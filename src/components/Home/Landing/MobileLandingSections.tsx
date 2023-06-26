@@ -69,7 +69,7 @@ export default function MobileLandingSections() {
                 <img
                     src={liquidityImage}
                     alt='concentrated and ambient liquidity'
-                    width='200px'
+                    width='260px'
                 />
                 <h2 tabIndex={0}>Deep, Diversified Liquidity</h2>
                 <p tabIndex={0}>
@@ -88,7 +88,7 @@ export default function MobileLandingSections() {
                 <img
                     src={orderImage}
                     alt='range and limit orders'
-                    width='150px'
+                    width='200px'
                 />
 
                 <h2 tabIndex={0}>Bridge the Gap Between Trading and LP’ing</h2>
