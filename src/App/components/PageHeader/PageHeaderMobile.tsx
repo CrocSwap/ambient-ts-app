@@ -43,7 +43,7 @@ const PageHeaderMobile = (props: PropsIF) => {
     return (
         <div
             className={styles.main_container}
-            // style={{ position: isHomePage ? 'fixed' : 'static' }}
+            style={{ position: isHomePage ? 'fixed' : 'static' }}
         >
             <Link to='/' aria-label='Home' className={styles.link}>
                 <img src={logo} alt='logo' width='35px' />
