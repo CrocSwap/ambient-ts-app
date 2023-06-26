@@ -2,7 +2,6 @@ import { Link, useLocation } from 'react-router-dom';
 import styles from './TopPoolsCard.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo, useContext } from 'react';
-import { formatAmountOld } from '../../../../utils/numbers';
 import { topPoolIF } from '../../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';

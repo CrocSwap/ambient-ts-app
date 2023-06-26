@@ -5,7 +5,6 @@ import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { get24hChange } from '../../../App/functions/getPoolStats';
-import { formatAmountOld } from '../../../utils/numbers';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';

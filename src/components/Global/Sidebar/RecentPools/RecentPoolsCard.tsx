@@ -2,7 +2,6 @@ import { Link, useLocation } from 'react-router-dom';
 import styles from './RecentPoolsCard.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo, useContext } from 'react';
-import { formatAmountOld } from '../../../../utils/numbers';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';

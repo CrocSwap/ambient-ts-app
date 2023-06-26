@@ -7,7 +7,6 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { formatAmountOld } from '../../../utils/numbers';
 import styles from './Stats.module.css';
 
 interface StatCardProps {

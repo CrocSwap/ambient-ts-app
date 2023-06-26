@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { formatAmountOld } from '../../../../../utils/numbers';
 import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../../App/functions/getPoolStats';
 import { CrocEnv } from '@crocswap-libs/sdk';
