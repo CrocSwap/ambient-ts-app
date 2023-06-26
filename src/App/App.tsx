@@ -53,6 +53,7 @@ import { TradeTokenContext } from '../contexts/TradeTokenContext';
 import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
 
@@ -94,6 +95,8 @@ export default function App() {
     } = useContext(SidebarContext);
 
     const { address: userAddress } = useAccount();
+
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     useWebSocketSubs({
         crocEnv,
@@ -328,7 +331,7 @@ export default function App() {
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
             </div>
-            <SidebarFooter />
+            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <GlobalModal />
             <GlobalPopup />
             <SnackbarComponent />

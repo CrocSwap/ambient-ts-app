@@ -1,19 +1,14 @@
 
 
-.main_container{
-
+.main_container {
     position: relative;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
+    overflow-y: scroll;
     scroll-snap-type: y mandatory;
-    height: 100dvh;
+    height: 100dvh;  
     width: 100%;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
     overflow-x: hidden;
     max-width: 100dvw;
-
-background: var(--dark1);
+    background: var(--dark1);
 }
 
 .main_container::-webkit-scrollbar{
@@ -26,16 +21,8 @@ background: var(--dark1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-
-
- margin-top: 5rem !important;
- gap: 1rem;
-
-
-padding: 0 2rem;
-
-
+  gap: 1rem;
+  padding: 0 2rem;
 }
 
 .hero img {
@@ -53,33 +40,26 @@ padding: 0 2rem;
 }
 
 
-
-
-
 /* end of hero */
-.mobile_card {
-    height: 100dvh;
 
+.mobile_card {
+    height: 100%;
     padding: 20px;
     border-radius: 8px;
-    margin: 12px 0;
-
-
     display: flex;
     flex-direction: column;
     justify-content: center;
     position: relative;
     scroll-snap-align: center;
     align-items: center;
-    
-    
+    text-align: center;
   }
 
   
 
 
 .mobile_card .scroll_button{
-    position: absolute;
+    /* position: absolute; */
     bottom: 20px;
     background: transparent;
     outline: none;
@@ -91,9 +71,6 @@ padding: 0 2rem;
       scroll-snap-align: center;
 
   }
-.mobile_card{
-  text-align: center;
-}
  
 
   .smaller_image{
