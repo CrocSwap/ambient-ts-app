@@ -123,27 +123,30 @@ function CurrencyQuantity(props: propsIF) {
     );
     return (
         <div className={`${styles.token_amount} `}>
-            {isLoading && progressDisplay}
-            <input
-                id={`${fieldId}-quantity`}
-                className={styles.currency_quantity}
-                placeholder={isLoading ? '' : '0.0'}
-                tabIndex={0}
-                aria-live={ariaLive}
-                aria-label={`Enter ${fieldId} amount`}
-                onChange={(event) => {
-                    handleOnChange(event);
-                }}
-                value={isLoading ? '' : displayValue}
-                type='text'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern={decimalNumRegEx.source}
-                disabled={disable}
-            />
+            {isLoading ? (
+                progressDisplay
+            ) : (
+                <input
+                    id={`${fieldId}-quantity`}
+                    className={styles.currency_quantity}
+                    placeholder={isLoading ? '' : '0.0'}
+                    tabIndex={0}
+                    aria-live={ariaLive}
+                    aria-label={`Enter ${fieldId} amount`}
+                    onChange={(event) => {
+                        handleOnChange(event);
+                    }}
+                    value={isLoading ? '' : displayValue}
+                    type='text'
+                    inputMode='decimal'
+                    autoComplete='off'
+                    autoCorrect='off'
+                    min='0'
+                    minLength={1}
+                    pattern={decimalNumRegEx.source}
+                    disabled={disable}
+                />
+            )}
         </div>
     );
 }
