@@ -125,9 +125,13 @@ function Reposition() {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
-    if (position) {
-        setCurrentRangeInReposition(position.positionId);
-    }
+
+    useEffect(() => {
+        setCurrentRangeInReposition('');
+        if (position) {
+            setCurrentRangeInReposition(position.positionId);
+        }
+    }, [position]);
 
     const [concLiq, setConcLiq] = useState<string>('');
 

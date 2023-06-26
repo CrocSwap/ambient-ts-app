@@ -45,7 +45,8 @@ function RangesRow(props: propsIF) {
         setCurrentPositionActive,
     } = useContext(TradeTableContext);
 
-    const { currentRangeInReposition } = useContext(RangeContext);
+    const { currentRangeInReposition, currentRangeInAdd } =
+        useContext(RangeContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -188,7 +189,8 @@ function RangesRow(props: propsIF) {
 
     const activePositionStyle =
         position.firstMintTx === currentPositionActive ||
-        position.positionId === currentRangeInReposition
+        position.positionId === currentRangeInReposition ||
+        position.positionId === currentRangeInAdd
             ? styles.active_position_style
             : '';
 
