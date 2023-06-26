@@ -10,6 +10,7 @@ type FormatParams = {
     maxFracDigits?: number;
     isUSD?: boolean;
     isInput?: boolean;
+    isTvl?: boolean;
 };
 
 export function getFormattedNumber({
@@ -22,6 +23,7 @@ export function getFormattedNumber({
     maxFracDigits = 2,
     isUSD = false,
     isInput = false,
+    isTvl = false,
 }: FormatParams) {
     let valueString = '';
     if (value === 0) {
@@ -56,7 +58,7 @@ export function getFormattedNumber({
         valueString = value.toFixed(3);
     } else if (value >= 10000 && !isInput) {
         // use abbreviations (k, M, B, T) for big numbers
-        valueString = formatAbbrev(value);
+        valueString = formatAbbrev(value, isTvl);
     } else {
         valueString = value.toLocaleString(undefined, {
             minimumFractionDigits: minFracDigits,
@@ -101,9 +103,10 @@ const formatSubscript = (value: number, precision = 3) => {
     return `0.${subscriptUnicode[zeros]}${valueNonZero}`;
 };
 
-const formatAbbrev = (value: number) => {
+const formatAbbrev = (value: number, isTvl?: boolean) => {
     return numbro(value).format({
         average: true,
+        ...(isTvl && { roundingFunction: (num: number) => Math.floor(num) }),
         mantissa: 2,
         abbreviations: {
             thousand: 'k',

@@ -5,7 +5,6 @@ import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { get24hChange } from '../../../App/functions/getPoolStats';
-import { formatAmountOld } from '../../../utils/numbers';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -166,11 +165,18 @@ export default function PoolCard(props: propsIF) {
                 const apyResult = await apyEst;
 
                 if (tvlResult) {
-                    const tvlString = formatAmountOld(tvlResult);
+                    console.log('TVL: ', tvlResult);
+                    const tvlString = getFormattedNumber({
+                        value: tvlResult,
+                        isTvl: true,
+                    });
                     setPoolTvl(tvlString);
                 }
                 if (volumeResult) {
-                    const volumeString = formatAmountOld(volumeResult);
+                    console.log('Vol: ', volumeResult);
+                    const volumeString = getFormattedNumber({
+                        value: volumeResult,
+                    });
                     setPoolVolume(volumeString);
                 }
                 if (apyResult) {
