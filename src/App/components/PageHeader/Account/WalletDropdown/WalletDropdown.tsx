@@ -136,11 +136,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 setUsdcVal(undefined);
             }
         });
-    }, [
-        chainId,
-        usdcData?.combinedBalanceDisplay,
-        tokenDataFromRTK.erc20Tokens === undefined,
-    ]);
+    }, [chainId, JSON.stringify(tokenDataFromRTK)]);
 
     const tokensData = [
         {
