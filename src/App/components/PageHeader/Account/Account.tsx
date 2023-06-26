@@ -84,6 +84,7 @@ export default function Account(props: propsIF) {
 
     const ethMainnetUsdValueTruncated = getFormattedNumber({
         value: ethMainnetUsdValue,
+        isUSD: true,
         prefix: '$',
     });
 
@@ -109,7 +110,6 @@ export default function Account(props: propsIF) {
         <section
             className={styles.wallet_display}
             ref={walletDropdownItemRef}
-            // tabIndex={0}
             aria-label={mainAriaLabel}
         >
             <button
@@ -138,7 +138,11 @@ export default function Account(props: propsIF) {
                                 : '...'
                             : ''
                     }
-                    ethValue={`${ethMainnetUsdValueTruncated}`}
+                    ethValue={
+                        ethMainnetUsdValueTruncated !== undefined
+                            ? `${ethMainnetUsdValueTruncated}`
+                            : undefined
+                    }
                     accountAddressFull={props.accountAddressFull}
                     walletDropdownTokenData={walletDropdownTokenData}
                     clickOutsideHandler={clickOutsideHandler}
