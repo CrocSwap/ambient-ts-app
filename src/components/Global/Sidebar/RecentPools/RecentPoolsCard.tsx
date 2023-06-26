@@ -15,6 +15,7 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     pool: SmallerPoolIF;
@@ -81,11 +82,13 @@ export default function RecentPoolsCard(props: propsIF) {
             // display the total volume for all time
             const volume = poolStatsFresh?.volumeTotalUsd;
             const volumeString = volume
-                ? '$' + formatAmountOld(volume)
+                ? getFormattedNumber({ value: volume, prefix: '$' })
                 : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvlTotalUsd;
-            const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
+            const tvlString = tvl
+                ? getFormattedNumber({ value: tvl, prefix: '$', isTvl: true })
+                : undefined;
             setPoolTvl(tvlString);
         })();
     };

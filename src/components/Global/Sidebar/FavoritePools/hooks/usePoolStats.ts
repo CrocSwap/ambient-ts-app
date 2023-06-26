@@ -4,6 +4,7 @@ import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../../App/functions/getPoolStats';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 
 export const usePoolStats = (
     pool: PoolIF,
@@ -31,11 +32,13 @@ export const usePoolStats = (
             );
             const volume = poolStatsFresh?.volumeTotalUsd; // display the total volume for all time
             const volumeString = volume
-                ? '$' + formatAmountOld(volume)
+                ? getFormattedNumber({ value: volume, prefix: '$' })
                 : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvlTotalUsd;
-            const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
+            const tvlString = tvl
+                ? getFormattedNumber({ value: tvl, prefix: '$', isTvl: true })
+                : undefined;
             setPoolTvl(tvlString);
         })();
     };

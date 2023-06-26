@@ -22,7 +22,10 @@ export const formatDollarAmount = (
     });
 };
 
-export const formatDollarAmountAxis = (num: number | undefined) => {
+export const formatDollarAmountAxis = (
+    num: number | undefined,
+    isTvl?: boolean,
+) => {
     const digits = num != undefined ? num.toString().length : 0;
     if (num === 0) return '$0.00';
     if (num === undefined) return '-';
@@ -33,6 +36,7 @@ export const formatDollarAmountAxis = (num: number | undefined) => {
 
     return numbro(num).formatCurrency({
         average: true,
+        ...(isTvl && { roundingFunction: (num: number) => Math.floor(num) }),
         mantissa: 2,
         // mantissa: num > 1000 ? 2 : num < 100 ? 5 : digits,
         abbreviations: {

@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getChainStats } from '../../../App/functions/getPoolStats';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
@@ -64,13 +65,23 @@ export default function Stats() {
                     }
 
                     setTotalTvlString(
-                        '$' + formatAmountOld(dexStats.tvlTotalUsd),
+                        getFormattedNumber({
+                            value: dexStats.tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                        }),
                     );
                     setTotalVolumeString(
-                        '$' + formatAmountOld(dexStats.volumeTotalUsd),
+                        getFormattedNumber({
+                            value: dexStats.volumeTotalUsd,
+                            prefix: '$',
+                        }),
                     );
                     setTotalFeesString(
-                        '$' + formatAmountOld(dexStats.feesTotalUsd),
+                        getFormattedNumber({
+                            value: dexStats.feesTotalUsd,
+                            prefix: '$',
+                        }),
                     );
                 },
             );
