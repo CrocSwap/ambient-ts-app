@@ -111,37 +111,35 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         const usdBal: number = parseFloat(
             usdcData?.combinedBalanceDisplay ?? '0.00',
         );
-        if (tokenDataFromRTK.erc20Tokens !== undefined) {
-            Promise.resolve(
-                cachedFetchTokenPrice(
-                    USDC[mktDataChainId(chainId) as '0x1'],
-                    chainId,
-                ),
-            ).then((price) => {
-                let newPriceString: string;
-                if (price?.usdPrice !== undefined) {
-                    const priceString: string = (
-                        (price && price?.usdPrice * usdBal) ??
-                        0
-                    )
-                        .toFixed(2)
-                        .toString();
-                    const parts: string[] = priceString.split('.');
-                    const intPart: string = parts[0];
-                    const decimalPart: string = parts[1] || '';
-                    const intWithCommas: string = intPart.replace(
-                        /\B(?=(\d{3})+(?!\d))/g,
-                        ',',
-                    );
-                    newPriceString =
-                        intWithCommas +
-                        (decimalPart.length > 0 ? '.' + decimalPart : '');
-                    setUsdcVal(newPriceString);
-                } else {
-                    setUsdcVal(undefined);
-                }
-            });
-        }
+        Promise.resolve(
+            cachedFetchTokenPrice(
+                USDC[mktDataChainId(chainId) as '0x1'],
+                chainId,
+            ),
+        ).then((price) => {
+            let newPriceString: string;
+            if (price?.usdPrice !== undefined) {
+                const priceString: string = (
+                    (price && price?.usdPrice * usdBal) ??
+                    0
+                )
+                    .toFixed(2)
+                    .toString();
+                const parts: string[] = priceString.split('.');
+                const intPart: string = parts[0];
+                const decimalPart: string = parts[1] || '';
+                const intWithCommas: string = intPart.replace(
+                    /\B(?=(\d{3})+(?!\d))/g,
+                    ',',
+                );
+                newPriceString =
+                    intWithCommas +
+                    (decimalPart.length > 0 ? '.' + decimalPart : '');
+                setUsdcVal(newPriceString);
+            } else {
+                setUsdcVal(undefined);
+            }
+        });
     }, [
         chainId,
         usdcData?.combinedBalanceDisplay,
