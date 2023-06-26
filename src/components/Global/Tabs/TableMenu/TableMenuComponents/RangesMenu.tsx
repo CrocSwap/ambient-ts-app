@@ -143,6 +143,7 @@ export default function RangesMenu(props: propsIF) {
             onClick={() => {
                 setSimpleRangeWidth(10);
                 setCurrentRangeInReposition(position.positionId);
+                setCurrentRangeInAdd('');
             }}
             state={{ position: position }}
         >
