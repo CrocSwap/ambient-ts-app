@@ -1,4 +1,5 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 interface swapParamsIF {
     chain: string;
@@ -82,6 +83,29 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
 
     // callable fn to navigate the user to a given URL path in the app
     const navigate = useNavigate();
+
+    const { params } = useParams();
+    const [currentParamsStr, setCurrentParamsStr] = useState<string>(
+        params ?? '',
+    );
+
+    function mapParams() {
+        const paramMap: Map<string, string> = new Map();
+        currentParamsStr
+            // split the params string at the separator character
+            .split('&')
+            // remove any values missing an = symbol
+            .filter((par) => par.includes('='))
+            // split substrings at = symbols to make [key, value] tuples
+            .map((par) => par.split('='))
+            // remove empty strings created by extra = symbols
+            .map((par) => par.filter((e) => e !== ''))
+            // remove tuples with trisomy issues
+            .filter((par) => par.length === 2)
+            .forEach((par) => paramMap.set(par[0], par[1]));
+    }
+
+    mapParams();
 
     // base URL of the user's location in the app, primarily uses provided
     // ... argument but will read the current URL pathname as a backup check
