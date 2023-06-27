@@ -445,23 +445,28 @@ function CurrencyConverter(props: propsIF) {
                 const inputStr = evt.target.value.replaceAll(',', '');
                 const inputNum = parseFloat(inputStr);
 
-                if (isNaN(inputNum)) return;
+                if (!isNaN(inputNum)) {
+                    const truncatedInputStr =
+                        inputNum === 0 ||
+                        precisionOfInput(inputStr) <= tradeData.tokenA.decimals
+                            ? inputStr
+                            : truncateDecimals(
+                                  inputNum,
+                                  tradeData.tokenA.decimals,
+                              );
+                    const truncatedInputNum = parseFloat(truncatedInputStr);
 
-                const truncatedInputStr =
-                    inputNum === 0 ||
-                    precisionOfInput(inputStr) <= tradeData.tokenA.decimals
-                        ? inputStr
-                        : truncateDecimals(inputNum, tradeData.tokenA.decimals);
-                const truncatedInputNum = parseFloat(truncatedInputStr);
+                    if (truncatedInputNum !== 0) {
+                        setSellQtyString(truncatedInputStr);
+                        setTokenAQtyLocal(truncatedInputStr);
+                        setIsTokenAPrimaryLocal(true);
+                        dispatch(setIsTokenAPrimary(true));
+                        dispatch(
+                            setPrimaryQuantity(truncatedInputNum.toString()),
+                        );
 
-                if (truncatedInputNum !== 0) {
-                    setSellQtyString(truncatedInputStr);
-                    setTokenAQtyLocal(truncatedInputStr);
-                    setIsTokenAPrimaryLocal(true);
-                    dispatch(setIsTokenAPrimary(true));
-                    dispatch(setPrimaryQuantity(truncatedInputNum.toString()));
-
-                    rawTokenBQty = await refreshImpact(inputStr, true);
+                        rawTokenBQty = await refreshImpact(inputStr, true);
+                    }
                 }
             } else {
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
@@ -542,23 +547,28 @@ function CurrencyConverter(props: propsIF) {
                 const inputStr = evt.target.value.replaceAll(',', '');
                 const inputNum = parseFloat(inputStr);
 
-                if (isNaN(inputNum)) return;
+                if (!isNaN(inputNum)) {
+                    const truncatedInputStr =
+                        inputNum === 0 ||
+                        precisionOfInput(inputStr) <= tradeData.tokenB.decimals
+                            ? inputStr
+                            : truncateDecimals(
+                                  inputNum,
+                                  tradeData.tokenB.decimals,
+                              );
+                    const truncatedInputNum = parseFloat(truncatedInputStr);
 
-                const truncatedInputStr =
-                    inputNum === 0 ||
-                    precisionOfInput(inputStr) <= tradeData.tokenB.decimals
-                        ? inputStr
-                        : truncateDecimals(inputNum, tradeData.tokenB.decimals);
-                const truncatedInputNum = parseFloat(truncatedInputStr);
+                    if (truncatedInputNum !== 0) {
+                        setBuyQtyString(truncatedInputStr);
+                        setTokenBQtyLocal(truncatedInputStr);
+                        setIsTokenAPrimaryLocal(false);
+                        dispatch(setIsTokenAPrimary(false));
+                        dispatch(
+                            setPrimaryQuantity(truncatedInputNum.toString()),
+                        );
 
-                if (truncatedInputNum !== 0) {
-                    setBuyQtyString(truncatedInputStr);
-                    setTokenBQtyLocal(truncatedInputStr);
-                    setIsTokenAPrimaryLocal(false);
-                    dispatch(setIsTokenAPrimary(false));
-                    dispatch(setPrimaryQuantity(truncatedInputNum.toString()));
-
-                    rawTokenAQty = await refreshImpact(inputStr, false);
+                        rawTokenAQty = await refreshImpact(inputStr, false);
+                    }
                 }
             } else {
                 rawTokenAQty = await refreshImpact(tokenBQtyLocal, false);
