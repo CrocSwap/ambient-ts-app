@@ -48,6 +48,14 @@ type anyParamsIF =
     | initParamsIF
     | repoParamsIF;
 
+type paramsType =
+    | 'chain'
+    | 'tokenA'
+    | 'tokenB'
+    | 'limitTick'
+    | 'lowTick'
+    | 'highTick';
+
 // index of all base URL pathways in the Ambient app
 const BASE_URL_PATHS = {
     index: '',
@@ -90,7 +98,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     );
 
     function mapParams() {
-        const paramMap: Map<string, string> = new Map();
+        const paramMap: Map<paramsType, string> = new Map();
         currentParamsStr
             // split the params string at the separator character
             .split('&')
@@ -102,7 +110,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             .map((par) => par.filter((e) => e !== ''))
             // remove tuples with trisomy issues
             .filter((par) => par.length === 2)
-            .forEach((par) => paramMap.set(par[0], par[1]));
+            .forEach((par) => paramMap.set(par[0] as paramsType, par[1]));
     }
 
     mapParams();
