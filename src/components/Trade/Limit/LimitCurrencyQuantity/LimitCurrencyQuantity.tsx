@@ -2,7 +2,6 @@
 import styles from './LimitCurrencyQuantity.module.css';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
-import { decimalNumRegEx } from '../../../../utils/regex/exports';
 
 interface propsIF {
     disable?: boolean;
@@ -22,11 +21,11 @@ function LimitCurrencyQuantity(props: propsIF) {
     }, [value]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        handleChangeEvent(event);
         const input = event.target.value.startsWith('.')
             ? '0' + event.target.value
             : event.target.value;
         setDisplayValue(input);
+        handleChangeEvent(event);
     };
 
     const precisionOfInput = (inputString: string) => {
@@ -34,6 +33,16 @@ function LimitCurrencyQuantity(props: propsIF) {
             return inputString.split('.')[1].length;
         }
         return 0;
+    };
+
+    const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const isPrecisionGreaterThanDecimals =
+            precisionOfInput(event.target.value) > thisToken.decimals;
+        const isUserInputValid =
+            !isPrecisionGreaterThanDecimals && !isNaN(+event.target.value);
+        if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
+            handleEventLocal(event);
+        }
     };
 
     return (
@@ -44,23 +53,15 @@ function LimitCurrencyQuantity(props: propsIF) {
                 aria-label={`Enter ${fieldId} amount`}
                 placeholder='0.0'
                 onChange={(event) => {
-                    const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) >
-                        thisToken.decimals;
-                    const isValid =
-                        !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' ||
-                            event.target.validity.valid);
-                    isValid ? handleEventLocal(event) : null;
+                    handleOnChange(event);
                 }}
                 value={displayValue}
-                type='string'
+                type='number'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern={decimalNumRegEx.source}
                 disabled={disable}
             />
         </div>
