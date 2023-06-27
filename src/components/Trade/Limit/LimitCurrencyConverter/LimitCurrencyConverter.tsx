@@ -282,32 +282,35 @@ function LimitCurrencyConverter(props: propsIF) {
             const inputStr = evt.target.value.replaceAll(',', '');
             const inputNum = parseFloat(inputStr);
 
-            if (!isNaN(inputNum)) {
-                const truncatedInputStr = removeLeadingZeros(
-                    inputNum === 0 ||
-                        precisionOfInput(inputStr) <= tradeData.tokenA.decimals
-                        ? inputStr
-                        : truncateDecimals(inputNum, tradeData.tokenA.decimals),
-                );
-                const truncatedInputNum = parseFloat(truncatedInputStr);
+            const truncatedInputStr = isNaN(inputNum)
+                ? ''
+                : removeLeadingZeros(
+                      inputNum === 0 ||
+                          precisionOfInput(inputStr) <=
+                              tradeData.tokenA.decimals
+                          ? inputStr
+                          : truncateDecimals(
+                                inputNum,
+                                tradeData.tokenA.decimals,
+                            ),
+                  );
 
-                setTokenAInputQty(truncatedInputStr);
-                setTokenAQtyLocal(truncatedInputStr);
-                setIsTokenAPrimaryLocal(true);
-                dispatch(setIsTokenAPrimary(true));
-                dispatch(setPrimaryQuantity(truncatedInputNum.toString()));
+            setTokenAInputQty(truncatedInputStr);
+            setTokenAQtyLocal(truncatedInputStr);
+            setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimary(true));
+            dispatch(setPrimaryQuantity(truncatedInputStr));
 
-                if (!tradeData.isDenomBase) {
-                    rawTokenBQty = isSellTokenBase
-                        ? (1 / limitTickDisplayPrice) * inputNum
-                        : limitTickDisplayPrice * inputNum;
-                } else {
-                    rawTokenBQty = !isSellTokenBase
-                        ? (1 / limitTickDisplayPrice) * inputNum
-                        : limitTickDisplayPrice * inputNum;
-                }
-                handleLimitButtonMessage(inputNum);
+            if (!tradeData.isDenomBase) {
+                rawTokenBQty = isSellTokenBase
+                    ? (1 / limitTickDisplayPrice) * inputNum
+                    : limitTickDisplayPrice * inputNum;
+            } else {
+                rawTokenBQty = !isSellTokenBase
+                    ? (1 / limitTickDisplayPrice) * inputNum
+                    : limitTickDisplayPrice * inputNum;
             }
+            handleLimitButtonMessage(inputNum);
         } else {
             if (!tradeData.isDenomBase) {
                 rawTokenBQty = isSellTokenBase
@@ -376,34 +379,37 @@ function LimitCurrencyConverter(props: propsIF) {
             const inputStr = evt.target.value.replaceAll(',', '');
             const inputNum = parseFloat(inputStr);
 
-            if (!isNaN(inputNum)) {
-                const truncatedInputStr = removeLeadingZeros(
-                    inputNum === 0 ||
-                        precisionOfInput(inputStr) <= tradeData.tokenB.decimals
-                        ? inputStr
-                        : truncateDecimals(inputNum, tradeData.tokenB.decimals),
-                );
-                const truncatedInputNum = parseFloat(truncatedInputStr);
+            const truncatedInputStr = isNaN(inputNum)
+                ? ''
+                : removeLeadingZeros(
+                      inputNum === 0 ||
+                          precisionOfInput(inputStr) <=
+                              tradeData.tokenB.decimals
+                          ? inputStr
+                          : truncateDecimals(
+                                inputNum,
+                                tradeData.tokenB.decimals,
+                            ),
+                  );
 
-                setTokenBInputQty(truncatedInputStr);
-                setUserSetTokenBToZero(false);
-                setTokenBInputQty(truncatedInputStr);
-                setIsTokenAPrimaryLocal(false);
-                dispatch(setIsTokenAPrimary(false));
-                dispatch(setPrimaryQuantity(truncatedInputNum.toString()));
+            setTokenBInputQty(truncatedInputStr);
+            setUserSetTokenBToZero(false);
+            setTokenBInputQty(truncatedInputStr);
+            setIsTokenAPrimaryLocal(false);
+            dispatch(setIsTokenAPrimary(false));
+            dispatch(setPrimaryQuantity(truncatedInputStr));
 
-                if (!tradeData.isDenomBase) {
-                    rawTokenAQty = isSellTokenBase
-                        ? limitTickDisplayPrice * inputNum
-                        : (1 / limitTickDisplayPrice) * inputNum;
-                } else {
-                    rawTokenAQty = !isSellTokenBase
-                        ? limitTickDisplayPrice * inputNum
-                        : (1 / limitTickDisplayPrice) * inputNum;
-                }
-
-                handleLimitButtonMessage(rawTokenAQty);
+            if (!tradeData.isDenomBase) {
+                rawTokenAQty = isSellTokenBase
+                    ? limitTickDisplayPrice * inputNum
+                    : (1 / limitTickDisplayPrice) * inputNum;
+            } else {
+                rawTokenAQty = !isSellTokenBase
+                    ? limitTickDisplayPrice * inputNum
+                    : (1 / limitTickDisplayPrice) * inputNum;
             }
+
+            handleLimitButtonMessage(rawTokenAQty);
         } else {
             if (!tradeData.isDenomBase) {
                 rawTokenAQty = isSellTokenBase
