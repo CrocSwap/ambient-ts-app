@@ -97,7 +97,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
         params ?? '',
     );
 
-    function mapParams() {
+    function updateParam(key: paramsType, value: string) {
         const paramMap: Map<paramsType, string> = new Map();
         currentParamsStr
             // split the params string at the separator character
@@ -111,9 +111,11 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             // remove tuples with trisomy issues
             .filter((par) => par.length === 2)
             .forEach((par) => paramMap.set(par[0] as paramsType, par[1]));
+        paramMap.set(key, value);
+        const newParamString = [...paramMap.entries()];
+        console.log(newParamString);
     }
-
-    mapParams();
+    false && updateParam;
 
     // base URL of the user's location in the app, primarily uses provided
     // ... argument but will read the current URL pathname as a backup check
