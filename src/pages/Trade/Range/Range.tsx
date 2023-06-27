@@ -96,6 +96,7 @@ function Range() {
         setChartTriggeredBy,
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
+        setCurrentRangeInAdd,
     } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
     const {
@@ -325,6 +326,12 @@ function Range() {
             defaultHighTick,
         ],
     );
+
+    useEffect(() => {
+        if (!isAdd) {
+            setCurrentRangeInAdd('');
+        }
+    }, [isAdd]);
 
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
         useState(defaultMinPriceDifferencePercentage);
