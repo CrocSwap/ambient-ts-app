@@ -768,16 +768,6 @@ function Swap(props: propsIF) {
                 setIsTutorialEnabled={setIsTutorialEnabled}
                 steps={swapTutorialSteps}
             />
-            <button
-                onClick={() =>
-                    linkGenInitPool.updateParam(
-                        'tokenA',
-                        '0x6B175474E89094C44Da98b954EedeAC495271d0F',
-                    )
-                }
-            >
-                Click Me
-            </button>
         </section>
     );
 }
