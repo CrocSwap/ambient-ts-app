@@ -35,6 +35,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { precisionOfInput } from '../../../App/functions/getPrecisionOfInput';
+import removeLeadingZeros from '../../../utils/functions/removeLeadingZeros';
 
 interface propsIF {
     slippageTolerancePercentage: number;
@@ -446,14 +447,17 @@ function CurrencyConverter(props: propsIF) {
                 const inputNum = parseFloat(inputStr);
 
                 if (!isNaN(inputNum)) {
-                    const truncatedInputStr =
+                    const truncatedInputStr = removeLeadingZeros(
                         inputNum === 0 ||
-                        precisionOfInput(inputStr) <= tradeData.tokenA.decimals
+                            precisionOfInput(inputStr) <=
+                                tradeData.tokenA.decimals
                             ? inputStr
                             : truncateDecimals(
                                   inputNum,
                                   tradeData.tokenA.decimals,
-                              );
+                              ),
+                    );
+
                     const truncatedInputNum = parseFloat(truncatedInputStr);
 
                     if (truncatedInputNum !== 0) {
@@ -548,14 +552,16 @@ function CurrencyConverter(props: propsIF) {
                 const inputNum = parseFloat(inputStr);
 
                 if (!isNaN(inputNum)) {
-                    const truncatedInputStr =
+                    const truncatedInputStr = removeLeadingZeros(
                         inputNum === 0 ||
-                        precisionOfInput(inputStr) <= tradeData.tokenB.decimals
+                            precisionOfInput(inputStr) <=
+                                tradeData.tokenB.decimals
                             ? inputStr
                             : truncateDecimals(
                                   inputNum,
                                   tradeData.tokenB.decimals,
-                              );
+                              ),
+                    );
                     const truncatedInputNum = parseFloat(truncatedInputStr);
 
                     if (truncatedInputNum !== 0) {

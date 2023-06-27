@@ -39,6 +39,7 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
+import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
 
 // interface for component props
 interface propsIF {
@@ -282,11 +283,12 @@ function LimitCurrencyConverter(props: propsIF) {
             const inputNum = parseFloat(inputStr);
 
             if (!isNaN(inputNum)) {
-                const truncatedInputStr =
+                const truncatedInputStr = removeLeadingZeros(
                     inputNum === 0 ||
-                    precisionOfInput(inputStr) <= tradeData.tokenA.decimals
+                        precisionOfInput(inputStr) <= tradeData.tokenA.decimals
                         ? inputStr
-                        : truncateDecimals(inputNum, tradeData.tokenA.decimals);
+                        : truncateDecimals(inputNum, tradeData.tokenA.decimals),
+                );
                 const truncatedInputNum = parseFloat(truncatedInputStr);
 
                 setTokenAInputQty(truncatedInputStr);
@@ -375,11 +377,12 @@ function LimitCurrencyConverter(props: propsIF) {
             const inputNum = parseFloat(inputStr);
 
             if (!isNaN(inputNum)) {
-                const truncatedInputStr =
+                const truncatedInputStr = removeLeadingZeros(
                     inputNum === 0 ||
-                    precisionOfInput(inputStr) <= tradeData.tokenB.decimals
+                        precisionOfInput(inputStr) <= tradeData.tokenB.decimals
                         ? inputStr
-                        : truncateDecimals(inputNum, tradeData.tokenB.decimals);
+                        : truncateDecimals(inputNum, tradeData.tokenB.decimals),
+                );
                 const truncatedInputNum = parseFloat(truncatedInputStr);
 
                 setTokenBInputQty(truncatedInputStr);
