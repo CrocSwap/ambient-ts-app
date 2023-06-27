@@ -48,14 +48,6 @@ type anyParamsIF =
     | initParamsIF
     | repoParamsIF;
 
-type paramsType =
-    | 'chain'
-    | 'tokenA'
-    | 'tokenB'
-    | 'limitTick'
-    | 'lowTick'
-    | 'highTick';
-
 // index of all base URL pathways in the Ambient app
 const BASE_URL_PATHS = {
     index: '',
@@ -78,7 +70,6 @@ export type pageNames = keyof typeof BASE_URL_PATHS;
 export interface linkGenMethodsIF {
     baseURL: string;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
-    updateParam: (key: paramsType, value: string) => void;
     navigate: (paramsObj?: anyParamsIF) => void;
     redirect: (paramsObj?: anyParamsIF) => void;
 }
@@ -92,33 +83,6 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
 
     // callable fn to navigate the user to a given URL path in the app
     const navigate = useNavigate();
-
-    const { params } = useParams();
-    const [currentParamsStr, setCurrentParamsStr] = useState<string>(
-        params ?? '',
-    );
-
-    function updateParam(key: paramsType, value: string): void {
-        const paramMap: Map<paramsType, string> = new Map();
-        currentParamsStr
-            // split the params string at the separator character
-            .split('&')
-            // remove any values missing an = symbol
-            .filter((par) => par.includes('='))
-            // split substrings at = symbols to make [key, value] tuples
-            .map((par) => par.split('='))
-            // remove empty strings created by extra = symbols
-            .map((par) => par.filter((e) => e !== ''))
-            // remove tuples with trisomy issues
-            .filter((par) => par.length === 2)
-            .forEach((par) => paramMap.set(par[0] as paramsType, par[1]));
-        paramMap.set(key, value);
-        const newParamString = [...paramMap.entries()]
-            .map((par) => par.join('='))
-            .join('&');
-        setCurrentParamsStr(newParamString);
-        history.replaceState(null, '', newParamString);
-    }
 
     // base URL of the user's location in the app, primarily uses provided
     // ... argument but will read the current URL pathname as a backup check
@@ -187,7 +151,6 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     return {
         baseURL,
         getFullURL,
-        updateParam,
         navigate: navigateUser,
         redirect: redirectUser,
     };
