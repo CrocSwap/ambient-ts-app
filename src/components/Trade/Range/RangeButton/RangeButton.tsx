@@ -23,21 +23,30 @@ function RangeButton(props: propsIF) {
 
     const { bypassConfirmRange } = useContext(UserPreferenceContext);
 
+    let title;
+
+    switch (true) {
+        case areBothAckd:
+            if (rangeAllowed) {
+                if (bypassConfirmRange.isEnabled) {
+                    title = isAdd
+                        ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
+                        : `Submit ${isAmbient ? 'Ambient' : ''} Liquidity`;
+                } else {
+                    title = 'Confirm';
+                }
+            } else {
+                title = rangeButtonErrorMessage;
+            }
+            break;
+
+        default:
+            title = 'Acknowledge';
+    }
+
     return (
         <Button
-            title={
-                areBothAckd
-                    ? rangeAllowed
-                        ? bypassConfirmRange.isEnabled
-                            ? isAdd
-                                ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
-                                : `Submit ${
-                                      isAmbient ? 'Ambient' : ''
-                                  } Liquidity`
-                            : 'Confirm'
-                        : rangeButtonErrorMessage
-                    : 'Acknowledge'
-            }
+            title={title}
             action={onClickFn}
             disabled={!rangeAllowed && areBothAckd}
             flat={true}

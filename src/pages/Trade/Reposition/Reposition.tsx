@@ -82,6 +82,7 @@ function Reposition() {
         setSimpleRangeWidth,
         setMaxRangePrice: setMaxPrice,
         setMinRangePrice: setMinPrice,
+        setCurrentRangeInReposition,
     } = useContext(RangeContext);
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
@@ -124,6 +125,13 @@ function Reposition() {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
+
+    useEffect(() => {
+        setCurrentRangeInReposition('');
+        if (position) {
+            setCurrentRangeInReposition(position.positionId);
+        }
+    }, [position]);
 
     const [concLiq, setConcLiq] = useState<string>('');
 
