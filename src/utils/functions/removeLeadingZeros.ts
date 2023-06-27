@@ -1,6 +1,5 @@
 const removeLeadingZeros = (numStr: string) => {
     const parts = numStr.split('.');
-    console.log(parts);
 
     let integerPart = numStr.includes('e')
         ? parseFloat(parts[0])
