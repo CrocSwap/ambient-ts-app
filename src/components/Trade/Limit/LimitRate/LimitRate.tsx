@@ -12,6 +12,7 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { exponentialNumRegEx } from '../../../../utils/regex/exports';
+import { useFreshParams } from '../../../../utils/hooks/useFreshParams';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -48,9 +49,12 @@ export default function LimitRate(props: propsIF) {
     const isDenomBase: boolean = tradeData.isDenomBase;
     const limitTick: number | undefined = tradeData.limitTick;
 
+    const handleParams = useFreshParams();
+
     const increaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick + gridSize));
+            handleParams.update('limitTick', (limitTick + gridSize).toString());
             setPriceInputFieldBlurred(true);
         }
     };
@@ -58,6 +62,7 @@ export default function LimitRate(props: propsIF) {
     const decreaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick - gridSize));
+            handleParams.update('limitTick', (limitTick + gridSize).toString());
             setPriceInputFieldBlurred(true);
         }
     };
@@ -72,6 +77,7 @@ export default function LimitRate(props: propsIF) {
                 ? pinTickLower(limit, gridSize)
                 : pinTickUpper(limit, gridSize);
             dispatch(setLimitTick(pinnedTick));
+            handleParams.update('limitTick', pinnedTick.toString());
             setPriceInputFieldBlurred(true);
         });
     };
