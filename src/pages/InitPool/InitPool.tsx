@@ -32,12 +32,15 @@ import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 
 // react functional component
 export default function InitPool() {
     const {
         wagmiModal: { open: openWagmiModalWallet },
     } = useContext(AppStateContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
         ethMainnetUsdPrice,
@@ -62,6 +65,21 @@ export default function InitPool() {
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
 
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
+    const [isInitPending, setIsInitPending] = useState(false);
+
+    const [initialPrice, setInitialPrice] = useState<number | undefined>();
+    const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
+    const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
+
+    const defaultPlaceholderTextAmount = 2000;
+
+    const [placeHolderPrice, setPlaceholderPrice] = useState<number>(
+        defaultPlaceholderTextAmount,
+    );
+
+    const [isDenomBase, setIsDenomBase] = useState(true);
+
     const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
         (state) => state.tradeData,
     );
@@ -85,7 +103,45 @@ export default function InitPool() {
         }
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
-    }, [crocEnv, sessionReceipts.length]);
+    }, [crocEnv, sessionReceipts.length, baseToken, quoteToken]);
+
+    useEffect(() => {
+        (async () => {
+            const mainnetBase = getMainnetEquivalent(
+                baseToken.address,
+                chainId,
+            );
+            const mainnetQuote = getMainnetEquivalent(
+                quoteToken.address,
+                chainId,
+            );
+            const basePricePromise = cachedFetchTokenPrice(
+                mainnetBase.token,
+                mainnetBase.chainId,
+            );
+            const quotePricePromise = cachedFetchTokenPrice(
+                mainnetQuote.token,
+                mainnetQuote.chainId,
+            );
+
+            const basePrice = (await basePricePromise)?.usdPrice || 2000;
+            const quotePrice = (await quotePricePromise)?.usdPrice || 1;
+
+            const defaultPriceNum = basePrice / quotePrice;
+
+            const defaultPriceTruncated =
+                defaultPriceNum < 0.0001
+                    ? defaultPriceNum.toExponential(2)
+                    : defaultPriceNum < 2
+                    ? defaultPriceNum.toPrecision(3)
+                    : defaultPriceNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setInitialPrice(defaultPriceNum);
+            setInitialPriceForDOM(defaultPriceTruncated);
+        })();
+    }, [baseToken, quoteToken]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
         useState(false);
@@ -115,20 +171,6 @@ export default function InitPool() {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
-    const [isInitPending, setIsInitPending] = useState(false);
-
-    const [initialPrice, setInitialPrice] = useState<number | undefined>();
-    const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
-    const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
-
-    const defaultInitialPrice = 2000;
-
-    const [placeHolderPrice, setPlaceholderPrice] =
-        useState<number>(defaultInitialPrice);
-
-    const [isDenomBase, setIsDenomBase] = useState(true);
 
     const invertInitialPrice = () => {
         if (initialPrice) {
