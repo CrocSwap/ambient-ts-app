@@ -52,7 +52,6 @@ interface propsIF {
     tokenAorB: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
     parseInput: (val: string) => void;
-    toggleUpdateTokenDisplayValue: boolean;
 }
 
 // central react functional component
@@ -73,7 +72,6 @@ function LimitCurrencySelector(props: propsIF) {
         tokenAorB,
         setUserOverrodeSurplusWithdrawalDefault,
         parseInput,
-        toggleUpdateTokenDisplayValue,
     } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
@@ -346,9 +344,6 @@ function LimitCurrencySelector(props: propsIF) {
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
                         parseInput={parseInput}
-                        toggleUpdateTokenDisplayValue={
-                            toggleUpdateTokenDisplayValue
-                        }
                     />
                 </div>
                 {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}

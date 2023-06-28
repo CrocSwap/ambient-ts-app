@@ -72,7 +72,10 @@ function RangeCurrencyQuantity(props: propsIF) {
                 onChange={(event) => {
                     handleOnChange(event);
                 }}
-                onBlur={(event) => parseInput(event.target.value)}
+                onBlur={(event) => {
+                    setDisplayValue(value);
+                    parseInput(event.target.value);
+                }}
                 value={displayValue}
                 type='number'
                 inputMode='decimal'

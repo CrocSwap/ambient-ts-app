@@ -10,7 +10,6 @@ interface propsIF {
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     parseInput: (val: string) => void;
     thisToken: TokenIF;
-    toggleUpdateTokenDisplayValue: boolean;
 }
 
 function LimitCurrencyQuantity(props: propsIF) {
@@ -21,14 +20,13 @@ function LimitCurrencyQuantity(props: propsIF) {
         fieldId,
         handleChangeEvent,
         parseInput,
-        toggleUpdateTokenDisplayValue,
     } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
     useEffect(() => {
         setDisplayValue(value);
-    }, [toggleUpdateTokenDisplayValue, value]);
+    }, [value]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
@@ -63,7 +61,10 @@ function LimitCurrencyQuantity(props: propsIF) {
                 onChange={(event) => {
                     handleOnChange(event);
                 }}
-                onBlur={(e) => parseInput(e.target.value)}
+                onBlur={(e) => {
+                    setDisplayValue(value);
+                    parseInput(e.target.value);
+                }}
                 value={displayValue}
                 type='number'
                 inputMode='decimal'
