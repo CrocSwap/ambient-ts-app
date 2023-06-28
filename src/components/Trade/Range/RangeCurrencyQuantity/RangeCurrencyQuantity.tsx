@@ -9,6 +9,7 @@ interface propsIF {
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isAdvancedMode: boolean;
     thisToken: TokenIF;
+    parseInput: (value: string) => void;
 }
 function RangeCurrencyQuantity(props: propsIF) {
     const {
@@ -18,6 +19,7 @@ function RangeCurrencyQuantity(props: propsIF) {
         updateOtherQuantity,
         fieldId,
         isAdvancedMode,
+        parseInput,
     } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
@@ -28,10 +30,7 @@ function RangeCurrencyQuantity(props: propsIF) {
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         updateOtherQuantity(event);
-        const input = event.target.value.startsWith('.')
-            ? '0' + event.target.value
-            : event.target.value;
-        setDisplayValue(input);
+        setDisplayValue(event.target.value);
     };
 
     const disabledContent = (
@@ -73,6 +72,7 @@ function RangeCurrencyQuantity(props: propsIF) {
                 onChange={(event) => {
                     handleOnChange(event);
                 }}
+                onBlur={(event) => parseInput(event.target.value)}
                 value={displayValue}
                 type='number'
                 inputMode='decimal'
