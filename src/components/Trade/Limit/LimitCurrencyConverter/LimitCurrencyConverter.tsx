@@ -276,6 +276,9 @@ function LimitCurrencyConverter(props: propsIF) {
         }
     };
 
+    const [toggleUpdateTokenDisplayValue, setToggleUpdateTokenDisplayValue] =
+        useState(false);
+
     const parseTokenAInput = (value: string) => {
         const inputNum = parseFloat(value);
         const truncatedInputStr = getFormattedInput(
@@ -284,6 +287,7 @@ function LimitCurrencyConverter(props: propsIF) {
         );
 
         setTokenAInputQty(truncatedInputStr);
+        setToggleUpdateTokenDisplayValue(!toggleUpdateTokenDisplayValue);
     };
 
     const parseTokenBInput = (value: string) => {
@@ -294,6 +298,7 @@ function LimitCurrencyConverter(props: propsIF) {
         );
 
         setTokenBInputQty(truncatedInputStr);
+        setToggleUpdateTokenDisplayValue(!toggleUpdateTokenDisplayValue);
     };
 
     const getFormattedInput = (value: number, decimals: number): string => {
@@ -404,7 +409,6 @@ function LimitCurrencyConverter(props: propsIF) {
             );
 
             setUserSetTokenBToZero(false);
-            setTokenBInputQty(truncatedInputStr);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(truncatedInputStr));
@@ -480,6 +484,7 @@ function LimitCurrencyConverter(props: propsIF) {
                     setUserOverrodeSurplusWithdrawalDefault
                 }
                 parseInput={parseTokenAInput}
+                toggleUpdateTokenDisplayValue={toggleUpdateTokenDisplayValue}
             />
             <div
                 className={`${styles.arrow_container} ${
@@ -514,6 +519,9 @@ function LimitCurrencyConverter(props: propsIF) {
                         setUserOverrodeSurplusWithdrawalDefault
                     }
                     parseInput={parseTokenBInput}
+                    toggleUpdateTokenDisplayValue={
+                        toggleUpdateTokenDisplayValue
+                    }
                 />
             </div>
             <LimitRate
