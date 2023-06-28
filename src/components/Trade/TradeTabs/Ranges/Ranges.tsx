@@ -21,6 +21,8 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
+import { useLocation } from 'react-router-dom';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -45,7 +47,7 @@ function Ranges(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-
+    const { setCurrentRangeInReposition } = useContext(RangeContext);
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
     const expandTradeTable = !isAccountView && expandTradeTableSelection;
@@ -61,6 +63,11 @@ function Ranges(props: propsIF) {
 
     const [rangeData, setRangeData] = useState<PositionIF[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const path = useLocation().pathname;
+
+    if (!path.includes('reposition')) {
+        setCurrentRangeInReposition('');
+    }
 
     useEffect(() => {
         if (isAccountView) setRangeData(activeAccountPositionData || []);
