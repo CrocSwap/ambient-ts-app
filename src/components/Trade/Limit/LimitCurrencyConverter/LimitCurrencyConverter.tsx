@@ -276,26 +276,46 @@ function LimitCurrencyConverter(props: propsIF) {
         }
     };
 
+    const parseTokenAInput = (value: string) => {
+        const inputNum = parseFloat(value);
+        const truncatedInputStr = getFormattedInput(
+            inputNum,
+            tradeData.tokenA.decimals,
+        );
+
+        setTokenAInputQty(truncatedInputStr);
+    };
+
+    const parseTokenBInput = (value: string) => {
+        const inputNum = parseFloat(value);
+        const truncatedInputStr = getFormattedInput(
+            inputNum,
+            tradeData.tokenB.decimals,
+        );
+
+        setTokenBInputQty(truncatedInputStr);
+    };
+
+    const getFormattedInput = (value: number, decimals: number): string => {
+        return isNaN(value)
+            ? ''
+            : removeLeadingZeros(
+                  value === 0 || precisionOfInput(value.toString()) <= decimals
+                      ? value.toString()
+                      : truncateDecimals(value, decimals),
+              );
+    };
+
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenBQty = 0;
         if (evt) {
             const inputStr = evt.target.value.replaceAll(',', '');
             const inputNum = parseFloat(inputStr);
+            const truncatedInputStr = getFormattedInput(
+                inputNum,
+                tradeData.tokenA.decimals,
+            );
 
-            const truncatedInputStr = isNaN(inputNum)
-                ? ''
-                : removeLeadingZeros(
-                      inputNum === 0 ||
-                          precisionOfInput(inputStr) <=
-                              tradeData.tokenA.decimals
-                          ? inputStr
-                          : truncateDecimals(
-                                inputNum,
-                                tradeData.tokenA.decimals,
-                            ),
-                  );
-
-            setTokenAInputQty(truncatedInputStr);
             setTokenAQtyLocal(truncatedInputStr);
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
@@ -378,21 +398,11 @@ function LimitCurrencyConverter(props: propsIF) {
         if (evt) {
             const inputStr = evt.target.value.replaceAll(',', '');
             const inputNum = parseFloat(inputStr);
+            const truncatedInputStr = getFormattedInput(
+                inputNum,
+                tradeData.tokenB.decimals,
+            );
 
-            const truncatedInputStr = isNaN(inputNum)
-                ? ''
-                : removeLeadingZeros(
-                      inputNum === 0 ||
-                          precisionOfInput(inputStr) <=
-                              tradeData.tokenB.decimals
-                          ? inputStr
-                          : truncateDecimals(
-                                inputNum,
-                                tradeData.tokenB.decimals,
-                            ),
-                  );
-
-            setTokenBInputQty(truncatedInputStr);
             setUserSetTokenBToZero(false);
             setTokenBInputQty(truncatedInputStr);
             setIsTokenAPrimaryLocal(false);
@@ -469,6 +479,7 @@ function LimitCurrencyConverter(props: propsIF) {
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
+                parseInput={parseTokenAInput}
             />
             <div
                 className={`${styles.arrow_container} ${
@@ -502,6 +513,7 @@ function LimitCurrencyConverter(props: propsIF) {
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
+                    parseInput={parseTokenBInput}
                 />
             </div>
             <LimitRate

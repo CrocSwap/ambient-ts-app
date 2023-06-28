@@ -8,11 +8,19 @@ interface propsIF {
     fieldId: string;
     value: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    parseInput: (val: string) => void;
     thisToken: TokenIF;
 }
 
 function LimitCurrencyQuantity(props: propsIF) {
-    const { value, thisToken, disable, fieldId, handleChangeEvent } = props;
+    const {
+        value,
+        thisToken,
+        disable,
+        fieldId,
+        handleChangeEvent,
+        parseInput,
+    } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
@@ -23,7 +31,7 @@ function LimitCurrencyQuantity(props: propsIF) {
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
         setDisplayValue(input);
-        setTimeout(() => handleChangeEvent(event), 750);
+        handleChangeEvent(event);
     };
 
     const precisionOfInput = (inputString: string) => {
@@ -52,6 +60,9 @@ function LimitCurrencyQuantity(props: propsIF) {
                 placeholder='0.0'
                 onChange={(event) => {
                     handleOnChange(event);
+                }}
+                onBlur={(event) => {
+                    parseInput(event.target.value);
                 }}
                 value={displayValue}
                 type='number'

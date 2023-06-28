@@ -716,8 +716,7 @@ export default function Limit() {
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
                     />
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
+                    {isUserConnected === undefined ? null : isUserConnected ? (
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 ? (
                             approvalButton
