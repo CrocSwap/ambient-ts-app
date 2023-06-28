@@ -146,6 +146,7 @@ export default function LimitRate(props: propsIF) {
                                 handleLimitChange(
                                     targetValPositive.replaceAll(',', ''),
                                 );
+
                                 setPreviousDisplayPrice(targetValPositive);
                             }
                         }}

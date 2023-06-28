@@ -59,24 +59,23 @@ function CurrencyQuantity(props: propsIF) {
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        const inputValue = value.startsWith('.') ? '0' + value : value;
         if (fieldId === 'sell') {
             setBuyQtyString('');
-            if (inputValue && parseFloat(inputValue) !== 0) {
+            if (value && parseFloat(value) !== 0) {
                 setIsBuyLoading(true);
-                setSellQtyString(inputValue);
+                setSellQtyString(value);
             }
             value || setIsBuyLoading(false);
         } else if (fieldId === 'buy') {
             setSellQtyString('');
-            if (inputValue && parseFloat(inputValue) !== 0) {
+            if (value && parseFloat(value) !== 0) {
                 setIsSellLoading(true);
-                setBuyQtyString(inputValue);
+                setBuyQtyString(value);
             }
             value || setIsSellLoading(false);
         }
 
-        setDisplayValue(inputValue);
+        setDisplayValue(value);
         setDisableReverseTokens(true);
         setLastEvent(event);
     };

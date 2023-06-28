@@ -21,11 +21,9 @@ function LimitCurrencyQuantity(props: propsIF) {
     }, [value]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        const input = event.target.value.startsWith('.')
-            ? '0' + event.target.value
-            : event.target.value;
+        const input = event.target.value;
         setDisplayValue(input);
-        handleChangeEvent(event);
+        setTimeout(() => handleChangeEvent(event), 750);
     };
 
     const precisionOfInput = (inputString: string) => {

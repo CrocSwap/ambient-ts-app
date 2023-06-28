@@ -36,17 +36,22 @@ export function getFormattedNumber({
         // only display two decimal points for USD values
         valueString = value.toFixed(2);
     } else if (isInput) {
-        if (value <= 10)
+        if (value < 0.0001) {
+            valueString = value.toExponential(2);
+        } else if (value < 2) {
+            valueString = value.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 6,
+            });
+        } else if (value <= 10) {
             // prevent scientific notation for inputs
-            valueString = Number(value?.toPrecision(3)).toLocaleString(
-                undefined,
-                { maximumFractionDigits: 20 },
-            );
-        else
+            valueString = Number(value?.toPrecision(3)).toString();
+        } else {
             valueString = value.toLocaleString(undefined, {
                 minimumFractionDigits: minFracDigits,
                 maximumFractionDigits: maxFracDigits,
             });
+        }
     } else if (value <= 0.0001) {
         // use subscript format for small numbers
         valueString = formatSubscript(value);
