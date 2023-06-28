@@ -88,7 +88,7 @@ export default function Investors() {
                 <img src={motivate} alt='motivate ' />{' '}
             </div>
 
-            <DividerDark />
+            {!showMobileVersion && <DividerDark />}
         </>
     );
     if (showMobileVersion) return mobileVersion;

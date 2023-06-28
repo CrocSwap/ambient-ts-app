@@ -21,13 +21,10 @@ export default function MobileLandingSections() {
 
     const heroSection = (
         <div className={`${styles.mobile_card} ${styles.hero} `}>
+            <div className={styles.hero_bg} />
             <>
                 <div style={{ paddingBottom: '2rem' }}>
                     <img src={logoText} alt='ambient' />
-
-                    <p className={styles.tagline}>
-                        Zero-to-One Decentralized Trading Protocol.
-                    </p>
                 </div>
                 <Stats />
             </>
@@ -49,6 +46,7 @@ export default function MobileLandingSections() {
 
     const secondRow = (
         <div className={`${styles.mobile_card} ${styles.right_align}`}>
+            <div className={styles.bg_1} />
             <Fade up>
                 <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
                 <h2 tabIndex={0} style={{ color: 'var(--text2)' }}>
@@ -65,6 +63,7 @@ export default function MobileLandingSections() {
 
     const thirdRow = (
         <div className={`${styles.mobile_card} ${styles.section4}`}>
+            <div className={styles.bg_2} />
             <Fade up>
                 <img
                     src={liquidityImage}
@@ -84,6 +83,8 @@ export default function MobileLandingSections() {
 
     const fourthRow = (
         <div className={`${styles.mobile_card} ${styles.section5}`}>
+            <div className={styles.bg_3} />
+
             <Fade up>
                 <img
                     src={orderImage}
@@ -107,6 +108,7 @@ export default function MobileLandingSections() {
 
     const fifthRow = (
         <div className={`${styles.mobile_card} ${styles.section6}`}>
+            <div className={styles.bg_4} />
             <Fade up>
                 <h2 tabIndex={0}>Better than CEX</h2>
                 <p tabIndex={0}>
@@ -130,6 +132,7 @@ export default function MobileLandingSections() {
 
     const footerSection = (
         <div className={`${styles.mobile_card} ${styles.footer_section}`}>
+            <div className={styles.bg_footer} />
             <Fade up>
                 <Footer />
             </Fade>

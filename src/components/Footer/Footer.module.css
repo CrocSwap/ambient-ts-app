@@ -43,6 +43,7 @@
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     grid-gap: 20px;
     margin: 0 2rem;
+   
 
 
 }
@@ -57,18 +58,33 @@
 
 .mobile_version .footer_item_container h3{
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+   
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+   
     display: flex;
     flex-direction: row;
     align-items: center;
-    vertical-align: middle;
+   
+    justify-content: center;
+    text-align: center;
+
+   
+}
+
+.started_button{
+    text-align: center;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
 }
 
 .mobile_version .footer_item_container p{
     display: none;
 }
 
+.mobile_version .footer_item_container{
+    text-align: center;
+}
 .container {
     width: 100%;
 

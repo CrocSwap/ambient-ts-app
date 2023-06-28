@@ -11,6 +11,83 @@
     background: var(--dark1);
 }
 
+/* .mobile_card:nth-of-type(3){
+
+
+  background: url(../../../assets/images/home/home2.png) no-repeat center center ; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+
+
+} */
+.mobile_card:nth-of-type(3),.mobile_card:nth-of-type(4), .mobile_card:nth-of-type(5), .mobile_card:nth-of-type(6){
+
+
+
+  position: relative;
+
+
+}
+.bg_1{
+  position: absolute;
+  background: url(../../../assets/images/home/home2.png)   ; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+ top: 200px;
+  left: 0;
+  height: 900px;
+  width: 100%;
+
+}
+
+
+.bg_2{
+  position: absolute;
+  background: url(../../../assets/images/home/home2.png) no-repeat  ; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-position:  right bottom;
+  top: 100px;
+  left: 0;
+  height: 400px;
+  width: 100%;
+
+}
+.bg_3{
+  position: absolute;
+  background: url(../../../assets/images/home/home3.png) no-repeat  ; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+ top: 200px;
+  left: 0;
+  height: 400px;
+  width: 100%;
+
+}
+.bg_4{
+  position: absolute;
+  background: url(../../../assets/images/home/home4.png) no-repeat  ; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+ top: 200px;
+  left: 0;
+  height: 600px;
+  width: 100%;
+
+}
+
+
+
 .main_container::-webkit-scrollbar{
     display: none;
 }
@@ -23,6 +100,22 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0 2rem;
+  position: relative;
+
+}
+
+.hero_bg{
+
+  position: absolute;
+  background: linear-gradient(to bottom, rgba(13, 17, 23, 0), rgba(13, 17, 23, 0.1) 80%, rgba(13, 17, 23, 0.4) 85%, rgba(13, 17, 23, 0.7), rgba(13, 17, 23, 0.9) , rgba(13, 17, 23, 1)),
+  url('../../../assets/images/home/home_wallpaper.png') no-repeat;
+  background-size: contain;
+  background-position: center top;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110%;
+  height: 200px;
 }
 
 .hero img {
@@ -90,38 +183,41 @@
   /* footer */
 
   .footer_section{
+    position: relative;
     width: 100%;
     height: 100%;
     background: var(--dark1);
     
-    background: url('../../../assets/images/home/home3.png') no-repeat center center fixed; 
+    /* background: url('../../../assets/images/home/home3.png') no-repeat center center fixed; 
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     -webkit-background-size: cover;
     -moz-background-size: cover;
-    -o-background-size: cover;
+    -o-background-size: cover; */
     padding-top: 6rem;
     background-size: cover;
   }
 
+  .bg_footer{
+    position: absolute;
+    background: url(../../../assets/images/home/home2.png) no-repeat  ; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+   top: 350px;
+    left: 0;
+    height: 500px;
+    width: 100%;
+  
+  }
 
 
- .investors{
-  background: radial-gradient(ellipse at top, var(--dark1), transparent),         
-       radial-gradient(ellipse at bottom, var(--dark3), transparent);
- }
+
 
  .investors h3, .pools h3{
   color: var(--text3)
  }
 
- .section6{
-
-  background: url('../../../assets/images/home/home4.png') no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-}
