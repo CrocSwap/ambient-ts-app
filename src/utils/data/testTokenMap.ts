@@ -16,6 +16,10 @@ export const testTokenMap = new Map([
         '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48_0x1', // 'USDC' on Mainnet
     ],
     [
+        '0x0595328847af962f951a4f8f8ee9a3bf261e4f6b_0x5', // 'OHM' on Goerli
+        '0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5_0x1', // 'OHM' on Mainnet
+    ],
+    [
         '0x4e3d1e75c459f8c3306033f78b257ab51c2dab6c_0x5', // 'WTT1021' on Goerli
         '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48_0x1', // 'USDC' on Mainnet
     ],
