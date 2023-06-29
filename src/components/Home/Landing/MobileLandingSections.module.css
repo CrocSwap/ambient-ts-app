@@ -119,12 +119,12 @@
 
 
 .main_logo img {
-  width: 70%;
-  height: 200px;
+ width: 300px;
+ height: 200px;
   object-fit: contain;
-  
-  /* max-width: 70dvw; 
-  height: auto; */
+  display: block;
+  margin: 0 auto;
+
 }
 
 .tagline{
