@@ -337,7 +337,7 @@ async function fetchCandleSeriesUniswap(
                             period: period.toString(),
                             time: time, // optional
                             n: candleNeeded, // positive integer
-                            chainId: '0x1',
+                            chainId: chainData.chainId,
                             dex: 'all',
                             poolStats: 'true',
                             concise: 'true',
