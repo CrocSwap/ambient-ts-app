@@ -25,6 +25,10 @@ export const useSidebarSearch = (
     tokens: tokenMethodsIF,
     chainId: string,
 ): sidebarSearchIF => {
+    // TODO:    refactor this data structure to hold two TokenIF data
+    // TODO:    ... objects instead of directly-coded metadata; the only
+    // TODO:    ... reason we have this shape is that the cache server used
+    // TODO:    ... data formatted as such
     const poolsOnChain = useMemo<TempPoolIF[]>(
         () =>
             poolList
@@ -111,6 +115,9 @@ export const useSidebarSearch = (
     // array of pools to output from the hook
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
 
+    // TODO:    port reorganized search logic for name+symbol search
+    // TODO:    ... from pool search to the other search filters
+
     // logic to update the output pools from the hook
     useEffect(() => {
         // fn to filter pools by address (must be exact)
@@ -121,7 +128,7 @@ export const useSidebarSearch = (
                     pool.quote.toLowerCase() === addr.toLowerCase(),
             );
         // fn to filter pools by symbol (must be exact IF input is two characters)
-        const searchBySymbol = (symb: string): TempPoolIF[] =>
+        const searchByNameOrSymbol = (symb: string): TempPoolIF[] =>
             poolsOnChain
                 .filter((pool: TempPoolIF) => {
                     // values against which to search
@@ -169,7 +176,7 @@ export const useSidebarSearch = (
                 filteredPools = searchByAddress(validatedInput);
                 break;
             case 'nameOrSymbol':
-                filteredPools = searchBySymbol(validatedInput);
+                filteredPools = searchByNameOrSymbol(validatedInput);
                 break;
             case '':
             default:
