@@ -37,11 +37,13 @@ export const useSidebarSearch = (
                         return {
                             base: baseToken.address,
                             baseDecimals: baseToken.decimals,
+                            baseName: baseToken.name,
                             baseSymbol: baseToken.symbol,
                             chainId: pool.chainId,
                             poolIdx: pool.poolIdx,
                             quote: quoteToken.address,
                             quoteDecimals: quoteToken.decimals,
+                            quoteName: quoteToken.name,
                             quoteSymbol: quoteToken.symbol,
                         };
                     } else {
@@ -121,18 +123,32 @@ export const useSidebarSearch = (
         // fn to filter pools by symbol (must be exact IF input is two characters)
         const searchBySymbol = (symb: string): TempPoolIF[] =>
             poolsOnChain
-                .filter((pool: TempPoolIF) =>
-                    symb.length === 2
-                        ? pool.baseSymbol.toLowerCase() ===
-                              symb.toLowerCase() ||
-                          pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
-                        : pool.baseSymbol
-                              .toLowerCase()
-                              .includes(symb.toLowerCase()) ||
-                          pool.quoteSymbol
-                              .toLowerCase()
-                              .includes(symb.toLowerCase()),
-                )
+                .filter((pool: TempPoolIF) => {
+                    // values against which to search
+                    const values: string[] = [
+                        pool.baseSymbol,
+                        pool.quoteSymbol,
+                        pool.baseName,
+                        pool.quoteName,
+                    ];
+                    // fn to find exact matches to search input
+                    function findExactMatch(input: string): boolean {
+                        return values.some(
+                            (val: string) =>
+                                val.toLowerCase() === input.toLowerCase(),
+                        );
+                    }
+                    // fn to find partial matches to search input
+                    function findPartialMatch(input: string): boolean {
+                        return values.some((val: string) =>
+                            val.toLowerCase().includes(input.toLowerCase()),
+                        );
+                    }
+                    // return search results for either exact or partial match
+                    return symb.length === 2
+                        ? findExactMatch(symb)
+                        : findPartialMatch(symb);
+                })
                 .filter(
                     (pool: TempPoolIF) =>
                         tokens.verifyToken(pool.base) &&
