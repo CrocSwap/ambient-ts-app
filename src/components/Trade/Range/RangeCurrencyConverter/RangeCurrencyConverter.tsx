@@ -29,14 +29,13 @@ import {
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -411,32 +410,24 @@ function RangeCurrencyConverter(props: propsIF) {
 
     const parseTokenAInput = (value: string) => {
         const inputNum = parseFloat(value);
-        const truncatedInputStr = getFormattedInput(
-            inputNum,
-            tradeData.tokenA.decimals,
-        );
+        const truncatedInputStr = getFormattedNumber({
+            value: inputNum,
+            isToken: true,
+            maxFracDigits: tradeData.tokenA.decimals,
+        });
 
         setTokenAInputQty(truncatedInputStr);
     };
 
     const parseTokenBInput = (value: string) => {
         const inputNum = parseFloat(value);
-        const truncatedInputStr = getFormattedInput(
-            inputNum,
-            tradeData.tokenB.decimals,
-        );
+        const truncatedInputStr = getFormattedNumber({
+            value: inputNum,
+            isToken: true,
+            maxFracDigits: tradeData.tokenB.decimals,
+        });
 
         setTokenBInputQty(truncatedInputStr);
-    };
-
-    const getFormattedInput = (value: number, decimals: number): string => {
-        return isNaN(value)
-            ? ''
-            : removeLeadingZeros(
-                  value === 0 || precisionOfInput(value.toString()) <= decimals
-                      ? value.toString()
-                      : truncateDecimals(value, decimals),
-              );
     };
 
     const handleTokenAQtyFieldUpdate = (

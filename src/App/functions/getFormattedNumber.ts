@@ -1,4 +1,6 @@
 import numbro from 'numbro';
+import { precisionOfInput } from './getPrecisionOfInput';
+import truncateDecimals from '../../utils/data/truncateDecimals';
 
 type FormatParams = {
     value?: number;
@@ -11,6 +13,7 @@ type FormatParams = {
     isUSD?: boolean;
     isInput?: boolean;
     isTvl?: boolean;
+    isToken?: boolean;
     removeCommas?: boolean;
 };
 
@@ -25,6 +28,7 @@ export function getFormattedNumber({
     isUSD = false,
     isInput = false,
     isTvl = false,
+    isToken = false,
     removeCommas = false,
 }: FormatParams) {
     let valueString = '';
@@ -37,6 +41,14 @@ export function getFormattedNumber({
     } else if (isUSD) {
         // only display two decimal points for USD values
         valueString = value.toFixed(2);
+    } else if (isToken) {
+        if (isNaN(value)) {
+            valueString = '';
+        } else if (precisionOfInput(value.toString()) <= maxFracDigits) {
+            valueString = value.toString();
+        } else {
+            valueString = truncateDecimals(value, maxFracDigits);
+        }
     } else if (isInput) {
         if (value < 0.0001) {
             valueString = value.toExponential(2);
