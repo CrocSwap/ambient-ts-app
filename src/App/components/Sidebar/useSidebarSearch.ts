@@ -92,14 +92,14 @@ export const useSidebarSearch = (
             poolList
                 .filter((pool: TempPoolIF) =>
                     symb.length === 2
-                        ? pool.baseSymbol.toLowerCase() ===
+                        ? pool.baseSymbol?.toLowerCase() ===
                               symb.toLowerCase() ||
-                          pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
+                          pool.quoteSymbol?.toLowerCase() === symb.toLowerCase()
                         : pool.baseSymbol
-                              .toLowerCase()
+                              ?.toLowerCase()
                               .includes(symb.toLowerCase()) ||
                           pool.quoteSymbol
-                              .toLowerCase()
+                              ?.toLowerCase()
                               .includes(symb.toLowerCase()),
                 )
                 .filter(
