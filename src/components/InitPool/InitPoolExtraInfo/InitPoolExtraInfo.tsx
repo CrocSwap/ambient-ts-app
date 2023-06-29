@@ -26,7 +26,6 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
         initGasPriceinDollars,
         baseToken,
         quoteToken,
-        invertInitialPrice,
         setIsDenomBase,
     } = props;
 
@@ -53,7 +52,6 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
     const priceDisplayDiv = (
         <div
             onClick={() => {
-                invertInitialPrice ? invertInitialPrice() : null;
                 setIsDenomBase(!isDenomBase);
             }}
             style={{ cursor: 'pointer' }}

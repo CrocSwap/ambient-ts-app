@@ -68,15 +68,14 @@ export default function InitPool() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isInitPending, setIsInitPending] = useState(false);
 
-    const [initialPrice, setInitialPrice] = useState<number | undefined>();
+    const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState<
+        number | undefined
+    >();
+    const [estimatedInitialPriceInBase, setEstimatedInitialPriceInBase] =
+        useState<string>('0');
+    const [estimatedInitialPriceDisplay, setEstimatedInitialPriceDisplay] =
+        useState<string>('0');
     const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
-    const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
-
-    const defaultPlaceholderTextAmount = 2000;
-
-    const [placeHolderPrice, setPlaceholderPrice] = useState<number>(
-        defaultPlaceholderTextAmount,
-    );
 
     const [isDenomBase, setIsDenomBase] = useState(true);
 
@@ -138,8 +137,10 @@ export default function InitPool() {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            setInitialPrice(defaultPriceNum);
+            setInitialPriceInBaseDenom(defaultPriceNum);
             setInitialPriceForDOM(defaultPriceTruncated);
+            setEstimatedInitialPriceInBase(defaultPriceTruncated);
+            setEstimatedInitialPriceDisplay(defaultPriceTruncated);
         })();
     }, [baseToken, quoteToken]);
 
@@ -171,35 +172,6 @@ export default function InitPool() {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    const invertInitialPrice = () => {
-        if (initialPrice) {
-            const invertedPriceNum = 1 / initialPrice;
-
-            const invertedPriceTruncated =
-                invertedPriceNum < 0.0001
-                    ? invertedPriceNum.toExponential(2)
-                    : invertedPriceNum < 2
-                    ? invertedPriceNum.toPrecision(3)
-                    : invertedPriceNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setInitialPrice(invertedPriceNum);
-            setInitialPriceForDOM(invertedPriceTruncated);
-        }
-        setPlaceholderPrice(1 / placeHolderPrice);
-    };
-
-    useEffect(() => {
-        if (initialPrice) {
-            if (isDenomBase) {
-                setInitialPriceInBaseDenom(initialPrice);
-            } else {
-                setInitialPriceInBaseDenom(1 / initialPrice);
-            }
-        }
-    }, [isDenomBase, initialPrice]);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
@@ -262,7 +234,8 @@ export default function InitPool() {
     const sendInit = () => {
         IS_LOCAL_ENV &&
             console.debug(`Initializing ${baseToken.symbol}-${quoteToken.symbol} pool at
-        an initial price of ${initialPriceInBaseDenom}`);
+        an initial price of ${initialPriceForDOM}`);
+        IS_LOCAL_ENV && console.log({ initialPriceInBaseDenom });
         if (initialPriceInBaseDenom) {
             (async () => {
                 let tx;
@@ -327,37 +300,7 @@ export default function InitPool() {
         }
     };
 
-    const tokenAApprovalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Approve ${tokenA.symbol}`
-                    : `${tokenA.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenA);
-            }}
-            flat={true}
-        />
-    );
-
-    const tokenBApprovalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Approve ${tokenB.symbol}`
-                    : `${tokenB.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenB);
-            }}
-            flat={true}
-        />
-    );
-
-    const placeholderText = `e.g. ${placeHolderPrice} (${
+    const placeholderText = `e.g. ${estimatedInitialPriceDisplay} (${
         isDenomBase ? baseToken.symbol : quoteToken.symbol
     }/${isDenomBase ? quoteToken.symbol : baseToken.symbol})`;
 
@@ -380,9 +323,68 @@ export default function InitPool() {
                 event.target.value === '')
         ) {
             if (event.target.value === '') {
-                setInitialPrice(undefined);
+                setInitialPriceInBaseDenom(undefined);
             } else {
-                setInitialPrice(targetValueNum);
+                if (isDenomBase) {
+                    setInitialPriceInBaseDenom(targetValueNum);
+                } else {
+                    setInitialPriceInBaseDenom(1 / targetValueNum);
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        handleDisplayUpdate();
+    }, [isDenomBase]);
+
+    const handleDisplayUpdate = () => {
+        if (estimatedInitialPriceInBase) {
+            if (isDenomBase) {
+                setEstimatedInitialPriceDisplay(estimatedInitialPriceInBase);
+            } else {
+                const invertedPriceNum =
+                    1 /
+                    parseFloat(estimatedInitialPriceInBase.replaceAll(',', ''));
+
+                const invertedPriceTruncated =
+                    invertedPriceNum < 0.0001
+                        ? invertedPriceNum.toExponential(2)
+                        : invertedPriceNum < 2
+                        ? invertedPriceNum.toPrecision(3)
+                        : invertedPriceNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                setEstimatedInitialPriceDisplay(invertedPriceTruncated);
+            }
+        }
+        if (initialPriceInBaseDenom) {
+            if (!isDenomBase) {
+                const newInitialPriceForDOMTruncated =
+                    1 / initialPriceInBaseDenom < 0.0001
+                        ? (1 / initialPriceInBaseDenom).toExponential(2)
+                        : 1 / initialPriceInBaseDenom < 2
+                        ? (1 / initialPriceInBaseDenom).toPrecision(3)
+                        : (1 / initialPriceInBaseDenom).toLocaleString(
+                              undefined,
+                              {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              },
+                          );
+                setInitialPriceForDOM(newInitialPriceForDOMTruncated);
+            } else {
+                const newInitialPriceForDOMTruncated =
+                    initialPriceInBaseDenom < 0.0001
+                        ? initialPriceInBaseDenom.toExponential(2)
+                        : initialPriceInBaseDenom < 2
+                        ? initialPriceInBaseDenom.toPrecision(3)
+                        : initialPriceInBaseDenom.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                setInitialPriceForDOM(newInitialPriceForDOMTruncated);
             }
         }
     };
@@ -413,7 +415,10 @@ export default function InitPool() {
                 } else if (!isTokenBAllowanceSufficient) {
                     // Display token B approval button
                     buttonContent = tokenBApprovalButton;
-                } else if (initialPrice === undefined || initialPrice <= 0) {
+                } else if (
+                    initialPriceInBaseDenom === undefined ||
+                    initialPriceInBaseDenom <= 0
+                ) {
                     // Display button to enter an initial price
                     buttonContent = (
                         <Button
@@ -499,6 +504,36 @@ export default function InitPool() {
         />
     );
 
+    const tokenAApprovalButton = (
+        <Button
+            title={
+                !isApprovalPending
+                    ? `Approve ${tokenA.symbol}`
+                    : `${tokenA.symbol} Approval Pending`
+            }
+            disabled={isApprovalPending}
+            action={async () => {
+                await approve(tokenA);
+            }}
+            flat={true}
+        />
+    );
+
+    const tokenBApprovalButton = (
+        <Button
+            title={
+                !isApprovalPending
+                    ? `Approve ${tokenB.symbol}`
+                    : `${tokenB.symbol} Approval Pending`
+            }
+            disabled={isApprovalPending}
+            action={async () => {
+                await approve(tokenB);
+            }}
+            flat={true}
+        />
+    );
+
     return (
         <section className={styles.main}>
             {poolExists && navigateToMarket}
@@ -526,14 +561,7 @@ export default function InitPool() {
                                         placeholder={placeholderText}
                                         type='string'
                                         onChange={handleInputChange}
-                                        onBlur={() =>
-                                            initialPrice &&
-                                            setInitialPriceForDOM(
-                                                parseFloat(
-                                                    initialPrice.toString(),
-                                                ).toString(),
-                                            )
-                                        }
+                                        onBlur={handleDisplayUpdate}
                                         value={initialPriceForDOM}
                                         inputMode='decimal'
                                         autoComplete='off'
@@ -545,13 +573,15 @@ export default function InitPool() {
                                 </section>
                             </div>
                             <InitPoolExtraInfo
-                                initialPrice={initialPrice}
+                                initialPrice={parseFloat(
+                                    initialPriceForDOM.replaceAll(',', ''),
+                                )}
                                 isDenomBase={isDenomBase}
                                 initGasPriceinDollars={initGasPriceinDollars}
                                 baseToken={baseToken}
                                 quoteToken={quoteToken}
                                 setIsDenomBase={setIsDenomBase}
-                                invertInitialPrice={invertInitialPrice}
+                                // invertInitialPrice={invertInitialPrice}
                             />
                         </div>
 
