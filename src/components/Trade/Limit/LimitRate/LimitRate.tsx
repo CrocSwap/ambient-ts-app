@@ -5,13 +5,7 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useState,
-} from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -35,7 +29,6 @@ export default function LimitRate(props: propsIF) {
         displayPrice,
         setDisplayPrice,
         previousDisplayPrice,
-        setPreviousDisplayPrice,
         isSellTokenBase,
         setPriceInputFieldBlurred,
         fieldId,
