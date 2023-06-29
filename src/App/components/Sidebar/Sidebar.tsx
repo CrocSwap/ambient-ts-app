@@ -51,6 +51,8 @@ function Sidebar() {
 
     const poolList = usePoolList(chainId, poolIndex);
 
+    console.log({ poolList });
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
