@@ -119,13 +119,17 @@ function Trade() {
     );
 
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
-
+    // const showPoolNotInitializedContent = isPoolInitialized === false;
+    const showPoolNotInitializedContent = true;
     const mainContent = (
         <div
             className={`${styles.right_col} ${
                 activeMobileComponent !== 'trade' ? styles.hide : ''
             }`}
         >
+            {showPoolNotInitializedContent && (
+                <div className={styles.init_overlay} />
+            )}
             <Outlet
                 context={{
                     tradeData: tradeData,
@@ -239,18 +243,10 @@ function Trade() {
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
-    const showPoolNotInitializedContent = isPoolInitialized === false;
-
     const poolNotInitializedContent = showPoolNotInitializedContent ? (
         <div className={styles.pool_not_initialialized_container}>
             <div className={styles.pool_init_bg}>
                 <div className={styles.pool_not_initialialized_content}>
-                    <div
-                        className={styles.close_init}
-                        onClick={() => navigate(-1)}
-                    >
-                        <VscClose size={28} />
-                    </div>
                     <div className={styles.pool_not_init_inner}>
                         <h2>This pool has not been initialized.</h2>
                         <h3>Do you want to initialize it?</h3>
@@ -356,7 +352,6 @@ function Trade() {
 
     return (
         <section className={`${styles.main_layout}`}>
-            {poolNotInitializedContent}
             <div
                 className={`${styles.middle_col}
                 ${expandTradeTable ? styles.flex_column : ''}`}
@@ -367,9 +362,12 @@ function Trade() {
                     } ${fullScreenStyle}`}
                 >
                     <div className={styles.main__chart_container}>
-                        {!isCandleDataNull && (
-                            <TradeCharts {...tradeChartsProps} />
-                        )}
+                        {!isCandleDataNull &&
+                            (showPoolNotInitializedContent ? (
+                                poolNotInitializedContent
+                            ) : (
+                                <TradeCharts {...tradeChartsProps} />
+                            ))}
                     </div>
                 </div>
                 <TradeTabs2 {...tradeTabsProps} />
