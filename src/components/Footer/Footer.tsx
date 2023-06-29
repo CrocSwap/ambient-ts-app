@@ -82,7 +82,7 @@ export default function Footer() {
             aria-label='Go to trade page button'
             className={styles.started_button}
         >
-            Get Started
+            Trade Now
         </Link>
     );
 
