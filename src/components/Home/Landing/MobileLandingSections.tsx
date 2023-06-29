@@ -12,40 +12,43 @@ import TradeNowButton from './TradeNowButton/TradeNowButton';
 import TopPools from '../TopPools/TopPools';
 import Investors from './Investors';
 import { useTranslation } from 'react-i18next';
+
 export default function MobileLandingSections() {
     const { t } = useTranslation();
     // eslint-disable-next-line
-    function scrollTo(section: any) {
-        section.current.scrollIntoView({ behavior: 'smooth' });
-    }
 
     const heroSection = (
-        <div className={`${styles.mobile_card} ${styles.hero} `}>
-            <div className={styles.hero_bg} />
+        <section className={`${styles.mobile_card} ${styles.hero} `} id='hero'>
             <>
-                <div style={{ paddingBottom: '2rem' }}>
+                <div className={styles.main_logo}>
                     <img src={logoText} alt='ambient' />
                 </div>
-                <Stats />
+                <div style={{ padding: ' 20px' }}>
+                    <Stats />
+                </div>
             </>
 
             <TradeNowButton />
-        </div>
+        </section>
     );
     const topPoolsSection = (
-        <div
+        <section
             className={`${styles.mobile_card} ${styles.pools} `}
             style={{ width: '100vw' }}
+            id='toppools'
         >
             <>
                 <h3> {t('topPools')}</h3>
                 <TopPools noTitle gap='8px' />
             </>
-        </div>
+        </section>
     );
 
     const secondRow = (
-        <div className={`${styles.mobile_card} ${styles.right_align}`}>
+        <section
+            className={`${styles.mobile_card} ${styles.right_align}`}
+            id='zerotoone'
+        >
             <div className={styles.bg_1} />
             <Fade up>
                 <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
@@ -58,11 +61,14 @@ export default function MobileLandingSections() {
                     rewards, and a fairer trading experience.
                 </p>
             </Fade>
-        </div>
+        </section>
     );
 
     const thirdRow = (
-        <div className={`${styles.mobile_card} ${styles.section4}`}>
+        <section
+            className={`${styles.mobile_card} ${styles.section4}`}
+            id='deep'
+        >
             <div className={styles.bg_2} />
             <Fade up>
                 <img
@@ -78,11 +84,14 @@ export default function MobileLandingSections() {
                     knock-out liquidity in the same liquidity pool.
                 </p>
             </Fade>
-        </div>
+        </section>
     );
 
     const fourthRow = (
-        <div className={`${styles.mobile_card} ${styles.section5}`}>
+        <section
+            className={`${styles.mobile_card} ${styles.section5}`}
+            id='limitorders'
+        >
             <div className={styles.bg_3} />
 
             <Fade up>
@@ -103,11 +112,14 @@ export default function MobileLandingSections() {
                     traders.
                 </p>
             </Fade>
-        </div>
+        </section>
     );
 
     const fifthRow = (
-        <div className={`${styles.mobile_card} ${styles.section6}`}>
+        <section
+            className={`${styles.mobile_card} ${styles.section6}`}
+            id='beeterthandex'
+        >
             <div className={styles.bg_4} />
             <Fade up>
                 <h2 tabIndex={0}>Better than CEX</h2>
@@ -118,25 +130,31 @@ export default function MobileLandingSections() {
                     user experience.
                 </p>
             </Fade>
-        </div>
+        </section>
     );
 
     const investorsSections = (
-        <div className={`${styles.mobile_card} ${styles.investors}`}>
+        <section
+            className={`${styles.mobile_card} ${styles.investors}`}
+            id='investors'
+        >
             <Fade up>
                 <h3>Investors</h3>
                 <Investors />
             </Fade>
-        </div>
+        </section>
     );
 
     const footerSection = (
-        <div className={`${styles.mobile_card} ${styles.footer_section}`}>
+        <section
+            className={`${styles.mobile_card} ${styles.footer_section}`}
+            id='footer'
+        >
             <div className={styles.bg_footer} />
             <Fade up>
                 <Footer />
             </Fade>
-        </div>
+        </section>
     );
 
     return (

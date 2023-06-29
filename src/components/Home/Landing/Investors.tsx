@@ -12,7 +12,6 @@ import PositiveSum from '../../../assets/images/investors/positivesum.svg';
 import motivate from '../../../assets/images/investors/motivate.svg';
 import styles from './Investors.module.css';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import DividerDark from '../../Global/DividerDark/DividerDark';
 export default function Investors() {
     const row1 = (
         <div className={styles.row1}>
@@ -65,30 +64,40 @@ export default function Investors() {
     );
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
+    const preSeedMobile = (
+        <div className={styles.pre_seed_mobile}>
+            <div className={styles.title_row}>
+                <img src={PreSeed} alt='pre-seed' width='80px' />
+            </div>
+            <div className={styles.image_row}>
+                <img src={PositiveSum} alt='positive sum' />
+                <img src={motivate} alt='motivate' />
+            </div>
+        </div>
+    );
+
     const mobileVersion = (
         <>
             <div className={styles.mobile_container}>
-                <img src={blocktower} alt='block tower' />
-                <img src={jane} alt='jane street' />
-                <img src={circle} alt='circle ' />
-                <img src={tensai} alt='tensai capital' />
-                <img src={naval} alt='naval ravikant' />
-                <img src={yunt} alt='yunt capital' width='200px' />
-                <img src={susa} alt='susa ' width='50px' />
-                <img src={quantstamp} alt='quantstamp ' width='200px' />
-                <img src={hypotenuse} alt='hypotenuse ' width='200px' />
-                <span>Julian Koh</span>
-                <span>llllvvuu</span>
-                <span>Dogetoshi</span>
-                <span>afkbyte</span>
-                <span>Jai Prasad</span>
-                <span>Don Sun</span>
-                <img src={PreSeed} alt='pre-seed' width='80px' />
-                <img src={PositiveSum} alt='positivie sum' />
-                <img src={motivate} alt='motivate ' />{' '}
+                <div className={styles.mobile_content}>
+                    <img src={blocktower} alt='block tower' />
+                    <img src={jane} alt='jane street' />
+                    <img src={circle} alt='circle' />
+                    <img src={tensai} alt='tensai capital' />
+                    <img src={naval} alt='naval ravikant' />
+                    <img src={yunt} alt='yunt capital' width='200px' />
+                    <img src={susa} alt='susa' width='50px' />
+                    <img src={quantstamp} alt='quantstamp' width='200px' />
+                    <img src={hypotenuse} alt='hypotenuse' width='200px' />
+                    <span>Julian Koh</span>
+                    <span>llllvvuu</span>
+                    <span>Dogetoshi</span>
+                    <span>afkbyte</span>
+                    <span>Jai Prasad</span>
+                    <span>Don Sun</span>
+                </div>
             </div>
-
-            {!showMobileVersion && <DividerDark />}
+            {preSeedMobile}
         </>
     );
     if (showMobileVersion) return mobileVersion;

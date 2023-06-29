@@ -4,13 +4,11 @@
     align-items: center;
     width: 100%;
 
-    flex-direction: column;
     height: 100%;
 
     border-radius: var(--border-radius);
-    gap: 2rem;
 
-    background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%), url('../../../assets/images/home/home_wallpaper.png') no-repeat
+    background:  linear-gradient(180deg, var(--dark1) 0%, var(--dark1) 0%, rgba(0, 0, 0, 0) 0%, var(--dark1) 100%), url('../../../assets/images/home/home_wallpaper.png') no-repeat
         center center;
 
     -webkit-background-size: cover;
@@ -18,7 +16,13 @@
     -o-background-size: cover;
     background-size: cover;
 }
-
+.hero_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
 
 .hero_container img {
     width: 250px;
@@ -38,45 +42,9 @@
     font-weight: 100;
 }
 
+
 @media only screen and (min-width: 768px) {
     .hero_container img {
         width: 500px;
     }
 }
-
-.mobile_container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  
-    
-    height: calc(100dvh - 190px);
-   margin-top: 5rem;
-   gap: 1rem;
-  margin-bottom: 3rem;
-
-
-  padding: 0 2rem;
-
-
-
- 
-  }
-
-
-  
-  .mobile_container img {
-    width: 100%;
-    max-width: 70dvw; 
-    height: auto;
-  }
-
-  .tagline{
-    font-weight: 100;
-    max-width: 780px;
-    font-size: 24px;
-    text-align: start;
-    
-  }
-
-

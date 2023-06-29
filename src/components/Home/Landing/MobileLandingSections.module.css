@@ -99,29 +99,32 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0 2rem;
-  position: relative;
+
 
 }
 
-.hero_bg{
-
-  position: absolute;
+.main_logo{
   background: linear-gradient(to bottom, rgba(13, 17, 23, 0), rgba(13, 17, 23, 0.1) 80%, rgba(13, 17, 23, 0.4) 85%, rgba(13, 17, 23, 0.7), rgba(13, 17, 23, 0.9) , rgba(13, 17, 23, 1)),
   url('../../../assets/images/home/home_wallpaper.png') no-repeat;
-  background-size: contain;
-  background-position: center top;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 110%;
+  width: 100%;
   height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center center;
+
 }
 
-.hero img {
-  width: 100%;
-  max-width: 70dvw; 
-  height: auto;
+
+
+.main_logo img {
+  width: 70%;
+  height: 200px;
+  object-fit: contain;
+  
+  /* max-width: 70dvw; 
+  height: auto; */
 }
 
 .tagline{
@@ -135,7 +138,7 @@
 
 /* end of hero */
 
-.mobile_card {
+.mobile_card:not(:first-of-type) {
     height: 100%;
     padding: 20px;
     border-radius: 8px;
@@ -148,10 +151,19 @@
     text-align: center;
   }
 
+  .mobile_card:first-of-type{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 1rem;
+  }
+
 .mobile_card:not(:last-of-type){
       scroll-snap-align: center;
 
   }
+
  
 
   .smaller_image{
