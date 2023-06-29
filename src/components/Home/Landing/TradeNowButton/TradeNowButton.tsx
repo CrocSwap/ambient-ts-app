@@ -27,7 +27,7 @@ export default function TradeNowButton(props: Props) {
                         inNav && styles.nav_button_text
                     }`}
                 >
-                    Get Started
+                    Trade Now
                 </p>
             </div>
         </Link>

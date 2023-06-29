@@ -35,7 +35,7 @@ const PageHeaderMobile = (props: PropsIF) => {
             onClick={() => openWagmiModal()}
         >
             <FaWallet color='var(--text1)' />
-            Connect to a wallet
+            Connect Wallet
         </button>
     );
 
