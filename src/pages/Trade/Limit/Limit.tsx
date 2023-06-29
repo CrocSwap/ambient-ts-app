@@ -181,7 +181,9 @@ export default function Limit() {
                     const limitRateTruncated = getFormattedNumber({
                         value: displayPriceWithDenom,
                         isInput: true,
+                        removeCommas: true,
                     });
+
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -248,6 +250,7 @@ export default function Limit() {
                     const limitRateTruncated = getFormattedNumber({
                         value: displayPriceWithDenom,
                         isInput: true,
+                        removeCommas: true,
                     });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);

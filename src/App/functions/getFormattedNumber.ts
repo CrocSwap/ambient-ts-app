@@ -11,6 +11,7 @@ type FormatParams = {
     isUSD?: boolean;
     isInput?: boolean;
     isTvl?: boolean;
+    removeCommas?: boolean;
 };
 
 export function getFormattedNumber({
@@ -24,6 +25,7 @@ export function getFormattedNumber({
     isUSD = false,
     isInput = false,
     isTvl = false,
+    removeCommas = false,
 }: FormatParams) {
     let valueString = '';
     if (value === 0) {
@@ -70,6 +72,7 @@ export function getFormattedNumber({
             maximumFractionDigits: maxFracDigits,
         });
     }
+    if (removeCommas) valueString = valueString.replaceAll(',', '');
     return `${prefix}${valueString}${suffix}`;
 }
 
