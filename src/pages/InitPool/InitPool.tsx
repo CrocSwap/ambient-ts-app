@@ -232,10 +232,6 @@ export default function InitPool() {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const sendInit = () => {
-        IS_LOCAL_ENV &&
-            console.debug(`Initializing ${baseToken.symbol}-${quoteToken.symbol} pool at
-        an initial price of ${initialPriceForDOM}`);
-        IS_LOCAL_ENV && console.log({ initialPriceInBaseDenom });
         if (initialPriceInBaseDenom) {
             (async () => {
                 let tx;
@@ -581,7 +577,6 @@ export default function InitPool() {
                                 baseToken={baseToken}
                                 quoteToken={quoteToken}
                                 setIsDenomBase={setIsDenomBase}
-                                // invertInitialPrice={invertInitialPrice}
                             />
                         </div>
 
