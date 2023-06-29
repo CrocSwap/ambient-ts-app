@@ -168,7 +168,8 @@ export default function Limit() {
                     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
 
                 IS_LOCAL_ENV && console.debug({ pinnedTick });
-                dispatch(setLimitTick(pinnedTick));
+                console.log(limitTickFromParams);
+                dispatch(setLimitTick(limitTickFromParams ?? pinnedTick));
 
                 const tickPrice = tickToPrice(pinnedTick);
                 const tickDispPrice = pool.toDisplayPrice(tickPrice);

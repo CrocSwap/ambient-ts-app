@@ -3,6 +3,7 @@ import {
     LimitOrderIF,
     PositionIF,
     TempPoolIF,
+    TokenIF,
     TransactionIF,
 } from '../../../utils/interfaces/exports';
 import { tokenMethodsIF } from '../../hooks/useTokens';
@@ -22,7 +23,37 @@ export const useSidebarSearch = (
     txList: TransactionIF[],
     limitOrderList: LimitOrderIF[],
     tokens: tokenMethodsIF,
+    chainId: string,
 ): sidebarSearchIF => {
+    const poolsOnChain = useMemo<TempPoolIF[]>(
+        () =>
+            poolList
+                .map((pool: TempPoolIF) => {
+                    const baseToken: TokenIF | undefined =
+                        tokens.getTokenByAddress(pool.base);
+                    const quoteToken: TokenIF | undefined =
+                        tokens.getTokenByAddress(pool.quote);
+                    if (baseToken && quoteToken) {
+                        return {
+                            base: baseToken.address,
+                            baseDecimals: baseToken.decimals,
+                            baseSymbol: baseToken.symbol,
+                            chainId: pool.chainId,
+                            poolIdx: pool.poolIdx,
+                            quote: quoteToken.address,
+                            quoteDecimals: quoteToken.decimals,
+                            quoteSymbol: quoteToken.symbol,
+                        };
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(
+                    (pool: TempPoolIF | null) => pool !== null,
+                ) as TempPoolIF[],
+        [chainId, poolList.length],
+    );
+
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
@@ -82,24 +113,24 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to filter pools by address (must be exact)
         const searchByAddress = (addr: string): TempPoolIF[] =>
-            poolList.filter(
+            poolsOnChain.filter(
                 (pool: TempPoolIF) =>
                     pool.base.toLowerCase() === addr.toLowerCase() ||
                     pool.quote.toLowerCase() === addr.toLowerCase(),
             );
         // fn to filter pools by symbol (must be exact IF input is two characters)
         const searchBySymbol = (symb: string): TempPoolIF[] =>
-            poolList
+            poolsOnChain
                 .filter((pool: TempPoolIF) =>
                     symb.length === 2
-                        ? pool.baseSymbol?.toLowerCase() ===
+                        ? pool.baseSymbol.toLowerCase() ===
                               symb.toLowerCase() ||
-                          pool.quoteSymbol?.toLowerCase() === symb.toLowerCase()
+                          pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
                         : pool.baseSymbol
-                              ?.toLowerCase()
+                              .toLowerCase()
                               .includes(symb.toLowerCase()) ||
                           pool.quoteSymbol
-                              ?.toLowerCase()
+                              .toLowerCase()
                               .includes(symb.toLowerCase()),
                 )
                 .filter(
@@ -109,7 +140,7 @@ export const useSidebarSearch = (
                 );
         // fn to return list of verified pools with no search filtering
         const noSearch = (): TempPoolIF[] =>
-            poolList.filter(
+            poolsOnChain.filter(
                 (pool: TempPoolIF) =>
                     tokens.verifyToken(pool.base) &&
                     tokens.verifyToken(pool.quote),

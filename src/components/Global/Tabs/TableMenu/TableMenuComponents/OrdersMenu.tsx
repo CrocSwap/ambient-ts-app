@@ -92,6 +92,7 @@ export default function OrdersMenu(props: propsIF) {
         }
 
         setTimeout(() => {
+            console.log(limitOrder.bidTick);
             dispatch(
                 setLimitTick(
                     limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick,
@@ -199,13 +200,13 @@ export default function OrdersMenu(props: propsIF) {
                               chain: chainData.chainId,
                               tokenA: limitOrder.base,
                               tokenB: limitOrder.quote,
-                              limitTick: limitOrder.bidTick,
+                              limitTick: 7,
                           }
                         : {
                               chain: chainData.chainId,
                               tokenA: limitOrder.quote,
                               tokenB: limitOrder.base,
-                              limitTick: limitOrder.askTick,
+                              limitTick: 8,
                           },
                 );
                 handleCopyOrder();
