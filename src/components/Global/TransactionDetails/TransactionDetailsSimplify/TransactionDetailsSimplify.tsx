@@ -226,8 +226,8 @@ export default function TransactionDetailsSimplify(
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isBuy
-                        ? `${baseQuantityDisplay}${baseTokenSymbol}`
-                        : `${quoteQuantityDisplay}${quoteTokenSymbol}`}
+                        ? `${baseQuantityDisplay} ${baseTokenSymbol}`
+                        : `${quoteQuantityDisplay} ${quoteTokenSymbol}`}
                 </div>
             ),
             explanation:

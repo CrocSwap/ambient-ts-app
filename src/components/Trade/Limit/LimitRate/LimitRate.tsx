@@ -124,6 +124,7 @@ export default function LimitRate(props: propsIF) {
                         onBlur={(e) => handleOnBlur(e.target.value)}
                         value={displayPrice === 'NaN' ? '...' : displayPrice}
                         type='number'
+                        step='any'
                         inputMode='decimal'
                         autoComplete='off'
                         autoCorrect='off'

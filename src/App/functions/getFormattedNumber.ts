@@ -50,6 +50,7 @@ export function getFormattedNumber({
             valueString = truncateDecimals(value, maxFracDigits);
         }
     } else if (isInput) {
+        removeCommas = true;
         if (value < 0.0001) {
             valueString = value.toExponential(2);
         } else if (value < 2) {
