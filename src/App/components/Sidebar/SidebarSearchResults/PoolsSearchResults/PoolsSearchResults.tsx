@@ -1,5 +1,5 @@
 import styles from '../SidebarSearchResults.module.css';
-import { TempPoolIF, TokenIF } from '../../../../../utils/interfaces/exports';
+import { TempPoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
 import { useContext } from 'react';
@@ -10,8 +10,6 @@ import {
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
-import { TokenContext } from '../../../../../contexts/TokenContext';
-import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
@@ -23,10 +21,6 @@ export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, cachedPoolStatsFetch, cachedFetchTokenPrice } =
         props;
     const { tokenA } = useAppSelector((state) => state.tradeData);
-    const { tokens } = useContext(TokenContext);
-    const ambientAddresses: string[] = tokens
-        .getTokensFromList(tokenListURIs.ambient)
-        .map((tkn: TokenIF) => tkn.address.toLowerCase());
     const {
         crocEnv,
         chainData: { chainId },
@@ -51,6 +45,8 @@ export default function PoolsSearchResults(props: propsIF) {
         });
     };
 
+    console.log(searchedPools);
+
     return (
         <div>
             <h4 className={styles.card_title}>Pools</h4>
@@ -64,15 +60,23 @@ export default function PoolsSearchResults(props: propsIF) {
                     <ol className={styles.main_result_container}>
                         {searchedPools
                             .sort((poolA: TempPoolIF, poolB: TempPoolIF) => {
-                                const checkPriority = (pool: TempPoolIF) => {
-                                    let output = 0;
-                                    ambientAddresses.includes(
-                                        pool.baseToken.address.toLowerCase(),
-                                    ) && output++;
-                                    ambientAddresses.includes(
-                                        pool.quoteToken.address.toLowerCase(),
-                                    ) && output++;
-                                    return output;
+                                const checkPriority = (
+                                    pool: TempPoolIF,
+                                ): number => {
+                                    let sourceCount = 0;
+                                    if (pool.baseToken.listedBy) {
+                                        sourceCount +=
+                                            pool.baseToken.listedBy.length;
+                                    } else if (pool.baseToken.fromList) {
+                                        sourceCount++;
+                                    }
+                                    if (pool.quoteToken.listedBy) {
+                                        sourceCount +=
+                                            pool.quoteToken.listedBy.length;
+                                    } else if (pool.quoteToken.fromList) {
+                                        sourceCount++;
+                                    }
+                                    return sourceCount;
                                 };
                                 return (
                                     checkPriority(poolB) - checkPriority(poolA)
