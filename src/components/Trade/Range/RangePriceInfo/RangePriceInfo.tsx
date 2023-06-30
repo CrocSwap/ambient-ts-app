@@ -9,7 +9,6 @@ import {
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
-import { formatAmountOld } from '../../../../utils/numbers';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { isStableToken } from '../../../../utils/data/stablePairs';
 
@@ -17,6 +16,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { ZERO_ADDRESS } from '../../../../constants';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -177,20 +177,12 @@ function RangePriceInfo(props: propsIF) {
             poolPriceNum = spotPriceNum * tokenAMainnetPrice;
         }
 
-        const displayUsdPriceString =
-            poolPriceNum === Infinity || poolPriceNum === 0
-                ? '…'
-                : poolPriceNum < 0.00001
-                ? poolPriceNum.toExponential(2)
-                : poolPriceNum < 2
-                ? poolPriceNum.toPrecision(3)
-                : poolPriceNum >= 100000
-                ? formatAmountOld(poolPriceNum, 1)
-                : poolPriceNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        setPoolPriceUsdEquivalent('~$' + displayUsdPriceString);
+        const displayUsdPriceString = getFormattedNumber({
+            value: poolPriceNum,
+            zeroDisplay: '…',
+            prefix: '~$',
+        });
+        setPoolPriceUsdEquivalent(displayUsdPriceString);
     };
 
     useEffect(() => {
@@ -266,35 +258,19 @@ function RangePriceInfo(props: propsIF) {
                 parseFloat(pinnedMaxPrice) * (tokenAMainnetPrice || 0);
         }
 
-        const minDisplayUsdPriceString =
-            minPriceNum === Infinity || minPriceNum === 0
-                ? '…'
-                : minPriceNum < 0.00001
-                ? minPriceNum.toExponential(2)
-                : minPriceNum < 2
-                ? minPriceNum.toPrecision(3)
-                : minPriceNum >= 100000
-                ? formatAmountOld(minPriceNum, 1)
-                : minPriceNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        setMinPriceUsdEquivalent('~$' + minDisplayUsdPriceString);
+        const minDisplayUsdPriceString = getFormattedNumber({
+            value: minPriceNum,
+            zeroDisplay: '…',
+            prefix: '~$',
+        });
+        setMinPriceUsdEquivalent(minDisplayUsdPriceString);
 
-        const maxDisplayUsdPriceString =
-            maxPriceNum === Infinity || maxPriceNum === 0
-                ? '…'
-                : maxPriceNum < 0.00001
-                ? maxPriceNum.toExponential(2)
-                : maxPriceNum < 2
-                ? maxPriceNum.toPrecision(3)
-                : maxPriceNum >= 100000
-                ? formatAmountOld(maxPriceNum, 1)
-                : maxPriceNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        setMaxPriceUsdEquivalent('~$' + maxDisplayUsdPriceString);
+        const maxDisplayUsdPriceString = getFormattedNumber({
+            value: maxPriceNum,
+            zeroDisplay: '…',
+            prefix: '~$',
+        });
+        setMaxPriceUsdEquivalent(maxDisplayUsdPriceString);
     }, [
         pinnedMinPrice,
         pinnedMaxPrice,

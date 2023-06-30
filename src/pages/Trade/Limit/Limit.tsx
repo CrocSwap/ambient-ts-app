@@ -57,6 +57,7 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 export default function Limit() {
     const {
@@ -177,18 +178,12 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
                     setEndDisplayPrice(displayPriceWithDenom);
 
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 0.0001
-                            ? displayPriceWithDenom.toExponential(2)
-                            : displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
+                    const limitRateTruncated = getFormattedNumber({
+                        value: displayPriceWithDenom,
+                        isInput: true,
+                        removeCommas: true,
+                    });
+
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -252,18 +247,11 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
 
                     setEndDisplayPrice(displayPriceWithDenom);
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 0.0001
-                            ? displayPriceWithDenom.toExponential(2)
-                            : displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
+                    const limitRateTruncated = getFormattedNumber({
+                        value: displayPriceWithDenom,
+                        isInput: true,
+                        removeCommas: true,
+                    });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -601,11 +589,11 @@ export default function Limit() {
                 ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -634,10 +622,10 @@ export default function Limit() {
         isSellTokenBase: isSellTokenBase,
         setLimitAllowed: setLimitAllowed,
         tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
         setTokenAInputQty: setTokenAInputQty,
-        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
+        tokenBInputQty: tokenBInputQty,
         setTokenBInputQty: setTokenBInputQty,
+        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
         setLimitButtonErrorMessage: setLimitButtonErrorMessage,
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
@@ -731,8 +719,7 @@ export default function Limit() {
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
                     />
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
+                    {isUserConnected === undefined ? null : isUserConnected ? (
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 ? (
                             approvalButton

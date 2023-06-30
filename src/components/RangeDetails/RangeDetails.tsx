@@ -2,7 +2,6 @@ import PriceInfo from './PriceInfo/PriceInfo';
 import styles from './RangeDetails.module.css';
 import { useContext, useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
-import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -19,6 +18,7 @@ import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 interface propsIF {
     position: PositionIF;
@@ -180,84 +180,38 @@ export default function RangeDetails(props: propsIF) {
                     const liqQuoteNum =
                         positionStats.positionLiqQuoteDecimalCorrected;
 
-                    const liqBaseDisplay =
-                        liqBaseNum !== undefined
-                            ? liqBaseNum === 0
-                                ? '0'
-                                : liqBaseNum < 2
-                                ? liqBaseNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 6,
-                                  })
-                                : liqBaseNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  })
-                            : undefined;
+                    const liqBaseDisplay = getFormattedNumber({
+                        value: liqBaseNum,
+                    });
                     setBaseCollateralDisplay(liqBaseDisplay);
 
-                    const liqQuoteDisplay =
-                        liqQuoteNum !== undefined
-                            ? liqQuoteNum === 0
-                                ? '0'
-                                : liqQuoteNum < 2
-                                ? liqQuoteNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 6,
-                                  })
-                                : liqQuoteNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  })
-                            : undefined;
+                    const liqQuoteDisplay = getFormattedNumber({
+                        value: liqQuoteNum,
+                    });
                     setQuoteCollateralDisplay(liqQuoteDisplay);
 
-                    const usdValue = position.totalValueUSD;
-                    if (usdValue !== undefined) {
-                        setUsdValue(
-                            usdValue === 0
-                                ? '0'
-                                : usdValue.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  }),
-                        );
-                    } else {
-                        setUsdValue(undefined);
-                    }
+                    setUsdValue(
+                        getFormattedNumber({
+                            value: position.totalValueUSD,
+                            isUSD: true,
+                        }),
+                    );
 
                     const baseFeeDisplayNum =
                         positionStats.feesLiqBaseDecimalCorrected;
                     const quoteFeeDisplayNum =
                         positionStats.feesLiqQuoteDecimalCorrected;
 
-                    const baseFeeDisplayTruncated = !baseFeeDisplayNum
-                        ? '0'
-                        : baseFeeDisplayNum < 0.0001
-                        ? baseFeeDisplayNum.toExponential(2)
-                        : baseFeeDisplayNum < 2
-                        ? baseFeeDisplayNum.toPrecision(3)
-                        : baseFeeDisplayNum >= 100000
-                        ? formatAmountOld(baseFeeDisplayNum)
-                        : // ? baseLiqDisplayNum.toExponential(2)
-                          baseFeeDisplayNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
+                    const baseFeeDisplayTruncated = getFormattedNumber({
+                        value: baseFeeDisplayNum,
+                        zeroDisplay: '0',
+                    });
                     setBaseFeesDisplay(baseFeeDisplayTruncated);
 
-                    const quoteFeesDisplayTruncated = !quoteFeeDisplayNum
-                        ? '0'
-                        : quoteFeeDisplayNum < 0.0001
-                        ? quoteFeeDisplayNum.toExponential(2)
-                        : quoteFeeDisplayNum < 2
-                        ? quoteFeeDisplayNum.toPrecision(3)
-                        : quoteFeeDisplayNum >= 100000
-                        ? formatAmountOld(quoteFeeDisplayNum)
-                        : quoteFeeDisplayNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
+                    const quoteFeesDisplayTruncated = getFormattedNumber({
+                        value: quoteFeeDisplayNum,
+                        zeroDisplay: '0',
+                    });
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
                 })
                 .catch(console.error);
