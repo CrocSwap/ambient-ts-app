@@ -289,7 +289,7 @@ export const useSidebarSearch = (
                     tx.quote.toLowerCase() === addr.toLowerCase(),
             );
         // fn to filter txs by symbol (must be exact IF input is two characters)
-        const searchBySymbol = (symb: string): TransactionIF[] =>
+        const searchByNameOrSymbol = (symb: string): TransactionIF[] =>
             txList.filter((tx: TransactionIF) => {
                 // values against which to search
                 const valuesToMatch: string[] = [
@@ -326,7 +326,7 @@ export const useSidebarSearch = (
                 filteredTxs = searchByAddress(validatedInput);
                 break;
             case 'nameOrSymbol':
-                filteredTxs = searchBySymbol(validatedInput);
+                filteredTxs = searchByNameOrSymbol(validatedInput);
                 break;
             case '':
             default:
