@@ -8,6 +8,7 @@ import {
     TransactionIF,
 } from '../../../utils/interfaces/exports';
 import { tokenMethodsIF } from '../../hooks/useTokens';
+import { ZERO_ADDRESS } from '../../../constants';
 
 export interface sidebarSearchIF {
     setInput: Dispatch<SetStateAction<string>>;
@@ -180,15 +181,21 @@ export const useSidebarSearch = (
             (poolA: PoolIF, poolB: PoolIF) => {
                 const checkPriority = (pool: PoolIF): number => {
                     let sourceCount = 0;
+                    function addToCount(num: number): void {
+                        sourceCount += num;
+                    }
                     if (pool.base.listedBy) {
-                        sourceCount += pool.base.listedBy.length;
+                        addToCount(pool.base.listedBy.length);
                     } else if (pool.base.fromList) {
-                        sourceCount++;
+                        addToCount(1);
                     }
                     if (pool.quote.listedBy) {
-                        sourceCount += pool.quote.listedBy.length;
+                        addToCount(pool.quote.listedBy.length);
                     } else if (pool.quote.fromList) {
-                        sourceCount++;
+                        addToCount(1);
+                    }
+                    if (pool.base.address === ZERO_ADDRESS) {
+                        addToCount(2);
                     }
                     return sourceCount;
                 };
