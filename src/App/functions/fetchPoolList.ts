@@ -24,16 +24,32 @@ export async function fetchPoolList(
         .then((response) => response.json())
         .then((json) => {
             if (!json?.data) {
-                return [] as TempPoolIF[];
+                return [];
             }
             let payload = json?.data as TempPoolServerIF[];
             payload = payload.filter((p) => inTokenUniv(p, tokenUniv));
-            const pools = Promise.all(
+            // TODO:    this is a `Promise.allSettled()` because one bad call for
+            // TODO:    ... a contract with no `symbol()` method was failing and
+            // TODO:    ... taking everything down, instructions from Doug are to
+            // TODO:    ... drop the bad result and investigate more later
+            const pools = Promise.allSettled(
                 payload.map((p) =>
                     expandPoolData(p, crocEnv, cachedTokenDetails),
                 ),
-            );
-            return pools.then((p) => p.filter(hasValidMetadata));
+            ).then((results) => {
+                function getFulfilledValues<T>(
+                    promises: PromiseSettledResult<T>[],
+                ): T[] {
+                    const fulfilledValues: T[] = [];
+                    for (const result of promises) {
+                        result.status === 'fulfilled' &&
+                            fulfilledValues.push(result.value);
+                    }
+                    return fulfilledValues;
+                }
+                return getFulfilledValues(results).filter(hasValidMetadata);
+            });
+            return pools;
         });
 }
 
