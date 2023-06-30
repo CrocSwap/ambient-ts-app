@@ -8,7 +8,6 @@ import {
     NavLink,
     useNavigate,
 } from 'react-router-dom';
-import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
 // START: Import JSX Components
@@ -42,6 +41,7 @@ function Trade() {
         useContext(CandleContext);
     const { isFullScreen: isChartFullScreen, chartSettings } =
         useContext(ChartContext);
+    // eslint-disable-next-line
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
     const { expandTradeTable, setOutsideControl, setSelectedOutsideTab } =
