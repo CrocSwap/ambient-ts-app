@@ -146,11 +146,11 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     <div>
                         <p>
                             Percentage width of the range around current pool
-                            price
+                            price.
                         </p>
                         <p>
-                            Tighter ranges accumulate rewards at faster, but are
-                            more likely to suffer divergence losses
+                            Tighter ranges accumulate rewards at faster rates,
+                            but are more likely to suffer divergence losses.
                         </p>
                     </div>,
                     'Range Width',
