@@ -185,26 +185,16 @@ export const useSidebarSearch = (
                     // initialize an output variable (minimum priority)
                     let sourceCount = 0;
                     // fn to increment the output value
-                    function addToCount(num: number): void {
+                    const addToCount = (num: number): void => {
                         sourceCount += num;
-                    }
+                    };
                     // increase priority relative to popularity of base token
-                    if (pool.base.listedBy) {
-                        addToCount(pool.base.listedBy.length);
-                    } else if (pool.base.fromList) {
-                        addToCount(1);
-                    }
+                    addToCount(pool.base.listedBy?.length ?? 1);
                     // increase priority relative to popularity of quote token
-                    if (pool.quote.listedBy) {
-                        addToCount(pool.quote.listedBy.length);
-                    } else if (pool.quote.fromList) {
-                        addToCount(1);
-                    }
+                    addToCount(pool.quote.listedBy?.length ?? 1);
                     // increase priority if the native token is in the pair
                     // necessary because other lists dont use the zero address
-                    if (pool.base.address === ZERO_ADDRESS) {
-                        addToCount(2);
-                    }
+                    pool.base.address === ZERO_ADDRESS && addToCount(2);
                     // return overall priority value
                     return sourceCount;
                 };
