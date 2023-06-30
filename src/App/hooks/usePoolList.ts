@@ -18,10 +18,6 @@ export const usePoolList = (
 
         const pools = fetchPoolList(crocEnv, tokenUniv, cachedTokenDetails);
         Promise.resolve<TempPoolIF[]>(pools)
-            .then((res) => {
-                console.log(res);
-                return res;
-            })
             .then((res) => setPoolList(res))
             .catch((err) => {
                 console.error(err);
