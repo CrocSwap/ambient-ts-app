@@ -73,7 +73,6 @@ import { isStablePair } from '../../../utils/data/stablePairs';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { formatAmountOld } from '../../../utils/numbers';
 
 function Range() {
     const {
@@ -195,20 +194,6 @@ function Range() {
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
-
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 0.0001
-            ? displayPriceWithDenom.toExponential(2)
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toPrecision(3)
-            : displayPriceWithDenom >= 100000
-            ? formatAmountOld(displayPriceWithDenom, 1)
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
 
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
@@ -1069,7 +1054,7 @@ function Range() {
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
         spotPriceDisplay: getFormattedNumber({
-            value: Number(displayPriceString),
+            value: displayPriceWithDenom,
         }),
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
@@ -1221,7 +1206,7 @@ function Range() {
         isQtyEntered: isQtyEntered,
         rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: getFormattedNumber({
-            value: Number(displayPriceString),
+            value: displayPriceWithDenom,
         }),
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFeeString: liquidityProviderFeeString,
@@ -1277,7 +1262,7 @@ function Range() {
 
             <AdvancedPriceInfo
                 poolPriceDisplay={getFormattedNumber({
-                    value: Number(displayPriceString),
+                    value: displayPriceWithDenom,
                 })}
                 isTokenABase={isTokenABase}
                 isOutOfRange={isOutOfRange}
@@ -1554,7 +1539,7 @@ function Range() {
                         tokenAQtyLocal={tokenAQtyLocal}
                         tokenBQtyLocal={tokenBQtyLocal}
                         spotPriceDisplay={getFormattedNumber({
-                            value: Number(displayPriceString),
+                            value: displayPriceWithDenom,
                         })}
                         isTokenABase={isTokenABase}
                         isAmbient={isAmbient}
