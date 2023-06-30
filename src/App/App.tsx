@@ -7,7 +7,6 @@ import {
     Navigate,
     useNavigate,
 } from 'react-router-dom';
-import { useAccount } from 'wagmi';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
@@ -28,12 +27,7 @@ import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
 import './App.css';
-import {
-    GRAPHCACHE_WSS_URL,
-    IS_LOCAL_ENV,
-    SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT,
-    SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
-} from '../constants';
+import { IS_LOCAL_ENV } from '../constants';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
@@ -42,20 +36,13 @@ import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
 import Accessibility from '../pages/Accessibility/Accessibility';
-import useWebSocketSubs from './hooks/useWebSocketSubs';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
-import { ChainDataContext } from '../contexts/ChainDataContext';
-import { TokenContext } from '../contexts/TokenContext';
 import { SidebarContext } from '../contexts/SidebarContext';
-import { CandleContext } from '../contexts/CandleContext';
-import { TradeTokenContext } from '../contexts/TradeTokenContext';
 import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
-
-const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
 
 /** ***** React Function *******/
 export default function App() {
@@ -64,8 +51,6 @@ export default function App() {
     const currentLocation = location.pathname;
 
     const {
-        server: { isEnabled: isServerEnabled },
-        subscriptions: { isEnabled: areSubscriptionsEnabled },
         chat: {
             isOpen: isChatOpen,
             setIsOpen: setChatOpen,
@@ -73,52 +58,11 @@ export default function App() {
         },
         theme: { selected: selectedTheme },
     } = useContext(AppStateContext);
-    const { candleData, setCandleData, candleTimeLocal } =
-        useContext(CandleContext);
-    const { crocEnv, chainData, isChainSupported, defaultUrlParams } =
-        useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { isChainSupported, defaultUrlParams } = useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
-    const { tokens } = useContext(TokenContext);
-    const {
-        baseToken: {
-            address: baseTokenAddress,
-            mainnetAddress: mainnetBaseTokenAddress,
-        },
-        quoteToken: {
-            address: quoteTokenAddress,
-            mainnetAddress: mainnetQuoteTokenAddress,
-        },
-    } = useContext(TradeTokenContext);
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
     } = useContext(SidebarContext);
-
-    const { address: userAddress } = useAccount();
-
-    const showMobileVersion = useMediaQuery('(max-width: 600px)');
-
-    useWebSocketSubs({
-        crocEnv,
-        wssGraphCacheServerDomain,
-        baseTokenAddress,
-        quoteTokenAddress,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
-        isServerEnabled,
-        shouldNonCandleSubscriptionsReconnect:
-            SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
-        areSubscriptionsEnabled,
-        tokenUniv: tokens.tokenUniv,
-        chainData,
-        lastBlockNumber,
-        candleData,
-        setCandleData,
-        candleTimeLocal,
-        userAddress,
-        shouldCandleSubscriptionsReconnect:
-            SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT,
-    });
 
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle = currentLocation.startsWith('/swap')
@@ -199,6 +143,7 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <>

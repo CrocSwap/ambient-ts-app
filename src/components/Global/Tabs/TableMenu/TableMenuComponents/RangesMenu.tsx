@@ -66,7 +66,11 @@ export default function RangesMenu(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { setSimpleRangeWidth } = useContext(RangeContext);
+    const {
+        setSimpleRangeWidth,
+        setCurrentRangeInReposition,
+        setCurrentRangeInAdd,
+    } = useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
 
@@ -136,6 +140,11 @@ export default function RangesMenu(props: propsIF) {
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
+            onClick={() => {
+                setSimpleRangeWidth(10);
+                setCurrentRangeInReposition(position.positionId);
+                setCurrentRangeInAdd('');
+            }}
             state={{ position: position }}
         >
             Reposition
@@ -167,7 +176,7 @@ export default function RangesMenu(props: propsIF) {
 
     const addButton = (
         <Link
-            style={{ opacity: '1' }}
+            style={{ opacity: '1', zIndex: '3' }}
             className={styles.option_button}
             to={linkGenPool.getFullURL({
                 chain: chainId,
@@ -176,7 +185,11 @@ export default function RangesMenu(props: propsIF) {
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
-            onClick={handleCopyClick}
+            onClick={(event) => {
+                event.stopPropagation();
+                handleCopyClick();
+                setCurrentRangeInAdd(position.positionId);
+            }}
         >
             Add
         </Link>

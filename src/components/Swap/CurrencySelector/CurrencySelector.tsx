@@ -29,6 +29,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -502,7 +503,6 @@ function CurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            <div className={styles.direction} />
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='swap_sell_qty'>
                     <CurrencyQuantity
@@ -528,7 +528,7 @@ function CurrencySelector(props: propsIF) {
                     id='swap_token_selector'
                 >
                     <TokenIcon
-                        src={thisToken.logoURI}
+                        src={uriToHttp(thisToken.logoURI)}
                         alt={thisToken.name}
                         size='2xl'
                     />

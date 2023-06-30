@@ -1,4 +1,3 @@
-import styles from './RangeButton.module.css';
 import Button from '../../../Global/Button/Button';
 import { memo, useContext } from 'react';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
@@ -24,29 +23,34 @@ function RangeButton(props: propsIF) {
 
     const { bypassConfirmRange } = useContext(UserPreferenceContext);
 
-    return (
-        <div className={styles.button_container}>
-            <Button
-                title={
-                    areBothAckd
-                        ? rangeAllowed
-                            ? bypassConfirmRange.isEnabled
-                                ? isAdd
-                                    ? `Add ${
-                                          isAmbient ? 'Ambient' : ''
-                                      } Liquidity`
-                                    : `Submit ${
-                                          isAmbient ? 'Ambient' : ''
-                                      } Liquidity`
-                                : 'Confirm'
-                            : rangeButtonErrorMessage
-                        : 'Acknowledge'
+    let title;
+
+    switch (true) {
+        case areBothAckd:
+            if (rangeAllowed) {
+                if (bypassConfirmRange.isEnabled) {
+                    title = isAdd
+                        ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
+                        : `Submit ${isAmbient ? 'Ambient' : ''} Liquidity`;
+                } else {
+                    title = 'Confirm';
                 }
-                action={onClickFn}
-                disabled={!rangeAllowed && areBothAckd}
-                flat={true}
-            />
-        </div>
+            } else {
+                title = rangeButtonErrorMessage;
+            }
+            break;
+
+        default:
+            title = 'Acknowledge';
+    }
+
+    return (
+        <Button
+            title={title}
+            action={onClickFn}
+            disabled={!rangeAllowed && areBothAckd}
+            flat={true}
+        />
     );
 }
 

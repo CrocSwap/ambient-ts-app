@@ -51,7 +51,14 @@ svg {
 }
 
 svg:hover {
-    color: var(--text1);
+    color: var(--accent1) ;
+    cursor: pointer ;
+}
+
+
+button:hover > svg{
+    color: var(--accent1) ;
+    cursor: pointer ;
 }
 
 button,

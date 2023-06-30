@@ -66,14 +66,14 @@ function CurrencyQuantity(props: propsIF) {
         const inputValue = value.startsWith('.') ? '0' + value : value;
         if (fieldId === 'sell') {
             setBuyQtyString('');
-            if (inputValue) {
+            if (inputValue && parseFloat(inputValue) !== 0) {
                 setIsBuyLoading(true);
                 setSellQtyString(inputValue);
             }
             value || setIsBuyLoading(false);
         } else if (fieldId === 'buy') {
             setSellQtyString('');
-            if (inputValue) {
+            if (inputValue && parseFloat(inputValue) !== 0) {
                 setIsSellLoading(true);
                 setBuyQtyString(inputValue);
             }
@@ -123,27 +123,30 @@ function CurrencyQuantity(props: propsIF) {
     );
     return (
         <div className={`${styles.token_amount} `}>
-            {isLoading && progressDisplay}
-            <input
-                id={`${fieldId}-quantity`}
-                className={styles.currency_quantity}
-                placeholder={isLoading ? '' : '0.0'}
-                tabIndex={0}
-                aria-live={ariaLive}
-                aria-label={`Enter ${fieldId} amount`}
-                onChange={(event) => {
-                    handleOnChange(event);
-                }}
-                value={isLoading ? '' : displayValue}
-                type='text'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern={decimalNumRegEx.source}
-                disabled={disable}
-            />
+            {isLoading ? (
+                progressDisplay
+            ) : (
+                <input
+                    id={`${fieldId}-quantity`}
+                    className={styles.currency_quantity}
+                    placeholder={isLoading ? '' : '0.0'}
+                    tabIndex={0}
+                    aria-live={ariaLive}
+                    aria-label={`Enter ${fieldId} amount`}
+                    onChange={(event) => {
+                        handleOnChange(event);
+                    }}
+                    value={isLoading ? '' : displayValue}
+                    type='text'
+                    inputMode='decimal'
+                    autoComplete='off'
+                    autoCorrect='off'
+                    min='0'
+                    minLength={1}
+                    pattern={decimalNumRegEx.source}
+                    disabled={disable}
+                />
+            )}
         </div>
     );
 }

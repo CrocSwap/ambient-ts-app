@@ -66,7 +66,7 @@ function Orders(props: propsIF) {
         if (isAccountView) setLimitOrderData(activeAccountLimitOrderData || []);
         else if (!showAllData)
             setLimitOrderData(
-                graphData?.limitOrdersByUser?.limitOrders.filter(
+                graphData?.userLimitOrdersByPool?.limitOrders.filter(
                     (order) =>
                         order.base.toLowerCase() ===
                             baseTokenAddress.toLowerCase() &&
@@ -80,9 +80,10 @@ function Orders(props: propsIF) {
         }
     }, [
         showAllData,
+        isAccountView,
         activeAccountLimitOrderData,
-        graphData?.limitOrdersByUser,
         graphData?.limitOrdersByPool,
+        graphData?.userLimitOrdersByPool,
     ]);
 
     useEffect(() => {
@@ -96,13 +97,16 @@ function Orders(props: propsIF) {
             );
         else if (!showAllData)
             setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
+                graphData?.dataLoadingStatus
+                    .isConnectedUserPoolOrderDataLoading,
             );
         else setIsLoading(graphData?.dataLoadingStatus.isPoolOrderDataLoading);
     }, [
         showAllData,
+        isAccountView,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserOrderDataLoading,
+        graphData?.dataLoadingStatus.isConnectedUserPoolOrderDataLoading,
         graphData?.dataLoadingStatus.isLookupUserOrderDataLoading,
         graphData?.dataLoadingStatus.isPoolOrderDataLoading,
     ]);

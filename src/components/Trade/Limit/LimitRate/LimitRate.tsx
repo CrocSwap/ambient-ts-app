@@ -88,6 +88,7 @@ export default function LimitRate(props: propsIF) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    height: '19px',
                 }}
             >
                 <p>Price</p>
@@ -171,11 +172,11 @@ export default function LimitRate(props: propsIF) {
                     >
                         <HiPlus />
                     </button>
-                    <button>
-                        <HiMinus
-                            onClick={!isDenomBase ? decreaseTick : increaseTick}
-                            aria-label='Decrease limit tick.'
-                        />
+                    <button
+                        onClick={!isDenomBase ? decreaseTick : increaseTick}
+                        aria-label='Decrease limit tick.'
+                    >
+                        <HiMinus />
                     </button>
                 </div>
             </div>

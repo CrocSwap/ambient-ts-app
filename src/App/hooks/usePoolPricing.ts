@@ -179,8 +179,10 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         setIsPoolPriceChangePositive(true);
                         return;
                     }
-
-                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+                    if (
+                        priceChangeResult > -0.0001 &&
+                        priceChangeResult < 0.0001
+                    ) {
                         setPoolPriceChangePercent('No Change');
                         setIsPoolPriceChangePositive(true);
                     } else {
@@ -188,15 +190,17 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
 
+                        const priceChangePercent = priceChangeResult * 100;
+
                         const priceChangeString =
-                            priceChangeResult > 0
+                            priceChangePercent > 0
                                 ? '+' +
-                                  priceChangeResult.toLocaleString(undefined, {
+                                  priceChangePercent.toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) +
                                   '%'
-                                : priceChangeResult.toLocaleString(undefined, {
+                                : priceChangePercent.toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) + '%';
