@@ -127,7 +127,7 @@ export const useSidebarSearch = (
             poolsOnChain
                 .filter((pool: PoolIF) => {
                     // values against which to search
-                    const values: string[] = [
+                    const valuesToMatch: string[] = [
                         pool.base.symbol,
                         pool.quote.symbol,
                         pool.base.name,
@@ -135,14 +135,14 @@ export const useSidebarSearch = (
                     ];
                     // fn to find exact matches to search input
                     function findExactMatch(input: string): boolean {
-                        return values.some(
+                        return valuesToMatch.some(
                             (val: string) =>
                                 val.toLowerCase() === input.toLowerCase(),
                         );
                     }
                     // fn to find partial matches to search input
                     function findPartialMatch(input: string): boolean {
-                        return values.some((val: string) =>
+                        return valuesToMatch.some((val: string) =>
                             val.toLowerCase().includes(input.toLowerCase()),
                         );
                     }
@@ -224,21 +224,34 @@ export const useSidebarSearch = (
                 // remove empty positions from search results
                 .filter((pos: PositionIF) => pos.totalValueUSD);
         // fn to filter range positions by symbol (must be exact IF input is two characters)
-        const searchBySymbol = (symb: string): PositionIF[] =>
+        const searchByNameOrSymbol = (symb: string): PositionIF[] =>
             positionList
-                .filter((position: PositionIF) =>
-                    symb.length === 2
-                        ? position.baseSymbol.toLowerCase() ===
-                              symb.toLowerCase() ||
-                          position.quoteSymbol.toLowerCase() ===
-                              symb.toLowerCase()
-                        : position.baseSymbol
-                              .toLowerCase()
-                              .includes(symb.toLowerCase()) ||
-                          position.quoteSymbol
-                              .toLowerCase()
-                              .includes(symb.toLowerCase()),
-                )
+                .filter((position: PositionIF) => {
+                    // values against which to search
+                    const valuesToMatch: string[] = [
+                        position.baseSymbol,
+                        position.quoteSymbol,
+                        position.baseName,
+                        position.quoteName,
+                    ];
+                    // fn to find exact matches to search input
+                    function findExactMatch(input: string): boolean {
+                        return valuesToMatch.some(
+                            (val: string) =>
+                                val.toLowerCase() === input.toLowerCase(),
+                        );
+                    }
+                    // fn to find partial matches to search input
+                    function findPartialMatch(input: string): boolean {
+                        return valuesToMatch.some((val: string) =>
+                            val.toLowerCase().includes(input.toLowerCase()),
+                        );
+                    }
+                    // return search results for either exact or partial match
+                    return symb.length === 2
+                        ? findExactMatch(symb)
+                        : findPartialMatch(symb);
+                })
                 // remove empty positions from search results
                 .filter((pos: PositionIF) => pos.totalValueUSD);
         // fn to return list of range positions with no search filtering
@@ -251,7 +264,7 @@ export const useSidebarSearch = (
                 filteredRangePositions = searchByAddress(validatedInput);
                 break;
             case 'nameOrSymbol':
-                filteredRangePositions = searchBySymbol(validatedInput);
+                filteredRangePositions = searchByNameOrSymbol(validatedInput);
                 break;
             case '':
             default:
