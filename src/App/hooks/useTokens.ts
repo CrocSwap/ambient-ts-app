@@ -11,7 +11,7 @@ export interface tokenMethodsIF {
     ackToken: (tkn: TokenIF) => void;
     tokenUniv: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
-    getTokenFromList: (uri: string) => TokenIF[];
+    getTokensFromList: (uri: string) => TokenIF[];
     getTokensByNameOrSymbol: (input: string, exact?: boolean) => TokenIF[];
 }
 
@@ -249,7 +249,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             ackToken: ackToken,
             tokenUniv: tokenUniv,
             getTokenByAddress: getTokenByAddress,
-            getTokenFromList: getTokensFromList,
+            getTokensFromList: getTokensFromList,
             getTokensByNameOrSymbol: getTokensByNameOrSymbol,
         }),
         [tokenUniv, chainId],
