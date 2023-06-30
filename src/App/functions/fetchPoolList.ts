@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import {
     TempPoolIF,
     TempPoolServerIF,
@@ -41,10 +41,19 @@ export async function fetchPoolList(
                     promises: PromiseSettledResult<T>[],
                 ): T[] {
                     const fulfilledValues: T[] = [];
+                    const rejectedPromises: PromiseRejectedResult[] = [];
                     for (const result of promises) {
-                        result.status === 'fulfilled' &&
-                            fulfilledValues.push(result.value);
+                        result.status === 'fulfilled'
+                            ? fulfilledValues.push(result.value)
+                            : rejectedPromises.push(result);
                     }
+                    IS_LOCAL_ENV &&
+                        rejectedPromises.forEach((reject) => {
+                            console.warn(
+                                'failed pool metadata query, see file fetchPoolList.ts to troubleshoot',
+                                reject,
+                            );
+                        });
                     return fulfilledValues;
                 }
                 return getFulfilledValues(results).filter(hasValidMetadata);
