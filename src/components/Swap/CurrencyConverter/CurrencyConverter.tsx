@@ -34,6 +34,8 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
+import { precisionOfInput } from '../../../App/functions/getPrecisionOfInput';
+import removeLeadingZeros from '../../../utils/functions/removeLeadingZeros';
 
 interface propsIF {
     slippageTolerancePercentage: number;
@@ -440,18 +442,30 @@ function CurrencyConverter(props: propsIF) {
             if (evt) {
                 setUserClickedCombinedMax(false);
 
-                const targetValue = evt.target.value.replaceAll(',', '');
+                // parse input
+                const inputStr = evt.target.value.replaceAll(',', '');
+                const inputNum = parseFloat(inputStr);
 
-                const input = targetValue.startsWith('.')
-                    ? '0' + targetValue
-                    : targetValue;
+                const truncatedInputStr = isNaN(inputNum)
+                    ? ''
+                    : removeLeadingZeros(
+                          inputNum === 0 ||
+                              precisionOfInput(inputStr) <=
+                                  tradeData.tokenA.decimals
+                              ? inputStr
+                              : truncateDecimals(
+                                    inputNum,
+                                    tradeData.tokenA.decimals,
+                                ),
+                      );
 
-                setTokenAQtyLocal(input);
+                setSellQtyString(truncatedInputStr);
+                setTokenAQtyLocal(truncatedInputStr);
                 setIsTokenAPrimaryLocal(true);
                 dispatch(setIsTokenAPrimary(true));
-                dispatch(setPrimaryQuantity(input));
+                dispatch(setPrimaryQuantity(truncatedInputStr));
 
-                rawTokenBQty = await refreshImpact(input, true);
+                rawTokenBQty = await refreshImpact(inputStr, true);
             } else {
                 rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
             }
@@ -527,16 +541,30 @@ function CurrencyConverter(props: propsIF) {
             if (evt) {
                 setUserClickedCombinedMax(false);
 
-                const input = evt.target.value.startsWith('.')
-                    ? '0' + evt.target.value.replaceAll(',', '')
-                    : evt.target.value.replaceAll(',', '');
+                // parse input
+                const inputStr = evt.target.value.replaceAll(',', '');
+                const inputNum = parseFloat(inputStr);
 
-                setTokenBQtyLocal(input);
+                const truncatedInputStr = isNaN(inputNum)
+                    ? ''
+                    : removeLeadingZeros(
+                          inputNum === 0 ||
+                              precisionOfInput(inputStr) <=
+                                  tradeData.tokenB.decimals
+                              ? inputStr
+                              : truncateDecimals(
+                                    inputNum,
+                                    tradeData.tokenB.decimals,
+                                ),
+                      );
+
+                setBuyQtyString(truncatedInputStr);
+                setTokenBQtyLocal(truncatedInputStr);
                 setIsTokenAPrimaryLocal(false);
                 dispatch(setIsTokenAPrimary(false));
-                dispatch(setPrimaryQuantity(input));
+                dispatch(setPrimaryQuantity(truncatedInputStr));
 
-                rawTokenAQty = await refreshImpact(input, false);
+                rawTokenAQty = await refreshImpact(inputStr, false);
             } else {
                 rawTokenAQty = await refreshImpact(tokenBQtyLocal, false);
             }

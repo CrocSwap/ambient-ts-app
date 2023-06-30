@@ -518,6 +518,7 @@ function TvlSubChart(props: TvlData) {
                     subChartValues.filter(
                         (value: any) => value.name === 'tvl',
                     )[0].value,
+                    true,
                 )}
             </label>
             <d3fc-canvas

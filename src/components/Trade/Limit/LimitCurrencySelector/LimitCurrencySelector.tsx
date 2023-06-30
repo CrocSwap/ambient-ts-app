@@ -51,6 +51,7 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     tokenAorB: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    parseInput: (val: string) => void;
 }
 
 // central react functional component
@@ -70,6 +71,7 @@ function LimitCurrencySelector(props: propsIF) {
         handleChangeClick,
         tokenAorB,
         setUserOverrodeSurplusWithdrawalDefault,
+        parseInput,
     } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
@@ -341,6 +343,7 @@ function LimitCurrencySelector(props: propsIF) {
                         thisToken={thisToken}
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
+                        parseInput={parseInput}
                     />
                 </div>
                 {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}

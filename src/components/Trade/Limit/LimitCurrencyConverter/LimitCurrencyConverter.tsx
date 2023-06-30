@@ -38,6 +38,8 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
+import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
 
 // interface for component props
 interface propsIF {
@@ -274,39 +276,61 @@ function LimitCurrencyConverter(props: propsIF) {
         }
     };
 
+    const parseTokenAInput = (value: string) => {
+        const inputNum = parseFloat(value);
+        const truncatedInputStr = getFormattedInput(
+            inputNum,
+            tradeData.tokenA.decimals,
+        );
+
+        setTokenAInputQty(truncatedInputStr);
+    };
+
+    const parseTokenBInput = (value: string) => {
+        const inputNum = parseFloat(value);
+        const truncatedInputStr = getFormattedInput(
+            inputNum,
+            tradeData.tokenB.decimals,
+        );
+
+        setTokenBInputQty(truncatedInputStr);
+    };
+
+    const getFormattedInput = (value: number, decimals: number): string => {
+        return isNaN(value)
+            ? ''
+            : removeLeadingZeros(
+                  value === 0 || precisionOfInput(value.toString()) <= decimals
+                      ? value.toString()
+                      : truncateDecimals(value, decimals),
+              );
+    };
+
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
-        let rawTokenBQty: number;
-
+        let rawTokenBQty = 0;
         if (evt) {
-            const input = evt.target.value.startsWith('.')
-                ? '0' + evt.target.value
-                : evt.target.value;
+            const inputStr = evt.target.value.replaceAll(',', '');
+            const inputNum = parseFloat(inputStr);
+            const truncatedInputStr = getFormattedInput(
+                inputNum,
+                tradeData.tokenA.decimals,
+            );
 
-            const parsedInput = parseFloat(input);
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                setLimitAllowed(false);
-                setLimitButtonErrorMessage('Enter an Amount');
-                setTokenAQtyLocal('');
-                setTokenAInputQty(input);
-                if (input !== '') return;
-            }
-
-            setTokenAQtyLocal(input);
-            setTokenAInputQty(input);
+            setTokenAQtyLocal(truncatedInputStr);
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
-            dispatch(setPrimaryQuantity(input));
+            dispatch(setPrimaryQuantity(truncatedInputStr));
 
             if (!tradeData.isDenomBase) {
                 rawTokenBQty = isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * parseFloat(input)
-                    : limitTickDisplayPrice * parseFloat(input);
+                    ? (1 / limitTickDisplayPrice) * inputNum
+                    : limitTickDisplayPrice * inputNum;
             } else {
                 rawTokenBQty = !isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * parseFloat(input)
-                    : limitTickDisplayPrice * parseFloat(input);
+                    ? (1 / limitTickDisplayPrice) * inputNum
+                    : limitTickDisplayPrice * inputNum;
             }
-            handleLimitButtonMessage(parseFloat(input));
+            handleLimitButtonMessage(inputNum);
         } else {
             if (!tradeData.isDenomBase) {
                 rawTokenBQty = isSellTokenBase
@@ -370,34 +394,28 @@ function LimitCurrencyConverter(props: propsIF) {
         useState<boolean>(false);
 
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
-        let rawTokenAQty;
+        let rawTokenAQty = 0;
         if (evt) {
-            const input = evt.target.value.startsWith('.')
-                ? '0' + evt.target.value
-                : evt.target.value;
+            const inputStr = evt.target.value.replaceAll(',', '');
+            const inputNum = parseFloat(inputStr);
+            const truncatedInputStr = getFormattedInput(
+                inputNum,
+                tradeData.tokenB.decimals,
+            );
 
-            const parsedInput = parseFloat(input);
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                setLimitAllowed(false);
-                setLimitButtonErrorMessage('Enter an Amount');
-                setUserSetTokenBToZero(true);
-                if (input !== '') return;
-            }
             setUserSetTokenBToZero(false);
-
-            setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
-            dispatch(setPrimaryQuantity(input));
+            dispatch(setPrimaryQuantity(truncatedInputStr));
 
             if (!tradeData.isDenomBase) {
                 rawTokenAQty = isSellTokenBase
-                    ? limitTickDisplayPrice * parseFloat(input)
-                    : (1 / limitTickDisplayPrice) * parseFloat(input);
+                    ? limitTickDisplayPrice * inputNum
+                    : (1 / limitTickDisplayPrice) * inputNum;
             } else {
                 rawTokenAQty = !isSellTokenBase
-                    ? limitTickDisplayPrice * parseFloat(input)
-                    : (1 / limitTickDisplayPrice) * parseFloat(input);
+                    ? limitTickDisplayPrice * inputNum
+                    : (1 / limitTickDisplayPrice) * inputNum;
             }
 
             handleLimitButtonMessage(rawTokenAQty);
@@ -460,6 +478,7 @@ function LimitCurrencyConverter(props: propsIF) {
                 setUserOverrodeSurplusWithdrawalDefault={
                     setUserOverrodeSurplusWithdrawalDefault
                 }
+                parseInput={parseTokenAInput}
             />
             <div
                 className={`${styles.arrow_container} ${
@@ -493,6 +512,7 @@ function LimitCurrencyConverter(props: propsIF) {
                     setUserOverrodeSurplusWithdrawalDefault={
                         setUserOverrodeSurplusWithdrawalDefault
                     }
+                    parseInput={parseTokenBInput}
                 />
             </div>
             <LimitRate

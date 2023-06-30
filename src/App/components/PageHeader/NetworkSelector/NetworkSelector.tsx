@@ -21,8 +21,6 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
         lookupChain(chain),
     );
 
-    // TODO (#1435): Clicking the currently-connected network in the network selector reloads the page
-
     const dropdownAriaDescription = 'Dropdown menu for networks.';
     const networkMenuContent = (
         <ul
