@@ -95,7 +95,7 @@ function bumpsToRanges(
     basePrice: number,
     quotePrice: number,
 ): LiquidityRangeIF[] {
-    let bumps = curve.liquidityBumps;
+    let bumps = curve.liquidityBumps ? curve.liquidityBumps : [];
 
     // Insert a synthetic bump right at the current price tick, so curve is smooth
     if (curve.liquidityBumps.filter((b) => b.bumpTick == tick).length == 0) {

@@ -8,3 +8,10 @@ export interface TempPoolIF {
     quoteDecimals: number;
     quoteSymbol: string;
 }
+
+export interface TempPoolServerIF {
+    base: string;
+    chainId: string;
+    poolIdx: number;
+    quote: string;
+}
