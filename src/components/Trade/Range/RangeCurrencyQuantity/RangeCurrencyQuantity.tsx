@@ -23,10 +23,16 @@ function RangeCurrencyQuantity(props: propsIF) {
     } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
+    const [toggleInputUpdated, setToggleInputUpdated] = useState(false);
 
     useEffect(() => {
         setDisplayValue(value);
-    }, [value]);
+    }, [toggleInputUpdated, value]);
+
+    const handleOnBlur = (input: string) => {
+        parseInput(input);
+        setToggleInputUpdated(!toggleInputUpdated);
+    };
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         updateOtherQuantity(event);
@@ -69,13 +75,8 @@ function RangeCurrencyQuantity(props: propsIF) {
                 id={`${fieldId}-range-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                onChange={(event) => {
-                    handleOnChange(event);
-                }}
-                onBlur={(event) => {
-                    setDisplayValue(value);
-                    parseInput(event.target.value);
-                }}
+                onChange={(event) => handleOnChange(event)}
+                onBlur={(event) => handleOnBlur(event.target.value)}
                 value={displayValue}
                 type='number'
                 inputMode='decimal'

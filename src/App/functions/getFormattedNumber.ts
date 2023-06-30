@@ -38,6 +38,7 @@ export function getFormattedNumber({
         // only display two decimal points for USD values
         valueString = value.toFixed(2);
     } else if (isInput) {
+        removeCommas = true;
         if (value < 0.0001) {
             valueString = value.toExponential(2);
         } else if (value < 2) {
