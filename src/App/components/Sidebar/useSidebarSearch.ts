@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     LimitOrderIF,
     PositionIF,
+    PoolIF,
     TempPoolIF,
     TokenIF,
     TransactionIF,
@@ -11,7 +12,7 @@ import { tokenMethodsIF } from '../../hooks/useTokens';
 export interface sidebarSearchIF {
     setInput: Dispatch<SetStateAction<string>>;
     isInputValid: boolean;
-    pools: TempPoolIF[];
+    pools: PoolIF[];
     positions: PositionIF[];
     txs: TransactionIF[];
     limits: LimitOrderIF[];
@@ -29,7 +30,7 @@ export const useSidebarSearch = (
     // TODO:    ... objects instead of directly-coded metadata; the only
     // TODO:    ... reason we have this shape is that the cache server used
     // TODO:    ... data formatted as such
-    const poolsOnChain = useMemo<TempPoolIF[]>(
+    const poolsOnChain = useMemo<PoolIF[]>(
         () =>
             poolList
                 .map((pool: TempPoolIF) => {
@@ -39,26 +40,16 @@ export const useSidebarSearch = (
                         tokens.getTokenByAddress(pool.quote);
                     if (baseToken && quoteToken) {
                         return {
-                            baseToken: baseToken,
-                            quoteToken: quoteToken,
-                            base: baseToken.address,
-                            baseDecimals: baseToken.decimals,
-                            baseName: baseToken.name,
-                            baseSymbol: baseToken.symbol,
+                            base: baseToken,
+                            quote: quoteToken,
                             chainId: pool.chainId,
                             poolIdx: pool.poolIdx,
-                            quote: quoteToken.address,
-                            quoteDecimals: quoteToken.decimals,
-                            quoteName: quoteToken.name,
-                            quoteSymbol: quoteToken.symbol,
                         };
                     } else {
                         return null;
                     }
                 })
-                .filter(
-                    (pool: TempPoolIF | null) => pool !== null,
-                ) as TempPoolIF[],
+                .filter((pool: PoolIF | null) => pool !== null) as PoolIF[],
         [chainId, poolList.length],
     );
 
@@ -115,7 +106,7 @@ export const useSidebarSearch = (
     }, [dbInput]);
 
     // array of pools to output from the hook
-    const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
+    const [outputPools, setOutputPools] = useState<PoolIF[]>([]);
 
     // TODO:    port reorganized search logic for name+symbol search
     // TODO:    ... from pool search to the other search filters
@@ -123,24 +114,22 @@ export const useSidebarSearch = (
     // logic to update the output pools from the hook
     useEffect(() => {
         // fn to filter pools by address (must be exact)
-        const searchByAddress = (addr: string): TempPoolIF[] =>
+        const searchByAddress = (addr: string): PoolIF[] =>
             poolsOnChain.filter(
-                (pool: TempPoolIF) =>
-                    pool.baseToken.address.toLowerCase() ===
-                        addr.toLowerCase() ||
-                    pool.quoteToken.address.toLowerCase() ===
-                        addr.toLowerCase(),
+                (pool: PoolIF) =>
+                    pool.base.address.toLowerCase() === addr.toLowerCase() ||
+                    pool.quote.address.toLowerCase() === addr.toLowerCase(),
             );
         // fn to filter pools by symbol (must be exact IF input is two characters)
-        const searchByNameOrSymbol = (symb: string): TempPoolIF[] =>
+        const searchByNameOrSymbol = (symb: string): PoolIF[] =>
             poolsOnChain
-                .filter((pool: TempPoolIF) => {
+                .filter((pool: PoolIF) => {
                     // values against which to search
                     const values: string[] = [
-                        pool.baseToken.symbol,
-                        pool.quoteToken.symbol,
-                        pool.baseToken.name,
-                        pool.quoteToken.name,
+                        pool.base.symbol,
+                        pool.quote.symbol,
+                        pool.base.name,
+                        pool.quote.name,
                     ];
                     // fn to find exact matches to search input
                     function findExactMatch(input: string): boolean {
@@ -161,19 +150,19 @@ export const useSidebarSearch = (
                         : findPartialMatch(symb);
                 })
                 .filter(
-                    (pool: TempPoolIF) =>
-                        tokens.verifyToken(pool.baseToken.address) &&
-                        tokens.verifyToken(pool.quoteToken.address),
+                    (pool: PoolIF) =>
+                        tokens.verifyToken(pool.base.address) &&
+                        tokens.verifyToken(pool.quote.address),
                 );
         // fn to return list of verified pools with no search filtering
-        const noSearch = (): TempPoolIF[] =>
+        const noSearch = (): PoolIF[] =>
             poolsOnChain.filter(
-                (pool: TempPoolIF) =>
-                    tokens.verifyToken(pool.baseToken.address) &&
-                    tokens.verifyToken(pool.quoteToken.address),
+                (pool: PoolIF) =>
+                    tokens.verifyToken(pool.base.address) &&
+                    tokens.verifyToken(pool.quote.address),
             );
         // variable to hold the list of pools generated by the search
-        let filteredPools: TempPoolIF[];
+        let filteredPools: PoolIF[];
         // logic router to apply the relevant search function
         switch (searchAs) {
             case 'address':

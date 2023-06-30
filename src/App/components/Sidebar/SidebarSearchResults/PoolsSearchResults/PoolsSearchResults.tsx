@@ -1,5 +1,5 @@
 import styles from '../SidebarSearchResults.module.css';
-import { TempPoolIF } from '../../../../../utils/interfaces/exports';
+import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
 import { useContext } from 'react';
@@ -12,7 +12,7 @@ import {
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
 
 interface propsIF {
-    searchedPools: TempPoolIF[];
+    searchedPools: PoolIF[];
     cachedPoolStatsFetch: PoolStatsFn;
     cachedFetchTokenPrice: TokenPriceFn;
 }
@@ -56,21 +56,21 @@ export default function PoolsSearchResults(props: propsIF) {
                     </header>
                     <ol className={styles.main_result_container}>
                         {searchedPools
-                            .sort((poolA: TempPoolIF, poolB: TempPoolIF) => {
+                            .sort((poolA: PoolIF, poolB: PoolIF) => {
                                 const checkPriority = (
-                                    pool: TempPoolIF,
+                                    pool: PoolIF,
                                 ): number => {
                                     let sourceCount = 0;
-                                    if (pool.baseToken.listedBy) {
+                                    if (pool.base.listedBy) {
                                         sourceCount +=
-                                            pool.baseToken.listedBy.length;
-                                    } else if (pool.baseToken.fromList) {
+                                            pool.base.listedBy.length;
+                                    } else if (pool.base.fromList) {
                                         sourceCount++;
                                     }
-                                    if (pool.quoteToken.listedBy) {
+                                    if (pool.quote.listedBy) {
                                         sourceCount +=
-                                            pool.quoteToken.listedBy.length;
-                                    } else if (pool.quoteToken.fromList) {
+                                            pool.quote.listedBy.length;
+                                    } else if (pool.quote.fromList) {
                                         sourceCount++;
                                     }
                                     return sourceCount;
@@ -80,7 +80,7 @@ export default function PoolsSearchResults(props: propsIF) {
                                 );
                             })
                             .slice(0, 4)
-                            .map((pool: TempPoolIF) => (
+                            .map((pool: PoolIF) => (
                                 <PoolLI
                                     key={`sidebar_searched_pool_${JSON.stringify(
                                         pool,
