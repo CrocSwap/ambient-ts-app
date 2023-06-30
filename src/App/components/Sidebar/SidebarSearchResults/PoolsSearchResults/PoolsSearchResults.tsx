@@ -55,45 +55,18 @@ export default function PoolsSearchResults(props: propsIF) {
                         <div>TVL</div>
                     </header>
                     <ol className={styles.main_result_container}>
-                        {searchedPools
-                            .sort((poolA: PoolIF, poolB: PoolIF) => {
-                                const checkPriority = (
-                                    pool: PoolIF,
-                                ): number => {
-                                    let sourceCount = 0;
-                                    if (pool.base.listedBy) {
-                                        sourceCount +=
-                                            pool.base.listedBy.length;
-                                    } else if (pool.base.fromList) {
-                                        sourceCount++;
-                                    }
-                                    if (pool.quote.listedBy) {
-                                        sourceCount +=
-                                            pool.quote.listedBy.length;
-                                    } else if (pool.quote.fromList) {
-                                        sourceCount++;
-                                    }
-                                    return sourceCount;
-                                };
-                                return (
-                                    checkPriority(poolB) - checkPriority(poolA)
-                                );
-                            })
-                            .slice(0, 4)
-                            .map((pool: PoolIF) => (
-                                <PoolLI
-                                    key={`sidebar_searched_pool_${JSON.stringify(
-                                        pool,
-                                    )}`}
-                                    handleClick={handleClick}
-                                    pool={pool}
-                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                                    cachedFetchTokenPrice={
-                                        cachedFetchTokenPrice
-                                    }
-                                    crocEnv={crocEnv}
-                                />
-                            ))}
+                        {searchedPools.slice(0, 4).map((pool: PoolIF) => (
+                            <PoolLI
+                                key={`sidebar_searched_pool_${JSON.stringify(
+                                    pool,
+                                )}`}
+                                handleClick={handleClick}
+                                pool={pool}
+                                cachedPoolStatsFetch={cachedPoolStatsFetch}
+                                cachedFetchTokenPrice={cachedFetchTokenPrice}
+                                crocEnv={crocEnv}
+                            />
+                        ))}
                     </ol>
                 </>
             ) : (
