@@ -12,7 +12,6 @@ export interface poolStatsIF {
 
 export const usePoolStats = (
     pool: TempPoolIF,
-    chainId: string,
     cachedPoolStatsFetch: PoolStatsFn,
     cachedFetchTokenPrice: TokenPriceFn,
     crocEnv?: CrocEnv,
@@ -30,7 +29,7 @@ export const usePoolStats = (
                 return;
             }
             const poolStatsFresh = await cachedPoolStatsFetch(
-                chainId,
+                pool.chainId,
                 pool.base,
                 pool.quote,
                 pool.poolIdx,

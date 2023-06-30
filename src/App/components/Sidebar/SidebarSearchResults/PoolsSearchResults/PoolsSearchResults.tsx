@@ -84,7 +84,6 @@ export default function PoolsSearchResults(props: propsIF) {
                                     key={`sidebar_searched_pool_${JSON.stringify(
                                         pool,
                                     )}`}
-                                    chainId={chainId}
                                     handleClick={handleClick}
                                     pool={pool}
                                     cachedPoolStatsFetch={cachedPoolStatsFetch}
