@@ -1,4 +1,8 @@
+import { TokenIF } from './TokenIF';
+
 export interface TempPoolIF {
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
     base: string;
     baseDecimals: number;
     baseName: string;

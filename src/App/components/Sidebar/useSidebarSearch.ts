@@ -39,6 +39,8 @@ export const useSidebarSearch = (
                         tokens.getTokenByAddress(pool.quote);
                     if (baseToken && quoteToken) {
                         return {
+                            baseToken: baseToken,
+                            quoteToken: quoteToken,
                             base: baseToken.address,
                             baseDecimals: baseToken.decimals,
                             baseName: baseToken.name,
