@@ -23,10 +23,16 @@ function LimitCurrencyQuantity(props: propsIF) {
     } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
+    const [toggleInputUpdated, setToggleInputUpdated] = useState(false);
 
     useEffect(() => {
         setDisplayValue(value);
-    }, [value]);
+    }, [toggleInputUpdated, value]);
+
+    const handleOnBlur = (input: string) => {
+        parseInput(input);
+        setToggleInputUpdated(!toggleInputUpdated);
+    };
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
@@ -61,10 +67,7 @@ function LimitCurrencyQuantity(props: propsIF) {
                 onChange={(event) => {
                     handleOnChange(event);
                 }}
-                onBlur={(e) => {
-                    setDisplayValue(value);
-                    parseInput(e.target.value);
-                }}
+                onBlur={(e) => handleOnBlur(e.target.value)}
                 value={displayValue}
                 type='number'
                 inputMode='decimal'
