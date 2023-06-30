@@ -29,19 +29,18 @@ export default function PoolsSearchResults(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
+    // fn to handle user clicks on `<PoolLI />` instances
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
-        const tokenAString: string =
+        // reorganize base and quote tokens as tokenA and tokenB
+        const [addrTokenA, addrTokenB] =
             baseAddr.toLowerCase() === tokenA.address.toLowerCase()
-                ? baseAddr
-                : quoteAddr;
-        const tokenBString: string =
-            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
-                ? quoteAddr
-                : baseAddr;
+                ? [baseAddr, quoteAddr]
+                : [quoteAddr, baseAddr];
+        // navigate user to the new appropriate URL path
         linkGenMarket.navigate({
             chain: chainId,
-            tokenA: tokenAString,
-            tokenB: tokenBString,
+            tokenA: addrTokenA,
+            tokenB: addrTokenB,
         });
     };
 
