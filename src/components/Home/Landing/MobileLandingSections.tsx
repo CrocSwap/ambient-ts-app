@@ -34,7 +34,7 @@ export default function MobileLandingSections() {
     const topPoolsSection = (
         <section
             className={`${styles.mobile_card} ${styles.pools} `}
-            style={{ width: '100vw' }}
+            style={{ width: '100vw', paddingTop: '56px' }}
             id='toppools'
         >
             <>
@@ -137,6 +137,7 @@ export default function MobileLandingSections() {
         <section
             className={`${styles.mobile_card} ${styles.investors}`}
             id='investors'
+            style={{ paddingTop: '56px' }}
         >
             <Fade up>
                 <h3>Investors</h3>

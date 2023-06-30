@@ -4,7 +4,7 @@
     position: relative;
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
-    height: calc(100dvh + 56px);  
+    height: 100dvh ;  
     width: 100%;
     overflow-x: hidden;
     max-width: 100dvw;
@@ -48,41 +48,51 @@
 
 .bg_2{
   position: absolute;
-  background: url(../../../assets/images/home/home2.png) no-repeat  ; 
+
+  background: 
+
+
+  url(../../../assets/images/home/home2.png)
+  no-repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   background-position:  right bottom;
-  top: 100px;
+  bottom: 0;
   left: 0;
-  height: 400px;
+  height: 150px;
   width: 100%;
 
 }
 .bg_3{
   position: absolute;
-  background: url(../../../assets/images/home/home3.png) no-repeat  ; 
+  background: 
+
+  url(../../../assets/images/home/home3.png)
+  no-repeat;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
- top: 200px;
+bottom: 0;
   left: 0;
-  height: 400px;
+  height: 80px;
   width: 100%;
 
 }
 .bg_4{
   position: absolute;
-  background: url(../../../assets/images/home/home4.png) no-repeat  ; 
+  background:  
+  url(../../../assets/images/home/home4.png) no-repeat  ; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
- top: 200px;
+height: 200px;
+bottom: 0;
   left: 0;
-  height: 600px;
+ 
   width: 100%;
 
 }
