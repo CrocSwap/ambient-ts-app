@@ -32,7 +32,7 @@ export async function fetchPoolList(
             // TODO:    ... a contract with no `symbol()` method was failing and
             // TODO:    ... taking everything down, instructions from Doug are to
             // TODO:    ... drop the bad result and investigate more later
-            const pools = Promise.allSettled(
+            const pools: Promise<TempPoolIF[]> = Promise.allSettled(
                 payload.map((p) =>
                     expandPoolData(p, crocEnv, cachedTokenDetails),
                 ),
@@ -40,20 +40,27 @@ export async function fetchPoolList(
                 function getFulfilledValues<T>(
                     promises: PromiseSettledResult<T>[],
                 ): T[] {
+                    // output variable for values from fulfilled promises
                     const fulfilledValues: T[] = [];
+                    // array to hold rejected promises for troubleshooting
                     const rejectedPromises: PromiseRejectedResult[] = [];
+                    // iterate over promises, push to each to the correct array
                     for (const result of promises) {
                         result.status === 'fulfilled'
                             ? fulfilledValues.push(result.value)
                             : rejectedPromises.push(result);
                     }
+                    // warn about rejected promises in the console (localhost only)
                     IS_LOCAL_ENV &&
-                        rejectedPromises.forEach((reject) => {
-                            console.warn(
-                                'failed pool metadata query, see file fetchPoolList.ts to troubleshoot',
-                                reject,
-                            );
-                        });
+                        rejectedPromises.forEach(
+                            (reject: PromiseRejectedResult) => {
+                                console.warn(
+                                    'failed pool metadata query, see file fetchPoolList.ts to troubleshoot',
+                                    reject,
+                                );
+                            },
+                        );
+                    // return array of values from fulfilled promises
                     return fulfilledValues;
                 }
                 return getFulfilledValues(results).filter(hasValidMetadata);
