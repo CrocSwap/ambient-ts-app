@@ -67,10 +67,10 @@ export default function PoolsSearchResults(props: propsIF) {
                                 const checkPriority = (pool: TempPoolIF) => {
                                     let output = 0;
                                     ambientAddresses.includes(
-                                        pool.base.toLowerCase(),
+                                        pool.baseToken.address.toLowerCase(),
                                     ) && output++;
                                     ambientAddresses.includes(
-                                        pool.quote.toLowerCase(),
+                                        pool.quoteToken.address.toLowerCase(),
                                     ) && output++;
                                     return output;
                                 };
