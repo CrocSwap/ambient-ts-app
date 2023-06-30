@@ -8,6 +8,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
+import uriToHttp from '../../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     token?: TokenIF;
@@ -92,7 +93,11 @@ export default function WalletCard(props: propsIF) {
             leaveDelay={200}
         >
             <div className={styles.token_icon}>
-                <TokenIcon src={tokenImageSrc} alt={tokenImageAlt} size='2xl' />
+                <TokenIcon
+                    src={uriToHttp(tokenImageSrc)}
+                    alt={tokenImageAlt}
+                    size='2xl'
+                />
                 <p className={styles.token_key}>{tokenImageAlt}</p>
             </div>
         </DefaultTooltip>

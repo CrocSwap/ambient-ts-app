@@ -198,6 +198,7 @@
 @media only screen and (min-width: 1200px) {
     .rectangle_container {
         display: flex;
+        flex-shrink: 0;
     }
 
     .nft_container {

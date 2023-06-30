@@ -1,6 +1,7 @@
 .trade_tab_container {
     position: relative;
     height: 100%;
+    padding: 8px;
 }
 
 .show_tx_message {
@@ -46,6 +47,8 @@
     border-radius: 4px;
     overflow: hidden;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .flex_column {

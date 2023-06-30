@@ -462,11 +462,9 @@ function LimitCurrencyConverter(props: propsIF) {
                 }
             />
             <div
-                className={
-                    disableReverseTokens
-                        ? styles.arrow_container_disabled
-                        : styles.arrow_container
-                }
+                className={`${styles.arrow_container} ${
+                    disableReverseTokens && styles.arrow_container_disabled
+                }`}
                 onClick={() => {
                     if (!disableReverseTokens) {
                         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);

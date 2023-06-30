@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { decimalNumRegEx } from '../../../../../utils/regex/exports';
 import TokenIcon from '../../../../Global/TokenIcon/TokenIcon';
 
 interface propsIF {
@@ -56,7 +57,7 @@ export default function DepositCurrencySelector(props: propsIF) {
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
+                pattern={decimalNumRegEx.source}
                 disabled={disable}
             />
         </div>

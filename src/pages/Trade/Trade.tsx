@@ -31,6 +31,7 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import uriToHttp from '../../utils/functions/uriToHttp';
 
 // React functional component
 function Trade() {
@@ -263,12 +264,12 @@ function Trade() {
                         >
                             Initialize Pool
                             <TokenIcon
-                                src={baseTokenLogo}
+                                src={uriToHttp(baseTokenLogo)}
                                 alt={baseTokenSymbol}
                                 size='m'
                             />
                             <TokenIcon
-                                src={quoteTokenLogo}
+                                src={uriToHttp(quoteTokenLogo)}
                                 alt={quoteTokenSymbol}
                                 size='m'
                             />

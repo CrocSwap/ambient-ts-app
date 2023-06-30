@@ -83,15 +83,14 @@ export default function Account(props: propsIF) {
 
     const ethMainnetUsdValueTruncated =
         ethMainnetUsdValue === undefined
-            ? '…'
+            ? undefined
             : ethMainnetUsdValue === 0
-            ? '$0.00'
+            ? '0.00'
             : ethMainnetUsdValue < 0.0001
-            ? '$' + ethMainnetUsdValue.toExponential(2)
+            ? ethMainnetUsdValue.toExponential(2)
             : ethMainnetUsdValue < 2
-            ? '$' + ethMainnetUsdValue.toPrecision(3)
-            : '$' +
-              ethMainnetUsdValue.toLocaleString(undefined, {
+            ? ethMainnetUsdValue.toPrecision(3)
+            : ethMainnetUsdValue.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
@@ -118,7 +117,6 @@ export default function Account(props: propsIF) {
         <section
             className={styles.wallet_display}
             ref={walletDropdownItemRef}
-            // tabIndex={0}
             aria-label={mainAriaLabel}
         >
             <button
@@ -147,7 +145,11 @@ export default function Account(props: propsIF) {
                                 : '...'
                             : ''
                     }
-                    ethValue={`${ethMainnetUsdValueTruncated}`}
+                    ethValue={
+                        ethMainnetUsdValueTruncated !== undefined
+                            ? `${ethMainnetUsdValueTruncated}`
+                            : undefined
+                    }
                     accountAddressFull={props.accountAddressFull}
                     walletDropdownTokenData={walletDropdownTokenData}
                     clickOutsideHandler={clickOutsideHandler}

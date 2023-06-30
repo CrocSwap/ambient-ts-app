@@ -4,19 +4,14 @@
     overflow: hidden;
     flex-direction: column;
     overflow-y: hidden;
-    padding: 5px;
-    color: white;
+   
+    color: var(--text1);
 }
 
 .modalSwapbox {
     background-color: var(--dark2);
 }
 
-.direction {
-    padding: 0.4.5px 0;
-    margin: 10px 0;
-}
-.direction,
 .swapbox_bottom {
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -38,7 +33,6 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    padding-right: 5px;
     color: var(--text1);
 }
 
@@ -70,31 +64,29 @@
     min-height: 40px;
 
     display: grid;
-    grid-template-columns: 1fr 120px;
+    grid-template-columns: 1fr 145px;
 }
 
-/* .swap_input {
-    width: 65%;
-} */
+
 .token_select {
-    /* background: var(--dark2); */
+ 
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* gap: 4px; */
-    /* width: 35%; */
+
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 
     background: transparent;
     outline: none;
     border: none;
+    padding: 0 4px;
+    border-radius: 4px;
 }
 
 .token_select:hover {
-    background: var(--dark2);
+    background: var(--dark3);
 }
-
 .token_select:focus-visible {
     border: 1px solid var(--text1);
 }
@@ -109,13 +101,9 @@
 
 /* bottom info */
 .swapbox_bottom {
-    margin: 6px;
-    height: 33px;
-
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 4px;
-    padding: 0 2rem;
+    padding: 8px 16px;
 }
 .token_select_button {
     cursor: pointer;

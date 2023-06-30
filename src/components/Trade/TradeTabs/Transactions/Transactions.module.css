@@ -213,6 +213,9 @@
     color: var(--text1);
 }
 
+.base_color {
+    color: var(--text1);
+}
 .mono_font {
     font-family: var(--roboto);
 }
@@ -277,7 +280,7 @@
     padding: 10px;
     display: flex;
     justify-content: center;
-    align-items: center;
+
 }
 
 .view_more_button {
@@ -296,6 +299,10 @@
     color: var(--text2);
 }
 
+.show_more_grid{
+    display: grid;
+    grid-template-rows: auto 70px;
+}
 .view_more_button:hover {
     color: var(--text1);
 }
