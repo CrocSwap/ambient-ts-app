@@ -7,6 +7,7 @@ import {
     TokenIF,
     TransactionIF,
 } from '../../../../utils/interfaces/exports';
+import matchSearchInput from './matchSearchInput';
 import { tokenMethodsIF } from '../../../hooks/useTokens';
 import { ZERO_ADDRESS } from '../../../../constants';
 
@@ -110,47 +111,31 @@ export const useSidebarSearch = (
     // array of pools to output from the hook
     const [outputPools, setOutputPools] = useState<PoolIF[]>([]);
 
-    // TODO:    port reorganized search logic for name+symbol search
-    // TODO:    ... from pool search to the other search filters
+    // constant to force searches to return exact matches only
+    const SEARCH_EXACT = true;
 
     // logic to update the output pools from the hook
     useEffect(() => {
         // fn to filter pools by address (must be exact)
         const searchByAddress = (addr: string): PoolIF[] =>
-            poolsOnChain.filter(
-                (pool: PoolIF) =>
-                    pool.base.address.toLowerCase() === addr.toLowerCase() ||
-                    pool.quote.address.toLowerCase() === addr.toLowerCase(),
+            poolsOnChain.filter((pool: PoolIF) =>
+                matchSearchInput(
+                    addr,
+                    [pool.base.address, pool.quote.address],
+                    SEARCH_EXACT,
+                ),
             );
         // fn to filter pools by symbol (must be exact IF input is two characters)
         const searchByNameOrSymbol = (symb: string): PoolIF[] =>
             poolsOnChain
-                .filter((pool: PoolIF) => {
-                    // values against which to search
-                    const valuesToMatch: string[] = [
+                .filter((pool: PoolIF) =>
+                    matchSearchInput(symb, [
                         pool.base.symbol,
                         pool.quote.symbol,
                         pool.base.name,
                         pool.quote.name,
-                    ];
-                    // fn to find exact matches to search input
-                    function findExactMatch(input: string): boolean {
-                        return valuesToMatch.some(
-                            (val: string) =>
-                                val.toLowerCase() === input.toLowerCase(),
-                        );
-                    }
-                    // fn to find partial matches to search input
-                    function findPartialMatch(input: string): boolean {
-                        return valuesToMatch.some((val: string) =>
-                            val.toLowerCase().includes(input.toLowerCase()),
-                        );
-                    }
-                    // return search results for either exact or partial match
-                    return symb.length === 2
-                        ? findExactMatch(symb)
-                        : findPartialMatch(symb);
-                })
+                    ]),
+                )
                 .filter(
                     (pool: PoolIF) =>
                         tokens.verifyToken(pool.base.address) &&
@@ -216,42 +201,27 @@ export const useSidebarSearch = (
         // fn to filter range positions by address (must be exact, will fix for casing mismatch)
         const searchByAddress = (addr: string): PositionIF[] =>
             positionList
-                .filter(
-                    (position: PositionIF) =>
-                        position.base.toLowerCase() === addr.toLowerCase() ||
-                        position.quote.toLowerCase() === addr.toLowerCase(),
+                // filter positions for ones with a matching address
+                .filter((position: PositionIF) =>
+                    matchSearchInput(
+                        addr,
+                        [position.base, position.quote],
+                        SEARCH_EXACT,
+                    ),
                 )
                 // remove empty positions from search results
                 .filter((pos: PositionIF) => pos.totalValueUSD);
         // fn to filter range positions by symbol (must be exact IF input is two characters)
         const searchByNameOrSymbol = (symb: string): PositionIF[] =>
             positionList
-                .filter((position: PositionIF) => {
-                    // values against which to search
-                    const valuesToMatch: string[] = [
+                .filter((position: PositionIF) =>
+                    matchSearchInput(symb, [
                         position.baseSymbol,
                         position.quoteSymbol,
                         position.baseName,
                         position.quoteName,
-                    ];
-                    // fn to find exact matches to search input
-                    function findExactMatch(input: string): boolean {
-                        return valuesToMatch.some(
-                            (val: string) =>
-                                val.toLowerCase() === input.toLowerCase(),
-                        );
-                    }
-                    // fn to find partial matches to search input
-                    function findPartialMatch(input: string): boolean {
-                        return valuesToMatch.some((val: string) =>
-                            val.toLowerCase().includes(input.toLowerCase()),
-                        );
-                    }
-                    // return search results for either exact or partial match
-                    return symb.length === 2
-                        ? findExactMatch(symb)
-                        : findPartialMatch(symb);
-                })
+                    ]),
+                )
                 // remove empty positions from search results
                 .filter((pos: PositionIF) => pos.totalValueUSD);
         // fn to return list of range positions with no search filtering
@@ -283,39 +253,19 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to filter txs by address (must be exact, will fix for casing mismatch)
         const searchByAddress = (addr: string): TransactionIF[] =>
-            txList.filter(
-                (tx: TransactionIF) =>
-                    tx.base.toLowerCase() === addr.toLowerCase() ||
-                    tx.quote.toLowerCase() === addr.toLowerCase(),
+            txList.filter((tx: TransactionIF) =>
+                matchSearchInput(addr, [tx.base, tx.quote], SEARCH_EXACT),
             );
         // fn to filter txs by symbol (must be exact IF input is two characters)
         const searchByNameOrSymbol = (symb: string): TransactionIF[] =>
-            txList.filter((tx: TransactionIF) => {
-                // values against which to search
-                const valuesToMatch: string[] = [
+            txList.filter((tx: TransactionIF) =>
+                matchSearchInput(symb, [
                     tx.baseSymbol,
                     tx.quoteSymbol,
                     tx.baseName,
                     tx.quoteName,
-                ];
-                // fn to find exact matches to search input
-                function findExactMatch(input: string): boolean {
-                    return valuesToMatch.some(
-                        (val: string) =>
-                            val.toLowerCase() === input.toLowerCase(),
-                    );
-                }
-                // fn to find partial matches to search input
-                function findPartialMatch(input: string): boolean {
-                    return valuesToMatch.some((val: string) =>
-                        val.toLowerCase().includes(input.toLowerCase()),
-                    );
-                }
-                // return search results for either exact or partial match
-                return symb.length === 2
-                    ? findExactMatch(symb)
-                    : findPartialMatch(symb);
-            });
+                ]),
+            );
         // fn to return array of txs with no search filtering
         const noSearch = (): TransactionIF[] => txList;
         // output variable to hold the array of txs generated by the search filter
@@ -345,39 +295,23 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to filter txs by address (must be exact, will fix for casing mismatch)
         const searchByAddress = (addr: string): LimitOrderIF[] =>
-            limitOrderList.filter(
-                (limitOrder: LimitOrderIF) =>
-                    limitOrder.base.toLowerCase() === addr.toLowerCase() ||
-                    limitOrder.quote.toLowerCase() === addr.toLowerCase(),
+            limitOrderList.filter((limitOrder: LimitOrderIF) =>
+                matchSearchInput(
+                    addr,
+                    [limitOrder.base, limitOrder.quote],
+                    SEARCH_EXACT,
+                ),
             );
         // fn to filter txs by symbol (must be exact IF input is two characters)
         const searchByNameOrSymbol = (symb: string): LimitOrderIF[] =>
-            limitOrderList.filter((limitOrder: LimitOrderIF) => {
-                // values against which to search
-                const valuesToMatch: string[] = [
+            limitOrderList.filter((limitOrder: LimitOrderIF) =>
+                matchSearchInput(symb, [
                     limitOrder.baseSymbol,
                     limitOrder.quoteSymbol,
                     limitOrder.baseName,
                     limitOrder.quoteName,
-                ];
-                // fn to find exact matches to search input
-                function findExactMatch(input: string): boolean {
-                    return valuesToMatch.some(
-                        (val: string) =>
-                            val.toLowerCase() === input.toLowerCase(),
-                    );
-                }
-                // fn to find partial matches to search input
-                function findPartialMatch(input: string): boolean {
-                    return valuesToMatch.some((val: string) =>
-                        val.toLowerCase().includes(input.toLowerCase()),
-                    );
-                }
-                // return search results for either exact or partial match
-                return symb.length === 2
-                    ? findExactMatch(symb)
-                    : findPartialMatch(symb);
-            });
+                ]),
+            );
         // fn to return array of txs with no search filtering
         const noSearch = (): LimitOrderIF[] => limitOrderList;
         // output variable to hold the array of txs generated by the search filter
