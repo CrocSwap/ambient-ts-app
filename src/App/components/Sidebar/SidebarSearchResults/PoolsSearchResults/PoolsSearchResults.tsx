@@ -10,6 +10,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
+import { WETH } from '../../../../../utils/tokens/exports';
 
 interface propsIF {
     searchedPools: PoolIF[];
@@ -44,6 +45,22 @@ export default function PoolsSearchResults(props: propsIF) {
         });
     };
 
+    function checkPoolForWETH(pool: PoolIF): boolean {
+        let output: boolean;
+        const addrWETH = WETH[chainId as keyof typeof WETH];
+        if (addrWETH) {
+            const checkIsWETH = (addr: string): boolean => {
+                return addr.toLowerCase() === addrWETH.toLowerCase();
+            };
+            output =
+                checkIsWETH(pool.base.address) ||
+                checkIsWETH(pool.quote.address);
+        } else {
+            output = false;
+        }
+        return output;
+    }
+
     return (
         <div>
             <h4 className={styles.card_title}>Pools</h4>
@@ -55,18 +72,23 @@ export default function PoolsSearchResults(props: propsIF) {
                         <div>TVL</div>
                     </header>
                     <ol className={styles.main_result_container}>
-                        {searchedPools.slice(0, 4).map((pool: PoolIF) => (
-                            <PoolLI
-                                key={`sidebar_searched_pool_${JSON.stringify(
-                                    pool,
-                                )}`}
-                                handleClick={handleClick}
-                                pool={pool}
-                                cachedPoolStatsFetch={cachedPoolStatsFetch}
-                                cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                crocEnv={crocEnv}
-                            />
-                        ))}
+                        {searchedPools
+                            .filter((pool: PoolIF) => !checkPoolForWETH(pool))
+                            .slice(0, 4)
+                            .map((pool: PoolIF) => (
+                                <PoolLI
+                                    key={`sidebar_searched_pool_${JSON.stringify(
+                                        pool,
+                                    )}`}
+                                    handleClick={handleClick}
+                                    pool={pool}
+                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                                    cachedFetchTokenPrice={
+                                        cachedFetchTokenPrice
+                                    }
+                                    crocEnv={crocEnv}
+                                />
+                            ))}
                     </ol>
                 </>
             ) : (
