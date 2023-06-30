@@ -70,6 +70,7 @@ function LimitCurrencyQuantity(props: propsIF) {
                 onBlur={(e) => handleOnBlur(e.target.value)}
                 value={displayValue}
                 type='number'
+                step='any'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'

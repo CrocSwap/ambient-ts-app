@@ -121,6 +121,7 @@ function CurrencyQuantity(props: propsIF) {
                     }}
                     value={isLoading ? '' : displayValue}
                     type='number'
+                    step='any'
                     inputMode='decimal'
                     autoComplete='off'
                     autoCorrect='off'

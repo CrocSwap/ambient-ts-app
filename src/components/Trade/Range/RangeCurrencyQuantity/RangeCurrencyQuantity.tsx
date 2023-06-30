@@ -79,6 +79,7 @@ function RangeCurrencyQuantity(props: propsIF) {
                 onBlur={(event) => handleOnBlur(event.target.value)}
                 value={displayValue}
                 type='number'
+                step='any'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
