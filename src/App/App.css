@@ -51,7 +51,14 @@ svg {
 }
 
 svg:hover {
-    color: var(--text1);
+    color: var(--accent1) ;
+    cursor: pointer ;
+}
+
+
+button:hover > svg{
+    color: var(--accent1) ;
+    cursor: pointer ;
 }
 
 button,
@@ -263,7 +270,7 @@ p:focus-visible {
         transition: all var(--animation-speed) ease-in-out;
 
         display: grid;
-        grid-template-columns: 31px auto;
+        grid-template-columns: 32px auto;
     }
 
     .content-container {

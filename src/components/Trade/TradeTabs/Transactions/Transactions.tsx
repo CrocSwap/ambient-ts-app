@@ -498,6 +498,14 @@ function Transactions(props: propsIF) {
         }
     };
 
+    const showViewMoreButton =
+        !expandTradeTable &&
+        !isAccountView &&
+        sortedRowItemContent.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
+
+    const gridTxStyle =
+        showViewMoreButton && isCandleSelected ? styles.show_more_grid : '';
+
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
@@ -505,24 +513,21 @@ function Transactions(props: propsIF) {
             isAccountView={isAccountView}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewTransaction}>
+        <div onKeyDown={handleKeyDownViewTransaction} className={gridTxStyle}>
             <ul ref={listRef} id='current_row_scroll'>
                 {currentRowItemContent}
             </ul>
+            {showViewMoreButton && (
+                <div className={styles.view_more_container}>
+                    <button
+                        className={styles.view_more_button}
+                        onClick={() => setExpandTradeTable(true)}
+                    >
+                        View More
+                    </button>
+                </div>
+            )}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
-            {!expandTradeTable &&
-                !isAccountView &&
-                sortedRowItemContent.length >
-                    NUM_TRANSACTIONS_WHEN_COLLAPSED && (
-                    <div className={styles.view_more_container}>
-                        <button
-                            className={styles.view_more_button}
-                            onClick={() => setExpandTradeTable(true)}
-                        >
-                            View More
-                        </button>
-                    </div>
-                )}
         </div>
     );
 

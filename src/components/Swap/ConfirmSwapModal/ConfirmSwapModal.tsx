@@ -26,6 +26,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getDisplayableEffectivePriceString } from '../../../App/functions/swap/getDisplayableEffectivePriceString';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -178,7 +179,7 @@ export default function ConfirmSwapModal(props: propsIF) {
 
             <div className={styles.logo_display}>
                 <TokenIcon
-                    src={buyTokenData.logoURI}
+                    src={uriToHttp(buyTokenData.logoURI)}
                     alt={buyTokenData.symbol}
                     size='2xl'
                 />
@@ -219,7 +220,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             <h2>{localeSellString}</h2>
             <div className={styles.logo_display}>
                 <TokenIcon
-                    src={sellTokenData.logoURI}
+                    src={uriToHttp(sellTokenData.logoURI)}
                     alt={sellTokenData.symbol}
                     size='2xl'
                 />
@@ -299,7 +300,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
         />
     );

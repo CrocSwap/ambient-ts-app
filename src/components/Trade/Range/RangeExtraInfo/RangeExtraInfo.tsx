@@ -92,25 +92,29 @@ function RangeExtraInfo(props: propsIF) {
         : extraInfoDataAdvanced;
 
     const RangeExtraInfoDetails = (
-        <div className={styles.extra_details}>
-            {extraInfoData.map((item, idx) => (
-                <div
-                    className={styles.extra_row}
-                    key={idx}
-                    tabIndex={0}
-                    aria-label={`${item.title} is ${item.data}`}
-                >
-                    <div className={styles.align_center}>
-                        <div>{item.title}</div>
-                        <TooltipComponent title={item.title} />
+        <div className={styles.extra_details_container}>
+            <div className={styles.extra_details}>
+                {extraInfoData.map((item, idx) => (
+                    <div
+                        className={styles.extra_row}
+                        key={idx}
+                        tabIndex={0}
+                        aria-label={`${item.title} is ${item.data}`}
+                    >
+                        <div className={styles.align_center}>
+                            <div>{item.title}</div>
+                            <TooltipComponent title={item.title} />
+                        </div>
+                        <div className={styles.data}>{item.data}</div>
                     </div>
-                    <div className={styles.data}>{item.data}</div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 
     const extraDetailsOrNull = showExtraDetails ? RangeExtraInfoDetails : null;
+
+    const [isConvHovered, setIsConHovered] = useState(false);
 
     const conversionRateDisplay = reverseDisplay
         ? `1 ${tokenB.symbol} ≈ ${poolPriceDisplay} ${tokenA.symbol}`
@@ -140,15 +144,31 @@ function RangeExtraInfo(props: propsIF) {
                     dispatch(toggleDidUserFlipDenom());
                     e.stopPropagation();
                 }}
+                onMouseEnter={() => setIsConHovered(true)}
+                onMouseOut={() => setIsConHovered(false)}
             >
                 {conversionRateDisplay}
             </div>
 
             {showExtraInfoDropdown && !showExtraDetails && (
-                <RiArrowDownSLine size={22} />
+                <RiArrowDownSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
             )}
             {showExtraInfoDropdown && showExtraDetails && (
-                <RiArrowUpSLine size={22} />
+                <RiArrowUpSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
             )}
         </button>
     );

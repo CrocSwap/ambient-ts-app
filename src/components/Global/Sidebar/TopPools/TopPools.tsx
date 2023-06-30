@@ -1,5 +1,5 @@
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import styles from './TopPools.module.css';
+import styles from '../SidebarTable.module.css';
 import TopPoolsCard from './TopPoolsCard';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';

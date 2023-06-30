@@ -6,12 +6,10 @@ interface ContentContainerPropsIF {
     customWidth?: boolean;
     customWidthAuto?: boolean;
     isOnTradeRoute?: boolean;
-    padding?: string;
 }
 
 export default function ContentContainer(props: ContentContainerPropsIF) {
-    const { children, isOnTradeRoute, customWidth, customWidthAuto, padding } =
-        props;
+    const { children, isOnTradeRoute, customWidth, customWidthAuto } = props;
 
     const customWidthStyle = customWidth ? styles.customWidth_container : null;
     const tradeRouteStyle = isOnTradeRoute
@@ -22,17 +20,15 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
         ? styles.customWidthAuto
         : styles.container;
 
-    const paddingStyle = padding ? padding : '0 1rem';
-
-    // TODO:   @Junior do we need the wrapper in the return below?  -Emily
     return (
         <section
             className={`$ ${customWidthStyle} ${customWidthAutoStyle} ${tradeRouteStyle} ${swapRouteStyle}`}
         >
             <section className={`${styles.window} ${tradeRouteStyle}`}>
                 <div
-                    className={styles.main_content}
-                    style={{ padding: paddingStyle }}
+                    className={`${styles.main_content} ${
+                        !isOnTradeRoute && styles.swap_main_content
+                    }`}
                 >
                     {children}
                 </div>

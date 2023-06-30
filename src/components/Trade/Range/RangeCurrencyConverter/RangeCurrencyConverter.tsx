@@ -11,7 +11,6 @@ import {
 
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
-
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
@@ -679,7 +678,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 tokenAorB={'A'}
             />
             <div className={styles.arrow_container}>
-                <img src={tokenArrow} alt='plus sign' />
+                <img src={tokenArrow} height={28} alt='plus sign' />
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
             <div id='range_currency_converter'>
