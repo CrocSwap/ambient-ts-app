@@ -89,7 +89,7 @@ function Ranges(props: propsIF) {
         showAllData,
         isAccountView,
         activeAccountPositionData,
-        graphData?.positionsByUser,
+        graphData?.positionsByPool,
         graphData?.userPositionsByPool,
     ]);
 

@@ -26,6 +26,7 @@ export const useSidebarSearch = (
     tokens: tokenMethodsIF,
     chainId: string,
 ): sidebarSearchIF => {
+    // console.log(poolList);
     // TODO:    refactor this data structure to hold two TokenIF data
     // TODO:    ... objects instead of directly-coded metadata; the only
     // TODO:    ... reason we have this shape is that the cache server used

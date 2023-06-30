@@ -35,14 +35,12 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { usePoolList } from '../../hooks/usePoolList';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { TempPoolIF } from '../../../utils/interfaces/exports';
 
 function Sidebar() {
-    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
+    const { cachedPoolStatsFetch, cachedFetchTokenPrice, cachedTokenDetails } =
         useContext(CachedDataContext);
-    const {
-        chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
+    const { crocEnv: crocEnv, chainData: chainData } =
+        useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { sidebar } = useContext(SidebarContext);
 
@@ -50,13 +48,13 @@ function Sidebar() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const poolList: TempPoolIF[] = usePoolList(chainId, poolIndex);
+    const poolList = usePoolList(cachedTokenDetails, tokens.tokenUniv, crocEnv);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
-        x.chainId === chainId;
+        x.chainId === chainData.chainId;
 
     const positionsByUser =
         graphData.positionsByUser.positions.filter(filterFn);
@@ -147,7 +145,7 @@ function Sidebar() {
         txsByUser,
         limitsByUser,
         tokens,
-        chainId,
+        chainData.chainId,
     );
 
     const [searchInput, setSearchInput] = useState<string>('');
