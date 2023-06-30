@@ -185,9 +185,9 @@ export const useSidebarSearch = (
                     // initialize an output variable (minimum priority)
                     let sourceCount = 0;
                     // fn to increment the output value
-                    const addToCount = (num: number): void => {
+                    function addToCount(num: number): void {
                         sourceCount += num;
-                    };
+                    }
                     // increase priority relative to popularity of base token
                     addToCount(pool.base.listedBy?.length ?? 1);
                     // increase priority relative to popularity of quote token
