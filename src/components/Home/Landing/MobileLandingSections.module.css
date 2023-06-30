@@ -4,11 +4,12 @@
     position: relative;
     overflow-y: scroll;
     scroll-snap-type: y mandatory;
-    height: 100dvh;  
+    height: calc(100dvh + 56px);  
     width: 100%;
     overflow-x: hidden;
     max-width: 100dvw;
     background: var(--dark1);
+   
 }
 
 /* .mobile_card:nth-of-type(3){
@@ -97,7 +98,7 @@
 
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+
   gap: 1rem;
 
 
@@ -153,6 +154,7 @@
     scroll-snap-align: center;
     align-items: center;
     text-align: center;
+
   }
 
   .mobile_card:first-of-type{
