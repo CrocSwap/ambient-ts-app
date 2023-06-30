@@ -45,8 +45,6 @@ export default function PoolsSearchResults(props: propsIF) {
         });
     };
 
-    console.log(searchedPools);
-
     return (
         <div>
             <h4 className={styles.card_title}>Pools</h4>
