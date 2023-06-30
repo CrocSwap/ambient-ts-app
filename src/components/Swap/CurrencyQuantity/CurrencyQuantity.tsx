@@ -121,6 +121,8 @@ function CurrencyQuantity(props: propsIF) {
             <Spinner size={24} bg='var(--dark2)' weight={2} />
         </div>
     );
+
+    const poolNotInit = true;
     return (
         <div className={`${styles.token_amount} `}>
             {isLoading ? (
@@ -144,9 +146,10 @@ function CurrencyQuantity(props: propsIF) {
                     min='0'
                     minLength={1}
                     pattern={decimalNumRegEx.source}
-                    disabled={disable}
+                    disabled={disable || poolNotInit}
                 />
             )}
+            <p className={styles.init_overlay}>pool not initialized</p>
         </div>
     );
 }
