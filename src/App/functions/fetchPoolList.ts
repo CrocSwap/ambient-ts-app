@@ -1,11 +1,10 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
-import { TempPoolServerIF, TokenIF } from '../../utils/interfaces/exports';
+import { TempPoolServerIF } from '../../utils/interfaces/exports';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 export async function fetchPoolList(
     crocEnv: CrocEnv,
-    tokenUniv: TokenIF[],
 ): Promise<TempPoolServerIF[]> {
     const ENDPOINT: string =
         GRAPHCACHE_SMALL_URL +
@@ -20,8 +19,7 @@ export async function fetchPoolList(
             if (!json?.data) {
                 return [];
             }
-            let payload = json?.data as TempPoolServerIF[];
-            payload = payload.filter((p) => inTokenUniv(p, tokenUniv));
+            const payload = json?.data as TempPoolServerIF[];
             // TODO:    this is a `Promise.allSettled()` because one bad call for
             // TODO:    ... a contract with no `symbol()` method was failing and
             // TODO:    ... taking everything down, instructions from Doug are to
@@ -59,16 +57,6 @@ export async function fetchPoolList(
             });
             return pools;
         });
-}
-
-function inTokenUniv(payload: TempPoolServerIF, tokenUniv: TokenIF[]): boolean {
-    const hasBase = tokenUniv.some(
-        (t) => t.address.toLowerCase() === payload.base.toLowerCase(),
-    );
-    const hasQuote = tokenUniv.some(
-        (t) => t.address.toLowerCase() === payload.quote.toLowerCase(),
-    );
-    return hasBase && hasQuote;
 }
 
 export type PoolListFn = (

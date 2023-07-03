@@ -1,6 +1,10 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { useEffect, useState } from 'react';
-import { PoolIF, TempPoolIF, TokenIF } from '../../utils/interfaces/exports';
+import {
+    PoolIF,
+    TempPoolServerIF,
+    TokenIF,
+} from '../../utils/interfaces/exports';
 import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
 import { fetchPoolList } from '../functions/fetchPoolList';
 import { tokenMethodsIF } from './useTokens';
@@ -17,15 +21,16 @@ export const usePoolList = (
             return undefined;
         }
 
-        const pools = fetchPoolList(
-            crocEnv,
-            tokens.tokenUniv,
-            cachedTokenDetails,
-        );
-        Promise.resolve<TempPoolIF[]>(pools)
+        const pools = fetchPoolList(crocEnv);
+        Promise.resolve<TempPoolServerIF[]>(pools)
             .then((res) => {
                 return res
-                    .map((result: TempPoolIF) => {
+                    .filter(
+                        (result: TempPoolServerIF) =>
+                            tokens.verifyToken(result.base) &&
+                            tokens.verifyToken(result.quote),
+                    )
+                    .map((result: TempPoolServerIF) => {
                         const baseToken: TokenIF | undefined =
                             tokens.getTokenByAddress(result.base);
                         const quoteToken: TokenIF | undefined =
@@ -43,7 +48,10 @@ export const usePoolList = (
                     })
                     .filter((pool: PoolIF | null) => pool !== null) as PoolIF[];
             })
-            .then((pools) => setPoolList(pools))
+            .then((pools) => {
+                setPoolList(pools);
+                console.log(pools);
+            })
             .catch((err) => {
                 console.error(err);
             });
