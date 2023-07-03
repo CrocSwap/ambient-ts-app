@@ -356,7 +356,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         simpleCalc: true,
                         annotateMEV: false,
                         ensResolution: true,
-                        n: 80,
+                        n: 200,
                         crocEnv: props.crocEnv,
                         lastBlockNumber: props.lastBlockNumber,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
