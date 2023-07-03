@@ -29,6 +29,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
@@ -164,11 +165,11 @@ export default function InitPool() {
                 gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);

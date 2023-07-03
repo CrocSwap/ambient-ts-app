@@ -32,6 +32,7 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { getFormattedNumber } from '../../functions/getFormattedNumber';
 
 const PageHeader = function () {
     const {
@@ -178,22 +179,9 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    const truncatedPoolPrice =
-        !poolPriceDisplayWithDenom ||
-        poolPriceDisplayWithDenom === Infinity ||
-        poolPriceDisplayWithDenom === 0
-            ? ''
-            : poolPriceDisplayWithDenom < 0.0001
-            ? poolPriceDisplayWithDenom.toExponential(2)
-            : poolPriceDisplayWithDenom < 2
-            ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
+    });
 
     useEffect(() => {
         const path = location.pathname;
@@ -371,8 +359,6 @@ const PageHeader = function () {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
-
-    // TODO (#1436): logo padding is problematic in mobile views
 
     return (
         <header
