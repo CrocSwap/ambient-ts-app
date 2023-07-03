@@ -92,7 +92,6 @@ export default function OrdersMenu(props: propsIF) {
         }
 
         setTimeout(() => {
-            console.log(limitOrder.bidTick);
             dispatch(
                 setLimitTick(
                     limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick,

@@ -138,7 +138,6 @@ export const useUrlParams = (
     ): void {
         if (urlParamMap.has(paramName)) {
             const paramVal = urlParamMap.get(paramName) as string;
-            console.log(paramName, paramVal);
             processFn(paramVal);
         }
     }
