@@ -25,12 +25,18 @@ interface RangeDetailsSimplifyPropsIF {
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
     isAccountView: boolean;
+    updatedPositionApy: number | undefined;
 }
 export default function RangeDetailsSimplify(
     props: RangeDetailsSimplifyPropsIF,
 ) {
-    const { position, baseFeesDisplay, quoteFeesDisplay, isAccountView } =
-        props;
+    const {
+        position,
+        baseFeesDisplay,
+        quoteFeesDisplay,
+        isAccountView,
+        updatedPositionApy,
+    } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -57,7 +63,6 @@ export default function RangeDetailsSimplify(
         isAmbient,
         ambientOrMax,
         ambientOrMin,
-        apyString,
         width,
         blockExplorer,
         tokenAAddressLowerCase,
@@ -86,6 +91,18 @@ export default function RangeDetailsSimplify(
     //         window.open(explorerUrl);
     //     }
     // }
+
+    const aprAmountString = updatedPositionApy
+        ? updatedPositionApy >= 1000
+            ? updatedPositionApy.toLocaleString(undefined, {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+              }) + '%+'
+            : updatedPositionApy.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + '%'
+        : undefined;
 
     function handleCopyPositionHash() {
         copy(posHash.toString());
@@ -268,7 +285,7 @@ export default function RangeDetailsSimplify(
         },
         {
             title: 'APR',
-            content: apyString,
+            content: aprAmountString,
             explanation:
                 'The estimated APR of the position based on rewards eaned',
         },
