@@ -22,13 +22,13 @@ class TopPool implements topPoolIF {
     base: TokenIF;
     quote: TokenIF;
     chainId: string;
-    poolId: number;
+    poolIdx: number;
     speed: number;
     id: number;
     constructor(
         tokenA: TokenIF,
         tokenB: TokenIF,
-        poolId: number,
+        poolIdx: number,
         speed: number,
         id: number,
     ) {
@@ -40,7 +40,7 @@ class TopPool implements topPoolIF {
             baseToken.chainId === quoteToken.chainId
                 ? chainNumToString(baseToken.chainId)
                 : '';
-        this.poolId = poolId;
+        this.poolIdx = poolIdx;
         this.speed = speed;
         this.id = id;
     }

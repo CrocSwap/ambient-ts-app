@@ -1,8 +1,5 @@
 import styles from './TradeChartsTokenInfo.module.css';
-import {
-    NoColorTooltip,
-    TextOnlyTooltip,
-} from '../../../../components/Global/StyledTooltip/StyledTooltip';
+import { NoColorTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import {
     useAppSelector,
     useAppDispatch,
@@ -11,14 +8,12 @@ import { memo, useContext } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import { IS_LOCAL_ENV } from '../../../../constants';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     simplifyVersion?: boolean;
@@ -30,10 +25,7 @@ function TradeChartsTokenInfo(props: propsIF) {
 
     const { tradeData } = useAppSelector((state) => state);
     const {
-        snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
-    const {
-        chainData: { chainId, poolIndex, blockExplorer },
+        chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const {
         poolPriceDisplay,
@@ -70,20 +62,9 @@ function TradeChartsTokenInfo(props: propsIF) {
             : poolPriceDisplay
         : 0;
 
-    const truncatedPoolPrice =
-        poolPriceDisplay === Infinity || poolPriceDisplay === 0
-            ? '…'
-            : poolPriceDisplayWithDenom < 0.0001
-            ? poolPriceDisplayWithDenom.toExponential(2)
-            : poolPriceDisplayWithDenom < 2
-            ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
+    });
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 
@@ -212,81 +193,30 @@ function TradeChartsTokenInfo(props: propsIF) {
             }
         </button>
     );
-    const [_, copy] = useCopyToClipboard();
-
-    function handleBaseCopy() {
-        copy(tradeData.baseToken.address);
-        openSnackbar(`${tradeData.baseToken.address} copied`);
-    }
-    function handleQuoteCopy() {
-        copy(tradeData.quoteToken.address);
-        openSnackbar(`${tradeData.quoteToken.address} copied`);
-    }
-    const handleLinkOut = (address: string) => {
-        const addressLink = `${blockExplorer}token/${address}`;
-
-        window.open(addressLink);
-    };
-
-    const baseTokenTooltipContentOrNull =
-        tradeData.baseToken.address === ZERO_ADDRESS ? null : (
-            <p>
-                {`${tradeData.baseToken.symbol + ':'} ${
-                    tradeData.baseToken.address
-                }`}{' '}
-                <FiCopy onClick={() => handleBaseCopy()} />{' '}
-                <FiExternalLink
-                    onClick={() => handleLinkOut(tradeData.baseToken.address)}
-                />
-            </p>
-        );
-
-    const tokenSymbols = (
-        <div
-            className={styles.mono_space_tooltip}
-            style={{ cursor: 'default' }}
-        >
-            {baseTokenTooltipContentOrNull}
-            <p>
-                {`${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}{' '}
-                <FiCopy onClick={() => handleQuoteCopy()} />{' '}
-                <FiExternalLink
-                    onClick={() => handleLinkOut(tradeData.quoteToken.address)}
-                />
-            </p>
-        </div>
-    );
 
     const denomToggleButton = (
         <button
             className={styles.denom_toggle_button}
             aria-label='flip denomination.'
+            onClick={() => dispatch(toggleDidUserFlipDenom())}
         >
-            <TextOnlyTooltip
-                interactive
-                title={tokenSymbols}
-                placement={'right'}
-            >
-                <div className={styles.tokens_images} id='trade_token_pair'>
-                    <TokenIcon
-                        src={topTokenLogo}
-                        alt={topTokenSymbol}
-                        size={smallScrenView ? 's' : 'l'}
-                    />
-                    <TokenIcon
-                        src={bottomTokenLogo}
-                        alt={bottomTokenSymbol}
-                        size={smallScrenView ? 's' : 'l'}
-                    />
-                </div>
-            </TextOnlyTooltip>
-
+            <div className={styles.tokens_images} id='trade_token_pair'>
+                <TokenIcon
+                    src={topTokenLogo}
+                    alt={topTokenSymbol}
+                    size={smallScrenView ? 's' : 'l'}
+                />
+                <TokenIcon
+                    src={bottomTokenLogo}
+                    alt={bottomTokenSymbol}
+                    size={smallScrenView ? 's' : 'l'}
+                />
+            </div>
             <div
                 className={styles.tokens_name}
                 aria-live='polite'
                 aria-atomic='true'
                 aria-relevant='all'
-                onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
                 {topTokenSymbol} / {bottomTokenSymbol}
             </div>

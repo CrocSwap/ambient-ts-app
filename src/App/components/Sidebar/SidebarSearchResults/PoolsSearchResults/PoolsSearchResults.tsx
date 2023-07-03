@@ -1,5 +1,5 @@
 import styles from '../SidebarSearchResults.module.css';
-import { TempPoolIF } from '../../../../../utils/interfaces/exports';
+import { PoolIF, TokenIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
 import { useContext } from 'react';
@@ -10,9 +10,10 @@ import {
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
+import { WETH } from '../../../../../utils/tokens/exports';
 
 interface propsIF {
-    searchedPools: TempPoolIF[];
+    searchedPools: PoolIF[];
     cachedPoolStatsFetch: PoolStatsFn;
     cachedFetchTokenPrice: TokenPriceFn;
 }
@@ -21,7 +22,6 @@ export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, cachedPoolStatsFetch, cachedFetchTokenPrice } =
         props;
     const { tokenA } = useAppSelector((state) => state.tradeData);
-
     const {
         crocEnv,
         chainData: { chainId },
@@ -30,21 +30,34 @@ export default function PoolsSearchResults(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
+    // fn to handle user clicks on `<PoolLI />` instances
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
-        const tokenAString: string =
+        // reorganize base and quote tokens as tokenA and tokenB
+        const [addrTokenA, addrTokenB] =
             baseAddr.toLowerCase() === tokenA.address.toLowerCase()
-                ? baseAddr
-                : quoteAddr;
-        const tokenBString: string =
-            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
-                ? quoteAddr
-                : baseAddr;
+                ? [baseAddr, quoteAddr]
+                : [quoteAddr, baseAddr];
+        // navigate user to the new appropriate URL path
         linkGenMarket.navigate({
             chain: chainId,
-            tokenA: tokenAString,
-            tokenB: tokenBString,
+            tokenA: addrTokenA,
+            tokenB: addrTokenB,
         });
     };
+
+    // fm to determine if the pool in question has WETH
+    function checkPoolForWETH(pool: PoolIF): boolean {
+        // check for a canonical WETH address on the current chain
+        const addrWETH: string = WETH[chainId as keyof typeof WETH];
+        // if found then check if either token is WETH
+        const checkWETH = (tkn: TokenIF): boolean => {
+            return addrWETH
+                ? tkn.address.toLowerCase() === addrWETH.toLowerCase()
+                : false;
+        };
+        // return `true` if either token is verified as WETH
+        return checkWETH(pool.base) || checkWETH(pool.quote);
+    }
 
     return (
         <div>
@@ -57,19 +70,24 @@ export default function PoolsSearchResults(props: propsIF) {
                         <div>TVL</div>
                     </header>
                     <ol className={styles.main_result_container}>
-                        {searchedPools.slice(0, 4).map((pool: TempPoolIF) => (
-                            <PoolLI
-                                key={`sidebar_searched_pool_${JSON.stringify(
-                                    pool,
-                                )}`}
-                                chainId={chainId}
-                                handleClick={handleClick}
-                                pool={pool}
-                                cachedPoolStatsFetch={cachedPoolStatsFetch}
-                                cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                crocEnv={crocEnv}
-                            />
-                        ))}
+                        {searchedPools
+                            .filter((pool: PoolIF) => !checkPoolForWETH(pool))
+                            // max five elements before content overflows container
+                            .slice(0, 5)
+                            .map((pool: PoolIF) => (
+                                <PoolLI
+                                    key={`sidebar_searched_pool_${JSON.stringify(
+                                        pool,
+                                    )}`}
+                                    handleClick={handleClick}
+                                    pool={pool}
+                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                                    cachedFetchTokenPrice={
+                                        cachedFetchTokenPrice
+                                    }
+                                    crocEnv={crocEnv}
+                                />
+                            ))}
                     </ol>
                 </>
             ) : (

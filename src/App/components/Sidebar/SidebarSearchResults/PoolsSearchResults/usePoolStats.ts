@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { formatAmountOld } from '../../../../../utils/numbers';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
-import { TempPoolIF } from '../../../../../utils/interfaces/exports';
+import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
 import { CrocEnv } from '@crocswap-libs/sdk';
 
@@ -11,8 +11,7 @@ export interface poolStatsIF {
 }
 
 export const usePoolStats = (
-    pool: TempPoolIF,
-    chainId: string,
+    pool: PoolIF,
     cachedPoolStatsFetch: PoolStatsFn,
     cachedFetchTokenPrice: TokenPriceFn,
     crocEnv?: CrocEnv,
@@ -30,9 +29,9 @@ export const usePoolStats = (
                 return;
             }
             const poolStatsFresh = await cachedPoolStatsFetch(
-                chainId,
-                pool.base,
-                pool.quote,
+                pool.chainId,
+                pool.base.address,
+                pool.quote.address,
                 pool.poolIdx,
                 0, // Only runs once after initital
                 crocEnv,
