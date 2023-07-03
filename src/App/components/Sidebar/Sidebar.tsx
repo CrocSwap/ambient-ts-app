@@ -51,7 +51,7 @@ function Sidebar() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const poolList = usePoolList(cachedTokenDetails, tokens.tokenUniv, crocEnv);
+    const poolList = usePoolList(cachedTokenDetails, tokens, crocEnv);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');

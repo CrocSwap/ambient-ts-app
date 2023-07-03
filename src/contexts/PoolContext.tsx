@@ -15,6 +15,8 @@ import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { TokenContext } from './TokenContext';
+import { usePoolList } from '../App/hooks/usePoolList';
 
 interface PoolContextIF {
     pool: CrocPoolView | undefined;
@@ -32,9 +34,11 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { cachedQuerySpotPrice } = useContext(CachedDataContext);
+    const { cachedQuerySpotPrice, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
     const {
         baseToken: { address: baseTokenAddress, decimals: baseTokenDecimals },
         quoteToken: {
@@ -42,6 +46,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
             decimals: quoteTokenDecimals,
         },
     } = useContext(TradeTokenContext);
+
+    const poolList = usePoolList(cachedTokenDetails, tokens.tokenUniv, crocEnv);
 
     const { tradeData, receiptData, userData } = useAppSelector(
         (state) => state,
