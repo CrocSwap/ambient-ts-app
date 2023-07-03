@@ -27,6 +27,7 @@ import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { CrocPositionView } from '@crocswap-libs/sdk';
 
 interface propsIF {
@@ -119,11 +120,11 @@ export default function LimitActionModal(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setNetworkFee(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);

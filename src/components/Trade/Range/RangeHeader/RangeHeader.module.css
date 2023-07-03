@@ -10,8 +10,17 @@
     font-weight: 300;
     color: var(--text1);
 }
-
+.hoverable_icon{
+    fill: var(--text2) !important;
+    color: var(--text2) !important
+}
+.hoverable_icon:hover{
+    fill: var(--accent1) !important
+}
 .settings_icon,
 .share_button {
     cursor: pointer;
+}
+.share_button:hover {
+    color: var(--accent1) !important;
 }

@@ -35,8 +35,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
-        baseQuantityDisplayShort,
-        quoteQuantityDisplayShort,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
@@ -44,7 +44,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-        txUsdValueLocaleString,
         baseTokenCharacter,
         quoteTokenCharacter,
     } = useProcessTransaction(tx, userAddress);
@@ -88,7 +87,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 <span>Total Value: </span>
                 <DefaultTooltip
                     interactive
-                    title={txUsdValueLocaleString}
+                    title={usdValue}
                     placement={'right-end'}
                     arrow
                     enterDelay={750}
@@ -152,7 +151,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 </p>
 
                 <div>
-                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
+                    {quoteQuantityDisplay.replace(/[()]/g, '')}
                     {buySellQuoteToken}
                 </div>
             </Row>
@@ -165,7 +164,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         : 'Sell: '}
                 </p>
                 <div>
-                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
+                    {baseQuantityDisplay.replace(/[()]/g, '')}
                     {buySellBaseToken}
                 </div>
             </Row>
@@ -182,7 +181,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 </p>
 
                 <div>
-                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
+                    {baseQuantityDisplay.replace(/[()]/g, '')}
                     {buySellBaseToken}
                 </div>
             </Row>
@@ -194,7 +193,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         : 'Sell: '}
                 </p>
                 <div>
-                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
+                    {quoteQuantityDisplay.replace(/[()]/g, '')}
                     {buySellQuoteToken}
                 </div>
             </Row>

@@ -36,6 +36,8 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -215,17 +217,8 @@ function RangeCurrencyConverter(props: propsIF) {
     }, []);
 
     const setTokenAQtyValue = (value: number) => {
-        const precision = precisionOfInput(value.toString());
-
         setTokenAQtyLocal(
             parseFloat(truncateDecimals(value, tradeData.tokenA.decimals)),
-        );
-        setTokenAInputQty(
-            value === 0
-                ? ''
-                : precision <= tradeData.tokenA.decimals
-                ? value.toString()
-                : truncateDecimals(value, tradeData.tokenA.decimals),
         );
 
         handleRangeButtonMessageTokenA(value);
@@ -246,13 +239,12 @@ function RangeCurrencyConverter(props: propsIF) {
 
         handleSecondaryTokenQty('B', value, qtyTokenB);
 
-        const truncatedTokenBQty = qtyTokenB
-            ? qtyTokenB < 0.00001
-                ? truncateDecimals(qtyTokenB, tradeData.tokenA.decimals)
-                : qtyTokenB < 2
-                ? qtyTokenB.toPrecision(3)
-                : truncateDecimals(qtyTokenB, 2)
-            : '';
+        const truncatedTokenBQty = getFormattedNumber({
+            value: qtyTokenB,
+            isInput: true,
+            zeroDisplay: '0',
+            nullDisplay: '',
+        });
 
         if (truncatedTokenBQty !== '0' && truncatedTokenBQty !== '') {
             if (primaryQuantityRange !== value.toString()) {
@@ -260,7 +252,6 @@ function RangeCurrencyConverter(props: propsIF) {
             }
             dispatch(setIsTokenAPrimaryRange(true));
             setTokenBQtyLocal(parseFloat(truncatedTokenBQty));
-
             setTokenBInputQty(truncatedTokenBQty);
         } else {
             dispatch(setIsTokenAPrimaryRange(true));
@@ -272,16 +263,8 @@ function RangeCurrencyConverter(props: propsIF) {
     };
 
     const setTokenBQtyValue = (value: number) => {
-        const precision = precisionOfInput(value.toString());
         setTokenBQtyLocal(
             parseFloat(truncateDecimals(value, tradeData.tokenB.decimals)),
-        );
-        setTokenBInputQty(
-            value === 0
-                ? ''
-                : precision <= tradeData.tokenB.decimals
-                ? value.toString()
-                : truncateDecimals(value, tradeData.tokenB.decimals),
         );
 
         handleRangeButtonMessageTokenB(value);
@@ -302,13 +285,13 @@ function RangeCurrencyConverter(props: propsIF) {
 
         handleSecondaryTokenQty('A', value, qtyTokenA);
 
-        const truncatedTokenAQty = qtyTokenA
-            ? qtyTokenA < 0.00001
-                ? truncateDecimals(qtyTokenA, tradeData.tokenA.decimals)
-                : qtyTokenA < 2
-                ? qtyTokenA.toPrecision(3)
-                : truncateDecimals(qtyTokenA, 2)
-            : '';
+        const truncatedTokenAQty = getFormattedNumber({
+            value: qtyTokenA,
+            isInput: true,
+            zeroDisplay: '0',
+            nullDisplay: '',
+            removeCommas: true,
+        });
 
         if (truncatedTokenAQty !== '0' && truncatedTokenAQty !== '') {
             if (primaryQuantityRange !== value.toString()) {
@@ -425,6 +408,36 @@ function RangeCurrencyConverter(props: propsIF) {
         }
     };
 
+    const parseTokenAInput = (value: string) => {
+        const inputNum = parseFloat(value);
+        const truncatedInputStr = getFormattedInput(
+            inputNum,
+            tradeData.tokenA.decimals,
+        );
+
+        setTokenAInputQty(truncatedInputStr);
+    };
+
+    const parseTokenBInput = (value: string) => {
+        const inputNum = parseFloat(value);
+        const truncatedInputStr = getFormattedInput(
+            inputNum,
+            tradeData.tokenB.decimals,
+        );
+
+        setTokenBInputQty(truncatedInputStr);
+    };
+
+    const getFormattedInput = (value: number, decimals: number): string => {
+        return isNaN(value)
+            ? ''
+            : removeLeadingZeros(
+                  value === 0 || precisionOfInput(value.toString()) <= decimals
+                      ? value.toString()
+                      : truncateDecimals(value, decimals),
+              );
+    };
+
     const handleTokenAQtyFieldUpdate = (
         evt?: ChangeEvent<HTMLInputElement>,
     ) => {
@@ -434,12 +447,7 @@ function RangeCurrencyConverter(props: propsIF) {
                 : evt.target.value;
 
             const parsedInput = parseFloat(input);
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                setTokenAAllowed(false);
-                setRangeButtonErrorMessage('Enter an Amount');
-                setTokenAQtyLocal(0);
-                if (input !== '') return;
-            }
+
             setTokenAQtyValue(!isNaN(parsedInput) ? parsedInput : 0);
             dispatch(setIsTokenAPrimaryRange(true));
             dispatch(setPrimaryQuantityRange(input));
@@ -537,12 +545,6 @@ function RangeCurrencyConverter(props: propsIF) {
                 ? '0' + evt.target.value
                 : evt.target.value;
             const parsedInput = parseFloat(input);
-            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
-                setTokenBAllowed(false);
-                setRangeButtonErrorMessage('Enter an Amount');
-                setTokenAQtyLocal(0);
-                if (input !== '') return;
-            }
 
             setTokenBQtyValue(!isNaN(parsedInput) ? parsedInput : 0);
             dispatch(setIsTokenAPrimaryRange(false));
@@ -676,9 +678,10 @@ function RangeCurrencyConverter(props: propsIF) {
                 isAdvancedMode={isAdvancedMode}
                 handleChangeClick={handleTokenAChangeClick}
                 tokenAorB={'A'}
+                parseInput={parseTokenAInput}
             />
             <div className={styles.arrow_container}>
-                <img src={tokenArrow} alt='plus sign' />
+                <img src={tokenArrow} height={28} alt='plus sign' />
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
             <div id='range_currency_converter'>
@@ -691,6 +694,7 @@ function RangeCurrencyConverter(props: propsIF) {
                     isAdvancedMode={isAdvancedMode}
                     handleChangeClick={handleTokenBChangeClick}
                     tokenAorB={'B'}
+                    parseInput={parseTokenBInput}
                 />
             </div>
         </section>

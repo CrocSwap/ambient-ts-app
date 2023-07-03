@@ -27,15 +27,7 @@
 .apr_display p:nth-of-type(2) {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    background: var(--apr-gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-
-    /* glow/positive */
-
-    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+    color: var(--other-green);
 }
 
 .row_display {

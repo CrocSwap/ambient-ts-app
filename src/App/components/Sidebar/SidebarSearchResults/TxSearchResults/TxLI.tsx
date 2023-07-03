@@ -1,6 +1,7 @@
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { getTxType, getTxValue } from './functions/exports';
+import { getTxType } from './functions/exports';
+import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 
 interface propsIF {
     tx: TransactionIF;
@@ -14,7 +15,7 @@ export default function TxLI(props: propsIF) {
     const txType = getTxType(tx.entityType);
 
     // value of transaction in human-readable format
-    const txValue = getTxValue(tx);
+    const txValue = getFormattedNumber({ value: tx.totalValueUSD });
 
     // TODO:   @Junior  please refactor the top-level element of this JSX return
     // TODO:   @Junior  ... to return an <li> element, and refactor parent to

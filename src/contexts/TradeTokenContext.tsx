@@ -85,6 +85,7 @@ export const TradeTokenContextProvider = (props: {
         crocEnv,
         pathname: location.pathname,
         chainData,
+        userAddress,
         searchableTokens: tokens.tokenUniv,
         receiptCount: receiptData.sessionReceipts.length,
         lastBlockNumber,

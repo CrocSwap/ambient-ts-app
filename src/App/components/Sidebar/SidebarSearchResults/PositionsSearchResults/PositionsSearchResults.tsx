@@ -4,11 +4,12 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import styles from '../SidebarSearchResults.module.css';
-import { getRangeDisplay, getValueUSD } from './functions/exports';
+import { getRangeDisplay } from './functions/exports';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
+import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 
 interface propsIF {
     searchedPositions: PositionIF[];
@@ -26,7 +27,9 @@ function PositionLI(props: PositionLiPropsIF) {
     const rangeDisplay = getRangeDisplay(position, isDenomBase);
 
     // fn to generate human-readable version of total position value
-    const positionValue = getValueUSD(position.totalValueUSD);
+    const positionValue = getFormattedNumber({
+        value: position.totalValueUSD,
+    });
 
     return (
         <li
