@@ -74,6 +74,7 @@ export default function PoolsSearchResults(props: propsIF) {
                     <ol className={styles.main_result_container}>
                         {searchedPools
                             .filter((pool: PoolIF) => !checkPoolForWETH(pool))
+                            // max five elements before content overflows container
                             .slice(0, 5)
                             .map((pool: PoolIF) => (
                                 <PoolLI
