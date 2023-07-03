@@ -74,7 +74,7 @@ export default function PoolsSearchResults(props: propsIF) {
                     <ol className={styles.main_result_container}>
                         {searchedPools
                             .filter((pool: PoolIF) => !checkPoolForWETH(pool))
-                            .slice(0, 4)
+                            .slice(0, 5)
                             .map((pool: PoolIF) => (
                                 <PoolLI
                                     key={`sidebar_searched_pool_${JSON.stringify(

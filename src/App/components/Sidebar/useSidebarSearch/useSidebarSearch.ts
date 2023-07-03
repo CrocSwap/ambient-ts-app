@@ -10,6 +10,7 @@ import {
 import matchSearchInput from './matchSearchInput';
 import { tokenMethodsIF } from '../../../hooks/useTokens';
 import { ZERO_ADDRESS } from '../../../../constants';
+import { tokenListURIs } from '../../../../utils/data/tokenListURIs';
 
 export interface sidebarSearchIF {
     setInput: Dispatch<SetStateAction<string>>;
@@ -162,25 +163,27 @@ export const useSidebarSearch = (
         const sortedPools: PoolIF[] = filteredPools.sort(
             (poolA: PoolIF, poolB: PoolIF) => {
                 // logic to assign numerical priority to a pool (scale is arbitrary)
-                const checkPriority = (pool: PoolIF): number => {
-                    // initialize an output variable (minimum priority)
-                    let sourceCount = 0;
+                function getPoolPriority(pool: PoolIF): number {
                     // fn to increment the output value
-                    function addToCount(num: number): void {
-                        sourceCount += num;
+                    function getTokenPriority(tkn: TokenIF): number {
+                        let count: number;
+                        if (tkn.address === ZERO_ADDRESS) {
+                            count = Object.keys(tokenListURIs).length;
+                        } else if (tkn.listedBy) {
+                            count = tkn.listedBy.length;
+                        } else {
+                            count = 1;
+                        }
+                        return count;
                     }
-                    // increase priority relative to popularity of base token
-                    addToCount(pool.base.listedBy?.length ?? 1);
-                    // increase priority relative to popularity of quote token
-                    addToCount(pool.quote.listedBy?.length ?? 1);
-                    // increase priority if the native token is in the pair
-                    // necessary because other lists dont use the zero address
-                    pool.base.address === ZERO_ADDRESS && addToCount(2);
                     // return overall priority value
-                    return sourceCount;
-                };
+                    return (
+                        getTokenPriority(pool.base) +
+                        getTokenPriority(pool.quote)
+                    );
+                }
                 // sort by relative popularity of tokens in the pool
-                return checkPriority(poolB) - checkPriority(poolA);
+                return getPoolPriority(poolB) - getPoolPriority(poolA);
             },
         );
         // send data to `useState()` hook which returns to the app
