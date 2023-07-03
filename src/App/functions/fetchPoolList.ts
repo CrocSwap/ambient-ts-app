@@ -1,5 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import {
     TempPoolIF,
     TempPoolServerIF,
@@ -8,35 +8,64 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
-const poolListEndpoint = GRAPHCACHE_SMALL_URL + '/pool_list?';
-
 export async function fetchPoolList(
     crocEnv: CrocEnv,
     tokenUniv: TokenIF[],
     cachedTokenDetails: FetchContractDetailsFn,
 ): Promise<TempPoolIF[]> {
-    return fetch(
+    const poolListEndpoint = GRAPHCACHE_SMALL_URL + '/pool_list?';
+    const FULL_ENDPOINT =
         poolListEndpoint +
-            new URLSearchParams({
-                chainId: (await crocEnv.context).chain.chainId,
-                poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
-            }),
-    )
+        new URLSearchParams({
+            chainId: (await crocEnv.context).chain.chainId,
+            poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
+        });
+    return fetch(FULL_ENDPOINT)
         .then((response) => response.json())
         .then((json) => {
             if (!json?.data) {
-                return [] as TempPoolIF[];
+                return [];
             }
             let payload = json?.data as TempPoolServerIF[];
-
             payload = payload.filter((p) => inTokenUniv(p, tokenUniv));
-
-            const pools = Promise.all(
+            // TODO:    this is a `Promise.allSettled()` because one bad call for
+            // TODO:    ... a contract with no `symbol()` method was failing and
+            // TODO:    ... taking everything down, instructions from Doug are to
+            // TODO:    ... drop the bad result and investigate more later
+            const pools: Promise<TempPoolIF[]> = Promise.allSettled(
                 payload.map((p) =>
                     expandPoolData(p, crocEnv, cachedTokenDetails),
                 ),
-            );
-            return pools.then((p) => p.filter(hasValidMetadata));
+            ).then((results) => {
+                function getFulfilledValues<T>(
+                    promises: PromiseSettledResult<T>[],
+                ): T[] {
+                    // output variable for values from fulfilled promises
+                    const fulfilledValues: T[] = [];
+                    // array to hold rejected promises for troubleshooting
+                    const rejectedPromises: PromiseRejectedResult[] = [];
+                    // iterate over promises, push to each to the correct array
+                    for (const result of promises) {
+                        result.status === 'fulfilled'
+                            ? fulfilledValues.push(result.value)
+                            : rejectedPromises.push(result);
+                    }
+                    // warn about rejected promises in the console (localhost only)
+                    IS_LOCAL_ENV &&
+                        rejectedPromises.forEach(
+                            (reject: PromiseRejectedResult) => {
+                                console.warn(
+                                    'failed pool metadata query, see file fetchPoolList.ts to troubleshoot',
+                                    reject,
+                                );
+                            },
+                        );
+                    // return array of values from fulfilled promises
+                    return fulfilledValues;
+                }
+                return getFulfilledValues(results).filter(hasValidMetadata);
+            });
+            return pools;
         });
 }
 

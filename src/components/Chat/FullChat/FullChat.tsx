@@ -275,7 +275,7 @@ export default function FullChat(props: FullChatPropsIF) {
                       logoURI: string;
                   };
                   chainId: string;
-                  poolId: number;
+                  poolIdx: number;
                   speed: number;
                   id: number;
               }[] = [];
@@ -299,7 +299,7 @@ export default function FullChat(props: FullChatPropsIF) {
                     logoURI: pool.quote.logoURI,
                 },
                 chainId: pool.chainId,
-                poolId: pool.poolId,
+                poolIdx: pool.poolIdx,
                 speed: findSpeed(pool),
                 id: findId(pool),
             };
@@ -356,7 +356,7 @@ export default function FullChat(props: FullChatPropsIF) {
             pool.base.address,
             pool.quote.address,
             pool.chainId,
-            pool.poolId,
+            pool.poolIdx,
         );
 
         return (
@@ -566,7 +566,7 @@ export default function FullChat(props: FullChatPropsIF) {
             readableRoom.base.address,
             readableRoom.quote.address,
             readableRoom.chainId,
-            readableRoom.poolId,
+            readableRoom.poolIdx,
         );
     function handleFavButton() {
         if (readableRoom) {
@@ -575,13 +575,13 @@ export default function FullChat(props: FullChatPropsIF) {
                       readableRoom.quote,
                       readableRoom.base,
                       readableRoom.chainId,
-                      readableRoom.poolId,
+                      readableRoom.poolIdx,
                   )
                 : favePools.add(
                       readableRoom.quote,
                       readableRoom.base,
                       readableRoom.chainId,
-                      readableRoom.poolId,
+                      readableRoom.poolIdx,
                   );
         }
     }

@@ -37,6 +37,7 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -84,21 +85,9 @@ export default function Withdraw(props: propsIF) {
         ? parseFloat(tokenExchangeDepositsDisplay)
         : undefined;
 
-    const tokenDexBalanceTruncated =
-        tokenExchangeDepositsDisplayNum !== undefined
-            ? tokenExchangeDepositsDisplayNum === 0
-                ? '0.00'
-                : tokenExchangeDepositsDisplayNum < 0.0001
-                ? tokenExchangeDepositsDisplayNum.toExponential(2)
-                : tokenExchangeDepositsDisplayNum < 2
-                ? tokenExchangeDepositsDisplayNum.toPrecision(3)
-                : // : tokenDexBalanceNum >= 100000
-                  // ? formatAmountOld(tokenDexBalanceNum)
-                  tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : undefined;
+    const tokenDexBalanceTruncated = getFormattedNumber({
+        value: tokenExchangeDepositsDisplayNum,
+    });
 
     const [withdrawQtyNonDisplay, setWithdrawQtyNonDisplay] = useState<
         string | undefined
@@ -369,11 +358,11 @@ export default function Withdraw(props: propsIF) {
                     : averageGasUnitsForErc20Withdrawal);
 
             setWithdrawGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);

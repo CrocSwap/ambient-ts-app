@@ -2,15 +2,20 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     LimitOrderIF,
     PositionIF,
+    PoolIF,
     TempPoolIF,
+    TokenIF,
     TransactionIF,
-} from '../../../utils/interfaces/exports';
-import { tokenMethodsIF } from '../../hooks/useTokens';
+} from '../../../../utils/interfaces/exports';
+import matchSearchInput from './matchSearchInput';
+import { tokenMethodsIF } from '../../../hooks/useTokens';
+import { ZERO_ADDRESS } from '../../../../constants';
+import { tokenListURIs } from '../../../../utils/data/tokenListURIs';
 
 export interface sidebarSearchIF {
     setInput: Dispatch<SetStateAction<string>>;
     isInputValid: boolean;
-    pools: TempPoolIF[];
+    pools: PoolIF[];
     positions: PositionIF[];
     txs: TransactionIF[];
     limits: LimitOrderIF[];
@@ -22,7 +27,32 @@ export const useSidebarSearch = (
     txList: TransactionIF[],
     limitOrderList: LimitOrderIF[],
     tokens: tokenMethodsIF,
+    chainId: string,
 ): sidebarSearchIF => {
+    // take raw data from query and format for the front end
+    const poolsOnChain = useMemo<PoolIF[]>(
+        () =>
+            poolList
+                .map((pool: TempPoolIF) => {
+                    const baseToken: TokenIF | undefined =
+                        tokens.getTokenByAddress(pool.base);
+                    const quoteToken: TokenIF | undefined =
+                        tokens.getTokenByAddress(pool.quote);
+                    if (baseToken && quoteToken) {
+                        return {
+                            base: baseToken,
+                            quote: quoteToken,
+                            chainId: pool.chainId,
+                            poolIdx: pool.poolIdx,
+                        };
+                    } else {
+                        return null;
+                    }
+                })
+                .filter((pool: PoolIF | null) => pool !== null) as PoolIF[],
+        [chainId, poolList.length],
+    );
+
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
@@ -76,59 +106,88 @@ export const useSidebarSearch = (
     }, [dbInput]);
 
     // array of pools to output from the hook
-    const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
+    const [outputPools, setOutputPools] = useState<PoolIF[]>([]);
+
+    // constant to force searches to return exact matches only
+    const SEARCH_EXACT = true;
 
     // logic to update the output pools from the hook
     useEffect(() => {
         // fn to filter pools by address (must be exact)
-        const searchByAddress = (addr: string): TempPoolIF[] =>
-            poolList.filter(
-                (pool: TempPoolIF) =>
-                    pool.base.toLowerCase() === addr.toLowerCase() ||
-                    pool.quote.toLowerCase() === addr.toLowerCase(),
+        const searchByAddress = (addr: string): PoolIF[] =>
+            poolsOnChain.filter((pool: PoolIF) =>
+                matchSearchInput(
+                    addr,
+                    [pool.base.address, pool.quote.address],
+                    SEARCH_EXACT,
+                ),
             );
         // fn to filter pools by symbol (must be exact IF input is two characters)
-        const searchBySymbol = (symb: string): TempPoolIF[] =>
-            poolList
-                .filter((pool: TempPoolIF) =>
-                    symb.length === 2
-                        ? pool.baseSymbol.toLowerCase() ===
-                              symb.toLowerCase() ||
-                          pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
-                        : pool.baseSymbol
-                              .toLowerCase()
-                              .includes(symb.toLowerCase()) ||
-                          pool.quoteSymbol
-                              .toLowerCase()
-                              .includes(symb.toLowerCase()),
+        const searchByNameOrSymbol = (symb: string): PoolIF[] =>
+            poolsOnChain
+                .filter((pool: PoolIF) =>
+                    matchSearchInput(symb, [
+                        pool.base.symbol,
+                        pool.quote.symbol,
+                        pool.base.name,
+                        pool.quote.name,
+                    ]),
                 )
                 .filter(
-                    (pool: TempPoolIF) =>
-                        tokens.verifyToken(pool.base) &&
-                        tokens.verifyToken(pool.quote),
+                    (pool: PoolIF) =>
+                        tokens.verifyToken(pool.base.address) &&
+                        tokens.verifyToken(pool.quote.address),
                 );
         // fn to return list of verified pools with no search filtering
-        const noSearch = (): TempPoolIF[] =>
-            poolList.filter(
-                (pool: TempPoolIF) =>
-                    tokens.verifyToken(pool.base) &&
-                    tokens.verifyToken(pool.quote),
+        const noSearch = (): PoolIF[] =>
+            poolsOnChain.filter(
+                (pool: PoolIF) =>
+                    tokens.verifyToken(pool.base.address) &&
+                    tokens.verifyToken(pool.quote.address),
             );
         // variable to hold the list of pools generated by the search
-        let filteredPools: TempPoolIF[];
+        let filteredPools: PoolIF[];
         // logic router to apply the relevant search function
         switch (searchAs) {
             case 'address':
                 filteredPools = searchByAddress(validatedInput);
                 break;
             case 'nameOrSymbol':
-                filteredPools = searchBySymbol(validatedInput);
+                filteredPools = searchByNameOrSymbol(validatedInput);
                 break;
             case '':
             default:
                 filteredPools = noSearch();
         }
-        setOutputPools(filteredPools);
+        // sort returned pools before sending data to the app
+        const sortedPools: PoolIF[] = filteredPools.sort(
+            (poolA: PoolIF, poolB: PoolIF) => {
+                // logic to assign numerical priority to a pool (scale is arbitrary)
+                function getPoolPriority(pool: PoolIF): number {
+                    // fn to increment the output value
+                    function getTokenPriority(tkn: TokenIF): number {
+                        let count: number;
+                        if (tkn.address === ZERO_ADDRESS) {
+                            count = Object.keys(tokenListURIs).length;
+                        } else if (tkn.listedBy) {
+                            count = tkn.listedBy.length;
+                        } else {
+                            count = 1;
+                        }
+                        return count;
+                    }
+                    // return overall priority value
+                    return (
+                        getTokenPriority(pool.base) +
+                        getTokenPriority(pool.quote)
+                    );
+                }
+                // sort by relative popularity of tokens in the pool
+                return getPoolPriority(poolB) - getPoolPriority(poolA);
+            },
+        );
+        // send data to `useState()` hook which returns to the app
+        setOutputPools(sortedPools);
     }, [validatedInput]);
 
     // array of range positions to output from the hook
@@ -141,28 +200,26 @@ export const useSidebarSearch = (
         // fn to filter range positions by address (must be exact, will fix for casing mismatch)
         const searchByAddress = (addr: string): PositionIF[] =>
             positionList
-                .filter(
-                    (position: PositionIF) =>
-                        position.base.toLowerCase() === addr.toLowerCase() ||
-                        position.quote.toLowerCase() === addr.toLowerCase(),
+                // filter positions for ones with a matching address
+                .filter((position: PositionIF) =>
+                    matchSearchInput(
+                        addr,
+                        [position.base, position.quote],
+                        SEARCH_EXACT,
+                    ),
                 )
                 // remove empty positions from search results
                 .filter((pos: PositionIF) => pos.totalValueUSD);
         // fn to filter range positions by symbol (must be exact IF input is two characters)
-        const searchBySymbol = (symb: string): PositionIF[] =>
+        const searchByNameOrSymbol = (symb: string): PositionIF[] =>
             positionList
                 .filter((position: PositionIF) =>
-                    symb.length === 2
-                        ? position.baseSymbol.toLowerCase() ===
-                              symb.toLowerCase() ||
-                          position.quoteSymbol.toLowerCase() ===
-                              symb.toLowerCase()
-                        : position.baseSymbol
-                              .toLowerCase()
-                              .includes(symb.toLowerCase()) ||
-                          position.quoteSymbol
-                              .toLowerCase()
-                              .includes(symb.toLowerCase()),
+                    matchSearchInput(symb, [
+                        position.baseSymbol,
+                        position.quoteSymbol,
+                        position.baseName,
+                        position.quoteName,
+                    ]),
                 )
                 // remove empty positions from search results
                 .filter((pos: PositionIF) => pos.totalValueUSD);
@@ -176,7 +233,7 @@ export const useSidebarSearch = (
                 filteredRangePositions = searchByAddress(validatedInput);
                 break;
             case 'nameOrSymbol':
-                filteredRangePositions = searchBySymbol(validatedInput);
+                filteredRangePositions = searchByNameOrSymbol(validatedInput);
                 break;
             case '':
             default:
@@ -195,21 +252,18 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to filter txs by address (must be exact, will fix for casing mismatch)
         const searchByAddress = (addr: string): TransactionIF[] =>
-            txList.filter(
-                (tx: TransactionIF) =>
-                    tx.base.toLowerCase() === addr.toLowerCase() ||
-                    tx.quote.toLowerCase() === addr.toLowerCase(),
+            txList.filter((tx: TransactionIF) =>
+                matchSearchInput(addr, [tx.base, tx.quote], SEARCH_EXACT),
             );
         // fn to filter txs by symbol (must be exact IF input is two characters)
-        const searchBySymbol = (symb: string): TransactionIF[] =>
+        const searchByNameOrSymbol = (symb: string): TransactionIF[] =>
             txList.filter((tx: TransactionIF) =>
-                symb.length === 2
-                    ? tx.baseSymbol.toLowerCase() === symb.toLowerCase() ||
-                      tx.quoteSymbol.toLowerCase() === symb.toLowerCase()
-                    : tx.baseSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()) ||
-                      tx.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
+                matchSearchInput(symb, [
+                    tx.baseSymbol,
+                    tx.quoteSymbol,
+                    tx.baseName,
+                    tx.quoteName,
+                ]),
             );
         // fn to return array of txs with no search filtering
         const noSearch = (): TransactionIF[] => txList;
@@ -221,7 +275,7 @@ export const useSidebarSearch = (
                 filteredTxs = searchByAddress(validatedInput);
                 break;
             case 'nameOrSymbol':
-                filteredTxs = searchBySymbol(validatedInput);
+                filteredTxs = searchByNameOrSymbol(validatedInput);
                 break;
             case '':
             default:
@@ -240,25 +294,22 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to filter txs by address (must be exact, will fix for casing mismatch)
         const searchByAddress = (addr: string): LimitOrderIF[] =>
-            limitOrderList.filter(
-                (limitOrder: LimitOrderIF) =>
-                    limitOrder.base.toLowerCase() === addr.toLowerCase() ||
-                    limitOrder.quote.toLowerCase() === addr.toLowerCase(),
+            limitOrderList.filter((limitOrder: LimitOrderIF) =>
+                matchSearchInput(
+                    addr,
+                    [limitOrder.base, limitOrder.quote],
+                    SEARCH_EXACT,
+                ),
             );
         // fn to filter txs by symbol (must be exact IF input is two characters)
-        const searchBySymbol = (symb: string): LimitOrderIF[] =>
+        const searchByNameOrSymbol = (symb: string): LimitOrderIF[] =>
             limitOrderList.filter((limitOrder: LimitOrderIF) =>
-                symb.length === 2
-                    ? limitOrder.baseSymbol.toLowerCase() ===
-                          symb.toLowerCase() ||
-                      limitOrder.quoteSymbol.toLowerCase() ===
-                          symb.toLowerCase()
-                    : limitOrder.baseSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()) ||
-                      limitOrder.quoteSymbol
-                          .toLowerCase()
-                          .includes(symb.toLowerCase()),
+                matchSearchInput(symb, [
+                    limitOrder.baseSymbol,
+                    limitOrder.quoteSymbol,
+                    limitOrder.baseName,
+                    limitOrder.quoteName,
+                ]),
             );
         // fn to return array of txs with no search filtering
         const noSearch = (): LimitOrderIF[] => limitOrderList;
@@ -270,7 +321,7 @@ export const useSidebarSearch = (
                 filteredLimits = searchByAddress(validatedInput);
                 break;
             case 'nameOrSymbol':
-                filteredLimits = searchBySymbol(validatedInput);
+                filteredLimits = searchByNameOrSymbol(validatedInput);
                 break;
             case '':
             default:

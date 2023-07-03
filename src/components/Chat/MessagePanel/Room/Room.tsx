@@ -156,7 +156,7 @@ export default function Room(props: propsIF) {
                       logoURI: string;
                   };
                   chainId: string;
-                  poolId: number;
+                  poolIdx: number;
                   speed: number;
                   id: number;
               }[] = [];
@@ -180,7 +180,7 @@ export default function Room(props: propsIF) {
                     logoURI: pool.quote.logoURI,
                 },
                 chainId: pool.chainId,
-                poolId: pool.poolId,
+                poolIdx: pool.poolIdx,
                 speed: findSpeed(pool),
                 id: findId(pool),
             };

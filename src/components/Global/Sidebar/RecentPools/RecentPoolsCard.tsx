@@ -2,7 +2,6 @@ import { Link, useLocation } from 'react-router-dom';
 import styles from './RecentPoolsCard.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo, useContext } from 'react';
-import { formatAmountOld } from '../../../../utils/numbers';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -15,6 +14,7 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     pool: SmallerPoolIF;
@@ -81,11 +81,13 @@ export default function RecentPoolsCard(props: propsIF) {
             // display the total volume for all time
             const volume = poolStatsFresh?.volumeTotalUsd;
             const volumeString = volume
-                ? '$' + formatAmountOld(volume)
+                ? getFormattedNumber({ value: volume, prefix: '$' })
                 : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvlTotalUsd;
-            const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
+            const tvlString = tvl
+                ? getFormattedNumber({ value: tvl, prefix: '$', isTvl: true })
+                : undefined;
             setPoolTvl(tvlString);
         })();
     };
