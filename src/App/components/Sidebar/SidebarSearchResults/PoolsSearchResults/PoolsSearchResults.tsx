@@ -1,5 +1,5 @@
 import styles from '../SidebarSearchResults.module.css';
-import { PoolIF } from '../../../../../utils/interfaces/exports';
+import { PoolIF, TokenIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
 import { useContext } from 'react';
@@ -45,20 +45,18 @@ export default function PoolsSearchResults(props: propsIF) {
         });
     };
 
+    // fm to determine if the pool in question has WETH
     function checkPoolForWETH(pool: PoolIF): boolean {
-        let output: boolean;
-        const addrWETH = WETH[chainId as keyof typeof WETH];
-        if (addrWETH) {
-            const checkIsWETH = (addr: string): boolean => {
-                return addr.toLowerCase() === addrWETH.toLowerCase();
-            };
-            output =
-                checkIsWETH(pool.base.address) ||
-                checkIsWETH(pool.quote.address);
-        } else {
-            output = false;
-        }
-        return output;
+        // check for a canonical WETH address on the current chain
+        const addrWETH: string = WETH[chainId as keyof typeof WETH];
+        // if found then check if either token is WETH
+        const checkWETH = (tkn: TokenIF): boolean => {
+            return addrWETH
+                ? tkn.address.toLowerCase() === addrWETH.toLowerCase()
+                : false;
+        };
+        // return `true` if either token is verified as WETH
+        return checkWETH(pool.base) || checkWETH(pool.quote);
     }
 
     return (
