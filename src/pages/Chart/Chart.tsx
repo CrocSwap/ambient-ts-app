@@ -160,13 +160,16 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
     }
 }
 
-export function renderCanvasArray(canvasArray: any[]) {
-    /*   canvasArray.forEach((canvas) => {
-      if (canvas && canvas.current) {
-        const container = d3.select(canvas.current).node() as HTMLCanvasElement;
-         if (container) container.requestRedraw(); 
-      }
-    }); */
+export function renderCanvasArray(
+    canvasArray: MutableRefObject<HTMLCanvasElement | null>[],
+) {
+    canvasArray.forEach((canvas) => {
+        if (canvas && canvas.current) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const container = d3.select(canvas.current).node() as any;
+            if (container) container.requestRedraw();
+        }
+    });
 }
 
 export default function Chart(props: propsIF) {
