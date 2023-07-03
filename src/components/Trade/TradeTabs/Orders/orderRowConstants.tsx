@@ -128,7 +128,7 @@ export const orderRowConstants = (props: Props) => {
             tabIndex={0}
         >
             {' '}
-            {'$' + usdValue}
+            {usdValue}
         </li>
     );
 

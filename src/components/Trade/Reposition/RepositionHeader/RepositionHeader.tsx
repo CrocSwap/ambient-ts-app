@@ -28,7 +28,8 @@ interface propsIF {
 function RepositionHeader(props: propsIF) {
     const { setRangeWidthPercentage, positionHash, resetTxHash } = props;
 
-    const { setSimpleRangeWidth } = useContext(RangeContext);
+    const { setSimpleRangeWidth, setCurrentRangeInReposition } =
+        useContext(RangeContext);
     const { bypassConfirmRepo, repoSlippage } = useContext(
         UserPreferenceContext,
     );
@@ -76,6 +77,7 @@ function RepositionHeader(props: propsIF) {
                     setSimpleRangeWidth(10);
                     navigate(exitPath, { replace: true });
                     resetTxHash();
+                    setCurrentRangeInReposition('');
                 }}
             />
         </ContentHeader>

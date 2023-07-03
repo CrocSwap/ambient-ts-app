@@ -8,17 +8,29 @@
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    min-height: 33px;
 
     background: transparent;
     outline: none;
     border: none;
     border-radius: var(--border-radius);
+
+    padding: 4px;
 }
 
 .extra_info_content:hover,
 .extra_info_content:focus-visible {
-    background: var(--dark2);
+    border-radius: var(--border-radius);
+    cursor: default;
+    background: transparent;
+}
+
+.non_hovered_arrow{
+    color: var(--text2) !important
+}
+
+.extra_info_content_active:hover{
+    cursor: pointer !important;
+    background: var(--dark2) !important;
 }
 
 .extra_info_content_active:focus-visible {
@@ -34,15 +46,31 @@
 .gas_pump svg {
     margin-right: 5px;
 }
+.gas_pump_icon:hover{
+    color: var(--text2) !important
+    
+}
 
+.gas_pump{
+    pointer-events: none;
+    padding-left: 4px;
+}
+
+.token_amount:hover{
+    color: var(--accent1);
+    cursor: pointer;
+}
 .token_amount svg {
     margin-left: 1rem;
 }
 
+
+
 .extra_details {
     /* background-color: var(--dark2); */
+    padding: 8px 16px;
     border: 1px solid var(--dark3);
-    margin: 10px 5px;
+  
 
     border-radius: var(--border-radius);
 
@@ -87,19 +115,12 @@
         gap: 5px;
         text-align: start;
     }
-    .extra_info_content {
-        padding: 0 2%;
-    }
+  
     .data {
         text-align: end;
     }
 
-    .extra_details {
-        padding: 0.1rem 1rem;
-    }
-    .price_impact {
-        padding: 0.1rem 1rem;
-    }
+
 
     .extra_row {
         flex-direction: row;

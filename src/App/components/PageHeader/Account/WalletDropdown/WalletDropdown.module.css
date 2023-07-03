@@ -4,8 +4,7 @@
     border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
-    /* gap: 4px; */
-    height: 100px;
+    height: 200px;
     overflow-y: hidden;
 }
 .wallet_content::-webkit-scrollbar {
@@ -68,7 +67,6 @@
 
 .actions_container {
     width: 100%;
-    /* position: absolute; */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
