@@ -731,7 +731,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [
         liqDataHoverEvent,
         mainCanvasBoundingClientRect,
-        diffHashSigScaleData(scaleData),
+        diffHashSigScaleData(scaleData, 'y'),
     ]);
 
     useEffect(() => {
@@ -760,9 +760,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         }
     }, [liquidityMouseMoveActive]);
 
-    // useEffect(() => {
-    //     renderCanvasArray([d3CanvasLiq]);
-    // }, [diffHashSigScaleData(scaleData), diffHashSig(liquidityData), location, ranges]);
+    useEffect(() => {
+        renderCanvasArray([d3CanvasLiq]);
+    }, [
+        diffHashSigScaleData(scaleData),
+        diffHashSig(liquidityData),
+        location,
+        ranges,
+    ]);
 
     return (
         <>

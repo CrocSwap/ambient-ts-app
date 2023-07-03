@@ -9,10 +9,7 @@ import { getPinnedPriceValuesFromTicks } from '../../Trade/Range/rangeFunctions'
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../utils/functions/diffHashSig';
+import { diffHashSigScaleData } from '../../../utils/functions/diffHashSig';
 import { createTriangle } from '../ChartUtils/triangle';
 import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
 
@@ -277,6 +274,7 @@ export default function RangeLineCanvas(props: propsIF) {
         location.pathname,
         liqMode,
         liqTransitionPointforCurve,
+        liqTransitionPointforDepth,
     ]);
 
     useEffect(() => {
@@ -402,7 +400,7 @@ export default function RangeLineCanvas(props: propsIF) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasRangeLine]);
-    }, [ranges]);
+    }, [ranges, liqTransitionPointforDepth, liqTransitionPointforCurve]);
 
     const setDefaultRangeData = () => {
         if (scaleData) {

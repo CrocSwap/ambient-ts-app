@@ -57,7 +57,10 @@ import { RangeContext } from '../../contexts/RangeContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import CandleChart from './CandleChart';
 import LiquidityChart from './Liquidity/LiquidityChart';
-import { scaleData } from '../Trade/TradeCharts/TradeCandleStickChart';
+import {
+    liquidityChartData,
+    scaleData,
+} from '../Trade/TradeCharts/TradeCandleStickChart';
 import VolumeBarCanvas from './SubChartComponents/VolumeBarCanvas';
 import RangeLineCanvas from './SubChartComponents/RangeLineCanvas';
 import LimitLineCanvas from './SubChartComponents/LimitLineCanvas';
@@ -107,8 +110,7 @@ export type lineValue = {
 
 interface propsIF {
     isTokenABase: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    liquidityData: any;
+    liquidityData: liquidityChartData | undefined;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
@@ -417,7 +419,7 @@ export default function Chart(props: propsIF) {
                 ? (border - liquidityData?.liqBidData[0]?.liqPrices) / 150
                 : standardDeviation;
 
-        if (scaleData !== undefined) {
+        if (scaleData !== undefined && liquidityData !== undefined) {
             if (
                 border + standardDeviation >=
                 liquidityData?.liqBidData[0]?.liqPrices
@@ -430,6 +432,8 @@ export default function Chart(props: propsIF) {
                             standardDeviation,
                         deltaAverageUSD: 0,
                         cumAverageUSD: 0,
+                        lowerBound: 0,
+                        upperBound: 0,
                     });
 
                     liquidityData?.depthLiqBidData.unshift({
@@ -439,6 +443,8 @@ export default function Chart(props: propsIF) {
                             standardDeviation,
                         deltaAverageUSD: 0,
                         cumAverageUSD: 0,
+                        lowerBound: 0,
+                        upperBound: 0,
                     });
                 }
             }
@@ -1897,7 +1903,7 @@ export default function Chart(props: propsIF) {
                     }
                 })
                 .on('drag', function (event) {
-                    if (!cancelDrag) {
+                    if (!cancelDrag && liquidityData) {
                         setIsLineDrag(true);
                         setCrosshairActive('none');
                         let dragedValue =
@@ -1968,7 +1974,7 @@ export default function Chart(props: propsIF) {
                                             baseTokenDecimals,
                                             quoteTokenDecimals,
                                             false, // isMinPrice
-                                            dragedValue,
+                                            dragedValue.toString(),
                                             lookupChain(chainId).gridSize,
                                         );
 
@@ -2006,7 +2012,7 @@ export default function Chart(props: propsIF) {
                                             baseTokenDecimals,
                                             quoteTokenDecimals,
                                             true, // isMinPrice
-                                            dragedValue,
+                                            dragedValue.toString(),
                                             lookupChain(chainId).gridSize,
                                         );
 
@@ -2479,6 +2485,8 @@ export default function Chart(props: propsIF) {
         checkLimitOrder,
         location,
         crosshairActive,
+        liquidityData?.liqTransitionPointforCurve,
+        liquidityData?.liqTransitionPointforDepth,
     ]);
 
     function createRectLabel(
@@ -2733,10 +2741,11 @@ export default function Chart(props: propsIF) {
                         sameLocationDataMax: sameLocationDataMax,
                     } = sameLocationRange();
 
-                    const passValue =
-                        liqMode === 'curve'
+                    const passValue = liquidityData
+                        ? liqMode === 'curve'
                             ? liquidityData?.liqTransitionPointforCurve
-                            : liquidityData?.liqTransitionPointforDepth;
+                            : liquidityData?.liqTransitionPointforDepth
+                        : poolPriceDisplay;
 
                     if (simpleRangeWidth !== 100 || tradeData.advancedMode) {
                         const isScientificlowTick = low
@@ -3266,7 +3275,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     const onClickRange = async (event: any) => {
-        if (scaleData) {
+        if (scaleData && liquidityData) {
             let newRangeValue: any;
 
             const low = ranges.filter((target: any) => target.name === 'Min')[0]
@@ -3332,7 +3341,7 @@ export default function Chart(props: propsIF) {
                             baseTokenDecimals,
                             quoteTokenDecimals,
                             false, // isMinPrice
-                            clickedValue,
+                            clickedValue.toString(),
                             lookupChain(chainId).gridSize,
                         );
 
@@ -3348,7 +3357,7 @@ export default function Chart(props: propsIF) {
                             baseTokenDecimals,
                             quoteTokenDecimals,
                             true, // isMinPrice
-                            clickedValue,
+                            clickedValue.toString(),
                             lookupChain(chainId).gridSize,
                         );
 
@@ -4244,8 +4253,12 @@ export default function Chart(props: propsIF) {
         ranges: ranges,
         setRanges: setRanges,
         liqMode: liqMode,
-        liqTransitionPointforCurve: liquidityData?.liqTransitionPointforCurve,
-        liqTransitionPointforDepth: liquidityData?.liqTransitionPointforDepth,
+        liqTransitionPointforCurve: liquidityData
+            ? liquidityData?.liqTransitionPointforCurve
+            : poolPriceDisplay,
+        liqTransitionPointforDepth: liquidityData
+            ? liquidityData?.liqTransitionPointforDepth
+            : poolPriceDisplay,
         lineSellColor: lineSellColor,
         lineBuyColor: lineBuyColor,
     };
@@ -4301,21 +4314,23 @@ export default function Chart(props: propsIF) {
                             showVolume={showVolume}
                         />
 
-                        <LiquidityChart
-                            liqMode={liqMode}
-                            liquidityData={liquidityData}
-                            liquidityScale={liquidityScale}
-                            scaleData={scaleData}
-                            liquidityDepthScale={liquidityDepthScale}
-                            ranges={ranges}
-                            liqDataHoverEvent={liqDataHoverEvent}
-                            liqTooltip={liqTooltip}
-                            mouseLeaveEvent={mouseLeaveEvent}
-                            isActiveDragOrZoom={isChartZoom || isLineDrag}
-                            mainCanvasBoundingClientRect={
-                                mainCanvasBoundingClientRect
-                            }
-                        />
+                        {liquidityData && (
+                            <LiquidityChart
+                                liqMode={liqMode}
+                                liquidityData={liquidityData}
+                                liquidityScale={liquidityScale}
+                                scaleData={scaleData}
+                                liquidityDepthScale={liquidityDepthScale}
+                                ranges={ranges}
+                                liqDataHoverEvent={liqDataHoverEvent}
+                                liqTooltip={liqTooltip}
+                                mouseLeaveEvent={mouseLeaveEvent}
+                                isActiveDragOrZoom={isChartZoom || isLineDrag}
+                                mainCanvasBoundingClientRect={
+                                    mainCanvasBoundingClientRect
+                                }
+                            />
+                        )}
                         <d3fc-canvas
                             ref={d3CanvasCrosshair}
                             className='cr-canvas'

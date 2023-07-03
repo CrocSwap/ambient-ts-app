@@ -593,8 +593,12 @@ function TradeCandleStickChart(props: propsIF) {
                 depthLiqAskData: depthLiqAskData,
                 topBoundary: topBoundary,
                 lowBoundary: lowBoundary,
-                liqTransitionPointforCurve: liqBoundary,
-                liqTransitionPointforDepth: liqBoundaryDepth,
+                liqTransitionPointforCurve: liqBoundary
+                    ? liqBoundary
+                    : poolPriceDisplay,
+                liqTransitionPointforDepth: liqBoundaryDepth
+                    ? liqBoundaryDepth
+                    : poolPriceDisplay,
             };
         } else {
             setIsLoading(true);
