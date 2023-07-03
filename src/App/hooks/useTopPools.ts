@@ -7,7 +7,7 @@ export interface topPoolIF {
     base: TokenIF;
     quote: TokenIF;
     chainId: string;
-    poolId: number;
+    poolIdx: number;
     speed: number;
     id: number;
 }
