@@ -22,7 +22,7 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] => {
 
         const pools: Promise<TempPoolServerIF[]> = fetchPoolList(crocEnv);
         Promise.resolve<TempPoolServerIF[]>(pools)
-            .then((res) => {
+            .then((res: TempPoolServerIF[]) => {
                 return res
                     .filter(
                         (result: TempPoolServerIF) =>
