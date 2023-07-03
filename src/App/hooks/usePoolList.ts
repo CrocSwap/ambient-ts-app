@@ -20,7 +20,7 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] => {
             return undefined;
         }
 
-        const pools = fetchPoolList(crocEnv);
+        const pools: Promise<TempPoolServerIF[]> = fetchPoolList(crocEnv);
         Promise.resolve<TempPoolServerIF[]>(pools)
             .then((res) => {
                 return res
@@ -47,13 +47,8 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] => {
                     })
                     .filter((pool: PoolIF | null) => pool !== null) as PoolIF[];
             })
-            .then((pools) => {
-                setPoolList(pools);
-                console.log(pools);
-            })
-            .catch((err) => {
-                console.error(err);
-            });
+            .then((pools) => setPoolList(pools))
+            .catch((err) => console.error(err));
     }, [crocEnv, tokenUniv]);
 
     return poolList;
