@@ -38,6 +38,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { usePoolList } from '../../hooks/usePoolList';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import { PoolIF } from '../../../utils/interfaces/exports';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice, cachedTokenDetails } =
@@ -51,7 +52,7 @@ function Sidebar() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const poolList = usePoolList(cachedTokenDetails, tokens, crocEnv);
+    const poolList: PoolIF[] = usePoolList(cachedTokenDetails, tokens, crocEnv);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
@@ -148,7 +149,6 @@ function Sidebar() {
         txsByUser,
         limitsByUser,
         tokens,
-        chainData.chainId,
     );
 
     const [searchInput, setSearchInput] = useState<string>('');
