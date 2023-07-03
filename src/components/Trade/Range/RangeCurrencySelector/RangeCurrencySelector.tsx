@@ -37,7 +37,6 @@ interface propsIF {
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isWithdrawTokenBFromDexChecked: boolean;
     setIsWithdrawTokenBFromDexChecked: Dispatch<SetStateAction<boolean>>;
-    sellToken?: boolean;
     reverseTokens: () => void;
     tokenAInputQty: string;
     tokenBInputQty: string;
@@ -52,6 +51,7 @@ interface propsIF {
     handleChangeClick: (input: string) => void;
     tokenAorB: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    parseInput: (value: string) => void;
 }
 
 function RangeCurrencySelector(props: propsIF) {
@@ -63,7 +63,6 @@ function RangeCurrencySelector(props: propsIF) {
         isWithdrawTokenBFromDexChecked,
         setIsWithdrawTokenBFromDexChecked,
         fieldId,
-        sellToken,
         updateOtherQuantity,
         reverseTokens,
         tokenABalance,
@@ -78,6 +77,7 @@ function RangeCurrencySelector(props: propsIF) {
         handleChangeClick,
         tokenAorB,
         setUserOverrodeSurplusWithdrawalDefault,
+        parseInput,
     } = props;
 
     const {
@@ -353,9 +353,6 @@ function RangeCurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}>
-                {sellToken ? 'Amounts' : ''}
-            </span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='range_sell_qty'>
                     <RangeCurrencyQuantity
@@ -367,6 +364,7 @@ function RangeCurrencySelector(props: propsIF) {
                         updateOtherQuantity={updateOtherQuantity}
                         disable={isFieldDisabled}
                         isAdvancedMode={isAdvancedMode}
+                        parseInput={parseInput}
                     />
                 </div>
                 <button

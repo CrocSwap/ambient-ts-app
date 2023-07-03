@@ -1,6 +1,7 @@
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import styles from './SidebarRecentTransactionsCard.module.css';
-import { getTxType, getTxValue } from './functions/exports';
+import { getTxType } from './functions/exports';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     tx: TransactionIF;
@@ -14,7 +15,10 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
     const txType = getTxType(tx.entityType);
 
     // human-readable form of transaction value to display in DOM
-    const txValue = getTxValue(tx);
+    const txValue = getFormattedNumber({
+        value: tx.totalValueUSD,
+        prefix: '$',
+    });
 
     return (
         <div className={styles.container} onClick={() => handleClick(tx)}>

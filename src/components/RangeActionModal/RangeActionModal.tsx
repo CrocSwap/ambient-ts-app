@@ -43,6 +43,7 @@ import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 
 interface propsIF {
@@ -127,11 +128,11 @@ export default function RangeActionModal(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setRemovalGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);

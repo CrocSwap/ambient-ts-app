@@ -27,7 +27,8 @@ export default function SlippageTolerance(props: propsIF) {
                         <input
                             id='slippage_tolerance_input_field'
                             onChange={(e) => takeNewSlippage(e.target.value)}
-                            type='text'
+                            type='number'
+                            step='any'
                             value={slip}
                             autoComplete={'off'}
                             placeholder={'e.g. 0.3'}

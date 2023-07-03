@@ -7,7 +7,7 @@ import {
 } from '@crocswap-libs/sdk';
 
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { formatAmountOld } from '../../../utils/numbers';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 export function roundDownTick(lowTick: number, nTicksGrid: number): number {
     const tickGrid = Math.floor(lowTick / nTicksGrid) * nTicksGrid;
@@ -86,31 +86,14 @@ export function getPinnedPriceValuesFromTicks(
                 : truncateDecimals(highPriceDisplay, 6)
             : truncateDecimals(highPriceDisplay, 2);
 
-    const lowPriceDisplayTruncatedWithCommas: string = !lowPriceDisplay
-        ? ''
-        : lowPriceDisplay < 0.0001
-        ? lowPriceDisplay.toExponential(2)
-        : lowPriceDisplay < 2
-        ? lowPriceDisplay.toPrecision(3)
-        : lowPriceDisplay >= 100000
-        ? formatAmountOld(lowPriceDisplay, 1)
-        : lowPriceDisplay.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const highPriceDisplayTruncatedWithCommas: string = !highPriceDisplay
-        ? ''
-        : highPriceDisplay < 0.0001
-        ? highPriceDisplay.toExponential(2)
-        : highPriceDisplay < 2
-        ? highPriceDisplay.toPrecision(3)
-        : highPriceDisplay >= 100000
-        ? formatAmountOld(highPriceDisplay, 1)
-        : highPriceDisplay.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const lowPriceDisplayTruncatedWithCommas = getFormattedNumber({
+        value: lowPriceDisplay,
+        nullDisplay: '',
+    });
+    const highPriceDisplayTruncatedWithCommas = getFormattedNumber({
+        value: highPriceDisplay,
+        nullDisplay: '',
+    });
 
     return {
         pinnedMinPriceDisplay: lowPriceDisplay.toString(),

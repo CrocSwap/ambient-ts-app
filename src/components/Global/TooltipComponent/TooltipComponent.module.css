@@ -5,3 +5,8 @@
 .icon svg:hover {
     color: white;
 }
+
+.icon{
+    display: flex;
+    justify-content: center
+}

@@ -46,7 +46,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
     // JSX frag to display the estimated APR of the position
     const estimatedAPR = (
         <div className={styles.price_info_row}>
-            <span>Est.APR</span>
+            <span>Est. APR</span>
             <span className='primary_apr'>35.68%</span>
         </div>
     );
