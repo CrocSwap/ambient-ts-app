@@ -1,19 +1,18 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
     PoolIF,
     TempPoolServerIF,
     TokenIF,
 } from '../../utils/interfaces/exports';
-import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
 import { fetchPoolList } from '../functions/fetchPoolList';
-import { tokenMethodsIF } from './useTokens';
+import { TokenContext } from '../../contexts/TokenContext';
 
-export const usePoolList = (
-    cachedTokenDetails: FetchContractDetailsFn,
-    tokens: tokenMethodsIF,
-    crocEnv?: CrocEnv,
-): PoolIF[] => {
+export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] => {
+    const {
+        tokens: { verifyToken, getTokenByAddress, tokenUniv },
+    } = useContext(TokenContext);
+
     const [poolList, setPoolList] = useState<PoolIF[]>([]);
 
     useEffect(() => {
@@ -27,14 +26,14 @@ export const usePoolList = (
                 return res
                     .filter(
                         (result: TempPoolServerIF) =>
-                            tokens.verifyToken(result.base) &&
-                            tokens.verifyToken(result.quote),
+                            verifyToken(result.base) &&
+                            verifyToken(result.quote),
                     )
                     .map((result: TempPoolServerIF) => {
                         const baseToken: TokenIF | undefined =
-                            tokens.getTokenByAddress(result.base);
+                            getTokenByAddress(result.base);
                         const quoteToken: TokenIF | undefined =
-                            tokens.getTokenByAddress(result.quote);
+                            getTokenByAddress(result.quote);
                         if (baseToken && quoteToken) {
                             return {
                                 base: baseToken,
@@ -55,7 +54,7 @@ export const usePoolList = (
             .catch((err) => {
                 console.error(err);
             });
-    }, [crocEnv, tokens.tokenUniv, cachedTokenDetails]);
+    }, [crocEnv, tokenUniv]);
 
     return poolList;
 };

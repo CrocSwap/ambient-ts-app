@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import {
     LimitOrderIF,
     PositionIF,
@@ -10,6 +17,7 @@ import matchSearchInput from './matchSearchInput';
 import { tokenMethodsIF } from '../../../hooks/useTokens';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { tokenListURIs } from '../../../../utils/data/tokenListURIs';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 export interface sidebarSearchIF {
     setInput: Dispatch<SetStateAction<string>>;
@@ -21,12 +29,13 @@ export interface sidebarSearchIF {
 }
 
 export const useSidebarSearch = (
-    poolList: PoolIF[],
     positionList: PositionIF[],
     txList: TransactionIF[],
     limitOrderList: LimitOrderIF[],
     tokens: tokenMethodsIF,
 ): sidebarSearchIF => {
+    const { poolList } = useContext(PoolContext);
+
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 

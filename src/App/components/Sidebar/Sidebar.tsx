@@ -35,24 +35,19 @@ import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { usePoolList } from '../../hooks/usePoolList';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { PoolIF } from '../../../utils/interfaces/exports';
 
 function Sidebar() {
-    const { cachedPoolStatsFetch, cachedFetchTokenPrice, cachedTokenDetails } =
+    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
-    const { crocEnv: crocEnv, chainData: chainData } =
-        useContext(CrocEnvContext);
+    const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { sidebar } = useContext(SidebarContext);
 
     const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
-
-    const poolList: PoolIF[] = usePoolList(cachedTokenDetails, tokens, crocEnv);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
@@ -144,7 +139,6 @@ function Sidebar() {
     ];
 
     const searchData: sidebarSearchIF = useSidebarSearch(
-        poolList,
         positionsByUser,
         txsByUser,
         limitsByUser,
