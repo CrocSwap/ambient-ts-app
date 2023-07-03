@@ -27,7 +27,10 @@ import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar
 import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
-import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
+import {
+    useSidebarSearch,
+    sidebarSearchIF,
+} from './useSidebarSearch/useSidebarSearch';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -145,6 +148,7 @@ function Sidebar() {
         txsByUser,
         limitsByUser,
         tokens,
+        chainData.chainId,
     );
 
     const [searchInput, setSearchInput] = useState<string>('');

@@ -51,6 +51,7 @@ interface propsIF {
     handleChangeClick: (input: string) => void;
     tokenAorB: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    parseInput: (value: string) => void;
 }
 
 function RangeCurrencySelector(props: propsIF) {
@@ -76,6 +77,7 @@ function RangeCurrencySelector(props: propsIF) {
         handleChangeClick,
         tokenAorB,
         setUserOverrodeSurplusWithdrawalDefault,
+        parseInput,
     } = props;
 
     const {
@@ -362,6 +364,7 @@ function RangeCurrencySelector(props: propsIF) {
                         updateOtherQuantity={updateOtherQuantity}
                         disable={isFieldDisabled}
                         isAdvancedMode={isAdvancedMode}
+                        parseInput={parseInput}
                     />
                 </div>
                 <button

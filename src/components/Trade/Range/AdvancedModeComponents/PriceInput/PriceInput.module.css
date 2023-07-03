@@ -22,30 +22,6 @@
         0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
         0px 0px 2px rgba(205, 193, 255, 0.2);
 }
-/* .overlay_container{
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: var(--dark2);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.disabled_text{
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    text-align: center;
-    font-weight: 100;
-}
-
-.warning_text{
-    font-weight: 300;
-    color: var(--accent1);
-} */
 
 .title,
 .percentage {
@@ -65,8 +41,8 @@
     display: grid;
     grid-template-columns: 18px 1fr 18px;
     color: var(--text1);
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
+    font-size: 20px;
+    line-height: 24px;
     text-align: center;
 
     background: var(--dark2);
