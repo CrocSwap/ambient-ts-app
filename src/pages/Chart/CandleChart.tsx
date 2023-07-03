@@ -39,7 +39,7 @@ export default function CandleChart(props: candlePropsIF) {
         period,
         lastCandleData,
     } = props;
-    const d3CanvasCandle = useRef<HTMLInputElement | null>(null);
+    const d3CanvasCandle = useRef<HTMLCanvasElement | null>(null);
     const [firstCandle, setFirstCandle] = useState<number>();
     const { expandTradeTable } = useContext(TradeTableContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -43,7 +43,7 @@ export default function LimitLineCanvas(props: propsIF) {
         limit,
     } = props;
 
-    const d3CanvasLimitLine = useRef<HTMLInputElement | null>(null);
+    const d3CanvasLimitLine = useRef<HTMLCanvasElement | null>(null);
 
     const location = useLocation();
 

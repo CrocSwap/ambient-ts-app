@@ -59,7 +59,7 @@ export default function RangeLineCanvas(props: propsIF) {
         lineBuyColor,
     } = props;
 
-    const d3CanvasRangeLine = useRef<HTMLInputElement | null>(null);
+    const d3CanvasRangeLine = useRef<HTMLCanvasElement | null>(null);
 
     const location = useLocation();
     const position = location?.state?.position;

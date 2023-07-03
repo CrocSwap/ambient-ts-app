@@ -53,8 +53,8 @@ type nearestLiquidity = {
 };
 
 export default function LiquidityChart(props: liquidityPropsIF) {
-    const d3CanvasLiq = useRef<HTMLInputElement | null>(null);
-    const d3CanvasLiqHover = useRef<HTMLInputElement | null>(null);
+    const d3CanvasLiq = useRef<HTMLCanvasElement | null>(null);
+    const d3CanvasLiqHover = useRef<HTMLCanvasElement | null>(null);
     const { pool: pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
     const tradeData = useAppSelector((state) => state.tradeData);

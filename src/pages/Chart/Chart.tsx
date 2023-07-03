@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable quotes */
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import moment from 'moment';
@@ -14,6 +12,7 @@ import {
     useState,
     useMemo,
     MouseEvent,
+    MutableRefObject,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -78,8 +77,8 @@ declare global {
                 HTMLDivElement
             >;
             'd3fc-canvas': DetailedHTMLProps<
-                HTMLAttributes<HTMLDivElement>,
-                HTMLDivElement
+                HTMLAttributes<HTMLCanvasElement>,
+                HTMLCanvasElement
             >;
         }
     }
@@ -162,12 +161,12 @@ export function setCanvasResolution(canvas: HTMLCanvasElement) {
 }
 
 export function renderCanvasArray(canvasArray: any[]) {
-    canvasArray.forEach((canvas) => {
-        if (canvas) {
-            const container = d3.select(canvas.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-    });
+    /*   canvasArray.forEach((canvas) => {
+      if (canvas && canvas.current) {
+        const container = d3.select(canvas.current).node() as HTMLCanvasElement;
+         if (container) container.requestRedraw(); 
+      }
+    }); */
 }
 
 export default function Chart(props: propsIF) {
@@ -252,12 +251,12 @@ export default function Chart(props: propsIF) {
 
     const d3Container = useRef<HTMLInputElement | null>(null);
 
-    const d3CanvasCrosshair = useRef<HTMLInputElement | null>(null);
-    const d3CanvasMarketLine = useRef<HTMLInputElement | null>(null);
-    const d3CanvasMain = useRef<HTMLInputElement | null>(null);
+    const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
+    const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
+    const d3CanvasMain = useRef<HTMLCanvasElement | null>(null);
 
-    const d3Xaxis = useRef<HTMLInputElement | null>(null);
-    const d3Yaxis = useRef<HTMLInputElement | null>(null);
+    const d3Xaxis = useRef<HTMLCanvasElement | null>(null);
+    const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
     const dispatch = useAppDispatch();
 
     const location = useLocation();
