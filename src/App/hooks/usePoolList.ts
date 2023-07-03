@@ -2,7 +2,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
 import {
     PoolIF,
-    TempPoolServerIF,
+    GCServerPoolIF,
     TokenIF,
 } from '../../utils/interfaces/exports';
 import { fetchPoolList } from '../functions/fetchPoolList';
@@ -20,16 +20,16 @@ export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] => {
             return undefined;
         }
 
-        const pools: Promise<TempPoolServerIF[]> = fetchPoolList(crocEnv);
-        Promise.resolve<TempPoolServerIF[]>(pools)
-            .then((res: TempPoolServerIF[]) => {
+        const pools: Promise<GCServerPoolIF[]> = fetchPoolList(crocEnv);
+        Promise.resolve<GCServerPoolIF[]>(pools)
+            .then((res: GCServerPoolIF[]) => {
                 return res
                     .filter(
-                        (result: TempPoolServerIF) =>
+                        (result: GCServerPoolIF) =>
                             verifyToken(result.base) &&
                             verifyToken(result.quote),
                     )
-                    .map((result: TempPoolServerIF) => {
+                    .map((result: GCServerPoolIF) => {
                         const baseToken: TokenIF | undefined =
                             getTokenByAddress(result.base);
                         const quoteToken: TokenIF | undefined =

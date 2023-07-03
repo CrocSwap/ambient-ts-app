@@ -1,11 +1,11 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
-import { TempPoolServerIF } from '../../utils/interfaces/exports';
+import { GCServerPoolIF } from '../../utils/interfaces/exports';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 export async function fetchPoolList(
     crocEnv: CrocEnv,
-): Promise<TempPoolServerIF[]> {
+): Promise<GCServerPoolIF[]> {
     const ENDPOINT: string =
         GRAPHCACHE_SMALL_URL +
         '/pool_list?' +
@@ -19,12 +19,12 @@ export async function fetchPoolList(
             if (!json?.data) {
                 return [];
             }
-            const payload = json?.data as TempPoolServerIF[];
+            const payload = json?.data as GCServerPoolIF[];
             // TODO:    this is a `Promise.allSettled()` because one bad call for
             // TODO:    ... a contract with no `symbol()` method was failing and
             // TODO:    ... taking everything down, instructions from Doug are to
             // TODO:    ... drop the bad result and investigate more later
-            const pools: Promise<TempPoolServerIF[]> = Promise.allSettled(
+            const pools: Promise<GCServerPoolIF[]> = Promise.allSettled(
                 payload,
             ).then((results) => {
                 function getFulfilledValues<T>(

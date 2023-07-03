@@ -3,7 +3,7 @@ import { PoolIF } from './PoolIF';
 import { PositionIF } from './PositionIF';
 import { SlippageIF } from './SlippageIF';
 import { SlippagePairIF } from './SlippagePairIF';
-import { TempPoolIF, TempPoolServerIF } from './TempPoolIF';
+import { GCServerPoolIF } from './GCServerPoolIF';
 import { TokenIF } from './TokenIF';
 import { TokenListIF } from './TokenListIF';
 import { TokenPairIF } from './TokenPairIF';
@@ -15,8 +15,7 @@ export type {
     PositionIF,
     SlippageIF,
     SlippagePairIF,
-    TempPoolIF,
-    TempPoolServerIF,
+    GCServerPoolIF,
     TokenIF,
     TokenListIF,
     TokenPairIF,
