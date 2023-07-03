@@ -1,23 +1,10 @@
-import { LimitOrderIF } from './LimitOrderIF';
-import { PoolIF } from './PoolIF';
-import { PositionIF } from './PositionIF';
-import { SlippageIF } from './SlippageIF';
-import { SlippagePairIF } from './SlippagePairIF';
-import { TempPoolIF } from './TempPoolIF';
-import { TokenIF } from './TokenIF';
-import { TokenListIF } from './TokenListIF';
-import { TokenPairIF } from './TokenPairIF';
-import { TransactionIF } from './TransactionIF';
-
-export type {
-    LimitOrderIF,
-    PoolIF,
-    PositionIF,
-    SlippageIF,
-    SlippagePairIF,
-    TempPoolIF,
-    TokenIF,
-    TokenListIF,
-    TokenPairIF,
-    TransactionIF,
-};
+export type { LimitOrderIF } from './LimitOrderIF';
+export type { PoolIF } from './PoolIF';
+export type { PositionIF } from './PositionIF';
+export type { SlippageIF } from './SlippageIF';
+export type { SlippagePairIF } from './SlippagePairIF';
+export type { GCServerPoolIF } from './GCServerPoolIF';
+export type { TokenIF } from './TokenIF';
+export type { TokenListIF } from './TokenListIF';
+export type { TokenPairIF } from './TokenPairIF';
+export type { TransactionIF } from './TransactionIF';

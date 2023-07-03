@@ -1,9 +1,15 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import {
     LimitOrderIF,
     PositionIF,
     PoolIF,
-    TempPoolIF,
     TokenIF,
     TransactionIF,
 } from '../../../../utils/interfaces/exports';
@@ -11,6 +17,7 @@ import matchSearchInput from './matchSearchInput';
 import { tokenMethodsIF } from '../../../hooks/useTokens';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { tokenListURIs } from '../../../../utils/data/tokenListURIs';
+import { PoolContext } from '../../../../contexts/PoolContext';
 
 export interface sidebarSearchIF {
     setInput: Dispatch<SetStateAction<string>>;
@@ -22,36 +29,12 @@ export interface sidebarSearchIF {
 }
 
 export const useSidebarSearch = (
-    poolList: TempPoolIF[],
     positionList: PositionIF[],
     txList: TransactionIF[],
     limitOrderList: LimitOrderIF[],
     tokens: tokenMethodsIF,
-    chainId: string,
 ): sidebarSearchIF => {
-    // take raw data from query and format for the front end
-    const poolsOnChain = useMemo<PoolIF[]>(
-        () =>
-            poolList
-                .map((pool: TempPoolIF) => {
-                    const baseToken: TokenIF | undefined =
-                        tokens.getTokenByAddress(pool.base);
-                    const quoteToken: TokenIF | undefined =
-                        tokens.getTokenByAddress(pool.quote);
-                    if (baseToken && quoteToken) {
-                        return {
-                            base: baseToken,
-                            quote: quoteToken,
-                            chainId: pool.chainId,
-                            poolIdx: pool.poolIdx,
-                        };
-                    } else {
-                        return null;
-                    }
-                })
-                .filter((pool: PoolIF | null) => pool !== null) as PoolIF[],
-        [chainId, poolList.length],
-    );
+    const { poolList } = useContext(PoolContext);
 
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
@@ -115,7 +98,7 @@ export const useSidebarSearch = (
     useEffect(() => {
         // fn to filter pools by address (must be exact)
         const searchByAddress = (addr: string): PoolIF[] =>
-            poolsOnChain.filter((pool: PoolIF) =>
+            poolList.filter((pool: PoolIF) =>
                 matchSearchInput(
                     addr,
                     [pool.base.address, pool.quote.address],
@@ -124,7 +107,7 @@ export const useSidebarSearch = (
             );
         // fn to filter pools by symbol (must be exact IF input is two characters)
         const searchByNameOrSymbol = (symb: string): PoolIF[] =>
-            poolsOnChain
+            poolList
                 .filter((pool: PoolIF) =>
                     matchSearchInput(symb, [
                         pool.base.symbol,
@@ -140,7 +123,7 @@ export const useSidebarSearch = (
                 );
         // fn to return list of verified pools with no search filtering
         const noSearch = (): PoolIF[] =>
-            poolsOnChain.filter(
+            poolList.filter(
                 (pool: PoolIF) =>
                     tokens.verifyToken(pool.base.address) &&
                     tokens.verifyToken(pool.quote.address),
