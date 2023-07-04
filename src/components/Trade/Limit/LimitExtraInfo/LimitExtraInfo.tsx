@@ -13,6 +13,7 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -50,62 +51,18 @@ function LimitExtraInfo(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 0.0001
-            ? displayPriceWithDenom.toExponential(2)
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    const startPriceString = !startDisplayPrice
-        ? '…'
-        : startDisplayPrice < 0.0001
-        ? startDisplayPrice.toExponential(2)
-        : startDisplayPrice < 2
-        ? startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const middlePriceString = !middleDisplayPrice
-        ? '…'
-        : middleDisplayPrice < 0.0001
-        ? middleDisplayPrice.toExponential(2)
-        : middleDisplayPrice < 2
-        ? middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const endPriceString = !endDisplayPrice
-        ? '…'
-        : endDisplayPrice < 0.0001
-        ? endDisplayPrice.toExponential(2)
-        : endDisplayPrice < 2
-        ? endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
+    });
+    const startPriceString = getFormattedNumber({
+        value: startDisplayPrice,
+    });
+    const middlePriceString = getFormattedNumber({
+        value: middleDisplayPrice,
+    });
+    const endPriceString = getFormattedNumber({
+        value: endDisplayPrice,
+    });
 
     const extraInfoData = [
         {
@@ -161,34 +118,30 @@ function LimitExtraInfo(props: propsIF) {
     ];
 
     const limitExtraInfoDetails = (
-        <div className={styles.extra_details}>
-            {extraInfoData.map((item, idx) => (
-                <div
-                    className={styles.extra_row}
-                    key={idx}
-                    tabIndex={0}
-                    aria-label={`${item.title} is ${item.data}`}
-                >
-                    <div className={styles.align_center}>
-                        <div>{item.title}</div>
-                        <TooltipComponent title={item.tooltipTitle} />
+        <div className={styles.extra_details_container}>
+            <div className={styles.extra_details}>
+                {extraInfoData.map((item, idx) => (
+                    <div
+                        className={styles.extra_row}
+                        key={idx}
+                        tabIndex={0}
+                        aria-label={`${item.title} is ${item.data}`}
+                    >
+                        <div className={styles.align_center}>
+                            <div>{item.title}</div>
+                            <TooltipComponent title={item.tooltipTitle} />
+                        </div>
+                        <div className={styles.data}>{item.data}</div>
                     </div>
-                    <div className={styles.data}>{item.data}</div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 
     const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
 
-    const dropDownOrNull = isQtyEntered ? (
-        <div style={{ cursor: 'pointer' }}>
-            {!showExtraDetails && <RiArrowDownSLine size={22} />}
-            {showExtraDetails && <RiArrowUpSLine size={22} />}
-        </div>
-    ) : null;
-
     const dispatch = useAppDispatch();
+    const [isConvHovered, setIsConHovered] = useState(false);
 
     const conversionRateDisplay = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
@@ -210,7 +163,7 @@ function LimitExtraInfo(props: propsIF) {
             aria-label={gasCostAriaLabel}
         >
             <div className={styles.gas_pump}>
-                <FaGasPump size={15} />{' '}
+                <FaGasPump size={15} className={styles.non_hoverable} />{' '}
                 {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
             </div>
             <div
@@ -219,11 +172,32 @@ function LimitExtraInfo(props: propsIF) {
                     dispatch(toggleDidUserFlipDenom());
                     e.stopPropagation();
                 }}
+                onMouseEnter={() => setIsConHovered(true)}
+                onMouseOut={() => setIsConHovered(false)}
             >
                 {conversionRateDisplay}
             </div>
             {/* <DenominationSwitch /> */}
-            {dropDownOrNull}
+            {isQtyEntered && !showExtraDetails && (
+                <RiArrowDownSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
+            )}
+            {isQtyEntered && showExtraDetails && (
+                <RiArrowUpSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
+            )}
         </button>
     );
     return (

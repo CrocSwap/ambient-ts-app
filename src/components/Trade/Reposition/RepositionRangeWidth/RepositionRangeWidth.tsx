@@ -30,7 +30,11 @@ function RepositionRangeWidth(props: IRepositionRangeWidth) {
     const PercentageOptionContent = (
         <div className={styles.percentage_options}>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 5
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(
                         (1 / 20) * 100,
@@ -42,7 +46,11 @@ function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 5%
             </button>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 10
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(
                         (1 / 10) * 100,
@@ -54,7 +62,11 @@ function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 10%
             </button>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 25
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(
                         (1 / 4) * 100,
@@ -66,7 +78,11 @@ function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 25%
             </button>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 50
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(
                         (1 / 2) * 100,
@@ -78,7 +94,11 @@ function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 50%
             </button>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 100
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(100, setRangeWidthPercentage);
                     setRescaleRangeBoundariesWithSlider(true);

@@ -1,8 +1,7 @@
 import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
-import { formatAmountOld } from '../../../utils/numbers';
-// import { formatAmountOld } from '../../../utils/numbers';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface IRemoveRangeInfoProps {
     baseTokenSymbol: string;
@@ -34,97 +33,24 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         isAmbient,
     } = props;
 
-    const liqBaseDisplay =
-        posLiqBaseDecimalCorrected !== undefined
-            ? posLiqBaseDecimalCorrected !== 0
-                ? posLiqBaseDecimalCorrected < 0.0001
-                    ? posLiqBaseDecimalCorrected.toExponential(2)
-                    : posLiqBaseDecimalCorrected < 2
-                    ? posLiqBaseDecimalCorrected.toPrecision(3)
-                    : posLiqBaseDecimalCorrected >= 10000
-                    ? formatAmountOld(posLiqBaseDecimalCorrected, 2)
-                    : posLiqBaseDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      })
-                : '0'
-            : undefined;
-
-    const liqQuoteDisplay =
-        posLiqQuoteDecimalCorrected !== undefined
-            ? posLiqQuoteDecimalCorrected !== 0
-                ? posLiqQuoteDecimalCorrected < 0.0001
-                    ? posLiqQuoteDecimalCorrected.toExponential(2)
-                    : posLiqQuoteDecimalCorrected < 2
-                    ? posLiqQuoteDecimalCorrected.toPrecision(3)
-                    : posLiqQuoteDecimalCorrected >= 10000
-                    ? formatAmountOld(posLiqQuoteDecimalCorrected, 2)
-                    : posLiqQuoteDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      })
-                : '0'
-            : undefined;
-
-    const feeLiqBaseDisplay =
-        feeLiqBaseDecimalCorrected !== undefined
-            ? feeLiqBaseDecimalCorrected !== 0
-                ? feeLiqBaseDecimalCorrected < 0.0001
-                    ? feeLiqBaseDecimalCorrected.toExponential(2)
-                    : feeLiqBaseDecimalCorrected < 2
-                    ? feeLiqBaseDecimalCorrected.toPrecision(3)
-                    : feeLiqBaseDecimalCorrected >= 10000
-                    ? formatAmountOld(feeLiqBaseDecimalCorrected, 2)
-                    : feeLiqBaseDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      })
-                : '0'
-            : undefined;
-
-    const feeLiqQuoteDisplay =
-        feeLiqQuoteDecimalCorrected !== undefined
-            ? feeLiqQuoteDecimalCorrected !== 0
-                ? feeLiqQuoteDecimalCorrected < 0.0001
-                    ? feeLiqQuoteDecimalCorrected.toExponential(2)
-                    : feeLiqQuoteDecimalCorrected < 2
-                    ? feeLiqQuoteDecimalCorrected.toPrecision(3)
-                    : feeLiqQuoteDecimalCorrected >= 10000
-                    ? formatAmountOld(feeLiqQuoteDecimalCorrected, 2)
-                    : feeLiqQuoteDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      })
-                : '0'
-            : undefined;
-
-    const baseRemovalString =
-        baseRemovalNum !== 0
-            ? baseRemovalNum < 0.0001
-                ? baseRemovalNum.toExponential(2)
-                : baseRemovalNum < 2
-                ? baseRemovalNum.toPrecision(3)
-                : baseRemovalNum >= 10000
-                ? formatAmountOld(baseRemovalNum, 2)
-                : baseRemovalNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : '0';
-
-    const quoteRemovalString =
-        quoteRemovalNum !== 0
-            ? quoteRemovalNum < 0.0001
-                ? quoteRemovalNum.toExponential(2)
-                : quoteRemovalNum < 2
-                ? quoteRemovalNum.toPrecision(3)
-                : quoteRemovalNum >= 10000
-                ? formatAmountOld(quoteRemovalNum, 2)
-                : quoteRemovalNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : '0';
+    const liqBaseDisplay = getFormattedNumber({
+        value: posLiqBaseDecimalCorrected,
+    });
+    const liqQuoteDisplay = getFormattedNumber({
+        value: posLiqQuoteDecimalCorrected,
+    });
+    const feeLiqBaseDisplay = getFormattedNumber({
+        value: feeLiqBaseDecimalCorrected,
+    });
+    const feeLiqQuoteDisplay = getFormattedNumber({
+        value: feeLiqQuoteDecimalCorrected,
+    });
+    const baseRemovalString = getFormattedNumber({
+        value: baseRemovalNum,
+    });
+    const quoteRemovalString = getFormattedNumber({
+        value: quoteRemovalNum,
+    });
 
     const rewardsEarnedSection = !isAmbient ? (
         <>
