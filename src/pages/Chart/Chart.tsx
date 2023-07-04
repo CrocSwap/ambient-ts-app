@@ -56,6 +56,7 @@ import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { createTriangle } from './ChartUtils/triangle';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -217,7 +218,6 @@ export default function Chart(props: propsIF) {
         (state) => state.userData,
     );
 
-    const lastCrDate = new Date(1682341200 * 1000);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const [minTickForLimit, setMinTickForLimit] = useState<any>();
@@ -456,6 +456,16 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
+
+    const lastCrDate = useMemo(() => {
+        const lastCrocDate = unparsedCandleData?.find((item: CandleData) => {
+            return item.tvlData.tvl === 0;
+        });
+
+        if (lastCrocDate) {
+            return lastCrocDate?.time * 1000;
+        }
+    }, [diffHashSigChart(unparsedCandleData)]);
 
     useEffect(() => {
         if (
@@ -3327,7 +3337,7 @@ export default function Chart(props: propsIF) {
         const _width = 65; // magic number of pixels to blur surrounding price
         const tickSize = 6;
 
-        const LastCrDate = xScale(lastCrDate);
+        const lastCrDateLocation = xScale(lastCrDate);
 
         scaleData.xScaleTime.domain(xScale.domain());
 
@@ -3386,47 +3396,54 @@ export default function Chart(props: propsIF) {
                     context.filter = ' blur(7px)';
                 }
 
-                if (
-                    xScale(d) > LastCrDate - _width / 2 &&
-                    xScale(d) < LastCrDate + _width / 2 &&
-                    d !== lastCrDate
-                ) {
-                    context.filter = ' blur(7px)';
-                }
-
                 if (d.style) {
                     context.font = '900 12px Lexend Deca';
                 }
 
                 context.beginPath();
-                if (formatValue) {
-                    const indexValue = filteredData.findIndex(
-                        (d1: any) => d1.date === d.date,
-                    );
-                    if (!d.style) {
-                        const maxIndex =
-                            indexValue === filteredData.length - 1
-                                ? indexValue
-                                : indexValue + 1;
-                        const minIndex =
-                            indexValue === 0 ? indexValue : indexValue - 1;
-                        const lastData = filteredData[maxIndex];
-                        const beforeData = filteredData[minIndex];
 
-                        if (
-                            beforeData.style ||
-                            (lastData.style && xScale(d.date.getTime()))
-                        ) {
+                if (
+                    d.date.getTime() !== lastCrDate &&
+                    !(
+                        xScale(d.date) > lastCrDateLocation - _width / 2 &&
+                        xScale(d.date) < lastCrDateLocation + _width / 2
+                    )
+                ) {
+                    if (formatValue) {
+                        const indexValue = filteredData.findIndex(
+                            (d1: any) => d1.date === d.date,
+                        );
+                        if (!d.style) {
+                            const maxIndex =
+                                indexValue === filteredData.length - 1
+                                    ? indexValue
+                                    : indexValue + 1;
+                            const minIndex =
+                                indexValue === 0 ? indexValue : indexValue - 1;
+                            const lastData = filteredData[maxIndex];
+                            const beforeData = filteredData[minIndex];
+
                             if (
-                                Math.abs(
-                                    xScale(beforeData.date.getTime()) -
-                                        xScale(d.date.getTime()),
-                                ) > _width &&
-                                Math.abs(
-                                    xScale(lastData.date.getTime()) -
-                                        xScale(d.date.getTime()),
-                                ) > _width
+                                beforeData.style ||
+                                (lastData.style && xScale(d.date.getTime()))
                             ) {
+                                if (
+                                    Math.abs(
+                                        xScale(beforeData.date.getTime()) -
+                                            xScale(d.date.getTime()),
+                                    ) > _width &&
+                                    Math.abs(
+                                        xScale(lastData.date.getTime()) -
+                                            xScale(d.date.getTime()),
+                                    ) > _width
+                                ) {
+                                    context.fillText(
+                                        formatValue,
+                                        xScale(d.date.getTime()),
+                                        Y + tickSize,
+                                    );
+                                }
+                            } else {
                                 context.fillText(
                                     formatValue,
                                     xScale(d.date.getTime()),
@@ -3440,15 +3457,8 @@ export default function Chart(props: propsIF) {
                                 Y + tickSize,
                             );
                         }
-                    } else {
-                        context.fillText(
-                            formatValue,
-                            xScale(d.date.getTime()),
-                            Y + tickSize,
-                        );
                     }
                 }
-
                 context.restore();
             }
         });
@@ -3476,14 +3486,13 @@ export default function Chart(props: propsIF) {
         }
 
         if (
-            !(
-                LastCrDate > xScale(crosshairData[0].x) - _width &&
-                LastCrDate < xScale(crosshairData[0].x) + _width
-            ) &&
-            LastCrDate !== crosshairData[0].x
+            xScale(crosshairData[0].x) > lastCrDateLocation - (_width - 15) &&
+            xScale(crosshairData[0].x) < lastCrDateLocation + (_width - 15) &&
+            crosshairActive !== 'none'
         ) {
-            context.fillText('🐊', LastCrDate, Y + tickSize);
+            context.filter = ' blur(7px)';
         }
+        context.fillText('🐊', lastCrDateLocation, Y + tickSize);
 
         context.restore();
 
@@ -4082,20 +4091,10 @@ export default function Chart(props: propsIF) {
                 return crosshairHorizontal;
             });
 
-            const crDataIndicator = d3fc
-                .annotationCanvasLine()
-                .orient('vertical')
-                .value((d: any) => d)
-                .xScale(scaleData?.xScale)
-                .yScale(scaleData?.yScale)
-                .label('');
-
-            crDataIndicator.decorate((context: any) => {
-                context.visibility = 'hidden';
-                context.strokeStyle = '#E480FF';
-                context.pointerEvents = 'none';
-                context.lineWidth = 0.5;
-            });
+            const crDataIndicator = createIndicatorLine(
+                scaleData?.xScale,
+                scaleData.yScale,
+            );
 
             setCrDataIndicator(() => {
                 return crDataIndicator;
@@ -4251,28 +4250,6 @@ export default function Chart(props: propsIF) {
         crosshairActive,
         crosshairVerticalCanvas,
     ]);
-
-    useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasCrIndicator.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-        if (crDataIndicator) {
-            d3.select(d3CanvasCrIndicator.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    ctx.setLineDash([0.6, 0.6]);
-
-                    crDataIndicator([lastCrDate]);
-                })
-                .on('measure', () => {
-                    ctx.setLineDash([0.6, 0.6]);
-                    crDataIndicator.context(ctx);
-                });
-        }
-    }, [crDataIndicator]);
 
     useEffect(() => {
         const canvas = d3
@@ -5631,15 +5608,11 @@ export default function Chart(props: propsIF) {
     const relocateTooltip = () => {
         if (lastCrDataTooltip) {
             const width = lastCrDataTooltip.style('width').split('p')[0] / 2;
-            const height = lastCrDataTooltip.style('height').split('p')[0];
+            const xAxisCanvas = d3.select(d3Xaxis.current).node() as any;
 
+            const rectXaxis = xAxisCanvas.getBoundingClientRect();
             lastCrDataTooltip
-                .style(
-                    'top',
-                    scaleData.yScale(scaleData.yScale.domain()[0]) +
-                        height * 2 +
-                        'px',
-                )
+                .style('bottom', rectXaxis.height + 15 + 'px')
                 .style('left', scaleData.xScale(lastCrDate) - width + 'px');
         }
     };
@@ -5836,6 +5809,7 @@ export default function Chart(props: propsIF) {
             isMouseLeaveAskLiq,
             unparsedCandleData?.length,
             !tradeData.advancedMode && simpleRangeWidth === 100,
+            isCrDataToolTipActive,
         ],
     );
 
@@ -6132,6 +6106,9 @@ export default function Chart(props: propsIF) {
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
+                                lastCrDate={lastCrDate}
+                                isCrDataIndActive={isCrDataIndActive}
+                                isCrDataToolTipActive={isCrDataToolTipActive}
                             />
                         </>
                     )}
@@ -6159,6 +6136,9 @@ export default function Chart(props: propsIF) {
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
+                                lastCrDate={lastCrDate}
+                                isCrDataIndActive={isCrDataIndActive}
+                                isCrDataToolTipActive={isCrDataToolTipActive}
                             />
                         </>
                     )}
