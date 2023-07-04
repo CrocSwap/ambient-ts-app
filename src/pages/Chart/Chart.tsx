@@ -4263,15 +4263,18 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
-
-                    crDataIndicator([lastCrDate]);
+                    if (isCrDataToolTipActive || isCrDataIndActive) {
+                        crDataIndicator([lastCrDate]);
+                    }
                 })
                 .on('measure', () => {
                     ctx.setLineDash([0.6, 0.6]);
                     crDataIndicator.context(ctx);
                 });
         }
-    }, [crDataIndicator]);
+
+        renderCanvasArray([d3CanvasCrIndicator]);
+    }, [crDataIndicator, isCrDataToolTipActive, isCrDataIndActive]);
 
     useEffect(() => {
         const canvas = d3
@@ -5575,17 +5578,6 @@ export default function Chart(props: propsIF) {
     };
 
     useEffect(() => {
-        if (crDataIndicator) {
-            d3.select(d3CanvasCrIndicator.current).style(
-                'visibility',
-                isCrDataIndActive || isCrDataToolTipActive
-                    ? 'visible'
-                    : 'hidden',
-            );
-        }
-    }, [isCrDataIndActive, crDataIndicator, isCrDataToolTipActive]);
-
-    useEffect(() => {
         if (lastCrDataTooltip && scaleData) {
             lastCrDataTooltip.html('<p> 🐊 Start of Crocswap Data </p>');
 
@@ -5595,13 +5587,6 @@ export default function Chart(props: propsIF) {
             );
 
             relocateTooltip();
-
-            d3.select(d3CanvasCrIndicator.current).style(
-                'visibility',
-                isCrDataIndActive || isCrDataToolTipActive
-                    ? 'visible'
-                    : 'hidden',
-            );
         }
     }, [isCrDataToolTipActive, lastCrDataTooltip, isCrDataIndActive]);
 
@@ -6048,7 +6033,7 @@ export default function Chart(props: propsIF) {
                         ></d3fc-canvas>
                         <d3fc-canvas
                             ref={d3CanvasCrIndicator}
-                            className='cr-vertical-canvas'
+                            className='cr-indicator-canvas'
                         ></d3fc-canvas>
 
                         <d3fc-canvas
