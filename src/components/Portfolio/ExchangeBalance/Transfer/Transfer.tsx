@@ -117,7 +117,6 @@ export default function Transfer(props: propsIF) {
         [transferQtyNonDisplay],
     );
 
-    // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isTransferPending, setIsTransferPending] = useState(false);
 
     useEffect(() => {
@@ -159,6 +158,7 @@ export default function Transfer(props: propsIF) {
             setButtonMessage('Transfer');
         }
     }, [
+        transferQtyNonDisplay,
         isTransferPending,
         isDexBalanceSufficient,
         isTransferQtyValid,

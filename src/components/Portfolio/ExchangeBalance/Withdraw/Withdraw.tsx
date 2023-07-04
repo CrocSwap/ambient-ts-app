@@ -162,6 +162,7 @@ export default function Withdraw(props: propsIF) {
             setButtonMessage('Withdraw');
         }
     }, [
+        withdrawQtyNonDisplay,
         isWithdrawPending,
         isDexBalanceSufficient,
         isWithdrawQtyValid,

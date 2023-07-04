@@ -184,6 +184,7 @@ export default function Deposit(props: propsIF) {
             setButtonMessage('Deposit');
         }
     }, [
+        depositQtyNonDisplay,
         isApprovalPending,
         isDepositPending,
         isTokenAllowanceSufficient,
