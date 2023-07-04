@@ -57,6 +57,7 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 export default function Limit() {
     const {
@@ -177,18 +178,12 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
                     setEndDisplayPrice(displayPriceWithDenom);
 
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 0.0001
-                            ? displayPriceWithDenom.toExponential(2)
-                            : displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
+                    const limitRateTruncated = getFormattedNumber({
+                        value: displayPriceWithDenom,
+                        isInput: true,
+                        removeCommas: true,
+                    });
+
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -252,18 +247,11 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
 
                     setEndDisplayPrice(displayPriceWithDenom);
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 0.0001
-                            ? displayPriceWithDenom.toExponential(2)
-                            : displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
+                    const limitRateTruncated = getFormattedNumber({
+                        value: displayPriceWithDenom,
+                        isInput: true,
+                        removeCommas: true,
+                    });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -601,11 +589,11 @@ export default function Limit() {
                 ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -634,10 +622,10 @@ export default function Limit() {
         isSellTokenBase: isSellTokenBase,
         setLimitAllowed: setLimitAllowed,
         tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
         setTokenAInputQty: setTokenAInputQty,
-        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
+        tokenBInputQty: tokenBInputQty,
         setTokenBInputQty: setTokenBInputQty,
+        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
         setLimitButtonErrorMessage: setLimitButtonErrorMessage,
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
@@ -719,93 +707,97 @@ export default function Limit() {
                 >
                     <LimitCurrencyConverter {...currencyConverterProps} />
                 </motion.div>
-                <div className={styles.header_container}></div>
-                <LimitExtraInfo
-                    isQtyEntered={
-                        tokenAInputQty !== '' || tokenBInputQty !== ''
-                    }
-                    orderGasPriceInDollars={orderGasPriceInDollars}
-                    liquidityProviderFeeString={liquidityProviderFeeString}
-                    isTokenABase={isSellTokenBase}
-                    startDisplayPrice={startDisplayPrice}
-                    middleDisplayPrice={middleDisplayPrice}
-                    endDisplayPrice={endDisplayPrice}
-                />
-                {isUserConnected === undefined ? null : isUserConnected ===
-                  true ? (
-                    !isTokenAAllowanceSufficient &&
-                    parseFloat(tokenAInputQty) > 0 ? (
-                        approvalButton
-                    ) : showBypassConfirmButton ? (
-                        <BypassLimitButton {...bypassLimitProps} />
+                <div className={styles.info_button_container}>
+                    <LimitExtraInfo
+                        isQtyEntered={
+                            tokenAInputQty !== '' || tokenBInputQty !== ''
+                        }
+                        orderGasPriceInDollars={orderGasPriceInDollars}
+                        liquidityProviderFeeString={liquidityProviderFeeString}
+                        isTokenABase={isSellTokenBase}
+                        startDisplayPrice={startDisplayPrice}
+                        middleDisplayPrice={middleDisplayPrice}
+                        endDisplayPrice={endDisplayPrice}
+                    />
+                    {isUserConnected === undefined ? null : isUserConnected ? (
+                        !isTokenAAllowanceSufficient &&
+                        parseFloat(tokenAInputQty) > 0 ? (
+                            approvalButton
+                        ) : showBypassConfirmButton ? (
+                            <BypassLimitButton {...bypassLimitProps} />
+                        ) : (
+                            <>
+                                <LimitButton
+                                    onClickFn={
+                                        areBothAckd
+                                            ? bypassConfirmLimit.isEnabled
+                                                ? handleLimitButtonClickWithBypass
+                                                : openModal
+                                            : ackAsNeeded
+                                    }
+                                    limitAllowed={
+                                        isOrderValid &&
+                                        poolPriceNonDisplay !== 0 &&
+                                        limitAllowed
+                                    }
+                                    limitButtonErrorMessage={
+                                        limitButtonErrorMessage
+                                    }
+                                    isBypassConfirmEnabled={
+                                        bypassConfirmLimit.isEnabled
+                                    }
+                                    areBothAckd={areBothAckd}
+                                />
+                                {ackTokenMessage && (
+                                    <p
+                                        className={styles.acknowledge_text}
+                                        dangerouslySetInnerHTML={{
+                                            __html: formattedAckTokenMessage,
+                                        }}
+                                    ></p>
+                                )}
+                                <div
+                                    className={
+                                        styles.acknowledge_etherscan_links
+                                    }
+                                >
+                                    {needConfirmTokenA && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenA.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={`approve ${tokenA.symbol}`}
+                                        >
+                                            {tokenA.symbol || tokenA.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                    {needConfirmTokenB && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenB.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={tokenB.symbol}
+                                        >
+                                            {tokenB.symbol || tokenB.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                </div>
+                            </>
+                        )
                     ) : (
-                        <>
-                            <LimitButton
-                                onClickFn={
-                                    areBothAckd
-                                        ? bypassConfirmLimit.isEnabled
-                                            ? handleLimitButtonClickWithBypass
-                                            : openModal
-                                        : ackAsNeeded
-                                }
-                                limitAllowed={
-                                    isOrderValid &&
-                                    poolPriceNonDisplay !== 0 &&
-                                    limitAllowed
-                                }
-                                limitButtonErrorMessage={
-                                    limitButtonErrorMessage
-                                }
-                                isBypassConfirmEnabled={
-                                    bypassConfirmLimit.isEnabled
-                                }
-                                areBothAckd={areBothAckd}
-                            />
-                            {ackTokenMessage && (
-                                <p
-                                    className={styles.acknowledge_text}
-                                    dangerouslySetInnerHTML={{
-                                        __html: formattedAckTokenMessage,
-                                    }}
-                                ></p>
-                            )}
-                            <div className={styles.acknowledge_etherscan_links}>
-                                {needConfirmTokenA && (
-                                    <a
-                                        href={
-                                            blockExplorer +
-                                            'token/' +
-                                            tokenA.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                        aria-label={`approve ${tokenA.symbol}`}
-                                    >
-                                        {tokenA.symbol || tokenA.name}{' '}
-                                        <FiExternalLink />
-                                    </a>
-                                )}
-                                {needConfirmTokenB && (
-                                    <a
-                                        href={
-                                            blockExplorer +
-                                            'token/' +
-                                            tokenB.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                        aria-label={tokenB.symbol}
-                                    >
-                                        {tokenB.symbol || tokenB.name}{' '}
-                                        <FiExternalLink />
-                                    </a>
-                                )}
-                            </div>
-                        </>
-                    )
-                ) : (
-                    loginButton
-                )}
+                        loginButton
+                    )}
+                </div>
             </ContentContainer>
             {isModalOpen && (
                 <Modal

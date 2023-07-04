@@ -12,8 +12,6 @@
     color: var(--text2);
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
-
-    padding: 8px 0;
 }
 
 .content_header svg {

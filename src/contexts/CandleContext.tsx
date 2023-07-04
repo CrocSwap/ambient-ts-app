@@ -7,20 +7,17 @@ import {
     useState,
     useContext,
 } from 'react';
-import { CandleData } from '../App/functions/fetchCandleSeries';
-import useDebounce from '../App/hooks/useDebounce';
 import {
-    GRAPHCACHE_URL,
-    IS_LOCAL_ENV,
-    OVERRIDE_CANDLE_POOL_ID,
-} from '../constants';
-import { mktDataChainId } from '../utils/data/chains';
+    CandleData,
+    fetchCandleSeriesHybrid,
+} from '../App/functions/fetchCandleSeries';
+import useDebounce from '../App/hooks/useDebounce';
 import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
-import { diffHashSig } from '../utils/functions/diffHashSig';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
+import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
@@ -53,7 +50,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { chartSettings, isEnabled: isChartEnabled } =
         useContext(ChartContext);
-    const { chainData } = useContext(CrocEnvContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
     const {
         baseToken: {
             address: baseTokenAddress,
@@ -64,6 +61,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             mainnetAddress: mainnetCanonQuote,
         },
     } = useContext(TradeTokenContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const [abortController, setAbortController] =
         useState<AbortController | null>(null);
@@ -124,6 +122,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isUserIdle,
         candleScale?.isFetchForTimeframe,
     ]);
+
     const fetchCandles = () => {
         if (
             isServerEnabled &&
@@ -131,103 +130,39 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
             mainnetQuoteTokenAddress &&
-            candleTimeLocal
+            candleTimeLocal &&
+            crocEnv
         ) {
             if (abortController) {
                 abortController.abort();
             }
 
-            const reqOptions =
-                chainData.chainId === '0x1'
-                    ? new URLSearchParams({
-                          base: mainnetBaseTokenAddress.toLowerCase(),
-                          quote: mainnetQuoteTokenAddress.toLowerCase(),
-                          poolIdx: (
-                              OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                          ).toString(),
-                          period: candleTimeLocal.toString(),
-                          n: (candleScale?.nCandle > 1000
-                              ? 1000
-                              : candleScale?.nCandle
-                          ).toString(), // positive integer: max 1000
-                          chainId: mktDataChainId(chainData.chainId),
-                          dex: 'all',
-                          poolStats: 'true',
-                          concise: 'true',
-                      })
-                    : new URLSearchParams({
-                          base: mainnetBaseTokenAddress.toLowerCase(),
-                          quote: mainnetQuoteTokenAddress.toLowerCase(),
-                          poolIdx: (
-                              OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                          ).toString(),
-                          period: candleTimeLocal.toString(),
-                          n: (candleScale?.nCandle > 1000
-                              ? 1000
-                              : candleScale?.nCandle
-                          ).toString(), // positive integer: max 1000
-                          chainId: mktDataChainId(chainData.chainId),
-                          dex: 'all',
-                          poolStats: 'true',
-                          concise: 'true',
-                          poolStatsChainIdOverride: chainData.chainId,
-                          poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                          poolStatsQuoteOverride:
-                              quoteTokenAddress.toLowerCase(),
-                          poolStatsPoolIdxOverride: (
-                              OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                          ).toString(),
-                      });
+            const candleTime = candleScale?.lastCandleDate || 0;
+            const nCandles =
+                candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
 
-            if (candleScale?.lastCandleDate) {
-                reqOptions.set('time', candleScale?.lastCandleDate.toString()); // optional
-            }
+            setIsFetchingCandle(true);
+            fetchCandleSeriesHybrid(
+                true,
+                chainData,
+                candleTimeLocal,
+                baseTokenAddress,
+                quoteTokenAddress,
+                candleTime,
+                nCandles,
+                crocEnv,
+                cachedFetchTokenPrice,
+            ).then((candles) => {
+                setCandleData(candles);
+                setIsCandleDataNull(false);
 
-            IS_LOCAL_ENV && console.debug('fetching new candles');
-            try {
-                if (GRAPHCACHE_URL) {
-                    const candleSeriesCacheEndpoint =
-                        GRAPHCACHE_URL + '/candle_series?';
-                    setIsFetchingCandle(true);
-                    fetch(candleSeriesCacheEndpoint + reqOptions)
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const candles = json?.data;
-                            if (candles?.length === 0) {
-                                setIsCandleDataNull(true);
-                                // Removing due to design decision to not change trade table size without user input
-                                // setExpandTradeTable(true);
-                            } else if (candles) {
-                                setCandleData({
-                                    pool: {
-                                        baseAddress:
-                                            baseTokenAddress.toLowerCase(),
-                                        quoteAddress:
-                                            quoteTokenAddress.toLowerCase(),
-                                        poolIdx: chainData.poolIndex,
-                                        chainId: chainData.chainId,
-                                    },
-                                    duration: candleTimeLocal,
-                                    candles: candles,
-                                });
-                                setIsCandleDataNull(false);
-                                // setExpandTradeTable(false);
-                            }
-                            return candles?.length;
-                        })
-                        .then((result) => {
-                            if (result !== 0) {
-                                setIsFetchingCandle(false);
-                            }
-                        })
-                        .catch(console.error);
+                const candleSeries = candles?.candles;
+                if (candleSeries && candleSeries.length > 0) {
+                    setIsFetchingCandle(false);
                 }
-            } catch (error) {
-                console.error({ error });
-            }
+            });
         } else {
             setIsCandleDataNull(true);
-            // setExpandTradeTable(true);
         }
     };
 
@@ -252,7 +187,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const minTimeMemo = useMemo(() => {
         const candleDataLength = candleData?.candles?.length;
         if (!candleDataLength) return;
-        // IS_LOCAL_ENV && console.debug({ candleDataLength });
 
         const lastDate = new Date(
             (candleDomains?.lastCandleDate as number) / 1000,
@@ -262,73 +196,43 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [candleData?.candles?.length, lastCandleDateInSecondsDebounced]);
 
     const numDurationsNeeded = useMemo(() => {
-        if (!minTimeMemo || !domainBoundaryInSecondsDebounced) return;
-        const candleNumber = Math.floor(
-            (minTimeMemo - domainBoundaryInSecondsDebounced) / candleTimeLocal,
+        if (!minTimeMemo || !domainBoundaryInSeconds) return;
+        const numDurations = Math.floor(
+            (minTimeMemo - domainBoundaryInSeconds) / candleTimeLocal + 1,
         );
 
-        return candleNumber > 2999 ? 2999 : candleNumber;
+        return numDurations > 2999 ? 2999 : numDurations;
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
-
-    const candleSeriesCacheEndpoint = GRAPHCACHE_URL + '/candle_series?';
-
-    function capNumDurations(numDurations: number): string {
-        const MAX_NUM_DURATIONS = 5000;
-        const MIN_NUM_DURATIONS = 1;
-        if (numDurations > MAX_NUM_DURATIONS) {
-            console.warn(`Candle fetch n=${numDurations} exceeds max cap.`);
-            return MAX_NUM_DURATIONS.toString();
-        } else if (numDurations < MIN_NUM_DURATIONS) {
-            console.warn(`Candle fetch n=${numDurations} non-positive.`);
-            return MIN_NUM_DURATIONS.toString();
-        }
-        return numDurations.toString();
-    }
 
     const fetchCandlesByNumDurations = (numDurations: number) => {
         const controller = new AbortController();
         setAbortController(controller);
-        const signal = controller.signal;
 
-        return fetch(
-            candleSeriesCacheEndpoint +
-                new URLSearchParams({
-                    base: mainnetBaseTokenAddress.toLowerCase(),
-                    quote: mainnetQuoteTokenAddress.toLowerCase(),
-                    poolIdx: (
-                        OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                    ).toString(),
-                    period: candleTimeLocal.toString(),
-                    time: minTimeMemo ? minTimeMemo.toString() : '0',
-                    // time: debouncedBoundary.toString(),
-                    n: capNumDurations(numDurations),
-                    // page: '0', // nonnegative integer
-                    chainId: mktDataChainId(chainData.chainId),
-                    dex: 'all',
-                    poolStats: 'true',
-                    concise: 'true',
-                    poolStatsChainIdOverride: chainData.chainId,
-                    poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                    poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                    poolStatsPoolIdxOverride: (
-                        OVERRIDE_CANDLE_POOL_ID || chainData.poolIndex
-                    ).toString(),
-                }),
-            { signal },
+        if (!crocEnv) {
+            return;
+        }
+
+        fetchCandleSeriesHybrid(
+            true,
+            chainData,
+            candleTimeLocal,
+            baseTokenAddress,
+            quoteTokenAddress,
+            minTimeMemo ? minTimeMemo : 0,
+            numDurations,
+            crocEnv,
+            cachedFetchTokenPrice,
         )
-            .then((response) => response?.json())
-            .then((json) => {
-                const fetchedCandles = json?.data;
-                if (fetchedCandles && candleData) {
+            .then((incrCandles) => {
+                if (incrCandles && candleData) {
                     const newCandles: CandleData[] = [];
-                    const updatedCandles: CandleData[] = candleData.candles;
 
                     for (
                         let index = 0;
-                        index < fetchedCandles.length;
+                        index < incrCandles.candles.length;
                         index++
                     ) {
-                        const messageCandle = fetchedCandles[index];
+                        const messageCandle = incrCandles.candles[index];
                         const indexOfExistingCandle =
                             candleData.candles.findIndex(
                                 (savedCandle) =>
@@ -337,24 +241,16 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
                         if (indexOfExistingCandle === -1) {
                             newCandles.push(messageCandle);
-                        } else if (
-                            diffHashSig(
-                                candleData.candles[indexOfExistingCandle],
-                            ) !== diffHashSig(messageCandle)
-                        ) {
-                            updatedCandles[indexOfExistingCandle] =
+                        } else {
+                            candleData.candles[indexOfExistingCandle] =
                                 messageCandle;
                         }
                     }
 
-                    const newCandleData: CandlesByPoolAndDuration = {
-                        pool: candleData.pool,
-
-                        duration: candleData.duration,
-
-                        candles: newCandles.concat(updatedCandles),
-                    };
-                    setCandleData(newCandleData);
+                    const newSeries = Object.assign({}, candleData, {
+                        candles: candleData.candles.concat(newCandles),
+                    });
+                    setCandleData(newSeries);
                 }
             })
             .catch((e) => {
@@ -364,9 +260,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     console.error(e);
                 }
                 setIsCandleDataNull(false);
-                // setExpandTradeTable(false);
             });
     };
+
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {

@@ -51,7 +51,14 @@ svg {
 }
 
 svg:hover {
-    color: var(--text1);
+    color: var(--accent1) ;
+    cursor: pointer ;
+}
+
+
+button:hover > svg{
+    color: var(--accent1) ;
+    cursor: pointer ;
 }
 
 button,
@@ -242,6 +249,18 @@ p:focus-visible {
 .tutorial_navigation_container {
     position: absolute;
     bottom: 0;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 @media only screen and (max-width: 600px) {
