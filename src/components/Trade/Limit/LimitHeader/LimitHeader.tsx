@@ -10,7 +10,6 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 
 // START: Import Other Local Files
 import styles from './LimitHeader.module.css';
-import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import {
     useAppDispatch,
@@ -37,6 +36,35 @@ function LimitHeader() {
     const isDenomBase = tradeData.isDenomBase;
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
+
+    const settingsSvg = (
+        <svg
+            width='14'
+            height='14'
+            viewBox='0 0 14 14'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+            className={styles.hoverable_icon}
+        >
+            <rect
+                y='9.625'
+                width='8.75'
+                height='1.75'
+                rx='0.875'
+                fill=''
+            ></rect>
+            <rect
+                x='5.25'
+                y='2.625'
+                width='8.75'
+                height='1.75'
+                rx='0.875'
+                fill=''
+            ></rect>
+            <circle cx='12.25' cy='10.5' r='1.75' fill=''></circle>
+            <circle cx='1.75' cy='3.5' r='1.75' fill=''></circle>
+        </svg>
+    );
 
     return (
         <ContentHeader>
@@ -66,7 +94,7 @@ function LimitHeader() {
                     tabIndex={0}
                     aria-label='Settings button'
                 >
-                    <img src={settingsIcon} alt='settings' />
+                    {settingsSvg}
                 </div>
             </IconWithTooltip>
             {isModalOpen && (

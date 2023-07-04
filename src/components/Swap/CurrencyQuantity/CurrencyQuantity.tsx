@@ -10,7 +10,6 @@ import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
 import Spinner from '../../Global/Spinner/Spinner';
-import { decimalNumRegEx } from '../../../utils/regex/exports';
 
 interface propsIF {
     disable?: boolean;
@@ -48,10 +47,7 @@ function CurrencyQuantity(props: propsIF) {
     >();
 
     useEffect(() => {
-        const valueWithLeadingZero = value.startsWith('.')
-            ? '0' + value
-            : value;
-        setDisplayValue(valueWithLeadingZero);
+        setDisplayValue(value);
     }, [value]);
 
     // Let input rest 3/4 of a second before triggering an update
@@ -63,24 +59,23 @@ function CurrencyQuantity(props: propsIF) {
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        const inputValue = value.startsWith('.') ? '0' + value : value;
         if (fieldId === 'sell') {
             setBuyQtyString('');
-            if (inputValue && parseFloat(inputValue) !== 0) {
+            if (value && parseFloat(value) !== 0) {
                 setIsBuyLoading(true);
-                setSellQtyString(inputValue);
+                setSellQtyString(value);
             }
             value || setIsBuyLoading(false);
         } else if (fieldId === 'buy') {
             setSellQtyString('');
-            if (inputValue && parseFloat(inputValue) !== 0) {
+            if (value && parseFloat(value) !== 0) {
                 setIsSellLoading(true);
-                setBuyQtyString(inputValue);
+                setBuyQtyString(value);
             }
             value || setIsSellLoading(false);
         }
 
-        setDisplayValue(inputValue);
+        setDisplayValue(value);
         setDisableReverseTokens(true);
         setLastEvent(event);
     };
@@ -93,24 +88,12 @@ function CurrencyQuantity(props: propsIF) {
     };
 
     const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const targetValue = event.target.value.replace(',', '.');
         const isPrecisionGreaterThanDecimals =
-            precisionOfInput(targetValue) > thisToken.decimals;
+            precisionOfInput(event.target.value) > thisToken.decimals;
         const isUserInputValid =
-            !isPrecisionGreaterThanDecimals &&
-            (event.target.value === '' || event.target.validity.valid);
+            !isPrecisionGreaterThanDecimals && !isNaN(+event.target.value);
         if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
-            let valueWithDecimal = targetValue;
-            if (valueWithDecimal.includes(',')) {
-                const parts = valueWithDecimal.split(',');
-                const lastPart = parts.pop();
-                const firstPart = parts.join('');
-                valueWithDecimal = `${firstPart}.${lastPart}`;
-            }
-            handleEventLocal({
-                ...event,
-                target: { ...event.target, value: valueWithDecimal },
-            });
+            handleEventLocal(event);
         }
     };
 
@@ -123,27 +106,30 @@ function CurrencyQuantity(props: propsIF) {
     );
     return (
         <div className={`${styles.token_amount} `}>
-            {isLoading && progressDisplay}
-            <input
-                id={`${fieldId}-quantity`}
-                className={styles.currency_quantity}
-                placeholder={isLoading ? '' : '0.0'}
-                tabIndex={0}
-                aria-live={ariaLive}
-                aria-label={`Enter ${fieldId} amount`}
-                onChange={(event) => {
-                    handleOnChange(event);
-                }}
-                value={isLoading ? '' : displayValue}
-                type='text'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern={decimalNumRegEx.source}
-                disabled={disable}
-            />
+            {isLoading ? (
+                progressDisplay
+            ) : (
+                <input
+                    id={`${fieldId}-quantity`}
+                    className={styles.currency_quantity}
+                    placeholder={isLoading ? '' : '0.0'}
+                    tabIndex={0}
+                    aria-live={ariaLive}
+                    aria-label={`Enter ${fieldId} amount`}
+                    onChange={(event) => {
+                        handleOnChange(event);
+                    }}
+                    value={isLoading ? '' : displayValue}
+                    type='number'
+                    step='any'
+                    inputMode='decimal'
+                    autoComplete='off'
+                    autoCorrect='off'
+                    min='0'
+                    minLength={1}
+                    disabled={disable}
+                />
+            )}
         </div>
     );
 }

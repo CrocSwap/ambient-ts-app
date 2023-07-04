@@ -11,7 +11,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { exponentialNumRegEx } from '../../../../utils/regex/exports';
+import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -29,7 +29,6 @@ export default function LimitRate(props: propsIF) {
         displayPrice,
         setDisplayPrice,
         previousDisplayPrice,
-        setPreviousDisplayPrice,
         isSellTokenBase,
         setPriceInputFieldBlurred,
         fieldId,
@@ -62,18 +61,33 @@ export default function LimitRate(props: propsIF) {
         }
     };
 
-    const handleLimitChange = (value: string): void => {
+    const handleLimitChange = async (value: string) => {
         IS_LOCAL_ENV && console.debug({ value });
-        const limitNonDisplay = isDenomBase
-            ? pool?.fromDisplayPrice(parseFloat(value))
-            : pool?.fromDisplayPrice(1 / parseFloat(value));
-        limitNonDisplay?.then((limit) => {
-            const pinnedTick: number = isSellTokenBase
-                ? pinTickLower(limit, gridSize)
-                : pinTickUpper(limit, gridSize);
-            dispatch(setLimitTick(pinnedTick));
-            setPriceInputFieldBlurred(true);
-        });
+        if (pool) {
+            const limit = await pool.fromDisplayPrice(
+                isDenomBase ? parseFloat(value) : 1 / parseFloat(value),
+            );
+
+            if (limit) {
+                const pinnedTick: number = isSellTokenBase
+                    ? pinTickLower(limit, gridSize)
+                    : pinTickUpper(limit, gridSize);
+
+                dispatch(setLimitTick(pinnedTick));
+            }
+        }
+    };
+
+    const handleOnChange = (input: string) => setDisplayPrice(input);
+
+    const handleOnBlur = async (input: string) => {
+        let newDisplayPrice = removeLeadingZeros(input.replaceAll(',', ''));
+        if (input.startsWith('.')) newDisplayPrice = `0.${input}`;
+
+        if (newDisplayPrice !== previousDisplayPrice) {
+            await handleLimitChange(newDisplayPrice);
+        }
+        setPriceInputFieldBlurred(true);
     };
 
     return (
@@ -88,6 +102,7 @@ export default function LimitRate(props: propsIF) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    height: '19px',
                 }}
             >
                 <p>Price</p>
@@ -103,59 +118,18 @@ export default function LimitRate(props: propsIF) {
 
                             (limitRateInputField as HTMLInputElement).select();
                         }}
-                        onChange={(event) => {
-                            const isValid =
-                                event.target.value === '' ||
-                                event.target.value === '.' ||
-                                event.target.validity.valid;
-                            const input = event.target.value.startsWith('.')
-                                ? '0' + event.target.value
-                                : event.target.value;
-                            isValid ? setDisplayPrice(input) : null;
-                        }}
+                        onChange={(e) => handleOnChange(e.target.value)}
                         className={styles.currency_quantity}
                         placeholder='0.0'
-                        onBlur={(event) => {
-                            const isValid =
-                                event.target.value === '' ||
-                                event.target.validity.valid;
-                            const targetValue = event.target.value;
-                            if (
-                                isValid &&
-                                targetValue !== previousDisplayPrice
-                            ) {
-                                // current value of input allowing sanitation
-                                let targetValPositive = targetValue.trim();
-                                // fn to determine if input has invalid leading char
-                                const checkFirstCharValid = (): boolean => {
-                                    return (
-                                        targetValPositive.startsWith('-') ||
-                                        targetValPositive.startsWith('+') ||
-                                        targetValPositive.startsWith(',') ||
-                                        targetValPositive.startsWith('%') ||
-                                        targetValPositive.startsWith('e') ||
-                                        targetValPositive.startsWith('E')
-                                    );
-                                };
-                                // remove all leading invalid character from input string
-                                while (checkFirstCharValid()) {
-                                    targetValPositive =
-                                        targetValPositive.substring(1);
-                                }
-                                handleLimitChange(
-                                    targetValPositive.replaceAll(',', ''),
-                                );
-                                setPreviousDisplayPrice(targetValPositive);
-                            }
-                        }}
+                        onBlur={(e) => handleOnBlur(e.target.value)}
                         value={displayPrice === 'NaN' ? '...' : displayPrice}
-                        type='text'
+                        type='number'
+                        step='any'
                         inputMode='decimal'
                         autoComplete='off'
                         autoCorrect='off'
                         min='0'
                         minLength={1}
-                        pattern={exponentialNumRegEx.source}
                         disabled={disable}
                         tabIndex={0}
                         aria-label='Limit Price.'

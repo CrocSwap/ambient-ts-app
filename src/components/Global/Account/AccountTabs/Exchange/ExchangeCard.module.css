@@ -3,6 +3,7 @@
     grid-template-columns: 1fr 1fr;
     width: 100%;
     align-items: center;
+    color: var(--text1);
 }
 
 .token_icon {
@@ -14,7 +15,6 @@
 
 .exchange_row {
     display: grid;
-    color: white;
     grid-template-columns: 2fr 1fr 1fr;
     align-items: center;
     height: 48px;
@@ -45,6 +45,7 @@
 .amount {
     display: flex;
     justify-content: flex-end;
+    color: var(--text1);
 }
 
 @media only screen and (min-width: 768px) {

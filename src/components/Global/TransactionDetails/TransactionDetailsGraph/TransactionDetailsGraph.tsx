@@ -1,12 +1,9 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetchCandleSeries';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-
-// Rest of your code
 
 import './TransactionDetailsGraph.css';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -19,6 +16,8 @@ import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/Chart/Chart';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { fetchCandleSeriesCroc } from '../../../../App/functions/fetchCandleSeries';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -37,7 +36,8 @@ export default function TransactionDetailsGraph(
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
-    const { chainData } = useContext(CrocEnvContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -70,8 +70,6 @@ export default function TransactionDetailsGraph(
             : testTokenMap
                   .get(quoteTokenAddress.toLowerCase() + '_' + chainId)
                   ?.split('_')[0];
-
-    const fetchGraphData = memoizeFetchTransactionGraphData();
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -183,16 +181,20 @@ export default function TransactionDetailsGraph(
                         offsetInSeconds;
 
                     try {
-                        const graphData = await fetchGraphData(
+                        if (!crocEnv) {
+                            return;
+                        }
+
+                        const graphData = await fetchCandleSeriesCroc(
                             fetchEnabled,
-                            mainnetBaseTokenAddress,
-                            mainnetQuoteTokenAddress,
                             chainData,
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
-                            startBoundary.toString(),
-                            numCandlesNeeded.toString(),
+                            startBoundary,
+                            numCandlesNeeded,
+                            crocEnv,
+                            cachedFetchTokenPrice,
                         );
 
                         if (graphData) {
@@ -209,7 +211,7 @@ export default function TransactionDetailsGraph(
                             setIsDataEmpty(true);
                         }
                     } catch (error) {
-                        console.error(error);
+                        console.warn(error);
                     }
                 }
             }
@@ -775,7 +777,28 @@ export default function TransactionDetailsGraph(
                             transactionType === 'limitOrder' &&
                             tx !== undefined
                         ) {
-                            if (tx.claimableLiq > 0) {
+                            if (tx.timeFirstMint === undefined) {
+                                horizontalBandData[0] = [
+                                    (
+                                        !isAccountView
+                                            ? denominationsInBase
+                                            : !isBaseTokenMoneynessGreaterOrEqual
+                                    )
+                                        ? tx.bidTickInvPriceDecimalCorrected
+                                        : tx.bidTickPriceDecimalCorrected,
+                                    (
+                                        !isAccountView
+                                            ? denominationsInBase
+                                            : !isBaseTokenMoneynessGreaterOrEqual
+                                    )
+                                        ? tx.askTickInvPriceDecimalCorrected
+                                        : tx.askTickPriceDecimalCorrected,
+                                ];
+
+                                horizontalBandJoin(svg, [
+                                    horizontalBandData,
+                                ]).call(horizontalBand);
+                            } else if (tx.claimableLiq > 0) {
                                 crossPointJoin(svg, [
                                     [
                                         {
@@ -803,9 +826,7 @@ export default function TransactionDetailsGraph(
                                             ? tx.askTickInvPriceDecimalCorrected
                                             : tx.askTickPriceDecimalCorrected,
 
-                                        x: tx.timeFirstMint
-                                            ? tx.timeFirstMint
-                                            : tx.txTime,
+                                        x: tx.timeFirstMint,
                                     },
                                 ];
 
