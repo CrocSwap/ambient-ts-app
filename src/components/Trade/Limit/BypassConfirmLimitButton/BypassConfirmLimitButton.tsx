@@ -1,4 +1,4 @@
-import styles from './BypassLimitButton.module.css';
+import styles from './BypassConfirmLimitButton.module.css';
 import {
     CircleLoader,
     CircleLoaderCompleted,
@@ -9,12 +9,10 @@ import TransactionDenied from '../../../Global/TransactionDenied/TransactionDeni
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-// import TransactionFailed from '../../../../Global/TransactionFailed/TransactionFailed';
 import { useState, Dispatch, SetStateAction, memo } from 'react';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
-// import { CrocImpact } from '@crocswap-libs/sdk';
 
 interface propsIF {
     newLimitOrderTransactionHash: string;
@@ -26,7 +24,7 @@ interface propsIF {
     sendLimitOrder: () => Promise<void>;
     setNewLimitOrderTransactionHash: Dispatch<SetStateAction<string>>;
 }
-function BypassLimitButton(props: propsIF) {
+function BypassConfirmLimitButton(props: propsIF) {
     const {
         newLimitOrderTransactionHash,
         txErrorCode,
@@ -190,4 +188,4 @@ function BypassLimitButton(props: propsIF) {
     );
 }
 
-export default memo(BypassLimitButton);
+export default memo(BypassConfirmLimitButton);

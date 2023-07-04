@@ -43,7 +43,7 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import { FiExternalLink } from 'react-icons/fi';
-import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
+import BypassConfirmLimitButton from '../../../components/Trade/Limit/BypassConfirmLimitButton/BypassConfirmLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { IS_LOCAL_ENV } from '../../../constants';
@@ -501,7 +501,7 @@ export default function Limit() {
         resetConfirmation();
     };
 
-    const bypassLimitProps = {
+    const bypassConfirmLimitProps = {
         newLimitOrderTransactionHash: newLimitOrderTransactionHash,
         txErrorCode: txErrorCode,
         tokenAInputQty: tokenAInputQty,
@@ -724,7 +724,9 @@ export default function Limit() {
                         parseFloat(tokenAInputQty) > 0 ? (
                             approvalButton
                         ) : showBypassConfirmButton ? (
-                            <BypassLimitButton {...bypassLimitProps} />
+                            <BypassConfirmLimitButton
+                                {...bypassConfirmLimitProps}
+                            />
                         ) : (
                             <>
                                 <LimitButton

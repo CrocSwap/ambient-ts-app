@@ -1,9 +1,6 @@
 import styles from './BypassConfirmRangeButton.module.css';
-
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-
 import { useState, Dispatch, SetStateAction } from 'react';
-
 import {
     CircleLoader,
     CircleLoaderCompleted,
