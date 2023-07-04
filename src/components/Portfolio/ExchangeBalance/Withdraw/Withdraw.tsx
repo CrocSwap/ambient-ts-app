@@ -146,6 +146,10 @@ export default function Withdraw(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Withdrawal Amount');
+        } else if (parseFloat(withdrawQtyNonDisplay) < 0) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage('Enter a Valid Withdrawal Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);

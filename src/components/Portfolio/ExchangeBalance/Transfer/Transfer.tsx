@@ -140,6 +140,11 @@ export default function Transfer(props: propsIF) {
             setIsAddressFieldDisabled(false);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Transfer Amount');
+        } else if (parseFloat(transferQtyNonDisplay) < 0) {
+            setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage('Enter a Valid Transfer Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(false);

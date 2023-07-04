@@ -154,6 +154,10 @@ export default function Deposit(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Deposit Amount');
+        } else if (parseFloat(depositQtyNonDisplay) < 0) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage('Enter a Valid Deposit Amount');
         } else if (isApprovalPending) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
