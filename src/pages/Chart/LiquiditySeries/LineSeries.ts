@@ -26,7 +26,7 @@ export function createLineSeries(
 export function decorateForLiquidityLine(series: any, threshold: number) {
     series.decorate(
         (context: CanvasRenderingContext2D, d: LiquidityDataLocal[]) => {
-            if (d[0].liqPrices > threshold) {
+            if (d[0]?.liqPrices > threshold) {
                 context.strokeStyle = lineSellColor;
             } else {
                 context.strokeStyle = lineBuyColor;

@@ -41,7 +41,7 @@ function FeeRateSubChart(props: FreeRateData) {
         crosshairActive,
     } = props;
 
-    const d3Yaxis = useRef<HTMLInputElement | null>(null);
+    const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
 
     const d3CanvasArea = useRef(null);
     const d3CanvasCrosshair = useRef(null);

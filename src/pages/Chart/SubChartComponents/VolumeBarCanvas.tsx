@@ -7,7 +7,7 @@ import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
 
 interface propsIF {
-    scaleData: scaleData;
+    scaleData: scaleData | undefined;
     selectedDate: number | undefined;
     denomInBase: boolean;
     volumeData: Array<CandleData>;
@@ -18,7 +18,7 @@ export default function VolumeBarCanvas(props: propsIF) {
     const { scaleData, selectedDate, denomInBase, volumeData, showVolume } =
         props;
 
-    const d3CanvasBar = useRef<HTMLInputElement | null>(null);
+    const d3CanvasBar = useRef<HTMLCanvasElement | null>(null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [barSeries, setBarSeries] = useState<any>();

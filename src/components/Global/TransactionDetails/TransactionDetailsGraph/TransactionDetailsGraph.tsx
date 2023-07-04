@@ -74,7 +74,7 @@ export default function TransactionDetailsGraph(
     const [graphData, setGraphData] = useState<any>();
 
     const d3PlotGraph = useRef(null);
-    const d3Yaxis = useRef<HTMLInputElement | null>(null);
+    const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
     const d3Xaxis = useRef(null);
     const graphMainDiv = useRef(null);
 

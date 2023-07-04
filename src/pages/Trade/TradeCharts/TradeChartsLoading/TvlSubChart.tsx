@@ -5,7 +5,10 @@ import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import './Subcharts.css';
 import { setCanvasResolution } from '../../../Chart/Chart';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../utils/functions/diffHashSig';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 
 interface TvlData {
@@ -44,7 +47,7 @@ function TvlSubChart(props: TvlData) {
     } = props;
 
     // const tvlMainDiv = useRef(null);
-    const d3Yaxis = useRef<HTMLInputElement | null>(null);
+    const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
 
     const d3CanvasArea = useRef(null);
     const d3CanvasCrosshair = useRef(null);
@@ -336,7 +339,7 @@ function TvlSubChart(props: TvlData) {
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
         }
-    }, [diffHashSig(scaleData), diffHashSig(tvlyScale), tvlGradient]);
+    }, [diffHashSigScaleData(scaleData), diffHashSig(tvlyScale), tvlGradient]);
 
     useEffect(() => {
         const canvas = d3
