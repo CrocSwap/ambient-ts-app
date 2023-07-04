@@ -216,6 +216,8 @@ export default function Chart(props: propsIF) {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
+
+    const lastCrDate = new Date(1682341200 * 1000);
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const [minTickForLimit, setMinTickForLimit] = useState<any>();
@@ -1308,7 +1310,10 @@ export default function Chart(props: propsIF) {
                                         scaleData?.yScale.domain(domain);
                                     }
 
-                                    if (isAdvancedModeActive && liquidityData) {
+                                    if (
+                                        tradeData.advancedMode &&
+                                        liquidityData
+                                    ) {
                                         const liqAllBidPrices =
                                             liquidityData?.liqBidData.map(
                                                 (liqPrices: any) =>
@@ -3322,7 +3327,7 @@ export default function Chart(props: propsIF) {
         const _width = 65; // magic number of pixels to blur surrounding price
         const tickSize = 6;
 
-        const LastCrDate = xScale(parsedChartData?.lastCrDate);
+        const LastCrDate = xScale(lastCrDate);
 
         scaleData.xScaleTime.domain(xScale.domain());
 
@@ -3384,7 +3389,7 @@ export default function Chart(props: propsIF) {
                 if (
                     xScale(d) > LastCrDate - _width / 2 &&
                     xScale(d) < LastCrDate + _width / 2 &&
-                    d !== parsedChartData?.lastCrDate
+                    d !== lastCrDate
                 ) {
                     context.filter = ' blur(7px)';
                 }
@@ -4260,7 +4265,7 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
 
-                    crDataIndicator([parsedChartData?.lastCrDate]);
+                    crDataIndicator([lastCrDate]);
                 })
                 .on('measure', () => {
                     ctx.setLineDash([0.6, 0.6]);
@@ -4282,7 +4287,7 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
 
-                    crDataIndicator([parsedChartData?.lastCrDate]);
+                    crDataIndicator([lastCrDate]);
                 })
                 .on('measure', () => {
                     ctx.setLineDash([0.6, 0.6]);
@@ -5635,12 +5640,7 @@ export default function Chart(props: propsIF) {
                         height * 2 +
                         'px',
                 )
-                .style(
-                    'left',
-                    scaleData.xScale(parsedChartData?.lastCrDate) -
-                        width +
-                        'px',
-                );
+                .style('left', scaleData.xScale(lastCrDate) - width + 'px');
         }
     };
 
@@ -5713,14 +5713,12 @@ export default function Chart(props: propsIF) {
                 d3.select(event.currentTarget).style('cursor', 'col-resize');
 
                 if (
-                    parsedChartData &&
                     scaleData &&
                     scaleData.xScale(scaleData.xScale.invert(event.layerX)) >
-                        scaleData.xScale(parsedChartData.lastCrDate) - 15 &&
+                        scaleData.xScale(lastCrDate) - 15 &&
                     scaleData.xScale(scaleData.xScale.invert(event.layerX)) <
-                        scaleData.xScale(parsedChartData.lastCrDate) + 15 &&
-                    scaleData.xScale.invert(event.layerX) !==
-                        parsedChartData.lastCrDate
+                        scaleData.xScale(lastCrDate) + 15 &&
+                    scaleData.xScale.invert(event.layerX) !== lastCrDate
                 ) {
                     d3.select(event.currentTarget).style('cursor', 'pointer');
 
@@ -5734,14 +5732,12 @@ export default function Chart(props: propsIF) {
             d3.select(d3Xaxis.current).on('click', (event: any) => {
                 if (
                     !isCrDataToolTipActive &&
-                    parsedChartData &&
                     scaleData &&
                     scaleData.xScale(scaleData.xScale.invert(event.layerX)) >
-                        scaleData.xScale(parsedChartData.lastCrDate) - 15 &&
+                        scaleData.xScale(lastCrDate) - 15 &&
                     scaleData.xScale(scaleData.xScale.invert(event.layerX)) <
-                        scaleData.xScale(parsedChartData.lastCrDate) + 15 &&
-                    scaleData.xScale.invert(event.layerX) !==
-                        parsedChartData.lastCrDate
+                        scaleData.xScale(lastCrDate) + 15 &&
+                    scaleData.xScale.invert(event.layerX) !== lastCrDate
                 ) {
                     setIsCrDataToolTipActive(true);
                 } else {
@@ -5803,10 +5799,6 @@ export default function Chart(props: propsIF) {
 
             const mouseLeaveCanvas = () => {
                 setCrosshairActive('none');
-
-                setIsMouseMoveCrosshair(false);
-                mouseOutFuncForLiq();
-
                 setIsCrDataIndActive(false);
 
                 render();
@@ -6081,21 +6073,8 @@ export default function Chart(props: propsIF) {
                             className='cr-canvas'
                         ></d3fc-canvas>
                         <d3fc-canvas
-                            ref={d3CanvasCrHorizontal}
-                            className='cr_horizontal-canvas'
-                        ></d3fc-canvas>
-                        <d3fc-canvas
-                            ref={d3CanvasCrVertical}
-                            className='cr-vertical-canvas'
-                        ></d3fc-canvas>
-                        <d3fc-canvas
                             ref={d3CanvasCrIndicator}
                             className='cr-vertical-canvas'
-                        ></d3fc-canvas>
-
-                        <d3fc-canvas
-                            ref={d3CanvasNoGoZone}
-                            className='no-go-zone-canvas'
                         ></d3fc-canvas>
 
                         <d3fc-canvas
