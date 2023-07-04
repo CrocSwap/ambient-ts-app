@@ -63,6 +63,7 @@ export default function DepositCurrencySelector(props: propsIF) {
                 onChange={(e) => handleOnChange(e.target.value)}
                 value={inputValue}
                 type='number'
+                step='any'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'

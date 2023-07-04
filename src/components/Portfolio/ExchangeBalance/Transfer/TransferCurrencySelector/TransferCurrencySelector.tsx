@@ -63,7 +63,8 @@ function TransferCurrencySelector(props: propsIF) {
                 onBlur={handleOnBlur}
                 onChange={(e) => handleOnChange(e.target.value)}
                 value={inputValue}
-                type='string'
+                type='number'
+                step='any'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'

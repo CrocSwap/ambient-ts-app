@@ -63,7 +63,8 @@ export default function WithdrawCurrencySelector(props: propsIF) {
                 onBlur={handleOnBlur}
                 onChange={(e) => handleOnChange(e.target.value)}
                 value={inputValue}
-                type='text'
+                type='number'
+                step='any'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
