@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 10px;
+    padding: 0px 0.5rem 0.5rem 0.5rem;
 }
 .options_control_display_container {
     display: flex;
@@ -20,19 +20,20 @@
 }
 
 .control_title {
-    color: var(--text-grey-light);
+    padding: 0 8px;
+    color: var(--text2);
 }
 
 .url_link {
     width: 100%;
-
     display: flex;
     flex-direction: row;
     align-items: center;
     display: grid;
     grid-template-columns: 1fr 50px;
     gap: 8px;
-    color: var(--text-highlight);
+    color: var(--text2);
+    border-radius: 4px;
 }
 
 .url_link div {
@@ -40,15 +41,20 @@
     display: flex;
     justify-content: flex-end;
     padding: 0 4px;
+    padding: 0;
 }
 
 .url_link input {
     outline: none;
     border: none;
-    color: var(--text-grey-light);
-    background: var(--dark1);
-    padding: 8px 1rem;
+    color: var(--text2);
+    background: var(--dark2);
+    padding: 8px;
     border-radius: var(--border-radius);
+}
+
+.url_link input::placeholder {
+    color: var(--text2);
 }
 
 .share_links_container {
@@ -65,21 +71,23 @@
     align-items: center;
     height: 130px;
     width: 130px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.social_link_container:hover , .social_link_container:focus-visible{
-    color: var(--text-grey-white);
+.social_link_container:hover,
+.social_link_container:focus-visible {
+    color: var(--text1);
     background: var(--dark2);
+    border-radius: 4px;
 }
 
-.social_link_container:focus-visible svg{
-    color: var(--text-grey-white);
+.social_link_container:focus-visible svg {
+    color: var(--text2);
 }
 
-.copy_button{
+.copy_button {
     background: transparent;
     outline: none;
     border: none;
@@ -87,7 +95,6 @@
     padding: 2px;
 }
 
-.copy_button:hover, .copy_button:focus-visible {
-border: 1px solid var(--text-grey-white)
-
+.copy_button svg {
+    color: var(--text2);
 }

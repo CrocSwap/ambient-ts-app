@@ -1,36 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from './Room.module.css';
-import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { PoolIF } from '../../../../utils/interfaces/exports';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
 import useChatApi from '../../Service/ChatApi';
-import { topPoolIF } from '../../../../App/hooks/useTopPools';
-
-interface currentPoolInfo {
-    tokenA: TokenIF;
-    tokenB: TokenIF;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-    didUserFlipDenom: boolean;
-    isDenomBase: boolean;
-    advancedMode: boolean;
-    isTokenAPrimary: boolean;
-    primaryQuantity: string;
-    isTokenAPrimaryRange: boolean;
-    primaryQuantityRange: string;
-    limitTick: number | undefined;
-    advancedLowTick: number;
-    advancedHighTick: number;
-    slippageTolerance: number;
-}
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    favePools: favePoolsMethodsIF;
     selectedRoom: any;
     setRoom: any;
-    currentPool: currentPoolInfo;
     isFullScreen: boolean;
     room: any;
     isCurrentPool: any;
@@ -43,13 +24,10 @@ interface propsIF {
     currentUser: any;
     favoritePoolsArray: PoolIF[];
     setFavoritePoolsArray: any;
-    topPools: topPoolIF[];
 }
 
-export default function RoomDropdown(props: propsIF) {
+export default function Room(props: propsIF) {
     const {
-        favePools,
-        currentPool,
         isFullScreen,
         isCurrentPool,
         setIsCurrentPool,
@@ -57,8 +35,10 @@ export default function RoomDropdown(props: propsIF) {
         setShowCurrentPoolButton,
         favoritePoolsArray,
         setFavoritePoolsArray,
-        topPools,
     } = props;
+    const { topPools: rooms } = useContext(CrocEnvContext);
+    const { favePools } = useContext(UserPreferenceContext);
+    const currentPool = useAppSelector((state) => state.tradeData);
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray] = useState<PoolIF[]>([]);
@@ -69,7 +49,7 @@ export default function RoomDropdown(props: propsIF) {
     const defaultRooms = [
         {
             id: 100,
-            name: '   @Global',
+            name: 'Global',
             value: 'Global',
         },
     ];
@@ -77,12 +57,10 @@ export default function RoomDropdown(props: propsIF) {
     const isFullScreenDefaultRooms = [
         {
             id: 100,
-            name: '@Global',
+            name: 'Global',
             value: 'Global',
         },
     ];
-
-    const rooms = topPools;
 
     function findSpeed(pool: any) {
         switch (pool.base.symbol + '/' + pool.quote.symbol) {
@@ -232,7 +210,7 @@ export default function RoomDropdown(props: propsIF) {
             const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
             favoritePoolsArray.splice(0, middleIndex);
         }
-    }, [favePools, props.selectedRoom]);
+    }, [favePools, props.selectedRoom, rooms.length === 0]);
 
     const [isActive, setIsActive] = useState(false);
 
@@ -367,6 +345,7 @@ export default function RoomDropdown(props: propsIF) {
                 <div onClick={() => handleDropdownMenu()}>
                     <RiArrowDownSLine
                         className={styles.star_icon}
+                        size={22}
                         id='room dropdown'
                     />
                 </div>

@@ -24,7 +24,7 @@
             rgba(189, 27, 27, 0),
             rgba(255, 255, 255, 0)
         ),
-        linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
+        linear-gradient(101deg, var(--accent1), var(--accent5), var(--accent1));
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark1) inset;
@@ -34,9 +34,10 @@
     min-height: 200px;
     min-width: 300px;
     border-radius: var(--border-radius);
+    overflow: hidden;
     position: relative;
     /* max-height: 80vh; */
-    color: var(--text-grey-white);
+    color: var(--text1);
     top: 1rem;
 
     /* min-height: 80vh; */
@@ -54,17 +55,16 @@
     font-weight: 200;
     text-transform: capitalize;
     font-size: 14px;
-    color: var(--text-grey-white);
+    color: var(--text1);
     padding: 1rem;
-    
-    
 }
 
 .modal_header h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     font-weight: 200;
-    color: var(--text-grey-white);
+    color: var(--text1);
+    padding-left: 27px;
 }
 
 .modal_content {
@@ -75,8 +75,8 @@
     /* min-height: 250px; */
 }
 
-.modal_header svg:hover{
-    color: var(--text-grey-white);
+.modal_header svg:hover {
+    color: var(--text1);
 }
 
 .close_button {
@@ -86,7 +86,6 @@
 @media only screen and (min-width: 500px) {
     .modal_body {
         top: 10rem;
-
-        min-width: 407px;
+        min-width: 400px;
     }
 }

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useEffect } from 'react';
+import { useState, ReactNode, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 // START: Import Local Files
@@ -8,12 +8,12 @@ import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { sidebarMethodsIF } from '../../../hooks/useSidebar';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {
     children?: ReactNode;
     shouldDisplayContentWhenUserNotLoggedIn: boolean;
-    openModalWallet: () => void;
     isDefaultOverridden: boolean;
     item: {
         name: string;
@@ -30,11 +30,13 @@ export default function SidebarAccordion(props: propsIF) {
         shouldDisplayContentWhenUserNotLoggedIn,
         idx,
         item,
-        openModalWallet,
         isDefaultOverridden,
         sidebar,
     } = props;
 
+    const {
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
     const { isConnected } = useAccount();
     const isTopPools = item.name === 'Top Pools';
 
@@ -49,7 +51,7 @@ export default function SidebarAccordion(props: propsIF) {
 
     const openStateContent = (
         <motion.div
-            className={styles.accordion_container}
+            className={styles.accordion_content}
             key='content'
             initial='collapsed'
             animate='open'
@@ -59,13 +61,9 @@ export default function SidebarAccordion(props: propsIF) {
                 collapsed: { opacity: 0, height: 0 },
             }}
             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 1] }}
+            onClick={overflowSidebarMQ ? () => sidebar.close() : undefined}
         >
-            <div
-                className={styles.sidebar_item_content}
-                onClick={overflowSidebarMQ ? () => sidebar.close() : undefined}
-            >
-                {item.data}
-            </div>
+            {item.data}
         </motion.div>
     );
 
@@ -100,21 +98,28 @@ export default function SidebarAccordion(props: propsIF) {
         sidebar.isOpen ? (
             <div className={styles.connect_button}>
                 <p>Your recent {item.name.toLowerCase()} will display here.</p>
-                <button onClick={openModalWallet}>Connect Wallet</button>
+                <button onClick={openWagmiModal}>Connect Wallet</button>
             </div>
         ) : (
             showOpenContentOrNull
         );
 
     return (
-        <>
+        <div className={styles.accordion_container}>
             <motion.li
                 key={idx}
                 className={styles.sidebar_item}
                 onClick={() => handleAccordionClick()}
             >
                 <div>
-                    <div className={styles.sidebar_link}>
+                    <div
+                        className={styles.sidebar_link}
+                        style={{
+                            justifyContent: !sidebar.isOpen
+                                ? 'center'
+                                : 'flex-start',
+                        }}
+                    >
                         {sidebar.isOpen && (
                             <MdPlayArrow
                                 size={12}
@@ -130,6 +135,6 @@ export default function SidebarAccordion(props: propsIF) {
             <AnimatePresence>
                 {isOpen && accordionContentToShow}
             </AnimatePresence>
-        </>
+        </div>
     );
 }

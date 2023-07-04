@@ -4,7 +4,7 @@
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: var(--text-grey-white);
+    color: var(--text1);
     text-align: start;
     height: calc(1.5em + 0.75rem + 2px);
     padding: 0;
@@ -23,7 +23,7 @@
     font-family: var(--mono);
 }
 .currency_quantity::placeholder {
-    color: var(--text-grey-dark);
+    color: var(--text3);
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
@@ -37,31 +37,18 @@
     overflow-y: hidden;
     color: white;
 
-    /* border-radius: var(--border-radius); */
-    /* background: rgba( 18, 23, 31, 0.5 ); */
-    /* box-shadow: 0 1px 32px 0 rgba(13, 17, 70, 0.37); */
-    /* backdrop-filter: blur( 8.5px ); */
-    /* -webkit-backdrop-filter: blur( 8.5px ); */
-    /* border: 1px solid rgba( 255, 255, 255, 0.18 ); */
+    margin-top: 8px;
+
 }
 
-/* .modalSwapbox {
-    background-color: var(--dark2); 
-
-    
-
-    
-  } */
-
 .direction {
-    padding: 0.4.5px 0;
-    margin: 4px 0;
+    margin-bottom: 8px;
 }
 .direction,
 .swapbox_bottom {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .swapbox_top {
@@ -77,10 +64,9 @@
 
 .token_amount {
     width: 100%;
-    border: 1px solid var(--text-highlight-dark);
     background: var(--dark2);
     /* background-image: linear-gradient(rgba(23, 29, 39, 1), rgba(23, 29, 39, 1)),
-        linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
+        linear-gradient(101deg, var(--accent1), var(--accent5), var(--accent1));
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark2) inset; */
@@ -113,6 +99,7 @@
     background: var(--dark2);
     border-radius: var(--border-radius);
     gap: 4px;
+    height: 40px;
 }
 
 .button_controls button {
@@ -128,12 +115,15 @@
     height: 20px;
 }
 
-.button_controls button:focus-visible{
+.button_controls button:hover > svg{
+    color: var(--accent1)
+}
+.button_controls button:focus-visible {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-    0px 0px 21px rgba(205, 193, 255, 0.2),
-    0px 0px 12px rgba(205, 193, 255, 0.2),
-    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
-    0px 0px 2px rgba(205, 193, 255, 0.2);
+        0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2),
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 .token_select img {
     max-width: 100%;
@@ -142,7 +132,7 @@
 .token_list_text {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 200;
 }
 
@@ -181,17 +171,17 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     outline: none;
     border: solid 0.2px transparent;
     border-radius: 50px;
     padding: 3px 8px;
     transition: all var(--animation-speed) ease-in-out;
-    border: 1px solid var(--text-highlight-dark);
+    border: 1px solid var(--accent1);
 }
 
 .reset_limit_button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 @keyframes shadow-pulse {

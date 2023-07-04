@@ -1,13 +1,14 @@
 .wallet_content {
-    background: var(--dark2);
+    background: var(--dark3);
     padding: 8px 1rem;
     border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
-    gap: 4px;
-
-    height: 100px;
-    overflow-y: scroll;
+    height: 200px;
+    overflow-y: hidden;
+}
+.wallet_content::-webkit-scrollbar {
+    display: none;
 }
 .name_display_container {
     margin: 0 auto;
@@ -38,7 +39,7 @@
 .name_display_content .name_display h2 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 100;
 }
 .name_display_content .wallet_display {
@@ -47,22 +48,25 @@
     gap: 1rem;
     align-items: center;
 }
+.name_display button {
+    cursor: pointer;
+}
 
 .wallet_display p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .copy_button {
     background: transparent;
     outline: none;
     border: none;
+    cursor: pointer;
 }
 
 .actions_container {
     width: 100%;
-    /* position: absolute; */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
@@ -73,60 +77,59 @@
 .actions_container a {
     cursor: pointer;
     background: transparent;
-    background: var(--dark2);
+    background: var(--dark3);
     border: none;
     outline: none;
-    padding: 8px;
+    padding: 6px 8px;
     display: flex;
     justify-content: center;
     flex-direction: row;
     align-items: center;
     gap: 4px;
-    color: var(--text-grey-light);
+    color: var(--text2);
     transition: all var(--animation-speed) ease-in-out;
     border-radius: var(--border-radius);
 }
 
 .actions_container button:first-of-type {
-    color: var(--text-highlight);
-    background: linear-gradient(
-        270deg,
-        #7371fc,
-        #cdc1ff,
-        #7371fc,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
+    color: var(--accent5);
+    /* background: var(--title-gradient); */
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
-    border: 1px solid #7371fc;
+    /* border: 1px solid var(--accent1); */
+
+    background: var(--accent1);
 }
 .actions_container button:first-of-type:hover,
 .actions_container button:first-of-type:focus-visible {
     color: var(--text-grey-white);
-    border: 1px solid rgba(223, 190, 106, 0);
+
+    /* border: 1px solid rgba(223, 190, 106, 0); */
     background-position: 99% 50%;
 }
 .actions_container a:hover,
 .actions_container a:focus-visible {
-    background: var(--dark2);
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .copy_button:focus-visible {
-    color: var(--text-grey-white);
+    color: var(--text1);
+    cursor: pointer;
 }
 
 .token_container {
+    font-size: var(--header2-size);
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid var(--dark1);
-    padding: 4px 0;
-}
 
+    padding: 4px 10px;
+}
+.token_container:not(:last-of-type) {
+    border-bottom: 1px solid var(--dark1);
+}
 .logo_name {
     display: flex;
     flex-direction: row;
@@ -144,7 +147,7 @@
 }
 
 .token_amount h3 {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .token_amount h3,
@@ -152,11 +155,10 @@
     text-align: right;
 }
 
-.blockie_container{
-   
+.jazzicon_container {
     border-radius: 50%;
 }
-.blockie_container canvas{
+.jazzicon_container canvas {
     max-width: 100%;
     max-height: 100%;
     margin: 0 auto;

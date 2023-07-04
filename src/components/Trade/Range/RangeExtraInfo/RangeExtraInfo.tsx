@@ -1,46 +1,44 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './RangeExtraInfo.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 
 // interface for component props
 interface propsIF {
-    tokenPair: TokenPairIF;
     poolPriceDisplay: string;
     slippageTolerance: number;
     liquidityProviderFeeString: string;
-    quoteTokenIsBuy?: boolean;
     rangeGasPriceinDollars: string | undefined;
-    isDenomBase: boolean;
     isTokenABase: boolean;
-    isQtyEntered: boolean;
     showExtraInfoDropdown: boolean;
     isBalancedMode: boolean;
 }
 
 // central react functional component
-export default function RangeExtraInfo(props: propsIF) {
+function RangeExtraInfo(props: propsIF) {
     const {
-        tokenPair,
         rangeGasPriceinDollars,
-        // quoteTokenIsBuy,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFeeString,
-        isDenomBase,
         isTokenABase,
-        // isQtyEntered,
         showExtraInfoDropdown,
         isBalancedMode,
     } = props;
+
+    const { isDenomBase, tokenA, tokenB } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
     const dispatch = useAppDispatch();
 
@@ -54,8 +52,8 @@ export default function RangeExtraInfo(props: propsIF) {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
             data: reverseDisplay
-                ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+                ? `${poolPriceDisplay} ${tokenA.symbol} per ${tokenB.symbol}`
+                : `${poolPriceDisplay} ${tokenB.symbol} per ${tokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -74,8 +72,8 @@ export default function RangeExtraInfo(props: propsIF) {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
             data: reverseDisplay
-                ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-                : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+                ? `${poolPriceDisplay} ${tokenA.symbol} per ${tokenB.symbol}`
+                : `${poolPriceDisplay} ${tokenB.symbol} per ${tokenA.symbol}`,
         },
         {
             title: 'Slippage Tolerance',
@@ -94,29 +92,33 @@ export default function RangeExtraInfo(props: propsIF) {
         : extraInfoDataAdvanced;
 
     const RangeExtraInfoDetails = (
-        <div className={styles.extra_details}>
-            {extraInfoData.map((item, idx) => (
-                <div
-                    className={styles.extra_row}
-                    key={idx}
-                    tabIndex={0}
-                    aria-label={`${item.title} is ${item.data}`}
-                >
-                    <div className={styles.align_center}>
-                        <div>{item.title}</div>
-                        <TooltipComponent title={item.title} />
+        <div className={styles.extra_details_container}>
+            <div className={styles.extra_details}>
+                {extraInfoData.map((item, idx) => (
+                    <div
+                        className={styles.extra_row}
+                        key={idx}
+                        tabIndex={0}
+                        aria-label={`${item.title} is ${item.data}`}
+                    >
+                        <div className={styles.align_center}>
+                            <div>{item.title}</div>
+                            <TooltipComponent title={item.title} />
+                        </div>
+                        <div className={styles.data}>{item.data}</div>
                     </div>
-                    <div className={styles.data}>{item.data}</div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 
     const extraDetailsOrNull = showExtraDetails ? RangeExtraInfoDetails : null;
 
+    const [isConvHovered, setIsConHovered] = useState(false);
+
     const conversionRateDisplay = reverseDisplay
-        ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenA.symbol}`
-        : `1 ${tokenPair.dataTokenA.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenB.symbol}`;
+        ? `1 ${tokenB.symbol} ≈ ${poolPriceDisplay} ${tokenA.symbol}`
+        : `1 ${tokenA.symbol} ≈ ${poolPriceDisplay} ${tokenB.symbol}`;
 
     const gasCostAriaLabel = `Gas cost is ${rangeGasPriceinDollars}. Conversion rate is ${conversionRateDisplay} `;
 
@@ -142,15 +144,31 @@ export default function RangeExtraInfo(props: propsIF) {
                     dispatch(toggleDidUserFlipDenom());
                     e.stopPropagation();
                 }}
+                onMouseEnter={() => setIsConHovered(true)}
+                onMouseOut={() => setIsConHovered(false)}
             >
                 {conversionRateDisplay}
             </div>
 
             {showExtraInfoDropdown && !showExtraDetails && (
-                <RiArrowDownSLine size={22} />
+                <RiArrowDownSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
             )}
             {showExtraInfoDropdown && showExtraDetails && (
-                <RiArrowUpSLine size={22} />
+                <RiArrowUpSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
             )}
         </button>
     );
@@ -162,3 +180,5 @@ export default function RangeExtraInfo(props: propsIF) {
         </>
     );
 }
+
+export default memo(RangeExtraInfo);

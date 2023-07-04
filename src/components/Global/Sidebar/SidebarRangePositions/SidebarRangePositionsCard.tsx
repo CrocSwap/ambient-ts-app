@@ -1,19 +1,17 @@
 import styles from './SidebarRangePositionsCard.module.css';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import {
-    getPositionValue,
-    getRangeDisplay,
-    getSymbols,
-} from './functions/exports';
+import { getRangeDisplay, getSymbols } from './functions/exports';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
-    isDenomBase: boolean;
     position: PositionIF;
     handleClick: (pos: PositionIF) => void;
 }
 
 export default function SidebarRangePositionsCard(props: propsIF) {
-    const { isDenomBase, position, handleClick } = props;
+    const { position, handleClick } = props;
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     // human-readable string showing the tokens in the pool
     const pair = getSymbols(
@@ -29,7 +27,10 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     );
 
     // human-readable string showing total value of the position
-    const value = getPositionValue(position.totalValueUSD);
+    const value = getFormattedNumber({
+        value: position.totalValueUSD,
+        prefix: '$',
+    });
 
     return (
         <div className={styles.container} onClick={() => handleClick(position)}>

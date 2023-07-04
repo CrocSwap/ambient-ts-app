@@ -1,255 +1,237 @@
 /* eslint-disable no-irregular-whitespace */
 import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import {
-    CandleData,
-    setDataLoadingStatus,
-} from '../../../../utils/state/graphDataSlice';
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect, useRef } from 'react';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { Dispatch, useState, useEffect, useRef, useContext, memo } from 'react';
 
-import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
-import Pagination from '../../../Global/Pagination/Pagination';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { Pagination } from '@mui/material';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
-import { useSortedTransactions } from '../useSortedTxs';
-import useDebounce from '../../../../App/hooks/useDebounce';
+import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
-import useWindowDimensions from '../../../../utils/hooks/useWindowDimensions';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-
-const NUM_TRANSACTIONS_WHEN_COLLAPSED = 10; // Number of transactions we show when the table is collapsed (i.e. half page)
-// NOTE: this is done to improve rendering speed for this page.
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import usePagination from '../../../Global/Pagination/usePagination';
+import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
+import Spinner from '../../../Global/Spinner/Spinner';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { IS_LOCAL_ENV } from '../../../../constants';
+import useDebounce from '../../../../App/hooks/useDebounce';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface propsIF {
-    isTokenABase: boolean;
+    filter?: CandleData | undefined;
     activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
-    isShowAllEnabled: boolean;
-    portfolio?: boolean;
-    tokenList: TokenIF[];
-    changesInSelectedCandle: TransactionIF[] | undefined;
-    chainData: ChainSpec;
-    blockExplorer?: string;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
-    account: string;
-    expandTradeTable: boolean; // when viewing /trade: expanded (paginated) or collapsed (view more) views
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
-    setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
-    isCandleSelected: boolean | undefined;
-    changeState?: (
-        isOpen: boolean | undefined,
-        candleData: CandleData | undefined,
-    ) => void;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
-    handlePulseAnimation?: (type: string) => void;
-    isSidebarOpen: boolean;
-    isOnPortfolioPage: boolean;
-    setSelectedDate?: Dispatch<Date | undefined>;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
+    setSelectedDate?: Dispatch<number | undefined>;
+    setSelectedInsideTab?: Dispatch<number>;
 }
-export default function Transactions(props: propsIF) {
+function Transactions(props: propsIF) {
     const {
-        isTokenABase,
+        filter,
         activeAccountTransactionData,
         connectedAccountActive,
-        isShowAllEnabled,
-        account,
-        changesInSelectedCandle,
-        chainData,
-        blockExplorer,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-        expandTradeTable,
-        isCandleSelected,
-        isSidebarOpen,
-        openGlobalModal,
-        closeGlobalModal,
-        isOnPortfolioPage,
-        handlePulseAnimation,
-        setIsShowAllEnabled,
-        changeState,
         setSelectedDate,
-        setExpandTradeTable,
-        setSimpleRangeWidth,
+        setSelectedInsideTab,
         isAccountView,
     } = props;
 
-    const dispatch = useAppDispatch();
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { isCandleSelected } = useContext(CandleContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const { chartSettings } = useContext(ChartContext);
+    const {
+        crocEnv,
+        chainData: { chainId, poolIndex },
+    } = useContext(CrocEnvContext);
+    const {
+        showAllData: showAllDataSelection,
+        expandTradeTable: expandTradeTableSelection,
+        setExpandTradeTable,
+    } = useContext(TradeTableContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+    const { setOutsideControl } = useContext(TradeTableContext);
+    const { tokens } = useContext(TokenContext);
+
+    const candleTime = chartSettings.candleTime.global;
+
+    // only show all data and expand when on trade tab page
+    const showAllData = !isAccountView && showAllDataSelection;
+    const expandTradeTable = !isAccountView && expandTradeTableSelection;
+
+    const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
+    // NOTE: this is done to improve rendering speed for this page.
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const changesByUser = graphData?.changesByUser?.changes;
-    const changesByPool = graphData?.changesByPool?.changes;
-    const dataLoadingStatus = graphData?.dataLoadingStatus;
+    const selectedBase = tradeData.baseToken.address;
+    const selectedQuote = tradeData.quoteToken.address;
 
-    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase =
-        tradeData.quoteToken.address.toLowerCase();
+    const [transactionData, setTransactionData] = useState<TransactionIF[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const changesByUserMatchingSelectedTokens = changesByUser.filter((tx) => {
-        if (
-            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-            tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
-            tx.changeType !== 'fill'
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    });
-
-    const changesByPoolWithoutFills = changesByPool.filter((tx) => {
-        if (
-            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-            tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
-            tx.changeType !== 'fill'
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    });
-
-    const [transactionData, setTransactionData] = useState(
-        isOnPortfolioPage
-            ? activeAccountTransactionData || []
-            : changesByPoolWithoutFills,
-    );
-
-    const isConnectedUserTxDataLoading =
-        dataLoadingStatus?.isConnectedUserTxDataLoading;
-    const isLookupUserTxDataLoading =
-        dataLoadingStatus?.isLookupUserTxDataLoading;
-    const isPoolTxDataLoading = dataLoadingStatus?.isPoolTxDataLoading;
-
-    const isTxDataLoadingForPortfolio =
-        (connectedAccountActive && isConnectedUserTxDataLoading) ||
-        (!connectedAccountActive && isLookupUserTxDataLoading);
-
-    const isTxDataLoadingForTradeTable =
-        !isCandleSelected &&
-        ((isShowAllEnabled && isPoolTxDataLoading) ||
-            (!isShowAllEnabled && isConnectedUserTxDataLoading));
-
-    const shouldDisplayLoadingAnimation =
-        (isOnPortfolioPage && isTxDataLoadingForPortfolio) ||
-        (!isOnPortfolioPage && isTxDataLoadingForTradeTable);
-
-    const shouldDisplayNoTableData = !transactionData.length;
-
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(
-        shouldDisplayLoadingAnimation,
-        2000,
-    ); // debounce 1 second
-    const debouncedShouldDisplayNoTableData = useDebounce(
-        shouldDisplayNoTableData,
-        1000,
-    ); // debounce 1 second
-
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
-        useSortedTransactions(
-            'time',
-            isShowAllEnabled && !isCandleSelected
-                ? changesByPoolWithoutFills
-                : transactionData,
-        );
-
-    function handleUserSelected() {
-        setTransactionData(changesByUserMatchingSelectedTokens);
-    }
-    function handlePoolSelected() {
-        if (!isOnPortfolioPage) {
-            setTransactionData(changesByPoolWithoutFills);
-        }
-    }
+    const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
-        if (isOnPortfolioPage && activeAccountTransactionData) {
-            setTransactionData(activeAccountTransactionData);
-        }
-    }, [isOnPortfolioPage, diffHashSig(activeAccountTransactionData)]);
-
-    // update tx table content when candle selected or underlying data changes
-    useEffect(() => {
-        if (!isOnPortfolioPage) {
-            if (isCandleSelected) {
-                if (changesInSelectedCandle !== undefined) {
-                    setTransactionData(changesInSelectedCandle);
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'candleData',
-                            loadingStatus: false,
-                        }),
-                    );
-                }
-                // setIsDataLoading(false);
-            } else if (isShowAllEnabled) {
-                handlePoolSelected();
-            } else {
-                handleUserSelected();
-            }
+        // handled in useEffect below
+        if (isCandleSelected) return;
+        if (isAccountView)
+            setTransactionData(activeAccountTransactionData || []);
+        else if (!showAllData)
+            setTransactionData(
+                graphData?.changesByUser?.changes.filter(
+                    (tx) =>
+                        tx.base.toLowerCase() ===
+                            tradeData.baseToken.address.toLowerCase() &&
+                        tx.quote.toLowerCase() ===
+                            tradeData.quoteToken.address.toLowerCase() &&
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
+                ),
+            );
+        else {
+            setTransactionData(
+                graphData?.changesByPool?.changes.filter(
+                    (tx) =>
+                        tx.base.toLowerCase() ===
+                            tradeData.baseToken.address.toLowerCase() &&
+                        tx.quote.toLowerCase() ===
+                            tradeData.quoteToken.address.toLowerCase() &&
+                        tx.changeType !== 'fill' &&
+                        tx.changeType !== 'cross',
+                ),
+            );
         }
     }, [
-        isOnPortfolioPage,
-
-        isCandleSelected
-            ? diffHashSig(changesInSelectedCandle)
-            : isShowAllEnabled
-            ? diffHashSig(changesByPoolWithoutFills)
-            : diffHashSig(changesByUserMatchingSelectedTokens),
+        showAllData,
+        isCandleSelected,
+        activeAccountTransactionData,
+        graphData?.changesByUser,
+        graphData?.changesByPool,
     ]);
+
+    useEffect(() => {
+        if (isAccountView && connectedAccountActive)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
+            );
+        else if (isAccountView)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
+            );
+        else if (isCandleSelected) {
+            setIsLoading(graphData?.dataLoadingStatus.isCandleDataLoading);
+        } else if (!showAllData)
+            setIsLoading(
+                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
+            );
+        else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
+    }, [
+        showAllData,
+        connectedAccountActive,
+        graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
+        graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
+        graphData?.dataLoadingStatus.isPoolTxDataLoading,
+        graphData?.dataLoadingStatus.isCandleDataLoading,
+    ]);
+
+    const shouldDisplayNoTableData = !isLoading && !transactionData.length;
+
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
+        useSortedTxs('time', transactionData);
 
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const max1400px = useMediaQuery('(max-width: 1400px)');
-    const max1700px = useMediaQuery('(max-width: 1700px)');
+    const showTimestamp = useMediaQuery('(min-width: 1000px)');
 
-    const showColumns =
-        (max1400px && !isSidebarOpen) || (max1700px && isSidebarOpen);
-    const view2 = useMediaQuery('(max-width: 1568px)');
+    const showColumns = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1850px)')
+            : useMediaQuery('(max-width: 1500px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1850px)')
+        : useMediaQuery('(max-width: 1600px)');
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const getCandleData = () =>
+        crocEnv &&
+        fetchPoolRecentChanges({
+            tokenList: tokens.tokenUniv,
+            base: selectedBase,
+            quote: selectedQuote,
+            poolIdx: poolIndex,
+            chainId: chainId,
+            annotate: true,
+            addValue: true,
+            simpleCalc: true,
+            annotateMEV: false,
+            ensResolution: true,
+            n: 80,
+            period: candleTime.time,
+            time: filter?.time,
+            crocEnv: crocEnv,
+            lastBlockNumber,
+            cachedFetchTokenPrice: cachedFetchTokenPrice,
+            cachedQuerySpotPrice: cachedQuerySpotPrice,
+            cachedTokenDetails: cachedTokenDetails,
+            cachedEnsResolve: cachedEnsResolve,
+        })
+            .then((selectedCandleChangesJson) => {
+                IS_LOCAL_ENV && console.debug({ selectedCandleChangesJson });
+                if (selectedCandleChangesJson) {
+                    const selectedCandleChangesWithoutFills =
+                        selectedCandleChangesJson.filter((tx) => {
+                            if (tx.changeType !== 'fill') {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                    setTransactionData(selectedCandleChangesWithoutFills);
+                }
+                setOutsideControl(true);
+                setSelectedInsideTab && setSelectedInsideTab(0);
+                setIsLoading(false);
+            })
+            .catch(console.error);
 
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const { height } = useWindowDimensions();
-
-    const showColumnTransactionItems = showColumns
-        ? Math.round((height - 250) / 50)
-        : Math.round((height - 250) / 38);
-    const transactionsPerPage = showColumnTransactionItems;
-
+    // update candle transactions on fresh load
     useEffect(() => {
-        setCurrentPage(1);
-    }, [account, isShowAllEnabled, baseTokenAddress + quoteTokenAddress]);
+        if (
+            isServerEnabled &&
+            isCandleSelected &&
+            candleTime.time &&
+            filter?.time &&
+            crocEnv
+        ) {
+            setIsLoading(true);
+            getCandleData();
+        }
+    }, [isServerEnabled, isCandleSelected, filter?.time, candleTime.time]);
 
-    // Get current transactions
-    const indexOfLastTransaction = currentPage * transactionsPerPage;
-    const indexOfFirstTransaction =
-        indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = sortedTransactions?.slice(
-        indexOfFirstTransaction,
-        indexOfLastTransaction,
-    );
-
-    // Change page
-    const paginate = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
-
-    const largeScreenView = useMediaQuery('(min-width: 1200px)');
+    // update candle transactions on last block num change
+    useEffect(() => {
+        if (isCandleSelected) getCandleData();
+    }, [lastBlockNumWait]);
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -271,7 +253,7 @@ export default function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: !showColumns,
+            show: showTimestamp,
 
             slug: 'time',
             sortable: true,
@@ -279,11 +261,10 @@ export default function Transactions(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && showPair,
+            show: isAccountView && showPair,
             slug: 'pool',
             sortable: true,
         },
-
         {
             name: 'ID',
 
@@ -293,22 +274,19 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Wallet',
-
-            show: !showColumns && !isOnPortfolioPage,
+            show: !showColumns && !isAccountView,
             slug: 'wallet',
-            sortable: isShowAllEnabled,
+            sortable: true,
         },
         {
             name: walID,
-
             show: showColumns,
             slug: 'walletid',
-            sortable: false,
+            sortable: !isAccountView,
             alignCenter: false,
         },
         {
             name: 'Price',
-
             show: !ipadView,
             slug: 'price',
             sortable: false,
@@ -316,7 +294,6 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Side',
-
             show: !showColumns,
             slug: 'side',
             sortable: false,
@@ -324,7 +301,6 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Type',
-
             show: !showColumns,
             slug: 'type',
             sortable: false,
@@ -332,7 +308,6 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: sideType,
-
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
@@ -340,14 +315,13 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Value (USD)',
-
             show: true,
             slug: 'value',
             sortable: true,
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}ㅤㅤ`,
+            name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -355,8 +329,7 @@ export default function Transactions(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
-
+            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
             show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
@@ -364,33 +337,27 @@ export default function Transactions(props: propsIF) {
         },
         {
             name: 'Tokensㅤㅤ',
-
-            show: !isOnPortfolioPage && showColumns,
-
+            show: !isAccountView && showColumns,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
         {
             name: <>Tokensㅤㅤ</>,
-
-            show: isOnPortfolioPage && showColumns,
-
+            show: isAccountView && showColumns,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
-
         {
             name: '',
-
             show: true,
             slug: 'menu',
             sortable: false,
         },
     ];
 
-    const headerStyle = isOnPortfolioPage
+    const headerStyle = isAccountView
         ? styles.portfolio_header
         : styles.trade_header;
 
@@ -409,68 +376,99 @@ export default function Transactions(props: propsIF) {
         </ul>
     );
 
-    const footerDisplay = (
-        <div className={styles.footer}>
-            {expandTradeTable && transactionData.length > 30 && (
-                <Pagination
-                    itemsPerPage={transactionsPerPage}
-                    totalItems={transactionData.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
-        </div>
+    const [page, setPage] = useState(1);
+    const resetPageToFirst = () => setPage(1);
+
+    const isScreenShort =
+        (isAccountView && useMediaQuery('(max-height: 900px)')) ||
+        (!isAccountView && useMediaQuery('(max-height: 700px)'));
+
+    const isScreenTall =
+        (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
+        (!isAccountView && useMediaQuery('(min-height: 1000px)'));
+
+    const _DATA = usePagination(
+        sortedTransactions,
+        isScreenShort,
+        isScreenTall,
     );
 
-    const currentRowItemContent = currentTransactions.map((tx, idx) => (
+    const {
+        showingFrom,
+        showingTo,
+        totalItems,
+        setCurrentPage,
+        rowsPerPage,
+        changeRowsPerPage,
+        count,
+    } = _DATA;
+    const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
+        setPage(p);
+        _DATA.jump(p);
+    };
+
+    const handleChangeRowsPerPage = (
+        event:
+            | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+            | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
+        changeRowsPerPage(parseInt(event.target.value, 10));
+    };
+    const tradePageCheck = expandTradeTable && transactionData.length > 30;
+
+    const listRef = useRef<HTMLUListElement>(null);
+    const sPagination = useMediaQuery('(max-width: 800px)');
+    const footerDisplay = rowsPerPage > 0 &&
+        ((isAccountView && transactionData.length > 10) ||
+            (!isAccountView && tradePageCheck)) && (
+            <div className={styles.footer}>
+                <div className={styles.footer_content}>
+                    <RowsPerPageDropdown
+                        rowsPerPage={rowsPerPage}
+                        onChange={handleChangeRowsPerPage}
+                        itemCount={sortedTransactions.length}
+                        setCurrentPage={setCurrentPage}
+                        resetPageToFirst={resetPageToFirst}
+                    />
+                    <Pagination
+                        count={count}
+                        page={page}
+                        shape='circular'
+                        color='secondary'
+                        onChange={handleChange}
+                        showFirstButton
+                        showLastButton
+                        size={sPagination ? 'small' : 'medium'}
+                    />
+                    <p
+                        className={styles.showing_text}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
+                </div>
+            </div>
+        );
+
+    const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
         <TransactionRow
-            account={account}
             key={idx}
             tx={tx}
-            tradeData={tradeData}
-            isTokenABase={isTokenABase}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={openGlobalModal}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            view2={view2}
+            showTimestamp={showTimestamp}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
-            blockExplorer={blockExplorer}
-            closeGlobalModal={closeGlobalModal}
-            isOnPortfolioPage={isOnPortfolioPage}
-            handlePulseAnimation={handlePulseAnimation}
-            setSimpleRangeWidth={setSimpleRangeWidth}
-            chainData={chainData}
+            isAccountView={isAccountView}
         />
     ));
     const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
         <TransactionRow
-            account={account}
             key={idx}
             tx={tx}
-            tradeData={tradeData}
-            isTokenABase={isTokenABase}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={openGlobalModal}
-            isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
-            view2={view2}
+            showTimestamp={showTimestamp}
             showPair={showPair}
-            isSidebarOpen={isSidebarOpen}
-            blockExplorer={blockExplorer}
-            closeGlobalModal={closeGlobalModal}
-            isOnPortfolioPage={isOnPortfolioPage}
-            handlePulseAnimation={handlePulseAnimation}
-            setSimpleRangeWidth={setSimpleRangeWidth}
-            chainData={chainData}
+            isAccountView={isAccountView}
         />
     ));
-    const listRef = useRef<HTMLUListElement>(null);
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -500,74 +498,76 @@ export default function Transactions(props: propsIF) {
         }
     };
 
-    const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
+    const showViewMoreButton =
+        !expandTradeTable &&
+        !isAccountView &&
+        sortedRowItemContent.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
+
+    const gridTxStyle =
+        showViewMoreButton && isCandleSelected ? styles.show_more_grid : '';
+
+    const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
-            isShowAllEnabled={isShowAllEnabled}
-            setIsShowAllEnabled={setIsShowAllEnabled}
             setSelectedDate={setSelectedDate}
-            changeState={changeState}
             type='transactions'
-            isOnPortfolioPage={isOnPortfolioPage}
+            isAccountView={isAccountView}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewTransaction}>
-            <ul ref={listRef}>
-                {expandTradeTable && largeScreenView
-                    ? currentRowItemContent
-                    : isAccountView
-                    ? // NOTE: the account view of this content should not be paginated
-                      sortedRowItemContent
-                    : sortedRowItemContent.slice(
-                          0,
-                          NUM_TRANSACTIONS_WHEN_COLLAPSED,
-                      )}
+        <div onKeyDown={handleKeyDownViewTransaction} className={gridTxStyle}>
+            <ul ref={listRef} id='current_row_scroll'>
+                {currentRowItemContent}
             </ul>
-            {
-                // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
-                // TODO (#1804): we should instead be adding results to RTK
-                !expandTradeTable &&
-                    !isAccountView &&
-                    sortedRowItemContent.length >
-                        NUM_TRANSACTIONS_WHEN_COLLAPSED && (
-                        <div className={styles.view_more_container}>
-                            <button
-                                className={styles.view_more_button}
-                                onClick={() => {
-                                    setExpandTradeTable(true);
-                                }}
-                            >
-                                View More
-                            </button>
-                        </div>
-                    )
-            }
+            {showViewMoreButton && (
+                <div className={styles.view_more_container}>
+                    <button
+                        className={styles.view_more_button}
+                        onClick={() => setExpandTradeTable(true)}
+                    >
+                        View More
+                    </button>
+                </div>
+            )}
+            {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
         </div>
     );
 
     const mobileView = useMediaQuery('(max-width: 1200px)');
 
-    const mobileViewHeight = mobileView ? '70vh' : '250px';
+    useEffect(() => {
+        if (mobileView) {
+            setExpandTradeTable(true);
+        }
+    }, [mobileView]);
 
-    const expandStyle = expandTradeTable
-        ? 'calc(100vh - 10rem)'
-        : mobileViewHeight;
+    useEffect(() => {
+        if (_DATA.currentData.length && !expandTradeTable) {
+            setCurrentPage(1);
+            const mockEvent = {} as React.ChangeEvent<unknown>;
+            handleChange(mockEvent, 1);
+        }
+    }, [expandTradeTable]);
 
-    const portfolioPageStyle = props.isOnPortfolioPage
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
+    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
-        <section
-            className={styles.main_list_container}
-            style={{ height: portfolioPageStyle }}
+        <div
+            className={`${styles.main_list_container} ${
+                expandTradeTable && styles.main_list_expanded
+            }`}
         >
-            {headerColumnsDisplay}
-            {debouncedShouldDisplayLoadingAnimation ? (
-                <TransactionsSkeletons />
-            ) : (
-                transactionDataOrNull
-            )}
-            {footerDisplay}
-        </section>
+            <div>{headerColumnsDisplay}</div>
+
+            <div className={styles.table_content}>
+                {isLoading ? (
+                    <Spinner size={100} bg='var(--dark1)' centered />
+                ) : (
+                    transactionDataOrNull
+                )}
+            </div>
+
+            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
+        </div>
     );
 }
+
+export default memo(Transactions);

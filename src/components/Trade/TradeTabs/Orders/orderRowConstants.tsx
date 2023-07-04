@@ -1,6 +1,5 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { NavLink } from 'react-router-dom';
 import styles from './Orders.module.css';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
@@ -8,6 +7,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 interface Props {
     posHashTruncated: string;
@@ -17,7 +17,6 @@ interface Props {
     usernameStyle: string;
     userNameToDisplay: string;
     baseTokenLogo: string;
-
     quoteTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
@@ -27,20 +26,14 @@ interface Props {
     elapsedTimeString: string;
     sideType: string;
     sideCharacter: string;
-
     limitOrder: LimitOrderIF;
-
     priceCharacter: string;
-
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPrice: string | undefined;
-
     isOwnerActiveAccount: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isOrderFilled: boolean;
-
     handleCopyPosHash: () => void;
-    openDetailsModal: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
@@ -55,7 +48,6 @@ interface Props {
 export const orderRowConstants = (props: Props) => {
     const {
         posHashTruncated,
-        openDetailsModal,
 
         posHash,
         handleCopyPosHash,
@@ -74,7 +66,7 @@ export const orderRowConstants = (props: Props) => {
         baseDisplay,
         quoteDisplay,
         elapsedTimeString,
-        isOnPortfolioPage,
+        isAccountView,
         priceCharacter,
         priceStyle,
         truncatedDisplayPrice,
@@ -82,12 +74,13 @@ export const orderRowConstants = (props: Props) => {
         sideType,
         sideCharacter,
         isOrderFilled,
+
+        handleRowMouseDown,
+        handleRowMouseOut,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
-
-    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
 
     const tradeLinkPath =
         '/trade/limit/' +
@@ -97,31 +90,14 @@ export const orderRowConstants = (props: Props) => {
             limitOrder.base,
         );
 
-    interface CustomLIPropsIF {
-        children: React.ReactNode;
-        className?: string | undefined;
-        style?: React.CSSProperties | undefined;
-        noClick?: boolean;
-    }
-    function CustomLI(props: CustomLIPropsIF) {
-        const { children, className, style, noClick } = props;
-
-        return (
-            <li
-                onClick={noClick ? undefined : openDetailsModal}
-                className={className}
-                style={style}
-            >
-                {children}
-            </li>
-        );
-    }
-
     const IDWithTooltip = (
         <TextOnlyTooltip
             interactive
             title={
-                <p className={styles.id_tooltip_style}>
+                <p
+                    className={styles.id_tooltip_style}
+                    onClick={(event) => event.stopPropagation()}
+                >
                     {posHash}
                     <FiCopy
                         style={{ cursor: 'pointer' }}
@@ -134,7 +110,6 @@ export const orderRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
             >
@@ -144,23 +119,34 @@ export const orderRowConstants = (props: Props) => {
     );
 
     const ValueWithTooltip = (
-        <CustomLI
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
             data-label='value'
             className={sellOrderStyle}
             style={{ textAlign: 'right' }}
+            tabIndex={0}
         >
             {' '}
-            {'$' + usdValue}
-        </CustomLI>
+            {usdValue}
+        </li>
     );
 
     const actualWalletWithTooltip = (
         <TextOnlyTooltip
             interactive
             title={
-                <div className={styles.wallet_tooltip_div}>
+                <div
+                    className={styles.wallet_tooltip_div}
+                    onClick={(event) => event.stopPropagation()}
+                >
                     <p className={styles.wallet_tooltip_p}>
-                        {limitOrder.user}
+                        <span
+                            onClick={handleWalletLinkClick}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {limitOrder.user}
+                        </span>
                         <FiCopy
                             style={{ cursor: 'pointer' }}
                             size={'12px'}
@@ -180,10 +166,9 @@ export const orderRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='wallet'
-                className={usernameStyle}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+                className={`${usernameStyle} ${styles.mono_font}`}
+                style={{ textTransform: 'lowercase' }}
             >
                 {userNameToDisplay}
             </p>
@@ -193,11 +178,13 @@ export const orderRowConstants = (props: Props) => {
     const walletWithoutTooltip = (
         <p
             // onClick={handleWalletClick}
-            onClick={openDetailsModal}
+
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
             tabIndex={0}
+            onMouseOver={handleRowMouseDown}
+            onMouseOut={handleRowMouseOut}
         >
             {userNameToDisplay}
         </p>
@@ -207,46 +194,79 @@ export const orderRowConstants = (props: Props) => {
         ? walletWithoutTooltip
         : actualWalletWithTooltip;
 
-    const baseTokenLogoComponent = baseTokenLogo ? (
-        <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={limitOrder.baseSymbol.charAt(0)}
-            width={logoSizes}
+    const baseTokenLogoComponent = (
+        <TokenIcon
+            src={baseTokenLogo}
+            alt={baseTokenSymbol}
+            size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
         />
     );
-
-    const quoteTokenLogoComponent = quoteTokenLogo ? (
-        <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={limitOrder.quoteSymbol.charAt(0)}
-            width={logoSizes}
+    const quoteTokenLogoComponent = (
+        <TokenIcon
+            src={quoteTokenLogo}
+            alt={quoteTokenSymbol}
+            size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
         />
     );
 
     const tokenPair = (
-        <CustomLI data-label='tokens' className='base_color'>
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            data-label='tokens'
+            onClick={(event) => event.stopPropagation()}
+        >
             <NavLink to={tradeLinkPath}>
                 {baseTokenSymbol} / {quoteTokenSymbol}
             </NavLink>
-        </CustomLI>
+        </li>
     );
+
     const baseQtyDisplayWithTooltip = (
-        <CustomLI data-label={baseTokenSymbol} className='base_color'>
-            <div className={styles.token_qty_tooltip}>
+        <li
+            data-label={baseTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            tabIndex={0}
+        >
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                }}
+            >
                 {baseDisplay}
                 {baseTokenLogoComponent}
             </div>
-        </CustomLI>
+        </li>
     );
+
     const quoteQtyDisplayWithTooltip = (
-        <CustomLI data-label={quoteTokenSymbol} className='base_color'>
-            <div className={styles.token_qty_tooltip}>
+        <li
+            data-label={quoteTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            tabIndex={0}
+        >
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                }}
+            >
                 {quoteDisplay}
                 {quoteTokenLogoComponent}
             </div>
-        </CustomLI>
+        </li>
     );
 
     const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
@@ -263,14 +283,22 @@ export const orderRowConstants = (props: Props) => {
             enterDelay={750}
             leaveDelay={0}
         >
-            <CustomLI style={{ textTransform: 'lowercase' }}>
+            <li
+                style={{ textTransform: 'lowercase' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
+            >
                 <p className='base_color'>{elapsedTimeString}</p>
-            </CustomLI>
+            </li>
         </TextOnlyTooltip>
     ) : (
-        <CustomLI style={{ textTransform: 'lowercase' }}>
+        <li
+            style={{ textTransform: 'lowercase' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <p className='base_color'>{elapsedTimeString}</p>
-        </CustomLI>
+        </li>
     );
     const txIdColumnComponent = (
         <li>
@@ -280,7 +308,9 @@ export const orderRowConstants = (props: Props) => {
     );
 
     const priceDisplay = (
-        <CustomLI
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
             data-label='price'
             className={priceStyle + ' ' + sellOrderStyle}
             style={{ textAlign: 'right' }}
@@ -289,48 +319,56 @@ export const orderRowConstants = (props: Props) => {
                 <p className={`${styles.align_right} `}>
                     <span>{priceCharacter}</span>
                     <span>
-                        {isOnPortfolioPage
+                        {isAccountView
                             ? truncatedDisplayPriceDenomByMoneyness
                             : truncatedDisplayPrice}
                     </span>
                 </p>
             ) || '…'}
-        </CustomLI>
+        </li>
     );
 
     const typeDisplay = (
-        <CustomLI
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
             data-label='type'
             className={sellOrderStyle}
             style={{ textAlign: 'center' }}
         >
-            Order
-        </CustomLI>
+            Limit
+        </li>
     );
 
     const sideDisplay = (
-        <CustomLI
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
             data-label='side'
             className={sellOrderStyle}
             style={{ textAlign: 'center' }}
         >
             {`${sideType} ${sideCharacter}`}
-        </CustomLI>
+        </li>
     );
 
     const sideTypeColumn = (
-        <CustomLI
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
             data-label='side-type'
             className={sellOrderStyle}
             style={{ textAlign: 'center' }}
         >
-            <p>Order</p>
+            <p>Limit</p>
             <p>{`${sideType} ${sideCharacter}`}</p>
-        </CustomLI>
+        </li>
     );
 
     const tokensColumn = (
-        <CustomLI
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
             data-label={baseTokenSymbol + quoteTokenSymbol}
             className='base_color'
         >
@@ -354,11 +392,15 @@ export const orderRowConstants = (props: Props) => {
                 {quoteDisplay}
                 {quoteTokenLogoComponent}
             </div>
-        </CustomLI>
+        </li>
     );
 
     const statusDisplay = (
-        <CustomLI data-label='status'>
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            data-label='status'
+        >
             <div
                 style={{
                     display: 'flex',
@@ -368,7 +410,7 @@ export const orderRowConstants = (props: Props) => {
             >
                 <OpenOrderStatus isFilled={isOrderFilled} />
             </div>
-        </CustomLI>
+        </li>
     );
 
     return {

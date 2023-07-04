@@ -7,6 +7,9 @@
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
+
+
+
 }
 
 .footer_item_container:hover {
@@ -19,7 +22,7 @@
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: var(--text-grey-white);
+    color: var(--text1);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -30,11 +33,29 @@
     font-weight: 300;
     font-size: 12px;
     line-height: 15px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .container {
     width: 100%;
+
+
+
+
+    background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 40.39%, rgba(0, 0, 0, 0) 68.28%, #000000 100%), url('../../assets/images/home/home3.png') no-repeat center center
+    ;
+mix-blend-mode: lighten;
+
+
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover;
+
+
+background-position: top 30px right 0;
+
+
 }
 
 .content {

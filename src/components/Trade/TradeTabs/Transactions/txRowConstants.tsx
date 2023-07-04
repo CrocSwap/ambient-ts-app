@@ -1,7 +1,5 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 import {
     DefaultTooltip,
@@ -13,6 +11,7 @@ import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
 interface Props {
     txHashTruncated: string;
@@ -21,9 +20,9 @@ interface Props {
     usernameStyle: string;
     userNameToDisplay: string;
     baseTokenLogo: string;
-    baseQuantityDisplayShort: string;
+    baseQuantityDisplay: string;
     quoteTokenLogo: string;
-    quoteQuantityDisplayShort: string;
+    quoteQuantityDisplay: string;
     elapsedTimeString: string;
     sideType: string;
     sideCharacter: string;
@@ -45,7 +44,7 @@ interface Props {
     truncatedDisplayPrice: string | undefined;
 
     isOwnerActiveAccount: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isBuy: boolean;
     isOrderRemove: boolean;
     valueArrows: boolean;
@@ -80,11 +79,11 @@ export const txRowConstants = (props: Props) => {
         userNameToDisplay,
         baseTokenLogo,
         quoteTokenLogo,
-        isOnPortfolioPage,
+        isAccountView,
         tx,
         elapsedTimeString,
-        baseQuantityDisplayShort,
-        quoteQuantityDisplayShort,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
 
         isOwnerActiveAccount,
         ownerId,
@@ -116,14 +115,18 @@ export const txRowConstants = (props: Props) => {
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
-    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
-
     const IDWithTooltip = (
         <TextOnlyTooltip
             interactive
             title={
-                <div className={styles.id_tooltip_style}>
-                    <span onClick={handleOpenExplorer}> {tx.tx + 'ㅤ'}</span>
+                <div
+                    className={styles.id_tooltip_style}
+                    onClick={(event) => event.stopPropagation()}
+                >
+                    <span onClick={handleOpenExplorer}>
+                        {' '}
+                        {tx.txHash + 'ㅤ'}
+                    </span>
                     <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
                     <FiExternalLink
                         size={'12px'}
@@ -136,7 +139,6 @@ export const txRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
                 tabIndex={0}
@@ -150,7 +152,6 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='value'
             className={sideTypeStyle}
             style={{ textAlign: 'right' }}
@@ -168,15 +169,16 @@ export const txRowConstants = (props: Props) => {
                     style={{
                         marginRight: '-80px',
                         background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
+                        color: 'var(--text1)',
                         padding: '12px',
                         borderRadius: '4px',
-                        cursor: 'default',
+                        cursor: 'pointer',
                     }}
                 >
                     <p
+                        className={`${styles.mono_font}`}
+                        onClick={(event) => event.stopPropagation()}
                         style={{
-                            fontFamily: 'monospace',
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -185,7 +187,7 @@ export const txRowConstants = (props: Props) => {
                             gap: '4px',
                         }}
                     >
-                        {ownerId}
+                        <span onClick={handleWalletClick}>{ownerId}</span>
                         <FiCopy
                             style={{ cursor: 'pointer' }}
                             size={'12px'}
@@ -205,10 +207,9 @@ export const txRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+                style={{ textTransform: 'lowercase' }}
             >
                 {userNameToDisplay}
             </p>
@@ -217,7 +218,6 @@ export const txRowConstants = (props: Props) => {
 
     const walletWithoutTooltip = (
         <p
-            onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
@@ -231,64 +231,50 @@ export const txRowConstants = (props: Props) => {
         ? walletWithoutTooltip
         : actualWalletWithTooltip;
 
-    const baseTokenLogoComponent =
-        baseTokenLogo !== '' ? (
-            <DefaultTooltip
-                interactive
-                title={
-                    <p>
-                        {tx.baseSymbol}
-                        {`${tx.baseSymbol === 'ETH' ? '' : ': ' + tx.base}`}
-                    </p>
-                }
-                placement={'left'}
-                disableHoverListener={!isOnPortfolioPage}
-                arrow
-                enterDelay={750}
-                leaveDelay={0}
-            >
-                <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-            </DefaultTooltip>
-        ) : (
-            <IconWithTooltip
-                title={`${tx.baseSymbol}: ${tx.base}`}
-                placement='bottom'
-            >
-                <NoTokenIcon
-                    tokenInitial={tx.baseSymbol.charAt(0)}
-                    width={logoSizes}
-                />
-            </IconWithTooltip>
-        );
+    const baseTokenLogoComponent = (
+        <DefaultTooltip
+            interactive
+            title={
+                <p>
+                    {tx.baseSymbol}
+                    {`${tx.baseSymbol === 'ETH' ? '' : ': ' + tx.base}`}
+                </p>
+            }
+            placement={'left'}
+            disableHoverListener={!isAccountView}
+            arrow
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <TokenIcon
+                src={baseTokenLogo}
+                alt={tx.baseSymbol}
+                size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
+            />
+        </DefaultTooltip>
+    );
 
-    const quoteTokenLogoComponent =
-        quoteTokenLogo !== '' ? (
-            <DefaultTooltip
-                interactive
-                title={
-                    <div>
-                        {tx.quoteSymbol}: {tx.quote}
-                    </div>
-                }
-                placement={'left'}
-                disableHoverListener={!isOnPortfolioPage}
-                arrow
-                enterDelay={750}
-                leaveDelay={0}
-            >
-                <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-            </DefaultTooltip>
-        ) : (
-            <IconWithTooltip
-                title={`${tx.quoteSymbol}: ${tx.quote}`}
-                placement='right'
-            >
-                <NoTokenIcon
-                    tokenInitial={tx.quoteSymbol.charAt(0)}
-                    width={logoSizes}
-                />
-            </IconWithTooltip>
-        );
+    const quoteTokenLogoComponent = (
+        <DefaultTooltip
+            interactive
+            title={
+                <div>
+                    {tx.quoteSymbol}: {tx.quote}
+                </div>
+            }
+            placement={'left'}
+            disableHoverListener={!isAccountView}
+            arrow
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <TokenIcon
+                src={quoteTokenLogo}
+                alt={tx.quoteSymbol}
+                size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
+            />
+        </DefaultTooltip>
+    );
 
     const pair =
         tx.base !== ZERO_ADDRESS
@@ -299,7 +285,7 @@ export const txRowConstants = (props: Props) => {
         (tx.entityType.toLowerCase() === 'limitorder'
             ? '/trade/limit/'
             : tx.entityType.toLowerCase() === 'liqchange'
-            ? '/trade/range/'
+            ? '/trade/pool/'
             : '/trade/market/') +
         formSlugForPairParams(tx.chainId, tx.quote, tx.base);
 
@@ -308,6 +294,7 @@ export const txRowConstants = (props: Props) => {
             className='base_color'
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
+            onClick={(event) => event.stopPropagation()}
         >
             <NavLink to={tradeLinkPath}>
                 {tx.baseSymbol} / {tx.quoteSymbol}
@@ -323,13 +310,13 @@ export const txRowConstants = (props: Props) => {
                     style={{
                         marginLeft: '-70px',
                         background: 'var(--dark3)',
-                        color: 'var(--text-grey-white)',
+                        color: 'var(--text1)',
                         padding: '12px',
                         borderRadius: '4px',
                         cursor: 'pointer',
                     }}
                 >
-                    {moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
+                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
                 </p>
             }
             placement={'right'}
@@ -338,7 +325,6 @@ export const txRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <li
-                onClick={openDetailsModal}
                 style={{ textTransform: 'lowercase' }}
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
@@ -351,7 +337,6 @@ export const txRowConstants = (props: Props) => {
 
     const baseQtyDisplayWithTooltip = (
         <li
-            onClick={openDetailsModal}
             data-label={tx.baseSymbol}
             className='base_color'
             onMouseEnter={handleRowMouseDown}
@@ -367,14 +352,13 @@ export const txRowConstants = (props: Props) => {
                     textAlign: 'right',
                 }}
             >
-                {baseQuantityDisplayShort}
+                {baseQuantityDisplay}
                 {baseTokenLogoComponent}
             </div>
         </li>
     );
     const quoteQtyDisplayWithTooltip = (
         <li
-            onClick={openDetailsModal}
             data-label={tx.quoteSymbol}
             className='base_color'
             onMouseEnter={handleRowMouseDown}
@@ -390,7 +374,7 @@ export const txRowConstants = (props: Props) => {
                     textAlign: 'right',
                 }}
             >
-                {quoteQuantityDisplayShort}
+                {quoteQuantityDisplay}
                 {quoteTokenLogoComponent}
             </div>
         </li>
@@ -407,13 +391,14 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='side'
             className={sideTypeStyle}
             style={{ textAlign: 'center' }}
             tabIndex={0}
         >
-            {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+            {tx.entityType === 'liqchange' ||
+            tx.changeType === 'burn' ||
+            tx.changeType === 'recover'
                 ? `${sideType}`
                 : `${sideType} ${sideCharacter}`}
         </li>
@@ -436,11 +421,11 @@ export const txRowConstants = (props: Props) => {
             >
                 {isBuy
                     ? isOrderRemove
-                        ? baseQuantityDisplayShort
-                        : quoteQuantityDisplayShort
+                        ? baseQuantityDisplay
+                        : quoteQuantityDisplay
                     : isOrderRemove
-                    ? quoteQuantityDisplayShort
-                    : baseQuantityDisplayShort}
+                    ? quoteQuantityDisplay
+                    : baseQuantityDisplay}
                 {valueArrows ? positiveArrow : ' '}
                 {isBuy
                     ? isOrderRemove
@@ -460,13 +445,13 @@ export const txRowConstants = (props: Props) => {
                 {isBuy
                     ? `${
                           isOrderRemove
-                              ? quoteQuantityDisplayShort
-                              : baseQuantityDisplayShort
+                              ? quoteQuantityDisplay
+                              : baseQuantityDisplay
                       }${valueArrows ? negativeArrow : ' '}`
                     : `${
                           isOrderRemove
-                              ? baseQuantityDisplayShort
-                              : quoteQuantityDisplayShort
+                              ? baseQuantityDisplay
+                              : quoteQuantityDisplay
                       }${valueArrows ? negativeArrow : ' '}`}
                 {isBuy
                     ? isOrderRemove
@@ -483,7 +468,6 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='type'
             className={sideTypeStyle}
             style={{ textAlign: 'center' }}
@@ -500,11 +484,12 @@ export const txRowConstants = (props: Props) => {
             data-label='side-type'
             className={sideTypeStyle}
             style={{ textAlign: 'center' }}
-            onClick={openDetailsModal}
         >
             <p>{type}</p>
             <p>
-                {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                {tx.entityType === 'liqchange' ||
+                tx.changeType === 'burn' ||
+                tx.changeType === 'recover'
                     ? `${sideType}`
                     : `${sideType} ${sideCharacter}`}
             </p>
@@ -515,7 +500,6 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='price'
             className={'gradient_text'}
             style={{
@@ -532,7 +516,6 @@ export const txRowConstants = (props: Props) => {
         <li
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
-            onClick={openDetailsModal}
             data-label='price'
             className={`${sideTypeStyle}`}
             tabIndex={0}
@@ -540,7 +523,7 @@ export const txRowConstants = (props: Props) => {
             <p className={`${styles.align_right} `}>
                 <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
                 <span>
-                    {isOnPortfolioPage
+                    {isAccountView
                         ? truncatedLowDisplayPriceDenomByMoneyness
                         : truncatedLowDisplayPrice}
                 </span>
@@ -548,7 +531,7 @@ export const txRowConstants = (props: Props) => {
             <p className={`${styles.align_right} `}>
                 <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
                 <span>
-                    {isOnPortfolioPage
+                    {isAccountView
                         ? truncatedHighDisplayPriceDenomByMoneyness
                         : truncatedHighDisplayPrice}
                 </span>
@@ -562,7 +545,7 @@ export const txRowConstants = (props: Props) => {
             onMouseLeave={handleRowMouseOut}
             onClick={() => {
                 if (IS_LOCAL_ENV) {
-                    console.debug({ isOnPortfolioPage });
+                    console.debug({ isAccountView });
                     console.debug({
                         truncatedDisplayPriceDenomByMoneyness,
                     });
@@ -577,7 +560,7 @@ export const txRowConstants = (props: Props) => {
                 <p className={`${styles.align_right} `}>
                     <span>
                         {(
-                            isOnPortfolioPage
+                            isAccountView
                                 ? truncatedDisplayPriceDenomByMoneyness
                                 : truncatedDisplayPrice
                         )
@@ -585,7 +568,7 @@ export const txRowConstants = (props: Props) => {
                             : '…'}
                     </span>
                     <span>
-                        {isOnPortfolioPage
+                        {isAccountView
                             ? truncatedDisplayPriceDenomByMoneyness
                             : truncatedDisplayPrice}
                     </span>

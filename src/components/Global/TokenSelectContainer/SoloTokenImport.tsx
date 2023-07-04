@@ -1,12 +1,13 @@
 import styles from './SoloTokenImport.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
-import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import Button from '../../Global/Button/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import TokenIcon from '../TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 interface propsIF {
-    customToken: TokenIF | null;
+    customToken: TokenIF | null | 'querying';
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
     chainId: string;
 }
@@ -15,15 +16,6 @@ export default function SoloTokenImport(props: propsIF) {
 
     const chainData = lookupChain(chainId);
 
-    const tokenLogo = customToken?.logoURI ? (
-        <img src={customToken.logoURI} alt='' width='30px' />
-    ) : (
-        <NoTokenIcon
-            tokenInitial={customToken?.symbol?.charAt(0) || '?'}
-            width='30px'
-        />
-    );
-
     const tokenNotFound = (
         <div className={styles.token_not_found}>
             <p>Cound not find matching token</p>
@@ -31,7 +23,15 @@ export default function SoloTokenImport(props: propsIF) {
         </div>
     );
 
+    const tokenQuerying = (
+        <div className={styles.match_text_container}>
+            <p>...</p>
+        </div>
+    );
+
     if (!customToken) return tokenNotFound;
+    if (customToken === 'querying') return tokenQuerying;
+
     return (
         <div className={styles.main_container}>
             <div className={styles.match_text_container}>
@@ -41,7 +41,11 @@ export default function SoloTokenImport(props: propsIF) {
 
             <div className={styles.token_display}>
                 <div>
-                    {tokenLogo}
+                    <TokenIcon
+                        src={uriToHttp(customToken.logoURI)}
+                        alt={customToken.name}
+                        size='2xl'
+                    />
                     <h2>{customToken?.symbol}</h2>
                 </div>
                 <h6>{customToken?.name}</h6>
@@ -56,7 +60,7 @@ export default function SoloTokenImport(props: propsIF) {
                     target='_blank'
                     rel='noopener noreferrer'
                     style={{
-                        color: 'var(--accent-secondary)',
+                        color: 'var(--accent2)',
                     }}
                     aria-label={customToken.symbol}
                 >
@@ -72,12 +76,6 @@ export default function SoloTokenImport(props: propsIF) {
                 title='Acknowledge'
                 action={() => chooseToken(customToken, true)}
             />
-            {/* <div className={styles.import_button}>
-                
-                <button onClick={() => chooseToken(customToken, true)}>
-                    Acknowledge
-                </button>
-            </div> */}
         </div>
     );
 }

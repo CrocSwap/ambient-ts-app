@@ -1,7 +1,12 @@
 .icon svg {
-    color: #bdbdbd;
+    color: var(--text2);
     transition: all var(--animation-speed) ease-in-out;
 }
 .icon svg:hover {
     color: white;
+}
+
+.icon{
+    display: flex;
+    justify-content: center
 }

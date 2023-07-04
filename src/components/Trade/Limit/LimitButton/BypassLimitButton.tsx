@@ -4,16 +4,16 @@ import {
     CircleLoaderCompleted,
     CircleLoaderFailed,
 } from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // import TransactionFailed from '../../../../Global/TransactionFailed/TransactionFailed';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, memo } from 'react';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 // import { CrocImpact } from '@crocswap-libs/sdk';
 
 interface propsIF {
@@ -21,26 +21,25 @@ interface propsIF {
     txErrorCode: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    tokenPair: TokenPairIF;
     resetConfirmation: () => void;
-    showBypassConfirmButton: boolean;
     setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
     sendLimitOrder: () => Promise<void>;
     setNewLimitOrderTransactionHash: Dispatch<SetStateAction<string>>;
 }
-export default function BypassLimitButton(props: propsIF) {
-    const receiptData = useAppSelector((state) => state.receiptData);
+function BypassLimitButton(props: propsIF) {
     const {
         newLimitOrderTransactionHash,
         txErrorCode,
         tokenAInputQty,
         tokenBInputQty,
-        tokenPair,
         resetConfirmation,
         sendLimitOrder,
         setShowBypassConfirmButton,
         setNewLimitOrderTransactionHash,
     } = props;
+
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const receiptData = useAppSelector((state) => state.receiptData);
 
     const transactionApproved = newLimitOrderTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
@@ -53,9 +52,8 @@ export default function BypassLimitButton(props: propsIF) {
         document.getElementById('buy-limit-quantity') as HTMLInputElement
     )?.value;
 
-    const sellTokenData = tokenPair?.dataTokenA;
-
-    const buyTokenData = tokenPair?.dataTokenB;
+    const sellTokenData = tokenA;
+    const buyTokenData = tokenB;
 
     const confirmSendMessage = (
         <WaitingConfirmation
@@ -86,7 +84,6 @@ export default function BypassLimitButton(props: propsIF) {
     const transactionException = (
         <TransactionException
             resetConfirmation={handleReset}
-            noAnimation
             initiateTx={sendLimitOrder}
         />
     );
@@ -108,7 +105,7 @@ export default function BypassLimitButton(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
             noAnimation
         />
@@ -130,7 +127,7 @@ export default function BypassLimitButton(props: propsIF) {
         ? 'var(--negative)'
         : transactionApproved
         ? 'var(--positive)'
-        : 'var(--text-highlight-dark)';
+        : 'var(--accent1)';
 
     const animationDisplay = isTransactionException ? (
         <CircleLoaderFailed size='30px' />
@@ -162,8 +159,8 @@ export default function BypassLimitButton(props: propsIF) {
                     onClick={() => setShowExtraInfo(!showExtraInfo)}
                 >
                     <div style={{ color: buttonColor }}>
-                        {animationDisplay}
-                        {buttonText}
+                        <div style={{ width: '35px' }}>{animationDisplay}</div>
+                        <div>{buttonText}</div>
                     </div>
                     {showExtraInfo ? (
                         <RiArrowUpSLine size={20} />
@@ -192,3 +189,5 @@ export default function BypassLimitButton(props: propsIF) {
         </section>
     );
 }
+
+export default memo(BypassLimitButton);

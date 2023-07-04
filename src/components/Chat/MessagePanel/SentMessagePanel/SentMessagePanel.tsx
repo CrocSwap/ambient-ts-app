@@ -2,19 +2,16 @@ import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
 import { useEffect, useState } from 'react';
-import Blockies from 'react-blockies';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setDataLoadingStatus } from '../../../../utils/state/graphDataSlice';
 
 interface SentMessageProps {
     message: Message;
     ensName: string;
     isCurrentUser: boolean;
     currentUser: string | undefined;
-    userImageData: string[];
     resolvedAddress: string | undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectedAccountActive: any;
@@ -51,7 +48,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     const { deleteMessage } = useChatApi();
 
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -293,8 +289,10 @@ export default function SentMessagePanel(props: SentMessageProps) {
         });
     }
 
-    const myBlockies = (
-        <Blockies seed={props.message.walletID.toLowerCase()} scale={3} />
+    const jazziconsSeed = props.message.walletID.toLowerCase();
+
+    const myJazzicon = (
+        <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
     return (
@@ -329,16 +327,14 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     }
                 >
                     {showAvatar && (
-                        <div>
-                            <div style={{ borderRadius: '50%' }}>
-                                {myBlockies}
-                            </div>
+                        <div className={styles.avatar_jazzicons}>
+                            {myJazzicon}
                         </div>
                     )}
                     {!showAvatar && (
-                        <div style={{ display: 'none' }}>
+                        <div style={{ display: 'none', marginLeft: '10px' }}>
                             <div className={styles.nft_container}>
-                                {myBlockies}
+                                {myJazzicon}
                             </div>
                         </div>
                     )}
@@ -362,13 +358,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
                                             : props.message.ensName
                                     }`
                                 ) {
-                                    dispatch(
-                                        setDataLoadingStatus({
-                                            datasetName: 'lookupUserTxData',
-                                            loadingStatus: true,
-                                        }),
-                                    );
-
                                     navigate(
                                         `/${
                                             props.message.ensName ===
@@ -389,6 +378,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                             setIsPosition={setIsPosition}
                             walletExplorer={getName()}
                             isCurrentUser={props.isCurrentUser}
+                            showAvatar={showAvatar}
                         />
                         {!isPosition && mentionedMessage()}
                     </div>

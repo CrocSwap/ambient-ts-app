@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction } from 'react';
 // import { CrocImpact } from '@crocswap-libs/sdk';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
@@ -17,12 +17,11 @@ import {
 
 // START: Import Other Local Files
 import styles from './BypassConfirmRepositionButton.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/TokenPairIF';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../utils/interfaces/exports';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
-    tokenPair: TokenPairIF;
     txErrorCode: string;
     resetConfirmation: () => void;
     onSend: () => void;
@@ -34,11 +33,10 @@ interface propsIF {
     setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function BypassConfirmRepositionButton(props: propsIF) {
+function BypassConfirmRepositionButton(props: propsIF) {
     const {
         newRepositionTransactionHash,
         txErrorCode,
-        tokenPair,
         onSend,
         resetConfirmation,
         showExtraInfo,
@@ -50,13 +48,14 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
     } = props;
 
     const receiptData = useAppSelector((state) => state.receiptData);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const transactionApproved = newRepositionTransactionHash !== '';
     const isTransactionDenied: boolean = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const sellTokenData: TokenIF = tokenPair.dataTokenA;
-    const buyTokenData: TokenIF = tokenPair.dataTokenB;
+    const sellTokenData: TokenIF = tokenA;
+    const buyTokenData: TokenIF = tokenB;
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -64,7 +63,7 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
             noAnimation
             reposition
@@ -101,7 +100,6 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
     // );
     const transactionException = (
         <TransactionException
-            noAnimation
             resetConfirmation={handleReset}
             initiateTx={onSend}
         />
@@ -132,7 +130,7 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
         ? 'var(--negative)'
         : transactionApproved
         ? 'var(--positive)'
-        : 'var(--text-highlight-dark)';
+        : 'var(--accent1)';
 
     const animationDisplay = isTransactionException ? (
         <CircleLoaderFailed size='30px' />
@@ -200,9 +198,4 @@ export default function BypassConfirmRepositionButton(props: propsIF) {
     );
 }
 
-// setShowBypassConfirm => True => Render the new button(tx denied)
-// setShowBypassConfirm => False => Render Open Confirmation button
-
-// For users with skip this confirmation
-// Click swap now button => initiates swap and renders new button => setShowBypassConfirm(true)
-// When receipt is successful, we render the old button => setShowBypassConfirm(false)
+export default memo(BypassConfirmRepositionButton);

@@ -27,12 +27,47 @@ export const APP_ENVIRONMENT: AppEnvironment =
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
 export const GRAPHCACHE_URL =
-    process.env.REACT_APP_GRAPHCACHE_URL || 'https://809821320828123.de:5000';
+    process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
+
+export const GRAPHCACHE_SMALL_URL =
+    process.env.REACT_APP_GRAPHCACHE_SMALL_URL || 'https://ambindexer.net/gcgo';
 
 export const GRAPHCACHE_WSS_URL =
     process.env.REACT_APP_GRAPHCACHE_WSS_URL ||
-    GRAPHCACHE_URL.replace('https', 'wss');
+    GRAPHCACHE_URL.replace('http', 'ws');
+
+export const CHAT_BACKEND_URL =
+    process.env.REACT_APP_CHAT_URL || `${GRAPHCACHE_URL}`;
+
+export const CHAT_BACKEND_WSS_URL =
+    process.env.REACT_APP_CHAT_WSS_URL ||
+    CHAT_BACKEND_URL.replace('http', 'ws');
+
+export const CHAT_ENABLED =
+    process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
+        ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
+        : true;
 
 export const MORALIS_KEY =
     process.env.REACT_APP_MORALIS_KEY ||
-    'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5';
+    'tb9SfJn2zwjLldR7JeHzLkT0cAHOu9Jc2QWVY06Sloar9VWNKTqZFMIta5BCWLma';
+
+export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
+export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
+
+// External links
+export const DOCS_LINK = 'https://docs.ambient.finance/';
+export const GITHUB_LINK = 'https://github.com/CrocSwap';
+export const TWITTER_LINK = 'https://twitter.com/ambient_finance';
+export const DISCORD_LINK = 'https://discord.gg/ambient-finance';
+export const MEDIUM_LINK = 'https://crocswap.medium.com/';
+
+export const OVERRIDE_CANDLE_POOL_ID = 36000;
+
+// Localstorage keys
+export const LS_KEY_CHART_SETTINGS = 'chart_settings';
+export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';
+
+// Icon archive
+export const ETH_ICON_URL =
+    'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png';

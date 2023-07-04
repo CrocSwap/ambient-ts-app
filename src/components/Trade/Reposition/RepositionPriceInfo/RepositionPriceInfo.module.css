@@ -1,21 +1,22 @@
-
-
-/* ------------------------ */
-.price_info_content{
-    /* background: rgb(19, 2, 2); */
-    padding: 8px 16px;
+.price_info_container {
+    padding: 0.5rem 0 0;
 }
-.apr_display{
+
+.price_info_content {
+    /* background: rgb(19, 2, 2); */
+    padding: 0.5rem 1.5rem;
+}
+.apr_display {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
 
-.apr_display p:first-of-type{
+.apr_display p:first-of-type {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
 
     display: flex;
     flex-direction: row;
@@ -23,23 +24,13 @@
     gap: 4px;
 }
 
-.apr_display p:nth-of-type(2){
+.apr_display p:nth-of-type(2) {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-
-    background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
-background-clip: text;
-text-fill-color: transparent;
-
-/* glow/positive */
-
-text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
-
+    color: var(--other-green);
 }
 
-.row_display{
+.row_display {
     /* display: flex;
     flex-direction: row;
     align-items: center;
@@ -54,83 +45,87 @@ text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
     gap: 4px;
 }
 
-.row_display p:first-of-type, .row_display p:nth-of-type(3){
-    color: var(--text-grey-white);
+.row_display p:first-of-type,
+.row_display p:nth-of-type(3) {
+    color: var(--text1);
     /* background: red; */
 }
 
-.row_display p:first-of-type{
+.row_display p:first-of-type {
     text-align: start;
 }
-.row_display p:nth-of-type(3){
+.row_display p:nth-of-type(3) {
     text-align: end;
 }
-.row_display p:nth-of-type(2){
-    color: var(--text-grey-light);
+.row_display p:nth-of-type(2) {
+    color: var(--text2);
     text-align: center;
 }
 
-.divider{
+.divider {
     width: 100%;
-    background: #242F3F;
+    background: var(--dark3);
     height: 1px;
-    margin: 6px 8px;
+    margin: 0.5rem auto;
     border-radius: 9999;
-    color: red;
-    /* padding: 0 8px; */
 }
 
-.gas_pump_dropdown{
-    background: transparent;
-    outline: none;
-    border: none
-}
-.gas_pump_dropdown button{
+.gas_pump_dropdown {
     background: transparent;
     outline: none;
     border: none;
-width: 100%;
+    margin: 0.25rem 2rem 0;
+}
+.gas_pump_dropdown button {
+    background: transparent;
+    outline: none;
+    border: none;
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 
     cursor: pointer;
+    margin: 0.5rem auto;
+    margin-bottom: 0.5rem;
+    padding: 0 0.25rem;
 }
-.gas_pump_dropdown button:hover{
-    color: var(--text-grey-white);
-    cursor: pointer;
-}
-.gas_pump_dropdown button:focus-visible{
-    border: 1px solid var(--text-grey-white)
-}
-.dropdown_content{
-    border: 1px solid #242F3F;
-border-radius: 4px;
-padding: 8px;
+.gas_pump_dropdown button:hover {
+    background: var(--dark2);
+    border-radius: var(--border-radius);
 
-transition: all var(--animation-speed) ease-in-out;
+}
+.gas_pump_dropdown button:focus-visible {
+    border: 1px solid var(--text1);
+}
+.dropdown_content {
+    border: 1px solid var(--dark3);
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+
+    transition: all var(--animation-speed) ease-in-out;
 }
 
-.gas_pump_dropdown p{
+.gas_pump_dropdown p {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 4px;
+    gap: 0.25rem;
 }
 
-.extra_row{
+.extra_row {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
 
-.align_center{
+.align_center {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -138,8 +133,8 @@ transition: all var(--animation-speed) ease-in-out;
     vertical-align: center;
 }
 
-.extra_row p{
-    color: var(--text-grey-light);
+.extra_row p {
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }

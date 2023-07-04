@@ -6,6 +6,7 @@ import {
     cloneElement,
     Dispatch,
     SetStateAction,
+    memo,
 } from 'react';
 import styles from './NavItem.module.css';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
@@ -15,16 +16,15 @@ interface NavItemPropsIF {
     icon: ReactNode;
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
+    allowClicksOutside?: boolean;
 }
 
-export default function NavItem(props: NavItemPropsIF) {
-    const { children, icon } = props;
+function NavItem(props: NavItemPropsIF) {
+    const { children, icon, open, setOpen, allowClicksOutside = false } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
 
-    const { open, setOpen } = props;
-
     const clickOutsideHandler = () => {
-        setOpen(false);
+        if (!allowClicksOutside) setOpen(false);
     };
 
     UseOnClickOutside(navItemRef, clickOutsideHandler);
@@ -43,7 +43,6 @@ export default function NavItem(props: NavItemPropsIF) {
             ref={navItemRef}
             tabIndex={0}
             aria-label='Nav item'
-            onKeyDown={() => setOpen(true)}
         >
             <div className={styles.icon_button} onClick={() => setOpen(!open)}>
                 {icon}
@@ -52,3 +51,5 @@ export default function NavItem(props: NavItemPropsIF) {
         </button>
     );
 }
+
+export default memo(NavItem);

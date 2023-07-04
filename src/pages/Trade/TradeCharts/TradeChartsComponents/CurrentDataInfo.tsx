@@ -1,23 +1,13 @@
 import styles from './CurrentDataInfo.module.css';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
-import { Dispatch, SetStateAction } from 'react';
-
-export interface CandleChartData {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    date: any;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    time: number;
-    allSwaps: unknown;
-    color: string;
-    stroke: string;
-}
+import { Dispatch, memo, SetStateAction } from 'react';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
-    currentData: CandleChartData | undefined;
+    currentData: CandleData | undefined;
     currentVolumeData: number | undefined;
     showLatest: boolean;
     setLatest: Dispatch<SetStateAction<boolean>>;
@@ -26,7 +16,7 @@ interface CurrentDataInfoPropsIF {
     rescale: boolean;
     reset: boolean;
 }
-export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
+function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
     const {
         showTooltip,
         currentData,
@@ -38,35 +28,45 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         rescale,
         reset,
     } = props;
-    function formattedCurrentData(data: number | undefined): string {
-        if (data) {
-            if (data > 2) {
-                return data.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                });
-            } else {
-                return data.toPrecision(3);
-            }
-        }
 
-        return '-';
+    function formattedCurrentData(data: number | undefined) {
+        return getFormattedNumber({ value: data, zeroDisplay: '-' });
     }
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const denominationsInBase = tradeData.isDenomBase;
 
     return (
         <div className={styles.chart_tooltips}>
             {showTooltip ? (
                 <div className={styles.current_data_info}>
-                    {'O: ' +
-                        formattedCurrentData(currentData?.open) +
-                        ' H: ' +
-                        formattedCurrentData(currentData?.high) +
-                        ' L: ' +
-                        formattedCurrentData(currentData?.low) +
-                        ' C: ' +
-                        formattedCurrentData(currentData?.close) +
-                        ' V: ' +
-                        formatDollarAmountAxis(currentVolumeData)}
+                    {currentData &&
+                        'O: ' +
+                            formattedCurrentData(
+                                denominationsInBase
+                                    ? currentData.invPriceOpenExclMEVDecimalCorrected
+                                    : currentData.priceOpenExclMEVDecimalCorrected,
+                            ) +
+                            ' H: ' +
+                            formattedCurrentData(
+                                denominationsInBase
+                                    ? currentData.invMinPriceExclMEVDecimalCorrected
+                                    : currentData.maxPriceExclMEVDecimalCorrected,
+                            ) +
+                            ' L: ' +
+                            formattedCurrentData(
+                                denominationsInBase
+                                    ? currentData.invMaxPriceExclMEVDecimalCorrected
+                                    : currentData.minPriceExclMEVDecimalCorrected,
+                            ) +
+                            ' C: ' +
+                            formattedCurrentData(
+                                denominationsInBase
+                                    ? currentData.invPriceCloseExclMEVDecimalCorrected
+                                    : currentData.priceCloseExclMEVDecimalCorrected,
+                            ) +
+                            ' V: ' +
+                            formatDollarAmountAxis(currentVolumeData)}
                 </div>
             ) : (
                 <div className={styles.current_data_info} />
@@ -129,3 +129,5 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         </div>
     );
 }
+
+export default memo(CurrentDataInfo);

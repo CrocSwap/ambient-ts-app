@@ -4,31 +4,19 @@
     overflow: hidden;
     flex-direction: column;
     overflow-y: hidden;
-    padding: 5px;
-    color: white;
+   
+    color: var(--text1);
 }
 
 .modalSwapbox {
     background-color: var(--dark2);
 }
 
-.direction {
-    padding: 0.4.5px 0;
-    margin: 10px 0;
-}
-.direction,
 .swapbox_bottom {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
-
-/* .surplus_container {
-    min-height: 33px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    margin: 6px 10px 0px 10px;
-} */
 
 .balance_with_pointer {
     display: flex;
@@ -45,8 +33,7 @@
     display: flex;
     overflow: hidden;
     flex-direction: column;
-    padding-right: 5px;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .wallet_logo {
@@ -73,63 +60,50 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    /* align-items: center; */
-    /* padding: 0.5rem 0; */
+
     min-height: 40px;
 
     display: grid;
-    grid-template-columns: 1fr 120px;
-    /* height: 40px; */
+    grid-template-columns: 1fr 145px;
 }
 
-/* .swap_input {
-    width: 65%;
-} */
+
 .token_select {
-    /* background: var(--dark2); */
+ 
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* gap: 4px; */
-    /* width: 35%; */
+
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 
     background: transparent;
     outline: none;
     border: none;
+    padding: 0 4px;
+    border-radius: 4px;
 }
 
 .token_select:hover {
-    background: var(--dark2);
+    background: var(--dark3);
 }
-
 .token_select:focus-visible {
-    border: 1px solid var(--text-grey-white);
-}
-
-.token_select img {
-    padding: 1px;
-    max-width: 100%;
+    border: 1px solid var(--text1);
 }
 
 .token_list_text {
     padding: 1px;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 200;
 }
 
 /* bottom info */
 .swapbox_bottom {
-    margin: 6px;
-    height: 33px;
-
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
     gap: 4px;
-    padding: 0 2rem;
+    padding: 8px 16px;
 }
 .token_select_button {
     cursor: pointer;
@@ -180,36 +154,26 @@
     justify-content: flex-end;
 }
 
-/* .main_wallet_container{
-    background-color: red;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-} */
-
 .max_button {
     cursor: pointer;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     outline: none;
     border: none;
-    /* background: var(--dark2); */
     background: transparent;
 
     width: 25px;
-    /* margin-right: 8px; */
     max-height: 20px;
-    /* padding: 0 8px; */
     transition: all var(--animation-speed) ease-in-out;
 }
+
 .max_button_enable {
     border-radius: 4px;
-    background: var(--dark2);
 }
 
 .max_button:hover {
-    color: var(--text-highlight-dark);
+    color: var(--accent1);
 }
 
 /* modal */
@@ -231,7 +195,7 @@
     background: var(--dark2);
 
     text-align: center;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     padding: 1rem 0;
@@ -245,10 +209,7 @@
         box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
         border-radius: var(--border-radius);
     }
-    /* 50% {
-    box-shadow: 0 0 0 6px rgba(131, 119, 220, 0.5);
-    border-radius: var(--border-radius);
-  } */
+
     100% {
         box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
         border-radius: var(--border-radius);

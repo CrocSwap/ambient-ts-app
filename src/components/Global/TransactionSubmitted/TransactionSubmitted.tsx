@@ -34,8 +34,8 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
         reposition,
     } = props;
 
-    const blockExploer = getChainExplorer(chainId);
-    const txUrlOnBlockExplorer = `${blockExploer}/tx/${hash}`;
+    const blockExplorer = getChainExplorer(chainId);
+    const txUrlOnBlockExplorer = `${blockExplorer}tx/${hash}`;
     const currentLocation = useLocation()?.pathname;
 
     const logoURI = tokenBImage;
@@ -68,7 +68,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             aria-label='view on etherscan'
         >
             View on Etherscan
-            <FiExternalLink size={20} color='var(--text-grey-white)' />
+            <FiExternalLink size={20} color='var(--text1)' />
         </a>
     );
     return (
@@ -93,7 +93,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                 {limit
                     ? 'Limit Transaction Successfully Submitted'
                     : range
-                    ? 'Range Transaction Successfully Submitted'
+                    ? 'Pool Transaction Successfully Submitted'
                     : reposition
                     ? 'Reposition Successfully Submitted'
                     : 'Swap Transaction Successfully Submitted'}
@@ -104,7 +104,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
                 }`}
             >
                 {txUrlOnBlockExplorer && etherscanButton}
-                {tokenBSymbol === 'ETH' || currentLocation === '/trade/range'
+                {tokenBSymbol === 'ETH' || currentLocation === '/trade/pool'
                     ? null
                     : addToMetaMaskButton}
             </div>

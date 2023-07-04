@@ -1,15 +1,16 @@
 .modal_container {
     width: 400px;
     padding: 1rem;
+    background: var(--dark1);
+    border-radius: var(--border-radius);
 }
-
 
 /* Transaction details */
 
 .confSwap_detail_note {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-weight: 300;
 
     /* padding: 1.5rem 0; */
@@ -58,7 +59,7 @@
     font-weight: 200;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     letter-spacing: -0.02em;
 }
 
@@ -70,10 +71,6 @@
     margin-left: 1rem;
 }
 
-.logo_display img {
-    width: 32px;
-}
-
 .limit_row_container {
     width: 100%;
     background: var(--dark2);
@@ -83,7 +80,7 @@
     font-weight: 200;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white);
+    color: var(--text1);
     letter-spacing: -0.02em;
     border-radius: var(--border-radius);
     padding: 0 2rem;
@@ -106,38 +103,53 @@
 
 .extra_info_container .row p {
     font-weight: 300;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
 
-.warning_box{
+.warning_box {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    gap: 4px;
+    padding: 12px;
+    margin-top: 1rem;
+    border: solid 1px var(--other-red);
+    border-radius: 4px;
+    background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(231, 86, 112, 0.1) 0%,
+        rgba(231, 86, 112, 0.1) 100%
+    );
+    color: var(--other-red);
+
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
+    letter-spacing: -0.02em;
 }
 
-.warning_box p{
-    color: var(--negative);
+.warning_box div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.warning_box p {
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    padding-top: 6px;
 }
 
-.warning_box button{
+.warning_box button {
     cursor: pointer;
-    background: var(--dark2);
-    color: var(--text-grey-light);
+    background: var(--other-red);
+    color: var(--dark1);
     outline: none;
     border: none;
-
-    padding: 3px 4px;
     border-radius: var(--border-radius);
-    border: 1px solid var(--border)
 
- 
-}
-.warning_box button:hover{
-    color: var(--text-grey-white)
+    padding: 6px 8px;
 }

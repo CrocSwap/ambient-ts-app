@@ -14,8 +14,8 @@ export const useTermsAgreed = (): [
 ] => {
     const TOS_VERSION = '2023-04-13';
     const TERMS_URLS = {
-        tos: '#',
-        privacy: '#',
+        tos: 'terms',
+        privacy: 'privacy',
         openSource: 'https://github.com/CrocSwap/ambient-ts-app',
     };
 

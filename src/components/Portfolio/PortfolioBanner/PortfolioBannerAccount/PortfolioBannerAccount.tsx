@@ -1,23 +1,20 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { motion } from 'framer-motion';
-import ambientLogo from '../../../../assets/images/logos/ambient_logo.png';
+// import ambientLogo from '../../../../assets/images/logos/ambient_logo.png';
 interface IPortfolioBannerAccountPropsIF {
-    imageData: string[];
     ensName: string;
     resolvedAddress: string;
-    activeAccount: string;
     truncatedAccountAddress: string;
     ensNameAvailable: boolean;
-    connectedAccountActive: boolean;
-    blockiesToDisplay: JSX.Element | null;
-    chainData: ChainSpec;
+    jazziconsToDisplay: JSX.Element | null;
 }
 import styles from './PortfolioBannerAccount.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -25,16 +22,21 @@ export default function PortfolioBannerAccount(
     const [showAccountDetails, setShowAccountDetails] = useState(false);
 
     const {
-        imageData,
         ensName,
         resolvedAddress,
-        activeAccount,
         truncatedAccountAddress,
         ensNameAvailable,
-        chainData,
     } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
-    const blockExplorer = chainData.blockExplorer;
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
 
     const ensNameToDisplay = ensNameAvailable
         ? ensName
@@ -44,12 +46,9 @@ export default function PortfolioBannerAccount(
         ? resolvedAddress
         : ensNameAvailable
         ? truncatedAccountAddress
-        : activeAccount;
+        : userAddress;
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
-    const [copiedData, setCopiedData] = useState('');
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyEnsName() {
         copy(
@@ -57,49 +56,22 @@ export default function PortfolioBannerAccount(
                 ? ensName
                 : resolvedAddress
                 ? resolvedAddress
-                : activeAccount,
+                : userAddress ?? '',
         );
-        setCopiedData(
-            ensNameAvailable
-                ? ensName
-                : resolvedAddress
-                ? resolvedAddress
-                : activeAccount,
-        );
+        const copiedData = ensNameAvailable
+            ? ensName
+            : resolvedAddress
+            ? resolvedAddress
+            : userAddress;
 
-        setOpenSnackbar(true);
+        openSnackbar(`${copiedData} copied`, 'info');
     }
     function handleCopyAddress() {
-        copy(resolvedAddress ? resolvedAddress : activeAccount);
-        setCopiedData(resolvedAddress ? resolvedAddress : activeAccount);
+        copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
+        const copiedData = resolvedAddress ? resolvedAddress : userAddress;
 
-        setOpenSnackbar(true);
+        openSnackbar(`${copiedData} copied`, 'info');
     }
-
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {copiedData} copied
-        </SnackbarComponent>
-    );
-
-    const iconVariants = {
-        open: {
-            width: '56px',
-            height: '56px',
-        },
-        closed: {
-            width: '56px',
-            height: '56px',
-        },
-    };
-
-    const ambientLogoDisplay = (
-        <img src={ambientLogo} alt='' className={styles.ambi_logo} />
-    );
 
     function handleOpenExplorer(address: string) {
         if (address && blockExplorer) {
@@ -117,17 +89,8 @@ export default function PortfolioBannerAccount(
                 className={styles.account_container}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
-                {imageData[0] ? (
-                    <motion.div
-                        className={styles.avatar_image}
-                        animate={showAccountDetails ? 'open' : 'closed'}
-                        variants={iconVariants}
-                    >
-                        <img src={imageData[0]} alt='avatar' />
-                    </motion.div>
-                ) : (
-                    ambientLogoDisplay
-                )}
+                {props.jazziconsToDisplay}
+
                 <div className={styles.account_names}>
                     <span className={styles.name} onClick={handleCopyEnsName}>
                         {ensNameToDisplay}
@@ -140,7 +103,7 @@ export default function PortfolioBannerAccount(
                                 size={'12px'}
                                 onClick={(e) => {
                                     handleOpenExplorer(
-                                        resolvedAddress || activeAccount,
+                                        resolvedAddress || (userAddress ?? ''),
                                     );
                                     e.stopPropagation();
                                 }}
@@ -149,7 +112,6 @@ export default function PortfolioBannerAccount(
                     </span>
                 </div>
             </div>
-            {snackbarContent}
         </motion.main>
     );
 }

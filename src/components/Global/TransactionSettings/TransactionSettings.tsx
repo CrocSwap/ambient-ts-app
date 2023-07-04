@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 // START: Import JSX Components
 import Button from '../Button/Button';
@@ -11,23 +11,27 @@ import styles from './TransactionSettings.module.css';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { VscClose } from 'react-icons/vsc';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { isStablePair } from '../../../utils/data/stablePairs';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { FiAlertTriangle } from 'react-icons/fi';
 
 // interface for component props
 interface propsIF {
-    module:
-        | 'Swap'
-        | 'Market Order'
-        | 'Limit Order'
-        | 'Range Order'
-        | 'Reposition';
+    module: 'Swap' | 'Limit Order' | 'Pool' | 'Reposition';
     slippage: SlippageMethodsIF;
-    isPairStable: boolean;
     onClose: () => void;
     bypassConfirm: skipConfirmIF;
 }
 
 export default function TransactionSettings(props: propsIF) {
-    const { module, slippage, isPairStable, onClose, bypassConfirm } = props;
+    const { module, slippage, onClose, bypassConfirm } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+
+    const isPairStable = isStablePair(tokenA.address, tokenB.address, chainId);
 
     const handleKeyDown = (event: { keyCode: number }): void => {
         event.keyCode === 13 && updateSettings();
@@ -57,15 +61,16 @@ export default function TransactionSettings(props: propsIF) {
     } ${module} confirmation modal`;
 
     return (
-        // <FocusTrap>
         <section>
             <div className={styles.settings_title}>
-                <div />
+                <div style={{ width: '22px' }} />
                 {module + ' Settings'}
-                <button onClick={onClose} className={styles.close_button}>
-                    {' '}
-                    <VscClose size={22} />
-                </button>
+                <VscClose
+                    size={22}
+                    role='button'
+                    onClick={onClose}
+                    className={styles.close_button}
+                />
             </div>
             <div className={styles.settings_container}>
                 <section>
@@ -81,6 +86,17 @@ export default function TransactionSettings(props: propsIF) {
                             }
                         />
                     )}
+                    {module === 'Swap' && currentSlippage > 1 && (
+                        <div className={styles.frontrun_warning}>
+                            <FiAlertTriangle size={28} color='var(--accent2)' />
+                            <div>
+                                <p>
+                                    Your transaction may be frontrun and result
+                                    in an unfavorable trade
+                                </p>
+                            </div>
+                        </div>
+                    )}
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
                         setTempBypassConfirm={setCurrentSkipConfirm}
@@ -88,29 +104,23 @@ export default function TransactionSettings(props: propsIF) {
                     />
                 </section>
                 <div className={styles.button_container}>
-                    {module !== 'Limit Order' ? (
-                        <Button
-                            title={
-                                currentSlippage > 0
-                                    ? 'Confirm'
-                                    : 'Enter a Valid Slippage'
-                            }
-                            action={updateSettings}
-                            disabled={!(currentSlippage > 0)}
-                            flat
-                            customAriaLabel={confirmAriaLabel}
-                        />
-                    ) : (
-                        <Button
-                            title='Confirm Settings'
-                            action={updateSettings}
-                            flat
-                            customAriaLabel={confirmAriaLabel}
-                        />
-                    )}
+                    <Button
+                        title={
+                            module === 'Limit Order'
+                                ? 'Submit Settings'
+                                : currentSlippage > 0
+                                ? 'Submit'
+                                : 'Enter a Valid Slippage'
+                        }
+                        action={updateSettings}
+                        disabled={
+                            module !== 'Limit Order' && currentSlippage <= 0
+                        }
+                        flat
+                        customAriaLabel={confirmAriaLabel}
+                    />
                 </div>
             </div>
         </section>
-        // </FocusTrap>
     );
 }

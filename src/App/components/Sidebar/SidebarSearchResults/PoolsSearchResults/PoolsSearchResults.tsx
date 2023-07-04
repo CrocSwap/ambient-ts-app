@@ -1,46 +1,54 @@
-import { useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
-import {
-    TokenPairIF,
-    TempPoolIF,
-} from '../../../../../utils/interfaces/exports';
+import { TempPoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
+import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
-    tokenPair: TokenPairIF;
-    chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedFetchTokenPrice: TokenPriceFn;
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const { searchedPools, tokenPair, chainId, cachedPoolStatsFetch } = props;
+    const { searchedPools, cachedPoolStatsFetch, cachedFetchTokenPrice } =
+        props;
+    const { tokenA } = useAppSelector((state) => state.tradeData);
 
-    const navigate = useNavigate();
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
-        const { dataTokenA } = tokenPair;
         const tokenAString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
+            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
                 ? baseAddr
                 : quoteAddr;
         const tokenBString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
+            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
                 ? quoteAddr
                 : baseAddr;
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tokenAString +
-                '&tokenB=' +
-                tokenBString,
-        );
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tokenAString,
+            tokenB: tokenBString,
+        });
     };
 
     return (
         <div>
-            <h4 className={styles.card_title}>Initialized Pools</h4>
+            <h4 className={styles.card_title}>Pools</h4>
             {searchedPools.length ? (
                 <>
                     <header className={styles.header}>
@@ -58,6 +66,8 @@ export default function PoolsSearchResults(props: propsIF) {
                                 handleClick={handleClick}
                                 pool={pool}
                                 cachedPoolStatsFetch={cachedPoolStatsFetch}
+                                cachedFetchTokenPrice={cachedFetchTokenPrice}
+                                crocEnv={crocEnv}
                             />
                         ))}
                     </ol>

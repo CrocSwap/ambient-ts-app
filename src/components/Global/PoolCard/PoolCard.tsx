@@ -1,43 +1,42 @@
 import styles from './PoolCard.module.css';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-    CrocEnv,
-    sortBaseQuoteTokens,
-    toDisplayPrice,
-} from '@crocswap-libs/sdk';
-import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
+import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { PoolStatsFn, get24hChange } from '../../../App/functions/getPoolStats';
-import { formatAmountOld } from '../../../utils/numbers';
-import { tradeData } from '../../../utils/state/tradeDataSlice';
+import { get24hChange } from '../../../App/functions/getPoolStats';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
 import { topPoolIF } from '../../../App/hooks/useTopPools';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { estimateFrom24HrRangeApr } from '../../../App/functions/fetchAprEst';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
-    isServerEnabled: boolean;
-    isUserIdle: boolean;
-    crocEnv?: CrocEnv;
-    tradeData: tradeData;
-    cachedQuerySpotPrice: SpotPriceFn;
-    lastBlockNumber: number;
-    chainId: string;
     pool: topPoolIF;
-    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolCard(props: propsIF) {
+    const { pool } = props;
     const {
-        isServerEnabled,
-        isUserIdle,
-        crocEnv,
-        lastBlockNumber,
-        chainId,
-        cachedQuerySpotPrice,
-        pool,
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
+    const {
         cachedPoolStatsFetch,
-    } = props;
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+    } = useContext(CachedDataContext);
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
+    const userData = useAppSelector((state) => state.userData);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
@@ -56,7 +55,7 @@ export default function PoolCard(props: propsIF) {
     useEffect(() => {
         if (
             isServerEnabled &&
-            !isUserIdle &&
+            !userData.isUserIdle &&
             crocEnv &&
             lastBlockNumber !== 0
         ) {
@@ -96,27 +95,9 @@ export default function PoolCard(props: propsIF) {
                         ? 1 / displayPrice
                         : displayPrice;
 
-                    const displayPriceWithFormatting: string | undefined =
-                        displayPriceWithInversion === undefined
-                            ? undefined
-                            : displayPriceWithInversion === 0
-                            ? '0.00'
-                            : displayPriceWithInversion < 0.001
-                            ? displayPriceWithInversion.toExponential(2)
-                            : displayPriceWithInversion < 0.5
-                            ? displayPriceWithInversion.toPrecision(3)
-                            : displayPriceWithInversion < 2
-                            ? displayPriceWithInversion.toPrecision(6)
-                            : displayPriceWithInversion >= 100000
-                            ? formatAmountOld(displayPriceWithInversion, 1)
-                            : // ? baseLiqDisplayNum.toExponential(2)
-                              displayPriceWithInversion.toLocaleString(
-                                  undefined,
-                                  {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  },
-                              );
+                    const displayPriceWithFormatting = getFormattedNumber({
+                        value: displayPriceWithInversion,
+                    });
 
                     setPoolPriceDisplay(displayPriceWithFormatting);
                 } else {
@@ -124,7 +105,13 @@ export default function PoolCard(props: propsIF) {
                 }
             })();
         }
-    }, [isServerEnabled, isUserIdle, lastBlockNumber, chainId, crocEnv]);
+    }, [
+        isServerEnabled,
+        userData.isUserIdle,
+        lastBlockNumber,
+        chainId,
+        crocEnv,
+    ]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
@@ -150,26 +137,46 @@ export default function PoolCard(props: propsIF) {
                 poolIndex &&
                 chainId &&
                 lastBlockNumber &&
-                shouldInvertDisplay !== undefined
+                shouldInvertDisplay !== undefined &&
+                crocEnv
             ) {
+                const RANGE_WIDTH = 0.1;
+
+                const apyEst = estimateFrom24HrRangeApr(
+                    RANGE_WIDTH,
+                    pool.base.address,
+                    pool.quote.address,
+                    crocEnv,
+                    lastBlockNumber,
+                );
+
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
                     pool.base.address,
                     pool.quote.address,
                     poolIndex,
                     Math.floor(Date.now() / 60000),
+                    crocEnv,
+                    cachedFetchTokenPrice,
                 );
 
-                const tvlResult = poolStats?.tvl;
-                const volumeResult = poolStats?.volume; // display the 24 hour volume
-                const apyResult = poolStats?.apy;
+                const tvlResult = poolStats?.tvlTotalUsd;
+                const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
+                const apyResult = await apyEst;
 
                 if (tvlResult) {
-                    const tvlString = formatAmountOld(tvlResult);
+                    console.log('TVL: ', tvlResult);
+                    const tvlString = getFormattedNumber({
+                        value: tvlResult,
+                        isTvl: true,
+                    });
                     setPoolTvl(tvlString);
                 }
                 if (volumeResult) {
-                    const volumeString = formatAmountOld(volumeResult);
+                    console.log('Vol: ', volumeResult);
+                    const volumeString = getFormattedNumber({
+                        value: volumeResult,
+                    });
                     setPoolVolume(volumeString);
                 }
                 if (apyResult) {
@@ -188,28 +195,39 @@ export default function PoolCard(props: propsIF) {
                         poolIndex,
                         shouldInvertDisplay,
                     );
-                    if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
+
+                    if (!priceChangeResult) {
+                        setPoolPriceChangePercent(undefined);
+                        setIsPoolPriceChangePositive(true);
+                        return;
+                    }
+
+                    if (
+                        priceChangeResult > -0.0001 &&
+                        priceChangeResult < 0.0001
+                    ) {
                         setPoolPriceChangePercent('No Change');
                         setIsPoolPriceChangePositive(true);
-                    } else if (priceChangeResult) {
+                    } else {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
                             : setIsPoolPriceChangePositive(false);
+
+                        const priceChangePercent = priceChangeResult * 100;
+
                         const priceChangeString =
-                            priceChangeResult > 0
+                            priceChangePercent > 0
                                 ? '+' +
-                                  priceChangeResult.toLocaleString(undefined, {
+                                  priceChangePercent.toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) +
                                   '%'
-                                : priceChangeResult.toLocaleString(undefined, {
+                                : priceChangePercent.toLocaleString(undefined, {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) + '%';
                         setPoolPriceChangePercent(priceChangeString);
-                    } else {
-                        setPoolPriceChangePercent(undefined);
                     }
                 } catch (error) {
                     setPoolPriceChangePercent(undefined);
@@ -219,74 +237,14 @@ export default function PoolCard(props: propsIF) {
     };
 
     useEffect(() => {
-        if (isServerEnabled && !isUserIdle) fetchPoolStats();
+        if (isServerEnabled && !userData.isUserIdle) fetchPoolStats();
         // NOTE: we assume that a block occurs more frequently than once a minute
-    }, [isServerEnabled, isUserIdle, lastBlockNumber, shouldInvertDisplay]);
-
-    const tokenImagesDisplay = (
-        <div className={styles.token_images}>
-            <img
-                src={
-                    shouldInvertDisplay ? pool.base.logoURI : pool.quote.logoURI
-                }
-                alt={`logo for token ${
-                    shouldInvertDisplay ? pool.base.logoURI : pool.quote.logoURI
-                }`}
-            />
-            <img
-                src={
-                    shouldInvertDisplay ? pool.quote.logoURI : pool.base.logoURI
-                }
-                alt={`logo for token ${
-                    shouldInvertDisplay ? pool.quote.name : pool.base.name
-                }`}
-            />
-        </div>
-    );
-
-    const tokenNamesDisplay = (
-        <div className={styles.tokens_name}>
-            {shouldInvertDisplay
-                ? `${pool.base.symbol} / ${pool.quote.symbol}`
-                : `${pool.quote.symbol} / ${pool.base.symbol}`}
-        </div>
-    );
-
-    const apyDisplay = (
-        <>
-            <div></div>
-            <div>
-                <div className={styles.row_title}>24h APR</div>
-                <div className={styles.apr}>
-                    {poolApy === undefined ? '…' : `${poolApy}%`}
-                </div>
-            </div>
-        </>
-    );
-
-    const volumeDisplay = (
-        <>
-            <div></div>
-            <div>
-                <div className={styles.row_title}>24h Vol.</div>
-                <div className={styles.vol}>
-                    {poolVolume === undefined ? '…' : `$${poolVolume}`}
-                </div>
-            </div>
-        </>
-    );
-
-    const tvlDisplay = (
-        <>
-            <div></div>
-            <div>
-                <div className={styles.row_title}>TVL</div>
-                <div className={styles.vol}>
-                    {poolTvl === undefined ? '…' : `$${poolTvl}`}
-                </div>
-            </div>
-        </>
-    );
+    }, [
+        isServerEnabled,
+        userData.isUserIdle,
+        lastBlockNumber,
+        shouldInvertDisplay,
+    ]);
 
     const poolPriceDisplayDOM = (
         <div className={styles.price}>
@@ -316,13 +274,8 @@ export default function PoolCard(props: propsIF) {
         </div>
     );
 
-    const linkpath =
-        '/trade/market/chain=' +
-        chainId +
-        '&tokenA=' +
-        quoteAddr +
-        '&tokenB=' +
-        baseAddr;
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const ariaDescription = `pool for ${pool.base.symbol} and ${
         pool.quote.symbol
@@ -335,22 +288,77 @@ export default function PoolCard(props: propsIF) {
     return (
         <Link
             className={styles.pool_card}
-            to={linkpath}
+            to={linkGenMarket.getFullURL({
+                chain: chainId,
+                tokenA: quoteAddr,
+                tokenB: baseAddr,
+            })}
             tabIndex={0}
             role='presentation'
             aria-label={ariaDescription}
         >
             <div className={styles.main_container}>
-                <div className={styles.row}>
-                    {tokenImagesDisplay}
-                    {tokenNamesDisplay}
+                <div className={styles.row} style={{ padding: '4px' }}>
+                    <div className={styles.token_images}>
+                        <img
+                            src={
+                                shouldInvertDisplay
+                                    ? pool.base.logoURI
+                                    : pool.quote.logoURI
+                            }
+                            alt={`logo for token ${
+                                shouldInvertDisplay
+                                    ? pool.base.logoURI
+                                    : pool.quote.logoURI
+                            }`}
+                        />
+                        <img
+                            src={
+                                shouldInvertDisplay
+                                    ? pool.quote.logoURI
+                                    : pool.base.logoURI
+                            }
+                            alt={`logo for token ${
+                                shouldInvertDisplay
+                                    ? pool.quote.name
+                                    : pool.base.name
+                            }`}
+                        />
+                    </div>
+                    <div className={styles.tokens_name}>
+                        {shouldInvertDisplay
+                            ? `${pool.base.symbol} / ${pool.quote.symbol}`
+                            : `${pool.quote.symbol} / ${pool.base.symbol}`}
+                    </div>
                 </div>
-                <div className={styles.row}>{volumeDisplay}</div>
-                <div className={styles.row}>{apyDisplay}</div>
-                <div className={styles.row}>{tvlDisplay}</div>
-                <div className={styles.column}>
-                    {poolPriceChangeDisplay}
-                    {poolPriceDisplayDOM}
+                <div className={styles.row}>
+                    <div className={styles.column}>
+                        {poolPriceChangeDisplay}
+                        {poolPriceDisplayDOM}
+                    </div>
+                    <div className={styles.column}>
+                        <div className={styles.row}></div>
+                        <div className={styles.row}>
+                            <div className={styles.row_title}>24h APR</div>
+                            <div className={styles.apr}>
+                                {poolApy === undefined ? '…' : `${poolApy}%`}
+                            </div>
+                        </div>
+                        <div className={styles.row}>
+                            <div className={styles.row_title}>Volume</div>
+                            <div className={styles.vol}>
+                                {poolVolume === undefined
+                                    ? '…'
+                                    : `$${poolVolume}`}
+                            </div>
+                        </div>
+                        <div className={styles.row}>
+                            <div className={styles.row_title}>TVL</div>
+                            <div className={styles.vol}>
+                                {poolTvl === undefined ? '…' : `$${poolTvl}`}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Link>

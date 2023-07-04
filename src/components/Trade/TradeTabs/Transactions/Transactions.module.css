@@ -3,7 +3,7 @@
     background-image: linear-gradient(
         to right,
         rgba(255, 255, 255, 0) 50%,
-        #171d27 50%
+        var(--dark2) 50%
     );
     background-position: -0% 0;
     background-size: 200% auto;
@@ -13,15 +13,28 @@
 }
 
 .border_left {
-    border-left: 1px solid var(--text-grey-white);
+    border-left: 2px solid var(--text1);
 }
 
 .main_list_container {
     width: 100%;
-    max-height: 90%;
+    height: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
     position: relative;
+}
+
+.main_list_container {
+    display: grid;
+    overflow-y: hidden;
+    grid-template-rows: auto 1fr;
+    padding: 0 4px;
+}
+
+.main_list_expanded {
+    display: grid;
+    grid-template-rows: auto 1fr 70px;
+    overflow-y: hidden;
 }
 
 .header {
@@ -30,15 +43,34 @@
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
+.table_content {
+    min-height: 100px;
+    flex-grow: 1; /* Allow the content to grow and occupy remaining space */
+    overflow: auto; /* Enable scrolling for the content */
+}
+
 .footer {
+    background: var(--dark1);
     width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-direction: column;
-    position: absolute;
-    bottom: 0;
+    /* position: sticky;
+    bottom: 0; */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
     margin: 0 auto;
+}
+
+.footer_content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 auto;
+    width: 60%;
 }
 /* width */
 .main_list_container::-webkit-scrollbar {
@@ -49,7 +81,6 @@
 /* Track */
 .main_list_container::-webkit-scrollbar-track {
     border-radius: 100vh;
-    /* background: #1f2937; */
 }
 
 /* Handle */
@@ -77,7 +108,7 @@
     font-size: 10px;
     line-height: 13px;
 
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .row_container {
     width: 100%;
@@ -90,10 +121,13 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
+}
+.row_container li:not(:last-child) {
     cursor: pointer;
 }
 
-.main_list_container ul {
+.main_list_container .row_container,
+.main_list_container .header {
     width: 100%;
     /* table row was living space at end so I changed it to table and added a fixed table layout*/
     display: table-row;
@@ -101,7 +135,8 @@
     display: table;
 }
 
-.main_list_container ul > li {
+.main_list_container .row_container > li,
+.main_list_container .header > li {
     display: table-cell;
 
     /* I commented this out to make the header align center with arrow */
@@ -109,14 +144,11 @@
     vertical-align: middle;
     padding: 0.2em 0.5em;
 }
-.base_color {
-    color: var(--text-grey-light);
-}
 .hover_style:hover {
     -webkit-mask-image: linear-gradient(
         -75deg,
         rgba(0, 0, 0, 0.6) 30%,
-        #000 50%,
+        black 50%,
         rgba(0, 0, 0, 0.6) 70%
     );
     -webkit-mask-size: 200%;
@@ -158,9 +190,6 @@
 }
 
 .token_images_account img {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
     margin: 0 2px;
 }
 
@@ -181,11 +210,14 @@
 }
 
 .light_grey {
-    color: var(--text-grey-light);
+    color: var(--text1);
 }
 
+.base_color {
+    color: var(--text1);
+}
 .mono_font {
-    font-family: monospace;
+    font-family: var(--roboto);
 }
 
 .tooltip_style {
@@ -194,7 +226,6 @@
 }
 
 .menu {
-    opacity: 0.8;
     transition: all var(--animation-speed) ease-in-out;
 }
 
@@ -216,7 +247,7 @@
     border-radius: 6.25rem;
     cursor: pointer;
     font-size: 10px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 
     display: flex;
     flex-direction: row;
@@ -225,7 +256,7 @@
 }
 .view_wallet_link:hover,
 .view_wallet_link:hover .view_wallet_link svg {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .view_wallet_link p {
@@ -242,14 +273,14 @@
 .row_container:focus-visible,
 .row_container li:focus-visible,
 .row_container div:focus-visible {
-    border: 1px solid var(--text-grey-white);
+    border: 1px solid var(--text1);
 }
 
 .view_more_container {
     padding: 10px;
     display: flex;
     justify-content: center;
-    align-items: center;
+
 }
 
 .view_more_button {
@@ -265,25 +296,34 @@
     border-radius: 6.25rem;
     cursor: pointer;
     font-size: 11px;
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
+.show_more_grid{
+    display: grid;
+    grid-template-rows: auto 70px;
+}
 .view_more_button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .id_tooltip_style {
     margin-left: -60px;
     background: var(--dark3);
-    color: var(--text-grey-white);
+    color: var(--text1);
     padding: 12px;
     border-radius: 4px;
     cursor: pointer;
-    font-family: monospace;
+    font-family: var(--roboto);
     white-space: nowrap;
     width: 460px;
 }
 
+.showing_text {
+    font-size: 10px;
+    color: var(--text2);
+    white-space: nowrap;
+}
 @media only screen and (max-width: 768px) {
     .view_wallet_link p {
         display: none;
@@ -303,8 +343,20 @@
     }
 }
 
-@media only screen and (max-width: 1200px) {
-    .footer {
+@media only screen and (max-width: 800px) {
+    .main_list_expanded {
+        display: grid;
+        grid-template-rows: 40px 1fr 150px;
+        overflow-y: hidden;
+    }
+
+    .footer_content {
+        width: 95%;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .showing_text {
         display: none;
     }
 }

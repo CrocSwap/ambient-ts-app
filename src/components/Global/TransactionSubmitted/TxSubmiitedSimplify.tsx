@@ -3,19 +3,22 @@ import Animation from '../../Global/Animation/Animation';
 import completed from '../../../assets/animations/completed.json';
 
 import { FiExternalLink } from 'react-icons/fi';
-import { getChainExplorer } from '../../../utils/data/chains';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface TransactionSubmittedProps {
     hash: string;
     content: string;
-    chainId: string;
     noAnimation?: boolean;
 }
 
 export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
-    const { hash, content, noAnimation, chainId } = props;
-    const blockExplorer = getChainExplorer(chainId);
-    const EthersanTx = `${blockExplorer}/tx/${hash}`;
+    const { hash, content, noAnimation } = props;
+    const {
+        chainData: { blockExplorer },
+    } = useContext(CrocEnvContext);
+
+    const EthersanTx = `${blockExplorer}tx/${hash}`;
 
     const etherscanButton = (
         <a
@@ -26,7 +29,7 @@ export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
             aria-label='view on etherscan'
         >
             View on Etherscan
-            <FiExternalLink size={20} color='var(--text-grey-white)' />
+            <FiExternalLink size={20} color='var(--text1)' />
         </a>
     );
     return (

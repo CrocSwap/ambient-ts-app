@@ -1,22 +1,38 @@
-.settings_container svg {
-    margin: 0 5px;
-}
-
-.share_button{
+.share_button {
     background: transparent;
     outline: none;
     border: none;
+    height: 20px;
+}
+.share_button:hover {
+    color: var(--accent1) !important;
 }
 .settings_icon,
 .share_button {
     cursor: pointer;
 }
 
+
+.hoverable_icon{
+    fill: var(--text2) !important;
+    color: var(--text2) !important
+}
+.hoverable_icon:hover{
+    fill: var(--accent1) !important
+}
 .token_info {
     cursor: pointer;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     letter-spacing: -0.02em;
     font-weight: 300;
-    color: var(--text-grey-white);
+    color: var(--text1);
+}
+
+.title {
+    color: var(--text1);
+}
+
+.swap_page_header {
+    padding-bottom: 16px;;
 }

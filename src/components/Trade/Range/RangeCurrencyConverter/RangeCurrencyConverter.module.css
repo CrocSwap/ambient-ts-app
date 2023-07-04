@@ -1,16 +1,6 @@
-.title {
-    font-weight: 300;
-
-    padding: 0.4.5px 0;
-    margin: 10px 0;
-
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text-grey-light);
-}
-
 .arrow_container {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-bottom: 16px;
 }

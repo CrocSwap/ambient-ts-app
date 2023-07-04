@@ -3,62 +3,43 @@ import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import { tradeData } from '../../../../../utils/state/tradeDataSlice';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
-import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import SnackbarComponent from '../../../../Global/SnackbarComponent/SnackbarComponent';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
-    chainData: ChainSpec;
-    tradeData: tradeData;
-    expandTradeTable: boolean;
     showColumns: boolean;
     ipadView: boolean;
-    view2: boolean;
     limitOrder: LimitOrderIF;
     showPair: boolean;
-    isSidebarOpen: boolean;
-    lastBlockNumber: number;
-    openGlobalModal: (content: React.ReactNode) => void;
-    closeGlobalModal: () => void;
-
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
-    isShowAllEnabled: boolean;
-    isOnPortfolioPage: boolean;
-    account: string;
-    handlePulseAnimation?: (type: string) => void;
+    isAccountView: boolean;
 }
-export default function OrderRow(props: propsIF) {
+function OrderRow(props: propsIF) {
+    const { showColumns, ipadView, showPair, limitOrder, isAccountView } =
+        props;
     const {
-        account,
-        crocEnv,
-        chainData,
-        tradeData,
-        showColumns,
-        ipadView,
-        showPair,
-        limitOrder,
-        isSidebarOpen,
-        openGlobalModal,
-        closeGlobalModal,
+        globalModal: { open: openGlobalModal },
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+    const {
+        showAllData: showAllDataSelection,
         currentPositionActive,
         setCurrentPositionActive,
-        isShowAllEnabled,
-        isOnPortfolioPage,
-        handlePulseAnimation,
-        lastBlockNumber,
-    } = props;
+    } = useContext(TradeTableContext);
+
+    // only show all data when on trade tabs page
+    const showAllData = !isAccountView && showAllDataSelection;
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
         posHash,
@@ -85,20 +66,15 @@ export default function OrderRow(props: propsIF) {
         quoteTokenCharacter,
         isDenomBase,
         elapsedTimeString,
-    } = useProcessOrder(limitOrder, account, isOnPortfolioPage);
+    } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const orderMenuProps = {
-        crocEnv: crocEnv,
-        closeGlobalModal: props.closeGlobalModal,
-        openGlobalModal: props.openGlobalModal,
         isOwnerActiveAccount: isOwnerActiveAccount,
         isOrderFilled: isOrderFilled,
-        isOnPortfolioPage: isOnPortfolioPage,
+        isAccountView: isAccountView,
     };
 
-    const dispatch = useAppDispatch();
-
-    const priceCharacter = isOnPortfolioPage
+    const priceCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? baseTokenCharacter
             : quoteTokenCharacter
@@ -106,7 +82,7 @@ export default function OrderRow(props: propsIF) {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const sideCharacter = isOnPortfolioPage
+    const sideCharacter = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? quoteTokenCharacter
             : baseTokenCharacter
@@ -119,21 +95,15 @@ export default function OrderRow(props: propsIF) {
     const sellOrderStyle = sideType === 'sell' ? 'order_sell' : 'order_buy';
 
     const usernameStyle =
-        isOwnerActiveAccount && isShowAllEnabled
+        isOwnerActiveAccount && showAllData
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
             ? 'gradient_text'
             : 'username_base_color';
     // eslint-disable-next-line
-    const usernameStyleModule =
-        isOwnerActiveAccount && isShowAllEnabled
-            ? styles.owned_tx_contrast
-            : ensName
-            ? styles.gradient_text
-            : styles.base_color;
     const userPositionStyle =
-        userNameToDisplay === 'You' && isShowAllEnabled
-            ? styles.border_left
+        userNameToDisplay === 'You' && showAllData
+            ? `${styles.border_left} ${sideType}_style`
             : null;
 
     const openDetailsModal = () => {
@@ -141,21 +111,17 @@ export default function OrderRow(props: propsIF) {
 
         openGlobalModal(
             <OrderDetails
-                account={account}
                 limitOrder={limitOrder}
-                closeGlobalModal={closeGlobalModal}
-                lastBlockNumber={lastBlockNumber}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
+                isAccountView={isAccountView}
             />,
         );
     };
     const orderDomId =
-        limitOrder.limitOrderIdentifier === currentPositionActive
-            ? `order-${limitOrder.limitOrderIdentifier}`
+        limitOrder.limitOrderId === currentPositionActive
+            ? `order-${limitOrder.limitOrderId}`
             : '';
 
     const activePositionRef = useRef(null);
@@ -175,13 +141,13 @@ export default function OrderRow(props: propsIF) {
     }
 
     useEffect(() => {
-        limitOrder.limitOrderIdentifier === currentPositionActive
+        limitOrder.limitOrderId === currentPositionActive
             ? scrollToDiv()
             : null;
     }, [currentPositionActive]);
 
     const activePositionStyle =
-        limitOrder.limitOrderIdentifier === currentPositionActive
+        limitOrder.limitOrderId === currentPositionActive
             ? styles.active_position_style
             : '';
 
@@ -189,60 +155,35 @@ export default function OrderRow(props: propsIF) {
     const highlightStyle = highlightRow ? 'var(--dark2)' : '';
     const handleRowMouseDown = () => setHighlightRow(true);
     const handleRowMouseOut = () => setHighlightRow(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
-    const [valueToCopy, setValueToCopy] = useState('');
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {valueToCopy} copied
-        </SnackbarComponent>
-    );
+    const [_, copy] = useCopyToClipboard();
 
     function handleWalletCopy() {
-        setValueToCopy(limitOrder.user);
         copy(limitOrder.user);
-
-        setOpenSnackbar(true);
+        openSnackbar(`${limitOrder.user} copied`, 'info');
     }
 
     function handleCopyPosHash() {
-        setValueToCopy(posHash.toString());
         copy(posHash.toString());
-
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
     function handleWalletLinkClick() {
-        if (!isOnPortfolioPage)
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: isOnPortfolioPage ? false : true,
-                }),
+        if (!isAccountView)
+            window.open(
+                `/${
+                    isOwnerActiveAccount
+                        ? 'account'
+                        : ensName
+                        ? ensName
+                        : ownerId
+                }`,
             );
-
-        window.open(
-            `/${
-                isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
-            }`,
-        );
     }
 
-    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     // eslint-disable-next-line
+    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
-        if (!isOnPortfolioPage) {
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'lookupUserTxData',
-                    loadingStatus: true,
-                }),
-            );
+        if (!isAccountView) {
             const accountUrl = `/${
                 isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId
             }`;
@@ -274,7 +215,7 @@ export default function OrderRow(props: propsIF) {
         baseDisplay,
         quoteDisplay,
         elapsedTimeString,
-        isOnPortfolioPage,
+        isAccountView,
         priceCharacter,
         priceStyle,
         truncatedDisplayPrice,
@@ -301,27 +242,38 @@ export default function OrderRow(props: propsIF) {
         statusDisplay,
     } = orderRowConstants(orderRowConstantsProps);
 
+    function handleRowClick() {
+        if (limitOrder.limitOrderId === currentPositionActive) {
+            return;
+        }
+        setCurrentPositionActive('');
+        openDetailsModal();
+    }
+    const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
+        event,
+    ) => {
+        if (event.key === 'Enter') {
+            openDetailsModal();
+        } else if (event.ctrlKey && event.key === 'c') {
+            // These will be shortcuts for the row menu. I will implement these at another time. -JR
+        }
+    };
+
     return (
         <>
             <ul
-                onMouseEnter={() => setShowHighlightedButton(true)}
-                onMouseLeave={() => setShowHighlightedButton(false)}
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle} row_container_global`}
                 id={orderDomId}
-                style={{ cursor: 'pointer', backgroundColor: highlightStyle }}
-                onClick={() =>
-                    limitOrder.limitOrderIdentifier === currentPositionActive
-                        ? null
-                        : setCurrentPositionActive('')
-                }
+                style={{ backgroundColor: highlightStyle }}
+                onClick={handleRowClick}
                 ref={currentPositionActive ? activePositionRef : null}
+                tabIndex={0}
+                onKeyDown={handleKeyPress}
             >
                 {!showColumns && OrderTimeWithTooltip}
-                {isOnPortfolioPage && showPair && tokenPair}
+                {isAccountView && showPair && tokenPair}
                 {!showColumns && <li>{IDWithTooltip}</li>}
-                {!showColumns && !isOnPortfolioPage && (
-                    <li>{walletWithTooltip}</li>
-                )}
+                {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
                 {showColumns && txIdColumnComponent}
                 {!ipadView && priceDisplay}
                 {!showColumns && sideDisplay}
@@ -334,27 +286,20 @@ export default function OrderRow(props: propsIF) {
                 {showColumns && tokensColumn}
                 {!ipadView && statusDisplay}
 
-                <li data-label='menu'>
+                <li data-label='menu' className={styles.menu}>
                     <OrdersMenu
-                        account={account}
-                        chainData={chainData}
-                        isShowAllEnabled={isShowAllEnabled}
-                        tradeData={tradeData}
                         limitOrder={limitOrder}
                         {...orderMenuProps}
-                        isSidebarOpen={isSidebarOpen}
-                        handlePulseAnimation={handlePulseAnimation}
-                        lastBlockNumber={lastBlockNumber}
-                        showHighlightedButton={showHighlightedButton}
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
+                        isAccountView={isAccountView}
                         handleAccountClick={handleAccountClick}
                     />
                 </li>
             </ul>
-            {snackbarContent}
         </>
     );
 }
+
+export default memo(OrderRow);

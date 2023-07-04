@@ -7,9 +7,11 @@ import moment from 'moment';
 // import Apy from '../../Global/Tabs/Apy/Apy';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import { useState } from 'react';
-import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
+import { useContext } from 'react';
 import { FiCopy } from 'react-icons/fi';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -20,23 +22,24 @@ interface ItemRowPropsIF {
 
 interface RangeDetailsSimplifyPropsIF {
     position: PositionIF;
-    account: string;
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 export default function RangeDetailsSimplify(
     props: RangeDetailsSimplifyPropsIF,
 ) {
-    const {
-        account,
-        position,
-        baseFeesDisplay,
-        quoteFeesDisplay,
-        isOnPortfolioPage,
-    } = props;
+    const { position, baseFeesDisplay, quoteFeesDisplay, isAccountView } =
+        props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
+        isDenomBase,
+        isBaseTokenMoneynessGreaterOrEqual,
+        minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness,
         userNameToDisplay,
         posHashTruncated,
         posHash,
@@ -46,6 +49,8 @@ export default function RangeDetailsSimplify(
         usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
         isPositionInRange,
@@ -59,22 +64,15 @@ export default function RangeDetailsSimplify(
         tokenBAddressLowerCase,
         baseDisplayFrontend,
         quoteDisplayFrontend,
-    } = useProcessRange(position, account, isOnPortfolioPage);
+    } = useProcessRange(position, userAddress, isAccountView);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
 
-    const [value, copy] = useCopyToClipboard();
-    // const [copiedData, setCopiedData] = useState('');
+    const { chainData } = useContext(CrocEnvContext);
 
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
+    const [_, copy] = useCopyToClipboard();
 
     function handleOpenWallet() {
         const walletUrl = isOwnerActiveAccount
@@ -91,16 +89,14 @@ export default function RangeDetailsSimplify(
 
     function handleCopyPositionHash() {
         copy(posHash.toString());
-        // setCopiedData(posHash.toString());
-
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash.toString()} copied`, 'info');
     }
 
     function handleOpenBaseAddress() {
         if (tokenAAddressLowerCase && blockExplorer) {
             const adressUrl =
                 tokenAAddressLowerCase === ZERO_ADDRESS
-                    ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
+                    ? `${blockExplorer}address/${chainData.addrs.dex}`
                     : `${blockExplorer}token/${tokenAAddressLowerCase}`;
             window.open(adressUrl);
         }
@@ -121,24 +117,36 @@ export default function RangeDetailsSimplify(
     const posHashContent = (
         <div className={styles.link_row} onClick={handleCopyPositionHash}>
             <p>{posHashTruncated}</p>
-            <FiCopy />
+            <FiCopy style={{ cursor: 'pointer' }} />
         </div>
     );
     const walletContent = (
-        <div className={styles.link_row} onClick={handleOpenWallet}>
+        <div
+            className={styles.link_row}
+            onClick={handleOpenWallet}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{userNameToDisplay}</p>
             <RiExternalLinkLine />
         </div>
     );
 
     const baseAddressContent = (
-        <div onClick={handleOpenBaseAddress} className={styles.link_row}>
+        <div
+            onClick={handleOpenBaseAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{baseTokenAddressTruncated}</p>
             <RiExternalLinkLine />
         </div>
     );
     const quoteAddressContent = (
-        <div onClick={handleOpenQuoteAddress} className={styles.link_row}>
+        <div
+            onClick={handleOpenQuoteAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
             <p>{quoteTokenAddressTruncated}</p>
             <RiExternalLinkLine />
         </div>
@@ -153,13 +161,12 @@ export default function RangeDetailsSimplify(
     const submissionTime = moment(position.timeFirstMint * 1000).format(
         'MM/DD/YYYY HH:mm',
     );
-    // const fillTime = moment(position.latestCrossPivotTime * 1000).format('MM/DD/YYYY HH:mm');
 
     const infoContent = [
         {
             title: 'Position Type ',
             content: isAmbient ? 'Ambient' : 'Range',
-            explanation: 'e.g. Range / Ambient ',
+            explanation: 'e.g. Range, Ambient ',
         },
         {
             title: 'Position Slot ID ',
@@ -192,7 +199,7 @@ export default function RangeDetailsSimplify(
 
         {
             title: 'Token 1 ',
-            content: baseTokenSymbol,
+            content: baseTokenSymbol + ' - ' + baseTokenName,
             explanation: 'Token #1 in the token pair',
         },
 
@@ -211,7 +218,7 @@ export default function RangeDetailsSimplify(
 
         {
             title: 'Token 2 ',
-            content: quoteTokenSymbol,
+            content: quoteTokenSymbol + ' - ' + quoteTokenName,
             explanation: 'Token #2 in the token pair',
         },
 
@@ -229,12 +236,28 @@ export default function RangeDetailsSimplify(
         },
         {
             title: 'Range Min ',
-            content: ambientOrMin,
+            content: isAmbient
+                ? ambientOrMin
+                : isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1 ${quoteTokenSymbol} = ${minRangeDenomByMoneyness} ${baseTokenSymbol}`
+                    : `1 ${baseTokenSymbol} = ${minRangeDenomByMoneyness} ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1 ${baseTokenSymbol} = ${ambientOrMin} ${quoteTokenSymbol}`
+                : `1 ${quoteTokenSymbol} = ${ambientOrMin} ${baseTokenSymbol}`,
             explanation: 'The low price boundary of the range',
         },
         {
             title: 'Range Max ',
-            content: ambientOrMax,
+            content: isAmbient
+                ? ambientOrMax
+                : isAccountView
+                ? isBaseTokenMoneynessGreaterOrEqual
+                    ? `1 ${quoteTokenSymbol} = ${maxRangeDenomByMoneyness} ${baseTokenSymbol}`
+                    : `1 ${baseTokenSymbol} = ${maxRangeDenomByMoneyness} ${quoteTokenSymbol}`
+                : isDenomBase
+                ? `1 ${baseTokenSymbol} = ${ambientOrMax} ${quoteTokenSymbol}`
+                : `1 ${quoteTokenSymbol} = ${ambientOrMax} ${baseTokenSymbol}`,
             explanation: 'The high price boundary of the range',
         },
 
@@ -342,7 +365,6 @@ export default function RangeDetailsSimplify(
                         ))}
                 </section>
             </div>
-            {snackbarContent}
         </div>
     );
 }

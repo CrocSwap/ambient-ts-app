@@ -1,40 +1,53 @@
 import { useMemo, useState } from 'react';
+import { getLocalStorageItem } from '../../utils/functions/getLocalStorageItem';
 
 export interface sidebarMethodsIF {
-    status: string;
+    status: SidebarStoredStatus;
     isOpen: boolean;
     isHiddenOnRoute: boolean;
-    open: (persist?: string) => void;
-    close: (persist?: string) => void;
-    toggle: (persist?: string) => void;
+    open: (persist?: boolean) => void;
+    close: (persist?: boolean) => void;
+    toggle: (persist?: boolean) => void;
+    getStoredStatus: () => SidebarStoredStatus | null;
+    resetStoredStatus: () => void;
 }
+
+export type SidebarStoredStatus = 'open' | 'closed';
 
 export const useSidebar = (pathname: string): sidebarMethodsIF => {
     // local storage key for persisted data
     const localStorageKey = 'sidebarStatus';
+    const getStoredSidebarStatus = () =>
+        getLocalStorageItem<SidebarStoredStatus>(localStorageKey);
+
+    const resetPersist = () => localStorage.setItem(localStorageKey, 'closed');
 
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
     // will default to 'open' if no value found (happens on first visit)
-    const [sidebar, setSidebar] = useState<string>(
-        localStorage.getItem(localStorageKey) || 'open',
+    const [sidebar, setSidebar] = useState<SidebarStoredStatus>(
+        getStoredSidebarStatus() || 'open',
     );
 
     // reusable logic to update state and optionally persist data in local storage
-    const changeSidebar = (newStatus: string, persist: string): void => {
+    const changeSidebar = (
+        newStatus: SidebarStoredStatus,
+        persist: boolean,
+    ): void => {
         setSidebar(newStatus);
         persist && localStorage.setItem(localStorageKey, newStatus);
     };
 
     // fn to open the sidebar
-    const openSidebar = (persist = ''): void => changeSidebar('open', persist);
+    const openSidebar = (persist = false): void =>
+        changeSidebar('open', persist);
 
     // fn to close the sidebar
-    const closeSidebar = (persist = ''): void =>
+    const closeSidebar = (persist = false): void =>
         changeSidebar('closed', persist);
 
     // fn to toggle the sidebar
-    const toggleSidebar = (persist = ''): void => {
+    const toggleSidebar = (persist = false): void => {
         // logic router as desired action is conditional on current value
         // default action is to open the sidebar
         switch (sidebar) {
@@ -59,12 +72,17 @@ export const useSidebar = (pathname: string): sidebarMethodsIF => {
         return isPathHidden;
     }, [pathname]);
 
-    return {
-        status: sidebar,
-        isOpen: sidebar === 'open',
-        isHiddenOnRoute: hidden,
-        open: openSidebar,
-        close: closeSidebar,
-        toggle: toggleSidebar,
-    };
+    return useMemo(
+        () => ({
+            status: sidebar,
+            isOpen: sidebar === 'open',
+            isHiddenOnRoute: hidden,
+            open: openSidebar,
+            close: closeSidebar,
+            toggle: toggleSidebar,
+            getStoredStatus: getStoredSidebarStatus,
+            resetStoredStatus: resetPersist,
+        }),
+        [sidebar, hidden, pathname],
+    );
 };

@@ -5,22 +5,24 @@
     display: flex;
     flex-direction: column;
     padding: 1rem;
+    background: var(--dark1);
+    border-radius: var(--border-radius);
 }
 
 .container h2 {
     font-size: var(--body-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .container input {
     width: 100%;
     height: 30px;
     background: var(--dark2);
-    color: var(--text-grey-white);
     outline: none;
     border: none;
     padding: 0 4px;
+    margin-bottom: 8px;
     border-radius: 4px;
     /* text-align: center; */
 }
@@ -49,7 +51,7 @@
 .input_control_container button {
     background: transparent;
     padding: 6px 0;
-    color: var(--text-grey-light);
+    color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     border: none;
@@ -58,11 +60,24 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 .input_control_container button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .loader {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.weth_text{
+  font-size: var(--body-size);
+  line-height: var(--body-lh);
+  text-align: center;
+  color: var(--text1);
+  padding: 1rem;  
+}
+@media only screen and (min-width: 768px) {
+.container{
+ width: 448px;   
+}
 }

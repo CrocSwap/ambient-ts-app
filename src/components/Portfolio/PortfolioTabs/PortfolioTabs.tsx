@@ -2,8 +2,7 @@ import {
     // START: Import React and Dongles
     useEffect,
     useState,
-    Dispatch,
-    SetStateAction,
+    useContext,
 } from 'react';
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
@@ -17,10 +16,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import {
-    PositionUpdateFn,
-    getPositionData,
-} from '../../../App/functions/getPositionData';
+import { getPositionData } from '../../../App/functions/getPositionData';
 import {
     LimitOrderIF,
     PositionIF,
@@ -32,110 +28,50 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
-import { ethers } from 'ethers';
-import {
-    resetLookupUserDataLoadingStatus,
-    setDataLoadingStatus,
-} from '../../../utils/state/graphDataSlice';
+import { setDataLoadingStatus } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
-import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
-import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
-import { allDexBalanceMethodsIF } from '../../../App/hooks/useExchangePrefs';
-import { allSlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
+import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 
 // interface for React functional component props
 interface propsIF {
-    crocEnv: CrocEnv | undefined;
-    isTokenABase: boolean;
-    provider: ethers.providers.Provider | undefined;
-    cachedFetchTokenPrice: TokenPriceFn;
-    cachedPositionUpdateQuery: PositionUpdateFn;
-    connectedUserTokens: (TokenIF | undefined)[];
     resolvedAddressTokens: (TokenIF | undefined)[];
-    resolvedAddress: string;
-    lastBlockNumber: number;
-    activeAccount: string;
+    resolvedAddress: string | undefined;
     connectedAccountActive: boolean;
-    chainId: string;
-    tokenList: TokenIF[];
-    tokenMap: Map<string, TokenIF>;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    searchableTokens: TokenIF[];
     openTokenModal: () => void;
-    chainData: ChainSpec;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
-    currentPositionActive: string;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    account: string;
-    isSidebarOpen: boolean;
-    isUserLoggedIn: boolean | undefined;
-    baseTokenBalance: string;
-    quoteTokenBalance: string;
-    baseTokenDexBalance: string;
-    quoteTokenDexBalance: string;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    handlePulseAnimation: (type: string) => void;
-    fullLayoutToggle: JSX.Element;
-    cachedQuerySpotPrice: SpotPriceFn;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    slippage: allSlippageMethodsIF;
-    gasPriceInGwei: number | undefined;
-    ethMainnetUsdPrice: number | undefined;
 }
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
     const {
-        searchableTokens,
-        cachedQuerySpotPrice,
-        cachedPositionUpdateQuery,
-        crocEnv,
-        isTokenABase,
-        cachedFetchTokenPrice,
-        tokenMap,
-        connectedUserTokens,
         resolvedAddressTokens,
         resolvedAddress,
-        lastBlockNumber,
-        activeAccount,
         connectedAccountActive,
-        chainId,
-        tokenList,
-        selectedOutsideTab,
-        setSelectedOutsideTab,
-        outsideControl,
-        setOutsideControl,
         openTokenModal,
-        baseTokenBalance,
-        quoteTokenBalance,
-        baseTokenDexBalance,
-        quoteTokenDexBalance,
-        handlePulseAnimation,
-        account,
-        setExpandTradeTable,
-        setSimpleRangeWidth,
-        dexBalancePrefs,
-        slippage,
-        gasPriceInGwei,
-        ethMainnetUsdPrice,
-        isSidebarOpen,
     } = props;
 
     const dispatch = useAppDispatch();
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const {
+        crocEnv,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData =
@@ -156,12 +92,11 @@ export default function PortfolioTabs(props: propsIF) {
         useState<LimitOrderIF[]>([]);
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
 
     const userPositionsCacheEndpoint =
-        httpGraphCacheServerDomain + '/user_positions?';
+        GRAPHCACHE_SMALL_URL + '/user_positions?';
     const userLimitOrdersCacheEndpoint =
-        httpGraphCacheServerDomain + '/user_limit_order_states?';
+        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(
@@ -179,31 +114,30 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
-
                 if (userPositions && crocEnv) {
                     Promise.all(
-                        userPositions.map((position: PositionIF) => {
+                        userPositions.map((position: PositionServerIF) => {
                             return getPositionData(
                                 position,
-                                searchableTokens,
+                                tokens.tokenUniv,
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
+                                cachedFetchTokenPrice,
+                                cachedQuerySpotPrice,
+                                cachedTokenDetails,
+                                cachedEnsResolve,
                             );
                         }),
                     ).then((updatedPositions) => {
-                        setLookupAccountPositionData(updatedPositions);
+                        setLookupAccountPositionData(
+                            updatedPositions.filter((p) => p.positionLiq > 0),
+                        );
                     });
                 }
                 IS_LOCAL_ENV && console.debug('dispatch');
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserRangeData',
-                        loadingStatus: false,
-                    }),
-                );
             })
-            .catch(() => {
+            .finally(() => {
                 dispatch(
                     setDataLoadingStatus({
                         datasetName: 'lookupUserRangeData',
@@ -225,26 +159,29 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userLimitOrderStates = json?.data;
-                if (userLimitOrderStates) {
+                if (userLimitOrderStates && crocEnv) {
                     Promise.all(
-                        userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                            return getLimitOrderData(
-                                limitOrder,
-                                searchableTokens,
-                            );
-                        }),
+                        userLimitOrderStates.map(
+                            (limitOrder: LimitOrderServerIF) => {
+                                return getLimitOrderData(
+                                    limitOrder,
+                                    tokens.tokenUniv,
+                                    crocEnv,
+                                    chainId,
+                                    lastBlockNumber,
+                                    cachedFetchTokenPrice,
+                                    cachedQuerySpotPrice,
+                                    cachedTokenDetails,
+                                    cachedEnsResolve,
+                                );
+                            },
+                        ),
                     ).then((updatedLimitOrderStates) => {
                         setLookupAccountLimitOrderData(updatedLimitOrderStates);
                     });
                 }
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserOrderData',
-                        loadingStatus: false,
-                    }),
-                );
             })
-            .catch(() => {
+            .finally(() => {
                 dispatch(
                     setDataLoadingStatus({
                         datasetName: 'lookupUserOrderData',
@@ -253,74 +190,68 @@ export default function PortfolioTabs(props: propsIF) {
                 );
             });
 
-    const getLookupUserTransactions = async (accountToSearch: string) =>
-        fetchUserRecentChanges({
-            tokenList: tokenList,
-            user: accountToSearch,
-            chainId: chainId,
-            annotate: true,
-            addValue: true,
-            simpleCalc: true,
-            annotateMEV: false,
-            ensResolution: true,
-            n: 100, // fetch last 500 changes,
-        })
-            .then((updatedTransactions) => {
-                if (updatedTransactions) {
-                    setLookupAccountTransactionData(updatedTransactions);
-                }
-
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: false,
-                    }),
-                );
+    const getLookupUserTransactions = async (accountToSearch: string) => {
+        if (crocEnv) {
+            fetchUserRecentChanges({
+                tokenList: tokens.tokenUniv,
+                user: accountToSearch,
+                chainId: chainId,
+                annotate: true,
+                addValue: true,
+                simpleCalc: true,
+                annotateMEV: false,
+                ensResolution: true,
+                n: 100, // fetch last 100 changes,
+                crocEnv: crocEnv,
+                lastBlockNumber: lastBlockNumber,
+                cachedFetchTokenPrice: cachedFetchTokenPrice,
+                cachedQuerySpotPrice: cachedQuerySpotPrice,
+                cachedTokenDetails: cachedTokenDetails,
+                cachedEnsResolve: cachedEnsResolve,
             })
-            .catch(() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserTxData',
-                        loadingStatus: false,
-                    }),
-                );
-            });
-
-    useEffect(() => {
-        (async () => {
-            IS_LOCAL_ENV &&
-                console.debug(
-                    'querying user tx/order/positions because address changed',
-                );
-            if (!connectedAccountActive) {
-                if (resolvedAddress) {
-                    dispatch(resetLookupUserDataLoadingStatus());
-                    await getLookupUserTransactions(resolvedAddress);
-                    await getLookupUserLimitOrders(resolvedAddress);
-                    await getLookupUserPositions(resolvedAddress);
-                } else {
+                .then((updatedTransactions) => {
+                    if (updatedTransactions) {
+                        setLookupAccountTransactionData(updatedTransactions);
+                    }
+                })
+                .finally(() => {
                     dispatch(
                         setDataLoadingStatus({
                             datasetName: 'lookupUserTxData',
                             loadingStatus: false,
                         }),
                     );
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserOrderData',
-                            loadingStatus: false,
-                        }),
+                });
+        }
+    };
+
+    useEffect(() => {
+        (async () => {
+            if (
+                !connectedAccountActive &&
+                !!tokens.tokenUniv &&
+                resolvedAddress &&
+                !!crocEnv
+            ) {
+                IS_LOCAL_ENV &&
+                    console.debug(
+                        'querying user tx/order/positions because address changed',
                     );
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserRangeData',
-                            loadingStatus: false,
-                        }),
-                    );
-                }
+
+                await Promise.all([
+                    getLookupUserTransactions(resolvedAddress),
+                    getLookupUserLimitOrders(resolvedAddress),
+                    getLookupUserPositions(resolvedAddress),
+                ]);
             }
         })();
-    }, [resolvedAddress, connectedAccountActive, diffHashSig(tokenList)]);
+    }, [
+        resolvedAddress,
+        connectedAccountActive,
+        lastBlockNumber,
+        !!tokens.tokenUniv,
+        !!crocEnv,
+    ]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
@@ -348,114 +279,43 @@ export default function PortfolioTabs(props: propsIF) {
 
     // props for <Wallet/> React Element
     const walletProps = {
-        crocEnv: crocEnv,
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
-        connectedUserTokens: connectedUserTokens,
+        chainId: chainId,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
-        lastBlockNumber: lastBlockNumber,
-        resolvedAddress: resolvedAddress,
-        activeAccount: activeAccount,
-        chainId: chainId,
-        tokenMap: tokenMap,
+        resolvedAddress: resolvedAddress ?? '',
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     // props for <Exchange/> React Element
     const exchangeProps = {
-        crocEnv: crocEnv,
-        cachedFetchTokenPrice: cachedFetchTokenPrice,
-        connectedUserTokens: connectedUserTokens,
+        chainId: chainId,
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
-        lastBlockNumber: lastBlockNumber,
-        resolvedAddress: resolvedAddress,
-        activeAccount: activeAccount,
-        chainId: chainId,
-        tokenMap: tokenMap,
+        resolvedAddress: resolvedAddress ?? '',
         openTokenModal: openTokenModal,
+        cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
     // props for <Range/> React Element
     const rangeProps = {
-        cachedQuerySpotPrice: cachedQuerySpotPrice,
-        cachedPositionUpdateQuery: cachedPositionUpdateQuery,
-        crocEnv: props.crocEnv,
-        expandTradeTable: false,
-        chainData: props.chainData,
-        isShowAllEnabled: false,
-        account: account,
-        openGlobalModal: props.openGlobalModal,
-        currentPositionActive: props.currentPositionActive,
-        closeGlobalModal: props.closeGlobalModal,
-        setCurrentPositionActive: props.setCurrentPositionActive,
-        isSidebarOpen: isSidebarOpen,
         activeAccountPositionData: activeAccountPositionData,
-        isOnPortfolioPage: true,
         connectedAccountActive: connectedAccountActive,
-        lastBlockNumber: lastBlockNumber,
-        chainId: chainId,
-        provider: props.provider,
-        isUserLoggedIn: props.isUserLoggedIn,
-        searchableTokens: searchableTokens,
-        baseTokenBalance: baseTokenBalance,
-        quoteTokenBalance: quoteTokenBalance,
-        baseTokenDexBalance: baseTokenDexBalance,
-        quoteTokenDexBalance: quoteTokenDexBalance,
-        handlePulseAnimation: handlePulseAnimation,
-        setSimpleRangeWidth: setSimpleRangeWidth,
-        dexBalancePrefs: dexBalancePrefs,
-        slippage: slippage,
-        gasPriceInGwei: gasPriceInGwei,
-        ethMainnetUsdPrice: ethMainnetUsdPrice,
-        setExpandTradeTable: setExpandTradeTable,
+        isAccountView: true,
     };
 
     // props for <Transactions/> React Element
     const transactionsProps = {
-        searchableTokens: searchableTokens,
-        isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
-        isShowAllEnabled: false,
         changesInSelectedCandle: undefined,
-        tokenList: tokenList,
-        chainData: props.chainData,
-        blockExplorer: props.chainData.blockExplorer || undefined,
-        currentTxActiveInTransactions: props.currentTxActiveInTransactions,
-        account: account,
-        setCurrentTxActiveInTransactions:
-            props.setCurrentTxActiveInTransactions,
-        expandTradeTable: false,
-        isCandleSelected: false,
-        closeGlobalModal: props.closeGlobalModal,
-        openGlobalModal: props.openGlobalModal,
-        isSidebarOpen: isSidebarOpen,
-        handlePulseAnimation: handlePulseAnimation,
-        isOnPortfolioPage: true,
-        tokenMap: tokenMap,
-        setExpandTradeTable: setExpandTradeTable,
-        setSimpleRangeWidth: setSimpleRangeWidth,
         isAccountView: true,
     };
 
     // Props for <Orders/> React Element
     const ordersProps = {
-        searchableTokens: searchableTokens,
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
-        crocEnv: props.crocEnv,
-        expandTradeTable: false,
-        chainData: props.chainData,
-        isShowAllEnabled: false,
-        account: account,
-        openGlobalModal: props.openGlobalModal,
-        currentPositionActive: props.currentPositionActive,
-        closeGlobalModal: props.closeGlobalModal,
-        setCurrentPositionActive: props.setCurrentPositionActive,
-        isSidebarOpen: isSidebarOpen,
-        isOnPortfolioPage: true,
-        handlePulseAnimation: handlePulseAnimation,
-        lastBlockNumber: lastBlockNumber,
+        isAccountView: true,
     };
 
     const accountTabDataWithTokens = [
@@ -523,10 +383,6 @@ export default function PortfolioTabs(props: propsIF) {
                         : accountTabDataWithoutTokens
                 }
                 rightTabOptions={false}
-                selectedOutsideTab={selectedOutsideTab}
-                setSelectedOutsideTab={setSelectedOutsideTab}
-                outsideControl={outsideControl}
-                setOutsideControl={setOutsideControl}
             />
         </div>
     );

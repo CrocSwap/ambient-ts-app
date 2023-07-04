@@ -1,6 +1,12 @@
 // START: Import React and Dongles
-import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
-import { ethers } from 'ethers';
+import {
+    ChangeEvent,
+    Dispatch,
+    memo,
+    SetStateAction,
+    useContext,
+    useState,
+} from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -8,89 +14,49 @@ import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantit
 
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
-import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-import { allDexBalanceMethodsIF } from '../../../../App/hooks/useExchangePrefs';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import { ackTokensMethodsIF } from '../../../../App/hooks/useAckTokens';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 // interface for component props
 interface propsIF {
-    provider?: ethers.providers.Provider;
-    isUserLoggedIn: boolean | undefined;
-    tokenPair: TokenPairIF;
-    chainId: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
-    setTokenAInputQty: Dispatch<SetStateAction<string>>;
-    setTokenBInputQty: Dispatch<SetStateAction<string>>;
     fieldId: string;
-    direction: string;
     sellToken?: boolean;
     reverseTokens: () => void;
     tokenABalance: string;
-    tokenBBalance: string;
     tokenADexBalance: string;
-    tokenBDexBalance: string;
     isSellTokenEth?: boolean;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     isWithdrawFromDexChecked: boolean;
-    tokenAWalletMinusTokenAQtyNum: number;
-    tokenASurplusMinusTokenAQtyNum: number;
-    tokenASurplusMinusTokenARemainderNum: number;
-    tokenAQtyCoveredBySurplusBalance: number;
-    tokenAQtyCoveredByWalletBalance: number;
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    gasPriceInGwei: number | undefined;
-
-    isOrderCopied: boolean;
-    verifyToken: (addr: string, chn: string) => boolean;
-    getTokensByName: (
-        searchName: string,
-        chn: string,
-        exact: boolean,
-    ) => TokenIF[];
-    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
-    importedTokensPlus: TokenIF[];
-    getRecentTokens: (
-        options?: getRecentTokensParamsIF | undefined,
-    ) => TokenIF[];
-    addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
-    outputTokens: TokenIF[];
-    validatedInput: string;
-    setInput: Dispatch<SetStateAction<string>>;
-    searchType: string;
-    openGlobalPopup: (
-        content: React.ReactNode,
-        popupTitle?: string,
-        popupPlacement?: string,
-    ) => void;
-    dexBalancePrefs: allDexBalanceMethodsIF;
-    ackTokens: ackTokensMethodsIF;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    parseInput: (val: string) => void;
 }
 
 // central react functional component
-export default function LimitCurrencySelector(props: propsIF) {
+function LimitCurrencySelector(props: propsIF) {
     const {
-        provider,
-        isUserLoggedIn,
-        tokenPair,
-        chainId,
         tokenAInputQty,
         tokenBInputQty,
         fieldId,
@@ -102,35 +68,32 @@ export default function LimitCurrencySelector(props: propsIF) {
         isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked,
         setIsSaveAsDexSurplusChecked,
-        gasPriceInGwei,
         handleChangeClick,
-        isOrderCopied,
-        verifyToken,
-        getTokensByName,
-        getTokenByAddress,
-        importedTokensPlus,
-        getRecentTokens,
-        addRecentToken,
         tokenAorB,
-        outputTokens,
-        validatedInput,
-        setInput,
-        searchType,
-        openGlobalPopup,
-        dexBalancePrefs,
-        ackTokens,
         setUserOverrodeSurplusWithdrawalDefault,
+        parseInput,
     } = props;
 
-    const thisToken =
-        fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { setInput } = useContext(TokenContext);
+    const { showOrderPulseAnimation } = useContext(TradeTableContext);
+    const { dexBalLimit } = useContext(UserPreferenceContext);
+
+    const thisToken = fieldId === 'sell' ? tokenA : tokenB;
 
     const isSellTokenSelector = fieldId === 'sell';
 
     // IMPORTANT!  The Limit Order module is the one only transaction configurator
     // ... in the app which has an input field with no token selector.  For that
     // ... reason, `LimitCurrencySelector.tsx` file needs to be coded separately
-    // ... from its counterparts in the Swap/Market/Range modules, even if we use
+    // ... from its counterparts in the Swap/Market/Pool modules, even if we use
     // ... a common element for those modules in the future.
 
     const modalCloseCustom = (): void => setInput('');
@@ -151,26 +114,18 @@ export default function LimitCurrencySelector(props: propsIF) {
     const tokenSelect = (
         <button
             className={`${styles.token_select} ${
-                isOrderCopied && styles.pulse_animation
+                showOrderPulseAnimation && styles.pulse_animation
             }`}
             onClick={openTokenModal}
             tabIndex={0}
             aria-label={`Open swap ${fieldId} token modal.`}
             id='limit_token_selector'
         >
-            {thisToken.logoURI ? (
-                <img
-                    className={styles.token_list_img}
-                    src={thisToken.logoURI}
-                    alt={thisToken.name + 'token logo'}
-                    width='30px'
-                />
-            ) : (
-                <NoTokenIcon
-                    tokenInitial={thisToken.symbol.charAt(0)}
-                    width='30px'
-                />
-            )}
+            <TokenIcon
+                src={uriToHttp(thisToken.logoURI)}
+                alt={thisToken.name + 'token logo'}
+                size='2xl'
+            />
             <span className={styles.token_list_text}>{thisToken.symbol}</span>
             <RiArrowDownSLine size={27} />
         </button>
@@ -226,15 +181,13 @@ export default function LimitCurrencySelector(props: propsIF) {
             : walletAndSurplusBalanceNonLocaleString;
 
     function handleMaxButtonClick() {
-        if (handleChangeClick && isUserLoggedIn && !isSellTokenEth) {
+        if (handleChangeClick && isUserConnected) {
             handleChangeClick(balanceNonLocaleString);
         }
     }
 
     const maxButton =
-        isSellTokenSelector &&
-        !isSellTokenEth &&
-        balanceLocaleString !== '0.00' ? (
+        isSellTokenSelector && balanceLocaleString !== '0.00' ? (
             <button
                 className={`${styles.max_button} ${styles.max_button_enable}`}
                 onClick={() => handleMaxButtonClick()}
@@ -291,7 +244,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                                 }
                             } else {
                                 setIsSaveAsDexSurplusChecked(false);
-                                dexBalancePrefs.limit.outputToDexBal.disable();
+                                dexBalLimit.outputToDexBal.disable();
                             }
                         }}
                     >
@@ -334,7 +287,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                                     );
                                 }
                             } else {
-                                dexBalancePrefs.limit.outputToDexBal.enable();
+                                dexBalLimit.outputToDexBal.enable();
                                 setIsSaveAsDexSurplusChecked(true);
                             }
                         }}
@@ -363,7 +316,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         style={{ cursor: 'default' }}
                         // onClick={() => handleMaxButtonClick()}
                     >
-                        {isUserLoggedIn ? balanceLocaleString : ''}
+                        {isUserConnected ? balanceLocaleString : ''}
                     </div>
                 </DefaultTooltip>
                 {maxButton}
@@ -372,7 +325,7 @@ export default function LimitCurrencySelector(props: propsIF) {
     );
 
     const balanceDisplayOrNull = isSellTokenSelector ? (
-        !isUserLoggedIn ? (
+        !isUserConnected ? (
             <div className={styles.swapbox_bottom} />
         ) : (
             <div className={styles.swapbox_bottom}>{walletContent}</div>
@@ -381,7 +334,6 @@ export default function LimitCurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}> </span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='limit_sell_qty'>
                     <LimitCurrencyQuantity
@@ -391,6 +343,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         thisToken={thisToken}
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
+                        parseInput={parseInput}
                     />
                 </div>
                 {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}
@@ -407,31 +360,19 @@ export default function LimitCurrencySelector(props: propsIF) {
                 >
                     <SoloTokenSelect
                         modalCloseCustom={modalCloseCustom}
-                        provider={provider}
                         closeModal={closeTokenModal}
-                        chainId={chainId}
-                        importedTokensPlus={importedTokensPlus}
-                        getTokensByName={getTokensByName}
-                        getTokenByAddress={getTokenByAddress}
-                        verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={
                             setShowSoloSelectTokenButtons
                         }
-                        outputTokens={outputTokens}
-                        validatedInput={validatedInput}
-                        setInput={setInput}
-                        searchType={searchType}
-                        addRecentToken={addRecentToken}
-                        getRecentTokens={getRecentTokens}
                         isSingleToken={false}
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
-                        tokenPair={tokenPair}
-                        ackTokens={ackTokens}
                     />
                 </Modal>
             )}
         </div>
     );
 }
+
+export default memo(LimitCurrencySelector);

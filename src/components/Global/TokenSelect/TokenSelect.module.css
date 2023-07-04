@@ -10,15 +10,18 @@
     background: transparent;
     outline: none;
     border: none;
+    border-radius: var(--border-radius);
+    padding: 0 8px;
 }
 
-.main_container:hover, .main_container:focus-visible {
-    background: var(--dark1);
+.main_container:hover,
+.main_container:focus-visible {
+    background: var(--dark2);
 
     cursor: pointer;
 }
-.main_container:focus-visible{
-    border-left: 1px solid var(--text-grey-white);
+.main_container:focus-visible {
+    border-left: 1px solid var(--text1);
 }
 
 .modal_content {
@@ -55,7 +58,7 @@
   left: 0;
 } */
 .close_icon_svg:hover {
-    color: var(--text-highlight);
+    color: var(--accent5);
 }
 /* .modal_content:hover {
     background: var(--dark2);
@@ -72,21 +75,13 @@
     gap: 1rem;
 }
 
-.modal_tokens_info img {
-    background: var(--dark2);
-    width: 27px;
-    height: 27px;
-
-    border-radius: 50%;
-}
-
 .star_svg {
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 }
 
 .star_svg:hover {
-    fill: var(--text-grey-light);
+    fill: var(--text2);
     cursor: pointer;
 }
 
@@ -101,13 +96,13 @@
 .modal_tokens_amount {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white)
+    color: var(--text1);
     /* font-weight: 400; */
 }
 .modal_token_name {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     /* font-weight: 400; */
 }
 
@@ -167,8 +162,8 @@
     padding: 5px 12px;
 
     border: none;
-    /* border: 1px solid #f6385b; */
-    border: 1px solid var(--text-highlight);
+    /* border: 1px solid var(--negative); */
+    border: 1px solid var(--accent5);
     outline: none;
 }
 
@@ -182,7 +177,7 @@
     border-bottom-right-radius: var(--border-radius);
 }
 .liqtype_buttons_container button:hover {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .name_container {
@@ -193,7 +188,7 @@
 }
 .active_button {
     color: rgb(0, 0, 0);
-    /* background-color: #f6385b; */
+    /* background-color: var(--negative); */
     background: var(--title-gradient);
 }
 .non_active_button {
@@ -206,11 +201,11 @@
     transition: all var(--animation-speed) ease;
 }
 .primary_style {
-    color: var(--text-highlight);
+    color: var(--accent5);
 }
 
 .danger_style {
-    color: #f6385b;
+    color: var(--negative);
 }
 
 .confirm:hover {
@@ -220,7 +215,7 @@
 .token_list_data {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
     width: 100%;
     text-align: end;
 }

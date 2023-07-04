@@ -1,70 +1,73 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 
 // START: Import Local Files
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
-import styles from './SidebarRecentTransactions.module.css';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
+import styles from '../SidebarTable.module.css';
 
 // START: Import JSX Components
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
-    coinGeckoTokenMap: Map<string, TokenIF>;
-    chainId: string;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean | undefined;
-    closeSidebar: () => void;
 }
 
 export default function SidebarRecentTransactions(props: propsIF) {
+    const { mostRecentTransactions } = props;
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
+
     const {
-        mostRecentTransactions,
-        chainId,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const {
         setCurrentTxActiveInTransactions,
-        setIsShowAllEnabled,
+        setShowAllData,
         setOutsideControl,
         setSelectedOutsideTab,
-        isUserLoggedIn,
-        closeSidebar,
-    } = props;
+    } = useContext(TradeTableContext);
+    const {
+        sidebar: { close: closeSidebar },
+    } = useContext(SidebarContext);
 
     const location = useLocation();
-    const navigate = useNavigate();
+
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenAccount: linkGenMethodsIF = useLinkGen('account');
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 0 : 0;
 
+    // TODO: should this redirect with a <Navigate /> element?
     function redirectBasedOnRoute() {
         if (onAccountRoute) return;
-        navigate('/account');
+        linkGenAccount.navigate();
     }
 
     const handleCardClick = (tx: TransactionIF): void => {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-        setIsShowAllEnabled(false);
-        setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            '/trade/market/chain=' +
-                chainId +
-                '&tokenA=' +
-                tx.base +
-                '&tokenB=' +
-                tx.quote,
-        );
+        setShowAllData(false);
+        setCurrentTxActiveInTransactions(tx.txId);
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tx.base,
+            tokenB: tx.quote,
+        });
     };
 
     const handleViewMoreClick = (): void => {
@@ -92,12 +95,15 @@ export default function SidebarRecentTransactions(props: propsIF) {
                         handleClick={handleCardClick}
                     />
                 ))}
+                {isUserConnected && (
+                    <div
+                        className={styles.view_more}
+                        onClick={handleViewMoreClick}
+                    >
+                        View More
+                    </div>
+                )}
             </div>
-            {isUserLoggedIn && (
-                <div className={styles.view_more} onClick={handleViewMoreClick}>
-                    View More
-                </div>
-            )}
         </div>
     );
 }

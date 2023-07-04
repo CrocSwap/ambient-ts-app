@@ -7,7 +7,7 @@ import {
 } from '@crocswap-libs/sdk';
 
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { formatAmountOld } from '../../../utils/numbers';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 export function roundDownTick(lowTick: number, nTicksGrid: number): number {
     const tickGrid = Math.floor(lowTick / nTicksGrid) * nTicksGrid;
@@ -69,44 +69,31 @@ export function getPinnedPriceValuesFromTicks(
         : highPriceDisplayInQuote;
 
     const lowPriceDisplayTruncated =
-        lowPriceDisplay < 2
+        lowPriceDisplay < 0.0001
+            ? lowPriceDisplay.toExponential(2)
+            : lowPriceDisplay < 2
             ? lowPriceDisplay > 0.1
                 ? truncateDecimals(lowPriceDisplay, 4)
                 : truncateDecimals(lowPriceDisplay, 6)
             : truncateDecimals(lowPriceDisplay, 2);
 
     const highPriceDisplayTruncated =
-        highPriceDisplay < 2
+        highPriceDisplay < 0.0001
+            ? highPriceDisplay.toExponential(2)
+            : highPriceDisplay < 2
             ? highPriceDisplay > 0.1
                 ? truncateDecimals(highPriceDisplay, 4)
                 : truncateDecimals(highPriceDisplay, 6)
             : truncateDecimals(highPriceDisplay, 2);
 
-    const lowPriceDisplayTruncatedWithCommas: string = !lowPriceDisplay
-        ? ''
-        : lowPriceDisplay < 0.00001
-        ? lowPriceDisplay.toExponential(2)
-        : lowPriceDisplay < 2
-        ? lowPriceDisplay.toPrecision(3)
-        : lowPriceDisplay >= 100000
-        ? formatAmountOld(lowPriceDisplay, 1)
-        : lowPriceDisplay.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const highPriceDisplayTruncatedWithCommas: string = !highPriceDisplay
-        ? ''
-        : highPriceDisplay < 0.00001
-        ? highPriceDisplay.toExponential(2)
-        : highPriceDisplay < 2
-        ? highPriceDisplay.toPrecision(3)
-        : highPriceDisplay >= 100000
-        ? formatAmountOld(highPriceDisplay, 1)
-        : highPriceDisplay.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const lowPriceDisplayTruncatedWithCommas = getFormattedNumber({
+        value: lowPriceDisplay,
+        nullDisplay: '',
+    });
+    const highPriceDisplayTruncatedWithCommas = getFormattedNumber({
+        value: highPriceDisplay,
+        nullDisplay: '',
+    });
 
     return {
         pinnedMinPriceDisplay: lowPriceDisplay.toString(),
@@ -247,13 +234,17 @@ export function getPinnedPriceValuesFromDisplayPrices(
           );
 
     const pinnedMinPriceDisplayTruncated =
-        pinnedMinPriceDisplay < 2
+        pinnedMinPriceDisplay < 0.0001
+            ? pinnedMinPriceDisplay.toExponential(2)
+            : pinnedMinPriceDisplay < 2
             ? pinnedMinPriceDisplay > 0.1
                 ? truncateDecimals(pinnedMinPriceDisplay, 4).toString()
                 : truncateDecimals(pinnedMinPriceDisplay, 6).toString()
             : truncateDecimals(pinnedMinPriceDisplay, 2).toString();
     const pinnedMaxPriceDisplayTruncated =
-        pinnedMaxPriceDisplay < 2
+        pinnedMaxPriceDisplay < 0.0001
+            ? pinnedMaxPriceDisplay.toExponential(2)
+            : pinnedMaxPriceDisplay < 2
             ? pinnedMinPriceDisplay > 0.1
                 ? truncateDecimals(pinnedMaxPriceDisplay, 4).toString()
                 : truncateDecimals(pinnedMaxPriceDisplay, 6).toString()

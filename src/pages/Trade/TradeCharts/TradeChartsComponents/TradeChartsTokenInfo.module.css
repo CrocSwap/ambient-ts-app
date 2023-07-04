@@ -1,21 +1,22 @@
 .tokens_info {
     display: flex;
     flex-direction: row;
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
 }
 
 .tokens_info_simplify {
-    margin: 0 5px 1px -5px;
     background: var(--dark1);
-    /* margin: 0 -5px ; */
-    /* align-items: center; */
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
 }
 .tokens_info_simplify_content {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    padding: 4px 1rem;
+    align-items: center;
+    padding: 4px;
+    grid-gap: 1rem;
+    gap: 1rem;
     overflow: hidden;
 }
 .tokens_info_simplify section {
@@ -32,9 +33,6 @@
 }
 
 .favorite_button {
-    margin-left: 3px;
-    margin-top: -3px;
-    margin-bottom: 6px;
     background: transparent;
     outline: none;
     border: none;
@@ -44,23 +42,18 @@
     cursor: pointer;
 }
 
- .amount:focus-visible{
+.amount:focus-visible {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-    0px 0px 21px rgba(205, 193, 255, 0.2),
-    0px 0px 12px rgba(205, 193, 255, 0.2),
-    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #cdc1ff,
-    0px 0px 2px rgba(205, 193, 255, 0.2);
+        0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2),
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 .favorite_button svg {
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.tokens_images img {
-    width: 18px;
-}
-
-.denom_toggle_button{
-
+.denom_toggle_button {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -69,38 +62,20 @@
     outline: none;
     border: none;
     padding: none;
-
 }
 
-.denom_toggle_button:focus-visible{
-    border: 1px solid var(--text-grey-white)
+.denom_toggle_button:focus-visible {
+    border: 1px solid var(--text1);
 }
 .tokens_name {
     letter-spacing: -0.02em;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     font-weight: 400;
-    color: var(--text-grey-light);
-    cursor: pointer;
-
-
-}
-
-.mono_space_tooltip{
-    color: var(--text-grey-white);
-    border-radius: 4px;
-    padding: 12px;
-    white-space: nowrap;
-    width: 350px;
-    background: var(--dark3);
-}
-
-.mono_space_tooltip p{
-    font-family: monospace !important;
-}
-.mono_space_tooltip svg{
+    color: var(--text1);
     cursor: pointer;
 }
+
 .tokens_images,
 .tokens_name,
 .fav_button,
@@ -111,7 +86,7 @@
 .tokens_name:hover,
 .fav_button:hover,
 .settings_container button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 @media only screen and (min-device-width: 200px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
@@ -132,10 +107,7 @@
         font-weight: 300;
         font-size: var(--header1-size);
         line-height: var(--header1-lh);
-        color: var(--text-grey-light);
-    }
-    .tokens_images img {
-        width: 25px;
+        color: var(--text1);
     }
 
     .graph_style {

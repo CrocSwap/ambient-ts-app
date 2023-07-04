@@ -20,7 +20,7 @@
 
     height: 400px;
     position: absolute;
-    background: var(--dark2);
+    background: var(--dark1);
     border-radius: 4px;
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -40,7 +40,7 @@
 }
 
 .container .header {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .container .content {
@@ -77,27 +77,19 @@
     background: transparent;
     text-transform: uppercase;
 
-    color: var(--text-accent);
+    color: var(--accent5);
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
-    background: linear-gradient(
-        270deg,
-        #7371fc,
-        #cdc1ff,
-        #7371fc,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
+    background: var(--title-gradient);
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
-    border: 1px solid var(--text-highlight-dark);
+    border: 1px solid var(--accent1);
 }
 
-.footer button:hover, .footer button:focus-visible {
-    color: var(--body-bg);
+.footer button:hover,
+.footer button:focus-visible {
+    color: var(--dark1);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }
-
-

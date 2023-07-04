@@ -11,6 +11,7 @@ export interface TokenListIF {
         minor: number;
         version: number;
     };
+    refreshAfter?: number;
     // eslint-disable-next-line
     tags?: any;
     default?: boolean;

@@ -1,7 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
-import Blockies from 'react-blockies';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 
 // START: Import JSX Components
 import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
@@ -9,66 +7,48 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 // START: Import Other Local Files
 import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     ensName: string;
-    activeAccount: string;
-    imageData: string[];
     resolvedAddress: string;
-    setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
     connectedAccountActive: boolean;
-    chainData: ChainSpec;
 }
 
 export default function PortfolioBanner(props: propsIF) {
-    const {
-        ensName,
-        activeAccount,
-        imageData,
-        resolvedAddress,
-        connectedAccountActive,
-        chainData,
-    } = props;
+    const { ensName, resolvedAddress, connectedAccountActive } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
+
     const ensNameAvailable = ensName !== '';
 
-    const blockiesSeed = resolvedAddress
+    const jazziconsSeed = resolvedAddress
         ? resolvedAddress.toLowerCase()
-        : activeAccount.toLowerCase();
+        : userAddress?.toLowerCase() ?? '';
 
-    const myBlockies = <Blockies seed={blockiesSeed} scale={7.4} />;
+    const myJazzicon = (
+        <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
+    );
 
     const truncatedAccountAddress = connectedAccountActive
-        ? trimString(activeAccount, 6, 6, '…')
+        ? trimString(userAddress ?? '', 6, 6, '…')
         : trimString(resolvedAddress, 6, 6, '…');
 
-    const blockiesToDisplay =
-        (resolvedAddress || connectedAccountActive) && myBlockies
-            ? myBlockies
+    const jazziconsToDisplay =
+        (resolvedAddress || connectedAccountActive) && myJazzicon
+            ? myJazzicon
             : null;
 
     return (
         <div className={styles.rectangle_container}>
             <PortfolioBannerAccount
-                imageData={imageData}
                 ensName={ensName}
                 ensNameAvailable={ensNameAvailable}
                 resolvedAddress={resolvedAddress}
-                activeAccount={activeAccount}
                 truncatedAccountAddress={truncatedAccountAddress}
-                connectedAccountActive={connectedAccountActive}
-                blockiesToDisplay={blockiesToDisplay}
-                chainData={chainData}
+                jazziconsToDisplay={jazziconsToDisplay}
             />
-            <div className={styles.nft_container}>
-                {imageData.slice(1, 3).map((image: string) => (
-                    <img
-                        src={image}
-                        alt='nft'
-                        key={`nft-image-${JSON.stringify(image)}`}
-                    />
-                ))}
-                {blockiesToDisplay}
-            </div>
         </div>
     );
 }

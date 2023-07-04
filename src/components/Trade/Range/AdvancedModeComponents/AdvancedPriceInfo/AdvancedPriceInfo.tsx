@@ -1,38 +1,28 @@
 import styles from './AdvancedPriceInfo.module.css';
-import { TokenPairIF } from '../../../../../utils/interfaces/exports';
+import { memo } from 'react';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
-    tokenPair: TokenPairIF;
     poolPriceDisplay: string;
-    isDenomBase: boolean;
     isTokenABase: boolean;
-    minimumSpan: number;
     isOutOfRange: boolean;
     aprPercentage: number | undefined;
-    daysInRange: number | undefined;
 }
 
-export default function AdvancedPriceInfo(props: propsIF) {
+function AdvancedPriceInfo(props: propsIF) {
     // JSX frag to display the pool price for the current pair
-    const {
-        tokenPair,
-        poolPriceDisplay,
-        isDenomBase,
-        isTokenABase,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        minimumSpan,
-        isOutOfRange,
-        aprPercentage,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        daysInRange,
-    } = props;
+    const { poolPriceDisplay, isTokenABase, isOutOfRange, aprPercentage } =
+        props;
+    const { isDenomBase, tokenA, tokenB } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
     const reverseDisplay =
         (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
     const currentPriceValue = reverseDisplay
-        ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-        : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`;
+        ? `${poolPriceDisplay} ${tokenA.symbol} per ${tokenB.symbol}`
+        : `${poolPriceDisplay} ${tokenB.symbol} per ${tokenA.symbol}`;
 
     const currentPrice = (
         <div
@@ -40,38 +30,41 @@ export default function AdvancedPriceInfo(props: propsIF) {
             tabIndex={0}
             aria-label={`Current price is ${currentPriceValue}. `}
         >
-            <div>Current Price: </div>
-            <div className={styles.current_price}>{currentPriceValue}</div>
+            <p className={styles.row_label}>Current Price </p>
+            <p className={styles.current_price}>{currentPriceValue}</p>
         </div>
     );
 
     const aprPercentageString = aprPercentage
-        ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
+        ? `${aprPercentage.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })}%`
         : '…';
 
-    const estimatedAPR = isOutOfRange ? (
-        <div className={styles.apr_display_out_of_range}>
-            <div>Est. APR | 0%</div>
-        </div>
+    const estimatedAPRValue = isOutOfRange ? (
+        <p className={styles.apr_display_out_of_range}>0%</p>
     ) : (
+        <p className={styles.apr_display_in_range}>{aprPercentageString}</p>
+    );
+
+    const estimatedAPR = (
         <div
-            className={styles.apr_display_in_range}
+            className={styles.price_info_row}
             tabIndex={aprPercentage ? 0 : -1}
             aria-label={`Estimated APR is ${aprPercentageString} percent.`}
         >
-            <div>{aprPercentageString}</div>
+            <p className={styles.row_label}>Est. APR </p>
+            {estimatedAPRValue}
         </div>
     );
 
     return (
         <div className={styles.price_info_container}>
-            <div className={styles.price_info_content}>
-                {currentPrice}
-                {estimatedAPR}
-            </div>
+            {currentPrice}
+            {estimatedAPR}
         </div>
     );
 }
+
+export default memo(AdvancedPriceInfo);

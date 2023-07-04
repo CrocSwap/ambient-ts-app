@@ -1,20 +1,18 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, Dispatch, SetStateAction } from 'react';
-// import { Link } from 'react-router-dom';
-import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
-
+import { useState, useRef, useContext, useEffect } from 'react';
+import { FiExternalLink } from 'react-icons/fi';
+import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
-// import Modal from '../../../../Global/Modal/Modal';
-// import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
-// import { useModal } from '../../../../Global/Modal/useModal';
-// import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -22,75 +20,98 @@ import {
     setIsTokenAPrimary,
     setLimitTick,
     setLimitTickCopied,
-    // setPrimaryQuantity,
-    setShouldLimitConverterUpdate,
-    tradeData,
+    setShouldSwapDirectionReverse,
+    setShouldLimitDirectionReverse,
+    setShouldRangeDirectionReverse,
+    setPrimaryQuantityRange,
+    setRangeTicksCopied,
 } from '../../../../../utils/state/tradeDataSlice';
-import { useNavigate } from 'react-router-dom';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { ChainSpec } from '@crocswap-libs/sdk';
-import { IS_LOCAL_ENV } from '../../../../../constants';
+import { AppStateContext } from '../../../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { SidebarContext } from '../../../../../contexts/SidebarContext';
+import { RangeContext } from '../../../../../contexts/RangeContext';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../../utils/hooks/useLinkGen';
+import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 
 // interface for React functional component props
 interface propsIF {
-    account: string;
-    tradeData: tradeData;
-    userPosition: boolean | undefined; // position belongs to active user
-    isTokenABase: boolean;
     tx: TransactionIF;
-    blockExplorer?: string;
-    isSidebarOpen: boolean;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    closeGlobalModal: () => void;
-    handlePulseAnimation?: (type: string) => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
-    setSimpleRangeWidth: Dispatch<SetStateAction<number>>;
-    chainData: ChainSpec;
-    isShowAllEnabled: boolean;
+    isAccountView: boolean;
     handleWalletClick: () => void;
 }
 
 // React functional component
 export default function TransactionsMenu(props: propsIF) {
+    const { isBaseTokenMoneynessGreaterOrEqual, tx, isAccountView } = props;
     const {
-        account,
-        tradeData,
-        isBaseTokenMoneynessGreaterOrEqual,
-        tx,
-        blockExplorer,
-        isSidebarOpen,
-        openGlobalModal,
-        closeGlobalModal,
-        handlePulseAnimation,
-        isOnPortfolioPage,
-        setSimpleRangeWidth,
-        chainData,
-    } = props;
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
+    const {
+        chainData: { blockExplorer, chainId },
+    } = useContext(CrocEnvContext);
+    const { setSimpleRangeWidth } = useContext(RangeContext);
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
+    const { handlePulseAnimation } = useContext(TradeTableContext);
+
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1500px)')
+        : useMediaQuery('(max-width: 1250px)');
+
+    const tradeData = useAppSelector((state) => state.tradeData);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const dispatch = useAppDispatch();
 
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+
     const handleCopyClick = () => {
-        if (handlePulseAnimation) {
-            if (tx.entityType === 'swap') {
-                handlePulseAnimation('swap');
-            } else if (tx.entityType === 'limitOrder') {
-                handlePulseAnimation('limitOrder');
-            } else if (tx.entityType === 'liqchange') {
-                handlePulseAnimation('range');
-            }
+        if (tx.entityType === 'swap') {
+            handlePulseAnimation('swap');
+        } else if (tx.entityType === 'limitOrder') {
+            handlePulseAnimation('limitOrder');
+        } else if (tx.entityType === 'liqchange') {
+            handlePulseAnimation('range');
         }
 
         if (tx.positionType === 'ambient') {
+            dispatch(setRangeTicksCopied(true));
             setSimpleRangeWidth(100);
             dispatch(setAdvancedMode(false));
+            const shouldReverse =
+                tradeData.tokenA.address.toLowerCase() !==
+                tx.base.toLowerCase();
+            if (shouldReverse) {
+                dispatch(setPrimaryQuantityRange(''));
+                dispatch(setShouldRangeDirectionReverse(true));
+            }
         } else if (tx.positionType === 'concentrated') {
             setTimeout(() => {
+                dispatch(setRangeTicksCopied(true));
                 dispatch(setAdvancedLowTick(tx.bidTick));
                 dispatch(setAdvancedHighTick(tx.askTick));
                 dispatch(setAdvancedMode(true));
+                const shouldReverse =
+                    tradeData.tokenA.address.toLowerCase() !==
+                    tx.base.toLowerCase();
+                if (shouldReverse) {
+                    dispatch(setPrimaryQuantityRange(''));
+                    dispatch(setShouldRangeDirectionReverse(true));
+                }
             }, 1000);
         } else if (tx.entityType === 'swap') {
             dispatch(
@@ -98,78 +119,37 @@ export default function TransactionsMenu(props: propsIF) {
                     (tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty),
                 ),
             );
+            const shouldReverse =
+                tradeData.tokenA.address.toLowerCase() ===
+                (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
+            if (shouldReverse) {
+                dispatch(setShouldSwapDirectionReverse(true));
+            }
         } else if (tx.entityType === 'limitOrder') {
             dispatch(setLimitTickCopied(true));
-            if (IS_LOCAL_ENV) {
-                console.debug({ tradeData });
-                console.debug({ tx });
-            }
-            const shouldMovePrimaryQuantity =
+            linkGenLimit.navigate(
+                tx.isBuy
+                    ? {
+                          chain: chainId,
+                          tokenA: tx.base,
+                          tokenB: tx.quote,
+                          limitTick: tx.bidTick,
+                      }
+                    : {
+                          chain: chainId,
+                          tokenA: tx.quote,
+                          tokenB: tx.base,
+                          limitTick: tx.askTick,
+                      },
+            );
+            const shouldReverse =
                 tradeData.tokenA.address.toLowerCase() ===
-                (tx.isBid ? tx.quote.toLowerCase() : tx.base.toLowerCase());
-
-            IS_LOCAL_ENV && console.debug({ shouldMovePrimaryQuantity });
-            const shouldClearNonPrimaryQty =
-                tradeData.limitTick !== tx.askTick &&
-                (tradeData.isTokenAPrimary
-                    ? tradeData.tokenA.address.toLowerCase() ===
-                      (tx.isBid
-                          ? tx.base.toLowerCase()
-                          : tx.quote.toLowerCase())
-                        ? true
-                        : false
-                    : tradeData.tokenB.address.toLowerCase() ===
-                      (tx.isBid
-                          ? tx.quote.toLowerCase()
-                          : tx.base.toLowerCase())
-                    ? true
-                    : false);
-            if (shouldMovePrimaryQuantity) {
-                IS_LOCAL_ENV && console.debug('flipping primary');
-                const sellQtyField = document.getElementById(
-                    'sell-limit-quantity',
-                ) as HTMLInputElement;
-                const buyQtyField = document.getElementById(
-                    'buy-limit-quantity',
-                ) as HTMLInputElement;
-
-                if (tradeData.isTokenAPrimary) {
-                    if (buyQtyField) {
-                        buyQtyField.value = sellQtyField.value;
-                    }
-                    if (sellQtyField) {
-                        sellQtyField.value = '';
-                    }
-                } else {
-                    if (sellQtyField) {
-                        sellQtyField.value = buyQtyField.value;
-                    }
-                    if (buyQtyField) {
-                        buyQtyField.value = '';
-                    }
-                }
-                dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
-                dispatch(setShouldLimitConverterUpdate(true));
-            } else if (shouldClearNonPrimaryQty) {
-                if (!tradeData.isTokenAPrimary) {
-                    const sellQtyField = document.getElementById(
-                        'sell-limit-quantity',
-                    ) as HTMLInputElement;
-                    if (sellQtyField) {
-                        sellQtyField.value = '';
-                    }
-                } else {
-                    const buyQtyField = document.getElementById(
-                        'buy-limit-quantity',
-                    ) as HTMLInputElement;
-                    if (buyQtyField) {
-                        buyQtyField.value = '';
-                    }
-                }
-                IS_LOCAL_ENV && console.debug('resetting');
+                (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
+            if (shouldReverse) {
+                dispatch(setShouldLimitDirectionReverse(true));
             }
             setTimeout(() => {
-                dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
+                dispatch(setLimitTick(tx.isBuy ? tx.bidTick : tx.askTick));
             }, 500);
         }
         setShowDropdownMenu(false);
@@ -177,7 +157,7 @@ export default function TransactionsMenu(props: propsIF) {
 
     function handleOpenExplorer() {
         if (tx && blockExplorer) {
-            const explorerUrl = `${blockExplorer}tx/${tx.tx}`;
+            const explorerUrl = `${blockExplorer}tx/${tx.txHash}`;
             window.open(explorerUrl);
         }
     }
@@ -185,21 +165,16 @@ export default function TransactionsMenu(props: propsIF) {
     const openDetailsModal = () => {
         openGlobalModal(
             <TransactionDetails
-                account={account}
                 tx={tx}
-                closeGlobalModal={closeGlobalModal}
                 isBaseTokenMoneynessGreaterOrEqual={
                     isBaseTokenMoneynessGreaterOrEqual
                 }
-                isOnPortfolioPage={isOnPortfolioPage}
-                chainData={chainData}
+                isAccountView={isAccountView}
             />,
         );
     };
 
-    const isTxCopiable = tx.source !== 'manual';
-
-    const navigate = useNavigate();
+    const isTxCopiable = true;
 
     const walletButton = (
         <button
@@ -222,25 +197,19 @@ export default function TransactionsMenu(props: propsIF) {
             <button
                 className={styles.option_button}
                 onClick={() => {
-                    navigate(
-                        '/trade/range/' +
-                            'chain=' +
-                            tx.chainId +
-                            '&tokenA=' +
-                            (tx.isBid ? tx.base : tx.quote) +
-                            '&tokenB=' +
-                            (tx.isBid ? tx.quote : tx.base) +
-                            '&lowTick=' +
-                            tx.bidTick +
-                            '&highTick=' +
-                            tx.askTick,
-                    );
+                    linkGenPool.navigate({
+                        chain: chainId,
+                        tokenA: tx.isBid ? tx.base : tx.quote,
+                        tokenB: tx.isBid ? tx.quote : tx.base,
+                        lowTick: tx.bidTick.toString(),
+                        highTick: tx.askTick.toString(),
+                    });
                     handleCopyClick();
                 }}
                 tabIndex={0}
                 aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         ) : tx.entityType === 'limitOrder' ? (
             <button
@@ -248,44 +217,51 @@ export default function TransactionsMenu(props: propsIF) {
                 onClick={() => {
                     dispatch(setLimitTickCopied(true));
                     dispatch(setLimitTick(undefined));
-
-                    navigate(
-                        '/trade/limit/' +
-                            'chain=' +
-                            tx.chainId +
-                            '&tokenA=' +
-                            (tx.isBid ? tx.base : tx.quote) +
-                            '&tokenB=' +
-                            (tx.isBid ? tx.quote : tx.base) +
-                            '&limitTick=' +
-                            (tx.isBid ? tx.bidTick : tx.askTick),
+                    linkGenLimit.navigate(
+                        tx.isBid
+                            ? {
+                                  chain: chainId,
+                                  tokenA: tx.base,
+                                  tokenB: tx.quote,
+                                  limitTick: tx.bidTick,
+                              }
+                            : {
+                                  chain: chainId,
+                                  tokenA: tx.quote,
+                                  tokenB: tx.base,
+                                  limitTick: tx.askTick,
+                              },
                     );
                     handleCopyClick();
                 }}
                 tabIndex={0}
                 aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         ) : (
             <button
                 className={styles.option_button}
                 onClick={() => {
-                    navigate(
-                        '/trade/market/' +
-                            'chain=' +
-                            tx.chainId +
-                            '&tokenA=' +
-                            (tx.isBuy ? tx.base : tx.quote) +
-                            '&tokenB=' +
-                            (tx.isBuy ? tx.quote : tx.base),
+                    linkGenMarket.navigate(
+                        tx.isBuy
+                            ? {
+                                  chain: chainId,
+                                  tokenA: tx.base,
+                                  tokenB: tx.quote,
+                              }
+                            : {
+                                  chain: chainId,
+                                  tokenA: tx.quote,
+                                  tokenB: tx.base,
+                              },
                     );
                     handleCopyClick();
                 }}
                 tabIndex={0}
                 aria-label='Copy trade.'
             >
-                Copy Trade
+                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
             </button>
         );
 
@@ -363,14 +339,17 @@ export default function TransactionsMenu(props: propsIF) {
                 onClick={() => setShowDropdownMenu(!showDropdownMenu)}
                 className={styles.dropdown_button}
             >
-                <FiMoreHorizontal />
+                <CiCircleMore size={25} color='var(--text1)' />
             </button>
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
 
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            onClick={(event) => event.stopPropagation()}
+        >
             {desktopView && transactionsMenu}
             {dropdownTransactionsMenu}
         </div>

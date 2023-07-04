@@ -10,7 +10,11 @@
     /* align-items: center; */
 }
 
-.container:focus-visible, .row button:focus-visible, .row a:focus-visible, .info button:focus-visible, .row svg:focus-visible{
+.container:focus-visible,
+.row button:focus-visible,
+.row a:focus-visible,
+.info button:focus-visible,
+.row svg:focus-visible {
     outline: 1px solid white;
 }
 .content {
@@ -36,13 +40,13 @@ cursor: pointer;
 }
 
 .info div {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
 .info p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .pending {
@@ -50,7 +54,12 @@ cursor: pointer;
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+    background: linear-gradient(
+        45deg,
+        transparent,
+        transparent 40%,
+        var(--accent1)
+    );
 
     animation: animate 2s linear infinite;
 
@@ -67,7 +76,7 @@ cursor: pointer;
 }
 
 .row p {
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 .pending:before {
     content: '';
@@ -76,12 +85,17 @@ cursor: pointer;
     left: 6px;
     right: 6px;
     bottom: 6px;
-    background: var(--body-bg);
+    background: var(--dark1);
     border-radius: 50%;
     z-index: 2;
 }
 .pending:after {
-    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+    background: linear-gradient(
+        45deg,
+        transparent,
+        transparent 40%,
+        var(--accent1)
+    );
 
     content: '';
     position: absolute;

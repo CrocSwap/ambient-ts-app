@@ -9,10 +9,10 @@
     background: transparent;
 }
 .non_filled {
-    border: 1px solid var(--text-grey-light);
+    border: var(--grey-light-border);
 }
 .filled {
-    border: 1px solid #41d18e;
+    border: 1px solid var(--positive);
 }
 
 /* Desktop screen Sizes */

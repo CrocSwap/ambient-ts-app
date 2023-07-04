@@ -1,6 +1,7 @@
 .tabs_container {
     width: 100%;
     height: 100%;
+    overflow: hidden;
 
     border-radius: var(--border-radius);
     background: var(--dark1);
@@ -29,6 +30,6 @@
         width: 90%;
         margin-left: 30px;
 
-      padding: 0 1rem;
+        padding: 0 1rem;
     }
 }

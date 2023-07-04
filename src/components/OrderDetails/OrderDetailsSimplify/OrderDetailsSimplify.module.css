@@ -5,7 +5,7 @@
 .main_container {
     width: 100%;
     transition: all var(--animation-speed) ease-in-out;
-    background: var(--dark2);
+    background: var(--dark1);
     cursor: default;
 
     display: flex;
@@ -29,10 +29,11 @@
     border-radius: var(--border-radius);
     border: 1px solid var(--dark2);
     padding: 8px;
-    height: 70%;
+
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 10px;
+   
 }
 
 /* info row */
@@ -43,7 +44,7 @@
     justify-content: space-between;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .title_container {

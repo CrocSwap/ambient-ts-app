@@ -1,4 +1,3 @@
-// import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './TokenQty.module.css';
 
 interface propsIF {
@@ -19,8 +18,6 @@ export default function TokenQty(props: propsIF) {
             {quantitiesAvailable
                 ? `${baseTokenCharacter}${baseQty || '0.00'}`
                 : '…'}
-            {/* {baseTokenCharacter} <p>{baseQty}</p> */}
-            {/* <img src={baseToken ? baseToken.logoURI : undefined} alt='' /> */}
         </section>
     );
 
@@ -29,9 +26,6 @@ export default function TokenQty(props: propsIF) {
             {quantitiesAvailable
                 ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
                 : '…'}
-
-            {/* {quoteTokenCharacter}<p>{quoteQty}</p> */}
-            {/* <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' /> */}
         </section>
     );
 
@@ -41,14 +35,12 @@ export default function TokenQty(props: propsIF) {
                 <div>
                     {baseTokenCharacter}
                     <p>{baseQty}</p>
-                    {/* <img src={baseToken ? baseToken.logoURI : undefined} alt='' /> */}
                 </div>
             ) : null}
             {quoteQty ? (
                 <div>
                     {quoteTokenCharacter}
                     <p>{quoteQty}</p>
-                    {/* <img src={quoteToken ? quoteToken.logoURI : undefined} alt='' /> */}
                 </div>
             ) : null}
         </section>

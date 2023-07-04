@@ -1,11 +1,10 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { memo, useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './LimitExtraInfo.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import {
@@ -13,16 +12,13 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
-    tokenPair: TokenPairIF;
-    poolPriceDisplay: number;
     orderGasPriceInDollars: string | undefined;
-    didUserFlipDenom: boolean;
     isTokenABase: boolean;
-    isDenomBase: boolean;
-    limitRate: string;
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
@@ -31,16 +27,17 @@ interface propsIF {
 }
 
 // central react functional component
-export default function LimitExtraInfo(props: propsIF) {
+function LimitExtraInfo(props: propsIF) {
     const {
         orderGasPriceInDollars,
-        poolPriceDisplay,
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
         isQtyEntered,
         liquidityProviderFeeString,
     } = props;
+    const { poolPriceDisplay } = useContext(PoolContext);
+
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -49,58 +46,23 @@ export default function LimitExtraInfo(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    const displayPriceWithDenom = isDenomBase
-        ? 1 / poolPriceDisplay
-        : poolPriceDisplay;
+    const displayPriceWithDenom =
+        isDenomBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    const startPriceString = !startDisplayPrice
-        ? '…'
-        : startDisplayPrice < 2
-        ? startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const middlePriceString = !middleDisplayPrice
-        ? '…'
-        : middleDisplayPrice < 2
-        ? middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const endPriceString = !endDisplayPrice
-        ? '…'
-        : endDisplayPrice < 2
-        ? endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
+    });
+    const startPriceString = getFormattedNumber({
+        value: startDisplayPrice,
+    });
+    const middlePriceString = getFormattedNumber({
+        value: middleDisplayPrice,
+    });
+    const endPriceString = getFormattedNumber({
+        value: endDisplayPrice,
+    });
 
     const extraInfoData = [
         {
@@ -119,21 +81,24 @@ export default function LimitExtraInfo(props: propsIF) {
         // },
         {
             title: 'Fill Start',
-            tooltipTitle: 'Fill Start Explanation',
+            tooltipTitle:
+                'Price at which the limit order will begin to be filled',
             data: isDenomBase
                 ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Fill Middle',
-            tooltipTitle: 'Fill Middle Explanation',
+            tooltipTitle:
+                'Average price at which the limit order will be filled',
             data: isDenomBase
                 ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Fill End',
-            tooltipTitle: 'Fill End Explanation',
+            tooltipTitle:
+                'Price at which the limit order will finish being filled and become claimable',
             data: isDenomBase
                 ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
@@ -141,46 +106,42 @@ export default function LimitExtraInfo(props: propsIF) {
         {
             title: 'Minimum Rebate Rate',
             tooltipTitle:
-                'The minimum provider fee for market orders in this pool. Provider fees are effectively rebated for limit orders.',
+                'The minimum provider fee for swaps in this pool. Provider fees are effectively rebated for limit orders.',
             data: '0.05%',
         },
         {
             title: 'Current Rebate Rate',
             tooltipTitle:
-                'The current provider fee for market orders. Provider fees are effectively rebated for limit orders.',
+                'The current provider fee for swaps. Provider fees are effectively rebated for limit orders.',
             data: `${liquidityProviderFeeString}%`,
         },
     ];
 
     const limitExtraInfoDetails = (
-        <div className={styles.extra_details}>
-            {extraInfoData.map((item, idx) => (
-                <div
-                    className={styles.extra_row}
-                    key={idx}
-                    tabIndex={0}
-                    aria-label={`${item.title} is ${item.data}`}
-                >
-                    <div className={styles.align_center}>
-                        <div>{item.title}</div>
-                        <TooltipComponent title={item.tooltipTitle} />
+        <div className={styles.extra_details_container}>
+            <div className={styles.extra_details}>
+                {extraInfoData.map((item, idx) => (
+                    <div
+                        className={styles.extra_row}
+                        key={idx}
+                        tabIndex={0}
+                        aria-label={`${item.title} is ${item.data}`}
+                    >
+                        <div className={styles.align_center}>
+                            <div>{item.title}</div>
+                            <TooltipComponent title={item.tooltipTitle} />
+                        </div>
+                        <div className={styles.data}>{item.data}</div>
                     </div>
-                    <div className={styles.data}>{item.data}</div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 
     const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
 
-    const dropDownOrNull = isQtyEntered ? (
-        <div style={{ cursor: 'pointer' }}>
-            {!showExtraDetails && <RiArrowDownSLine size={22} />}
-            {showExtraDetails && <RiArrowUpSLine size={22} />}
-        </div>
-    ) : null;
-
     const dispatch = useAppDispatch();
+    const [isConvHovered, setIsConHovered] = useState(false);
 
     const conversionRateDisplay = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
@@ -202,7 +163,7 @@ export default function LimitExtraInfo(props: propsIF) {
             aria-label={gasCostAriaLabel}
         >
             <div className={styles.gas_pump}>
-                <FaGasPump size={15} />{' '}
+                <FaGasPump size={15} className={styles.non_hoverable} />{' '}
                 {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
             </div>
             <div
@@ -211,11 +172,32 @@ export default function LimitExtraInfo(props: propsIF) {
                     dispatch(toggleDidUserFlipDenom());
                     e.stopPropagation();
                 }}
+                onMouseEnter={() => setIsConHovered(true)}
+                onMouseOut={() => setIsConHovered(false)}
             >
                 {conversionRateDisplay}
             </div>
             {/* <DenominationSwitch /> */}
-            {dropDownOrNull}
+            {isQtyEntered && !showExtraDetails && (
+                <RiArrowDownSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
+            )}
+            {isQtyEntered && showExtraDetails && (
+                <RiArrowUpSLine
+                    size={22}
+                    className={
+                        isConvHovered
+                            ? styles.non_hovered_arrow
+                            : styles.dropdown_arrow
+                    }
+                />
+            )}
         </button>
     );
     return (
@@ -225,3 +207,5 @@ export default function LimitExtraInfo(props: propsIF) {
         </>
     );
 }
+
+export default memo(LimitExtraInfo);

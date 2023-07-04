@@ -4,7 +4,7 @@
 }
 
 .container h3 {
-    color: var(--text-grey-white);
+    color: var(--text1);
     font-weight: 300;
     font-size: 24px;
     line-height: 30px;
@@ -34,6 +34,7 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    place-items: center;
 }
 
 /* Desktop screen Sizes */
@@ -72,8 +73,11 @@
     .row5 {
         grid-template-columns: repeat(6, 1fr);
     }
-    .row5 img {
-        width: 120px;
+    .row5 span {
+        color: var(--text1);
+        font-size: var(--header-2-size);
+        line-height: var(--header-2-lh);
+        font-family: var(--font-family);
     }
 
     /* .row7{ grid-template-columns: 1fr 1fr;} */

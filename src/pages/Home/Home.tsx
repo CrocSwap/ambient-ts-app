@@ -1,67 +1,21 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
-import DividerDark from '../../components/Global/DividerDark/DividerDark';
-import HomeSlider from '../../components/Home/Landing/HomeSlider';
 import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
-import { TokenIF } from '../../utils/interfaces/exports';
 import styles from './Home.module.css';
-import { SpotPriceFn } from '../../App/functions/querySpotPrice';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import Home1 from '../../components/Home/Landing/Home1';
-import { topPoolIF } from '../../App/hooks/useTopPools';
-import { PoolStatsFn } from '../../App/functions/getPoolStats';
+import LandingSections from '../../components/Home/Landing/LandingSections';
+import Hero from '../../components/Home/Landing/Hero';
 
-interface propsIF {
-    isServerEnabled: boolean;
-    crocEnv?: CrocEnv;
-    cachedQuerySpotPrice: SpotPriceFn;
-    tokenMap: Map<string, TokenIF>;
-    lastBlockNumber: number;
-    chainId: string;
-    topPools: topPoolIF[];
-    cachedPoolStatsFetch: PoolStatsFn;
-}
-export default function Home(props: propsIF) {
-    const {
-        isServerEnabled,
-        tokenMap,
-        lastBlockNumber,
-        crocEnv,
-        chainId,
-        cachedQuerySpotPrice,
-        topPools,
-        cachedPoolStatsFetch,
-    } = props;
-
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const userData = useAppSelector((state) => state.userData);
-
+export default function Home() {
     return (
         <section data-testid={'home'} className={styles.home_container}>
-            <HomeSlider />
-            <div className={styles.pools_container}>
-                <TopPools
-                    isServerEnabled={isServerEnabled}
-                    tradeData={tradeData}
-                    userData={userData}
-                    crocEnv={crocEnv}
-                    cachedQuerySpotPrice={cachedQuerySpotPrice}
-                    tokenMap={tokenMap}
-                    lastBlockNumber={lastBlockNumber}
-                    chainId={chainId}
-                    topPools={topPools}
-                    cachedPoolStatsFetch={cachedPoolStatsFetch}
-                />
-                <DividerDark />
-                <Stats
-                    isServerEnabled={isServerEnabled}
-                    lastBlockNumber={lastBlockNumber}
-                    userData={userData}
-                    chainId={chainId}
-                />
+            <div style={{ width: '100%', height: '480px' }}>
+                <Hero />
             </div>
-            <DividerDark />
-            <Home1 />
+            <div className={styles.pools_container}>
+                <TopPools />
+                <Stats />
+            </div>
+
+            <LandingSections />
         </section>
     );
 }

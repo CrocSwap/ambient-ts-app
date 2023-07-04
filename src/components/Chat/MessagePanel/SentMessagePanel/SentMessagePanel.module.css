@@ -9,9 +9,16 @@
     vertical-align: middle;
     margin: 10px;
 }
-.nft_container{
-    
-   
+
+.avatar_jazzicons {
+    display: flex;
+}
+
+.avatar_jazzicons canvas {
+    border-radius: 50%;
+    border: 1px solid var(--accent1);
+}
+.nft_container {
     max-width: 25px;
     max-height: 25px;
     border-radius: 50%;
@@ -22,8 +29,6 @@
     vertical-align: middle;
     margin: 10px;
 }
-
-
 
 .avatar_image_position {
     max-width: 13px;
@@ -60,7 +65,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
+    font-size: 10px;
     line-height: 12px;
     text-align: center;
 
@@ -82,12 +87,12 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 15px;
     flex-grow: 5px !important;
-    margin: 10px;
+    margin-left: 10px;
     width: 85%;
-    color: #ebebff;
+    color: var(--text1);
     align-self: stretch;
     word-break: break-word;
     white-space: normal;
@@ -103,12 +108,12 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 15px;
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
-    color: #ebebff;
+    color: var(--text1);
     white-space: pre-line;
     align-self: stretch;
     word-break: break-word;
@@ -116,7 +121,7 @@
 }
 
 .mention_message {
-    color: #7371FC;
+    color: var(--accent1);
     width: 80%;
     height: 80%;
 
@@ -126,7 +131,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 14px;
+    font-size: 12px;
     line-height: 15px;
     flex-grow: 5px !important;
     margin: 10px;
@@ -136,25 +141,19 @@
     white-space: normal;
     margin-left: 0px;
     margin-right: 0px;
-    
 }
 
 .mention_message_block {
-    
     margin-left: 6px;
     width: 80%;
     height: 80%;
 }
 
 .mention_message_block_without_avatar {
-    
     margin-left: 30px;
     width: 80%;
-    height: 80%
+    height: 80%;
 }
-
-
-
 
 .right_image_box {
     display: flex;
@@ -197,7 +196,7 @@
     flex: none;
     order: 4;
     align-self: stretch;
-    background: #242f3f;
+    background: var(--dark3);
 }
 
 .name {
@@ -215,14 +214,14 @@
     align-items: center;
 
     /* accent/secondary */
-    color: #e480ff;
+    color: var(--accent2);
 
     /* Inside auto layout */
     flex: none;
     order: 0;
     flex-grow: 0;
 
-    margin-left: 5px;
+    margin-left: 10px;
 }
 
 .current_user_name {
@@ -240,7 +239,7 @@
     align-items: center;
 
     /* accent/secondary */
-    color: #9f55ffd5;
+    color: var(--accent1);
 
     /* Inside auto layout */
     flex: none;

@@ -1,21 +1,20 @@
 import styles from './AppOverlay.module.css';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, useContext, memo } from 'react';
 import OverlayComponent from '../OverlayComponent/OverlayComponent';
 import {
     MdOutlineArrowBackIosNew,
     MdOutlineArrowForwardIos,
 } from 'react-icons/md';
 import { VscClose } from 'react-icons/vsc';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
-interface AppOverlayPropsIf {
-    isAppOverlayActive: boolean;
-
-    setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
-}
-export default function AppOverlay(props: AppOverlayPropsIf) {
-    // const navigate = useNavigate();
-
-    const { isAppOverlayActive, setIsAppOverlayActive } = props;
+function AppOverlay() {
+    const {
+        appOverlay: {
+            isActive: isAppOverlayActive,
+            setIsActive: setIsAppOverlayActive,
+        },
+    } = useContext(AppStateContext);
 
     const [page, setPage] = useState(0);
 
@@ -149,3 +148,5 @@ export default function AppOverlay(props: AppOverlayPropsIf) {
         </div>
     );
 }
+
+export default memo(AppOverlay);

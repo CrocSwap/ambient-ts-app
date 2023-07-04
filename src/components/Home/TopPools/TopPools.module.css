@@ -11,14 +11,14 @@
     line-height: 30px;
     text-align: center;
     letter-spacing: -0.02em;
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 
-.title:focus-visible{
-text-decoration: underline;
-text-decoration-color:var(--text-grey-white) ;
-border: none;
-outline: none;
+.title:focus-visible {
+    text-decoration: underline;
+    text-decoration-color: var(--text1);
+    border: none;
+    outline: none;
 }
 
 .content {
@@ -33,8 +33,4 @@ outline: none;
     gap: 1rem;
 }
 
-.divider {
-    width: 100%;
-    height: 1px;
-    background: var(--border);
-}
+

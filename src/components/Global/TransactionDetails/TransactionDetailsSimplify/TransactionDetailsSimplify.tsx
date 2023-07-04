@@ -6,6 +6,10 @@ import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import moment from 'moment';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { useMediaQuery } from '@material-ui/core';
 
 interface ItemRowPropsIF {
     title: string;
@@ -16,54 +20,46 @@ interface ItemRowPropsIF {
 
 interface TransactionDetailsSimplifyPropsIF {
     tx: TransactionIF;
-    account: string;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
 }
 export default function TransactionDetailsSimplify(
     props: TransactionDetailsSimplifyPropsIF,
 ) {
-    const { account, tx, isOnPortfolioPage } = props;
+    const { tx, isAccountView } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
+
     const {
+        ensName,
         userNameToDisplay,
         txHashTruncated,
         txHash,
         blockExplorer,
         isOwnerActiveAccount,
         ownerId,
-        // usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
-        txUsdValueLocaleString,
-
         isDenomBase,
-        // baseTokenLogo,
-        // quoteTokenLogo,
-        // lowPriceDisplay,
-        // highPriceDisplay,
-        // bidTick,
-        // askTick,
-        // positionLiqTotalUSD,
-
-        // baseQuantityDisplayShort,
-        // quoteQuantityDisplayShort,
-        baseQuantityDisplayLong,
-        quoteQuantityDisplayLong,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         baseTokenAddress,
         quoteTokenAddress,
-
+        usdValue,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
-        baseTokenCharacter,
-        quoteTokenCharacter,
         isBaseTokenMoneynessGreaterOrEqual,
-        // positionLiquidity,
-    } = useProcessTransaction(tx, account);
+    } = useProcessTransaction(tx, userAddress);
+
+    const { chainData } = useContext(CrocEnvContext);
+
+    const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
     const isAmbient = tx.positionType === 'ambient';
 
@@ -87,7 +83,7 @@ export default function TransactionDetailsSimplify(
         if (txHash && blockExplorer) {
             const adressUrl =
                 baseTokenAddress === ZERO_ADDRESS
-                    ? `${blockExplorer}address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209`
+                    ? `${blockExplorer}address/${chainData.addrs.dex}`
                     : `${blockExplorer}token/${baseTokenAddress}`;
             window.open(adressUrl);
         }
@@ -99,28 +95,56 @@ export default function TransactionDetailsSimplify(
         }
     }
     const txContent = (
-        <div className={styles.link_row} onClick={handleOpenExplorer}>
-            <p>{txHashTruncated}</p>
+        <div
+            className={styles.link_row}
+            onClick={handleOpenExplorer}
+            style={{ cursor: 'pointer' }}
+        >
+            <p style={{ fontFamily: 'monospace' }}>
+                {showFullAddresses ? txHash : txHashTruncated}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
 
     const walletContent = (
-        <div className={styles.link_row} onClick={handleOpenWallet}>
-            <p>{userNameToDisplay}</p>
+        <div
+            className={styles.link_row}
+            onClick={handleOpenWallet}
+            style={{ cursor: 'pointer' }}
+        >
+            <p style={!ensName ? { fontFamily: 'monospace' } : undefined}>
+                {showFullAddresses
+                    ? ensName
+                        ? ensName
+                        : ownerId
+                    : userNameToDisplay}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
 
     const baseAddressContent = (
-        <div onClick={handleOpenBaseAddress} className={styles.link_row}>
-            <p>{baseTokenAddressTruncated}</p>
+        <div
+            onClick={handleOpenBaseAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
+            <p style={{ fontFamily: 'monospace' }}>
+                {showFullAddresses ? tx.base : baseTokenAddressTruncated}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
     const quoteAddressContent = (
-        <div onClick={handleOpenQuoteAddress} className={styles.link_row}>
-            <p>{quoteTokenAddressTruncated}</p>
+        <div
+            onClick={handleOpenQuoteAddress}
+            className={styles.link_row}
+            style={{ cursor: 'pointer' }}
+        >
+            <p style={{ fontFamily: 'monospace' }}>
+                {showFullAddresses ? tx.quote : quoteTokenAddressTruncated}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
@@ -153,7 +177,9 @@ export default function TransactionDetailsSimplify(
     const infoContent = [
         {
             title: 'Transaction Type ',
-            content: changeTypeDisplay,
+            content: (
+                <div style={{ cursor: 'default' }}>{changeTypeDisplay}</div>
+            ),
             explanation: 'Transaction type explanation',
         },
 
@@ -171,13 +197,21 @@ export default function TransactionDetailsSimplify(
 
         {
             title: 'Time ',
-            content: moment(tx.time * 1000).format('MM/DD/YYYY HH:mm'),
+            content: (
+                <div style={{ cursor: 'default' }}>
+                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
+                </div>
+            ),
             explanation: 'The transaction confirmation time',
         },
 
         {
             title: isSwap ? 'From Token ' : 'Token 1 ',
-            content: isBuy ? baseTokenSymbol : quoteTokenSymbol,
+            content: (
+                <div style={{ cursor: 'default' }}>
+                    {isBuy ? baseTokenSymbol : quoteTokenSymbol}
+                </div>
+            ),
             explanation: 'The symbol (short name) of the sell token',
         },
 
@@ -189,9 +223,13 @@ export default function TransactionDetailsSimplify(
 
         {
             title: isSwap ? 'From Qty ' : 'Token 1 Qty',
-            content: isBuy
-                ? `${baseQuantityDisplayLong} ${baseTokenSymbol}`
-                : `${quoteQuantityDisplayLong} ${quoteTokenSymbol}`,
+            content: (
+                <div style={{ cursor: 'default' }}>
+                    {isBuy
+                        ? `${baseQuantityDisplay} ${baseTokenSymbol}`
+                        : `${quoteQuantityDisplay} ${quoteTokenSymbol}`}
+                </div>
+            ),
             explanation:
                 'The quantity of the sell token (scaled by its decimals value)',
         },
@@ -205,37 +243,44 @@ export default function TransactionDetailsSimplify(
         {
             title: isSwap ? 'To Address ' : 'Token 2 Address',
             content: !isBuy ? baseAddressContent : quoteAddressContent,
-            explanation: 'Address of the From/Sell Token',
+            explanation: 'Address of the To/Buy Token',
         },
 
         {
             title: isSwap ? 'To Qty ' : 'Token 2 Qty ',
-            content: !isBuy
-                ? `${baseQuantityDisplayLong} ${baseTokenSymbol}`
-                : `${quoteQuantityDisplayLong} ${quoteTokenSymbol}`,
+            content: (
+                <div style={{ cursor: 'default' }}>
+                    {!isBuy
+                        ? `${baseQuantityDisplay} ${baseTokenSymbol}`
+                        : `${quoteQuantityDisplay} ${quoteTokenSymbol}`}
+                </div>
+            ),
             explanation:
                 'The quantity of the to/buy token (scaled by its decimals value)',
         },
-
         {
             title: isSwap ? 'Price ' : 'Low Price Boundary',
-            content: isSwap
-                ? isOnPortfolioPage
-                    ? isBaseTokenMoneynessGreaterOrEqual
-                        ? `${baseTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
-                        : `${quoteTokenCharacter}${truncatedDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
-                    : isDenomBase
-                    ? `${quoteTokenCharacter}${truncatedDisplayPrice} / ${baseTokenSymbol}`
-                    : `${baseTokenCharacter}${truncatedDisplayPrice} / ${quoteTokenSymbol}`
-                : isOnPortfolioPage
-                ? isBaseTokenMoneynessGreaterOrEqual
-                    ? `${baseTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
-                    : `${quoteTokenCharacter}${truncatedLowDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
-                : isAmbient
-                ? '0.00'
-                : isDenomBase
-                ? `${quoteTokenCharacter}${truncatedLowDisplayPrice} / ${baseTokenSymbol}`
-                : `${baseTokenCharacter}${truncatedLowDisplayPrice} / ${quoteTokenSymbol}`,
+            content: (
+                <div style={{ cursor: 'default' }}>
+                    {isSwap
+                        ? isAccountView
+                            ? isBaseTokenMoneynessGreaterOrEqual
+                                ? `1 ${quoteTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
+                                : `1 ${baseTokenSymbol} = ${truncatedDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
+                            : isDenomBase
+                            ? `1 ${baseTokenSymbol} = ${truncatedDisplayPrice} ${quoteTokenSymbol}`
+                            : `1 ${quoteTokenSymbol} = ${truncatedDisplayPrice} ${baseTokenSymbol}`
+                        : isAccountView
+                        ? isBaseTokenMoneynessGreaterOrEqual
+                            ? `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
+                            : `1 ${baseTokenSymbol} = ${truncatedLowDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
+                        : isAmbient
+                        ? '0.00'
+                        : isDenomBase
+                        ? `1 ${baseTokenSymbol} = ${truncatedLowDisplayPrice} ${quoteTokenSymbol}`
+                        : `1 ${quoteTokenSymbol} = ${truncatedLowDisplayPrice} ${baseTokenSymbol}`}
+                </div>
+            ),
             explanation: isSwap
                 ? 'The transaction price'
                 : 'The low price boundary',
@@ -253,28 +298,27 @@ export default function TransactionDetailsSimplify(
     if (isSwap) {
         infoContent.push({
             title: 'Value ',
-            content: txUsdValueLocaleString,
+            content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
             explanation: 'The appoximate US dollar value of the transaction',
         });
     } else {
         infoContent.push(
             {
                 title: 'High Price Boundary',
-                content: isOnPortfolioPage
+                content: isAccountView
                     ? isBaseTokenMoneynessGreaterOrEqual
-                        ? `${baseTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${quoteTokenSymbol}`
-                        : `${quoteTokenCharacter}${truncatedHighDisplayPriceDenomByMoneyness} / ${baseTokenSymbol}`
+                        ? `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${baseTokenSymbol}`
+                        : `1 ${baseTokenSymbol} = ${truncatedHighDisplayPriceDenomByMoneyness} ${quoteTokenSymbol}`
                     : isAmbient
                     ? '∞'
                     : isDenomBase
-                    ? `${quoteTokenCharacter}${truncatedHighDisplayPrice} / ${baseTokenSymbol}`
-                    : `${baseTokenCharacter}${truncatedHighDisplayPrice} / ${quoteTokenSymbol}`,
+                    ? `1 ${baseTokenSymbol} = ${truncatedHighDisplayPrice} ${quoteTokenSymbol}`
+                    : `1 ${quoteTokenSymbol} = ${truncatedHighDisplayPrice} ${baseTokenSymbol}`,
                 explanation: 'The high price boundary',
             },
             {
                 title: 'Value ',
-                content: txUsdValueLocaleString,
-
+                content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
                 explanation:
                     'The appoximate US dollar value of the transaction',
             },
@@ -298,17 +342,15 @@ export default function TransactionDetailsSimplify(
 
     return (
         <div className={styles.tx_details_container}>
-            <div className={styles.main_container}>
-                <div className={styles.info_content}>
-                    {infoContent.map((info, idx) => (
-                        <InfoRow
-                            key={info.title + idx}
-                            title={info.title}
-                            content={info.content}
-                            explanation={info.explanation}
-                        />
-                    ))}
-                </div>
+            <div className={styles.info_content}>
+                {infoContent.map((info, idx) => (
+                    <InfoRow
+                        key={info.title + idx}
+                        title={info.title}
+                        content={info.content}
+                        explanation={info.explanation}
+                    />
+                ))}
             </div>
         </div>
     );

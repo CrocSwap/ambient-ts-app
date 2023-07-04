@@ -4,16 +4,15 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ZERO_ADDRESS } from '../../../constants';
 import DividerDark from '../DividerDark/DividerDark';
 
-interface TransactionSubmittedProps {
+interface propsIF {
     resetConfirmation: () => void;
-    noAnimation?: boolean;
     initiateTx?: () => void;
 }
 
-export default function TransactionException(props: TransactionSubmittedProps) {
+export default function TransactionException(props: propsIF) {
     const { resetConfirmation, initiateTx } = props;
 
-    const rangeModuleActive = location.pathname.includes('/trade/range');
+    const rangeModuleActive = location.pathname.includes('/trade/pool');
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isEthSecondary =
@@ -56,8 +55,7 @@ export default function TransactionException(props: TransactionSubmittedProps) {
                     </p>
                     <DividerDark />
                     <p>
-                        Please check your wallet for notifications, or click
-                        &quot;Try Again&quot;.
+                        Please check your wallet for notifications or try again.
                     </p>
                 </>
             )}

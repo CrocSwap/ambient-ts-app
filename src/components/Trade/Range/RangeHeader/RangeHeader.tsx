@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode } from 'react';
+import { memo, useContext } from 'react';
 
 // START: Import JSX Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
@@ -7,42 +7,37 @@ import TransactionSettings from '../../../Global/TransactionSettings/Transaction
 
 // START: Import Local Files
 import styles from './RangeHeader.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
-import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../../Global/ShareModal/ShareModal';
 import { SlippageMethodsIF } from '../../../../App/hooks/useSlippage';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 // interface for component props
 interface propsIF {
-    chainId: string;
-    tokenPair: TokenPairIF;
     mintSlippage: SlippageMethodsIF;
-    isPairStable: boolean;
-    isDenomBase: boolean;
     isTokenABase: boolean;
-    openGlobalModal: (content: ReactNode, title?: string) => void;
-    bypassConfirm: allSkipConfirmMethodsIF;
-    shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
-export default function RangeHeader(props: propsIF) {
+function RangeHeader(props: propsIF) {
+    const { mintSlippage, isTokenABase } = props;
+
+    const { bypassConfirmRange } = useContext(UserPreferenceContext);
     const {
-        tokenPair,
-        mintSlippage,
-        isPairStable,
-        isDenomBase,
-        isTokenABase,
-        openGlobalModal,
-        bypassConfirm,
-    } = props;
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
+    const { isDenomBase, tokenA, tokenB } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -51,10 +46,40 @@ export default function RangeHeader(props: propsIF) {
     const reverseDisplay =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
+    const settingsSvg = (
+        <svg
+            width='14'
+            height='14'
+            viewBox='0 0 14 14'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+            className={styles.hoverable_icon}
+        >
+            <rect
+                y='9.625'
+                width='8.75'
+                height='1.75'
+                rx='0.875'
+                fill=''
+            ></rect>
+            <rect
+                x='5.25'
+                y='2.625'
+                width='8.75'
+                height='1.75'
+                rx='0.875'
+                fill=''
+            ></rect>
+            <circle cx='12.25' cy='10.5' r='1.75' fill=''></circle>
+            <circle cx='1.75' cy='3.5' r='1.75' fill=''></circle>
+        </svg>
+    );
+
     return (
         <ContentHeader>
             <AiOutlineShareAlt
                 onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+                className={styles.share_button}
                 id='range_share_button'
                 role='button'
                 tabIndex={0}
@@ -65,13 +90,8 @@ export default function RangeHeader(props: propsIF) {
                 className={styles.token_info}
                 onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
-                {reverseDisplay
-                    ? tokenPair.dataTokenA.symbol
-                    : tokenPair.dataTokenB.symbol}{' '}
-                /{' '}
-                {reverseDisplay
-                    ? tokenPair.dataTokenB.symbol
-                    : tokenPair.dataTokenA.symbol}
+                {reverseDisplay ? tokenA.symbol : tokenB.symbol} /{' '}
+                {reverseDisplay ? tokenB.symbol : tokenA.symbol}
             </div>
             <IconWithTooltip title='Settings' placement='left'>
                 <div
@@ -83,7 +103,7 @@ export default function RangeHeader(props: propsIF) {
                     tabIndex={0}
                     aria-label='Settings button'
                 >
-                    <img src={settingsIcon} alt='settings' />
+                    {settingsSvg}
                 </div>
             </IconWithTooltip>
             {isModalOpen && (
@@ -94,14 +114,15 @@ export default function RangeHeader(props: propsIF) {
                     centeredTitle
                 >
                     <TransactionSettings
-                        module='Range Order'
+                        module='Pool'
                         slippage={mintSlippage}
-                        isPairStable={isPairStable}
                         onClose={closeModal}
-                        bypassConfirm={bypassConfirm.range}
+                        bypassConfirm={bypassConfirmRange}
                     />
                 </Modal>
             )}
         </ContentHeader>
     );
 }
+
+export default memo(RangeHeader);

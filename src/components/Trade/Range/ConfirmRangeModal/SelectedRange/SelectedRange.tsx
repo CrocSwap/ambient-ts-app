@@ -1,29 +1,20 @@
 import styles from './SelectedRange.module.css';
-import { useState } from 'react';
-import { TokenPairIF } from '../../../../../utils/interfaces/exports';
+import { memo, useContext, useState } from 'react';
+import { PoolContext } from '../../../../../contexts/PoolContext';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
-    minPriceDisplay: number | string;
-    maxPriceDisplay: number | string;
-    spotPriceDisplay?: string;
-    poolPriceDisplayNum: number;
-    denominationsInBase: boolean;
     isTokenABase: boolean;
-    tokenPair: TokenPairIF;
     isAmbient: boolean;
     pinnedMinPriceDisplayTruncatedInBase: string;
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
-    // poolPriceTruncatedInBase: string;
-    // poolPriceTruncatedInQuote: string;
 }
-export default function SelectedRange(props: propsIF) {
+function SelectedRange(props: propsIF) {
     const {
-        poolPriceDisplayNum,
-        denominationsInBase,
         isTokenABase,
-        tokenPair,
         isAmbient,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
@@ -31,11 +22,15 @@ export default function SelectedRange(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
     } = props;
 
-    const reverseDisplayDefault =
-        (isTokenABase && denominationsInBase) ||
-        (!isTokenABase && !denominationsInBase);
+    const { poolPriceDisplay } = useContext(PoolContext);
+    const { isDenomBase, tokenA, tokenB } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
-    const [denomInBase, setDenomInBase] = useState(denominationsInBase);
+    const reverseDisplayDefault =
+        (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
+
+    const [denomInBase, setDenomInBase] = useState(isDenomBase);
     const [reverseDisplay, setReverseDisplay] = useState(reverseDisplayDefault);
 
     const minPrice = denomInBase
@@ -46,22 +41,14 @@ export default function SelectedRange(props: propsIF) {
         ? pinnedMaxPriceDisplayTruncatedInBase
         : pinnedMaxPriceDisplayTruncatedInQuote;
 
-    const displayPriceWithDenom = denomInBase
-        ? 1 / poolPriceDisplayNum
-        : poolPriceDisplayNum;
+    const displayPriceWithDenom =
+        denomInBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
 
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
+    });
 
     // PRICE RANGE DISPLAY
     interface PriceRangeProps {
@@ -99,28 +86,20 @@ export default function SelectedRange(props: propsIF) {
                 value={minPrice}
                 tokens={
                     reverseDisplay
-                        ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
-                        : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                        ? `${tokenB.symbol} per ${tokenA.symbol}`
+                        : `${tokenA.symbol} per ${tokenB.symbol}`
                 }
-                currentToken={
-                    reverseDisplay
-                        ? tokenPair.dataTokenA.symbol
-                        : tokenPair.dataTokenB.symbol
-                }
+                currentToken={reverseDisplay ? tokenA.symbol : tokenB.symbol}
             />
             <PriceRangeDisplay
                 title='Max Price'
                 value={maxPrice}
                 tokens={
                     reverseDisplay
-                        ? `${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`
-                        : `${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                        ? `${tokenB.symbol} per ${tokenA.symbol}`
+                        : `${tokenA.symbol} per ${tokenB.symbol}`
                 }
-                currentToken={
-                    reverseDisplay
-                        ? tokenPair.dataTokenB.symbol
-                        : tokenPair.dataTokenA.symbol
-                }
+                currentToken={reverseDisplay ? tokenB.symbol : tokenA.symbol}
             />
         </div>
     );
@@ -157,3 +136,5 @@ export default function SelectedRange(props: propsIF) {
         </>
     );
 }
+
+export default memo(SelectedRange);

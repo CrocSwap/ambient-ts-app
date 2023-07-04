@@ -1,5 +1,11 @@
-import { ChangeEvent, Dispatch, SetStateAction, useEffect } from 'react';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import {
+    ChangeEvent,
+    Dispatch,
+    memo,
+    SetStateAction,
+    useContext,
+    useEffect,
+} from 'react';
 import styles from './MinMaxPrice.module.css';
 import PriceInput from '../PriceInput/PriceInput';
 
@@ -9,6 +15,8 @@ import {
     setAdvancedLowTick,
 } from '../../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
+import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -23,17 +31,13 @@ interface MinMaxPriceIF {
     highBoundOnBlur: () => void;
     rangeLowTick: number;
     rangeHighTick: number;
-    // setRangeLowTick: Dispatch<SetStateAction<number>>;
-    // setRangeHighTick: Dispatch<SetStateAction<number>>;
-    chainId: string;
     maxPrice: number;
     minPrice: number;
-    isRangeCopied: boolean;
     setMaxPrice: Dispatch<SetStateAction<number>>;
     setMinPrice: Dispatch<SetStateAction<number>>;
 }
 
-export default function MinMaxPrice(props: MinMaxPriceIF) {
+function MinMaxPrice(props: MinMaxPriceIF) {
     const {
         minPricePercentage,
         maxPricePercentage,
@@ -45,15 +49,15 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
-        // setRangeLowTick,
-        // setRangeHighTick,
-        chainId,
         maxPrice,
         minPrice,
         setMaxPrice,
         setMinPrice,
-        isRangeCopied,
     } = props;
+
+    const {
+        chainData: { gridSize: tickSize },
+    } = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 
@@ -78,9 +82,12 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            // const maxPriceInput = evt.target.value;
             const targetValue = evt.target.value.replaceAll(',', '');
-            const isValid = evt.target.validity.valid;
+            const input = targetValue.startsWith('.')
+                ? '0' + targetValue
+                : targetValue;
+            const isValid = exponentialNumRegEx.test(input);
+
             if (isValid) {
                 handleSetMinTarget(targetValue);
             }
@@ -91,9 +98,12 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
     const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            // const maxPriceInput = evt.target.value;
             const targetValue = evt.target.value.replaceAll(',', '');
-            const isValid = evt.target.validity.valid;
+            const input = targetValue.startsWith('.')
+                ? '0' + targetValue
+                : targetValue;
+
+            const isValid = exponentialNumRegEx.test(input);
             if (isValid) {
                 handleSetMaxTarget(targetValue);
             }
@@ -113,34 +123,23 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         if (maxPrice !== undefined && minPrice !== undefined) {
             const high = maxPrice;
             const low = minPrice;
-
             setMaxPriceInputString(
                 high !== undefined ? high.toString() : '0.0',
             );
             setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
-
-            // lowBoundOnBlur();
-            // highBoundOnBlur();
         }
     }, [maxPrice, minPrice]);
 
-    const tickSize = lookupChain(chainId).gridSize;
-
     const increaseLowTick = () => {
-        // setRangeLowTick(rangeLowTick + tickSize);
-
         dispatch(setAdvancedLowTick(rangeLowTick + tickSize));
     };
     const increaseHighTick = () => {
-        // setRangeHighTick(rangeHighTick + tickSize);
         dispatch(setAdvancedHighTick(rangeHighTick + tickSize));
     };
     const decreaseLowTick = () => {
-        // setRangeLowTick(rangeLowTick - tickSize);
         dispatch(setAdvancedLowTick(rangeLowTick - tickSize));
     };
     const decreaseHighTick = () => {
-        // setRangeHighTick(rangeHighTick - tickSize);
         dispatch(setAdvancedHighTick(rangeHighTick - tickSize));
     };
 
@@ -151,40 +150,42 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                     fieldId='min'
                     title='Min Price'
                     percentageDifference={minPricePercentage}
-                    handleChangeEvent={
+                    handleChangeEvent={() => undefined}
+                    onBlur={(event) => {
                         !isDenomBase
-                            ? handleMaxPriceChangeEvent
-                            : handleMinPriceChangeEvent
-                    }
-                    onBlur={lowBoundOnBlur}
+                            ? handleMaxPriceChangeEvent(event)
+                            : handleMinPriceChangeEvent(event);
+                        lowBoundOnBlur();
+                    }}
                     increaseTick={
                         !isDenomBase ? increaseLowTick : decreaseHighTick
                     }
                     decreaseTick={
                         !isDenomBase ? decreaseLowTick : increaseHighTick
                     }
-                    isRangeCopied={isRangeCopied}
                 />
                 <PriceInput
                     fieldId='max'
                     title='Max Price'
                     percentageDifference={maxPricePercentage}
-                    handleChangeEvent={
+                    handleChangeEvent={() => undefined}
+                    onBlur={(event) => {
                         !isDenomBase
-                            ? handleMinPriceChangeEvent
-                            : handleMaxPriceChangeEvent
-                    }
-                    onBlur={highBoundOnBlur}
+                            ? handleMinPriceChangeEvent(event)
+                            : handleMaxPriceChangeEvent(event);
+                        highBoundOnBlur();
+                    }}
                     increaseTick={
                         !isDenomBase ? increaseHighTick : decreaseLowTick
                     }
                     decreaseTick={
                         !isDenomBase ? decreaseHighTick : increaseLowTick
                     }
-                    isRangeCopied={isRangeCopied}
                 />
             </div>
             {disable && disableInputContent}
         </div>
     );
 }
+
+export default memo(MinMaxPrice);

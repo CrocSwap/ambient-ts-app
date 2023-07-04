@@ -3,32 +3,25 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
-import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction } from 'react';
+import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
 import { IS_LOCAL_ENV } from '../../../../constants';
-// import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
+
 interface propsIF {
     previousDisplayPrice: string;
     setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
     displayPrice: string;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    gridSize: number;
-    pool: CrocPoolView | undefined;
-    tokenPair: TokenPairIF;
     fieldId: string;
-    chainId: string;
-    sellToken?: boolean;
     isSellTokenBase: boolean;
     disable?: boolean;
-    reverseTokens: () => void;
-    // onBlur: () => void;
-    poolPriceNonDisplay: number | undefined;
-    limitTickDisplayPrice: number;
-    isOrderCopied: boolean;
 }
 
 export default function LimitRate(props: propsIF) {
@@ -36,134 +29,71 @@ export default function LimitRate(props: propsIF) {
         displayPrice,
         setDisplayPrice,
         previousDisplayPrice,
-        setPreviousDisplayPrice,
-        pool,
-        gridSize,
         isSellTokenBase,
         setPriceInputFieldBlurred,
         fieldId,
         disable,
-        // poolPriceNonDisplay,
-        // limitTickDisplayPrice,
-        isOrderCopied,
     } = props;
 
     const dispatch = useAppDispatch();
+    const {
+        chainData: { gridSize },
+    } = useContext(CrocEnvContext);
+    const { pool } = useContext(PoolContext);
+    const { showOrderPulseAnimation } = useContext(TradeTableContext);
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const isDenomBase = tradeData.isDenomBase;
-    const limitTick = tradeData.limitTick;
+    const isDenomBase: boolean = tradeData.isDenomBase;
+    const limitTick: number | undefined = tradeData.limitTick;
 
-    const increaseTick = () => {
+    const increaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick + gridSize));
             setPriceInputFieldBlurred(true);
         }
     };
 
-    const decreaseTick = () => {
+    const decreaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick - gridSize));
             setPriceInputFieldBlurred(true);
         }
     };
 
-    // const initialLimitRateNonDisplay =
-    //     (poolPriceNonDisplay || 0) * (isSellTokenBase ? 0.985 : 1.015);
-
-    // const pinnedInitialTick: number = isSellTokenBase
-    //     ? pinTickLower(initialLimitRateNonDisplay, gridSize)
-    //     : pinTickUpper(initialLimitRateNonDisplay, gridSize);
-
-    const handleLimitChange = (value: string) => {
+    const handleLimitChange = async (value: string) => {
         IS_LOCAL_ENV && console.debug({ value });
-        // const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(value));
-        const limitNonDisplay = isDenomBase
-            ? pool?.fromDisplayPrice(parseFloat(value))
-            : pool?.fromDisplayPrice(1 / parseFloat(value));
+        if (pool) {
+            const limit = await pool.fromDisplayPrice(
+                isDenomBase ? parseFloat(value) : 1 / parseFloat(value),
+            );
 
-        limitNonDisplay?.then((limit) => {
-            // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
-            const pinnedTick: number = isSellTokenBase
-                ? pinTickLower(limit, gridSize)
-                : pinTickUpper(limit, gridSize);
-            dispatch(setLimitTick(pinnedTick));
-            setPriceInputFieldBlurred(true);
-        });
+            if (limit) {
+                const pinnedTick: number = isSellTokenBase
+                    ? pinTickLower(limit, gridSize)
+                    : pinTickUpper(limit, gridSize);
+
+                dispatch(setLimitTick(pinnedTick));
+            }
+        }
     };
 
-    //    onFocusPriceDisplay;
+    const handleOnChange = (input: string) => setDisplayPrice(input);
 
-    const rateInput = (
-        <div className={styles.token_amount}>
-            <input
-                id={`${fieldId}-quantity`}
-                onFocus={() => {
-                    const limitRateInputField = document.getElementById(
-                        'limit-rate-quantity',
-                    );
+    const handleOnBlur = async (input: string) => {
+        let newDisplayPrice = removeLeadingZeros(input.replaceAll(',', ''));
+        if (input.startsWith('.')) newDisplayPrice = `0.${input}`;
 
-                    (limitRateInputField as HTMLInputElement).select();
-                }}
-                onChange={(event) => {
-                    const isValid =
-                        event.target.value === '' ||
-                        event.target.validity.valid;
-                    isValid ? setDisplayPrice(event.target.value) : null;
-                }}
-                className={styles.currency_quantity}
-                placeholder='0.0'
-                // onChange={(event) => handleLimitChange(event.target.value)}
-                onBlur={(event) => {
-                    const isValid =
-                        event.target.value === '' ||
-                        event.target.validity.valid;
-                    const targetValue = event.target.value;
-                    if (isValid && targetValue !== previousDisplayPrice) {
-                        handleLimitChange(targetValue.replaceAll(',', ''));
-                        setPreviousDisplayPrice(targetValue);
-                    }
-                }}
-                value={displayPrice === 'NaN' ? '...' : displayPrice}
-                type='string'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
-                disabled={disable}
-                tabIndex={0}
-                aria-label='Limit Price.'
-                aria-live='polite'
-                aria-atomic='true'
-                aria-relevant='all'
-                // value={limitPrice}
-            />
-        </div>
-    );
-
-    const buttonControls = (
-        <div className={styles.button_controls}>
-            <button
-                onClick={!isDenomBase ? increaseTick : decreaseTick}
-                aria-label='Increase limit tick.'
-            >
-                <HiPlus />
-            </button>
-            <button>
-                <HiMinus
-                    onClick={!isDenomBase ? decreaseTick : increaseTick}
-                    aria-label='Decrease limit tick.'
-                />
-            </button>
-        </div>
-    );
+        if (newDisplayPrice !== previousDisplayPrice) {
+            await handleLimitChange(newDisplayPrice);
+        }
+        setPriceInputFieldBlurred(true);
+    };
 
     return (
         <div
             className={`${styles.swapbox} ${
-                isOrderCopied && styles.pulse_animation
+                showOrderPulseAnimation && styles.pulse_animation
             }`}
         >
             <span
@@ -172,22 +102,56 @@ export default function LimitRate(props: propsIF) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    height: '19px',
                 }}
             >
                 <p>Price</p>
-                {/* <button
-                    className={styles.reset_limit_button}
-                    onClick={() => {
-                        dispatch(setLimitTick(pinnedInitialTick));
-                    }}
-                >
-                    Top of Book
-                </button> */}
             </span>
-
             <div className={styles.swap_input} id='limit_rate'>
-                {rateInput}
-                {buttonControls}
+                <div className={styles.token_amount}>
+                    <input
+                        id={`${fieldId}-quantity`}
+                        onFocus={() => {
+                            const limitRateInputField = document.getElementById(
+                                'limit-rate-quantity',
+                            );
+
+                            (limitRateInputField as HTMLInputElement).select();
+                        }}
+                        onChange={(e) => handleOnChange(e.target.value)}
+                        className={styles.currency_quantity}
+                        placeholder='0.0'
+                        onBlur={(e) => handleOnBlur(e.target.value)}
+                        value={displayPrice === 'NaN' ? '...' : displayPrice}
+                        type='number'
+                        step='any'
+                        inputMode='decimal'
+                        autoComplete='off'
+                        autoCorrect='off'
+                        min='0'
+                        minLength={1}
+                        disabled={disable}
+                        tabIndex={0}
+                        aria-label='Limit Price.'
+                        aria-live='polite'
+                        aria-atomic='true'
+                        aria-relevant='all'
+                    />
+                </div>
+                <div className={styles.button_controls}>
+                    <button
+                        onClick={!isDenomBase ? increaseTick : decreaseTick}
+                        aria-label='Increase limit tick.'
+                    >
+                        <HiPlus />
+                    </button>
+                    <button
+                        onClick={!isDenomBase ? decreaseTick : increaseTick}
+                        aria-label='Decrease limit tick.'
+                    >
+                        <HiMinus />
+                    </button>
+                </div>
             </div>
         </div>
     );

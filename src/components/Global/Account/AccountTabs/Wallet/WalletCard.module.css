@@ -1,29 +1,34 @@
 .token_info {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
     align-items: center;
-    gap: 3rem;
+    color: var(--text1);
 }
 
 .token_icon {
     display: flex;
     align-items: center;
     flex-direction: row;
-    gap: 4px;
+    gap: 8px;
 }
 
 .wallet_row {
     display: grid;
-    color: white;
     grid-template-columns: 2fr 1fr 1fr;
     align-items: center;
     height: 48px;
-}
-
-.wallet_row {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: rgba(235, 235, 255, 0.4);
+    padding: 0 4px;
+    border-radius: var(--border-radius);
+}
+
+.wallet_row:hover {
+    transition: all var(--animation-speed) ease-in-out;
+    background: var(--dark2);
+    cursor: default;
 }
 
 .token_key,
@@ -32,13 +37,18 @@
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;
-    color: #ebebff;
-
-    /* text-align: right; */
+    color: var(--text1);
 }
 
 .value,
 .amount {
     display: flex;
     justify-content: flex-end;
+    color: var(--text1);
+}
+
+@media only screen and (min-width: 768px) {
+    .token_info {
+        width: 50%;
+    }
 }

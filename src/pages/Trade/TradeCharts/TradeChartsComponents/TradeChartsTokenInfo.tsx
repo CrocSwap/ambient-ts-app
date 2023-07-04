@@ -1,47 +1,38 @@
 import styles from './TradeChartsTokenInfo.module.css';
-import {
-    NoColorTooltip,
-    TextOnlyTooltip,
-} from '../../../../components/Global/StyledTooltip/StyledTooltip';
+import { NoColorTooltip } from '../../../../components/Global/StyledTooltip/StyledTooltip';
 import {
     useAppSelector,
     useAppDispatch,
 } from '../../../../utils/hooks/reduxToolkit';
-import NoTokenIcon from '../../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { useState } from 'react';
+import { memo, useContext } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { favePoolsMethodsIF } from '../../../../App/hooks/useFavePools';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import { FiCopy, FiExternalLink } from 'react-icons/fi';
-import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { IS_LOCAL_ENV } from '../../../../constants';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
-    isPoolPriceChangePositive: boolean;
-    poolPriceDisplay: number;
-    poolPriceChangePercent: string | undefined;
-    favePools: favePoolsMethodsIF;
-    chainId: string;
     simplifyVersion?: boolean;
-    chainData: ChainSpec;
 }
 
-export default function TradeChartsTokenInfo(props: propsIF) {
-    const {
-        isPoolPriceChangePositive,
-        poolPriceDisplay,
-        poolPriceChangePercent,
-        favePools,
-        chainId,
-        simplifyVersion,
-        chainData,
-    } = props;
+function TradeChartsTokenInfo(props: propsIF) {
+    const { simplifyVersion } = props;
     const dispatch = useAppDispatch();
 
     const { tradeData } = useAppSelector((state) => state);
+    const {
+        chainData: { chainId, poolIndex },
+    } = useContext(CrocEnvContext);
+    const {
+        poolPriceDisplay,
+        isPoolPriceChangePositive,
+        poolPriceChangePercent,
+    } = useContext(PoolContext);
+    const { favePools } = useContext(UserPreferenceContext);
 
     const denomInBase = tradeData.isDenomBase;
 
@@ -65,25 +56,22 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         : // denom in b, return token a character
           getUnicodeCharacter(tradeData.baseToken.symbol);
 
-    const truncatedPoolPrice =
-        poolPriceDisplay === Infinity || poolPriceDisplay === 0
-            ? '…'
-            : poolPriceDisplay < 2
-            ? poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : poolPriceDisplay.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const poolPriceDisplayWithDenom = poolPriceDisplay
+        ? tradeData.isDenomBase
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay
+        : 0;
+
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
+    });
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 
-    const logoSizes = smallScrenView ? '18px' : '25px';
-
     const poolPrice =
-        poolPriceDisplay === Infinity || poolPriceDisplay === 0
+        poolPriceDisplay === Infinity ||
+        poolPriceDisplay === 0 ||
+        poolPriceDisplay === undefined
             ? '…'
             : `${currencyCharacter}${truncatedPoolPrice}`;
 
@@ -91,7 +79,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         <span
             onClick={() => dispatch(toggleDidUserFlipDenom())}
             className={styles.amount}
-            style={{ marginTop: '2.5px', cursor: 'pointer' }}
+            style={{ cursor: 'pointer' }}
             aria-label={poolPrice}
         >
             {poolPrice}
@@ -114,11 +102,13 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                 style={
                     isPoolPriceChangePositive
                         ? {
-                              color: 'green',
-                              marginTop: '4.5px',
+                              color: 'var(--other-green)',
                               fontSize: '15px',
                           }
-                        : { color: 'red', marginTop: '4.5px', fontSize: '15px' }
+                        : {
+                              color: 'var(--other-red)',
+                              fontSize: '15px',
+                          }
                 }
                 aria-label={`Pool price change is ${poolPriceNumber}`}
             >
@@ -132,7 +122,7 @@ export default function TradeChartsTokenInfo(props: propsIF) {
         base: tradeData.baseToken,
         quote: tradeData.quoteToken,
         chainId: chainId,
-        poolId: chainData.poolIndex,
+        poolId: poolIndex,
     };
 
     const isButtonFavorited = favePools.check(
@@ -148,13 +138,13 @@ export default function TradeChartsTokenInfo(props: propsIF) {
                   tradeData.baseToken,
                   tradeData.quoteToken,
                   chainId,
-                  chainData.poolIndex,
+                  poolIndex,
               )
             : favePools.add(
                   tradeData.quoteToken,
                   tradeData.baseToken,
                   chainId,
-                  chainData.poolIndex,
+                  poolIndex,
               );
         IS_LOCAL_ENV && console.debug(tradeData);
     }
@@ -203,99 +193,30 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             }
         </button>
     );
-    const [value, copy] = useCopyToClipboard();
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
-
-    function handleBaseCopy() {
-        copy(tradeData.baseToken.address);
-
-        setOpenSnackbar(true);
-    }
-    function handleQuoteCopy() {
-        copy(tradeData.quoteToken.address);
-
-        setOpenSnackbar(true);
-    }
-    const handleLinkOut = (address: string) => {
-        const addressLink = `${chainData.blockExplorer}token/${address}`;
-
-        window.open(addressLink);
-    };
-
-    const baseTokenTooltipContentOrNull =
-        tradeData.baseToken.address === ZERO_ADDRESS ? null : (
-            <p>
-                {`${tradeData.baseToken.symbol + ':'} ${
-                    tradeData.baseToken.address
-                }`}{' '}
-                <FiCopy onClick={() => handleBaseCopy()} />{' '}
-                <FiExternalLink
-                    onClick={() => handleLinkOut(tradeData.baseToken.address)}
-                />
-            </p>
-        );
-
-    const tokenSymbols = (
-        <div
-            className={styles.mono_space_tooltip}
-            style={{ cursor: 'default' }}
-        >
-            {baseTokenTooltipContentOrNull}
-            <p>
-                {`${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}{' '}
-                <FiCopy onClick={() => handleQuoteCopy()} />{' '}
-                <FiExternalLink
-                    onClick={() => handleLinkOut(tradeData.quoteToken.address)}
-                />
-            </p>
-        </div>
-    );
 
     const denomToggleButton = (
         <button
             className={styles.denom_toggle_button}
             aria-label='flip denomination.'
+            onClick={() => dispatch(toggleDidUserFlipDenom())}
         >
-            <TextOnlyTooltip
-                interactive
-                title={tokenSymbols}
-                placement={'right'}
-            >
-                <div className={styles.tokens_images} id='trade_token_pair'>
-                    {topTokenLogo ? (
-                        <img src={topTokenLogo} alt={topTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={topTokenSymbol.charAt(0)}
-                            width={logoSizes}
-                        />
-                    )}
-                    {bottomTokenLogo ? (
-                        <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={bottomTokenSymbol.charAt(0)}
-                            width={logoSizes}
-                        />
-                    )}
-                </div>
-            </TextOnlyTooltip>
-
+            <div className={styles.tokens_images} id='trade_token_pair'>
+                <TokenIcon
+                    src={topTokenLogo}
+                    alt={topTokenSymbol}
+                    size={smallScrenView ? 's' : 'l'}
+                />
+                <TokenIcon
+                    src={bottomTokenLogo}
+                    alt={bottomTokenSymbol}
+                    size={smallScrenView ? 's' : 'l'}
+                />
+            </div>
             <div
                 className={styles.tokens_name}
                 aria-live='polite'
                 aria-atomic='true'
                 aria-relevant='all'
-                onClick={() => dispatch(toggleDidUserFlipDenom())}
             >
                 {topTokenSymbol} / {bottomTokenSymbol}
             </div>
@@ -323,7 +244,8 @@ export default function TradeChartsTokenInfo(props: propsIF) {
             {denomToggleButton}
             {currentAmountDisplay}
             {poolPriceChange}
-            {snackbarContent}
         </div>
     );
 }
+
+export default memo(TradeChartsTokenInfo);

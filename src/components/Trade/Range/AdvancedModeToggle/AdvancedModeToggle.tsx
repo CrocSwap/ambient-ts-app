@@ -2,12 +2,13 @@ import styles from './AdvancedModeToggle.module.css';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
+import { memo } from 'react';
 
 interface advancedModePropsIF {
     advancedMode: boolean;
 }
 
-export default function AdvancedModeToggle(props: advancedModePropsIF) {
+function AdvancedModeToggle(props: advancedModePropsIF) {
     const { advancedMode } = props;
 
     const dispatch = useAppDispatch();
@@ -31,3 +32,5 @@ export default function AdvancedModeToggle(props: advancedModePropsIF) {
         </div>
     );
 }
+
+export default memo(AdvancedModeToggle);

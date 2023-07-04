@@ -87,7 +87,7 @@
     flex-direction: row;
     background: var(--dark2);
     border-radius: 4px;
-    outline: 1px solid var(--text-grey-light);
+    outline: 1px solid var(--text2);
     /* max-width: 200px; */
     margin: 10px auto;
 }
@@ -102,51 +102,39 @@
     outline: none;
 }
 .mobile_toggle_container button:hover {
-    color: var(--text-grey-white);
+    color: var(--text1);
 }
 .active_button_mobile_toggle {
     color: rgb(0, 0, 0);
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
 }
 
 .non_active_button_mobile_toggle {
-    color: var(--text-grey-white);
+    color: var(--text1);
     background-color: transparent;
 }
 
 @media (min-width: 1200px) {
     .tabs_exchange_balance_container,
     .full_layout_container {
-        /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */
-        /* height: calc(100vh - 16rem); */
-        /* height: 100%; */
-        /* overflow-y: hidden; */
         width: 100%;
         display: grid;
-        /* margin: 1rem 0; */
-        /* max-height: 80%; */
-
-        /* display: grid;
-        grid-template-columns: auto auto; */
-        /* grid-template-columns: auto 380px; */
         transition: all var(--animation-speed) ease-in-out;
+        overflow: hidden;
     }
 
     .tabs_exchange_balance_container {
         width: 100%;
+        flex: 1;
         grid-template-columns: auto auto;
         margin-left: 4px;
-        /* grid-template-columns: auto 380px; */
         gap: 1rem;
-        /* max-height: calc(100vh - 20rem); */
-        /* padding: 1rem 0; */
-
-        /* max-height: 80%; */
-        /* overflow-y: hidden; */
     }
     .full_layout_container {
         display: grid;
         grid-template-columns: auto 50px;
+
+        flex: 1;
     }
 
     .tabs_exchange_balance_container {

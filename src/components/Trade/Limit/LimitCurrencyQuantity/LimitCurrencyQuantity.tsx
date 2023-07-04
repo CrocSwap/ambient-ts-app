@@ -8,40 +8,53 @@ interface propsIF {
     fieldId: string;
     value: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    parseInput: (val: string) => void;
     thisToken: TokenIF;
 }
 
-export default function LimitCurrencyQuantity(props: propsIF) {
-    const { value, thisToken, disable, fieldId, handleChangeEvent } = props;
+function LimitCurrencyQuantity(props: propsIF) {
+    const {
+        value,
+        thisToken,
+        disable,
+        fieldId,
+        handleChangeEvent,
+        parseInput,
+    } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
+    const [toggleInputUpdated, setToggleInputUpdated] = useState(false);
 
     useEffect(() => {
         setDisplayValue(value);
-    }, [value]);
+    }, [toggleInputUpdated, value]);
+
+    const handleOnBlur = (input: string) => {
+        parseInput(input);
+        setToggleInputUpdated(!toggleInputUpdated);
+    };
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        // if (event && fieldId === 'sell') {
-        //     setTokenBInputQty('');
-        // } else if (event && fieldId === 'buy') {
-        //     setTokenAInputQty('');
-        // }
-
-        handleChangeEvent(event);
-
-        const input = event.target.value.startsWith('.')
-            ? '0' + event.target.value
-            : event.target.value;
-
+        const input = event.target.value;
         setDisplayValue(input);
+        handleChangeEvent(event);
     };
 
     const precisionOfInput = (inputString: string) => {
         if (inputString.includes('.')) {
             return inputString.split('.')[1].length;
         }
-        // String Does Not Contain Decimal
         return 0;
+    };
+
+    const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const isPrecisionGreaterThanDecimals =
+            precisionOfInput(event.target.value) > thisToken.decimals;
+        const isUserInputValid =
+            !isPrecisionGreaterThanDecimals && !isNaN(+event.target.value);
+        if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
+            handleEventLocal(event);
+        }
     };
 
     return (
@@ -52,26 +65,21 @@ export default function LimitCurrencyQuantity(props: propsIF) {
                 aria-label={`Enter ${fieldId} amount`}
                 placeholder='0.0'
                 onChange={(event) => {
-                    const isPrecisionGreaterThanDecimals =
-                        precisionOfInput(event.target.value) >
-                        thisToken.decimals;
-                    const isValid =
-                        !isPrecisionGreaterThanDecimals &&
-                        (event.target.value === '' ||
-                            event.target.validity.valid);
-                    isValid ? handleEventLocal(event) : null;
+                    handleOnChange(event);
                 }}
+                onBlur={(e) => handleOnBlur(e.target.value)}
                 value={displayValue}
-                type='string'
+                type='number'
+                step='any'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
-                autoFocus={fieldId === 'sell'}
             />
         </div>
     );
 }
+
+export default LimitCurrencyQuantity;

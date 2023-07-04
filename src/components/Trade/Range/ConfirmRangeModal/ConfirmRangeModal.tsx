@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useContext, memo } from 'react';
 
 // START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
@@ -8,27 +8,24 @@ import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConf
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import SelectedRange from './SelectedRange/SelectedRange';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 
 // START: Import Local Files
 import styles from './ConfirmRangeModal.module.css';
-import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { allSkipConfirmMethodsIF } from '../../../../App/hooks/useSkipConfirm';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     sendTransaction: () => void;
-    closeModal: () => void;
     newRangeTransactionHash: string;
-    setNewRangeTransactionHash: Dispatch<SetStateAction<string>>;
-    tokenPair: TokenPairIF;
-    poolPriceDisplayNum: number;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
     minPriceDisplay: string;
-    denominationsInBase: boolean;
     isTokenABase: boolean;
     isAmbient: boolean;
     isInRange: boolean;
@@ -39,24 +36,16 @@ interface propsIF {
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     txErrorCode: string;
-    txErrorMessage: string;
     resetConfirmation: () => void;
-    bypassConfirm: allSkipConfirmMethodsIF;
     isAdd: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
 }
 
-export default function ConfirmRangeModal(props: propsIF) {
+function ConfirmRangeModal(props: propsIF) {
     const {
         sendTransaction,
         newRangeTransactionHash,
-        minPriceDisplay,
-        maxPriceDisplay,
-        spotPriceDisplay,
-        poolPriceDisplayNum,
-        tokenPair,
-        denominationsInBase,
         isTokenABase,
         isAmbient,
         isInRange,
@@ -68,33 +57,29 @@ export default function ConfirmRangeModal(props: propsIF) {
         showConfirmation,
         setShowConfirmation,
         resetConfirmation,
-        bypassConfirm,
         isAdd,
         tokenAQtyLocal,
         tokenBQtyLocal,
     } = props;
 
-    const { dataTokenA, dataTokenB } = tokenPair;
+    const {
+        bypassConfirmLimit,
+        bypassConfirmRange,
+        bypassConfirmRepo,
+        bypassConfirmSwap,
+    } = useContext(UserPreferenceContext);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const txApproved = newRangeTransactionHash !== '';
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
     const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const localeTokenAString =
-        tokenAQtyLocal > 999
-            ? tokenAQtyLocal.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenAQtyLocal.toString();
-
-    const localeTokenBString =
-        tokenBQtyLocal > 999
-            ? tokenBQtyLocal.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenBQtyLocal.toString();
+    const localeTokenAString = getFormattedNumber({
+        value: tokenAQtyLocal,
+    });
+    const localeTokenBString = getFormattedNumber({
+        value: tokenBQtyLocal,
+    });
 
     const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
@@ -106,17 +91,17 @@ export default function ConfirmRangeModal(props: propsIF) {
     const txSubmitted = (
         <TransactionSubmitted
             hash={newRangeTransactionHash}
-            tokenBSymbol={dataTokenB.symbol}
-            tokenBAddress={dataTokenB.address}
-            tokenBDecimals={dataTokenB.decimals}
-            tokenBImage={dataTokenB.logoURI}
-            chainId={dataTokenB.chainId}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
+            tokenBImage={uriToHttp(tokenB.logoURI)}
+            chainId={tokenB.chainId}
             range
         />
     );
 
-    const tokenACharacter: string = getUnicodeCharacter(dataTokenA.symbol);
-    const tokenBCharacter: string = getUnicodeCharacter(dataTokenB.symbol);
+    const tokenACharacter: string = getUnicodeCharacter(tokenA.symbol);
+    const tokenBCharacter: string = getUnicodeCharacter(tokenB.symbol);
 
     // this is the starting state for the bypass confirmation toggle switch
     // if this modal is being shown, we can assume bypass is disabled
@@ -128,31 +113,19 @@ export default function ConfirmRangeModal(props: propsIF) {
             <section className={styles.position_display}>
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
-                        {dataTokenA.logoURI ? (
-                            <img
-                                src={dataTokenA.logoURI}
-                                alt={dataTokenA.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenA.symbol.charAt(0)}
-                                width='30px'
-                            />
-                        )}
-                        {dataTokenB.logoURI ? (
-                            <img
-                                src={dataTokenB.logoURI}
-                                alt={dataTokenB.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={dataTokenB.symbol.charAt(0)}
-                                width='30px'
-                            />
-                        )}
+                        <TokenIcon
+                            src={uriToHttp(tokenA.logoURI)}
+                            alt={tokenA.name}
+                            size='2xl'
+                        />
+                        <TokenIcon
+                            src={uriToHttp(tokenB.logoURI)}
+                            alt={tokenB.name}
+                            size='2xl'
+                        />
                     </div>
                     <span className={styles.token_symbol}>
-                        {dataTokenA.symbol}/{dataTokenB.symbol}
+                        {tokenA.symbol}/{tokenB.symbol}
                     </span>
                 </div>
                 <RangeStatus
@@ -165,18 +138,12 @@ export default function ConfirmRangeModal(props: propsIF) {
                 <div className={styles.fee_tier_container}>
                     <div className={styles.detail_line}>
                         <div>
-                            {dataTokenA.logoURI ? (
-                                <img
-                                    src={dataTokenA.logoURI}
-                                    alt={dataTokenA.name}
-                                />
-                            ) : (
-                                <NoTokenIcon
-                                    tokenInitial={dataTokenA.symbol.charAt(0)}
-                                    width='20px'
-                                />
-                            )}
-                            <span>{dataTokenA.symbol}</span>
+                            <TokenIcon
+                                src={uriToHttp(tokenA.logoURI)}
+                                alt={tokenA.name}
+                                size='m'
+                            />
+                            <span>{tokenA.symbol}</span>
                         </div>
                         <span>
                             {localeTokenAString !== ''
@@ -186,18 +153,12 @@ export default function ConfirmRangeModal(props: propsIF) {
                     </div>
                     <div className={styles.detail_line}>
                         <div>
-                            {dataTokenB.logoURI ? (
-                                <img
-                                    src={dataTokenB.logoURI}
-                                    alt={dataTokenB.name}
-                                />
-                            ) : (
-                                <NoTokenIcon
-                                    tokenInitial={dataTokenB.symbol.charAt(0)}
-                                    width='20px'
-                                />
-                            )}
-                            <span>{dataTokenB.symbol}</span>
+                            <TokenIcon
+                                src={uriToHttp(tokenB.logoURI)}
+                                alt={tokenB.name}
+                                size='m'
+                            />
+                            <span>{tokenB.symbol}</span>
                         </div>
                         <span>
                             {localeTokenBString
@@ -209,12 +170,6 @@ export default function ConfirmRangeModal(props: propsIF) {
             </section>
             {isAmbient || (
                 <SelectedRange
-                    minPriceDisplay={minPriceDisplay}
-                    maxPriceDisplay={maxPriceDisplay}
-                    spotPriceDisplay={spotPriceDisplay}
-                    poolPriceDisplayNum={poolPriceDisplayNum}
-                    tokenPair={tokenPair}
-                    denominationsInBase={denominationsInBase}
                     isTokenABase={isTokenABase}
                     isAmbient={isAmbient}
                     pinnedMinPriceDisplayTruncatedInBase={
@@ -243,9 +198,9 @@ export default function ConfirmRangeModal(props: propsIF) {
         <WaitingConfirmation
             content={`Minting a Position with ${
                 localeTokenAString ? localeTokenAString : '0'
-            } ${dataTokenA.symbol} and ${
+            } ${tokenA.symbol} and ${
                 localeTokenBString ? localeTokenBString : '0'
-            } ${dataTokenB.symbol}. `}
+            } ${tokenB.symbol} `}
         />
     );
 
@@ -265,22 +220,20 @@ export default function ConfirmRangeModal(props: propsIF) {
                     <Button
                         title={
                             isAdd
-                                ? `Add to ${
-                                      isAmbient ? 'Ambient' : 'Range'
-                                  } Position`
-                                : `Create ${
-                                      isAmbient ? 'Ambient' : 'Range'
-                                  } Position`
+                                ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
+                                : `Submit ${
+                                      isAmbient ? 'Ambient' : ''
+                                  } Liquidity`
                         }
                         action={() => {
                             // if this modal is launched we can infer user wants confirmation
                             // if user enables bypass, update all settings in parallel
                             // otherwise do not not make any change to persisted preferences
                             if (currentSkipConfirm) {
-                                bypassConfirm.swap.enable();
-                                bypassConfirm.limit.enable();
-                                bypassConfirm.range.enable();
-                                bypassConfirm.repo.enable();
+                                bypassConfirmSwap.enable();
+                                bypassConfirmLimit.enable();
+                                bypassConfirmRange.enable();
+                                bypassConfirmRepo.enable();
                             }
                             sendTransaction();
                             setShowConfirmation(false);
@@ -292,3 +245,5 @@ export default function ConfirmRangeModal(props: propsIF) {
         </div>
     );
 }
+
+export default memo(ConfirmRangeModal);

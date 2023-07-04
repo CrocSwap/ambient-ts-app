@@ -1,7 +1,6 @@
 import styles from './NotificationTable.module.css';
 import { Dispatch, RefObject, SetStateAction } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
-import FocusTrap from 'focus-trap-react';
 
 import {
     useAppDispatch,
@@ -13,19 +12,12 @@ interface NotificationTableProps {
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
     pendingTransactions: string[];
-    lastBlockNumber: number;
     notificationItemRef: RefObject<HTMLDivElement>;
-    chainId: string;
 }
 
 const NotificationTable = (props: NotificationTableProps) => {
-    const {
-        showNotificationTable,
-        pendingTransactions,
-        lastBlockNumber,
-        notificationItemRef,
-        chainId,
-    } = props;
+    const { showNotificationTable, pendingTransactions, notificationItemRef } =
+        props;
 
     const dispatch = useAppDispatch();
 
@@ -51,9 +43,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                 key={idx}
                 status='successful'
                 hash={tx?.transactionHash}
-                chainId={chainId}
                 txBlockNumber={tx.blockNumber}
-                lastBlockNumber={lastBlockNumber}
                 txType={
                     transactionsByType.find(
                         (e) => e.txHash === tx?.transactionHash,
@@ -67,9 +57,7 @@ const NotificationTable = (props: NotificationTableProps) => {
             key={idx}
             status='failed'
             hash={tx?.transactionHash}
-            chainId={chainId}
             txBlockNumber={tx.blockNumber}
-            lastBlockNumber={lastBlockNumber}
             txType={
                 transactionsByType.find((e) => e.txHash === tx?.transactionHash)
                     ?.txType
@@ -81,40 +69,34 @@ const NotificationTable = (props: NotificationTableProps) => {
             key={idx}
             status='pending'
             hash={tx}
-            chainId={chainId}
-            lastBlockNumber={lastBlockNumber}
             txType={transactionsByType.find((e) => e.txHash === tx)?.txType}
         />
     ));
 
     if (!showNotificationTable) return null;
     return (
-        <FocusTrap focusTrapOptions={{ clickOutsideDeactivates: true }}>
-            <div className={styles.main_container}>
-                <div ref={notificationItemRef} className={styles.container}>
-                    <section className={styles.header}>
-                        Recent Transactions
-                    </section>
+        <div className={styles.main_container}>
+            <div ref={notificationItemRef} className={styles.container}>
+                <section className={styles.header}>Recent Transactions</section>
 
-                    <section className={styles.content}>
-                        {pendingTransactionsDisplay}
-                        {failedTransactionsDisplay}
-                        {successfulTransactionsDisplay}
-                    </section>
+                <section className={styles.content}>
+                    {pendingTransactionsDisplay}
+                    {failedTransactionsDisplay}
+                    {successfulTransactionsDisplay}
+                </section>
 
-                    <section className={styles.footer}>
-                        <button
-                            onClick={() => {
-                                dispatch(resetReceiptData());
-                            }}
-                            aria-label='Clear all'
-                        >
-                            Clear all
-                        </button>
-                    </section>
-                </div>
+                <section className={styles.footer}>
+                    <button
+                        onClick={() => {
+                            dispatch(resetReceiptData());
+                        }}
+                        aria-label='Clear all'
+                    >
+                        Clear all
+                    </button>
+                </section>
             </div>
-        </FocusTrap>
+        </div>
     );
 };
 

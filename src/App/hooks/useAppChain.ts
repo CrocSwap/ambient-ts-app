@@ -5,7 +5,8 @@ import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { useNavigate } from 'react-router-dom';
+import chainNumToString from '../functions/chainNumToString';
+import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 
 export const useAppChain = (
     isUserLoggedIn: boolean | undefined,
@@ -25,14 +26,14 @@ export const useAppChain = (
     const { chain: chainNetwork } = useNetwork();
 
     function determineConnected(chainNetwork?: { id: number }): string {
-        return chainNetwork
-            ? '0x' + chainNetwork.id.toString(16)
-            : defaultChain;
+        return chainNetwork ? chainNumToString(chainNetwork.id) : defaultChain;
     }
 
     const defaultChain = getDefaultChainId();
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter
@@ -61,7 +62,7 @@ export const useAppChain = (
     // a lot of dangling providers pointing to the wrong chain that will error and
     // time out, slowing down app performance
     function nukeAndReloadApp() {
-        navigate('/');
+        linkGenIndex.navigate();
         window.location.reload();
     }
 

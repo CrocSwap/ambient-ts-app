@@ -1,10 +1,9 @@
 import styles from './PriceInfo.module.css';
-// import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-// import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
-import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { useLocation } from 'react-router-dom';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 
 type ItemIF = {
     slug: string;
@@ -13,7 +12,6 @@ type ItemIF = {
 };
 
 interface propsIF {
-    account: string;
     limitOrder: LimitOrderIF;
 
     baseCollateralDisplay: string | undefined;
@@ -32,6 +30,8 @@ interface propsIF {
     baseTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
+    baseTokenName: string;
+    quoteTokenName: string;
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
@@ -69,23 +69,11 @@ export default function PriceInfo(props: propsIF) {
                         : baseDisplayFrontend
                     : approximateBuyQtyTruncated}
 
-                {isBid ? (
-                    quoteTokenLogo ? (
-                        <img src={quoteTokenLogo} alt='quote token' />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol.charAt(0)}
-                            width='27px'
-                        />
-                    )
-                ) : baseTokenLogo ? (
-                    <img src={baseTokenLogo} alt='base token' />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={baseTokenSymbol.charAt(0)}
-                        width='27px'
-                    />
-                )}
+                <TokenIcon
+                    src={isBid ? quoteTokenLogo : baseTokenLogo}
+                    alt={isBid ? quoteTokenSymbol : baseTokenSymbol}
+                    size='xl'
+                />
             </p>
         </div>
     );
@@ -98,34 +86,30 @@ export default function PriceInfo(props: propsIF) {
                     : isBid
                     ? baseDisplayFrontend
                     : quoteDisplayFrontend}
-                {!isBid ? (
-                    quoteTokenLogo ? (
-                        <img src={quoteTokenLogo} alt='quote token' />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol.charAt(0)}
-                            width='27px'
-                        />
-                    )
-                ) : baseTokenLogo ? (
-                    <img src={baseTokenLogo} alt='base token' />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={baseTokenSymbol.charAt(0)}
-                        width='27px'
-                    />
-                )}
+
+                <TokenIcon
+                    src={!isBid ? quoteTokenLogo : baseTokenLogo}
+                    alt={!isBid ? quoteTokenSymbol : baseTokenSymbol}
+                    size='xl'
+                />
             </p>
         </div>
     );
 
     const tokenPairDetails = (
-        <div
-            className={styles.token_pair_details_container}
-            onClick={() => {
-                // dispatch(toggleDidUserFlipDenom());
-            }}
-        >
+        <div className={styles.token_pair_details}>
+            <div className={styles.token_pair_images}>
+                <TokenIcon
+                    src={baseTokenLogo}
+                    alt={baseTokenSymbol}
+                    size='2xl'
+                />
+                <TokenIcon
+                    src={quoteTokenLogo}
+                    alt={quoteTokenSymbol}
+                    size='2xl'
+                />
+            </div>
             <p>
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
@@ -135,7 +119,7 @@ export default function PriceInfo(props: propsIF) {
 
     const orderType = (
         <div className={styles.order_type}>
-            <p>Type:</p>
+            <p>Order Type:</p>
             <p>Limit</p>
         </div>
     );

@@ -1,8 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 
 import styles from './OrderDetails.module.css';
 import OrderDetailsHeader from './OrderDetailsHeader/OrderDetailsHeader';
-import printDomToImage from '../../utils/functions/printDomToImage';
 import PriceInfo from '../OrderDetails/PriceInfo/PriceInfo';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
@@ -10,38 +9,52 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
-import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import SnackbarComponent from '../Global/SnackbarComponent/SnackbarComponent';
-import { ChainSpec } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { AppStateContext } from '../../contexts/AppStateContext';
+import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
+import { getLimitOrderData } from '../../App/functions/getLimitOrderData';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { TokenContext } from '../../contexts/TokenContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import modalBackground from '../../assets/images/backgrounds/background.png';
+import printDomToImage from '../../utils/functions/printDomToImage';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 interface propsIF {
-    account: string;
     limitOrder: LimitOrderIF;
-    lastBlockNumber: number;
-    closeGlobalModal: () => void;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
-    isOnPortfolioPage: boolean;
-    chainData: ChainSpec;
+    isAccountView: boolean;
 }
 
 export default function OrderDetails(props: propsIF) {
+    const { limitOrder, isBaseTokenMoneynessGreaterOrEqual, isAccountView } =
+        props;
+
     const [showShareComponent, setShowShareComponent] = useState(true);
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { tokens } = useContext(TokenContext);
+
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const {
-        limitOrder,
-        account,
-        isBaseTokenMoneynessGreaterOrEqual,
-        isOnPortfolioPage,
-        chainData,
-    } = props;
-
-    const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
-    const {
-        // usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         baseDisplayFrontend,
         quoteDisplayFrontend,
         isDenomBase,
@@ -50,29 +63,17 @@ export default function OrderDetails(props: propsIF) {
         isOrderFilled,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
-        // posHashTruncated,
         posHash,
-    } = useProcessOrder(limitOrder, account);
+    } = useProcessOrder(limitOrder, userAddress);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
 
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
+    const [_, copy] = useCopyToClipboard();
 
     function handleCopyPositionId() {
         copy(posHash);
-        setOpenSnackbar(true);
+        openSnackbar(`${posHash} copied`, 'info');
     }
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value} copied
-        </SnackbarComponent>
-    );
 
     const [usdValue, setUsdValue] = useState<string>('...');
     // const [usdValue, setUsdValue] = useState<string>(limitOrder.totalValueUSD.toString());
@@ -85,6 +86,7 @@ export default function OrderDetails(props: propsIF) {
     const user = limitOrder.user;
     const bidTick = limitOrder.bidTick;
     const askTick = limitOrder.askTick;
+    const pivotTime = limitOrder.pivotTime;
     const baseTokenAddress = limitOrder.base;
     const quoteTokenAddress = limitOrder.quote;
     const positionType = 'knockout';
@@ -115,19 +117,10 @@ export default function OrderDetails(props: propsIF) {
         ? baseDisplayFrontendNum * parsedLimitPriceNum
         : baseDisplayFrontendNum / parsedLimitPriceNum;
 
-    const approximateSellQtyTruncated =
-        approximateSellQty === 0
-            ? '0'
-            : approximateSellQty < 0.0001
-            ? approximateSellQty.toExponential(2)
-            : approximateSellQty < 2
-            ? approximateSellQty.toPrecision(3)
-            : approximateSellQty >= 100000
-            ? formatAmountOld(approximateSellQty)
-            : approximateSellQty.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const approximateSellQtyTruncated = getFormattedNumber({
+        value: approximateSellQty,
+        zeroDisplay: '0',
+    });
 
     const approximateBuyQty = isFillStarted
         ? isBid
@@ -145,28 +138,17 @@ export default function OrderDetails(props: propsIF) {
         ? quoteDisplayFrontendNum / parsedLimitPriceNum
         : quoteDisplayFrontendNum * parsedLimitPriceNum;
 
-    const approximateBuyQtyTruncated =
-        approximateBuyQty === 0
-            ? '0'
-            : approximateBuyQty < 0.0001
-            ? approximateBuyQty.toExponential(2)
-            : approximateBuyQty < 2
-            ? approximateBuyQty.toPrecision(3)
-            : approximateBuyQty >= 100000
-            ? formatAmountOld(approximateBuyQty)
-            : approximateBuyQty.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    const httpGraphCacheServerDomain = GRAPHCACHE_URL;
+    const approximateBuyQtyTruncated = getFormattedNumber({
+        value: approximateBuyQty,
+        zeroDisplay: '0',
+    });
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
-            httpGraphCacheServerDomain + '/position_stats?';
+            GRAPHCACHE_SMALL_URL + '/limit_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
-        if (positionType) {
+        if (positionType && crocEnv) {
             fetch(
                 positionStatsCacheEndpoint +
                     new URLSearchParams({
@@ -178,6 +160,7 @@ export default function OrderDetails(props: propsIF) {
                         quote: quoteTokenAddress,
                         poolIdx: poolIndex.toString(),
                         chainId: chainId,
+                        pivotTime: pivotTime.toString(),
                         positionType: positionType,
                         addValue: 'true',
                         omitAPY: 'false',
@@ -185,7 +168,20 @@ export default function OrderDetails(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then((json) => {
-                    const positionStats = json?.data;
+                    const positionPayload = json?.data as LimitOrderServerIF;
+                    return getLimitOrderData(
+                        positionPayload,
+                        tokens.tokenUniv,
+                        crocEnv,
+                        chainId,
+                        lastBlockNumber,
+                        cachedFetchTokenPrice,
+                        cachedQuerySpotPrice,
+                        cachedTokenDetails,
+                        cachedEnsResolve,
+                    );
+                })
+                .then((positionStats: LimitOrderIF) => {
                     IS_LOCAL_ENV && console.debug({ positionStats });
                     const liqBaseNum =
                         positionStats.positionLiqBaseDecimalCorrected;
@@ -196,32 +192,16 @@ export default function OrderDetails(props: propsIF) {
                     const claimableQuoteNum =
                         positionStats.claimableLiqQuoteDecimalCorrected;
 
-                    const isOrderClaimable = positionStats.claimableLiq !== '0';
+                    const isOrderClaimable = positionStats.claimableLiq !== 0;
                     setIsClaimable(isOrderClaimable);
 
-                    const liqBaseDisplay = liqBaseNum
-                        ? liqBaseNum < 2
-                            ? liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqBaseDisplay = getFormattedNumber({
+                        value: liqBaseNum,
+                    });
 
-                    const claimableBaseDisplay = claimableBaseNum
-                        ? claimableBaseNum < 2
-                            ? claimableBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : claimableBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const claimableBaseDisplay = getFormattedNumber({
+                        value: claimableBaseNum,
+                    });
 
                     isOrderFilled
                         ? setBaseCollateralDisplay(
@@ -229,29 +209,13 @@ export default function OrderDetails(props: propsIF) {
                           )
                         : setBaseCollateralDisplay(liqBaseDisplay ?? '0.00');
 
-                    const liqQuoteDisplay = liqQuoteNum
-                        ? liqQuoteNum < 2
-                            ? liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqQuoteDisplay = getFormattedNumber({
+                        value: liqQuoteNum,
+                    });
 
-                    const claimableQuoteDisplay = claimableQuoteNum
-                        ? claimableQuoteNum < 2
-                            ? claimableQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : claimableQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const claimableQuoteDisplay = getFormattedNumber({
+                        value: claimableQuoteNum,
+                    });
 
                     isOrderFilled
                         ? setQuoteCollateralDisplay(
@@ -259,62 +223,43 @@ export default function OrderDetails(props: propsIF) {
                           )
                         : setQuoteCollateralDisplay(liqQuoteDisplay ?? '0.00');
 
-                    const usdValue = positionStats.totalValueUSD;
-
-                    if (usdValue) {
-                        setUsdValue(
-                            usdValue.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            }),
-                        );
-                    } else {
-                        setUsdValue('0.00');
-                    }
+                    setUsdValue(
+                        getFormattedNumber({
+                            value: positionStats.totalValueUSD,
+                            isUSD: true,
+                        }),
+                    );
                 })
                 .catch(console.error);
         }
-    }, [lastBlock]);
-
-    const [showSettings, setShowSettings] = useState(false);
+    }, [lastBlockNumber]);
 
     const detailsRef = useRef(null);
-    const downloadAsImage = () => {
+
+    const copyOrderDetailsToClipboard = async () => {
         if (detailsRef.current) {
-            printDomToImage(detailsRef.current);
+            const blob = await printDomToImage(detailsRef.current, '#0d1117', {
+                background: `url(${modalBackground}) no-repeat`,
+                backgroundSize: 'cover',
+            });
+            if (blob) {
+                copy(blob);
+                openSnackbar('Shareable image copied to clipboard', 'info');
+            }
         }
     };
+
     // eslint-disable-next-line
     const [controlItems, setControlItems] = useState([
         { slug: 'ticks', name: 'Show ticks', checked: true },
         { slug: 'liquidity', name: 'Show Liquidity', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
     ]);
-
-    // const handleChange = (slug: string) => {
-    //     const copyControlItems = [...controlItems];
-    //     const modifiedControlItems = copyControlItems.map((item) => {
-    //         if (slug === item.slug) item.checked = !item.checked;
-    //         return item;
-    //     });
-
-    //     setControlItems(modifiedControlItems);
-    // };
-
-    // const controlDisplay = showSettings ? (
-    //     <div className={styles.control_display_container}>
-    //         {controlItems.map((item, idx) => (
-    //             <OrderDetailsControl key={idx} item={item} handleChange={handleChange} />
-    //         ))}
-    //     </div>
-    // ) : null;
-
     const shareComponent = (
-        <div ref={detailsRef}>
+        <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
                 <div className={styles.left_container}>
                     <PriceInfo
-                        account={account}
                         limitOrder={limitOrder}
                         controlItems={controlItems}
                         usdValue={usdValue}
@@ -333,6 +278,8 @@ export default function OrderDetails(props: propsIF) {
                         baseTokenLogo={baseTokenLogo}
                         baseTokenSymbol={baseTokenSymbol}
                         quoteTokenSymbol={quoteTokenSymbol}
+                        baseTokenName={baseTokenName}
+                        quoteTokenName={quoteTokenName}
                         isFillStarted={isFillStarted}
                         truncatedDisplayPrice={truncatedDisplayPrice}
                         truncatedDisplayPriceDenomByMoneyness={
@@ -347,8 +294,7 @@ export default function OrderDetails(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual={
                             isBaseTokenMoneynessGreaterOrEqual
                         }
-                        isOnPortfolioPage={isOnPortfolioPage}
-                        chainData={chainData}
+                        isAccountView={isAccountView}
                     />
                 </div>
             </div>
@@ -357,13 +303,9 @@ export default function OrderDetails(props: propsIF) {
     );
 
     return (
-        <div className={styles.order_details_container}>
+        <div className={styles.outer_container}>
             <OrderDetailsHeader
-                limitOrder={limitOrder}
-                onClose={props.closeGlobalModal}
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
-                downloadAsImage={downloadAsImage}
+                copyOrderDetailsToClipboard={copyOrderDetailsToClipboard}
                 showShareComponent={showShareComponent}
                 setShowShareComponent={setShowShareComponent}
                 handleCopyPositionId={handleCopyPositionId}
@@ -373,7 +315,6 @@ export default function OrderDetails(props: propsIF) {
                 shareComponent
             ) : (
                 <OrderDetailsSimplify
-                    account={account}
                     limitOrder={limitOrder}
                     usdValue={usdValue}
                     isBid={isBid}
@@ -389,12 +330,13 @@ export default function OrderDetails(props: propsIF) {
                     baseTokenLogo={baseTokenLogo}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
+                    baseTokenName={baseTokenName}
+                    quoteTokenName={quoteTokenName}
                     isFillStarted={isFillStarted}
                     truncatedDisplayPrice={truncatedDisplayPrice}
-                    isOnPortfolioPage={isOnPortfolioPage}
+                    isAccountView={isAccountView}
                 />
             )}
-            {snackbarContent}
         </div>
     );
 }

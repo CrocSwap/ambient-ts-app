@@ -1,38 +1,40 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
-import { FiMinus } from 'react-icons/fi';
-import { MdAdd } from 'react-icons/md';
+
+import { RangeContext } from '../../../../contexts/RangeContext';
 import styles from './RepositionRangeWidth.module.css';
 import {
     updateRangeWithButton,
     handleRangeSlider,
 } from './repositionRangeWidthFunctions';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface IRepositionRangeWidth {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
-    setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
-    const {
-        rangeWidthPercentage,
-        setRangeWidthPercentage,
-        setRescaleRangeBoundariesWithSlider,
-    } = props;
+function RepositionRangeWidth(props: IRepositionRangeWidth) {
+    const { rangeWidthPercentage, setRangeWidthPercentage } = props;
+
+    const { setRescaleRangeBoundariesWithSlider } = useContext(RangeContext);
 
     // todo
     // @anyone working on this. I think we could refactor the RangeWidth component and reuse it here but I know this might take a few different functionalities so to simplify things, I have created an entirely new component for it. The workflow should follow a similar approach to RangeWidth.tsx so take a look at that for some guidance, especially rangeWidthFunctions.ts.
     // Also, don't forget the input ids will be different. -JR
 
+    const {
+        globalPopup: { open: openGlobalPopup },
+    } = useContext(AppStateContext);
+
     const PercentageOptionContent = (
         <div className={styles.percentage_options}>
-            <div className={styles.add_minus_icons}>
-                <MdAdd size={22} />
-                <FiMinus size={22} />
-            </div>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 5
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(
                         (1 / 20) * 100,
@@ -44,7 +46,11 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 5%
             </button>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 10
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(
                         (1 / 10) * 100,
@@ -56,7 +62,11 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 10%
             </button>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 25
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(
                         (1 / 4) * 100,
@@ -68,7 +78,11 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 25%
             </button>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 50
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(
                         (1 / 2) * 100,
@@ -80,7 +94,11 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
                 50%
             </button>
             <button
-                className={styles.percentage_option_buttons}
+                className={
+                    rangeWidthPercentage === 100
+                        ? `${styles.percentage_option_buttons} ${styles.matching_percentage_button}`
+                        : styles.percentage_option_buttons
+                }
                 onClick={() => {
                     updateRangeWithButton(100, setRangeWidthPercentage);
                     setRescaleRangeBoundariesWithSlider(true);
@@ -88,7 +106,23 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
             >
                 Ambient
             </button>
-            <AiOutlineInfoCircle color='#ffffff' />
+            <button
+                onClick={() =>
+                    openGlobalPopup(
+                        <div>
+                            Ambient liquidity remains fully in range regardless
+                            of pool price, but accumulates rewards at lower
+                            rates.
+                        </div>,
+                        'Ambient Range Width',
+                        'right',
+                    )
+                }
+                className={styles.explanation_button}
+                aria-label='Open range width explanation popup.'
+            >
+                <AiOutlineInfoCircle color='#ffffff' />
+            </button>
         </div>
     );
 
@@ -129,3 +163,5 @@ export default function RepositionRangeWidth(props: IRepositionRangeWidth) {
         </div>
     );
 }
+
+export default memo(RepositionRangeWidth);

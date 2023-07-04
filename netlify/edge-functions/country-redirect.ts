@@ -3,9 +3,9 @@ import { Context } from 'https://edge.netlify.com';
 export default async (request: Request, context: Context) => {
     const GEOFENCED = [];
 
-    const geofenceArg = Deno.env.REACT_APP_GEOFENCED_COUNTRY_CODES;
+    const geofenceArg = Netlify.env.get('NETLIFY_EDGE_GEOFENCED_COUNTRY_CODES');
     const geofenced = GEOFENCED.concat(
-        geofenceArg ? JSON.parse(geofenceArg) : [],
+        geofenceArg ? geofenceArg.split(',') : [],
     );
 
     // if user not in geofenced country, show website
@@ -20,7 +20,7 @@ export default async (request: Request, context: Context) => {
 
     const path = splitArray[1] || '';
 
-    const geofencedUrl = Deno.env.REACT_APP_GEOFENCED_REDIRECT;
+    const geofencedUrl = Netlify.env.get('NETLIFY_EDGE_GEOFENCED_REDIRECT');
 
     if (geofencedUrl) {
         const url = new URL(geofencedUrl + path, request.url);
@@ -31,7 +31,7 @@ export default async (request: Request, context: Context) => {
         <!DOCTYPE html>
         <html lang="en">
           <body>
-            Sorry, Ambient is not currently available in ${context.geo.country.name}
+            Sorry. Ambient is not currently available in ${context.geo.country.name}
           </body>
         </html>
       `;

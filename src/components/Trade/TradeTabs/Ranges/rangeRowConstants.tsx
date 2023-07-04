@@ -1,76 +1,58 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import styles from './Ranges.module.css';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { NavLink } from 'react-router-dom';
 import { ZERO_ADDRESS } from '../../../../constants';
 import Medal from '../../../Global/Medal/Medal';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 interface Props {
     posHashTruncated: string;
-    // sideTypeStyle: string;
     usdValue: string;
     usernameStyle: string;
     userNameToDisplay: string;
     baseTokenLogo: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
-    // baseQuantityDisplayShort: string;
     quoteTokenLogo: string;
-    // quoteQuantityDisplayShort: string;
-    // elapsedTimeString: string;
-    // sideType: string;
     sideCharacter: string;
-    // ensName: string | null;
     posHash: string;
     elapsedTimeString: string;
-
     ownerId: string;
     ambientOrMin: string;
     ambientOrMax: string;
     apyClassname: string | undefined;
     apyString: string | undefined;
-    // negativeArrow: string;
-
-    // type: string;
-    // truncatedLowDisplayPrice: string | undefined;
-    // truncatedHighDisplayPrice: string | undefined;
-    // priceCharacter: string;
-    // truncatedLowDisplayPriceDenomByMoneyness: string | undefined;
     minRangeDenomByMoneyness: string | undefined;
     maxRangeDenomByMoneyness: string | undefined;
-    // truncatedDisplayPrice: string | undefined;
-
     isOwnerActiveAccount: boolean;
-    isOnPortfolioPage: boolean;
+    isAccountView: boolean;
     isAmbient: boolean;
     ipadView: boolean;
     isPositionInRange: boolean;
-    // valueArrows: boolean;
     isLeaderboard: boolean | undefined;
     showColumns: boolean;
     rank: number | undefined;
-
     handleCopyPosHash: () => void;
-    // handleOpenExplorer: () => void;
-    openDetailsModal: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
-
     position: PositionIF;
 }
+
 export default function rangeRowConstants(props: Props) {
     const {
         handleCopyPosHash,
         posHash,
         posHashTruncated,
         usdValue,
-        openDetailsModal,
-
         handleWalletLinkClick,
         handleWalletCopy,
         ownerId,
@@ -86,11 +68,9 @@ export default function rangeRowConstants(props: Props) {
         showColumns,
         rank,
         elapsedTimeString,
-
         maxRangeDenomByMoneyness,
-        isOnPortfolioPage,
+        isAccountView,
         isAmbient,
-
         minRangeDenomByMoneyness,
         ambientOrMin,
         ambientOrMax,
@@ -99,38 +79,21 @@ export default function rangeRowConstants(props: Props) {
         apyClassname,
         apyString,
         isPositionInRange,
+        handleRowMouseDown,
+        handleRowMouseOut,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
-    const logoSizes = phoneScreen ? '10px' : smallScreen ? '15px' : '20px';
-
-    interface CustomLIPropsIF {
-        children: React.ReactNode;
-        className?: string | undefined;
-        style?: React.CSSProperties | undefined;
-        noClick?: boolean;
-    }
-    function CustomLI(props: CustomLIPropsIF) {
-        const { children, className, style, noClick } = props;
-
-        return (
-            <li
-                onClick={noClick ? undefined : openDetailsModal}
-                className={className}
-                style={style}
-            >
-                {children}
-            </li>
-        );
-    }
-
     const IDWithTooltip = (
         <TextOnlyTooltip
             interactive
             title={
-                <p className={styles.id_tooltip_style}>
+                <p
+                    className={styles.id_tooltip_style}
+                    onClick={(event) => event.stopPropagation()}
+                >
                     {posHash.toString()}
                     <FiCopy
                         style={{ cursor: 'pointer' }}
@@ -143,9 +106,10 @@ export default function rangeRowConstants(props: Props) {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='id'
                 className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
             >
                 {posHashTruncated}
             </p>
@@ -153,14 +117,16 @@ export default function rangeRowConstants(props: Props) {
     );
 
     const valueWithTooltip = (
-        <CustomLI
+        <li
             data-label='value'
             className='base_color'
             style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
             {' '}
             {'$' + usdValue}
-        </CustomLI>
+        </li>
     );
 
     const actualWalletWithTooltip = (
@@ -168,8 +134,16 @@ export default function rangeRowConstants(props: Props) {
             interactive
             title={
                 <div className={styles.wallet_tooltip_div}>
-                    <p className={styles.wallet_tooltip_p}>
-                        {ownerId}
+                    <p
+                        className={styles.wallet_tooltip_p}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <span
+                            onClick={handleWalletLinkClick}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {ownerId}
+                        </span>
                         <FiCopy
                             style={{ cursor: 'pointer' }}
                             size={'12px'}
@@ -189,10 +163,11 @@ export default function rangeRowConstants(props: Props) {
             leaveDelay={0}
         >
             <p
-                onClick={openDetailsModal}
                 data-label='wallet'
-                className={usernameStyle}
-                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
+                className={`${usernameStyle} ${styles.mono_font}`}
+                style={{ textTransform: 'lowercase' }}
+                onMouseEnter={handleRowMouseDown}
+                onMouseLeave={handleRowMouseOut}
             >
                 {userNameToDisplay}
             </p>
@@ -201,12 +176,12 @@ export default function rangeRowConstants(props: Props) {
 
     const walletWithoutTooltip = (
         <p
-            // onClick={handleWalletClick}
-            onClick={openDetailsModal}
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
             tabIndex={0}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
             {userNameToDisplay}
         </p>
@@ -215,25 +190,22 @@ export default function rangeRowConstants(props: Props) {
     const walletWithTooltip = isOwnerActiveAccount
         ? walletWithoutTooltip
         : actualWalletWithTooltip;
-    const baseTokenLogoComponent =
-        baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width={logoSizes} />
-        ) : (
-            <NoTokenIcon
-                tokenInitial={position.baseSymbol.charAt(0)}
-                width={logoSizes}
-            />
-        );
 
-    const quoteTokenLogoComponent =
-        quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
-        ) : (
-            <NoTokenIcon
-                tokenInitial={position.quoteSymbol.charAt(0)}
-                width={logoSizes}
-            />
-        );
+    const baseTokenLogoComponent = (
+        <TokenIcon
+            src={baseTokenLogo}
+            alt={baseTokenSymbol}
+            size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
+        />
+    );
+
+    const quoteTokenLogoComponent = (
+        <TokenIcon
+            src={quoteTokenLogo}
+            alt={quoteTokenSymbol}
+            size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
+        />
+    );
 
     const pair =
         position.base !== ZERO_ADDRESS
@@ -245,22 +217,28 @@ export default function rangeRowConstants(props: Props) {
     // eslint-disable-next-line
     const tip = pair.join('\n');
 
-    const tradeLinkPath =
-        '/trade/range/chain=' +
-        position.chainId +
-        '&tokenA=' +
-        position.quote +
-        '&tokenB=' +
-        position.base;
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const tokenPair = (
-        <CustomLI className='base_color' noClick>
-            <NavLink to={tradeLinkPath}>
+        <li
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+            onClick={(event) => event.stopPropagation()}
+        >
+            <NavLink
+                to={linkGenPool.getFullURL({
+                    chain: position.chainId,
+                    tokenA: position.quote,
+                    tokenB: position.base,
+                })}
+            >
                 <div>
                     {baseTokenSymbol} / {quoteTokenSymbol}
                 </div>
             </NavLink>
-        </CustomLI>
+        </li>
     );
 
     const idOrNull =
@@ -270,74 +248,80 @@ export default function rangeRowConstants(props: Props) {
         isLeaderboard && !showColumns ? <Medal ranking={rank ?? 80} /> : null;
 
     const baseQtyDisplayWithTooltip = (
-        <CustomLI data-label={baseTokenSymbol} className='base_color'>
+        <li
+            data-label={baseTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div className={styles.base_display_div}>
                 {position.positionLiqBaseTruncated || '0'}
                 {baseTokenLogoComponent}
             </div>
-        </CustomLI>
+        </li>
     );
     const quoteQtyDisplayWithTooltip = (
-        <CustomLI data-label={quoteTokenSymbol} className='base_color'>
+        <li
+            data-label={quoteTokenSymbol}
+            className='base_color'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <div className={styles.base_display_div}>
                 {position.positionLiqQuoteTruncated || '0'}
                 {quoteTokenLogoComponent}
             </div>
-        </CustomLI>
+        </li>
     );
 
     const rangeTimeWithTooltip = (
-        // <TextOnlyTooltip
-        //     interactive
-        //     title={
-        //         ''
-        //         // <p className={styles.range_time_p}>
-        //         //     {moment(position.latestUpdateTime * 1000).format(
-        //         //         'MM/DD/YYYY HH:mm',
-        //         //     )}
-        //         // </p>
-        //     }
-        //     placement={'right'}
-        //     enterDelay={750}
-        //     leaveDelay={0}
-        // >
-        <CustomLI style={{ textTransform: 'lowercase' }}>
+        <li
+            style={{ textTransform: 'lowercase' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <p className='base_color'>{elapsedTimeString}</p>
-        </CustomLI>
+        </li>
     );
 
     const txIdColumnComponent = (
-        <li>
+        <li onMouseEnter={handleRowMouseDown} onMouseLeave={handleRowMouseOut}>
             {IDWithTooltip}
             {walletWithTooltip}
         </li>
     );
 
     const fullScreenMinDisplay = isAmbient ? (
-        <CustomLI
+        <li
             data-label='max price'
             className='base_color'
             style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
             <span>{'0.00'}</span>
-        </CustomLI>
+        </li>
     ) : (
-        <CustomLI
+        <li
             data-label='min price'
             className='base_color'
             style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
             <span>{sideCharacter}</span>
             <span>
-                {isOnPortfolioPage && !isAmbient
+                {isAccountView && !isAmbient
                     ? minRangeDenomByMoneyness || '…'
                     : ambientOrMin || '…'}
             </span>
-        </CustomLI>
+        </li>
     );
 
     const fullScreenMaxDisplay = isAmbient ? (
-        <CustomLI
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
             data-label='max price'
             className='base_color'
             style={{ textAlign: 'right' }}
@@ -349,32 +333,36 @@ export default function rangeRowConstants(props: Props) {
             >
                 {'∞'}
             </span>
-        </CustomLI>
+        </li>
     ) : (
-        <CustomLI
+        <li
             data-label='max price'
             className='base_color'
             style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
             <span>{sideCharacter}</span>
             <span>
-                {isOnPortfolioPage
+                {isAccountView
                     ? maxRangeDenomByMoneyness || '…'
                     : ambientOrMax || '…'}
             </span>
-        </CustomLI>
+        </li>
     );
 
     const columnNonAmbientPrice = showColumns && !ipadView && !isAmbient && (
-        <CustomLI
+        <li
             data-label='side-type'
             className='base_color'
             style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
             <p>
                 <span>{sideCharacter}</span>
                 <span>
-                    {isOnPortfolioPage && !isAmbient
+                    {isAccountView && !isAmbient
                         ? minRangeDenomByMoneyness || '…'
                         : ambientOrMin || '…'}
                 </span>
@@ -382,18 +370,20 @@ export default function rangeRowConstants(props: Props) {
             <p>
                 <span>{sideCharacter}</span>
                 <span>
-                    {isOnPortfolioPage
+                    {isAccountView
                         ? maxRangeDenomByMoneyness || '…'
                         : ambientOrMax || '…'}
                 </span>
             </p>
-        </CustomLI>
+        </li>
     );
     const columnAmbientPrice = showColumns && !ipadView && isAmbient && (
-        <CustomLI
+        <li
             data-label='side-type'
             className='base_color'
             style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
         >
             <p>
                 <span
@@ -403,11 +393,13 @@ export default function rangeRowConstants(props: Props) {
                     {'ambient'}
                 </span>
             </p>
-        </CustomLI>
+        </li>
     );
 
     const tokenValues = (
-        <CustomLI
+        <li
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
             data-label={baseTokenSymbol + quoteTokenSymbol}
             className='base_color'
             style={{ textAlign: 'right' }}
@@ -431,31 +423,40 @@ export default function rangeRowConstants(props: Props) {
                 {position.positionLiqQuoteTruncated || '0'}
                 {quoteTokenLogoComponent}
             </div>
-        </CustomLI>
+        </li>
     );
 
     const apyDisplay = (
-        <CustomLI data-label='apy' style={{ textAlign: 'right' }}>
+        <li
+            data-label='apy'
+            style={{ textAlign: 'right' }}
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             {' '}
             <p className={apyClassname}>{apyString}</p>
-        </CustomLI>
+        </li>
     );
 
     const rangeDisplay = (
-        <CustomLI data-label='status' className='gradient_text'>
+        <li
+            data-label='status'
+            className='gradient_text'
+            onMouseEnter={handleRowMouseDown}
+            onMouseLeave={handleRowMouseOut}
+        >
             <RangeStatus
                 isInRange={isPositionInRange}
                 isAmbient={isAmbient}
-                isEmpty={position.totalValueUSD === 0}
+                isEmpty={position.positionLiq === 0}
                 justSymbol
             />
-        </CustomLI>
+        </li>
     );
 
     return {
         valueWithTooltip,
         walletWithTooltip,
-
         tokenPair,
         idOrNull,
         rankingOrNull,

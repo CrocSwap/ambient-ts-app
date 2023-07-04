@@ -20,7 +20,7 @@
     height: 26px;
 
     /* Dark/Tertiary */
-    background: #242f3f;
+    background: var(--dark3);
     border-radius: 4px;
 
     /* Inside auto layout */
@@ -45,7 +45,7 @@
     letter-spacing: -0.02em;
 
     /* text/grey light */
-    color: #7371fc;
+    color: var(--accent1);
 
     /* Inside auto layout */
     flex: none;
@@ -83,15 +83,16 @@
     user-select: none;
     margin: -5px auto;
     position: relative;
-    padding: 3px;
+    background: var(--dark3);
+    padding: 1px;
+    border-radius: 4px;
 }
 
 .dropdown_btn {
-    padding: 4px 16px;
-    background: #171d27;
+    padding: 2px 4px;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 300;
-    color: #ebebff;
+    color: var(--text1);
     display: flex;
     align-items: center;
     cursor: pointer;
@@ -103,26 +104,21 @@
     position: absolute;
     top: 110%;
     padding: 15px;
-    background: #fff;
+    background: white;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 500;
     color: rgba(235, 235, 255, 0.4);
     width: 95%;
+    text-align: center;
 }
 
 .star_icon {
-    height: 20px;
-    width: 20px;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
     cursor: pointer;
-    opacity: 0.5;
 }
 
-
-
 .dropdown_btn_isActive {
-    padding: 4px 16px;
-    background: #171d27;
+    padding: 4px 4px;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 300;
     display: flex;
@@ -130,6 +126,7 @@
     cursor: pointer;
     justify-content: space-between;
     color: rgba(235, 235, 255, 0.4);
+    border-radius: 4px;
 }
 
 .star_icon_selected_room {
@@ -154,7 +151,7 @@
 }
 
 .dropdown_item:hover {
-    background: #242f3f;
+    background: var(--dark3);
 }
 
 .dropdown_item_no_fav_pools {

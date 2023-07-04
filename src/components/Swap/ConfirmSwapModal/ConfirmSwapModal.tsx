@@ -1,6 +1,12 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { CrocImpact, CrocPoolView } from '@crocswap-libs/sdk';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 
 // START: Import JSX Components
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
@@ -9,28 +15,27 @@ import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied'
 import TransactionException from '../../Global/TransactionException/TransactionException';
 import Button from '../../Global/Button/Button';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 // START: Import Other Local Files
 import styles from './ConfirmSwapModal.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
-import { allSkipConfirmMethodsIF } from '../../../App/hooks/useSkipConfirm';
 import { AiOutlineWarning } from 'react-icons/ai';
-import DividerDark from '../../Global/DividerDark/DividerDark';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     initiateSwapMethod: () => void;
-    poolPriceDisplay: number | undefined;
     isDenomBase: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
-    priceImpact: CrocImpact | undefined;
-    onClose: () => void;
     newSwapTransactionHash: string;
     tokenPair: TokenPairIF;
     txErrorCode: string;
-    txErrorMessage: string;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
@@ -39,9 +44,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
-    bypassConfirm: allSkipConfirmMethodsIF;
-    lastBlockNumber: number;
-    pool: CrocPoolView | undefined;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -61,10 +63,16 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
-        bypassConfirm,
-        lastBlockNumber,
-        pool,
     } = props;
+
+    const { pool } = useContext(PoolContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const {
+        bypassConfirmLimit,
+        bypassConfirmRange,
+        bypassConfirmRepo,
+        bypassConfirmSwap,
+    } = useContext(UserPreferenceContext);
 
     const transactionApproved = newSwapTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
@@ -165,74 +173,57 @@ export default function ConfirmSwapModal(props: propsIF) {
             : effectivePrice
         : undefined;
 
-    const displayEffectivePriceString =
-        !effectivePriceWithDenom ||
-        effectivePriceWithDenom === Infinity ||
-        effectivePriceWithDenom === 0
-            ? '…'
-            : effectivePriceWithDenom < 2
-            ? effectivePriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : effectivePriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{localeBuyString}</h2>
 
             <div className={styles.logo_display}>
-                {buyTokenData.logoURI ? (
-                    <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={buyTokenData.symbol.charAt(0)}
-                        width='30px'
-                    />
-                )}
-
+                <TokenIcon
+                    src={uriToHttp(buyTokenData.logoURI)}
+                    alt={buyTokenData.symbol}
+                    size='2xl'
+                />
                 <h2>{buyTokenData.symbol}</h2>
             </div>
         </div>
     );
 
-    const priceIncreaseComponentOrNull = isWaitingForPriceChangeAckt ? (
+    const priceIncreaseComponent = (
         <div className={` ${styles.warning_box}`}>
-            <AiOutlineWarning color='var(--negative)' />
-            <p>
-                WARNING: THE PRICE OF {buyTokenData.symbol} HAS INCREASED BY{' '}
-                {buyTokenPriceChangeString + '%'}
-            </p>
+            <ul>
+                <div>
+                    <AiOutlineWarning
+                        color='var(--other-red)'
+                        size={20}
+                        style={{ marginRight: '4px' }}
+                    />
+                    Price Updated
+                </div>
+                <p>
+                    The price of {buyTokenData.symbol} has increased by{' '}
+                    {buyTokenPriceChangeString + '%'}
+                </p>
+            </ul>
             <button
                 onClick={() => {
                     setBaselineBlockNumber(lastBlockNumber);
                     setIsWaitingForPriceChangeAckt(false);
                 }}
             >
-                Acknowledge
+                Accept
             </button>
         </div>
-    ) : null;
+    );
 
     const sellCurrencyRow = (
         <div className={styles.currency_row_container}>
             <h2>{localeSellString}</h2>
             <div className={styles.logo_display}>
-                {sellTokenData.logoURI ? (
-                    <img
-                        src={sellTokenData.logoURI}
-                        alt={sellTokenData.symbol}
-                    />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={sellTokenData.symbol.charAt(0)}
-                        width='30px'
-                    />
-                )}
-
+                <TokenIcon
+                    src={uriToHttp(sellTokenData.logoURI)}
+                    alt={sellTokenData.symbol}
+                    size='2xl'
+                />
                 <h2>{sellTokenData.symbol}</h2>
             </div>
         </div>
@@ -267,16 +258,18 @@ export default function ConfirmSwapModal(props: propsIF) {
                         style={{ cursor: 'pointer' }}
                     >
                         {isDenomBaseLocal
-                            ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                            : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                            ? `${getFormattedNumber({
+                                  value: effectivePriceWithDenom,
+                              })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${getFormattedNumber({
+                                  value: effectivePriceWithDenom,
+                              })} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
                     </p>
                 </div>
                 <div className={styles.row}>
                     <p>Slippage Tolerance</p>
                     <p>{slippageTolerancePercentage}%</p>
                 </div>
-                {!!priceIncreaseComponentOrNull && <DividerDark />}
-                {priceIncreaseComponentOrNull}
             </div>
             {!isWaitingForPriceChangeAckt && (
                 <ConfirmationModalControl
@@ -307,7 +300,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
         />
     );
@@ -336,26 +329,29 @@ export default function ConfirmSwapModal(props: propsIF) {
                 {showConfirmation ? fullTxDetails2 : confirmationDisplay}
             </section>
             <footer className={styles.modal_footer}>
-                {showConfirmation && !isWaitingForPriceChangeAckt && (
-                    <Button
-                        title='Send Swap'
-                        action={() => {
-                            // if this modal is launched we can infer user wants confirmation
-                            // if user enables bypass, update all settings in parallel
-                            // otherwise do not not make any change to persisted preferences
-                            if (tempBypassConfirm) {
-                                bypassConfirm.swap.enable();
-                                bypassConfirm.limit.enable();
-                                bypassConfirm.range.enable();
-                                bypassConfirm.repo.enable();
-                            }
-                            initiateSwapMethod();
-                            setShowConfirmation(false);
-                        }}
-                        flat
-                        disabled={isWaitingForPriceChangeAckt}
-                    />
-                )}
+                {showConfirmation &&
+                    (!isWaitingForPriceChangeAckt ? (
+                        <Button
+                            title='Submit Swap'
+                            action={() => {
+                                // if this modal is launched we can infer user wants confirmation
+                                // if user enables bypass, update all settings in parallel
+                                // otherwise do not not make any change to persisted preferences
+                                if (tempBypassConfirm) {
+                                    bypassConfirmSwap.enable();
+                                    bypassConfirmLimit.enable();
+                                    bypassConfirmRange.enable();
+                                    bypassConfirmRepo.enable();
+                                }
+                                initiateSwapMethod();
+                                setShowConfirmation(false);
+                            }}
+                            flat
+                            disabled={isWaitingForPriceChangeAckt}
+                        />
+                    ) : (
+                        priceIncreaseComponent
+                    ))}
             </footer>
         </div>
     );

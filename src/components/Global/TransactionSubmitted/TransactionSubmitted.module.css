@@ -9,8 +9,8 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }
-.noAnimation_submitted h2{
-  color: var(--text-grey-white)
+.noAnimation_submitted h2 {
+    color: var(--text1);
 }
 .transaction_submitted p a {
     cursor: pointer;
@@ -20,8 +20,7 @@
 }
 .completed_animation {
     display: flex;
-    /* min-width: 400px;
-    max-width: 400px; */
+    min-height: 200px;
 
     justify-content: center;
     align-items: center;
@@ -54,10 +53,10 @@
     font-size: 16px;
 
     line-height: 24px;
-    background: var(--text-highlight-dark);
+    background: var(--accent1);
 
     text-decoration: none;
-    color: var(--text-grey-white);
+    color: var(--text1);
     border-radius: 4px;
     width: 100%;
     display: flex;
@@ -68,7 +67,8 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.bypass_buttons a, .bypass_buttons button{
+.bypass_buttons a,
+.bypass_buttons button {
     padding: 3px 4px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -76,6 +76,6 @@
 
 .view_etherscan:hover,
 .view_etherscan:focus-visible {
-    color: var(--text-grey-white);
-    box-shadow: 4px 4px var(--text-highlight);
+    color: var(--text1);
+    box-shadow: 4px 4px var(--accent5);
 }

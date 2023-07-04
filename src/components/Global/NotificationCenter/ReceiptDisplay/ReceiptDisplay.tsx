@@ -9,18 +9,24 @@ import { VscClose } from 'react-icons/vsc';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { removeReceipt } from '../../../../utils/state/receiptDataSlice';
 import { getChainExplorer } from '../../../../utils/data/chains';
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
     txBlockNumber?: number;
-    lastBlockNumber: number;
-    chainId: number | string;
     txType: string | undefined;
 }
 
 export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
-    const { status, hash, txBlockNumber, lastBlockNumber, txType } = props;
+    const { status, hash, txBlockNumber, txType } = props;
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+
     const pending = (
         <div className={styles.pending}>
             <AiOutlineLoading3Quarters />
@@ -48,8 +54,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
         } else return '';
     }
 
-    const blockExploer = getChainExplorer(props.chainId);
-    const EtherscanTx = `${blockExploer}/tx/${hash}`;
+    const blockExplorer = getChainExplorer(chainId);
+    const EtherscanTx = `${blockExplorer}tx/${hash}`;
 
     const dispatch = useAppDispatch();
 
@@ -118,9 +124,9 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                     </div>
                 </div>
                 <div className={styles.row}>
-                    <p>
-                        {`${handleTxTextDisplay(status)}  ${elapsedTimeString}`}
-                    </p>
+                    <p>{`${handleTxTextDisplay(
+                        status,
+                    )}  ${elapsedTimeString}`}</p>
                     <a
                         href={EtherscanTx}
                         className={styles.action}

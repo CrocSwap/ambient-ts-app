@@ -1,0 +1,4 @@
+.button_container_disabled button {
+    color: var(--text3);
+}
+

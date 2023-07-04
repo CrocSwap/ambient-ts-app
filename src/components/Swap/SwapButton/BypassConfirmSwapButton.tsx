@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
-import { CrocImpact } from '@crocswap-libs/sdk';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import JSX Components
@@ -20,25 +19,15 @@ import styles from './BypassConfirmSwapButton.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     initiateSwapMethod: () => void;
-    poolPriceDisplay: number | undefined;
-    isDenomBase: boolean;
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    priceImpact: CrocImpact | undefined;
-    onClose: () => void;
     newSwapTransactionHash: string;
     tokenPair: TokenPairIF;
     txErrorCode: string;
-    txErrorMessage: string;
-    showConfirmation: boolean;
     setShowBypassConfirm: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
-    slippageTolerancePercentage: number;
-    effectivePrice: number;
-    isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
     setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
@@ -93,7 +82,6 @@ export default function BypassConfirmSwapButton(props: propsIF) {
 
     const transactionException = (
         <TransactionException
-            noAnimation
             resetConfirmation={handleReset}
             initiateTx={initiateSwapMethod}
         />
@@ -116,7 +104,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
             noAnimation
         />
@@ -136,7 +124,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
         ? 'var(--negative)'
         : transactionApproved
         ? 'var(--positive)'
-        : 'var(--text-highlight-dark)';
+        : 'var(--accent1)';
 
     const animationDisplay = isTransactionException ? (
         <CircleLoaderFailed size='30px' />
@@ -166,8 +154,8 @@ export default function BypassConfirmSwapButton(props: propsIF) {
                     onClick={() => setShowExtraInfo(!showExtraInfo)}
                 >
                     <div style={{ color: buttonColor }}>
-                        {animationDisplay}
-                        {buttonText}
+                        <div style={{ width: '35px' }}>{animationDisplay}</div>
+                        <div>{buttonText}</div>
                     </div>
                     {showExtraInfo ? (
                         <RiArrowUpSLine size={20} />

@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CandleData } from '../../App/functions/fetchCandleSeries';
+import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { IS_LOCAL_ENV } from '../../constants';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
@@ -6,23 +8,33 @@ export interface graphData {
     lastBlock: number;
     lastBlockPoll?: NodeJS.Timer;
     positionsByUser: PositionsByUser;
+    userPositionsByPool: PositionsByPool;
     positionsByPool: PositionsByPool;
     leaderboardByPool: PositionsByPool;
     changesByUser: ChangesByUser;
     changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
-    liquidityData: LiquidityData;
-    poolVolumeSeries: PoolVolumeSeries;
-    poolTvlSeries: PoolTvlSeries;
+    liquidityData?: LiquidityDataIF;
+    liquidityRequest?: PoolRequestParams;
     limitOrdersByUser: LimitOrdersByUser;
+    userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
     dataLoadingStatus: DataLoadingStatus;
+}
+
+export interface PoolRequestParams {
+    baseAddress: string;
+    quoteAddress: string;
+    poolIndex: number;
+    chainId: string;
 }
 
 export interface DataLoadingStatus {
     isConnectedUserTxDataLoading: boolean;
     isConnectedUserOrderDataLoading: boolean;
+    isConnectedUserPoolOrderDataLoading: boolean;
     isConnectedUserRangeDataLoading: boolean;
+    isConnectedUserPoolRangeDataLoading: boolean;
     isLookupUserTxDataLoading: boolean;
     isLookupUserOrderDataLoading: boolean;
     isLookupUserRangeDataLoading: boolean;
@@ -41,111 +53,6 @@ export interface LimitOrdersByPool {
     limitOrders: LimitOrderIF[];
 }
 
-export interface PoolVolumeSeries {
-    dataReceived: boolean;
-    pools: Array<VolumeSeriesByPool>;
-}
-
-export interface PoolTvlSeries {
-    dataReceived: boolean;
-    pools: Array<TvlSeriesByPool>;
-}
-
-export interface TvlSeriesByPool {
-    dataReceived: boolean;
-    pool: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-    };
-    tvlData: TvlSeriesByPoolTimeAndResolution;
-}
-
-export interface VolumeSeriesByPool {
-    dataReceived: boolean;
-    pool: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-    };
-    volumeData: VolumeSeriesByPoolTimeAndResolution;
-}
-
-export interface TvlSeriesByPoolTimeAndResolution {
-    network: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    timeStart: number;
-    timeEnd: number;
-    resolution: number;
-    seriesData: Array<TvlByTimeData>;
-}
-
-export interface VolumeSeriesByPoolTimeAndResolution {
-    network: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    timeStart: number;
-    timeEnd: number;
-    resolution: number;
-    seriesData: Array<VolumeByTimeData>;
-}
-
-export interface TvlByTimeData {
-    time: number;
-    tvl: number;
-    method: string;
-}
-
-export interface VolumeByTimeData {
-    time: number;
-    volumeDay: number;
-    method: string;
-}
-
-// export interface LiquidityForAllPools {
-//     pools: Array<LiquidityByPool>;
-// }
-
-export interface LiquidityData {
-    time: number;
-    currentTick: number;
-    ranges: Array<Range>;
-}
-
-// export interface LiquidityByPool {
-//     pool: { baseAddress: string; quoteAddress: string; poolIdx: number; chainId: string };
-//     liquidityData: liquidityData;
-// }
-
-export interface Range {
-    lowerBound: number | string;
-    lowerBoundPrice: number;
-    lowerBoundInvPrice: number | string;
-    lowerBoundPriceDecimalCorrected: number;
-    lowerBoundInvPriceDecimalCorrected: number | string;
-    upperBound: number;
-    upperBoundPrice: number;
-    upperBoundInvPrice: number;
-    upperBoundPriceDecimalCorrected: number;
-    upperBoundInvPriceDecimalCorrected: number;
-    activeLiq: string;
-    activeAmbientLiq: string;
-    activeConcLiq: string;
-    cumAskLiq: string;
-    cumAmbientAskLiq: string;
-    cumConcAskLiq: string;
-    cumBidLiq: string;
-    cumAmbientBidLiq: string;
-    cumConcBidLiq: string;
-    deltaAverageUSD: number;
-    cumAverageUSD: number;
-}
-
 export interface CandlesForAllPools {
     pools: Array<Pool>;
 }
@@ -155,7 +62,6 @@ export interface Pool {
         baseAddress: string;
         quoteAddress: string;
         poolIdx: number;
-        network: string;
     };
     candlesByPoolAndDuration: Array<CandlesByPoolAndDuration>;
 }
@@ -165,61 +71,10 @@ export interface CandlesByPoolAndDuration {
         baseAddress: string;
         quoteAddress: string;
         poolIdx: number;
-        network: string;
+        chainId: string;
     };
     duration: number;
     candles: Array<CandleData>;
-}
-
-export interface TvlData {
-    interpBadness: number;
-    interpDistHigher: number;
-    interpDistLower: number;
-    method: string;
-    time: number;
-    tvl: number;
-}
-
-export interface CandleData {
-    tvlData: TvlData;
-    volumeUSD: number;
-    averageLiquidityFee: number;
-    time: number;
-    poolHash: string;
-    firstBlock: number;
-    lastBlock: number;
-    minPriceDecimalCorrected: number;
-    maxPriceDecimalCorrected: number;
-    priceOpenDecimalCorrected: number;
-    priceCloseDecimalCorrected: number;
-    priceCloseExclMEVDecimalCorrected: number;
-    invPriceCloseExclMEVDecimalCorrected: number;
-    invMinPriceDecimalCorrected: number;
-    invMaxPriceDecimalCorrected: number;
-    invPriceOpenDecimalCorrected: number;
-    invPriceCloseDecimalCorrected: number;
-    minPriceExclMEVDecimalCorrected: number;
-    invMinPriceExclMEVDecimalCorrected: number;
-    maxPriceExclMEVDecimalCorrected: number;
-    invMaxPriceExclMEVDecimalCorrected: number;
-    priceOpenExclMEVDecimalCorrected: number;
-    invPriceOpenExclMEVDecimalCorrected: number;
-    numSwaps: number;
-    netBaseFlow: string;
-    netQuoteFlow: string;
-    totalBaseFlow: string;
-    totalQuoteFlow: string;
-    firstSwap: string;
-    lastSwap: string;
-    numSwapsFromCroc: number;
-    numSwapsFromUniV3: number;
-    network: string;
-    chainId: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    period: number;
-    allSwaps: Array<string>;
 }
 
 export interface PositionsByUser {
@@ -252,20 +107,23 @@ export interface ChangesByPool {
 const initialState: graphData = {
     lastBlock: 0,
     positionsByUser: { dataReceived: false, positions: [] },
+    userPositionsByPool: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
     leaderboardByPool: { dataReceived: false, positions: [] },
     changesByUser: { dataReceived: false, changes: [] },
     changesByPool: { dataReceived: false, changes: [] },
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
+    userLimitOrdersByPool: { dataReceived: false, limitOrders: [] },
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     candlesForAllPools: { pools: [] },
-    liquidityData: { time: 0, currentTick: 0, ranges: [] },
-    poolVolumeSeries: { dataReceived: false, pools: [] },
-    poolTvlSeries: { dataReceived: false, pools: [] },
+    liquidityData: undefined,
+    liquidityRequest: undefined,
     dataLoadingStatus: {
         isConnectedUserTxDataLoading: true,
         isConnectedUserOrderDataLoading: true,
+        isConnectedUserPoolOrderDataLoading: true,
         isConnectedUserRangeDataLoading: true,
+        isConnectedUserPoolRangeDataLoading: true,
         isLookupUserTxDataLoading: true,
         isLookupUserOrderDataLoading: true,
         isLookupUserRangeDataLoading: true,
@@ -275,6 +133,11 @@ const initialState: graphData = {
         isCandleDataLoading: true,
     },
 };
+
+function normalizeAddr(addr: string): string {
+    const caseAddr = addr.toLowerCase();
+    return caseAddr.startsWith('0x') ? caseAddr : '0x' + caseAddr;
+}
 
 export const graphDataSlice = createSlice({
     name: 'graphData',
@@ -326,6 +189,12 @@ export const graphDataSlice = createSlice({
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
+        setUserPositionsByPool: (
+            state,
+            action: PayloadAction<PositionsByPool>,
+        ) => {
+            state.userPositionsByPool = action.payload;
+        },
         setLeaderboardByPool: (
             state,
             action: PayloadAction<PositionsByPool>,
@@ -337,6 +206,12 @@ export const graphDataSlice = createSlice({
             action: PayloadAction<LimitOrdersByUser>,
         ) => {
             state.limitOrdersByUser = action.payload;
+        },
+        setUserLimitOrdersByPool: (
+            state,
+            action: PayloadAction<LimitOrdersByPool>,
+        ) => {
+            state.userLimitOrdersByPool = action.payload;
         },
         setLimitOrdersByPool: (
             state,
@@ -392,15 +267,6 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        setPoolVolumeSeries: (
-            state,
-            action: PayloadAction<PoolVolumeSeries>,
-        ) => {
-            state.poolVolumeSeries = action.payload;
-        },
-        setPoolTvlSeries: (state, action: PayloadAction<PoolTvlSeries>) => {
-            state.poolTvlSeries = action.payload;
-        },
         setChangesByUser: (state, action: PayloadAction<ChangesByUser>) => {
             state.changesByUser = action.payload;
         },
@@ -408,15 +274,13 @@ export const graphDataSlice = createSlice({
             state,
             action: PayloadAction<Array<TransactionIF>>,
         ) => {
-            // const payload = action.payload;
-            // console.log({ payload });
             const newChangesArray: Array<TransactionIF> = [];
 
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                const txToFind = updatedTx.tx.toLowerCase();
+                const txToFind = updatedTx.txHash.toLowerCase();
                 const indexOfTxInState = state.changesByUser.changes.findIndex(
-                    (tx) => tx.tx.toLowerCase() === txToFind,
+                    (tx) => tx.txHash.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
                     newChangesArray.push(action.payload[index]);
@@ -440,12 +304,11 @@ export const graphDataSlice = createSlice({
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 IS_LOCAL_ENV && console.debug({ updatedTx });
-                const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
+                const idToFind = updatedTx.limitOrderId.toLowerCase();
                 const indexOfOrderInState =
                     state.limitOrdersByUser.limitOrders.findIndex(
                         (order) =>
-                            order.limitOrderIdentifier.toLowerCase() ===
-                            idToFind,
+                            order.limitOrderId.toLowerCase() === idToFind,
                     );
                 if (indexOfOrderInState === -1) {
                     state.limitOrdersByUser.limitOrders = [
@@ -463,12 +326,11 @@ export const graphDataSlice = createSlice({
         ) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                const idToFind = updatedTx.limitOrderIdentifier?.toLowerCase();
+                const idToFind = updatedTx.limitOrderId?.toLowerCase();
                 const indexOfOrderInState =
                     state.limitOrdersByPool.limitOrders.findIndex(
                         (order) =>
-                            order.limitOrderIdentifier?.toLowerCase() ===
-                            idToFind,
+                            order.limitOrderId?.toLowerCase() === idToFind,
                     );
                 if (indexOfOrderInState === -1) {
                     state.limitOrdersByPool.limitOrders = [
@@ -489,9 +351,9 @@ export const graphDataSlice = createSlice({
         ) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                const txToFind = updatedTx.tx.toLowerCase();
+                const txToFind = updatedTx.txHash.toLowerCase();
                 const indexOfTxInState = state.changesByPool.changes.findIndex(
-                    (tx) => tx.tx.toLowerCase() === txToFind,
+                    (tx) => tx.txHash.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
                     state.changesByPool.changes = [
@@ -503,11 +365,43 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        setLiquidity: (state, action: PayloadAction<LiquidityData>) => {
-            // console.log('pool found in RTK for new liquidity data');
 
-            state.liquidityData = action.payload;
+        setLiquidity: (state, action: PayloadAction<LiquidityDataIF>) => {
+            // Sanitize the raw result from the backend
+            const curve = action.payload.curveState;
+            const base = normalizeAddr(curve.base);
+            const quote = normalizeAddr(curve.quote);
+            const chainId = curve.chainId;
+
+            // Verify that the result matches the current request in case multiple are in-flight
+            if (
+                state.liquidityRequest?.baseAddress.toLowerCase() === base &&
+                state.liquidityRequest?.quoteAddress.toLowerCase() === quote &&
+                state.liquidityRequest?.poolIndex === curve.poolIdx &&
+                state.liquidityRequest?.chainId === chainId
+            ) {
+                state.liquidityData = action.payload;
+                state.liquidityData.curveState.base = base;
+                state.liquidityData.curveState.quote = quote;
+                state.liquidityData.curveState.chainId = chainId;
+            } else {
+                console.warn(
+                    'Discarding mismatched liquidity curve request',
+                    base,
+                    quote,
+                    chainId,
+                );
+            }
         },
+
+        setLiquidityPending: (
+            state,
+            action: PayloadAction<PoolRequestParams>,
+        ) => {
+            state.liquidityData = undefined;
+            state.liquidityRequest = action.payload;
+        },
+
         setCandles: (
             state,
             action: PayloadAction<CandlesByPoolAndDuration>,
@@ -519,8 +413,6 @@ export const graphDataSlice = createSlice({
 
             // if candles for pool not yet saved in RTK, add to RTK
             if (indexOfPool === -1) {
-                // console.log('pool not found in RTK for new candle data');
-
                 state.candlesForAllPools.pools =
                     state.candlesForAllPools.pools.concat({
                         pool: action.payload.pool,
@@ -534,7 +426,6 @@ export const graphDataSlice = createSlice({
                     });
                 // else, check if duration exists
             } else {
-                // console.log('pool found in RTK for new candle data');
                 const durationToFind = action.payload.duration;
                 const indexOfDuration = state.candlesForAllPools.pools[
                     indexOfPool
@@ -557,7 +448,6 @@ export const graphDataSlice = createSlice({
                         },
                     ]);
                 } else {
-                    // console.log('duration found');
                     state.candlesForAllPools.pools[
                         indexOfPool
                     ].candlesByPoolAndDuration[indexOfDuration] = {
@@ -566,7 +456,6 @@ export const graphDataSlice = createSlice({
                         candles: action.payload.candles,
                     };
                 }
-                // state.candlesForAllPools.pools[indexOfPool] = action.payload;
             }
         },
         addCandles: (
@@ -598,7 +487,6 @@ export const graphDataSlice = createSlice({
                     });
                 // else, replace candles for pool if different
             } else {
-                // console.log('pool found in RTK for new candle subscription data');
                 const durationToFind = action.payload.duration;
                 const indexOfDuration = state.candlesForAllPools.pools[
                     indexOfPool
@@ -607,7 +495,6 @@ export const graphDataSlice = createSlice({
                     .findIndex((duration) => duration === durationToFind);
 
                 if (indexOfDuration === -1) {
-                    // console.log('duration not found');
                     state.candlesForAllPools.pools[
                         indexOfPool
                     ].candlesByPoolAndDuration = state.candlesForAllPools.pools[
@@ -635,7 +522,6 @@ export const graphDataSlice = createSlice({
 
                     // if new candle data not already in RTK, add
                     if (indexOfDuplicate === -1) {
-                        // console.log('no duplicate found, adding');
                         state.candlesForAllPools.pools[
                             indexOfPool
                         ].candlesByPoolAndDuration[indexOfDuration].candles =
@@ -664,8 +550,16 @@ export const graphDataSlice = createSlice({
                     state.dataLoadingStatus.isConnectedUserOrderDataLoading =
                         action.payload.loadingStatus;
                     break;
+                case 'connectedUserPoolOrderData':
+                    state.dataLoadingStatus.isConnectedUserPoolOrderDataLoading =
+                        action.payload.loadingStatus;
+                    break;
                 case 'connectedUserRangeData':
                     state.dataLoadingStatus.isConnectedUserRangeDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'connectedUserPoolRangeData':
+                    state.dataLoadingStatus.isConnectedUserPoolRangeDataLoading =
                         action.payload.loadingStatus;
                     break;
                 case 'lookupUserTxData':
@@ -700,17 +594,15 @@ export const graphDataSlice = createSlice({
                     break;
             }
         },
+        resetPoolDataLoadingStatus: (state) => {
+            state.dataLoadingStatus.isPoolTxDataLoading = true;
+            state.dataLoadingStatus.isPoolOrderDataLoading = true;
+            state.dataLoadingStatus.isPoolRangeDataLoading = true;
+        },
         resetConnectedUserDataLoadingStatus: (state) => {
             state.dataLoadingStatus.isConnectedUserTxDataLoading = true;
             state.dataLoadingStatus.isConnectedUserOrderDataLoading = true;
             state.dataLoadingStatus.isConnectedUserRangeDataLoading = true;
-            // state.dataLoadingStatus.isLookupUserTxDataLoading = true;
-            // state.dataLoadingStatus.isLookupUserOrderDataLoading = true;
-            // state.dataLoadingStatus.isLookupUserRangeDataLoading = true;
-            // state.dataLoadingStatus.isPoolTxDataLoading = true;
-            // state.dataLoadingStatus.isPoolOrderDataLoading = true;
-            // state.dataLoadingStatus.isPoolRangeDataLoading = true;
-            // state.dataLoadingStatus.isCandleDataLoading = true;
         },
         resetLookupUserDataLoadingStatus: (state) => {
             state.dataLoadingStatus.isLookupUserTxDataLoading = true;
@@ -731,16 +623,17 @@ export const {
     setLastBlockPoll,
     setPositionsByUser,
     addPositionsByUser,
+    setUserPositionsByPool,
     setPositionsByPool,
     setLeaderboardByPool,
     updateLeaderboard,
     addPositionsByPool,
-    setPoolVolumeSeries,
-    setPoolTvlSeries,
     setLiquidity,
+    setLiquidityPending,
     setCandles,
     addCandles,
     setLimitOrdersByUser,
+    setUserLimitOrdersByPool,
     setLimitOrdersByPool,
     setChangesByUser,
     addChangesByUser,
@@ -750,6 +643,7 @@ export const {
     setChangesByPool,
     setDataLoadingStatus,
     resetUserGraphData,
+    resetPoolDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
     resetLookupUserDataLoadingStatus,
 } = graphDataSlice.actions;

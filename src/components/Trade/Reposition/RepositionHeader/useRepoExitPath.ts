@@ -1,8 +1,15 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+} from '../../../../utils/hooks/useLinkGen';
 
 export const useRepoExitPath = (): string => {
     const { params } = useParams();
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     // generate a nav path for clicking the exit button
     // regenerate value every time the URL params change (virtually never)
@@ -23,21 +30,18 @@ export const useRepoExitPath = (): string => {
             .filter((par) => par.length === 2);
         // fn to look up the value of any param
         // return empty string if param is not found
-        const findParam = (name: string): string => {
+        const findParam = (name: 'chain' | 'tokenA' | 'tokenB'): string => {
             // find param tuple with name provided as an arg
             const paramTuple = paramSets.find((param) => param[0] === name);
             // return value from tuple or empty string in tuple is not found
             return paramTuple ? paramTuple[1] : '';
         };
         // generate and return nav path
-        return (
-            '/trade/range/chain=' +
-            findParam('chain') +
-            '&tokenA=' +
-            findParam('tokenA') +
-            '&tokenB=' +
-            findParam('tokenB')
-        );
+        return linkGenPool.getFullURL({
+            chain: findParam('chain'),
+            tokenA: findParam('tokenA'),
+            tokenB: findParam('tokenB'),
+        });
     }, [params]);
 
     // return memoized URL pathway

@@ -1,6 +1,7 @@
 .trade_tab_container {
     position: relative;
     height: 100%;
+    padding: 8px;
 }
 
 .show_tx_message {
@@ -11,10 +12,9 @@
     align-items: center;
     gap: 4px;
     padding: 4px 0;
-    margin-left: -5px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .option_button {
@@ -25,7 +25,7 @@
     display: flex;
     /* justify-content: center; */
     align-items: center;
-    /* border: 1px solid #242f3f; */
+    /* border: 1px solid var(--dark3); */
     box-shadow: 2px 1000px 1px var(--dark2) inset;
     transition: all var(--animation-speed) ease-in-out;
 
@@ -36,9 +36,23 @@
     cursor: pointer;
     font-size: 10px;
     /* line-height: var(--body-lh); */
-    color: var(--text-grey-light);
+    color: var(--text2);
 }
 
 .option_button:hover {
     opacity: 0.8;
+}
+
+.round_container {
+    border-radius: 4px;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.flex_column {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
