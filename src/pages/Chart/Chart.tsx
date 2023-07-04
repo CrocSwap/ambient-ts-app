@@ -107,6 +107,11 @@ export type lineValue = {
     value: number;
 };
 
+type zoomUtils = {
+    zoom: d3.ZoomBehavior<Element, unknown>;
+    yAxisZoom: d3.ZoomBehavior<Element, unknown>;
+    xAxisZoom: d3.ZoomBehavior<Element, unknown>;
+};
 interface propsIF {
     isTokenABase: boolean;
     liquidityData: liquidityChartData | undefined;
@@ -222,8 +227,8 @@ export default function Chart(props: propsIF) {
     );
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const [minTickForLimit, setMinTickForLimit] = useState<any>();
-    const [maxTickForLimit, setMaxTickForLimit] = useState<any>();
+    const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
+    const [maxTickForLimit, setMaxTickForLimit] = useState<number>(0);
 
     const unparsedCandleData = unparsedData.candles;
 
@@ -298,13 +303,13 @@ export default function Chart(props: propsIF) {
         },
     ]);
 
-    // Axes
+    // Axis
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [yAxis, setYaxis] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [xAxis, setXaxis] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [boundaries, setBoundaries] = useState<any>();
+
+    const [boundaries, setBoundaries] = useState<boolean>();
 
     // Rules
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
@@ -337,7 +342,6 @@ export default function Chart(props: propsIF) {
         },
     ]);
     // Crosshairs
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] =
         useState<d3.Selection<HTMLDivElement, unknown, null, undefined>>();
     const [crosshairActive, setCrosshairActive] = useState<string>('chart');
@@ -350,8 +354,7 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [marketLine, setMarketLine] = useState<any>();
 
-    // NoGoZone Joins
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // NoGoZone
     const [noGoZoneBoudnaries, setNoGoZoneBoudnaries] = useState([[0, 0]]);
 
     // Utils
@@ -1270,7 +1273,7 @@ export default function Chart(props: propsIF) {
                                 isWheel
                             );
                         }
-                    }) as any;
+                    });
 
                 let firstLocation: any;
                 let newCenter: any;
