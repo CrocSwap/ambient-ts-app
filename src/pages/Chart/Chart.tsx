@@ -4223,7 +4223,7 @@ export default function Chart(props: propsIF) {
                 setCrosshairData([
                     {
                         x: snappedTime,
-                        y: scaleData?.yScale.invert(event.clientY),
+                        y: scaleData?.yScale.invert(offsetY),
                     },
                 ]);
                 setMouseLocationY(offsetY);
