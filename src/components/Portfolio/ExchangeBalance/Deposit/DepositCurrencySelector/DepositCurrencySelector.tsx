@@ -32,10 +32,12 @@ export default function DepositCurrencySelector(props: propsIF) {
     const handleOnChange = (input: string) => {
         setInputValue(input);
         setDepositQty(
-            fromDisplayQty(
-                input.replaceAll(',', ''),
-                selectedToken.decimals,
-            ).toString(),
+            input === ''
+                ? ''
+                : fromDisplayQty(
+                      input.replaceAll(',', ''),
+                      selectedToken.decimals,
+                  ).toString(),
         );
     };
 
