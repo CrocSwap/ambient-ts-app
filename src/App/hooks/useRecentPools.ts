@@ -13,6 +13,12 @@ export interface recentPoolsMethodsIF {
     resetPools: () => void;
 }
 
+// !important:  logic to prevent addition of non-existent pools has been relocated
+// !important:  ... from this file to the in-situ function call of `addPool` in the
+// !important:  ... PageHeader.tsx file to (A) prevent a flash in the sidebar when
+// !important:  ... updating and (B) to allow us to force a token pair into the recent
+// !important:  ... token list should the need ever arise
+
 // Hook for maintaining a list of pools the user has accessed during this session.
 // Pools are sorted in order from most recently to least recently used. Viewing any
 //  pool-related page will bump that pool to the front of the list.
