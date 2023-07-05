@@ -165,7 +165,6 @@ export default function PoolCard(props: propsIF) {
                 const apyResult = await apyEst;
 
                 if (tvlResult) {
-                    console.log('TVL: ', tvlResult);
                     const tvlString = getFormattedNumber({
                         value: tvlResult,
                         isTvl: true,
@@ -173,7 +172,6 @@ export default function PoolCard(props: propsIF) {
                     setPoolTvl(tvlString);
                 }
                 if (volumeResult) {
-                    console.log('Vol: ', volumeResult);
                     const volumeString = getFormattedNumber({
                         value: volumeResult,
                     });
