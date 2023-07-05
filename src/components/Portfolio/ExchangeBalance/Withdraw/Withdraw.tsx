@@ -127,6 +127,11 @@ export default function Withdraw(props: propsIF) {
         [withdrawQtyNonDisplay],
     );
 
+    const withdrawQtyNonDisplayNum = useMemo(
+        () => parseFloat(withdrawQtyNonDisplay ?? ''),
+        [withdrawQtyNonDisplay],
+    );
+
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
 
     useEffect(() => {
@@ -142,11 +147,12 @@ export default function Withdraw(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Please Enter a Valid Address');
-        } else if (!withdrawQtyNonDisplay) {
+        } else if (!withdrawQtyNonDisplayNum) {
+            // if num is undefined or 0
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Withdrawal Amount');
-        } else if (parseFloat(withdrawQtyNonDisplay) < 0) {
+        } else if (withdrawQtyNonDisplayNum < 0) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Valid Withdrawal Amount');

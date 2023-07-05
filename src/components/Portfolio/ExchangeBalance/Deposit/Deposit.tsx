@@ -142,6 +142,11 @@ export default function Deposit(props: propsIF) {
         [depositQtyNonDisplay],
     );
 
+    const depositQtyNonDisplayNum = useMemo(
+        () => parseFloat(depositQtyNonDisplay ?? ''),
+        [depositQtyNonDisplay],
+    );
+
     const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isDepositPending, setIsDepositPending] = useState(false);
 
@@ -150,11 +155,12 @@ export default function Deposit(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
-        } else if (!depositQtyNonDisplay) {
+        } else if (!depositQtyNonDisplayNum) {
+            // if num is undefined or 0
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Deposit Amount');
-        } else if (parseFloat(depositQtyNonDisplay) < 0) {
+        } else if (depositQtyNonDisplayNum < 0) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Valid Deposit Amount');
