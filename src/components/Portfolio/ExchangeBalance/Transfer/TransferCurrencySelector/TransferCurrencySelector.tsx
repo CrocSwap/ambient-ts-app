@@ -33,10 +33,12 @@ function TransferCurrencySelector(props: propsIF) {
     const handleOnChange = (input: string) => {
         setInputValue(input);
         setTransferQty(
-            fromDisplayQty(
-                input.replaceAll(',', ''),
-                selectedToken.decimals,
-            ).toString(),
+            input === ''
+                ? ''
+                : fromDisplayQty(
+                      input.replaceAll(',', ''),
+                      selectedToken.decimals,
+                  ).toString(),
         );
     };
 

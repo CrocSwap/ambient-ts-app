@@ -33,10 +33,12 @@ export default function WithdrawCurrencySelector(props: propsIF) {
     const handleOnChange = (input: string) => {
         setInputValue(input);
         setWithdrawQty(
-            fromDisplayQty(
-                input.replaceAll(',', ''),
-                selectedToken.decimals,
-            ).toString(),
+            input === ''
+                ? ''
+                : fromDisplayQty(
+                      input.replaceAll(',', ''),
+                      selectedToken.decimals,
+                  ).toString(),
         );
     };
 
