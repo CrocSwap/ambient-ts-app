@@ -15,6 +15,7 @@ import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -54,10 +55,17 @@ export default function BypassConfirmSwapButton(props: propsIF) {
     const sellTokenData: TokenIF = tokenPair.dataTokenA;
     const buyTokenData: TokenIF = tokenPair.dataTokenB;
 
+    const formattedSellTokenQty = getFormattedNumber({
+        value: parseFloat(sellQtyString),
+    });
+    const formatedBuyTokenQty = getFormattedNumber({
+        value: parseFloat(buyQtyString),
+    });
+
     const confirmSendMessage = (
         <WaitingConfirmation
             noAnimation
-            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol} 
+            content={`Swapping ${formattedSellTokenQty} ${sellTokenData.symbol} for ${formatedBuyTokenQty} ${buyTokenData.symbol} 
             `}
         />
     );
@@ -138,7 +146,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
         ? 'Transaction Failed'
         : transactionApproved
         ? 'Transaction Submitted'
-        : `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`;
+        : `Swapping ${formattedSellTokenQty} ${sellTokenData.symbol} for ${formatedBuyTokenQty} ${buyTokenData.symbol}`;
 
     return (
         <section className={styles.container}>

@@ -13,6 +13,7 @@ import { useState, Dispatch, SetStateAction, memo } from 'react';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     newLimitOrderTransactionHash: string;
@@ -43,12 +44,12 @@ function BypassConfirmLimitButton(props: propsIF) {
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const sellTokenQty = (
-        document.getElementById('sell-limit-quantity') as HTMLInputElement
-    )?.value;
-    const buyTokenQty = (
-        document.getElementById('buy-limit-quantity') as HTMLInputElement
-    )?.value;
+    const sellTokenQty = getFormattedNumber({
+        value: parseFloat(tokenAInputQty),
+    });
+    const buyTokenQty = getFormattedNumber({
+        value: parseFloat(tokenBInputQty),
+    });
 
     const sellTokenData = tokenA;
     const buyTokenData = tokenB;
@@ -145,7 +146,7 @@ function BypassConfirmLimitButton(props: propsIF) {
         ? 'Transaction Failed'
         : transactionApproved
         ? 'Transaction Submitted'
-        : `Submitting Limit Order to Swap ${tokenAInputQty} ${sellTokenData.symbol} for ${tokenBInputQty} ${buyTokenData.symbol}`;
+        : `Submitting Limit Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
