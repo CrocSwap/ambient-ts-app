@@ -1,6 +1,7 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { useMemo, useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/exports';
+import sortTokens from '../../utils/functions/sortTokens';
 
 export interface SmallerPoolIF {
     baseToken: TokenIF;
@@ -17,7 +18,7 @@ export interface recentPoolsMethodsIF {
 // !important:  ... from this file to the in-situ function call of `addPool` in the
 // !important:  ... PageHeader.tsx file to (A) prevent a flash in the sidebar when
 // !important:  ... updating and (B) to allow us to force a token pair into the recent
-// !important:  ... token list should the need ever arise
+// !important:  ... token list should the need ever
 
 // Hook for maintaining a list of pools the user has accessed during this session.
 // Pools are sorted in order from most recently to least recently used. Viewing any
@@ -39,10 +40,8 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
             tokenB.address,
         );
 
-        const [baseToken, quoteToken] =
-            baseTokenAddr === tokenA.address
-                ? [tokenA, tokenB]
-                : [tokenB, tokenA];
+        const [baseToken, quoteToken] = sortTokens(tokenA, tokenB);
+
         const nextPool = { baseToken: baseToken, quoteToken: quoteToken };
 
         function poolMatches(pool: SmallerPoolIF) {
