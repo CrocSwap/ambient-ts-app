@@ -173,7 +173,6 @@ const PageHeader = function () {
                 .pool(tradeData.baseToken.address, tradeData.quoteToken.address)
                 .isInit();
             Promise.resolve(promise).then((poolExists: boolean) => {
-                console.log({ poolExists });
                 poolExists &&
                     recentPools.addPool(
                         tradeData.baseToken,
