@@ -1,9 +1,6 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { useContext, useEffect, useMemo, useState } from 'react';
-import sortTokens from '../../utils/functions/sortTokens';
+import { useMemo, useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { tokenMethodsIF } from './useTokens';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 export interface SmallerPoolIF {
     baseToken: TokenIF;
@@ -19,48 +16,9 @@ export interface recentPoolsMethodsIF {
 // Hook for maintaining a list of pools the user has accessed during this session.
 // Pools are sorted in order from most recently to least recently used. Viewing any
 //  pool-related page will bump that pool to the front of the list.
-export const useRecentPools = (
-    chainId: string,
-    tokenA: TokenIF,
-    tokenB: TokenIF,
-    tokens: tokenMethodsIF,
-): recentPoolsMethodsIF => {
-    const { crocEnv } = useContext(CrocEnvContext);
-
+export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
     // array of pools the user has interacted with in the current session
     const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([]);
-
-    // subset of recent pools filtered for current chain and being initialized
-    const realPools = useMemo<SmallerPoolIF[]>(() => {
-        const existingPools: SmallerPoolIF[] = [];
-        if (crocEnv) {
-            recentPools.forEach((pool: SmallerPoolIF) => {
-                const promise = crocEnv
-                    .pool(pool.baseToken.address, pool.quoteToken.address)
-                    .isInit();
-                Promise.resolve(promise).then(
-                    (result: boolean) => result && existingPools.push(pool),
-                );
-            });
-        }
-        return existingPools;
-    }, [recentPools, crocEnv]);
-
-    // add pools to the recent pools list (in-session)
-    // runs every time to the current token pair changes
-    // later this will need more logic for a Pool ID value
-    useEffect(() => {
-        // sort current token pair as base and quote
-        const [baseToken, quoteToken]: TokenIF[] = sortTokens(tokenA, tokenB);
-        // add the pool to the list of recent pools
-        // fn has internal logic to handle duplicate values
-        if (
-            tokens.verifyToken(baseToken.address) &&
-            tokens.verifyToken(quoteToken.address)
-        ) {
-            addPool(baseToken, quoteToken);
-        }
-    }, [tokenA.address, tokenB.address]);
 
     // fn to add a token to the recentTokens array
     function addPool(tokenA: TokenIF, tokenB: TokenIF): void {
@@ -109,7 +67,7 @@ export const useRecentPools = (
         const currentChain: number = parseInt(chainId);
         // filter out pairs for which a pool does not yet exist
         // return a set number of pools on the current active chain
-        return realPools
+        return recentPools
             .filter(
                 (pool: SmallerPoolIF) =>
                     pool.baseToken.chainId === currentChain &&

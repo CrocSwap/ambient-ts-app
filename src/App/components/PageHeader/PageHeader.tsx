@@ -38,7 +38,7 @@ const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { setCrocEnv } = useContext(CrocEnvContext);
+    const { crocEnv, setCrocEnv } = useContext(CrocEnvContext);
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -168,10 +168,20 @@ const PageHeader = function () {
     const quoteAddressInRtk = tradeData.quoteToken.address;
 
     useEffect(() => {
-        if (baseAddressInRtk && quoteAddressInRtk) {
-            recentPools.addPool(tradeData.baseToken, tradeData.quoteToken);
+        if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
+            const promise = crocEnv
+                .pool(tradeData.baseToken.address, tradeData.quoteToken.address)
+                .isInit();
+            Promise.resolve(promise).then((poolExists: boolean) => {
+                console.log({ poolExists });
+                poolExists &&
+                    recentPools.addPool(
+                        tradeData.baseToken,
+                        tradeData.quoteToken,
+                    );
+            });
         }
-    }, [baseAddressInRtk, quoteAddressInRtk]);
+    }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
