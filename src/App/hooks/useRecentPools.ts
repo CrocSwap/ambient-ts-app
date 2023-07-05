@@ -1,8 +1,9 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import sortTokens from '../../utils/functions/sortTokens';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 export interface SmallerPoolIF {
     baseToken: TokenIF;
@@ -24,8 +25,26 @@ export const useRecentPools = (
     tokenB: TokenIF,
     tokens: tokenMethodsIF,
 ): recentPoolsMethodsIF => {
+    const { crocEnv } = useContext(CrocEnvContext);
+
     // array of pools the user has interacted with in the current session
     const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([]);
+
+    // subset of recent pools filtered for current chain and being initialized
+    const realPools = useMemo<SmallerPoolIF[]>(() => {
+        const existingPools: SmallerPoolIF[] = [];
+        if (crocEnv) {
+            recentPools.forEach((pool: SmallerPoolIF) => {
+                const promise = crocEnv
+                    .pool(pool.baseToken.address, pool.quoteToken.address)
+                    .isInit();
+                Promise.resolve(promise).then(
+                    (result: boolean) => result && existingPools.push(pool),
+                );
+            });
+        }
+        return existingPools;
+    }, [recentPools, crocEnv]);
 
     // add pools to the recent pools list (in-session)
     // runs every time to the current token pair changes
@@ -88,8 +107,9 @@ export const useRecentPools = (
     function getPools(count: number): SmallerPoolIF[] {
         // active conntected chain ID as an integer
         const currentChain: number = parseInt(chainId);
+        // filter out pairs for which a pool does not yet exist
         // return a set number of pools on the current active chain
-        return recentPools
+        return realPools
             .filter(
                 (pool: SmallerPoolIF) =>
                     pool.baseToken.chainId === currentChain &&
