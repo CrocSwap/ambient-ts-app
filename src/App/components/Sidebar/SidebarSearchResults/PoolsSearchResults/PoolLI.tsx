@@ -1,13 +1,12 @@
 import styles from '../SidebarSearchResults.module.css';
-import { TempPoolIF } from '../../../../../utils/interfaces/exports';
+import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import { poolStatsIF, usePoolStats } from './usePoolStats';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
 import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface propsIF {
-    pool: TempPoolIF;
-    chainId: string;
+    pool: PoolIF;
     handleClick: (baseAddr: string, quoteAddr: string) => void;
     cachedPoolStatsFetch: PoolStatsFn;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -17,7 +16,6 @@ interface propsIF {
 export default function PoolLI(props: propsIF) {
     const {
         pool,
-        chainId,
         handleClick,
         cachedPoolStatsFetch,
         cachedFetchTokenPrice,
@@ -27,7 +25,6 @@ export default function PoolLI(props: propsIF) {
     // hook to get volume and TVL for the current pool
     const poolStats: poolStatsIF = usePoolStats(
         pool,
-        chainId,
         cachedPoolStatsFetch,
         cachedFetchTokenPrice,
         crocEnv,
@@ -36,10 +33,10 @@ export default function PoolLI(props: propsIF) {
     return (
         <li
             className={styles.card_container}
-            onClick={() => handleClick(pool.base, pool.quote)}
+            onClick={() => handleClick(pool.base.address, pool.quote.address)}
         >
             <p>
-                {pool.baseSymbol ?? '--'} / {pool.quoteSymbol ?? '--'}
+                {pool.base.symbol ?? '--'} / {pool.quote.symbol ?? '--'}
             </p>
             <p style={{ textAlign: 'center' }}>{poolStats.volume ?? '--'}</p>
             <p style={{ textAlign: 'center' }}>{poolStats.tvl ?? '--'}</p>
