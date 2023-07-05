@@ -105,12 +105,22 @@ export default function Deposit(props: propsIF) {
     const [isCurrencyFieldDisabled, setIsCurrencyFieldDisabled] =
         useState<boolean>(true);
 
+    const depositQtyNonDisplayNum = useMemo(
+        () => parseFloat(depositQtyNonDisplay ?? ''),
+        [depositQtyNonDisplay],
+    );
+
+    const isDepositQtyValid = useMemo(
+        () => depositQtyNonDisplayNum > 0,
+        [depositQtyNonDisplay],
+    );
+
     const isTokenAllowanceSufficient = useMemo(
         () =>
-            tokenAllowance && !!depositQtyNonDisplay
+            tokenAllowance && isDepositQtyValid && !!depositQtyNonDisplay
                 ? BigNumber.from(tokenAllowance).gte(depositQtyNonDisplay)
                 : false,
-        [tokenAllowance, depositQtyNonDisplay],
+        [tokenAllowance, isDepositQtyValid],
     );
 
     const isWalletBalanceSufficientToCoverGas = useMemo(() => {
@@ -124,7 +134,7 @@ export default function Deposit(props: propsIF) {
 
     const isWalletBalanceSufficientToCoverDeposit = useMemo(
         () =>
-            tokenWalletBalanceAdjustedNonDisplayString && !!depositQtyNonDisplay
+            tokenWalletBalanceAdjustedNonDisplayString && isDepositQtyValid
                 ? BigNumber.from(
                       tokenWalletBalanceAdjustedNonDisplayString,
                   ).gte(BigNumber.from(depositQtyNonDisplay))
@@ -134,17 +144,7 @@ export default function Deposit(props: propsIF) {
                   ).gte(BigNumber.from(0))
                 ? true
                 : false,
-        [tokenWalletBalanceAdjustedNonDisplayString, depositQtyNonDisplay],
-    );
-
-    const isDepositQtyValid = useMemo(
-        () => depositQtyNonDisplay !== undefined,
-        [depositQtyNonDisplay],
-    );
-
-    const depositQtyNonDisplayNum = useMemo(
-        () => parseFloat(depositQtyNonDisplay ?? ''),
-        [depositQtyNonDisplay],
+        [tokenWalletBalanceAdjustedNonDisplayString, isDepositQtyValid],
     );
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
@@ -205,7 +205,7 @@ export default function Deposit(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     const deposit = async (depositQtyNonDisplay: string) => {
-        if (crocEnv && depositQtyNonDisplay && userAddress) {
+        if (crocEnv && isDepositQtyValid && userAddress) {
             try {
                 const depositQtyDisplay = toDisplayQty(
                     depositQtyNonDisplay,
