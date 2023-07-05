@@ -38,6 +38,7 @@ export default function TransactionDetailsGraph(
     } = props;
     const { chainData, crocEnv } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const oneHourMiliseconds = 60 * 60 * 1000;
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -176,7 +177,7 @@ export default function TransactionDetailsGraph(
 
                     const offsetInSeconds = 120;
 
-                    const startBoundary =
+                    const endTime =
                         Math.floor(new Date().getTime() / 1000) -
                         offsetInSeconds;
 
@@ -191,7 +192,7 @@ export default function TransactionDetailsGraph(
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
-                            startBoundary,
+                            endTime,
                             numCandlesNeeded,
                             crocEnv,
                             cachedFetchTokenPrice,
@@ -521,12 +522,9 @@ export default function TransactionDetailsGraph(
                 }
             }
 
-            const xScaleOriginal = xScale.copy();
-
             const scaleData = {
                 xScale: xScale,
                 yScale: yScale,
-                xScaleOriginal: xScaleOriginal,
             };
 
             setScaleData(() => {
@@ -720,21 +718,29 @@ export default function TransactionDetailsGraph(
             triangleLimit: any,
         ) => {
             if (graphData.length > 0) {
-                const buffer =
-                    Math.abs(
-                        scaleData.xScale.domain()[1].getTime() -
-                            scaleData.xScale.domain()[0].getTime(),
-                    ) / 30;
+                const minDomain = scaleData.xScale.domain()[0].getTime();
+                const maxDomain = scaleData.xScale.domain()[1].getTime();
+                const buffer = Math.abs(maxDomain - minDomain) / 30;
 
+                if (transactionType === 'limitOrder' && tx !== undefined) {
+                    if (tx.timeFirstMint * 1000 + buffer >= maxDomain) {
+                        scaleData?.xScale.domain([
+                            minDomain,
+                            maxDomain + oneHourMiliseconds * 5,
+                        ]);
+                    }
+
+                    // if (tx.timeFirstMint*1000-buffer <= minDomain) {
+                    //     scaleData?.xScale.domain([tx.timeFirstMint*1000-oneHourMiliseconds * 24 ,maxDomain])
+                    // }
+                }
                 const tickTempValues = scaleData.xScale.ticks(7);
                 const tickValues: any[] = [];
 
                 tickTempValues.map((tick: any) => {
                     if (
-                        tick.getTime() + buffer <
-                            scaleData.xScale.domain()[1].getTime() &&
-                        tick.getTime() - buffer >
-                            scaleData.xScale.domain()[0].getTime()
+                        tick.getTime() + buffer < maxDomain &&
+                        tick.getTime() - buffer > minDomain
                     ) {
                         tickValues.push(tick);
                     }
@@ -760,10 +766,6 @@ export default function TransactionDetailsGraph(
                     'measure',
                     function (event: any) {
                         scaleData?.xScale.range([0, event.detail.width]);
-                        scaleData?.xScaleOriginal.range([
-                            0,
-                            event.detail.width,
-                        ]);
                         scaleData?.yScale.range([event.detail.height, 0]);
                     },
                 );
