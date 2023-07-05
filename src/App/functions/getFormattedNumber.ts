@@ -36,7 +36,10 @@ export function getFormattedNumber({
         valueString = '∞';
     } else if (isUSD) {
         // only display two decimal points for USD values
-        valueString = value.toFixed(2);
+        valueString = value.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
     } else if (isInput) {
         removeCommas = true;
         if (value < 0.0001) {
