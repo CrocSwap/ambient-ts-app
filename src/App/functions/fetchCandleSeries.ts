@@ -109,19 +109,30 @@ export async function fetchCandleSeriesHybrid(
         if (!uniCandles) {
             return candles;
         }
+        console.log(uniCandles);
 
-        // Sanitize volume, tvl and fee data from Uni data
-        uniCandles.forEach((u) => {
-            u.tvlData.tvl = 0;
-            u.volumeUSD = 0;
-            u.averageLiquidityFee = 0;
-        });
+        // // Sanitize volume, tvl and fee data from Uni data
+        // uniCandles.forEach((u) => {
+        //     u.tvlData.tvl = 0;
+        //     u.volumeUSD = 0;
+        //     u.averageLiquidityFee = 0;
+        // });
 
-        candles.candles = candles.candles.concat(uniCandles);
+        candles.candles = candles.candles.concat(
+            await expandPoolStats(
+                uniCandles,
+                baseTokenAddress,
+                quoteTokenAddress,
+                chainData.poolIndex,
+                chainData.chainId,
+                crocEnv,
+                cachedFetchTokenPrice,
+            ),
+        );
     } catch (e) {
         console.warn(e);
     }
-
+    console.log(candles);
     return candles;
 }
 
@@ -313,7 +324,7 @@ async function fetchCandleSeriesUniswap(
     quoteTokenAddress: string,
     time: string,
     candleNeeded: string,
-): Promise<CandleData[] | undefined | void> {
+): Promise<CandleDataServerIF[] | undefined | void> {
     const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
         translateMainnetForGraphcache(
             mainnetBaseTokenAddress,
@@ -325,36 +336,36 @@ async function fetchCandleSeriesUniswap(
         try {
             if (httpGraphCacheServerDomain) {
                 const candleSeriesCacheEndpoint =
-                    GRAPHCACHE_URL + '/candle_series?';
+                    'http://localhost:8080/gcgo/pool_candles?';
 
                 return fetch(
                     candleSeriesCacheEndpoint +
                         new URLSearchParams({
-                            base: mainnetBase.toLowerCase(),
-                            quote: mainnetQuote.toLowerCase(),
+                            base: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+                            quote: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
                             poolIdx: '36000',
                             // poolIdx: chainData.poolIndex.toString(),
                             period: period.toString(),
                             time: time, // optional
                             n: candleNeeded, // positive integer
-                            chainId: chainData.chainId,
-                            dex: 'all',
-                            poolStats: 'true',
-                            concise: 'true',
-                            poolStatsChainIdOverride: chainData.chainId,
-                            poolStatsBaseOverride:
-                                baseTokenAddress.toLowerCase(),
-                            poolStatsQuoteOverride:
-                                quoteTokenAddress.toLowerCase(),
-                            poolStatsPoolIdxOverride:
-                                chainData.poolIndex.toString(),
+                            chainId: '0x1',
+                            // dex: 'all',
+                            // poolStats: 'true',
+                            // concise: 'true',
+                            // poolStatsChainIdOverride: chainData.chainId,
+                            // poolStatsBaseOverride:
+                            //     baseTokenAddress.toLowerCase(),
+                            // poolStatsQuoteOverride:
+                            //     quoteTokenAddress.toLowerCase(),
+                            // poolStatsPoolIdxOverride:
+                            //     chainData.poolIndex.toString(),
                         }),
                 )
                     .then((response) => response?.json())
                     .then((json) => {
                         const candles = json?.data;
                         if (candles) {
-                            return candles as CandleData[];
+                            return candles as CandleDataServerIF[];
                         }
                     })
                     .catch(console.warn);
