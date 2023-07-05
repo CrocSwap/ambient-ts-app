@@ -9,9 +9,9 @@ export interface SmallerPoolIF {
 }
 
 export interface recentPoolsMethodsIF {
-    addPool: (tokenA: TokenIF, tokenB: TokenIF) => void;
-    getPools: (count: number) => SmallerPoolIF[];
-    resetPools: () => void;
+    add: (tokenA: TokenIF, tokenB: TokenIF) => void;
+    get: (count: number) => SmallerPoolIF[];
+    reset: () => void;
 }
 
 // !important:  logic to prevent addition of non-existent pools has been relocated
@@ -88,9 +88,9 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
 
     return useMemo(
         () => ({
-            addPool,
-            getPools,
-            resetPools,
+            add: addPool,
+            get: getPools,
+            reset: resetPools,
         }),
         [recentPools],
     );

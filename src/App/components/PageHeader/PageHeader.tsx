@@ -174,10 +174,7 @@ const PageHeader = function () {
                 .isInit();
             Promise.resolve(promise).then((poolExists: boolean) => {
                 poolExists &&
-                    recentPools.addPool(
-                        tradeData.baseToken,
-                        tradeData.quoteToken,
-                    );
+                    recentPools.add(tradeData.baseToken, tradeData.quoteToken);
             });
         }
     }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
