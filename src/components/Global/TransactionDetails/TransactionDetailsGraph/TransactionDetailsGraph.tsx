@@ -730,9 +730,12 @@ export default function TransactionDetailsGraph(
                         ]);
                     }
 
-                    // if (tx.timeFirstMint*1000-buffer <= minDomain) {
-                    //     scaleData?.xScale.domain([tx.timeFirstMint*1000-oneHourMiliseconds * 24 ,maxDomain])
-                    // }
+                    if (tx.timeFirstMint * 1000 - buffer <= minDomain) {
+                        scaleData?.xScale.domain([
+                            tx.timeFirstMint * 1000 - oneHourMiliseconds * 24,
+                            maxDomain,
+                        ]);
+                    }
                 }
                 const tickTempValues = scaleData.xScale.ticks(7);
                 const tickValues: any[] = [];
