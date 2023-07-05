@@ -501,7 +501,7 @@ export default function Limit() {
         resetConfirmation();
     };
 
-    const bypassConfirmLimitProps = {
+    const bypassConfirmLimitButtonProps = {
         newLimitOrderTransactionHash: newLimitOrderTransactionHash,
         txErrorCode: txErrorCode,
         tokenAInputQty: tokenAInputQty,
@@ -725,7 +725,7 @@ export default function Limit() {
                             approvalButton
                         ) : showBypassConfirmButton ? (
                             <BypassConfirmLimitButton
-                                {...bypassConfirmLimitProps}
+                                {...bypassConfirmLimitButtonProps}
                             />
                         ) : (
                             <>
