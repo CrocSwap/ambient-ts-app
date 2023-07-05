@@ -44,7 +44,7 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
 
         const nextPool = { baseToken: baseToken, quoteToken: quoteToken };
 
-        function poolMatches(pool: SmallerPoolIF) {
+        function matchPools(pool: SmallerPoolIF): boolean {
             return (
                 pool.baseToken.address.toLowerCase() ===
                     baseTokenAddr.toLowerCase() &&
@@ -57,11 +57,11 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
         if (recentPools.length == 0) {
             // Initialize empty list
             setRecentPools([nextPool]);
-        } else if (poolMatches(recentPools[0])) {
+        } else if (matchPools(recentPools[0])) {
             // Do nothing because front matches
         } else {
             // Remove the pool (if previously present) and move to the front of the list
-            const removed = recentPools.filter((pool) => !poolMatches(pool));
+            const removed = recentPools.filter((pool) => !matchPools(pool));
             setRecentPools([nextPool, ...removed]);
         }
     }
