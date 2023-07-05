@@ -487,7 +487,7 @@ function Swap(props: propsIF) {
     } = useContext(AppStateContext);
 
     const handleSwapButtonClickWithBypass = () => {
-        IS_LOCAL_ENV && console.debug('setting to true');
+        IS_LOCAL_ENV && console.debug('setting  bypass confirm to true');
         setShowBypassConfirm(true);
         initiateSwap();
     };
