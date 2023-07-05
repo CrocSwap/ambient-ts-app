@@ -26,7 +26,6 @@ interface propsIF {
     sellQtyString: string;
     buyQtyString: string;
     setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
-    showBypassConfirm: boolean;
     showExtraInfo: boolean;
     setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
 }
