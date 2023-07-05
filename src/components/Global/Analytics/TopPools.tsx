@@ -9,7 +9,7 @@ export default function TopPools() {
             change: '+5%',
         },
     ];
-    const duplicatedData = Array.from({ length: 20 }, () => data).flat();
+    const duplicatedData = Array.from({ length: 50 }, () => data).flat();
 
     return (
         <div className='flex flex-col h-screen'>
@@ -67,7 +67,7 @@ export default function TopPools() {
                                 </tr>
                             </thead>
                             <tbody className='bg-dark1 text-white text-body font-regular capitalize leading-body overflow-y-auto max-h-96'>
-                                {data.map((row, index) => (
+                                {duplicatedData.map((row, index) => (
                                     <tr key={index}>
                                         <td className='px-6  whitespace-nowrap'>
                                             <div className='flex items-center'>
