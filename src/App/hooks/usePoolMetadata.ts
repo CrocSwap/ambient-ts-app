@@ -176,6 +176,40 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         !!props.crocEnv,
     ]);
 
+    // Reset loading states when token values change
+    useEffect(() => {
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'poolRangeData',
+                loadingStatus: true,
+            }),
+        );
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'poolTxData',
+                loadingStatus: true,
+            }),
+        );
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'poolOrderData',
+                loadingStatus: true,
+            }),
+        );
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'connectedUserPoolRangeData',
+                loadingStatus: true,
+            }),
+        );
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'connectedUserPoolOrderData',
+                loadingStatus: true,
+            }),
+        );
+    }, [tradeData.tokenA.address, tradeData.tokenB.address]);
+
     // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
     // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
     useEffect(() => {
