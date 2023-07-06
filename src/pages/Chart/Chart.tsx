@@ -1742,6 +1742,7 @@ export default function Chart(props: propsIF) {
         maxTickForLimit,
         canUserDragRange,
         canUserDragLimit,
+        showVolume,
     ]);
 
     useEffect(() => {
@@ -4375,7 +4376,7 @@ export default function Chart(props: propsIF) {
                         : d.priceOpenExclMEVDecimalCorrected;
 
                     context.fillStyle =
-                        d.volumeUSD === null
+                        d.volumeUSD === null || d.volumeUSD === 0
                             ? 'transparent'
                             : selectedDate !== undefined &&
                               selectedDate === d.time * 1000
@@ -4385,7 +4386,7 @@ export default function Chart(props: propsIF) {
                             : 'rgba(115,113,252, 0.5)';
 
                     context.strokeStyle =
-                        d.volumeUSD === null
+                        d.volumeUSD === null || d.volumeUSD === 0
                             ? 'transparent'
                             : selectedDate !== undefined &&
                               selectedDate === d.time * 1000
@@ -5077,6 +5078,7 @@ export default function Chart(props: propsIF) {
         isSidebarOpen,
         liqMode,
         isCrDataToolTipActive,
+        showVolume,
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -5127,14 +5129,15 @@ export default function Chart(props: propsIF) {
         const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
         const selectedVolumeDataValue = nearest?.volumeUSD;
 
-        const isSelectedVolume = selectedVolumeDataValue
-            ? yValueVolume <=
-                  (selectedVolumeDataValue < longestValue
-                      ? longestValue
-                      : selectedVolumeDataValue) && yValueVolume !== 0
-                ? true
-                : false
-            : false;
+        const isSelectedVolume =
+            selectedVolumeDataValue && showVolume
+                ? yValueVolume <=
+                      (selectedVolumeDataValue < longestValue
+                          ? longestValue
+                          : selectedVolumeDataValue) && yValueVolume !== 0
+                    ? true
+                    : false
+                : false;
 
         const close = denomInBase
             ? nearest?.invPriceCloseExclMEVDecimalCorrected
@@ -5795,6 +5798,7 @@ export default function Chart(props: propsIF) {
             unparsedCandleData?.length,
             !tradeData.advancedMode && simpleRangeWidth === 100,
             isCrDataToolTipActive,
+            showVolume,
         ],
     );
 
