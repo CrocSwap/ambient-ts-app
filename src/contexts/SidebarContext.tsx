@@ -1,5 +1,11 @@
 import { useMediaQuery } from '@material-ui/core';
-import React, { createContext, useEffect, useMemo, useContext } from 'react';
+import {
+    ReactNode,
+    createContext,
+    useEffect,
+    useMemo,
+    useContext,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     recentPoolsMethodsIF,
@@ -12,7 +18,6 @@ import isJsonString from '../utils/functions/isJsonString';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CrocEnvContext } from './CrocEnvContext';
-import { TokenContext } from './TokenContext';
 
 interface SidebarStateIF {
     recentPools: recentPoolsMethodsIF;
@@ -23,16 +28,13 @@ export const SidebarContext = createContext<SidebarStateIF>(
     {} as SidebarStateIF,
 );
 
-export const SidebarContextProvider = (props: {
-    children: React.ReactNode;
-}) => {
+export const SidebarContextProvider = (props: { children: ReactNode }) => {
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const { chainData } = useContext(CrocEnvContext);
-    const { tokens } = useContext(TokenContext);
 
-    const { tradeData, receiptData } = useAppSelector((state) => state);
+    const { receiptData } = useAppSelector((state) => state);
     const lastReceipt =
         receiptData.sessionReceipts.length > 0 &&
         isJsonString(receiptData.sessionReceipts[0])
@@ -48,12 +50,7 @@ export const SidebarContextProvider = (props: {
 
     const sidebar = useSidebar(location.pathname);
     // hook to manage recent pool data in-session
-    const recentPools: recentPoolsMethodsIF = useRecentPools(
-        chainData.chainId,
-        tradeData.tokenA,
-        tradeData.tokenB,
-        tokens,
-    );
+    const recentPools: recentPoolsMethodsIF = useRecentPools(chainData.chainId);
 
     const sidebarState = {
         sidebar,
