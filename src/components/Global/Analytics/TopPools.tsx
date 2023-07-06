@@ -155,18 +155,18 @@ export default function TopPools() {
 
     return (
         <div className='flex flex-col h-full'>
-            <div className='flex-grow overflow-auto h-full'>
+            <div className='flex-grow overflow-auto h-full hide-scrollbar'>
                 <div className='py-2 h-full'>
-                    <div className='shadow rounded-lg bg-dark1 h-full'>
+                    <div className='shadow rounded-lg bg-dark1 h-full py-2'>
                         <table className='divide-y divide-dark3 relative w-full '>
                             <thead
-                                className=' sticky top-0 h-25'
+                                className=' sticky top-0 h-25 '
                                 style={{ height: '25px', zIndex: '2' }}
                             >
                                 <tr className='text-text2 text-body font-regular capitalize leading-body'>
                                     <th
                                         scope='col'
-                                        className='sticky top-0 px-12 text-left tracking-wider'
+                                        className='sticky top-0 px-8 text-left tracking-wider'
                                     >
                                         Tokens
                                     </th>
@@ -178,25 +178,25 @@ export default function TopPools() {
                                     </th>
                                     <th
                                         scope='col'
-                                        className='hidden sm:table-cell sticky top-0 px-6 text-left tracking-wider'
+                                        className='hidden sm:table-cell sticky top-0 px-6 text-left tracking-wider hover:bg-dark2 cursor-pointer'
                                     >
                                         Price
                                     </th>
                                     <th
                                         scope='col'
-                                        className='hidden sm:table-cell sticky top-0 px-6 text-left tracking-wider'
+                                        className='hidden sm:table-cell sticky top-0 px-6 text-left tracking-wider hover:bg-dark2 cursor-pointer'
                                     >
                                         TVL
                                     </th>
                                     <th
                                         scope='col'
-                                        className='hidden xl:table-cell sticky top-0 px-6 text-left tracking-wider'
+                                        className='hidden xl:table-cell sticky top-0 px-6 text-left tracking-wider hover:bg-dark2 cursor-pointer'
                                     >
                                         APR
                                     </th>
                                     <th
                                         scope='col'
-                                        className='sticky top-0 px-6 text-left tracking-wider'
+                                        className='sticky top-0 px-6 text-left tracking-wider hover:bg-dark2 cursor-pointer'
                                     >
                                         Volume
                                     </th>
