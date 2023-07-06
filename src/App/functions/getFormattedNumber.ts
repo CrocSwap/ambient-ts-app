@@ -36,7 +36,7 @@ export function getFormattedNumber({
         valueString = '∞';
     } else if (isUSD) {
         // only display two decimal points for USD values
-        valueString = value.toLocaleString(undefined, {
+        valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
@@ -45,7 +45,7 @@ export function getFormattedNumber({
         if (value < 0.0001) {
             valueString = value.toExponential(2);
         } else if (value < 2) {
-            valueString = value.toLocaleString(undefined, {
+            valueString = value.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
             });
@@ -53,7 +53,7 @@ export function getFormattedNumber({
             // prevent scientific notation for inputs
             valueString = Number(value?.toPrecision(3)).toString();
         } else {
-            valueString = value.toLocaleString(undefined, {
+            valueString = value.toLocaleString('en-US', {
                 minimumFractionDigits: minFracDigits,
                 maximumFractionDigits: maxFracDigits,
             });
@@ -71,7 +71,7 @@ export function getFormattedNumber({
         // use abbreviations (k, M, B, T) for big numbers
         valueString = formatAbbrev(value, isTvl);
     } else {
-        valueString = value.toLocaleString(undefined, {
+        valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: minFracDigits,
             maximumFractionDigits: maxFracDigits,
         });
