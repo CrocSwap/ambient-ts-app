@@ -9,6 +9,9 @@ import {
     goerliDAI,
     mainnetETH,
     mainnetUSDC,
+    mainnetWBTC,
+    mainnetPEPE,
+    mainnetDAI,
 } from './defaultTokens';
 import { topPoolIF } from '../../App/hooks/useTopPools';
 import { TokenIF } from '../interfaces/exports';
@@ -58,7 +61,12 @@ const MAINNET_POOL_ID = lookupChain('0x1').poolIndex;
 const GOERLI_POOL_ID = lookupChain('0x5').poolIndex;
 
 const defaultTopPools = {
-    '0x1': [new TopPool(mainnetETH, mainnetUSDC, MAINNET_POOL_ID, 0, 1)],
+    '0x1': [
+        new TopPool(mainnetETH, mainnetUSDC, MAINNET_POOL_ID, 0, 1),
+        new TopPool(mainnetETH, mainnetWBTC, MAINNET_POOL_ID, 0.5, 3),
+        new TopPool(mainnetETH, mainnetPEPE, MAINNET_POOL_ID, -2, 4),
+        new TopPool(mainnetUSDC, mainnetDAI, MAINNET_POOL_ID, -2, 4),
+    ],
     '0x5': [
         new TopPool(goerliETH, goerliUSDC, GOERLI_POOL_ID, 0, 1),
         new TopPool(goerliETH, goerliWBTC, GOERLI_POOL_ID, 0.5, 3),
