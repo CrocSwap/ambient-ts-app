@@ -117,7 +117,11 @@ export default function Transfer(props: propsIF) {
         [transferQtyNonDisplay],
     );
 
-    // const [isApprovalPending, setIsApprovalPending] = useState(false);
+    const transferQtyNonDisplayNum = useMemo(
+        () => parseFloat(transferQtyNonDisplay ?? ''),
+        [transferQtyNonDisplay],
+    );
+
     const [isTransferPending, setIsTransferPending] = useState(false);
 
     useEffect(() => {
@@ -135,11 +139,17 @@ export default function Transfer(props: propsIF) {
             setIsAddressFieldDisabled(false);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Please Enter a Valid Address');
-        } else if (!transferQtyNonDisplay) {
+        } else if (!transferQtyNonDisplayNum) {
+            // if num is undefined or 0
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(false);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Transfer Amount');
+        } else if (transferQtyNonDisplayNum < 0) {
+            setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage('Enter a Valid Transfer Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(false);
@@ -154,6 +164,7 @@ export default function Transfer(props: propsIF) {
             setButtonMessage('Transfer');
         }
     }, [
+        transferQtyNonDisplay,
         isTransferPending,
         isDexBalanceSufficient,
         isTransferQtyValid,
