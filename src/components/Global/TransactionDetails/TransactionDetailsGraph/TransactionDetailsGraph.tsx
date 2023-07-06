@@ -18,6 +18,7 @@ import {
 } from '../../../../pages/Chart/Chart';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { fetchCandleSeriesCroc } from '../../../../App/functions/fetchCandleSeries';
+import moment from 'moment';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -76,7 +77,7 @@ export default function TransactionDetailsGraph(
 
     const d3PlotGraph = useRef(null);
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
-    const d3Xaxis = useRef(null);
+    const d3Xaxis = useRef<HTMLInputElement | null>(null);
     const graphMainDiv = useRef(null);
 
     const [scaleData, setScaleData] = useState<any>();
@@ -88,7 +89,10 @@ export default function TransactionDetailsGraph(
     const [triangleLimit, setTriangleLimit] = useState();
     const [horizontalBand, setHorizontalBand] = useState();
 
+    const [period, setPeriod] = useState<number | undefined>();
+
     const [yAxis, setYaxis] = useState<any>();
+    const [xAxis, setXaxis] = useState<any>();
 
     const decidePeriod = (diff: number) => {
         return diff <= 60
@@ -158,7 +162,7 @@ export default function TransactionDetailsGraph(
                     }
                 };
 
-                const minDate = time() * 1000 - oneHourMiliseconds * 24;
+                const minDate = time() * 1000 - oneHourMiliseconds * 8;
 
                 const diff =
                     new Date().getTime() - minDate < 43200000
@@ -166,6 +170,7 @@ export default function TransactionDetailsGraph(
                         : new Date().getTime() - minDate;
 
                 const period = decidePeriod(Math.floor(diff / 1000 / 200));
+                setPeriod(period);
                 if (period !== undefined) {
                     const calcNumberCandlesNeeded = Math.floor(
                         (diff * 2) / (period * 1000),
@@ -542,8 +547,95 @@ export default function TransactionDetailsGraph(
             setYaxis(() => {
                 return _yAxis;
             });
+
+            const xAxis = d3fc.axisBottom().scale(scaleData?.xScale);
+
+            setXaxis(() => {
+                return xAxis;
+            });
         }
     }, [scaleData]);
+
+    useEffect(() => {
+        if (scaleData) {
+            const d3XaxisCanvas = d3
+                .select(d3Xaxis.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            if (d3XaxisCanvas) {
+                const d3XaxisContext = d3XaxisCanvas.getContext(
+                    '2d',
+                ) as CanvasRenderingContext2D;
+
+                d3.select(d3Xaxis.current).on('draw', function () {
+                    if (xAxis) {
+                        setCanvasResolution(d3XaxisCanvas);
+                        drawXaxis(d3XaxisContext, scaleData?.xScale, 3);
+                    }
+                });
+
+                renderCanvasArray([d3Xaxis]);
+            }
+        }
+    }, [xAxis, scaleData, d3Xaxis, period]);
+
+    const drawXaxis = (context: any, xScale: any, Y: any) => {
+        if (period) {
+            const _width = 30; // magic number of pixels to surrounding price
+            const minDomainLocation = scaleData?.xScale.range()[0];
+            const maxDomainLocation = scaleData?.xScale.range()[1];
+
+            const tickSize = 6;
+            let formatValue = undefined;
+
+            context.beginPath();
+            context.textAlign = 'center';
+            context.textBaseline = 'top';
+            context.fillStyle = 'rgba(189,189,189,0.6)';
+            context.font = '10px Lexend Deca';
+            const tickTempValues = scaleData.xScale.ticks(7);
+
+            tickTempValues.map((tick: any) => {
+                if (
+                    moment(tick).format('HH:mm') === '00:00' ||
+                    period === 86400
+                ) {
+                    formatValue = moment(tick).format('MMM DD');
+                } else {
+                    formatValue = moment(tick).format('HH:mm');
+                }
+
+                if (
+                    moment(tick)
+                        .format('DD')
+                        .match(/^(01)$/) &&
+                    moment(tick).format('HH:mm') === '00:00'
+                ) {
+                    formatValue =
+                        moment(tick).format('MMM') === 'Jan'
+                            ? moment(tick).format('YYYY')
+                            : moment(tick).format('MMM');
+                }
+
+                if (
+                    !(
+                        minDomainLocation >= xScale(tick) - _width &&
+                        minDomainLocation <= xScale(tick) + _width
+                    ) &&
+                    !(
+                        maxDomainLocation >= xScale(tick) - _width &&
+                        maxDomainLocation <= xScale(tick) + _width
+                    )
+                ) {
+                    context.fillText(formatValue, xScale(tick), Y + tickSize);
+                }
+            });
+            context.restore();
+
+            renderCanvasArray([d3Xaxis]);
+        }
+    };
 
     useEffect(() => {
         if (scaleData) {
@@ -723,10 +815,6 @@ export default function TransactionDetailsGraph(
                 const minDomain = scaleData.xScale.domain()[0].getTime();
                 const maxDomain = scaleData.xScale.domain()[1].getTime();
 
-                const tickValues: any[] = [];
-                // const diffValue = graphData[0].time-graphData[1].time;
-                // const period = decidePeriod(diffValue);
-
                 const buffer = oneHourMiliseconds * 5;
 
                 if (transactionType === 'limitOrder' && tx !== undefined) {
@@ -744,23 +832,6 @@ export default function TransactionDetailsGraph(
                         ]);
                     }
                 }
-                const tickTempValues = scaleData.xScale.ticks(7);
-
-                tickTempValues.map((tick: any) => {
-                    if (
-                        tick.getTime() + buffer < maxDomain &&
-                        tick.getTime() - buffer > minDomain
-                    ) {
-                        tickValues.push(tick);
-                    }
-                });
-
-                console.log({ tickValues });
-
-                const xAxis = d3fc
-                    .axisBottom()
-                    .scale(scaleData?.xScale)
-                    .tickValues(tickValues);
 
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
@@ -917,8 +988,6 @@ export default function TransactionDetailsGraph(
                                 ],
                             ]).call(crossPoint);
                         }
-
-                        d3.select(d3Xaxis.current).select('svg').call(xAxis);
                     },
                 );
 
@@ -964,11 +1033,11 @@ export default function TransactionDetailsGraph(
                     style={{ width: '10%' }}
                 ></d3fc-canvas>
             </div>
-            <d3fc-svg
+            <d3fc-canvas
                 className='x-axis'
                 ref={d3Xaxis}
                 style={{ height: '20px', width: '100%' }}
-            ></d3fc-svg>
+            ></d3fc-canvas>
         </div>
     );
     let dataToRender;
