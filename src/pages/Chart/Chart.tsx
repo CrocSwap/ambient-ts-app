@@ -64,6 +64,7 @@ import VolumeBarCanvas from './SubChartComponents/VolumeBarCanvas';
 import RangeLineCanvas from './SubChartComponents/RangeLineCanvas';
 import LimitLineCanvas from './SubChartComponents/LimitLineCanvas';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
+import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -231,6 +232,7 @@ export default function Chart(props: propsIF) {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
@@ -271,6 +273,8 @@ export default function Chart(props: propsIF) {
 
     const d3Xaxis = useRef<HTMLCanvasElement | null>(null);
     const d3Yaxis = useRef<HTMLDivElement | null>(null);
+    const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
+
     const dispatch = useAppDispatch();
 
     const location = useLocation();
@@ -341,14 +345,23 @@ export default function Chart(props: propsIF) {
             value: undefined,
         },
     ]);
+    // Crosshairs
     const [liqTooltip, setLiqTooltip] =
         useState<d3.Selection<HTMLDivElement, unknown, null, undefined>>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [lastCrDataTooltip, setLastCrDataTooltip] = useState<any>();
     const [crosshairActive, setCrosshairActive] = useState<string>('chart');
+    const [isCrDataIndActive, setIsCrDataIndActive] = useState<boolean>(false);
+    const [isCrDataToolTipActive, setIsCrDataToolTipActive] =
+        useState<boolean>(false);
 
     // Crosshairs
     const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [crDataIndicator, setCrDataIndicator] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
 
@@ -414,6 +427,16 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
+
+    const lastCrDate = useMemo(() => {
+        const lastCrocDate = unparsedCandleData?.find((item: CandleData) => {
+            return item.tvlData.tvl === 0;
+        });
+
+        if (lastCrocDate) {
+            return lastCrocDate?.time * 1000;
+        }
+    }, [diffHashSigChart(unparsedCandleData)]);
 
     const standardDeviation = (arr: number[], usePopulation = false) => {
         const mean =
@@ -1176,33 +1199,6 @@ export default function Chart(props: propsIF) {
                                         scaleData?.yScale.domain(domain);
                                     }
 
-                                    const topPlacement =
-                                        event.sourceEvent.y -
-                                        80 -
-                                        (event.sourceEvent.offsetY -
-                                            scaleData?.yScale(
-                                                poolPriceDisplay,
-                                            )) /
-                                            2;
-
-                                    if (liqTooltip) {
-                                        liqTooltip
-                                            .style(
-                                                'top',
-                                                topPlacement > 500
-                                                    ? 500
-                                                    : (topPlacement < 115
-                                                          ? 115
-                                                          : topPlacement) +
-                                                          'px',
-                                            )
-                                            .style(
-                                                'left',
-                                                event.sourceEvent.offsetX -
-                                                    80 +
-                                                    'px',
-                                            );
-                                    }
                                     if (
                                         tradeData.advancedMode &&
                                         liquidityData
@@ -1225,6 +1221,8 @@ export default function Chart(props: propsIF) {
                                 clickedForLine = true;
                                 render();
                                 setZoomAndYdragControl(event);
+
+                                relocateTooltip();
                             }
                         }
 
@@ -3062,6 +3060,11 @@ export default function Chart(props: propsIF) {
             const _width = 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
 
+            let lastCrDateLocation = 0;
+            if (lastCrDate) {
+                lastCrDateLocation = xScale(lastCrDate);
+            }
+
             scaleData?.xScaleTime.domain(xScale.domain());
 
             const data = correctStyleForData(
@@ -3121,39 +3124,58 @@ export default function Chart(props: propsIF) {
                     ) {
                         context.filter = ' blur(7px)';
                     }
+
                     if (d.style) {
                         context.font = '900 12px Lexend Deca';
                     }
 
                     context.beginPath();
-                    if (formatValue) {
-                        const indexValue = filteredData.findIndex(
-                            (d1: xAxisTick) => d1.date === d.date,
-                        );
-                        if (!d.style) {
-                            const maxIndex =
-                                indexValue === filteredData.length - 1
-                                    ? indexValue
-                                    : indexValue + 1;
-                            const minIndex =
-                                indexValue === 0 ? indexValue : indexValue - 1;
-                            const lastData = filteredData[maxIndex];
-                            const beforeData = filteredData[minIndex];
 
-                            if (
-                                beforeData.style ||
-                                (lastData.style && xScale(d.date.getTime()))
-                            ) {
+                    if (
+                        d.date.getTime() !== lastCrDate &&
+                        !(
+                            xScale(d.date) > lastCrDateLocation - _width / 2 &&
+                            xScale(d.date) < lastCrDateLocation + _width / 2
+                        )
+                    ) {
+                        if (formatValue) {
+                            const indexValue = filteredData.findIndex(
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                (d1: any) => d1.date === d.date,
+                            );
+                            if (!d.style) {
+                                const maxIndex =
+                                    indexValue === filteredData.length - 1
+                                        ? indexValue
+                                        : indexValue + 1;
+                                const minIndex =
+                                    indexValue === 0
+                                        ? indexValue
+                                        : indexValue - 1;
+                                const lastData = filteredData[maxIndex];
+                                const beforeData = filteredData[minIndex];
+
                                 if (
-                                    Math.abs(
-                                        xScale(beforeData.date.getTime()) -
-                                            xScale(d.date.getTime()),
-                                    ) > _width &&
-                                    Math.abs(
-                                        xScale(lastData.date.getTime()) -
-                                            xScale(d.date.getTime()),
-                                    ) > _width
+                                    beforeData.style ||
+                                    (lastData.style && xScale(d.date.getTime()))
                                 ) {
+                                    if (
+                                        Math.abs(
+                                            xScale(beforeData.date.getTime()) -
+                                                xScale(d.date.getTime()),
+                                        ) > _width &&
+                                        Math.abs(
+                                            xScale(lastData.date.getTime()) -
+                                                xScale(d.date.getTime()),
+                                        ) > _width
+                                    ) {
+                                        context.fillText(
+                                            formatValue,
+                                            xScale(d.date.getTime()),
+                                            Y + tickSize,
+                                        );
+                                    }
+                                } else {
                                     context.fillText(
                                         formatValue,
                                         xScale(d.date.getTime()),
@@ -3167,15 +3189,8 @@ export default function Chart(props: propsIF) {
                                     Y + tickSize,
                                 );
                             }
-                        } else {
-                            context.fillText(
-                                formatValue,
-                                xScale(d.date.getTime()),
-                                Y + tickSize,
-                            );
                         }
                     }
-
                     context.restore();
                 }
             });
@@ -3203,6 +3218,17 @@ export default function Chart(props: propsIF) {
                     Y + tickSize,
                 );
             }
+
+            if (
+                xScale(crosshairData[0].x) >
+                    lastCrDateLocation - (_width - 15) &&
+                xScale(crosshairData[0].x) <
+                    lastCrDateLocation + (_width - 15) &&
+                crosshairActive !== 'none'
+            ) {
+                context.filter = ' blur(7px)';
+            }
+            context.fillText('🐊', lastCrDateLocation, Y + tickSize);
 
             context.restore();
 
@@ -3571,6 +3597,32 @@ export default function Chart(props: propsIF) {
             setCrosshairHorizontal(() => {
                 return crosshairHorizontal;
             });
+
+            const crDataIndicator = createIndicatorLine(
+                scaleData?.xScale,
+                scaleData.yScale,
+            );
+
+            setCrDataIndicator(() => {
+                return crDataIndicator;
+            });
+
+            if (
+                d3
+                    .select(d3Container.current)
+                    .select('.lastCrDataTooltip')
+                    .node() === null
+            ) {
+                const lastCrDataTooltip = d3
+                    .select(d3Container.current)
+                    .append('div')
+                    .attr('class', 'lastCrDataTooltip')
+                    .style('visibility', 'hidden');
+
+                setLastCrDataTooltip(() => {
+                    return lastCrDataTooltip;
+                });
+            }
         }
     }, [diffHashSigScaleData(scaleData)]);
 
@@ -3626,6 +3678,36 @@ export default function Chart(props: propsIF) {
         crosshairActive,
         crosshairVerticalCanvas,
     ]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasCrIndicator.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+        console.log('burda');
+
+        if (crDataIndicator) {
+            d3.select(d3CanvasCrIndicator.current)
+                .on('draw', () => {
+                    console.log('draw');
+
+                    setCanvasResolution(canvas);
+                    ctx.setLineDash([0.6, 0.6]);
+                    if (isCrDataToolTipActive || isCrDataIndActive) {
+                        console.log('üf');
+
+                        crDataIndicator([lastCrDate]);
+                    }
+                })
+                .on('measure', () => {
+                    ctx.setLineDash([0.6, 0.6]);
+                    crDataIndicator.context(ctx);
+                });
+        }
+
+        renderCanvasArray([d3CanvasCrIndicator]);
+    }, [crDataIndicator, isCrDataToolTipActive, isCrDataIndActive]);
 
     useEffect(() => {
         const canvas = d3
@@ -3914,16 +3996,45 @@ export default function Chart(props: propsIF) {
                 mouseLeaveCanvas();
             });
 
-            d3.select(d3Xaxis.current).on(
-                'mouseover',
-                (event: MouseEvent<HTMLDivElement>) => {
-                    d3.select(event.currentTarget).style(
-                        'cursor',
-                        'col-resize',
-                    );
-                    setCrosshairActive('none');
-                },
-            );
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            d3.select(d3Xaxis.current).on('mousemove', (event: any) => {
+                d3.select(event.currentTarget).style('cursor', 'col-resize');
+
+                if (
+                    scaleData &&
+                    lastCrDate &&
+                    scaleData.xScale(scaleData.xScale.invert(event.layerX)) >
+                        scaleData.xScale(lastCrDate) - 15 &&
+                    scaleData.xScale(scaleData.xScale.invert(event.layerX)) <
+                        scaleData.xScale(lastCrDate) + 15 &&
+                    scaleData.xScale.invert(event.layerX) !== lastCrDate
+                ) {
+                    d3.select(event.currentTarget).style('cursor', 'pointer');
+
+                    setIsCrDataIndActive(true);
+                } else {
+                    setIsCrDataIndActive(false);
+                }
+                setCrosshairActive('none');
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            d3.select(d3Xaxis.current).on('click', (event: any) => {
+                if (
+                    !isCrDataToolTipActive &&
+                    scaleData &&
+                    lastCrDate &&
+                    scaleData.xScale(scaleData.xScale.invert(event.layerX)) >
+                        scaleData.xScale(lastCrDate) - 15 &&
+                    scaleData.xScale(scaleData.xScale.invert(event.layerX)) <
+                        scaleData.xScale(lastCrDate) + 15 &&
+                    scaleData.xScale.invert(event.layerX) !== lastCrDate
+                ) {
+                    setIsCrDataToolTipActive(true);
+                } else {
+                    setIsCrDataToolTipActive(false);
+                }
+            });
 
             render();
 
@@ -3971,6 +4082,9 @@ export default function Chart(props: propsIF) {
 
             const mouseLeaveCanvas = () => {
                 setCrosshairActive('none');
+                setIsCrDataIndActive(false);
+
+                render();
             };
 
             d3.select(d3CanvasMain.current).on(
@@ -3981,6 +4095,10 @@ export default function Chart(props: propsIF) {
                     setMouseLeaveEvent(event);
                 },
             );
+
+            d3.select(d3Xaxis.current).on('mouseleave', () => {
+                mouseLeaveCanvas();
+            });
 
             const mouseEnterCanvas = () => {
                 if (!isLineDrag) {
@@ -4003,13 +4121,14 @@ export default function Chart(props: propsIF) {
         diffHashSigScaleData(scaleData),
         limit,
         ranges,
-        liqMode,
         liquidityScale,
         liquidityDepthScale,
         isLineDrag,
         unparsedCandleData?.length,
         tradeData.advancedMode,
         !tradeData.advancedMode && simpleRangeWidth === 100,
+        isCrDataToolTipActive,
+        lastCrDate,
     ]);
 
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
@@ -4229,21 +4348,40 @@ export default function Chart(props: propsIF) {
                 setMouseLocationY(offsetY);
 
                 renderCanvasArray([d3CanvasCrosshair]);
-            }
-            if (liqMode !== 'none') {
-                setLiqDataHoverEvent(event);
-            }
-
-            if (mainCanvasBoundingClientRect) {
-                const offsetY =
-                    event.clientY - mainCanvasBoundingClientRect?.top;
-                const offsetX =
-                    event.clientX - mainCanvasBoundingClientRect?.left;
+                if (liqMode !== 'none') {
+                    setLiqDataHoverEvent(event);
+                }
 
                 const { isHoverCandleOrVolumeData } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
                 setIsOnCandleOrVolumeMouseLocation(isHoverCandleOrVolumeData);
             }
+        }
+    };
+
+    useEffect(() => {
+        if (lastCrDataTooltip && scaleData) {
+            lastCrDataTooltip.html('<p> 🐊 Start of Crocswap Data </p>');
+
+            lastCrDataTooltip.style(
+                'visibility',
+                isCrDataToolTipActive ? 'visible' : 'hidden',
+            );
+
+            relocateTooltip();
+        }
+    }, [isCrDataToolTipActive, lastCrDataTooltip, isCrDataIndActive]);
+
+    const relocateTooltip = () => {
+        if (lastCrDataTooltip && scaleData && lastCrDate) {
+            const width = lastCrDataTooltip.style('width').split('p')[0] / 2;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const xAxisCanvas = d3.select(d3Xaxis.current).node() as any;
+
+            const rectXaxis = xAxisCanvas.getBoundingClientRect();
+            lastCrDataTooltip
+                .style('bottom', rectXaxis.height + 15 + 'px')
+                .style('left', scaleData?.xScale(lastCrDate) - width + 'px');
         }
     };
 
@@ -4457,6 +4595,11 @@ export default function Chart(props: propsIF) {
                             className='cr-canvas'
                         ></d3fc-canvas>
                         <d3fc-canvas
+                            ref={d3CanvasCrIndicator}
+                            className='cr-indicator-canvas'
+                        ></d3fc-canvas>
+
+                        <d3fc-canvas
                             ref={d3CanvasMarketLine}
                             className='market-line-canvas'
                         ></d3fc-canvas>
@@ -4507,6 +4650,9 @@ export default function Chart(props: propsIF) {
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
+                                lastCrDate={lastCrDate}
+                                isCrDataIndActive={isCrDataIndActive}
+                                isCrDataToolTipActive={isCrDataToolTipActive}
                             />
                         </>
                     )}
@@ -4534,6 +4680,9 @@ export default function Chart(props: propsIF) {
                                 setCrosshairActive={setCrosshairActive}
                                 crosshairActive={crosshairActive}
                                 setShowTooltip={props.setShowTooltip}
+                                lastCrDate={lastCrDate}
+                                isCrDataIndActive={isCrDataIndActive}
+                                isCrDataToolTipActive={isCrDataToolTipActive}
                             />
                         </>
                     )}
