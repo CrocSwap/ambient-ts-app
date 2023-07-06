@@ -36,7 +36,7 @@ export const useTokenSearch = (
             setSearchAs('address');
             // if not an apparent token address, search name and symbol
             // if not an apparent token address, search name and symbol
-        } else if (cleanInput.length >= 2) {
+        } else if (cleanInput.length) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
             // otherwise treat as if there is no input entered
@@ -81,17 +81,24 @@ export const useTokenSearch = (
 
         // fn to run a token search by name or symbol
         function searchAsNameOrSymbol(): TokenIF[] {
-            // determine if the validated input is exactly two characters
-            // for two-character input, app should only return exact matches
-            const exactOnly: boolean = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
-            return tokens.getTokensByNameOrSymbol(validatedInput, exactOnly);
+            return tokens.getTokensByNameOrSymbol(validatedInput);
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens: TokenIF[] = tokens.defaultTokens;
+            const ambientTokens: TokenIF[] = tokens.defaultTokens;
+            // get tokens from the Uniswap list, remove any already on Ambient list
+            const uniswapTokens: TokenIF[] = tokens
+                .getTokensFromList(tokenListURIs.uniswap)
+                .filter((uniTkn: TokenIF) => {
+                    return !ambientTokens
+                        .map((tkn: TokenIF) => tkn.address.toLowerCase())
+                        .includes(uniTkn.address.toLowerCase());
+                });
+            // combine the Ambient and Uniswap token lists with no duplicates
+            const outputTokens: TokenIF[] = ambientTokens.concat(uniswapTokens);
             // fn to add tokens from an array to the output array
             const addTokensToOutput = (
                 newTokens: TokenIF[],
