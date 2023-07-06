@@ -144,7 +144,6 @@ export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
     mainnetWBTC,
-    mainnetWBTC,
     mainnetPEPE,
     mainnetDAI,
     goerliETH,
