@@ -13,11 +13,11 @@ export default function Apy(props: ApyProps) {
 
     const amountString = amount
         ? amount >= 1000
-            ? amount.toLocaleString(undefined, {
+            ? amount.toLocaleString('en-US', {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
               }) + '%+'
-            : amount.toLocaleString(undefined, {
+            : amount.toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               }) + '%'
