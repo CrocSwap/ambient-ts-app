@@ -150,34 +150,66 @@
     }
 }
 
-.only_mentions_toggle_wrapper{
-    display: inline-block;
-    vertical-align: bottom ;
-    margin-left: .4rem;
-}
-.only_mentions_wrapper{
+
+.ment_skip_button{
     position: absolute;
-    top: 0;
-    left: 1rem;
-    background: #171d27;
-    background: #34327e;
-    transform: translateY(-100%);
+    display: block;
+    width: 1.4rem;
+    height: 1.4rem;
+    background-color: var(--accent1);
+    border-radius: 10rem;
+    bottom: 45%;
+    right: 1.4rem; 
+    z-index: 2;   
+    cursor: pointer;
     opacity: 0;
-    animation: opaAnim 0.3s .3s ease-in-out forwards;
-    box-shadow: 0px 0px 12px rgba(205, 193, 255, 0.2);
-    border-top: 0.5px solid var(--accent1);
-    border-left: 0.5px solid var(--accent1);
-    border-right: 0.5px solid var(--accent1);
-    border-radius: .2rem .2rem 0 0;
-    padding: .4rem 1rem;
-    font-size: .8rem;
+    animation: opaAnim .4s ease-in-out forwards;
 }
 
-.only_mentions_text{
-    transition: ease-in-out .3s;
-    opacity: .5;
+
+.ment_skip_button_down, .ment_skip_button_last{
+    position: absolute;
+    display: block;
+    width: 1.4rem;
+    height: 1.4rem;
+    background-color: var(--accent1);
+    border-radius: 10rem;
+    bottom: 37%;
+    right: 1.4rem; 
+    z-index: 2;   
+    cursor: pointer;
+    opacity: 0;
+    animation: opaAnim .4s ease-in-out forwards;
+    -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 
-.only_mentions_text_active{
-    opacity: 1;
+.ment_skip_button_last{
+    bottom: 30%;
+    width: auto;
+    bottom: 10%;
+    text-align: center;
+    padding: 0 1rem;
+    font-size: .82rem;
+    height: auto;
+    left: 50%;
+    color: black;
+    font-weight: 600;
+    right: auto;
+    transform: translateX(-50%);
 }
+
+.ment_skip_button_last svg{
+
+    vertical-align: middle;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+}
+
+.ment_skip_button svg, .ment_skip_button_down svg, .ment_skip_button_last svg{
+    color: black;
+}
+
+

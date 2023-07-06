@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import { CHAT_BACKEND_WSS_URL, CHAT_BACKEND_URL } from '../../../constants';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
+import { check } from 'prettier';
 
 const useChatSocket = (
     room: string,
@@ -10,7 +11,7 @@ const useChatSocket = (
     isChatOpen = true,
     address?: string,
     ensName?: string | null,
-    onlyMentions = false,
+    // onlyMentions = false,
 ) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
@@ -19,6 +20,7 @@ const useChatSocket = (
     const [lastMessage, setLastMessage] = useState<Message>();
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
+    const [notis, setNotis] = useState<Map<string, number>>();
 
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
@@ -29,6 +31,23 @@ const useChatSocket = (
             CHAT_BACKEND_URL +
                 '/chat/api/messages/getMsgWithoutWebSocket/' +
                 encodedRoomInfo,
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+        return data;
+    }
+
+    async function getMentionsWithRest(roomInfo: string) {
+        const encodedRoomInfo = encodeURIComponent(roomInfo);
+        const response = await fetch(
+            CHAT_BACKEND_URL +
+                '/chat/api/messages/getMentions/' +
+                encodedRoomInfo +
+                '/' +
+                address,
+
             {
                 method: 'GET',
             },
@@ -62,6 +81,7 @@ const useChatSocket = (
         }
 
         async function getRest() {
+            // const data = onlyMentions ? await getMentionsWithRest(room) : await getMsgWithRest(room);
             const data = await getMsgWithRest(room);
 
             setMessages(data.reverse());
@@ -79,14 +99,31 @@ const useChatSocket = (
 
         if (socketRef && socketRef.current) {
             socketRef.current.on('msg-recieve', (data: any) => {
+                console.log('msg-recieve', data);
                 setMessages([...messagesRef.current, data]);
                 if (messagesRef.current[messagesRef.current.length - 1]) {
-                    // setLastMessage(messagesRef.current[messagesRef.current.length-1]);
-                    // setLastMessageText(messagesRef.current[messagesRef.current.length-1].message);
-                    // setMessageUser(messagesRef.current[messagesRef.current.length-1].sender);
                     setLastMessage(data);
                     setLastMessageText(data.message);
                     setMessageUser(data.sender);
+                }
+            });
+
+            socketRef.current.on('noti', (data: any) => {
+                console.log('.....................');
+                console.log(data);
+                console.log('.....................');
+
+                if (notis) {
+                    const checkVal = notis.get(data.roomInfo);
+                    if (checkVal != undefined) {
+                        setNotis(notis.set(data.roomInfo, checkVal + 1));
+                    } else {
+                        setNotis(notis.set(data.roomInfo, 1));
+                    }
+                } else {
+                    const nts = new Map<string, number>();
+                    nts.set(data.roomInfo, 1);
+                    setNotis(nts);
                 }
             });
         }
@@ -96,7 +133,7 @@ const useChatSocket = (
                 socketRef.current.disconnect();
             }
         };
-    }, [room, areSubscriptionsEnabled, isChatOpen, address]);
+    }, [room, areSubscriptionsEnabled, isChatOpen, address, notis]);
 
     async function getMsg() {
         if (!socketRef.current) return;
@@ -142,6 +179,7 @@ const useChatSocket = (
         lastMessageText,
         deleteMsgFromList,
         users,
+        notis,
     };
 };
 

@@ -26,6 +26,7 @@ interface SentMessageProps {
     nextMessage: any;
     deleteMsgFromList: (id: string) => void;
     isLinkInCrocodileLabsLinks(word: string): boolean;
+    mentionIndex?: number;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -299,7 +300,10 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     return (
-        <div className={styles.msg_bubble_container} style={messageStyle()}>
+        <div
+            className={`${styles.msg_bubble_container} mentIndex-${props.mentionIndex} `}
+            style={messageStyle()}
+        >
             <div>
                 {daySeparator === '' ? (
                     ''

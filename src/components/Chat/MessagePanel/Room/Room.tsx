@@ -8,6 +8,7 @@ import useChatApi from '../../Service/ChatApi';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import Toggle2 from '../../../Global/Toggle/Toggle2';
 
 interface propsIF {
     selectedRoom: any;
@@ -24,6 +25,11 @@ interface propsIF {
     currentUser: any;
     favoritePoolsArray: PoolIF[];
     setFavoritePoolsArray: any;
+    focusMentions: boolean;
+    setFocusMentions: any;
+    notis?: Map<string, number>;
+    mentCount: number;
+    mentIndex: number;
 }
 
 export default function Room(props: propsIF) {
@@ -367,9 +373,16 @@ export default function Room(props: propsIF) {
                         }
                     >
                         {tab.name}
+                        {handleNotiDot(tab.name || '')}
                     </div>
                 ));
             }
+        }
+    }
+
+    function handleNotiDot(key: string) {
+        if (props.notis?.get(key)) {
+            return <div className={styles.noti_dot}></div>;
         }
     }
 
@@ -389,6 +402,7 @@ export default function Room(props: propsIF) {
                     style={{ flexGrow: '1' }}
                 >
                     {props.selectedRoom}
+                    {handleNotiDot(props.selectedRoom || '')}
                 </div>
                 {showCurrentPoolButton ? (
                     <div
@@ -473,10 +487,43 @@ export default function Room(props: propsIF) {
                                     ''
                                 )}
                                 {pool.name}
+                                {handleNotiDot(pool.name || '')}
                             </div>
                         ))}
-
                         {handleShowRoomsExceptGlobal(props.selectedRoom)}
+                    </div>
+
+                    <div className={styles.only_mentions_wrapper}>
+                        <span
+                            className={`${styles.only_mentions_text} ${
+                                props.focusMentions
+                                    ? styles.only_mentions_text_active
+                                    : ''
+                            }`}
+                        >
+                            Focus Mentions{' '}
+                        </span>
+                        <span className={styles.only_mentions_toggle_wrapper}>
+                            <Toggle2
+                                key={'only_mentions_toggle'}
+                                isOn={props.focusMentions}
+                                disabled={false}
+                                handleToggle={() =>
+                                    props.setFocusMentions(!props.focusMentions)
+                                }
+                                id='only_mentions_toggle_id'
+                                aria-label={'only_mentions_toggle_aria_label'}
+                            />
+                        </span>
+                        {props.mentCount > 0 && (
+                            <div
+                                className={`${styles.ment_text_info_wrapper} ${
+                                    props.focusMentions ? styles.opa_full : ''
+                                }`}
+                            >
+                                {props.mentIndex + 1}/ {props.mentCount}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

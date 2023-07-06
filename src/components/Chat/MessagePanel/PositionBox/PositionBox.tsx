@@ -81,18 +81,18 @@ export default function PositionBox(props: propsIF) {
 
     useEffect(() => {
         updateIsPosition();
-        console.log('ddd ', posFingerprint);
+        // console.log('ddd ', posFingerprint);
     }, [message, posFingerprint, txFingerprint]);
 
     useEffect(() => {
-        console.log(
-            'aaaaaakdxsnbşljmnfc ',
-            transactionsData.find(
-                (item) =>
-                    item.txHash ===
-                    '0x42e90fa2db7ccffae0e6164b6daa43103ea6a38658601a59ba50372f57ad8105',
-            ),
-        );
+        // console.log(
+        //     'aaaaaakdxsnbşljmnfc ',
+        //     transactionsData.find(
+        //         (item) =>
+        //             item.txHash ===
+        //             '0x42e90fa2db7ccffae0e6164b6daa43103ea6a38658601a59ba50372f57ad8105',
+        //     ),
+        // );
     }, [message]);
 
     function financial(x: any) {

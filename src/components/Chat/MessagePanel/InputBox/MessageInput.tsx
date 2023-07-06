@@ -181,10 +181,6 @@ export default function MessageInput(props: MessageInputProps) {
         // }else if(e.key === 'ArrowDown' && mentPanelActive) {
         //     e.preventDefault();
         // }
-
-        console.log('..............................................');
-        console.log('mentPanelActive', mentPanelActive);
-        console.log('possibleMentUser', possibleMentUser);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -220,7 +216,10 @@ export default function MessageInput(props: MessageInputProps) {
     });
 
     const handleSendMsg = async (msg: string, roomId: string) => {
+        console.log(msg);
+        console.log(mentUser);
         if (msg !== '' && address) {
+            console.log(mentUser);
             props.sendMsg(
                 props.currentUser,
                 message,

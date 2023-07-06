@@ -24,7 +24,7 @@ interface propsIF {
 }
 
 function ChatPanel(props: propsIF) {
-    const [onlyMentions, setOnlyMentions] = useState(false);
+    const [focusMentions, setFocusMentions] = useState(true);
     const { isFullScreen } = props;
     const {
         chat: {
@@ -61,6 +61,9 @@ function ChatPanel(props: propsIF) {
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
+    const [mentIndex, setMentIndex] = useState(-1);
+    const [hasNewMention, setHasNewMention] = useState(false);
+
     const {
         messages,
         getMsg,
@@ -69,6 +72,7 @@ function ChatPanel(props: propsIF) {
         sendMsg,
         deleteMsgFromList,
         users,
+        notis,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -224,6 +228,22 @@ function ChatPanel(props: propsIF) {
         setNotification(0);
     }, [isChatOpen]);
 
+    useEffect(() => {
+        console.log(ments.length);
+
+        const mentsInScp = messages.filter((item) => {
+            return item.mentionedWalletID == address;
+        });
+
+        if (mentIndex == -1) {
+            setMentIndex(mentsInScp.length - 1);
+        }
+
+        if (notis?.get(room)) {
+            console.log('i got new message');
+        }
+    }, [messages]);
+
     function handleCloseChatPanel() {
         setIsChatOpen(false);
     }
@@ -244,6 +264,14 @@ function ChatPanel(props: propsIF) {
         setScrollDirection('Scroll Down');
         return () => clearTimeout(timer);
     };
+
+    const getChatBubbleYPos = (bubbleEl?: Element, containerEl?: Element) => {
+        if (bubbleEl === undefined || containerEl === undefined) return 0;
+        const elTop =
+            bubbleEl?.getBoundingClientRect().top + containerEl?.scrollTop;
+        return elTop - containerEl?.getBoundingClientRect().top;
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
         if (
@@ -255,6 +283,27 @@ function ChatPanel(props: propsIF) {
             setScrollDirection('Scroll Down');
         } else {
             setScrollDirection('Scroll Up');
+        }
+
+        if (ments.length > 0) {
+            let currIndex = 0;
+            for (let i = 0; i < ments.length; i++) {
+                const targetEl = document.querySelectorAll(`.mentIndex-${i}`);
+                const targetTop = getChatBubbleYPos(targetEl[0], e.target);
+                if (
+                    e.target.scrollTop > targetTop
+                    // ||
+                    // targetEl[0].getBoundingClientRect().top - e.target.getBoundingClientRect().bottom < 0
+                ) {
+                    currIndex += 1;
+                }
+            }
+
+            if (currIndex >= ments.length) currIndex = ments.length - 1;
+
+            setTimeout(() => {
+                setMentIndex(currIndex);
+            }, 200);
         }
     };
 
@@ -282,6 +331,34 @@ function ChatPanel(props: propsIF) {
             const lowercaseB = currencyB.trim().toLowerCase();
             return `${lowercaseA}&${lowercaseB}`;
         }
+    };
+
+    const ments = messages.filter((item) => {
+        return item.mentionedWalletID == address;
+    });
+
+    const handleMentionSkipper = (way: number) => {
+        let newMentIndex = 0;
+        if (way == 1) {
+            newMentIndex = mentIndex + 1;
+        } else if (way === -1) {
+            newMentIndex = mentIndex - 1;
+        } else {
+            newMentIndex = ments.length - 1;
+        }
+
+        const targetEl = document.querySelectorAll(
+            `.mentIndex-${newMentIndex}`,
+        );
+        // const parentTop = messageEnd.current.getBoundingClientRect().top;
+        // const elTop = targetEl.item(0)?.getBoundingClientRect().top + messageEnd.current.scrollTop;
+        // const elYCoord = elTop - parentTop;
+
+        // messageEnd.current.scrollTop = elYCoord - 40;
+
+        messageEnd.current.scrollTop =
+            getChatBubbleYPos(targetEl.item(0), messageEnd.current) - 40;
+        // setMentIndex(newMentIndex);
     };
 
     const header = (
@@ -332,6 +409,7 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
+    let mentIndexPointer = 0;
     const messageList = (
         <div
             ref={messageEnd}
@@ -340,28 +418,43 @@ function ChatPanel(props: propsIF) {
             id='chatmessage'
         >
             {messages &&
-                messages.map((item, i) => (
-                    <SentMessagePanel
-                        key={i}
-                        isUserLoggedIn={isUserLoggedIn as boolean}
-                        message={item}
-                        ensName={ensName}
-                        isCurrentUser={item.sender === currentUser}
-                        currentUser={currentUser}
-                        resolvedAddress={resolvedAddress}
-                        connectedAccountActive={address}
-                        moderator={moderator}
-                        room={room}
-                        isMessageDeleted={isMessageDeleted}
-                        setIsMessageDeleted={setIsMessageDeleted}
-                        nextMessage={
-                            i === messages.length - 1 ? null : messages[i + 1]
-                        }
-                        previousMessage={i === 0 ? null : messages[i - 1]}
-                        deleteMsgFromList={deleteMsgFromList}
-                        isLinkInCrocodileLabsLinks={isLinkInCrocodileLabsLinks}
-                    />
-                ))}
+                messages.map((item, i) => {
+                    if (item.mentionedWalletID === address) {
+                        mentIndexPointer += 1;
+                    }
+
+                    return (
+                        <SentMessagePanel
+                            key={i}
+                            isUserLoggedIn={isUserLoggedIn as boolean}
+                            message={item}
+                            ensName={ensName}
+                            isCurrentUser={item.sender === currentUser}
+                            currentUser={currentUser}
+                            resolvedAddress={resolvedAddress}
+                            connectedAccountActive={address}
+                            moderator={moderator}
+                            room={room}
+                            isMessageDeleted={isMessageDeleted}
+                            setIsMessageDeleted={setIsMessageDeleted}
+                            nextMessage={
+                                i === messages.length - 1
+                                    ? null
+                                    : messages[i + 1]
+                            }
+                            previousMessage={i === 0 ? null : messages[i - 1]}
+                            deleteMsgFromList={deleteMsgFromList}
+                            isLinkInCrocodileLabsLinks={
+                                isLinkInCrocodileLabsLinks
+                            }
+                            mentionIndex={
+                                item.mentionedWalletID === address
+                                    ? mentIndexPointer - 1
+                                    : undefined
+                            }
+                        />
+                    );
+                })}
         </div>
     );
 
@@ -504,35 +597,12 @@ function ChatPanel(props: propsIF) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onClick={(e: any) => e.stopPropagation()}
         >
-            {isChatOpen && (
-                <div className={styles.only_mentions_wrapper}>
-                    <span
-                        className={`${styles.only_mentions_text} ${
-                            onlyMentions ? styles.only_mentions_text_active : ''
-                        }`}
-                    >
-                        Only Mentions{' '}
-                    </span>
-                    <span className={styles.only_mentions_toggle_wrapper}>
-                        <Toggle2
-                            key={'only_mentions_toggle'}
-                            isOn={onlyMentions}
-                            disabled={false}
-                            handleToggle={() => setOnlyMentions(!onlyMentions)}
-                            id='only_mentions_toggle_id'
-                            aria-label={'only_mentions_toggle_aria_label'}
-                        />
-                    </span>
-                </div>
-            )}
-
             <div
                 className={styles.modal_body}
                 style={{ height: contentHeight, width: '100%' }}
             >
                 <div className={styles.chat_body}>
                     {header}
-
                     <Room
                         selectedRoom={room}
                         setRoom={setRoom}
@@ -548,6 +618,11 @@ function ChatPanel(props: propsIF) {
                         ensName={ensName}
                         setFavoritePoolsArray={setFavoritePoolsArray}
                         favoritePoolsArray={favoritePoolsArray}
+                        focusMentions={focusMentions}
+                        setFocusMentions={setFocusMentions}
+                        notis={notis}
+                        mentCount={ments.length}
+                        mentIndex={mentIndex}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
@@ -561,6 +636,42 @@ function ChatPanel(props: propsIF) {
                     <div id='thelastmessage' />
                 </div>
             </div>
+
+            {ments.length > 0 && isChatOpen && focusMentions && (
+                <>
+                    {mentIndex > 0 && (
+                        <div
+                            className={styles.ment_skip_button}
+                            onClick={() => {
+                                handleMentionSkipper(-1);
+                            }}
+                        >
+                            <IoIosArrowUp size={22} />
+                        </div>
+                    )}
+                    {mentIndex < ments.length - 1 && (
+                        <div
+                            className={styles.ment_skip_button_down}
+                            onClick={() => {
+                                handleMentionSkipper(1);
+                            }}
+                        >
+                            <IoIosArrowDown size={22} />
+                        </div>
+                    )}
+                    {mentIndex < ments.length - 1 && (
+                        <div
+                            className={styles.ment_skip_button_last}
+                            onClick={() => {
+                                handleMentionSkipper(2);
+                            }}
+                        >
+                            <IoIosArrowDown size={22} />
+                            Last Mention
+                        </div>
+                    )}
+                </>
+            )}
         </div>
     );
 }
