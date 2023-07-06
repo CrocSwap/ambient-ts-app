@@ -3220,6 +3220,7 @@ export default function Chart(props: propsIF) {
             }
 
             if (
+                lastCrDateLocation &&
                 xScale(crosshairData[0].x) >
                     lastCrDateLocation - (_width - 15) &&
                 xScale(crosshairData[0].x) <
@@ -3228,7 +3229,10 @@ export default function Chart(props: propsIF) {
             ) {
                 context.filter = ' blur(7px)';
             }
-            context.fillText('🐊', lastCrDateLocation, Y + tickSize);
+
+            if (lastCrDateLocation) {
+                context.fillText('🐊', lastCrDateLocation, Y + tickSize);
+            }
 
             context.restore();
 
