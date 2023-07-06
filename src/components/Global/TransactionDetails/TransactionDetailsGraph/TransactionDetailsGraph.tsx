@@ -38,6 +38,7 @@ export default function TransactionDetailsGraph(
     } = props;
     const { chainData, crocEnv } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const oneHourMiliseconds = 60 * 60 * 1000;
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -176,7 +177,7 @@ export default function TransactionDetailsGraph(
 
                     const offsetInSeconds = 120;
 
-                    const startBoundary =
+                    const endTime =
                         Math.floor(new Date().getTime() / 1000) -
                         offsetInSeconds;
 
@@ -191,7 +192,7 @@ export default function TransactionDetailsGraph(
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
-                            startBoundary,
+                            endTime,
                             numCandlesNeeded,
                             crocEnv,
                             cachedFetchTokenPrice,
@@ -521,12 +522,9 @@ export default function TransactionDetailsGraph(
                 }
             }
 
-            const xScaleOriginal = xScale.copy();
-
             const scaleData = {
                 xScale: xScale,
                 yScale: yScale,
-                xScaleOriginal: xScaleOriginal,
             };
 
             setScaleData(() => {
@@ -720,91 +718,126 @@ export default function TransactionDetailsGraph(
             triangleLimit: any,
         ) => {
             if (graphData.length > 0) {
-                const buffer =
-                    Math.abs(
-                        scaleData.xScale.domain()[1].getTime() -
-                            scaleData.xScale.domain()[0].getTime(),
-                    ) / 30;
+                const minDomain = scaleData.xScale.domain()[0].getTime();
+                const maxDomain = scaleData.xScale.domain()[1].getTime();
+                const buffer = Math.abs(maxDomain - minDomain) / 30;
 
-                const tickTempValues = scaleData.xScale.ticks(7);
-                const tickValues: any[] = [];
+                (async () => {
+                    if (transactionType === 'limitOrder' && tx !== undefined) {
+                        if (tx.timeFirstMint * 1000 + buffer >= maxDomain) {
+                            scaleData?.xScale.domain([
+                                minDomain,
+                                maxDomain + oneHourMiliseconds * 5,
+                            ]);
+                        }
 
-                tickTempValues.map((tick: any) => {
-                    if (
-                        tick.getTime() + buffer <
-                            scaleData.xScale.domain()[1].getTime() &&
-                        tick.getTime() - buffer >
-                            scaleData.xScale.domain()[0].getTime()
-                    ) {
-                        tickValues.push(tick);
+                        if (tx.timeFirstMint * 1000 - buffer <= minDomain) {
+                            scaleData?.xScale.domain([
+                                tx.timeFirstMint * 1000 -
+                                    oneHourMiliseconds * 24,
+                                maxDomain,
+                            ]);
+                        }
                     }
-                });
+                })().then(() => {
+                    const tickTempValues = scaleData.xScale.ticks(7);
+                    const tickValues: any[] = [];
 
-                const xAxis = d3fc
-                    .axisBottom()
-                    .scale(scaleData?.xScale)
-                    .tickValues(tickValues);
-
-                const lineJoin = d3fc.dataJoin('g', 'lineJoin');
-                const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
-
-                const horizontalBandJoin = d3fc.dataJoin('g', 'horizontalBand');
-                const horizontalBandData: any[] = [];
-
-                const rangelinesJoin = d3fc.dataJoin('g', 'rangeLines');
-                const limitPriceLineJoin = d3fc.dataJoin('g', 'limitPriceLine');
-                const triangleRangeJoin = d3fc.dataJoin('g', 'triangleRange');
-                const triangleLimitJoin = d3fc.dataJoin('g', 'triangleLimit');
-
-                d3.select(d3PlotGraph.current).on(
-                    'measure',
-                    function (event: any) {
-                        scaleData?.xScale.range([0, event.detail.width]);
-                        scaleData?.xScaleOriginal.range([
-                            0,
-                            event.detail.width,
-                        ]);
-                        scaleData?.yScale.range([event.detail.height, 0]);
-                    },
-                );
-
-                d3.select(d3PlotGraph.current).on(
-                    'draw',
-                    function (event: any) {
-                        const svg = d3.select(event.target).select('svg');
-
+                    tickTempValues.map((tick: any) => {
                         if (
-                            transactionType === 'limitOrder' &&
-                            tx !== undefined
+                            tick.getTime() + buffer < maxDomain &&
+                            tick.getTime() - buffer > minDomain
                         ) {
-                            if (tx.timeFirstMint === undefined) {
-                                horizontalBandData[0] = [
-                                    (
-                                        !isAccountView
-                                            ? denominationsInBase
-                                            : !isBaseTokenMoneynessGreaterOrEqual
-                                    )
-                                        ? tx.bidTickInvPriceDecimalCorrected
-                                        : tx.bidTickPriceDecimalCorrected,
-                                    (
-                                        !isAccountView
-                                            ? denominationsInBase
-                                            : !isBaseTokenMoneynessGreaterOrEqual
-                                    )
-                                        ? tx.askTickInvPriceDecimalCorrected
-                                        : tx.askTickPriceDecimalCorrected,
-                                ];
+                            tickValues.push(tick);
+                        }
+                    });
 
-                                horizontalBandJoin(svg, [
-                                    horizontalBandData,
-                                ]).call(horizontalBand);
-                            } else if (tx.claimableLiq > 0) {
-                                crossPointJoin(svg, [
-                                    [
+                    const xAxis = d3fc
+                        .axisBottom()
+                        .scale(scaleData?.xScale)
+                        .tickValues(tickValues);
+
+                    const lineJoin = d3fc.dataJoin('g', 'lineJoin');
+                    const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
+
+                    const horizontalBandJoin = d3fc.dataJoin(
+                        'g',
+                        'horizontalBand',
+                    );
+                    const horizontalBandData: any[] = [];
+
+                    const rangelinesJoin = d3fc.dataJoin('g', 'rangeLines');
+                    const limitPriceLineJoin = d3fc.dataJoin(
+                        'g',
+                        'limitPriceLine',
+                    );
+                    const triangleRangeJoin = d3fc.dataJoin(
+                        'g',
+                        'triangleRange',
+                    );
+                    const triangleLimitJoin = d3fc.dataJoin(
+                        'g',
+                        'triangleLimit',
+                    );
+
+                    d3.select(d3PlotGraph.current).on(
+                        'measure',
+                        function (event: any) {
+                            scaleData?.xScale.range([0, event.detail.width]);
+                            scaleData?.yScale.range([event.detail.height, 0]);
+                        },
+                    );
+
+                    d3.select(d3PlotGraph.current).on(
+                        'draw',
+                        function (event: any) {
+                            const svg = d3.select(event.target).select('svg');
+
+                            if (
+                                transactionType === 'limitOrder' &&
+                                tx !== undefined
+                            ) {
+                                if (tx.timeFirstMint === undefined) {
+                                    horizontalBandData[0] = [
+                                        (
+                                            !isAccountView
+                                                ? denominationsInBase
+                                                : !isBaseTokenMoneynessGreaterOrEqual
+                                        )
+                                            ? tx.bidTickInvPriceDecimalCorrected
+                                            : tx.bidTickPriceDecimalCorrected,
+                                        (
+                                            !isAccountView
+                                                ? denominationsInBase
+                                                : !isBaseTokenMoneynessGreaterOrEqual
+                                        )
+                                            ? tx.askTickInvPriceDecimalCorrected
+                                            : tx.askTickPriceDecimalCorrected,
+                                    ];
+
+                                    horizontalBandJoin(svg, [
+                                        horizontalBandData,
+                                    ]).call(horizontalBand);
+                                } else if (tx.claimableLiq > 0) {
+                                    crossPointJoin(svg, [
+                                        [
+                                            {
+                                                x: tx.timeFirstMint
+                                                    ? tx.timeFirstMint * 1000
+                                                    : tx.txTime * 1000,
+                                                y: (
+                                                    !isAccountView
+                                                        ? denominationsInBase
+                                                        : !isBaseTokenMoneynessGreaterOrEqual
+                                                )
+                                                    ? tx.askTickInvPriceDecimalCorrected
+                                                    : tx.askTickPriceDecimalCorrected,
+                                            },
+                                        ],
+                                    ]).call(crossPoint);
+                                } else {
+                                    const limitLine = [
                                         {
-                                            x: tx.timeFirstMint
-                                                ? tx.timeFirstMint * 1000
-                                                : tx.txTime * 1000,
                                             y: (
                                                 !isAccountView
                                                     ? denominationsInBase
@@ -812,104 +845,97 @@ export default function TransactionDetailsGraph(
                                             )
                                                 ? tx.askTickInvPriceDecimalCorrected
                                                 : tx.askTickPriceDecimalCorrected,
+
+                                            x: tx.timeFirstMint,
+                                        },
+                                    ];
+
+                                    limitPriceLineJoin(svg, [limitLine]).call(
+                                        limitPriceLine,
+                                    );
+
+                                    triangleLimitJoin(svg, [limitLine]).call(
+                                        triangleLimit,
+                                    );
+                                }
+                            }
+
+                            if (
+                                transactionType === 'liqchange' &&
+                                tx !== undefined
+                            ) {
+                                if (tx.positionType !== 'ambient') {
+                                    const bidLine = (
+                                        !isAccountView
+                                            ? denominationsInBase
+                                            : !isBaseTokenMoneynessGreaterOrEqual
+                                    )
+                                        ? tx.bidTickInvPriceDecimalCorrected
+                                        : tx.bidTickPriceDecimalCorrected;
+
+                                    const askLine = (
+                                        !isAccountView
+                                            ? denominationsInBase
+                                            : !isBaseTokenMoneynessGreaterOrEqual
+                                    )
+                                        ? tx.askTickInvPriceDecimalCorrected
+                                        : tx.askTickPriceDecimalCorrected;
+
+                                    horizontalBandData[0] = [bidLine, askLine];
+
+                                    const rangeLinesData = [bidLine, askLine];
+
+                                    const triangleData = [
+                                        bidLine,
+                                        bidLine,
+                                        askLine,
+                                        askLine,
+                                    ];
+
+                                    horizontalBandJoin(svg, [
+                                        horizontalBandData,
+                                    ]).call(horizontalBand);
+
+                                    rangelinesJoin(svg, [rangeLinesData]).call(
+                                        priceLine,
+                                    );
+
+                                    triangleRangeJoin(svg, [triangleData]).call(
+                                        triangleRange,
+                                    );
+                                }
+                            }
+
+                            lineJoin(svg, [graphData]).call(lineSeries);
+
+                            if (
+                                transactionType === 'swap' &&
+                                tx !== undefined
+                            ) {
+                                crossPointJoin(svg, [
+                                    [
+                                        {
+                                            x: tx.txTime * 1000,
+                                            y: (
+                                                !isAccountView
+                                                    ? denominationsInBase
+                                                    : !isBaseTokenMoneynessGreaterOrEqual
+                                            )
+                                                ? tx.swapInvPriceDecimalCorrected
+                                                : tx.swapPriceDecimalCorrected,
                                         },
                                     ],
                                 ]).call(crossPoint);
-                            } else {
-                                const limitLine = [
-                                    {
-                                        y: (
-                                            !isAccountView
-                                                ? denominationsInBase
-                                                : !isBaseTokenMoneynessGreaterOrEqual
-                                        )
-                                            ? tx.askTickInvPriceDecimalCorrected
-                                            : tx.askTickPriceDecimalCorrected,
-
-                                        x: tx.timeFirstMint,
-                                    },
-                                ];
-
-                                limitPriceLineJoin(svg, [limitLine]).call(
-                                    limitPriceLine,
-                                );
-
-                                triangleLimitJoin(svg, [limitLine]).call(
-                                    triangleLimit,
-                                );
                             }
-                        }
 
-                        if (
-                            transactionType === 'liqchange' &&
-                            tx !== undefined
-                        ) {
-                            if (tx.positionType !== 'ambient') {
-                                const bidLine = (
-                                    !isAccountView
-                                        ? denominationsInBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual
-                                )
-                                    ? tx.bidTickInvPriceDecimalCorrected
-                                    : tx.bidTickPriceDecimalCorrected;
+                            d3.select(d3Xaxis.current)
+                                .select('svg')
+                                .call(xAxis);
+                        },
+                    );
 
-                                const askLine = (
-                                    !isAccountView
-                                        ? denominationsInBase
-                                        : !isBaseTokenMoneynessGreaterOrEqual
-                                )
-                                    ? tx.askTickInvPriceDecimalCorrected
-                                    : tx.askTickPriceDecimalCorrected;
-
-                                horizontalBandData[0] = [bidLine, askLine];
-
-                                const rangeLinesData = [bidLine, askLine];
-
-                                const triangleData = [
-                                    bidLine,
-                                    bidLine,
-                                    askLine,
-                                    askLine,
-                                ];
-
-                                horizontalBandJoin(svg, [
-                                    horizontalBandData,
-                                ]).call(horizontalBand);
-
-                                rangelinesJoin(svg, [rangeLinesData]).call(
-                                    priceLine,
-                                );
-
-                                triangleRangeJoin(svg, [triangleData]).call(
-                                    triangleRange,
-                                );
-                            }
-                        }
-
-                        lineJoin(svg, [graphData]).call(lineSeries);
-
-                        if (transactionType === 'swap' && tx !== undefined) {
-                            crossPointJoin(svg, [
-                                [
-                                    {
-                                        x: tx.txTime * 1000,
-                                        y: (
-                                            !isAccountView
-                                                ? denominationsInBase
-                                                : !isBaseTokenMoneynessGreaterOrEqual
-                                        )
-                                            ? tx.swapInvPriceDecimalCorrected
-                                            : tx.swapPriceDecimalCorrected,
-                                    },
-                                ],
-                            ]).call(crossPoint);
-                        }
-
-                        d3.select(d3Xaxis.current).select('svg').call(xAxis);
-                    },
-                );
-
-                render();
+                    render();
+                });
             }
         },
         [tx],
