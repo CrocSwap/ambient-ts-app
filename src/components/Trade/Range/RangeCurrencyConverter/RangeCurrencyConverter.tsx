@@ -511,12 +511,7 @@ function RangeCurrencyConverter(props: propsIF) {
         }
         dispatch(setIsTokenAPrimaryRange(true));
         dispatch(setPrimaryQuantityRange(input));
-        const tokenAField = document.getElementById(
-            'A-range-quantity',
-        ) as HTMLInputElement;
-        if (tokenAField) {
-            tokenAField.value = input;
-        }
+        setTokenAInputQty(input);
     };
 
     const handleTokenBChangeClick = (input: string) => {
@@ -529,12 +524,7 @@ function RangeCurrencyConverter(props: propsIF) {
         }
         dispatch(setIsTokenAPrimaryRange(false));
         dispatch(setPrimaryQuantityRange(input));
-        const tokenBField = document.getElementById(
-            'B-range-quantity',
-        ) as HTMLInputElement;
-        if (tokenBField) {
-            tokenBField.value = input;
-        }
+        setTokenBInputQty(input);
     };
 
     const handleTokenBQtyFieldUpdate = (
