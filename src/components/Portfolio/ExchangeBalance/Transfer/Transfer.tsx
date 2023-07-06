@@ -265,14 +265,7 @@ export default function Transfer(props: propsIF) {
         </div>
     ) : null;
 
-    // const transferInput = document.getElementById(
-    //     'exchange-balance-transfer-exchange-balance-transfer-quantity',
-    // ) as HTMLInputElement;
-
     const resetTransferQty = () => {
-        // if (transferInput) {
-        //     transferInput.value = '';
-        // }
         setTransferQtyNonDisplay(undefined);
         setInputValue('');
     };

@@ -258,14 +258,7 @@ export default function Withdraw(props: propsIF) {
         }
     };
 
-    // const withdrawInput = document.getElementById(
-    //     'exchange-balance-withdraw-exchange-balance-withdraw-quantity',
-    // ) as HTMLInputElement;
-
     const resetWithdrawQty = () => {
-        // if (withdrawInput) {
-        //     withdrawInput.value = '';
-        // }
         setWithdrawQtyNonDisplay(undefined);
         setInputValue('');
     };

@@ -396,6 +396,20 @@ function Swap(props: propsIF) {
         setShowExtraInfo: setShowExtraInfo,
     };
 
+    const byPassConfirmSwapButtonProps = {
+        initiateSwapMethod: initiateSwap,
+        newSwapTransactionHash: newSwapTransactionHash,
+        setNewSwapTransactionHash: setNewSwapTransactionHash,
+        txErrorCode: txErrorCode,
+        sellQtyString: sellQtyString,
+        buyQtyString: buyQtyString,
+        tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
+        resetConfirmation: resetConfirmation,
+        setShowBypassConfirm: setShowBypassConfirm,
+        showExtraInfo: showExtraInfo,
+        setShowExtraInfo: setShowExtraInfo,
+    };
+
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
@@ -456,8 +470,8 @@ function Swap(props: propsIF) {
         isLiq: false,
         isTokenAPrimary: isTokenAPrimary,
         sellQtyString: sellQtyString,
-        buyQtyString: buyQtyString,
         setSellQtyString: setSellQtyString,
+        buyQtyString: buyQtyString,
         setBuyQtyString: setBuyQtyString,
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
@@ -473,7 +487,7 @@ function Swap(props: propsIF) {
     } = useContext(AppStateContext);
 
     const handleSwapButtonClickWithBypass = () => {
-        IS_LOCAL_ENV && console.debug('setting to true');
+        IS_LOCAL_ENV && console.debug('setting  bypass confirm to true');
         setShowBypassConfirm(true);
         initiateSwap();
     };
@@ -690,7 +704,7 @@ function Swap(props: propsIF) {
                                     ) : (
                                         // user has hide confirmation modal on
                                         <BypassConfirmSwapButton
-                                            {...confirmSwapModalProps}
+                                            {...byPassConfirmSwapButtonProps}
                                         />
                                     )}
                                     {ackTokenMessage && (

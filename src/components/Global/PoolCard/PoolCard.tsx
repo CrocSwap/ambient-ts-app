@@ -15,6 +15,8 @@ import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { estimateFrom24HrRangeApr } from '../../../App/functions/fetchAprEst';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import TokenIcon from '../TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     pool: topPoolIF;
@@ -298,24 +300,26 @@ export default function PoolCard(props: propsIF) {
             <div className={styles.main_container}>
                 <div className={styles.row} style={{ padding: '4px' }}>
                     <div className={styles.token_images}>
-                        <img
-                            src={
+                        <TokenIcon
+                            size='2xl'
+                            src={uriToHttp(
                                 shouldInvertDisplay
                                     ? pool.base.logoURI
-                                    : pool.quote.logoURI
-                            }
+                                    : pool.quote.logoURI,
+                            )}
                             alt={`logo for token ${
                                 shouldInvertDisplay
                                     ? pool.base.logoURI
                                     : pool.quote.logoURI
                             }`}
                         />
-                        <img
-                            src={
+                        <TokenIcon
+                            size='2xl'
+                            src={uriToHttp(
                                 shouldInvertDisplay
                                     ? pool.quote.logoURI
-                                    : pool.base.logoURI
-                            }
+                                    : pool.base.logoURI,
+                            )}
                             alt={`logo for token ${
                                 shouldInvertDisplay
                                     ? pool.quote.name
