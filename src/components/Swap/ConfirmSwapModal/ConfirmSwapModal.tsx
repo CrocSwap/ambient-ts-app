@@ -86,14 +86,14 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const localeSellString =
         parseFloat(sellQtyString) > 999
-            ? parseFloat(sellQtyString).toLocaleString(undefined, {
+            ? parseFloat(sellQtyString).toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
             : sellQtyString;
     const localeBuyString =
         parseFloat(buyQtyString) > 999
-            ? parseFloat(buyQtyString).toLocaleString(undefined, {
+            ? parseFloat(buyQtyString).toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
@@ -157,7 +157,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     }, [currentBuyTokenPrice, baselineBuyTokenPrice]);
 
     const buyTokenPriceChangeString = buyTokenPriceChangePercentage
-        ? buyTokenPriceChangePercentage.toLocaleString(undefined, {
+        ? buyTokenPriceChangePercentage.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })

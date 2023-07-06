@@ -178,7 +178,7 @@ export default function PoolCard(props: propsIF) {
                     setPoolVolume(volumeString);
                 }
                 if (apyResult) {
-                    const apyString = apyResult.toLocaleString(undefined, {
+                    const apyString = apyResult.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     });
@@ -216,12 +216,12 @@ export default function PoolCard(props: propsIF) {
                         const priceChangeString =
                             priceChangePercent > 0
                                 ? '+' +
-                                  priceChangePercent.toLocaleString(undefined, {
+                                  priceChangePercent.toLocaleString('en-US', {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) +
                                   '%'
-                                : priceChangePercent.toLocaleString(undefined, {
+                                : priceChangePercent.toLocaleString('en-US', {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) + '%';

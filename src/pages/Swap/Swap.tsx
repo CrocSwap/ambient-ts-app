@@ -564,7 +564,7 @@ function Swap(props: propsIF) {
 
     const liquidityProviderFeeString = (
         tradeData.liquidityFee * 100
-    ).toLocaleString(undefined, {
+    ).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });

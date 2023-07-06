@@ -127,7 +127,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     }
 
     const aprPercentageString = aprPercentage
-        ? ` ${aprPercentage.toLocaleString(undefined, {
+        ? ` ${aprPercentage.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })}%`
