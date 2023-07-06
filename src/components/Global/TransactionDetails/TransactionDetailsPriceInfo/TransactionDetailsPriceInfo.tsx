@@ -10,6 +10,7 @@ import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import Apy from '../../Tabs/Apy/Apy';
 
 type ItemIF = {
     slug: string;
@@ -20,10 +21,11 @@ type ItemIF = {
 interface propsIF {
     tx: TransactionIF;
     controlItems: ItemIF[];
+    positionApy: number | undefined;
 }
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
-    const { tx, controlItems } = props;
+    const { tx, controlItems, positionApy } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -283,6 +285,15 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 {controlItems[2] && totalValueContent}
                 {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}
+                {tx.entityType === 'liqchange' ? (
+                    <Apy
+                        amount={positionApy || undefined}
+                        fs='48px'
+                        lh='60px'
+                        center
+                        showTitle
+                    />
+                ) : undefined}
             </div>
         </div>
     );

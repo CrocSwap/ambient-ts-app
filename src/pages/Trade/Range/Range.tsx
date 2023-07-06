@@ -1155,6 +1155,8 @@ function Range() {
         sendTransaction: sendTransaction,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
         showBypassConfirmButton: showBypassConfirmButton,
+        tokenAInputQty: tokenAInputQty,
+        tokenBInputQty: tokenBInputQty,
     };
 
     // props for <RangeCurrencyConverter/> React element
