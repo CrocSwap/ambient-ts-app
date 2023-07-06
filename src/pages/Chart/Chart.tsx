@@ -360,6 +360,7 @@ export default function Chart(props: propsIF) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crDataIndicator, setCrDataIndicator] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
@@ -3139,6 +3140,7 @@ export default function Chart(props: propsIF) {
                     ) {
                         if (formatValue) {
                             const indexValue = filteredData.findIndex(
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 (d1: any) => d1.date === d.date,
                             );
                             if (!d.style) {
@@ -3994,6 +3996,7 @@ export default function Chart(props: propsIF) {
                 mouseLeaveCanvas();
             });
 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             d3.select(d3Xaxis.current).on('mousemove', (event: any) => {
                 d3.select(event.currentTarget).style('cursor', 'col-resize');
 
@@ -4372,6 +4375,7 @@ export default function Chart(props: propsIF) {
     const relocateTooltip = () => {
         if (lastCrDataTooltip && scaleData && lastCrDate) {
             const width = lastCrDataTooltip.style('width').split('p')[0] / 2;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const xAxisCanvas = d3.select(d3Xaxis.current).node() as any;
 
             const rectXaxis = xAxisCanvas.getBoundingClientRect();
