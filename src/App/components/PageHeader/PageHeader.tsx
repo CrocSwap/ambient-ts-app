@@ -261,6 +261,11 @@ const PageHeader = function () {
             shouldDisplay: true,
         },
         {
+            title: t('common:analyticsTitle'),
+            destination: '/analytics',
+            shouldDisplay: true,
+        },
+        {
             title: t('common:accountTitle'),
             destination: '/account',
             shouldDisplay: isConnected,
