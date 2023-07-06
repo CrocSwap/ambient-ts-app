@@ -134,6 +134,19 @@ div.liqTooltip {
     border-radius: var(--border-radius);
 }
 
+div.lastCrDataTooltip {
+    position: absolute;
+    text-align: center;
+    align-items: center;
+
+    background: rgba(10, 10, 19, 0.47);
+    padding: 3px;
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+}
+
 .liqTooltip {
     position: absolute;
     text-align: center;
