@@ -19,6 +19,15 @@ type PoolStats = {
     baseTokenCharacter?: string;
     quoteTokenCharacter?: string;
 };
+
+type HeaderItem = {
+    label: string;
+    hidden: boolean;
+    align: string;
+    responsive?: string;
+    clickable: boolean;
+    pxValue?: number;
+};
 export default function TopPools() {
     const { topPools } = useContext(CrocEnvContext);
 
@@ -153,65 +162,94 @@ export default function TopPools() {
         );
     };
 
+    const TableHead = ({ headerItems }: { headerItems: HeaderItem[] }) => {
+        return (
+            <thead
+                className='sticky top-0 h-25'
+                style={{ height: '25px', zIndex: '2' }}
+            >
+                <tr className='text-text2 text-body font-regular capitalize leading-body'>
+                    {headerItems.map((headerItem, index) => (
+                        <th
+                            key={index}
+                            scope='col'
+                            className={`${headerItem.hidden ? 'hidden' : ''} ${
+                                headerItem.responsive
+                                    ? `${headerItem.responsive}:table-cell`
+                                    : ''
+                            } sticky top-0 ${
+                                headerItem.pxValue
+                                    ? `px-${headerItem.pxValue}`
+                                    : 'px-6'
+                            } text-${headerItem.align} tracking-wider ${
+                                headerItem.clickable
+                                    ? 'hover:bg-dark2 cursor-pointer'
+                                    : ''
+                            }`}
+                        >
+                            {headerItem.label}
+                        </th>
+                    ))}
+                </tr>
+            </thead>
+        );
+    };
+
+    const topPoolsHeaderItems: HeaderItem[] = [
+        {
+            label: 'Tokens',
+            hidden: false,
+            align: 'left',
+            clickable: false,
+            pxValue: 8,
+        },
+        {
+            label: 'Pool',
+            hidden: true,
+            align: 'left',
+            responsive: 'sm',
+            clickable: false,
+        },
+        {
+            label: 'Price',
+            hidden: true,
+            align: 'left',
+            responsive: 'sm',
+            clickable: true,
+        },
+        {
+            label: 'TVL',
+            hidden: true,
+            align: 'left',
+            responsive: 'sm',
+            clickable: true,
+        },
+        {
+            label: 'APR',
+            hidden: true,
+            align: 'left',
+            responsive: 'xl',
+            clickable: true,
+        },
+        { label: 'Volume', hidden: false, align: 'left', clickable: true },
+        {
+            label: 'Change',
+            hidden: true,
+            align: 'left',
+            responsive: 'lg',
+            clickable: false,
+        },
+        { label: '', hidden: false, align: 'right', clickable: false },
+    ];
+
     return (
         <div className='flex flex-col h-full'>
             <div className='flex-grow overflow-auto h-full hide-scrollbar'>
                 <div className='py-2 h-full'>
                     <div className='shadow rounded-lg bg-dark1 h-full py-2'>
                         <table className='divide-y divide-dark3 relative w-full '>
-                            <thead
-                                className=' sticky top-0 h-25 '
-                                style={{ height: '25px', zIndex: '2' }}
-                            >
-                                <tr className='text-text2 text-body font-regular capitalize leading-body'>
-                                    <th
-                                        scope='col'
-                                        className='sticky top-0 px-8 text-left tracking-wider'
-                                    >
-                                        Tokens
-                                    </th>
-                                    <th
-                                        scope='col'
-                                        className='hidden sm:table-cell sticky top-0 px-6 text-left tracking-wider'
-                                    >
-                                        Pool
-                                    </th>
-                                    <th
-                                        scope='col'
-                                        className='hidden sm:table-cell sticky top-0 px-6 text-left tracking-wider hover:bg-dark2 cursor-pointer'
-                                    >
-                                        Price
-                                    </th>
-                                    <th
-                                        scope='col'
-                                        className='hidden sm:table-cell sticky top-0 px-6 text-left tracking-wider hover:bg-dark2 cursor-pointer'
-                                    >
-                                        TVL
-                                    </th>
-                                    <th
-                                        scope='col'
-                                        className='hidden xl:table-cell sticky top-0 px-6 text-left tracking-wider hover:bg-dark2 cursor-pointer'
-                                    >
-                                        APR
-                                    </th>
-                                    <th
-                                        scope='col'
-                                        className='sticky top-0 px-6 text-left tracking-wider hover:bg-dark2 cursor-pointer'
-                                    >
-                                        Volume
-                                    </th>
-                                    <th
-                                        scope='col'
-                                        className='hidden lg:table-cell sticky top-0 px-6 text-left tracking-wider'
-                                    >
-                                        Change
-                                    </th>
-                                    <th
-                                        scope='col'
-                                        className='sticky top-0 px-6 text-right tracking-wider'
-                                    ></th>
-                                </tr>
-                            </thead>
+                            <TableHead headerItems={topPoolsHeaderItems} />
+
                             <tbody className='bg-dark1 text-white text-body font-regular capitalize leading-body overflow-y-auto max-h-96'>
                                 {topPools.map((pool, index) => (
                                     <PoolRow key={index} {...pool} />
