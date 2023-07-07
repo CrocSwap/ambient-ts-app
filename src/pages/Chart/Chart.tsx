@@ -3353,7 +3353,10 @@ export default function Chart(props: propsIF) {
         const _width = 65; // magic number of pixels to blur surrounding price
         const tickSize = 6;
 
-        const lastCrDateLocation = xScale(lastCrDate);
+        const firstCandle =
+            unparsedCandleData[unparsedCandleData.length - 1]?.time;
+        const firstCandleDateLocation = xScale(firstCandle * 1000);
+        const firstCrDateLocation = xScale(lastCrDate);
 
         scaleData.xScaleTime.domain(xScale.domain());
 
@@ -3421,8 +3424,13 @@ export default function Chart(props: propsIF) {
                 if (
                     d.date.getTime() !== lastCrDate &&
                     !(
-                        xScale(d.date) > lastCrDateLocation - _width / 2 &&
-                        xScale(d.date) < lastCrDateLocation + _width / 2
+                        (xScale(d.date) > firstCrDateLocation - _width / 2 &&
+                            xScale(d.date) <
+                                firstCrDateLocation + _width / 2) ||
+                        (xScale(d.date) >
+                            firstCandleDateLocation - _width / 2 &&
+                            xScale(d.date) <
+                                firstCandleDateLocation + _width / 2)
                     )
                 ) {
                     if (formatValue) {
@@ -3502,13 +3510,22 @@ export default function Chart(props: propsIF) {
         }
 
         if (
-            xScale(crosshairData[0].x) > lastCrDateLocation - (_width - 15) &&
-            xScale(crosshairData[0].x) < lastCrDateLocation + (_width - 15) &&
+            ((xScale(crosshairData[0].x) >
+                firstCrDateLocation - (_width - 15) &&
+                xScale(crosshairData[0].x) <
+                    firstCrDateLocation + (_width - 15)) ||
+                (xScale(crosshairData[0].x) >
+                    firstCandleDateLocation - (_width - 15) &&
+                    xScale(crosshairData[0].x) <
+                        firstCandleDateLocation + (_width - 15))) &&
             crosshairActive !== 'none'
         ) {
             context.filter = ' blur(7px)';
         }
-        context.fillText('🐊', lastCrDateLocation, Y + tickSize);
+
+        context.fillText('🐊', firstCrDateLocation, Y + tickSize);
+
+        context.fillText('🥚', firstCandleDateLocation, Y + tickSize);
 
         context.restore();
 
