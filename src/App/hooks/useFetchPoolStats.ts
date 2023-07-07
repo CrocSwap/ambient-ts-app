@@ -14,27 +14,9 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { get24hChange } from '../functions/getPoolStats';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
-type PoolStats = {
-    poolName?: string;
-    baseLogoUri?: string;
-    quoteLogoUri?: string;
-    poolPrice?: string;
-    poolVolume?: string;
-    poolTvl?: string;
-    poolApy?: string;
+import { PoolStatIF } from '../../utils/interfaces/PoolStatIF';
 
-    poolPriceChangePercent?: string;
-    isPoolPriceChangePositive?: boolean;
-
-    baseTokenCharacter?: string;
-    quoteTokenCharacter?: string;
-
-    poolLink: string;
-
-    shouldInvertDisplay?: boolean;
-};
-
-const useFetchPoolStats = (pool: PoolIF): PoolStats => {
+const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
