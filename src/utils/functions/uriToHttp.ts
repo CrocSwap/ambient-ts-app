@@ -12,7 +12,7 @@
 export default function uriToHttp(uri: string): string {
     // special-case URIs which should not be processed by this function
     // any URIs in this array will be returned as-is
-    const excludedURIs = [
+    const excludedURIs: string[] = [
         '/ambient-token-list.json',
         '/broken-list.json',
         '/testnet-token-list.json',
@@ -22,15 +22,15 @@ export default function uriToHttp(uri: string): string {
     if (excludedURIs.includes(uri.trim())) return uri.trim();
 
     // get the prefix of the URI
-    const protocol = uri.trim().split(':')[0].toLowerCase();
+    const protocol: string = uri.trim().split(':')[0].toLowerCase();
 
     // create hashes both for ipfs and ipns URIs
-    const ipfsHash = uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2];
-    const ipnsHash = uri.match(/^ipns:(\/\/)?(.*)$/i)?.[2];
+    const ipfsHash: string | undefined = uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2];
+    const ipnsHash: string | undefined = uri.match(/^ipns:(\/\/)?(.*)$/i)?.[2];
 
     // declare a variable to hold the value to return
     // will be an array with one or two strings
-    const outputURLs = [];
+    const outputURLs: string[] = [];
 
     // execute differential actions based on the protocol URI prefix
     switch (protocol) {
