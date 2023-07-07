@@ -1,9 +1,6 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction } from 'react';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-
-// START: Import JSX Components
-// import TransactionFailed from '../../Global/TransactionFailed/TransactionFailed';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../Global/TransactionException/TransactionException';
@@ -13,13 +10,12 @@ import {
     CircleLoaderCompleted,
     CircleLoaderFailed,
 } from '../../Global/LoadingAnimations/CircleLoader/CircleLoader';
-
-// START: Import Other Local Files
 import styles from './BypassConfirmSwapButton.module.css';
 import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -31,7 +27,6 @@ interface propsIF {
     sellQtyString: string;
     buyQtyString: string;
     setNewSwapTransactionHash: Dispatch<SetStateAction<string>>;
-    showBypassConfirm: boolean;
     showExtraInfo: boolean;
     setShowExtraInfo: Dispatch<SetStateAction<boolean>>;
 }
@@ -60,10 +55,17 @@ export default function BypassConfirmSwapButton(props: propsIF) {
     const sellTokenData: TokenIF = tokenPair.dataTokenA;
     const buyTokenData: TokenIF = tokenPair.dataTokenB;
 
+    const formattedSellTokenQty = getFormattedNumber({
+        value: parseFloat(sellQtyString),
+    });
+    const formatedBuyTokenQty = getFormattedNumber({
+        value: parseFloat(buyQtyString),
+    });
+
     const confirmSendMessage = (
         <WaitingConfirmation
             noAnimation
-            content={`Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol} 
+            content={`Swapping ${formattedSellTokenQty} ${sellTokenData.symbol} for ${formatedBuyTokenQty} ${buyTokenData.symbol} 
             `}
         />
     );
@@ -144,7 +146,7 @@ export default function BypassConfirmSwapButton(props: propsIF) {
         ? 'Transaction Failed'
         : transactionApproved
         ? 'Transaction Submitted'
-        : `Swapping ${sellQtyString} ${sellTokenData.symbol} for ${buyQtyString} ${buyTokenData.symbol}`;
+        : `Swapping ${formattedSellTokenQty} ${sellTokenData.symbol} for ${formatedBuyTokenQty} ${buyTokenData.symbol}`;
 
     return (
         <section className={styles.container}>

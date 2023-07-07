@@ -134,7 +134,7 @@ export default function InitPool() {
                     ? defaultPriceNum.toExponential(2)
                     : defaultPriceNum < 2
                     ? defaultPriceNum.toPrecision(3)
-                    : defaultPriceNum.toLocaleString(undefined, {
+                    : defaultPriceNum.toLocaleString('en-US', {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
@@ -349,7 +349,7 @@ export default function InitPool() {
                         ? invertedPriceNum.toExponential(2)
                         : invertedPriceNum < 2
                         ? invertedPriceNum.toPrecision(3)
-                        : invertedPriceNum.toLocaleString(undefined, {
+                        : invertedPriceNum.toLocaleString('en-US', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                           });
@@ -377,7 +377,7 @@ export default function InitPool() {
                         ? initialPriceInBaseDenom.toExponential(2)
                         : initialPriceInBaseDenom < 2
                         ? initialPriceInBaseDenom.toPrecision(3)
-                        : initialPriceInBaseDenom.toLocaleString(undefined, {
+                        : initialPriceInBaseDenom.toLocaleString('en-US', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                           });

@@ -46,9 +46,7 @@
     gap: 0.5rem;
 }
 
-.token_images img {
-    width: 30px;
-}
+
 .tokens_name {
     font-family: var(--font-logo);
     font-weight: 100;
