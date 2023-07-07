@@ -20,10 +20,6 @@ export const useTokenSearch = (
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string>('');
 
-    const recentTxTokens = useAppSelector(
-        (state) => state.userData.recentTokens,
-    );
-
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
