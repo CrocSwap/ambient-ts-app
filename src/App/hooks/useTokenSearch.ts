@@ -89,6 +89,7 @@ export const useTokenSearch = (
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
             const ambientTokens: TokenIF[] = tokens.defaultTokens;
+            console.log({ ambientTokens });
             // get tokens from the Uniswap list, remove any already on Ambient list
             const uniswapTokens: TokenIF[] = tokens
                 .getTokensFromList(tokenListURIs.uniswap)
@@ -100,6 +101,7 @@ export const useTokenSearch = (
             // combine the Ambient and Uniswap token lists with no duplicates
             const outputTokens: TokenIF[] = ambientTokens.concat(uniswapTokens);
             // fn to add tokens from an array to the output array
+            console.log({ outputTokens });
             const addTokensToOutput = (
                 newTokens: TokenIF[],
                 verificationNeeded: boolean,
@@ -134,10 +136,11 @@ export const useTokenSearch = (
             // add recent tokens to output array
             addTokensToOutput(getRecentTokens(), false, 2);
             // remove off-chain tokens from output array
-            const ouputTokensOnChain = outputTokens.filter(
+            const outputTokensOnChain = outputTokens.filter(
                 (tk: TokenIF) => tk.chainId === parseInt(chainId),
             );
-            return ouputTokensOnChain;
+            console.log({ outputTokensOnChain });
+            return outputTokens;
         }
 
         // declare an output variable

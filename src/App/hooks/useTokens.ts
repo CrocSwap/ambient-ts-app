@@ -68,7 +68,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
 
     // Universe of tokens within the given chain. Combines both tokens from
     // lists and user-acknowledge tokens
-    const tokenMap = useMemo(() => {
+    const tokenMap = useMemo<Map<string, TokenIF>>(() => {
         const retMap = new Map<string, TokenIF>();
         tokenLists
             .reverse() // Reverse add, so higher priority lists overwrite lower priority
@@ -105,13 +105,19 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         return retMap;
     }, [tokenLists, ackTokens, chainId]);
 
-    const tokenUniv = useMemo(() => [...tokenMap.values()], [tokenMap]);
+    const tokenUniv: TokenIF[] = useMemo(
+        () => [...tokenMap.values()],
+        [tokenMap],
+    );
 
-    const defaultTokensInUniv = useMemo(
+    const defaultTokensInUniv: TokenIF[] = useMemo(
         () =>
-            defaultTokens.filter(
-                (tkn) => chainNumToString(tkn.chainId) === chainId,
-            ),
+            tokenUniv.filter((tkn) => {
+                return (
+                    chainNumToString(tkn.chainId) === chainId &&
+                    tkn.listedBy?.includes(tokenListURIs.ambient)
+                );
+            }),
         [chainId],
     );
 
