@@ -4,7 +4,6 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 
-import { topPoolIF } from '../../App/hooks/useTopPools';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
