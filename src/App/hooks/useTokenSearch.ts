@@ -145,6 +145,7 @@ export const useTokenSearch = (
             .sort((a: TokenIF, b: TokenIF) => {
                 // fn to numerically prioritize a token (high = important)
                 const getPriority = (tkn: TokenIF): number => {
+                    const tknAddress: string = tkn.address.toLowerCase();
                     // declare an output variable
                     let priority: number;
                     // canonical token addresses to assign probability
@@ -154,26 +155,24 @@ export const useTokenSearch = (
                             chainId.toLowerCase() as keyof typeof USDC
                         ].toLowerCase(),
                     };
-                    // logic router to assign numerical priority to output
-                    // unlisted tokens get priority 0
-                    switch (tkn.address.toLowerCase()) {
-                        // native token
-                        case addresses.nativeToken:
-                            priority = 1000;
-                            break;
-                        // USDCoin (uses address for current chain)
-                        case addresses.USDC:
-                            priority = 900;
-                            break;
-                        // all non-privileged tokens
-                        default:
-                            priority = 0;
+                    if (tknAddress === ZERO_ADDRESS) {
+                        priority = 100;
+                    } else if (tknAddress === addresses.USDC) {
+                        priority = 90;
+                    } else if (tkn.listedBy) {
+                        priority = tkn.listedBy.length;
+                    } else {
+                        priority = 0;
                     }
                     // return numerical priority of the token
                     return priority;
                 };
+                // token priority values (numeric)
+                const priorityTknA: number = getPriority(a);
+                const priorityTknB: number = getPriority(b);
+                const priority123ABC: number = b.symbol < a.symbol ? 1 : -1;
                 // sort tokens by relative priority level
-                return getPriority(b) - getPriority(a);
+                return priorityTknB - priorityTknA || priority123ABC;
             });
         setOutputTokens(sortedTokens);
         // run hook every time the validated input from the user changes
