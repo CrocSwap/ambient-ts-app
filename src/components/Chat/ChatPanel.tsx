@@ -11,7 +11,7 @@ import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
-import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+import { IoIosArrowUp, IoIosArrowDown, IoIosClose } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
@@ -48,6 +48,7 @@ function ChatPanel(props: propsIF) {
         currentPool.baseToken.symbol + ' / ' + currentPool.quoteToken.symbol,
     );
     const [showPopUp, setShowPopUp] = useState(false);
+    const [popUpText, setPopUpText] = useState('false');
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -78,7 +79,7 @@ function ChatPanel(props: propsIF) {
 
     function isLink(url: string) {
         const urlPattern =
-            /.*(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,8})(:[0-9]{1,5})?(\/.*)?$/i;
+            /^(https|http|ftp|ftps?:\/\/)?([a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,7})(:[0-9]{1,5})?(\/.*)?$/gm;
         return urlPattern.test(url);
     }
 
@@ -91,7 +92,6 @@ function ChatPanel(props: propsIF) {
     function formatURL(url: string) {
         if (!/^https?:\/\//i.test(url)) {
             url = 'https://' + url;
-            console.log(url);
             return url;
         }
         return url;
@@ -107,6 +107,19 @@ function ChatPanel(props: propsIF) {
         return crocodileLabsLinks.some((link) => word.includes(link));
     }
 
+    function isLinkInCrocodileLabsLinksForInput(word: string) {
+        return crocodileLabsLinks.some((link) => {
+            try {
+                const url = new URL(link);
+                const domain = url.hostname;
+                return word.includes(domain);
+            } catch (error) {
+                console.error('Invalid URL:', link);
+                return false;
+            }
+        });
+    }
+
     // eslint-disable-next-line
     function closeOnEscapeKeyDown(e: any) {
         if ((e.charCode || e.keyCode) === 27) setIsChatOpen(false);
@@ -117,6 +130,10 @@ function ChatPanel(props: propsIF) {
         if (e.keyCode === 67 && e.ctrlKey && e.altKey) {
             setIsChatOpen(!isChatOpen);
         }
+    }
+
+    function closePopUp() {
+        setShowPopUp(false);
     }
 
     const [mentPanelActive, setMentPanelActive] = useState(false);
@@ -323,7 +340,6 @@ function ChatPanel(props: propsIF) {
                 ) : (
                     <IoIosArrowDown
                         size={22}
-                        className={styles.close_button}
                         onClick={() => handleCloseChatPanel()}
                         role='button'
                         tabIndex={0}
@@ -370,8 +386,14 @@ function ChatPanel(props: propsIF) {
                         previousMessage={i === 0 ? null : messages[i - 1]}
                         deleteMsgFromList={deleteMsgFromList}
                         isLinkInCrocodileLabsLinks={isLinkInCrocodileLabsLinks}
-                        filterMessage={filterMessage}
                         formatURL={formatURL}
+                        isLinkInCrocodileLabsLinksForInput={
+                            isLinkInCrocodileLabsLinksForInput
+                        }
+                        showPopUp={showPopUp}
+                        setShowPopUp={setShowPopUp}
+                        popUpText={popUpText}
+                        setPopUpText={setPopUpText}
                     />
                 ))}
         </div>
@@ -465,8 +487,17 @@ function ChatPanel(props: propsIF) {
     );
 
     const sendingLink = (
-        <div className={styles.chat_notification}>
-            {showPopUp ? 'You cannot send that link.' : ''}
+        <div className={styles.pop_up}>
+            <p>{popUpText}</p>
+            <div className={styles.close_button}>
+                <IoIosClose
+                    onClick={() => closePopUp()}
+                    size={20}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Close information box.'
+                />
+            </div>
         </div>
     );
 
@@ -492,6 +523,11 @@ function ChatPanel(props: propsIF) {
             setShowPopUp={setShowPopUp}
             filterMessage={filterMessage}
             formatURL={formatURL}
+            isLinkInCrocodileLabsLinksForInput={
+                isLinkInCrocodileLabsLinksForInput
+            }
+            popUpText={popUpText}
+            setPopUpText={setPopUpText}
         />
     );
 
@@ -551,7 +587,7 @@ function ChatPanel(props: propsIF) {
                     <DividerDark changeColor addMarginTop addMarginBottom />
 
                     {messageList}
-                    {sendingLink}
+                    {showPopUp ? sendingLink : ''}
                     {chatNotification}
 
                     {messageInput}

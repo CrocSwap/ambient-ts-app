@@ -6,6 +6,8 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { BiBlock } from 'react-icons/bi';
+import { wordlists } from 'ethers';
 
 interface SentMessageProps {
     message: Message;
@@ -26,8 +28,12 @@ interface SentMessageProps {
     nextMessage: any;
     deleteMsgFromList: (id: string) => void;
     isLinkInCrocodileLabsLinks(word: string): boolean;
-    filterMessage(message: string): boolean;
     formatURL(url: string): void;
+    isLinkInCrocodileLabsLinksForInput(word: string): boolean;
+    showPopUp: boolean;
+    setShowPopUp: Dispatch<SetStateAction<boolean>>;
+    popUpText: string;
+    setPopUpText: Dispatch<SetStateAction<string>>;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -37,6 +43,8 @@ function SentMessagePanel(props: SentMessageProps) {
     const [showName, setShowName] = useState<boolean>(true);
     const [daySeparator, setdaySeparator] = useState('');
     const [ok, setOk] = useState(false);
+    const [count, setCount] = useState(0);
+    const [lastMessageTime, setLastMessageTime] = useState<any>(null);
 
     const { deleteMessage } = useChatApi();
 
@@ -44,7 +52,6 @@ function SentMessagePanel(props: SentMessageProps) {
     const location = useLocation();
 
     useEffect(() => {
-        //   console.log('eeee: ',props.filterMessage(props.message.message))
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
         const currentMessageDate = new Date(props.message?.createdAt);
         const nextMessageDate = new Date(props.nextMessage?.createdAt);
@@ -54,12 +61,10 @@ function SentMessagePanel(props: SentMessageProps) {
         const nextCurrentDiffInMs = Math.abs(
             nextMessageDate.getTime() - currentMessageDate.getTime(),
         );
-
         getDayAndName(
             props.previousMessage?.createdAt,
             props.message?.createdAt,
         );
-
         if (props.previousMessage?.sender === props.message?.sender) {
             if (currentPreviousDiffInMs < 10 * 60 * 1000) {
                 setShowAvatar(false);
@@ -98,6 +103,23 @@ function SentMessagePanel(props: SentMessageProps) {
             } else {
                 setHasSeparator(true);
             }
+        }
+
+        if (props.message?.sender === props.currentUser) {
+            if (count >= 3) {
+                const currentTime = new Date().getTime();
+                const timeDifference = currentTime - lastMessageTime;
+                if (timeDifference < 60000) {
+                    props.setShowPopUp(true);
+                    props.setPopUpText(
+                        'You cannot send more than three messages in a minute',
+                    );
+                    return;
+                }
+            }
+
+            setCount((prevCount) => prevCount + 1);
+            setLastMessageTime(currentMessageDate.getTime());
         }
     }, [props.message, props.nextMessage, props.previousMessage]);
 
@@ -162,9 +184,22 @@ function SentMessagePanel(props: SentMessageProps) {
         window.open(url);
     }
 
+    function handleOpenExplorerAddHttp(url: string) {
+        window.open(convertToFullUrl(url));
+    }
+
+    function convertToFullUrl(domain: string): string {
+        const protocol = 'https://';
+        return protocol + domain;
+    }
+
     function returnDomain(word: string) {
-        const url = new URL(word);
-        return url.hostname + url.pathname;
+        if (props.isLinkInCrocodileLabsLinks(word)) {
+            const url = new URL(word);
+            return url.hostname + url.pathname;
+        } else {
+            return word;
+        }
     }
 
     function detectLinksFromMessage(url: string) {
@@ -177,26 +212,41 @@ function SentMessagePanel(props: SentMessageProps) {
                             onClick={() =>
                                 props.isLinkInCrocodileLabsLinks(word)
                                     ? handleOpenExplorer(word)
+                                    : props.isLinkInCrocodileLabsLinksForInput(
+                                          word,
+                                      )
+                                    ? handleOpenExplorerAddHttp(word)
                                     : ''
                             }
                             key={index}
                             style={
-                                props.isLinkInCrocodileLabsLinks(word)
+                                props.isLinkInCrocodileLabsLinks(word) ||
+                                props.isLinkInCrocodileLabsLinksForInput(word)
                                     ? { color: '#ab7de7', cursor: 'pointer' }
                                     : { color: 'white', cursor: 'default' }
                             }
                         >
-                            {' ' + word}
+                            {' ' + returnDomain(word)}
+                            {}
                         </span>
                     ))}
                 </>
             );
         } else {
-            if (props.isLinkInCrocodileLabsLinks(url)) {
+            if (
+                props.isLinkInCrocodileLabsLinks(url) ||
+                props.isLinkInCrocodileLabsLinksForInput(url)
+            ) {
                 return (
                     <p
                         style={{ color: '#ab7de7', cursor: 'pointer' }}
-                        onClick={() => handleOpenExplorer(url)}
+                        onClick={() =>
+                            props.isLinkInCrocodileLabsLinks(url)
+                                ? handleOpenExplorer(url)
+                                : props.isLinkInCrocodileLabsLinksForInput(url)
+                                ? handleOpenExplorerAddHttp(url)
+                                : ''
+                        }
                     >
                         {returnDomain(url)}
                     </p>
@@ -306,6 +356,10 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
+    // function blockUser(userId: string) {
+
+    // }
+
     return (
         <div className={styles.msg_bubble_container} style={messageStyle()}>
             <div>
@@ -377,7 +431,16 @@ function SentMessagePanel(props: SentMessageProps) {
                             }}
                         >
                             {showName && getName()}
+                            <div>
+                                {' '}
+                                {props.moderator && showName ? (
+                                    <BiBlock size={13} color='red' />
+                                ) : (
+                                    ''
+                                )}
+                            </div>
                         </div>
+
                         <PositionBox
                             message={props.message.message}
                             isInput={false}

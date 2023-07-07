@@ -38,7 +38,11 @@ interface MessageInputProps {
     filterMessage(message: string): boolean;
     showPopUp: boolean;
     setShowPopUp: Dispatch<SetStateAction<boolean>>;
-    formatURL(url: string): void;
+    formatURL(url: string): string;
+    isLinkInCrocodileLabsLinksForInput(word: string): boolean;
+    setPopUpText: Dispatch<SetStateAction<string>>;
+    popUpText: string;
+    count: number;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -58,6 +62,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
     const [possibleMentUser, setPossibleMentUser] = useState<User | null>(null);
+    const [isExceedingMaxLength, setIsExceedingMaxLength] = useState(false);
 
     const roomId = props.room;
 
@@ -66,6 +71,13 @@ export default function MessageInput(props: MessageInputProps) {
         let msg = message;
         msg += emoji.emoji;
         setMessage(msg);
+        // if(msg.length >= 140)
+        // {
+        //     event.preventDefault(); // Prevent further input when the limit is reached
+        //     props.setShowPopUp(true);
+        //     props.setPopUpText('Maximum length exceeded (140 characters limit).');
+
+        // }
     };
 
     const handleEmojiPickerHideShow = () => {
@@ -93,18 +105,12 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     const handleSendMessageButton = () => {
-        console.log(
-            'message: ',
-            message,
-            ' filtered: ',
-            props.filterMessage(message),
-        );
-        console.log(props.isLinkInCrocodileLabsLinks(message));
         if (
             (props.isLink(message) || props.filterMessage(message)) &&
-            !props.isLinkInCrocodileLabsLinks(message)
+            !props.isLinkInCrocodileLabsLinksForInput(message)
         ) {
             props.setShowPopUp(true);
+            props.setPopUpText('You cannot send this link.');
         } else {
             handleSendMsg(props.formatURL(message), roomId);
             setMessage('');
@@ -118,9 +124,10 @@ export default function MessageInput(props: MessageInputProps) {
         if (e.key === 'Enter') {
             if (
                 (props.isLink(message) || props.filterMessage(message)) &&
-                !props.isLinkInCrocodileLabsLinks(message)
+                !props.isLinkInCrocodileLabsLinksForInput(message)
             ) {
                 props.setShowPopUp(true);
+                props.setPopUpText('You cannot send this link.');
             } else {
                 handleSendMsg(message, roomId);
                 setMessage('');
@@ -151,21 +158,14 @@ export default function MessageInput(props: MessageInputProps) {
                     ],
                 );
             }
+        } else if (e.key !== 'Backspace' && e.target.value.length >= 140) {
+            props.setShowPopUp(true);
+            props.setShowPopUp(true);
+            props.setPopUpText(
+                'Maximum length exceeded (140 characters limit).',
+            );
+            e.preventDefault(); // Prevent further input when the limit is reached
         }
-        // else if(e.key === 'ArrowUp' && mentPanelActive) {
-        //     e.preventDefault();
-        //     if(possibleMentUser === null) {
-        //         setPossibleMentUser(props.users[props.users.length - 1]);
-        //     }else{
-        //         const index = props.users.indexOf(possibleMentUser);
-        //         if(index > 0) {
-
-        //         }
-        //     }
-
-        // }else if(e.key === 'ArrowDown' && mentPanelActive) {
-        //     e.preventDefault();
-        // }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -272,6 +272,7 @@ export default function MessageInput(props: MessageInputProps) {
                     autoComplete={'off'}
                     tabIndex={-1}
                     autoFocus={props.appPage}
+                    maxLength={140}
                 />
 
                 <BsEmojiSmile
