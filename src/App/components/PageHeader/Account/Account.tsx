@@ -85,7 +85,7 @@ export default function Account(props: propsIF) {
     const ethMainnetUsdValueTruncated = getFormattedNumber({
         value: ethMainnetUsdValue,
         isUSD: true,
-        prefix: '$',
+        prefix: '',
     });
 
     const ethQuantityInWalletAndDeposits =

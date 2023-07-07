@@ -24,7 +24,7 @@ export const usePoolStats = (
                 pool.chainId,
                 pool.base.address,
                 pool.quote.address,
-                pool.poolId,
+                pool.poolIdx,
                 Math.floor(Date.now() / 60000),
                 crocEnv,
                 cachedFetchTokenPrice,

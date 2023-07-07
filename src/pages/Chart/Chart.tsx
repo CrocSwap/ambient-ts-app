@@ -5582,7 +5582,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (lastCrDataTooltip && scaleData) {
-            lastCrDataTooltip.html('<p> 🐊 Start of Crocswap Data </p>');
+            lastCrDataTooltip.html('<p> 🐊 Start of Ambient Data </p>');
 
             lastCrDataTooltip.style(
                 'visibility',
