@@ -89,7 +89,6 @@ export const useTokenSearch = (
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
             const ambientTokens: TokenIF[] = tokens.defaultTokens;
-            console.log({ ambientTokens });
             // get tokens from the Uniswap list, remove any already on Ambient list
             const uniswapTokens: TokenIF[] = tokens
                 .getTokensFromList(tokenListURIs.uniswap)
@@ -98,49 +97,8 @@ export const useTokenSearch = (
                         .map((tkn: TokenIF) => tkn.address.toLowerCase())
                         .includes(uniTkn.address.toLowerCase());
                 });
-            // combine the Ambient and Uniswap token lists with no duplicates
-            const outputTokens: TokenIF[] = ambientTokens.concat(uniswapTokens);
-            // fn to add tokens from an array to the output array
-            console.log({ outputTokens });
-            const addTokensToOutput = (
-                newTokens: TokenIF[],
-                verificationNeeded: boolean,
-                maxToAdd: number,
-            ): void => {
-                // counter to track how many tokens from array have been added
-                let limiter = 0;
-                // logic to iterate through all tokens in array parameter
-                for (let i = 0; i < newTokens.length; i++) {
-                    // check if current token at index is already in the ouput variable
-                    const isInArray = outputTokens.some(
-                        (tk: TokenIF) =>
-                            tk.address.toLowerCase() ===
-                                newTokens[i].address.toLowerCase() &&
-                            tk.chainId === newTokens[i].chainId,
-                    );
-                    // check if token is recognized from a list (if necessary)
-                    const isTokenKnown = verificationNeeded
-                        ? tokens.verifyToken(newTokens[i].address)
-                        : true;
-                    // add token to output if not already there and limiter is below max
-                    if (!isInArray && isTokenKnown && limiter < maxToAdd) {
-                        limiter++;
-                        outputTokens.push(newTokens[i]);
-                    }
-                }
-            };
-            // add wallet tokens to output array
-            addTokensToOutput(walletTokens, true, 2);
-            // add tokens from recent txs to output array
-            addTokensToOutput(recentTxTokens ?? [], false, 2);
-            // add recent tokens to output array
-            addTokensToOutput(getRecentTokens(), false, 2);
-            // remove off-chain tokens from output array
-            const outputTokensOnChain = outputTokens.filter(
-                (tk: TokenIF) => tk.chainId === parseInt(chainId),
-            );
-            console.log({ outputTokensOnChain });
-            return outputTokens;
+            // combine the Ambient and Uniswap token lists
+            return ambientTokens.concat(uniswapTokens);
         }
 
         // declare an output variable
