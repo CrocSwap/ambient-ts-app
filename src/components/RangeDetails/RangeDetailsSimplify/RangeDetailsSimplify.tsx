@@ -94,11 +94,11 @@ export default function RangeDetailsSimplify(
 
     const aprAmountString = updatedPositionApy
         ? updatedPositionApy >= 1000
-            ? updatedPositionApy.toLocaleString(undefined, {
+            ? updatedPositionApy.toLocaleString('en-US', {
                   minimumFractionDigits: 0,
                   maximumFractionDigits: 0,
               }) + '%+'
-            : updatedPositionApy.toLocaleString(undefined, {
+            : updatedPositionApy.toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               }) + '%'

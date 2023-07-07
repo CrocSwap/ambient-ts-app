@@ -34,8 +34,7 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
-import { precisionOfInput } from '../../../App/functions/getPrecisionOfInput';
-import removeLeadingZeros from '../../../utils/functions/removeLeadingZeros';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     slippageTolerancePercentage: number;
@@ -446,18 +445,11 @@ function CurrencyConverter(props: propsIF) {
                 const inputStr = evt.target.value.replaceAll(',', '');
                 const inputNum = parseFloat(inputStr);
 
-                const truncatedInputStr = isNaN(inputNum)
-                    ? ''
-                    : removeLeadingZeros(
-                          inputNum === 0 ||
-                              precisionOfInput(inputStr) <=
-                                  tradeData.tokenA.decimals
-                              ? inputStr
-                              : truncateDecimals(
-                                    inputNum,
-                                    tradeData.tokenA.decimals,
-                                ),
-                      );
+                const truncatedInputStr = getFormattedNumber({
+                    value: inputNum,
+                    isToken: true,
+                    maxFracDigits: tradeData.tokenA.decimals,
+                });
 
                 setSellQtyString(truncatedInputStr);
                 setTokenAQtyLocal(truncatedInputStr);
@@ -545,18 +537,11 @@ function CurrencyConverter(props: propsIF) {
                 const inputStr = evt.target.value.replaceAll(',', '');
                 const inputNum = parseFloat(inputStr);
 
-                const truncatedInputStr = isNaN(inputNum)
-                    ? ''
-                    : removeLeadingZeros(
-                          inputNum === 0 ||
-                              precisionOfInput(inputStr) <=
-                                  tradeData.tokenB.decimals
-                              ? inputStr
-                              : truncateDecimals(
-                                    inputNum,
-                                    tradeData.tokenB.decimals,
-                                ),
-                      );
+                const truncatedInputStr = getFormattedNumber({
+                    value: inputNum,
+                    isToken: true,
+                    maxFracDigits: tradeData.tokenB.decimals,
+                });
 
                 setBuyQtyString(truncatedInputStr);
                 setTokenBQtyLocal(truncatedInputStr);

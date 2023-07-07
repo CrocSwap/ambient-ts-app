@@ -252,7 +252,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 omitEmpty: 'true',
                                 omitKnockout: 'true',
                                 addValue: 'true',
-                                n: '50',
+                                n: '200',
                             }),
                     )
                         .then((response) => response.json())
@@ -427,7 +427,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 quote: sortedTokens[1].toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
-                                n: '50',
+                                n: '200',
                             }),
                     )
                         .then((response) => response?.json())
