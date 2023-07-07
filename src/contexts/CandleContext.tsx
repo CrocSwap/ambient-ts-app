@@ -121,6 +121,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         mainnetQuoteTokenAddress,
         isUserIdle,
         candleScale?.isFetchForTimeframe,
+        candleTimeLocal,
     ]);
 
     const fetchCandles = () => {

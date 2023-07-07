@@ -1,4 +1,4 @@
-import styles from './BypassLimitButton.module.css';
+import styles from './BypassConfirmLimitButton.module.css';
 import {
     CircleLoader,
     CircleLoaderCompleted,
@@ -9,12 +9,11 @@ import TransactionDenied from '../../../Global/TransactionDenied/TransactionDeni
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-// import TransactionFailed from '../../../../Global/TransactionFailed/TransactionFailed';
 import { useState, Dispatch, SetStateAction, memo } from 'react';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
-// import { CrocImpact } from '@crocswap-libs/sdk';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     newLimitOrderTransactionHash: string;
@@ -26,7 +25,7 @@ interface propsIF {
     sendLimitOrder: () => Promise<void>;
     setNewLimitOrderTransactionHash: Dispatch<SetStateAction<string>>;
 }
-function BypassLimitButton(props: propsIF) {
+function BypassConfirmLimitButton(props: propsIF) {
     const {
         newLimitOrderTransactionHash,
         txErrorCode,
@@ -45,12 +44,12 @@ function BypassLimitButton(props: propsIF) {
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const sellTokenQty = (
-        document.getElementById('sell-limit-quantity') as HTMLInputElement
-    )?.value;
-    const buyTokenQty = (
-        document.getElementById('buy-limit-quantity') as HTMLInputElement
-    )?.value;
+    const sellTokenQty = getFormattedNumber({
+        value: parseFloat(tokenAInputQty),
+    });
+    const buyTokenQty = getFormattedNumber({
+        value: parseFloat(tokenBInputQty),
+    });
 
     const sellTokenData = tokenA;
     const buyTokenData = tokenB;
@@ -147,7 +146,7 @@ function BypassLimitButton(props: propsIF) {
         ? 'Transaction Failed'
         : transactionApproved
         ? 'Transaction Submitted'
-        : `Submitting Limit Order to Swap ${tokenAInputQty} ${sellTokenData.symbol} for ${tokenBInputQty} ${buyTokenData.symbol}`;
+        : `Submitting Limit Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
@@ -190,4 +189,4 @@ function BypassLimitButton(props: propsIF) {
     );
 }
 
-export default memo(BypassLimitButton);
+export default memo(BypassConfirmLimitButton);

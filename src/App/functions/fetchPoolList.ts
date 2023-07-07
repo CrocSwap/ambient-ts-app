@@ -1,81 +1,62 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
-import {
-    TempPoolIF,
-    TempPoolServerIF,
-} from '../../utils/interfaces/TempPoolIF';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { FetchContractDetailsFn } from './fetchContractDetails';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCServerPoolIF } from '../../utils/interfaces/exports';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
-
-const poolListEndpoint = GRAPHCACHE_SMALL_URL + '/pool_list?';
 
 export async function fetchPoolList(
     crocEnv: CrocEnv,
-    tokenUniv: TokenIF[],
-    cachedTokenDetails: FetchContractDetailsFn,
-): Promise<TempPoolIF[]> {
-    return fetch(
-        poolListEndpoint +
-            new URLSearchParams({
-                chainId: (await crocEnv.context).chain.chainId,
-                poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
-            }),
-    )
+): Promise<GCServerPoolIF[]> {
+    const ENDPOINT: string =
+        GRAPHCACHE_SMALL_URL +
+        '/pool_list?' +
+        new URLSearchParams({
+            chainId: (await crocEnv.context).chain.chainId,
+            poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
+        });
+    return fetch(ENDPOINT)
         .then((response) => response.json())
         .then((json) => {
             if (!json?.data) {
-                return [] as TempPoolIF[];
+                return [];
             }
-            let payload = json?.data as TempPoolServerIF[];
-
-            payload = payload.filter((p) => inTokenUniv(p, tokenUniv));
-
-            const pools = Promise.all(
-                payload.map((p) =>
-                    expandPoolData(p, crocEnv, cachedTokenDetails),
-                ),
-            );
-            return pools.then((p) => p.filter(hasValidMetadata));
+            const payload = json?.data as GCServerPoolIF[];
+            // TODO:    this is a `Promise.allSettled()` because one bad call for
+            // TODO:    ... a contract with no `symbol()` method was failing and
+            // TODO:    ... taking everything down, instructions from Doug are to
+            // TODO:    ... drop the bad result and investigate more later
+            const pools: Promise<GCServerPoolIF[]> = Promise.allSettled(
+                payload,
+            ).then((results) => {
+                function getFulfilledValues<T>(
+                    promises: PromiseSettledResult<T>[],
+                ): T[] {
+                    // output variable for values from fulfilled promises
+                    const fulfilledValues: T[] = [];
+                    // array to hold rejected promises for troubleshooting
+                    const rejectedPromises: PromiseRejectedResult[] = [];
+                    // iterate over promises, push to each to the correct array
+                    for (const result of promises) {
+                        result.status === 'fulfilled'
+                            ? fulfilledValues.push(result.value)
+                            : rejectedPromises.push(result);
+                    }
+                    // warn about rejected promises in the console (localhost only)
+                    IS_LOCAL_ENV &&
+                        rejectedPromises.forEach(
+                            (reject: PromiseRejectedResult) => {
+                                console.warn(
+                                    'failed pool metadata query, see file fetchPoolList.ts to troubleshoot',
+                                    reject,
+                                );
+                            },
+                        );
+                    // return array of values from fulfilled promises
+                    return fulfilledValues;
+                }
+                return getFulfilledValues(results);
+            });
+            return pools;
         });
-}
-
-function inTokenUniv(payload: TempPoolServerIF, tokenUniv: TokenIF[]): boolean {
-    const hasBase = tokenUniv.some(
-        (t) => t.address.toLowerCase() === payload.base.toLowerCase(),
-    );
-    const hasQuote = tokenUniv.some(
-        (t) => t.address.toLowerCase() === payload.quote.toLowerCase(),
-    );
-    return hasBase && hasQuote;
-}
-
-function hasValidMetadata(pool: TempPoolIF): boolean {
-    return pool.baseSymbol !== '' && pool.quoteSymbol !== '';
-}
-
-async function expandPoolData(
-    payload: TempPoolServerIF,
-    crocEnv: CrocEnv,
-    cachedTokenDetails: FetchContractDetailsFn,
-): Promise<TempPoolIF> {
-    const baseDetails = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        payload.base,
-        (await crocEnv.context).chain.chainId,
-    );
-    const quoteDetails = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        payload.quote,
-        (await crocEnv.context).chain.chainId,
-    );
-
-    return Object.assign({}, payload, {
-        baseSymbol: (await baseDetails)?.symbol || '',
-        quoteSymbol: (await quoteDetails)?.symbol || '',
-        baseDecimals: (await baseDetails)?.decimals || 1,
-        quoteDecimals: (await baseDetails)?.decimals || 1,
-    });
 }
 
 export type PoolListFn = (

@@ -184,7 +184,7 @@ export default function TransactionDetailsGraph(
 
                     const offsetInSeconds = 120;
 
-                    const endTime =
+                    const startBoundary =
                         Math.floor(new Date().getTime() / 1000) -
                         offsetInSeconds;
 
@@ -192,14 +192,13 @@ export default function TransactionDetailsGraph(
                         if (!crocEnv) {
                             return;
                         }
-
                         const graphData = await fetchCandleSeriesCroc(
                             fetchEnabled,
                             chainData,
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
-                            endTime,
+                            startBoundary,
                             numCandlesNeeded,
                             crocEnv,
                             cachedFetchTokenPrice,
