@@ -239,6 +239,17 @@ export default function Chart(props: propsIF) {
     const lineSellColor = 'rgba(115, 113, 252)';
     const lineBuyColor = 'rgba(205, 193, 255)';
 
+    const selectedCandleColor = '#E480FF';
+    const crocCandleLightColor = '#CDC1FF';
+    const crocCandleBorderLightColor = '#CDC1FF';
+    const crocCandleDarkColor = '#24243e';
+    const crocCandleBorderDarkColor = '#7371FC';
+
+    const uniswapCandleLightColor = '#4a5a76';
+    const uniswapCandleBorderLightColor = '#4a5a76';
+    const uniswapCandleDarkColor = '#252f40';
+    const uniswapCandleBorderDarkColor = '#5e6b81';
+
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
 
     const poolPriceDisplay = poolPriceWithoutDenom
@@ -458,12 +469,16 @@ export default function Chart(props: propsIF) {
     }, [d3Container === null]);
 
     const lastCrDate = useMemo(() => {
-        const lastCrocDate = unparsedCandleData?.find((item: CandleData) => {
-            return item.tvlData.tvl === 0;
-        });
+        const lastCrocDate = Math.max(
+            ...unparsedCandleData
+                .filter((item) => item.tvlData.tvl === 0)
+                .map((o) => {
+                    return o.time;
+                }),
+        );
 
         if (lastCrocDate) {
-            return lastCrocDate?.time * 1000;
+            return lastCrocDate * 1000;
         }
     }, [diffHashSigChart(unparsedCandleData)]);
 
@@ -1742,6 +1757,7 @@ export default function Chart(props: propsIF) {
         maxTickForLimit,
         canUserDragRange,
         canUserDragLimit,
+        showVolume,
     ]);
 
     useEffect(() => {
@@ -3337,7 +3353,10 @@ export default function Chart(props: propsIF) {
         const _width = 65; // magic number of pixels to blur surrounding price
         const tickSize = 6;
 
-        const lastCrDateLocation = xScale(lastCrDate);
+        const firstCandle =
+            unparsedCandleData[unparsedCandleData.length - 1]?.time;
+        const firstCandleDateLocation = xScale(firstCandle * 1000);
+        const firstCrDateLocation = xScale(lastCrDate);
 
         scaleData.xScaleTime.domain(xScale.domain());
 
@@ -3405,8 +3424,13 @@ export default function Chart(props: propsIF) {
                 if (
                     d.date.getTime() !== lastCrDate &&
                     !(
-                        xScale(d.date) > lastCrDateLocation - _width / 2 &&
-                        xScale(d.date) < lastCrDateLocation + _width / 2
+                        (xScale(d.date) > firstCrDateLocation - _width / 2 &&
+                            xScale(d.date) <
+                                firstCrDateLocation + _width / 2) ||
+                        (xScale(d.date) >
+                            firstCandleDateLocation - _width / 2 &&
+                            xScale(d.date) <
+                                firstCandleDateLocation + _width / 2)
                     )
                 ) {
                     if (formatValue) {
@@ -3486,13 +3510,23 @@ export default function Chart(props: propsIF) {
         }
 
         if (
-            xScale(crosshairData[0].x) > lastCrDateLocation - (_width - 15) &&
-            xScale(crosshairData[0].x) < lastCrDateLocation + (_width - 15) &&
+            ((xScale(crosshairData[0].x) >
+                firstCrDateLocation - (_width - 15) &&
+                xScale(crosshairData[0].x) <
+                    firstCrDateLocation + (_width - 15)) ||
+                (xScale(crosshairData[0].x) >
+                    firstCandleDateLocation - (_width - 15) &&
+                    xScale(crosshairData[0].x) <
+                        firstCandleDateLocation + (_width - 15))) &&
             crosshairActive !== 'none'
         ) {
             context.filter = ' blur(7px)';
         }
-        context.fillText('🐊', lastCrDateLocation, Y + tickSize);
+
+        context.fillText('🐊', firstCrDateLocation, Y + tickSize);
+
+        context.fillText('', firstCandleDateLocation, Y + tickSize);
+        // context.fillText('🥚', firstCandleDateLocation, Y + tickSize);
 
         context.restore();
 
@@ -4133,21 +4167,41 @@ export default function Chart(props: propsIF) {
                         ? d.invPriceOpenExclMEVDecimalCorrected
                         : d.priceOpenExclMEVDecimalCorrected;
 
+                    const crocColor =
+                        close > open
+                            ? crocCandleLightColor
+                            : crocCandleDarkColor;
+
+                    const uniswapColor =
+                        close > open
+                            ? uniswapCandleLightColor
+                            : uniswapCandleDarkColor;
+
+                    const crocBorderColor =
+                        close > open
+                            ? crocCandleBorderLightColor
+                            : crocCandleBorderDarkColor;
+
+                    const uniswapBorderColor =
+                        close > open
+                            ? uniswapCandleBorderLightColor
+                            : uniswapCandleBorderDarkColor;
+
                     context.fillStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#24243e';
+                            ? selectedCandleColor
+                            : d.tvlData.tvl === 0
+                            ? uniswapColor
+                            : crocColor;
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#7371FC';
+                            ? selectedCandleColor
+                            : d.tvlData.tvl === 0
+                            ? uniswapBorderColor
+                            : crocBorderColor;
 
                     context.cursorStyle = 'pointer';
                 })
@@ -4375,21 +4429,21 @@ export default function Chart(props: propsIF) {
                         : d.priceOpenExclMEVDecimalCorrected;
 
                     context.fillStyle =
-                        d.volumeUSD === null
+                        d.volumeUSD === null || d.volumeUSD === 0
                             ? 'transparent'
                             : selectedDate !== undefined &&
                               selectedDate === d.time * 1000
-                            ? '#E480FF'
+                            ? selectedCandleColor
                             : close > open
                             ? 'rgba(205,193,255, 0.5)'
                             : 'rgba(115,113,252, 0.5)';
 
                     context.strokeStyle =
-                        d.volumeUSD === null
+                        d.volumeUSD === null || d.volumeUSD === 0
                             ? 'transparent'
                             : selectedDate !== undefined &&
                               selectedDate === d.time * 1000
-                            ? '#E480FF'
+                            ? selectedCandleColor
                             : close > open
                             ? 'rgba(205,193,255, 0.5)'
                             : 'rgba(115,113,252, 0.5)';
@@ -5077,6 +5131,7 @@ export default function Chart(props: propsIF) {
         isSidebarOpen,
         liqMode,
         isCrDataToolTipActive,
+        showVolume,
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -5127,14 +5182,15 @@ export default function Chart(props: propsIF) {
         const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
         const selectedVolumeDataValue = nearest?.volumeUSD;
 
-        const isSelectedVolume = selectedVolumeDataValue
-            ? yValueVolume <=
-                  (selectedVolumeDataValue < longestValue
-                      ? longestValue
-                      : selectedVolumeDataValue) && yValueVolume !== 0
-                ? true
-                : false
-            : false;
+        const isSelectedVolume =
+            selectedVolumeDataValue && showVolume
+                ? yValueVolume <=
+                      (selectedVolumeDataValue < longestValue
+                          ? longestValue
+                          : selectedVolumeDataValue) && yValueVolume !== 0
+                    ? true
+                    : false
+                : false;
 
         const close = denomInBase
             ? nearest?.invPriceCloseExclMEVDecimalCorrected
@@ -5795,6 +5851,7 @@ export default function Chart(props: propsIF) {
             unparsedCandleData?.length,
             !tradeData.advancedMode && simpleRangeWidth === 100,
             isCrDataToolTipActive,
+            showVolume,
         ],
     );
 
