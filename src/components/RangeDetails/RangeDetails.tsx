@@ -116,7 +116,6 @@ export default function RangeDetails(props: propsIF) {
 
     const [usdValue, setUsdValue] = useState<string | undefined>();
 
-    // eslint-disable-next-line
     const [updatedPositionApy, setUpdatedPositionApy] = useState<
         number | undefined
     >(positionApy);
@@ -148,8 +147,6 @@ export default function RangeDetails(props: propsIF) {
                         poolIdx: poolIndex.toString(),
                         chainId: chainId,
                         positionType: position.positionType,
-                        addValue: 'true',
-                        omitAPY: 'true',
                     }),
             )
                 .then((response) => response?.json())
@@ -195,6 +192,12 @@ export default function RangeDetails(props: propsIF) {
                             value: position.totalValueUSD,
                             isUSD: true,
                         }),
+                    );
+
+                    setUpdatedPositionApy(
+                        positionStats.aprEst
+                            ? positionStats.aprEst * 100
+                            : undefined,
                     );
 
                     const baseFeeDisplayNum =
@@ -263,7 +266,7 @@ export default function RangeDetails(props: propsIF) {
                         quoteTokenSymbol={props.quoteTokenSymbol}
                         isDenomBase={props.isDenomBase}
                         isAmbient={isAmbient}
-                        positionApy={positionApy}
+                        positionApy={updatedPositionApy}
                         minRangeDenomByMoneyness={minRangeDenomByMoneyness}
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
                     />
@@ -300,6 +303,7 @@ export default function RangeDetails(props: propsIF) {
                     baseFeesDisplay={baseFeesDisplay}
                     quoteFeesDisplay={quoteFeesDisplay}
                     isAccountView={isAccountView}
+                    updatedPositionApy={updatedPositionApy}
                 />
             )}
         </div>

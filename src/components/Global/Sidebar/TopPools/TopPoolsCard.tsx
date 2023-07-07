@@ -69,7 +69,7 @@ export default function TopPoolsCard(props: propsIF) {
                 pool.chainId,
                 pool.base.address,
                 pool.quote.address,
-                pool.poolId,
+                pool.poolIdx,
                 Math.floor(Date.now() / 60000),
                 crocEnv,
                 cachedFetchTokenPrice,

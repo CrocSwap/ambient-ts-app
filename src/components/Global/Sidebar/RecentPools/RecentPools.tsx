@@ -26,7 +26,7 @@ function RecentPools(props: propsIF) {
                 <div>TVL</div>
             </header>
             <div className={styles.content}>
-                {recentPools.getPools(5).map((pool: SmallerPoolIF) => (
+                {recentPools.get(5).map((pool: SmallerPoolIF) => (
                     <RecentPoolsCard
                         pool={pool}
                         key={'recent_pool_' + JSON.stringify(pool)}
