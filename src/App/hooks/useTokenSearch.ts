@@ -179,11 +179,7 @@ export const useTokenSearch = (
                 // sort tokens by relative priority level
                 return getPriority(b) - getPriority(a);
             });
-
-        // send found tokens to local state hook
-        // this will be the array of tokens returned by the hook
-        const resultsLimiter = 8;
-        setOutputTokens(sortedTokens.slice(0, resultsLimiter));
+        setOutputTokens(sortedTokens);
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
