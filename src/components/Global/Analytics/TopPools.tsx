@@ -1,24 +1,11 @@
-import { useContext, useEffect } from 'react';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { useContext } from 'react';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import { topPoolIF } from '../../../App/hooks/useTopPools';
+import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { useNavigate } from 'react-router-dom';
-type PoolStats = {
-    poolName?: string;
-    baseLogoUri?: string;
-    quoteLogoUri?: string;
-    poolVolume?: string;
-    poolPrice?: string;
-    poolTvl?: string;
-    poolApy?: string;
-    poolPriceChangePercent?: string;
-    isPoolPriceChangePositive?: boolean;
 
-    baseTokenCharacter?: string;
-    quoteTokenCharacter?: string;
-};
+import { PoolContext } from '../../../contexts/PoolContext';
 
 type HeaderItem = {
     label: string;
@@ -29,21 +16,9 @@ type HeaderItem = {
     pxValue?: number;
 };
 export default function TopPools() {
-    const { topPools } = useContext(CrocEnvContext);
+    const { poolList } = useContext(PoolContext);
 
-    const formattedPoolData: PoolStats[] = [];
-    useEffect(() => {
-        const fetchPoolData = async () => {
-            for (const pool of topPools) {
-                const poolStats = await useFetchPoolStats(pool);
-                formattedPoolData.push(poolStats);
-            }
-        };
-
-        fetchPoolData();
-    }, []);
-
-    const PoolRow = (pool: topPoolIF) => {
+    const PoolRow = (pool: PoolIF) => {
         const poolData = useFetchPoolStats(pool);
         const {
             poolName,
@@ -66,7 +41,7 @@ export default function TopPools() {
 
         return (
             <tr
-                className='hover:bg-dark2 cursor-pointer'
+                className='hover:bg-dark2 cursor-pointer analaytics-pools-table '
                 onClick={navigateToTrade}
             >
                 <td className='px-6  whitespace-nowrap'>
@@ -106,7 +81,9 @@ export default function TopPools() {
                     className='hidden sm:table-cell px-6  whitespace-nowrap'
                     style={{ height: '40px' }}
                 >
-                    <div className=' text-text1'>{poolTvl ?? '...'}</div>
+                    <div className=' text-text1'>
+                        {!poolTvl || poolTvl.includes('NaN') ? '...' : poolTvl}
+                    </div>
                 </td>
                 <td
                     className='hidden xl:table-cell px-6  whitespace-nowrap'
@@ -247,11 +224,11 @@ export default function TopPools() {
             <div className='flex-grow overflow-auto h-full hide-scrollbar'>
                 <div className='py-2 h-full'>
                     <div className='shadow rounded-lg bg-dark1 h-full py-2'>
-                        <table className='divide-y divide-dark3 relative w-full '>
+                        <table className='divide-y divide-dark3 relative w-full top-pools-analytics-table'>
                             <TableHead headerItems={topPoolsHeaderItems} />
 
                             <tbody className='bg-dark1 text-white text-body font-regular capitalize leading-body overflow-y-auto max-h-96'>
-                                {topPools.map((pool, index) => (
+                                {poolList.map((pool, index) => (
                                     <PoolRow key={index} {...pool} />
                                 ))}
                             </tbody>

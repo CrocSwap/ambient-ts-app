@@ -14,7 +14,7 @@ import { estimateFrom24HrRangeApr } from '../functions/fetchAprEst';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { get24hChange } from '../functions/getPoolStats';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-
+import { PoolIF } from '../../utils/interfaces/PoolIF';
 type PoolStats = {
     poolName?: string;
     baseLogoUri?: string;
@@ -32,7 +32,7 @@ type PoolStats = {
     poolLink: string;
 };
 
-const useFetchPoolStats = (pool: topPoolIF): PoolStats => {
+const useFetchPoolStats = (pool: PoolIF): PoolStats => {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
@@ -56,7 +56,8 @@ const useFetchPoolStats = (pool: topPoolIF): PoolStats => {
         boolean | undefined
     >();
 
-    const poolName = pool?.name;
+    const poolName = `${pool?.base.symbol} / ${pool?.quote.symbol}`;
+    console.log('pool', pool);
 
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.base.symbol)
