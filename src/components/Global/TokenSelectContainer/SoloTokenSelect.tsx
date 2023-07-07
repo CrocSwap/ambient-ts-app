@@ -284,16 +284,18 @@ export const SoloTokenSelect = (props: propsIF) => {
                         />
                     ),
                 )}
-
             {showSoloSelectTokenButtons ? (
-                outputTokens.map((token: TokenIF) => (
-                    <TokenSelect
-                        key={JSON.stringify(token)}
-                        token={token}
-                        chooseToken={chooseToken}
-                        fromListsText=''
-                    />
-                ))
+                <div className={styles.scrollable_container}>
+                    {' '}
+                    {outputTokens.map((token: TokenIF) => (
+                        <TokenSelect
+                            key={JSON.stringify(token)}
+                            token={token}
+                            chooseToken={chooseToken}
+                            fromListsText=''
+                        />
+                    ))}
+                </div>
             ) : (
                 <SoloTokenImport
                     customToken={customToken}
