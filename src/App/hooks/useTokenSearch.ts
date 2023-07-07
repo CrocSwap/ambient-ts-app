@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
@@ -20,10 +19,6 @@ export const useTokenSearch = (
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string>('');
 
-    const recentTxTokens = useAppSelector(
-        (state) => state.userData.recentTokens,
-    );
-
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
@@ -36,7 +31,7 @@ export const useTokenSearch = (
             setSearchAs('address');
             // if not an apparent token address, search name and symbol
             // if not an apparent token address, search name and symbol
-        } else if (cleanInput.length >= 2) {
+        } else if (cleanInput.length) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
             // otherwise treat as if there is no input entered
@@ -61,6 +56,7 @@ export const useTokenSearch = (
             // if fixed string is valid, assign it to the output variable
             output = fixedInput;
         }
+        console.log({ output });
         // return output variable
         return output;
     }, [input]);
@@ -81,56 +77,24 @@ export const useTokenSearch = (
 
         // fn to run a token search by name or symbol
         function searchAsNameOrSymbol(): TokenIF[] {
-            // determine if the validated input is exactly two characters
-            // for two-character input, app should only return exact matches
-            const exactOnly: boolean = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
-            return tokens.getTokensByNameOrSymbol(validatedInput, exactOnly);
+            return tokens.getTokensByNameOrSymbol(validatedInput);
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens: TokenIF[] = tokens.defaultTokens;
-            // fn to add tokens from an array to the output array
-            const addTokensToOutput = (
-                newTokens: TokenIF[],
-                verificationNeeded: boolean,
-                maxToAdd: number,
-            ): void => {
-                // counter to track how many tokens from array have been added
-                let limiter = 0;
-                // logic to iterate through all tokens in array parameter
-                for (let i = 0; i < newTokens.length; i++) {
-                    // check if current token at index is already in the ouput variable
-                    const isInArray = outputTokens.some(
-                        (tk: TokenIF) =>
-                            tk.address.toLowerCase() ===
-                                newTokens[i].address.toLowerCase() &&
-                            tk.chainId === newTokens[i].chainId,
-                    );
-                    // check if token is recognized from a list (if necessary)
-                    const isTokenKnown = verificationNeeded
-                        ? tokens.verifyToken(newTokens[i].address)
-                        : true;
-                    // add token to output if not already there and limiter is below max
-                    if (!isInArray && isTokenKnown && limiter < maxToAdd) {
-                        limiter++;
-                        outputTokens.push(newTokens[i]);
-                    }
-                }
-            };
-            // add wallet tokens to output array
-            addTokensToOutput(walletTokens, true, 2);
-            // add tokens from recent txs to output array
-            addTokensToOutput(recentTxTokens ?? [], false, 2);
-            // add recent tokens to output array
-            addTokensToOutput(getRecentTokens(), false, 2);
-            // remove off-chain tokens from output array
-            const ouputTokensOnChain = outputTokens.filter(
-                (tk: TokenIF) => tk.chainId === parseInt(chainId),
-            );
-            return ouputTokensOnChain;
+            const ambientTokens: TokenIF[] = tokens.defaultTokens;
+            // get tokens from the Uniswap list, remove any already on Ambient list
+            const uniswapTokens: TokenIF[] = tokens
+                .getTokensFromList(tokenListURIs.uniswap)
+                .filter((uniTkn: TokenIF) => {
+                    return !ambientTokens
+                        .map((tkn: TokenIF) => tkn.address.toLowerCase())
+                        .includes(uniTkn.address.toLowerCase());
+                });
+            // combine the Ambient and Uniswap token lists
+            return ambientTokens.concat(uniswapTokens);
         }
 
         // declare an output variable
@@ -211,11 +175,7 @@ export const useTokenSearch = (
                 // sort tokens by relative priority level
                 return getPriority(b) - getPriority(a);
             });
-
-        // send found tokens to local state hook
-        // this will be the array of tokens returned by the hook
-        const resultsLimiter = 8;
-        setOutputTokens(sortedTokens.slice(0, resultsLimiter));
+        setOutputTokens(sortedTokens);
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [
