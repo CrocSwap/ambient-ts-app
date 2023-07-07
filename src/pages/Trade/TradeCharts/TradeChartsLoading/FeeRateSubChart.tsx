@@ -203,9 +203,7 @@ function FeeRateSubChart(props: FreeRateData) {
 
     useEffect(() => {
         if (feeData !== undefined) {
-            const _feeData = lastCrDate
-                ? feeData.filter((item) => item.time * 1000 >= lastCrDate)
-                : feeData;
+            const _feeData = feeData.filter((item) => item.tvlData.tvl !== 0);
 
             const canvas = d3
                 .select(d3CanvasArea.current)

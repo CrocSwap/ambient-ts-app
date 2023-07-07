@@ -4173,7 +4173,7 @@ export default function Chart(props: propsIF) {
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
                             ? selectedCandleColor
-                            : lastCrDate && d.time * 1000 < lastCrDate
+                            : d.tvlData.tvl === 0
                             ? uniswapColor
                             : crocColor;
 
@@ -4181,7 +4181,7 @@ export default function Chart(props: propsIF) {
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
                             ? selectedCandleColor
-                            : lastCrDate && d.time * 1000 < lastCrDate
+                            : d.tvlData.tvl === 0
                             ? uniswapBorderColor
                             : crocBorderColor;
 
