@@ -17,14 +17,39 @@ export default function MobileLandingSections() {
     const { t } = useTranslation();
     // eslint-disable-next-line
 
-    const heroSection = (
+    // const heroSection = (
+    //     <section className={`${styles.mobile_card} ${styles.hero} `} id='hero'>
+    //         <>
+    //             <div className={styles.main_logo}>
+    //                 <img src={logoText} alt='ambient' />
+    //             </div>
+    //             <div style={{ padding: ' 20px' }}>
+    //                 <Stats />
+    //             </div>
+    //         </>
+
+    //         <TradeNowButton />
+    //     </section>
+    // );
+    const heroSection2 = (
         <section className={`${styles.mobile_card} ${styles.hero} `} id='hero'>
             <>
                 <div className={styles.main_logo}>
                     <img src={logoText} alt='ambient' />
                 </div>
                 <div style={{ padding: ' 20px' }}>
-                    <Stats />
+                    <TopPools noTitle gap='8px' />
+                </div>
+            </>
+
+            <TradeNowButton />
+        </section>
+    );
+    const heroSection3 = (
+        <section className={`${styles.mobile_card} ${styles.hero} `} id='hero'>
+            <>
+                <div className={styles.main_logo}>
+                    <img src={logoText} alt='ambient' />
                 </div>
             </>
 
@@ -160,7 +185,7 @@ export default function MobileLandingSections() {
 
     return (
         <div className={styles.main_container}>
-            {heroSection}
+            {heroSection3}
 
             {topPoolsSection}
 

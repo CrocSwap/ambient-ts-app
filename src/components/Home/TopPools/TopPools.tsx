@@ -18,6 +18,8 @@ export default function TopPools(props: TopPoolsPropsIF) {
     // TODO:   @Junior  please remove the NavLink wrapper or refactor PoolCard.tsx
     // TODO:   ... so it returns a NavLink element
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
+    const topPoolsToShow = showMobileVersion ? topPools.slice(0, 3) : topPools;
+
     return (
         <motion.div
             className={styles.container}
@@ -39,7 +41,7 @@ export default function TopPools(props: TopPoolsPropsIF) {
                 className={styles.content}
                 style={{ gap: props.gap ? props.gap : '1rem' }}
             >
-                {topPools.map((pool, idx) => (
+                {topPoolsToShow.map((pool, idx) => (
                     <PoolCard key={idx} pool={pool} />
                 ))}
             </div>
