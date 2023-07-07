@@ -170,7 +170,7 @@ export const useTokenSearch = (
                 // token priority values (numeric)
                 const priorityTknA: number = getPriority(a);
                 const priorityTknB: number = getPriority(b);
-                const priority123ABC: number = b.symbol < a.symbol ? 1 : -1;
+                const priority123ABC: number = b.name < a.name ? 1 : -1;
                 // sort tokens by relative priority level
                 return priorityTknB - priorityTknA || priority123ABC;
             });
