@@ -23,6 +23,7 @@ type PoolStats = {
     poolVolume?: string;
     poolTvl?: string;
     poolApy?: string;
+
     poolPriceChangePercent?: string;
     isPoolPriceChangePositive?: boolean;
 
@@ -30,6 +31,8 @@ type PoolStats = {
     quoteTokenCharacter?: string;
 
     poolLink: string;
+
+    shouldInvertDisplay?: boolean;
 };
 
 const useFetchPoolStats = (pool: PoolIF): PoolStats => {
@@ -57,7 +60,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStats => {
     >();
 
     const poolName = `${pool?.base.symbol} / ${pool?.quote.symbol}`;
-    console.log('pool', pool);
 
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.base.symbol)
@@ -280,6 +282,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStats => {
         lastBlockNumber,
         shouldInvertDisplay,
     ]);
+
     return {
         poolName,
         baseLogoUri,
@@ -293,6 +296,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStats => {
         quoteTokenCharacter,
         poolPrice,
         poolLink,
+        shouldInvertDisplay,
     };
 };
 export default useFetchPoolStats;
