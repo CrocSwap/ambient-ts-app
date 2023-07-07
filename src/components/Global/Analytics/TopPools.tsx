@@ -58,7 +58,7 @@ export default function TopPools() {
                                 size='2xl'
                             />
                         </div>
-                        <div className='ml-4  sm:hidden md:hidden lg:hidden xl:hidden'>
+                        <div className='ml-4  sm:hidden '>
                             <div className='text-text1'>
                                 {poolName ?? '...'}
                             </div>
