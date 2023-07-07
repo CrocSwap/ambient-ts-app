@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';

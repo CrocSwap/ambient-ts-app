@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { defaultTokens } from '../../utils/data/defaultTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import fetchTokenList from '../../utils/functions/fetchTokenList';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
