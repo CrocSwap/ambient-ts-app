@@ -301,8 +301,13 @@ function SentMessagePanel(props: SentMessageProps) {
 
     return (
         <div
-            className={`${styles.msg_bubble_container} mentIndex-${props.mentionIndex} `}
+            className={`${styles.msg_bubble_container} ${
+                props.mentionIndex !== undefined
+                    ? 'mentionedMessage mentIndex-' + props.mentionIndex
+                    : ''
+            }  `}
             style={messageStyle()}
+            data-ment-index={props.mentionIndex}
         >
             <div>
                 {daySeparator === '' ? (

@@ -229,8 +229,6 @@ function ChatPanel(props: propsIF) {
     }, [isChatOpen]);
 
     useEffect(() => {
-        console.log(ments.length);
-
         const mentsInScp = messages.filter((item) => {
             return item.mentionedWalletID == address;
         });
@@ -287,23 +285,22 @@ function ChatPanel(props: propsIF) {
 
         if (ments.length > 0) {
             let currIndex = 0;
-            for (let i = 0; i < ments.length; i++) {
-                const targetEl = document.querySelectorAll(`.mentIndex-${i}`);
-                const targetTop = getChatBubbleYPos(targetEl[0], e.target);
+
+            const mentElements = document.querySelectorAll('.mentionedMessage');
+
+            for (let i = 0; i < mentElements.length; i++) {
                 if (
-                    e.target.scrollTop > targetTop
-                    // ||
-                    // targetEl[0].getBoundingClientRect().top - e.target.getBoundingClientRect().bottom < 0
+                    mentElements[i].getBoundingClientRect().bottom <
+                    messageEnd.current.getBoundingClientRect().bottom
                 ) {
-                    currIndex += 1;
+                    const attr =
+                        mentElements[i].getAttribute('data-ment-index');
+                    currIndex = parseInt(attr as string);
+                } else {
+                    break;
                 }
             }
-
-            if (currIndex >= ments.length) currIndex = ments.length - 1;
-
-            setTimeout(() => {
-                setMentIndex(currIndex);
-            }, 200);
+            setMentIndex(currIndex);
         }
     };
 
@@ -338,27 +335,41 @@ function ChatPanel(props: propsIF) {
     });
 
     const handleMentionSkipper = (way: number) => {
-        let newMentIndex = 0;
+        let targetElement = null;
+        // down
+        const mentElements = document.querySelectorAll('.mentionedMessage');
         if (way == 1) {
-            newMentIndex = mentIndex + 1;
-        } else if (way === -1) {
-            newMentIndex = mentIndex - 1;
-        } else {
-            newMentIndex = ments.length - 1;
+            for (let i = 0; i < mentElements.length; i++) {
+                if (
+                    mentElements[i].getBoundingClientRect().bottom >
+                    messageEnd.current.getBoundingClientRect().bottom
+                ) {
+                    targetElement = mentElements[i];
+                    break;
+                }
+            }
+        }
+        // up
+        else if (way === -1) {
+            for (let i = mentElements.length - 1; i >= 0; i--) {
+                if (
+                    mentElements[i].getBoundingClientRect().top <
+                    messageEnd.current.getBoundingClientRect().top
+                ) {
+                    targetElement = mentElements[i];
+                    break;
+                }
+            }
+        }
+        // last
+        else {
+            targetElement = mentElements.item(mentElements.length - 1);
         }
 
-        const targetEl = document.querySelectorAll(
-            `.mentIndex-${newMentIndex}`,
-        );
-        // const parentTop = messageEnd.current.getBoundingClientRect().top;
-        // const elTop = targetEl.item(0)?.getBoundingClientRect().top + messageEnd.current.scrollTop;
-        // const elYCoord = elTop - parentTop;
-
-        // messageEnd.current.scrollTop = elYCoord - 40;
-
-        messageEnd.current.scrollTop =
-            getChatBubbleYPos(targetEl.item(0), messageEnd.current) - 40;
-        // setMentIndex(newMentIndex);
+        if (targetElement != null) {
+            messageEnd.current.scrollTop =
+                getChatBubbleYPos(targetElement, messageEnd.current) - 40;
+        }
     };
 
     const header = (
