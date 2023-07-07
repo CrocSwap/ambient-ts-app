@@ -213,7 +213,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             const searchExact = (): TokenIF[] => {
                 // return tokens where name OR symbol exactly matches search string
                 return tokenUniv.filter(
-                    (tkn) =>
+                    (tkn: TokenIF) =>
                         tkn.name.toLowerCase() === cleanedInput ||
                         tkn.symbol.toLowerCase() === cleanedInput,
                 );

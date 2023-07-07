@@ -56,6 +56,7 @@ export const useTokenSearch = (
             // if fixed string is valid, assign it to the output variable
             output = fixedInput;
         }
+        console.log({ output });
         // return output variable
         return output;
     }, [input]);
