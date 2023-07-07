@@ -239,6 +239,17 @@ export default function Chart(props: propsIF) {
     const lineSellColor = 'rgba(115, 113, 252)';
     const lineBuyColor = 'rgba(205, 193, 255)';
 
+    const selectedCandleColor = '#E480FF';
+    const crocCandleLightColor = '#CDC1FF';
+    const crocCandleBorderLightColor = '#CDC1FF';
+    const crocCandleDarkColor = '#24243e';
+    const crocCandleBorderDarkColor = '#7371FC';
+
+    const uniswapCandleLightColor = '#4a5a76';
+    const uniswapCandleBorderLightColor = '#4a5a76';
+    const uniswapCandleDarkColor = '#252f40';
+    const uniswapCandleBorderDarkColor = '#5e6b81';
+
     const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
 
     const poolPriceDisplay = poolPriceWithoutDenom
@@ -458,12 +469,16 @@ export default function Chart(props: propsIF) {
     }, [d3Container === null]);
 
     const lastCrDate = useMemo(() => {
-        const lastCrocDate = unparsedCandleData?.find((item: CandleData) => {
-            return item.tvlData.tvl === 0;
-        });
+        const lastCrocDate = Math.max(
+            ...unparsedCandleData
+                .filter((item) => item.tvlData.tvl === 0)
+                .map((o) => {
+                    return o.time;
+                }),
+        );
 
         if (lastCrocDate) {
-            return lastCrocDate?.time * 1000;
+            return lastCrocDate * 1000;
         }
     }, [diffHashSigChart(unparsedCandleData)]);
 
@@ -4134,21 +4149,41 @@ export default function Chart(props: propsIF) {
                         ? d.invPriceOpenExclMEVDecimalCorrected
                         : d.priceOpenExclMEVDecimalCorrected;
 
+                    const crocColor =
+                        close > open
+                            ? crocCandleLightColor
+                            : crocCandleDarkColor;
+
+                    const uniswapColor =
+                        close > open
+                            ? uniswapCandleLightColor
+                            : uniswapCandleDarkColor;
+
+                    const crocBorderColor =
+                        close > open
+                            ? crocCandleBorderLightColor
+                            : crocCandleBorderDarkColor;
+
+                    const uniswapBorderColor =
+                        close > open
+                            ? uniswapCandleBorderLightColor
+                            : uniswapCandleBorderDarkColor;
+
                     context.fillStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#24243e';
+                            ? selectedCandleColor
+                            : lastCrDate && d.time * 1000 < lastCrDate
+                            ? uniswapColor
+                            : crocColor;
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#7371FC';
+                            ? selectedCandleColor
+                            : lastCrDate && d.time * 1000 < lastCrDate
+                            ? uniswapBorderColor
+                            : crocBorderColor;
 
                     context.cursorStyle = 'pointer';
                 })
@@ -4380,7 +4415,7 @@ export default function Chart(props: propsIF) {
                             ? 'transparent'
                             : selectedDate !== undefined &&
                               selectedDate === d.time * 1000
-                            ? '#E480FF'
+                            ? selectedCandleColor
                             : close > open
                             ? 'rgba(205,193,255, 0.5)'
                             : 'rgba(115,113,252, 0.5)';
@@ -4390,7 +4425,7 @@ export default function Chart(props: propsIF) {
                             ? 'transparent'
                             : selectedDate !== undefined &&
                               selectedDate === d.time * 1000
-                            ? '#E480FF'
+                            ? selectedCandleColor
                             : close > open
                             ? 'rgba(205,193,255, 0.5)'
                             : 'rgba(115,113,252, 0.5)';
@@ -5582,7 +5617,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (lastCrDataTooltip && scaleData) {
-            lastCrDataTooltip.html('<p> 🐊 Start of Crocswap Data </p>');
+            lastCrDataTooltip.html('<p>  🐊 Start of Crocswap Data </p>');
 
             lastCrDataTooltip.style(
                 'visibility',
