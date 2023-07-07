@@ -39,55 +39,47 @@ export default function TokenSelect(props: propsIF) {
             : undefined;
 
     return (
-        <>
-            <button
-                className={styles.main_container}
-                onClick={() => chooseToken(token, false)}
-                role='button'
-                tabIndex={0}
-                aria-label={`Select ${token.symbol}`}
-            >
-                <section className={styles.left_side_container}>
-                    <div className={styles.modal_content}>
-                        <div className={styles.modal_tokens_info}>
-                            <TokenIcon
-                                src={
-                                    token.logoURI
-                                        ? uriToHttp(token.logoURI)
-                                        : ''
-                                }
-                                alt={token.symbol?.charAt(0)}
-                                size='xl'
-                            />
-                            <div className={styles.name_container}>
-                                <span className={styles.modal_token_symbol}>
-                                    {token.symbol}
-                                </span>
-                                <span className={styles.modal_token_name}>
-                                    {token.name}
-                                </span>
-                            </div>
+        <button
+            className={styles.main_container}
+            onClick={() => chooseToken(token, false)}
+            role='button'
+            tabIndex={0}
+            aria-label={`Select ${token.symbol}`}
+        >
+            <section className={styles.left_side_container}>
+                <div className={styles.modal_content}>
+                    <div className={styles.modal_tokens_info}>
+                        <TokenIcon
+                            src={token.logoURI ? uriToHttp(token.logoURI) : ''}
+                            alt={token.symbol?.charAt(0)}
+                            size='xl'
+                        />
+                        <div className={styles.name_container}>
+                            <span className={styles.modal_token_symbol}>
+                                {token.symbol}
+                            </span>
+                            <span className={styles.modal_token_name}>
+                                {token.name}
+                            </span>
                         </div>
                     </div>
-                </section>
-                <div className={styles.modal_tokens_amount}>
-                    <p>
-                        {isUserLoggedIn
-                            ? combinedBalanceDisplayTruncated === undefined
-                                ? connectedUserErc20Tokens !== undefined
-                                    ? '0'
-                                    : '...'
-                                : tokenIsEth &&
-                                  parseFloat(
-                                      combinedBalanceDisplayTruncated,
-                                  ) === 0
-                                ? '0'
-                                : combinedBalanceDisplayTruncated
-                            : ''}
-                    </p>
-                    <p className={styles.token_list_data}>{fromListsText}</p>
                 </div>
-            </button>
-        </>
+            </section>
+            <div className={styles.modal_tokens_amount}>
+                <p>
+                    {isUserLoggedIn
+                        ? combinedBalanceDisplayTruncated === undefined
+                            ? connectedUserErc20Tokens !== undefined
+                                ? '0'
+                                : '...'
+                            : tokenIsEth &&
+                              parseFloat(combinedBalanceDisplayTruncated) === 0
+                            ? '0'
+                            : combinedBalanceDisplayTruncated
+                        : ''}
+                </p>
+                <p className={styles.token_list_data}>{fromListsText}</p>
+            </div>
+        </button>
     );
 }
