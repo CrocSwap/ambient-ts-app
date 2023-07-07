@@ -3424,13 +3424,15 @@ export default function Chart(props: propsIF) {
                 if (
                     d.date.getTime() !== lastCrDate &&
                     !(
-                        (xScale(d.date) > firstCrDateLocation - _width / 2 &&
-                            xScale(d.date) <
-                                firstCrDateLocation + _width / 2) ||
+                        (
+                            xScale(d.date) > firstCrDateLocation - _width / 2 &&
+                            xScale(d.date) < firstCrDateLocation + _width / 2
+                        )
+                        /*   ||
                         (xScale(d.date) >
                             firstCandleDateLocation - _width / 2 &&
                             xScale(d.date) <
-                                firstCandleDateLocation + _width / 2)
+                                firstCandleDateLocation + _width / 2) */
                     )
                 ) {
                     if (formatValue) {
@@ -3510,14 +3512,13 @@ export default function Chart(props: propsIF) {
         }
 
         if (
-            ((xScale(crosshairData[0].x) >
-                firstCrDateLocation - (_width - 15) &&
-                xScale(crosshairData[0].x) <
-                    firstCrDateLocation + (_width - 15)) ||
+            xScale(crosshairData[0].x) > firstCrDateLocation - (_width - 15) &&
+            xScale(crosshairData[0].x) < firstCrDateLocation + (_width - 15) &&
+            /*   ||
                 (xScale(crosshairData[0].x) >
                     firstCandleDateLocation - (_width - 15) &&
                     xScale(crosshairData[0].x) <
-                        firstCandleDateLocation + (_width - 15))) &&
+                        firstCandleDateLocation + (_width - 15)) */
             crosshairActive !== 'none'
         ) {
             context.filter = ' blur(7px)';
