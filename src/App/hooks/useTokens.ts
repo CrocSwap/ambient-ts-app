@@ -3,6 +3,7 @@ import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import fetchTokenList from '../../utils/functions/fetchTokenList';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 import chainNumToString from '../functions/chainNumToString';
+import { defaultTokens } from '../../utils/data/defaultTokens';
 
 export interface tokenMethodsIF {
     defaultTokens: TokenIF[];
@@ -78,23 +79,14 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                 // list URI of this iteration of the token
                 const originatingList: string = t.fromList ?? 'unknown';
                 // deep copy of this token data object
-                const deepToken = {
-                    address: t.address,
-                    chainId: t.chainId,
-                    decimals: t.decimals,
-                    fromList: originatingList,
-                    listedBy: [originatingList],
-                    logoURI: t.logoURI,
-                    name: t.name,
-                    symbol: t.symbol,
-                };
+                const deepToken: TokenIF = deepCopyToken(t, originatingList);
                 // get the current token from the Map if already listed
                 const tknFromMap: TokenIF | undefined = retMap.get(
                     t.address.toLowerCase(),
                 );
                 // if token is listed, update the array of originating URIs
                 if (tknFromMap?.listedBy) {
-                    deepToken.listedBy = deepToken.listedBy.concat(
+                    deepToken.listedBy = deepToken.listedBy?.concat(
                         tknFromMap.listedBy,
                     );
                 }
@@ -104,10 +96,30 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         return retMap;
     }, [tokenLists, ackTokens, chainId]);
 
-    const tokenUniv: TokenIF[] = useMemo(
-        () => [...tokenMap.values()],
-        [tokenMap],
-    );
+    const tokenUniv: TokenIF[] = useMemo(() => {
+        if (tokenMap.size) {
+            return [...tokenMap.values()];
+        } else {
+            return defaultTokens
+                .filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
+                .map((tkn: TokenIF) =>
+                    deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
+                );
+        }
+    }, [tokenMap.size]);
+
+    function deepCopyToken(tkn: TokenIF, source: string): TokenIF {
+        return {
+            address: tkn.address,
+            chainId: tkn.chainId,
+            decimals: tkn.decimals,
+            fromList: source,
+            listedBy: [source],
+            logoURI: tkn.logoURI,
+            name: tkn.name,
+            symbol: tkn.symbol,
+        };
+    }
 
     const defaultTokensInUniv: TokenIF[] = useMemo(
         () =>
@@ -117,7 +129,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                     tkn.listedBy?.includes(tokenListURIs.ambient)
                 );
             }),
-        [chainId],
+        [chainId, tokenUniv.length],
     );
 
     // Load token lists from local storage for fast load, but asynchronously
