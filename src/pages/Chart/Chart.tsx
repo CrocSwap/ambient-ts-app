@@ -3525,7 +3525,8 @@ export default function Chart(props: propsIF) {
 
         context.fillText('🐊', firstCrDateLocation, Y + tickSize);
 
-        context.fillText('🥚', firstCandleDateLocation, Y + tickSize);
+        context.fillText('', firstCandleDateLocation, Y + tickSize);
+        // context.fillText('🥚', firstCandleDateLocation, Y + tickSize);
 
         context.restore();
 
