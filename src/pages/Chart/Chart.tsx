@@ -989,10 +989,10 @@ export default function Chart(props: propsIF) {
                     event: any,
                     unparsedCandleData: Array<CandleData>,
                 ) => {
-                    let dx = event.sourceEvent.deltaY / 3;
-
-                    dx =
-                        Math.abs(dx) === 0 ? -event.sourceEvent.deltaX / 3 : dx;
+                    const dx =
+                        Math.abs(event.sourceEvent.deltaX) != 0
+                            ? event.sourceEvent.deltaX / 3
+                            : event.sourceEvent.deltaY / 3;
 
                     const domainX = scaleData?.xScale.domain();
                     const linearX = d3
