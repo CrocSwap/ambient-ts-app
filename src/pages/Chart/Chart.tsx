@@ -1016,9 +1016,11 @@ export default function Chart(props: propsIF) {
                     const deltaX = linearX(dx);
                     if (lastCandleTime && firstCandleTime) {
                         if (
-                            event.sourceEvent.shiftKey ||
-                            event.sourceEvent.altKey ||
-                            event.sourceEvent.deltaX !== 0
+                            (event.sourceEvent.shiftKey ||
+                                event.sourceEvent.altKey ||
+                                event.sourceEvent.deltaX !== 0) &&
+                            !event.sourceEvent.ctrlKey &&
+                            !event.sourceEvent.metaKey
                         ) {
                             getNewCandleData(
                                 firstTime + deltaX,
