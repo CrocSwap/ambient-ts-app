@@ -1,20 +1,16 @@
-import { memo } from 'react';
+import { Suspense, memo } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
-interface TokenIconPropsIF {
+interface propsIF {
     src?: string;
     alt?: string;
     size?: TokenIconSize;
 }
 
-function TokenIcon({
-    src = '',
-    alt = 'Token Icon',
-    size = 'm',
-}: TokenIconPropsIF) {
+function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
     const getIconWidth = (size: TokenIconSize) => {
         switch (size) {
             case '3xl':
@@ -38,8 +34,12 @@ function TokenIcon({
         }
     };
 
+    const noTokenIcon: JSX.Element = (
+        <NoTokenIcon tokenInitial={alt?.charAt(0)} width={getIconWidth(size)} />
+    );
+
     return (
-        <>
+        <Suspense fallback={noTokenIcon}>
             {src !== '' ? (
                 <img
                     className={styles.token_icon}
@@ -48,12 +48,9 @@ function TokenIcon({
                     alt={alt}
                 />
             ) : (
-                <NoTokenIcon
-                    tokenInitial={alt?.charAt(0)}
-                    width={getIconWidth(size)}
-                />
+                noTokenIcon
             )}
-        </>
+        </Suspense>
     );
 }
 
