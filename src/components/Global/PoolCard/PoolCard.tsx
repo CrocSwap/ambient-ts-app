@@ -307,11 +307,11 @@ export default function PoolCard(props: propsIF) {
                                     ? pool.base.logoURI
                                     : pool.quote.logoURI,
                             )}
-                            alt={`logo for token ${
+                            alt={
                                 shouldInvertDisplay
-                                    ? pool.base.logoURI
-                                    : pool.quote.logoURI
-                            }`}
+                                    ? pool.base.symbol
+                                    : pool.quote.symbol
+                            }
                         />
                         <TokenIcon
                             size='2xl'
@@ -320,11 +320,11 @@ export default function PoolCard(props: propsIF) {
                                     ? pool.quote.logoURI
                                     : pool.base.logoURI,
                             )}
-                            alt={`logo for token ${
+                            alt={
                                 shouldInvertDisplay
-                                    ? pool.quote.name
-                                    : pool.base.name
-                            }`}
+                                    ? pool.quote.symbol
+                                    : pool.base.symbol
+                            }
                         />
                     </div>
                     <div className={styles.tokens_name}>

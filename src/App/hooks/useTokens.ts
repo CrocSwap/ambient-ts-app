@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { defaultTokens } from '../../utils/data/defaultTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import fetchTokenList from '../../utils/functions/fetchTokenList';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 import chainNumToString from '../functions/chainNumToString';
+import { defaultTokens } from '../../utils/data/defaultTokens';
 
 export interface tokenMethodsIF {
     defaultTokens: TokenIF[];
@@ -68,7 +68,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
 
     // Universe of tokens within the given chain. Combines both tokens from
     // lists and user-acknowledge tokens
-    const tokenMap = useMemo(() => {
+    const tokenMap = useMemo<Map<string, TokenIF>>(() => {
         const retMap = new Map<string, TokenIF>();
         tokenLists
             .reverse() // Reverse add, so higher priority lists overwrite lower priority
@@ -79,23 +79,14 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                 // list URI of this iteration of the token
                 const originatingList: string = t.fromList ?? 'unknown';
                 // deep copy of this token data object
-                const deepToken = {
-                    address: t.address,
-                    chainId: t.chainId,
-                    decimals: t.decimals,
-                    fromList: originatingList,
-                    listedBy: [originatingList],
-                    logoURI: t.logoURI,
-                    name: t.name,
-                    symbol: t.symbol,
-                };
+                const deepToken: TokenIF = deepCopyToken(t, originatingList);
                 // get the current token from the Map if already listed
                 const tknFromMap: TokenIF | undefined = retMap.get(
                     t.address.toLowerCase(),
                 );
                 // if token is listed, update the array of originating URIs
                 if (tknFromMap?.listedBy) {
-                    deepToken.listedBy = deepToken.listedBy.concat(
+                    deepToken.listedBy = deepToken.listedBy?.concat(
                         tknFromMap.listedBy,
                     );
                 }
@@ -105,14 +96,40 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         return retMap;
     }, [tokenLists, ackTokens, chainId]);
 
-    const tokenUniv = useMemo(() => [...tokenMap.values()], [tokenMap]);
+    const tokenUniv: TokenIF[] = useMemo(() => {
+        if (tokenMap.size) {
+            return [...tokenMap.values()];
+        } else {
+            return defaultTokens
+                .filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
+                .map((tkn: TokenIF) =>
+                    deepCopyToken(tkn, tkn.fromList ?? tokenListURIs.ambient),
+                );
+        }
+    }, [tokenMap.size]);
 
-    const defaultTokensInUniv = useMemo(
+    function deepCopyToken(tkn: TokenIF, source: string): TokenIF {
+        return {
+            address: tkn.address,
+            chainId: tkn.chainId,
+            decimals: tkn.decimals,
+            fromList: source,
+            listedBy: [source],
+            logoURI: tkn.logoURI,
+            name: tkn.name,
+            symbol: tkn.symbol,
+        };
+    }
+
+    const defaultTokensInUniv: TokenIF[] = useMemo(
         () =>
-            defaultTokens.filter(
-                (tkn) => chainNumToString(tkn.chainId) === chainId,
-            ),
-        [chainId],
+            tokenUniv.filter((tkn) => {
+                return (
+                    chainNumToString(tkn.chainId) === chainId &&
+                    tkn.listedBy?.includes(tokenListURIs.ambient)
+                );
+            }),
+        [chainId, tokenUniv.length],
     );
 
     // Load token lists from local storage for fast load, but asynchronously
@@ -208,7 +225,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
             const searchExact = (): TokenIF[] => {
                 // return tokens where name OR symbol exactly matches search string
                 return tokenUniv.filter(
-                    (tkn) =>
+                    (tkn: TokenIF) =>
                         tkn.name.toLowerCase() === cleanedInput ||
                         tkn.symbol.toLowerCase() === cleanedInput,
                 );

@@ -9,7 +9,6 @@ import { CrocImpact } from '@crocswap-libs/sdk';
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
 import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
-import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import Modal from '../../components/Global/Modal/Modal';
 import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
@@ -55,6 +54,7 @@ import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
+import OrderHeader from '../../components/Trade/OrderHeader/OrderHeader';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -649,7 +649,12 @@ function Swap(props: propsIF) {
             <div className={`${swapContainerStyle}`}>
                 {poolNotInitializedContent}
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
-                    <SwapHeader isOnTradeRoute={isOnTradeRoute} />
+                    <OrderHeader
+                        slippage={swapSlippage}
+                        bypassConfirm={bypassConfirmSwap}
+                        settingsTitle='Swap'
+                        isSwapPage={!isOnTradeRoute}
+                    />
                     {navigationMenu}
                     <motion.div
                         initial={{ opacity: 0 }}

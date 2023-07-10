@@ -245,6 +245,9 @@ export const SoloTokenSelect = (props: propsIF) => {
         document.getElementById('token_select_input_field')?.focus();
     };
 
+    // arbitrary limit on number of tokens to display in DOM for performance
+    const MAX_TOKEN_COUNT = 300;
+
     return (
         <section className={styles.container}>
             <div className={styles.input_control_container}>
@@ -284,16 +287,20 @@ export const SoloTokenSelect = (props: propsIF) => {
                         />
                     ),
                 )}
-
             {showSoloSelectTokenButtons ? (
-                outputTokens.map((token: TokenIF) => (
-                    <TokenSelect
-                        key={JSON.stringify(token)}
-                        token={token}
-                        chooseToken={chooseToken}
-                        fromListsText=''
-                    />
-                ))
+                <div className={styles.scrollable_container}>
+                    {' '}
+                    {outputTokens
+                        .slice(0, MAX_TOKEN_COUNT)
+                        .map((token: TokenIF) => (
+                            <TokenSelect
+                                key={JSON.stringify(token)}
+                                token={token}
+                                chooseToken={chooseToken}
+                                fromListsText=''
+                            />
+                        ))}
+                </div>
             ) : (
                 <SoloTokenImport
                     customToken={customToken}
