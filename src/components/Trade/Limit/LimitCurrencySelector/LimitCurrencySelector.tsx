@@ -31,6 +31,7 @@ import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 // interface for component props
 interface propsIF {
@@ -50,6 +51,7 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     tokenAorB: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    parseInput: (val: string) => void;
 }
 
 // central react functional component
@@ -69,6 +71,7 @@ function LimitCurrencySelector(props: propsIF) {
         handleChangeClick,
         tokenAorB,
         setUserOverrodeSurplusWithdrawalDefault,
+        parseInput,
     } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
@@ -119,7 +122,7 @@ function LimitCurrencySelector(props: propsIF) {
             id='limit_token_selector'
         >
             <TokenIcon
-                src={thisToken.logoURI}
+                src={uriToHttp(thisToken.logoURI)}
                 alt={thisToken.name + 'token logo'}
                 size='2xl'
             />
@@ -331,7 +334,6 @@ function LimitCurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            <span className={styles.direction}> </span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='limit_sell_qty'>
                     <LimitCurrencyQuantity
@@ -341,6 +343,7 @@ function LimitCurrencySelector(props: propsIF) {
                         thisToken={thisToken}
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
+                        parseInput={parseInput}
                     />
                 </div>
                 {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}

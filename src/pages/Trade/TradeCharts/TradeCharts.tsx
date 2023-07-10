@@ -30,7 +30,6 @@ import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
@@ -165,31 +164,11 @@ function TradeCharts(props: propsIF) {
         };
     });
 
-    const saveImageContent = (
-        <div
-            className={styles.save_image_content}
-            onClick={copyChartToClipboard}
-            role='button'
-            tabIndex={0}
-            aria-label='Download chart image button'
-        >
-            Copy to Clipboard
-            <FiCopy />
-        </div>
-    );
-
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
             <DefaultTooltip
                 interactive
-                title={
-                    <div
-                        className={styles.save_image_content}
-                        onClick={() => setIsChartFullScreen(!isChartFullScreen)}
-                    >
-                        Toggle Full Screen Chart
-                    </div>
-                }
+                title={'Toggle Full Screen Chart'}
                 enterDelay={500}
             >
                 <button
@@ -205,7 +184,7 @@ function TradeCharts(props: propsIF) {
             </DefaultTooltip>
             <DefaultTooltip
                 interactive
-                title={saveImageContent}
+                title={'Copy to Clipboard'}
                 enterDelay={500}
             >
                 <button
@@ -292,15 +271,6 @@ function TradeCharts(props: propsIF) {
 
     const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
 
-    const [graphIsLoading, setGraphIsLoading] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setGraphIsLoading(false);
-        }, 1500);
-        return () => clearTimeout(timer);
-    }, []);
-
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
@@ -339,29 +309,25 @@ function TradeCharts(props: propsIF) {
                     reset={reset}
                 />
             </div>
-            {graphIsLoading ? (
-                <Spinner size={100} bg='var(--dark2)' centered />
-            ) : (
-                <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
-                    <TradeCandleStickChart
-                        changeState={props.changeState}
-                        chartItemStates={chartItemStates}
-                        setCurrentData={setCurrentData}
-                        setCurrentVolumeData={setCurrentVolumeData}
-                        selectedDate={selectedDate}
-                        setSelectedDate={setSelectedDate}
-                        rescale={rescale}
-                        setRescale={setRescale}
-                        latest={latest}
-                        setLatest={setLatest}
-                        reset={reset}
-                        setReset={setReset}
-                        showLatest={showLatest}
-                        setShowLatest={setShowLatest}
-                        setShowTooltip={setShowTooltip}
-                    />
-                </div>
-            )}
+            <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
+                <TradeCandleStickChart
+                    changeState={props.changeState}
+                    chartItemStates={chartItemStates}
+                    setCurrentData={setCurrentData}
+                    setCurrentVolumeData={setCurrentVolumeData}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    rescale={rescale}
+                    setRescale={setRescale}
+                    latest={latest}
+                    setLatest={setLatest}
+                    reset={reset}
+                    setReset={setReset}
+                    showLatest={showLatest}
+                    setShowLatest={setShowLatest}
+                    setShowTooltip={setShowTooltip}
+                />
+            </div>
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

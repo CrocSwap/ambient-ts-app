@@ -5,6 +5,7 @@ import * as d3fc from 'd3fc';
 import './Subcharts.css';
 import { setCanvasResolution } from '../../../Chart/Chart';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { createIndicatorLine } from '../../../Chart/ChartUtils/indicatorLineSeries';
 
 interface FreeRateData {
     feeData: Array<CandleData>;
@@ -22,6 +23,9 @@ interface FreeRateData {
     crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
+    lastCrDate: number | undefined;
+    isCrDataIndActive: boolean;
+    isCrDataToolTipActive: boolean;
 }
 
 function FeeRateSubChart(props: FreeRateData) {
@@ -39,15 +43,19 @@ function FeeRateSubChart(props: FreeRateData) {
         setCrosshairActive,
         setCrosshairData,
         crosshairActive,
+        lastCrDate,
+        isCrDataIndActive,
+        isCrDataToolTipActive,
     } = props;
 
-    const d3Yaxis = useRef<HTMLInputElement | null>(null);
+    const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
 
     const d3CanvasArea = useRef(null);
     const d3CanvasCrosshair = useRef(null);
 
     const [feeRateyScale, setFeeRateyScale] = useState<any>();
     const [lineSeries, setLineSeries] = useState<any>();
+    const [crDataIndicator, setCrDataIndicator] = useState<any>();
     const [feeRateZoom, setFeeRateZoom] = useState<any>();
     const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
         useState<any>();
@@ -151,6 +159,12 @@ function FeeRateSubChart(props: FreeRateData) {
                 return lineSeries;
             });
 
+            const crDataIndicator = createIndicatorLine(xScale, feeRateyScale);
+
+            setCrDataIndicator(() => {
+                return crDataIndicator;
+            });
+
             const crosshairVerticalCanvas = d3fc
                 .annotationCanvasLine()
                 .orient('vertical')
@@ -200,14 +214,28 @@ function FeeRateSubChart(props: FreeRateData) {
                     .on('draw', () => {
                         setCanvasResolution(canvas);
                         lineSeries(feeData);
+                        if (isCrDataIndActive || isCrDataToolTipActive) {
+                            ctx.setLineDash([0.6, 0.6]);
+                            crDataIndicator([lastCrDate]);
+                        }
                     })
                     .on('measure', (event: any) => {
                         feeRateyScale.range([event.detail.height, 0]);
                         lineSeries.context(ctx);
+                        ctx.setLineDash([0.6, 0.6]);
+                        crDataIndicator.context(ctx);
                     });
             }
+            renderCanvas();
         }
-    }, [lineSeries, feeData]);
+    }, [
+        lineSeries,
+        feeData,
+        crDataIndicator,
+        lastCrDate,
+        isCrDataIndActive,
+        isCrDataToolTipActive,
+    ]);
 
     useEffect(() => {
         const canvas = d3
@@ -259,6 +287,11 @@ function FeeRateSubChart(props: FreeRateData) {
             const container = d3
                 .select(d3CanvasCrosshair.current)
                 .node() as any;
+            if (container) container.requestRedraw();
+        }
+
+        if (crDataIndicator) {
+            const container = d3.select(crDataIndicator.current).node() as any;
             if (container) container.requestRedraw();
         }
     };

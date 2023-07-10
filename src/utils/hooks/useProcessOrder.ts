@@ -1,7 +1,6 @@
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
@@ -18,6 +17,8 @@ import moment from 'moment';
 import { getChainExplorer } from '../data/chains';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { diffHashSig } from '../functions/diffHashSig';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import uriToHttp from '../functions/uriToHttp';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -36,8 +37,8 @@ export const useProcessOrder = (
     const baseTokenName = limitOrder.baseName;
     const quoteTokenName = limitOrder.quoteName;
 
-    const quoteTokenLogo = limitOrder.quoteTokenLogoURI;
-    const baseTokenLogo = limitOrder.baseTokenLogoURI;
+    const quoteTokenLogo = uriToHttp(limitOrder.quoteTokenLogoURI);
+    const baseTokenLogo = uriToHttp(limitOrder.baseTokenLogoURI);
 
     const isOwnerActiveAccount =
         limitOrder.user.toLowerCase() === account?.toLowerCase();
@@ -167,62 +168,23 @@ export const useProcessOrder = (
             ? limitOrder.positionLiqQuoteDecimalCorrected
             : limitOrder.claimableLiqQuoteDecimalCorrected;
 
-    const baseQty = !liqBaseNum
-        ? '0'
-        : liqBaseNum < 0.0001
-        ? liqBaseNum.toExponential(2)
-        : liqBaseNum < 2
-        ? liqBaseNum.toPrecision(3)
-        : liqBaseNum >= 100000
-        ? formatAmountOld(liqBaseNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          liqBaseNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-    const quoteQty = !liqQuoteNum
-        ? '0'
-        : liqQuoteNum < 0.0001
-        ? liqQuoteNum.toExponential(2)
-        : liqQuoteNum < 2
-        ? liqQuoteNum.toPrecision(3)
-        : liqQuoteNum >= 100000
-        ? formatAmountOld(liqQuoteNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          liqQuoteNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const baseQty = getFormattedNumber({
+        value: liqBaseNum,
+        zeroDisplay: '0',
+    });
+
+    const quoteQty = getFormattedNumber({
+        value: liqQuoteNum,
+        zeroDisplay: '0',
+    });
 
     const usdValueNum = limitOrder.totalValueUSD;
 
-    const usdValueTruncated =
-        usdValueNum === undefined
-            ? undefined
-            : usdValueNum === 0
-            ? '0.00 '
-            : usdValueNum < 0.001
-            ? usdValueNum.toExponential(2) + ' '
-            : usdValueNum >= 99999
-            ? formatAmountOld(usdValueNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              }) + ' ';
-
-    const usdValueLocaleString =
-        usdValueNum === undefined
-            ? '…'
-            : usdValueNum === 0
-            ? '0.00 '
-            : usdValueNum < 0.01
-            ? usdValueNum.toPrecision(3)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              usdValueNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const usdValue = getFormattedNumber({
+        value: usdValueNum,
+        isUSD: true,
+        prefix: '$',
+    });
 
     // -----------------------------------------------------------------------------------------
 
@@ -239,8 +201,6 @@ export const useProcessOrder = (
 
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
     // ------------------------------------------------------------------
-    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
-    // ----------------------------------------------------------------------
 
     const positionTime =
         limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
@@ -272,33 +232,15 @@ export const useProcessOrder = (
             const invPriceDecimalCorrected =
                 limitOrder.invLimitPriceDecimalCorrected;
 
-            const nonInvertedPriceTruncated =
-                priceDecimalCorrected === 0
-                    ? '0'
-                    : priceDecimalCorrected < 0.0001
-                    ? priceDecimalCorrected.toExponential(2)
-                    : priceDecimalCorrected < 2
-                    ? priceDecimalCorrected.toPrecision(3)
-                    : priceDecimalCorrected >= 100000
-                    ? formatAmountOld(priceDecimalCorrected)
-                    : priceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const nonInvertedPriceTruncated = getFormattedNumber({
+                value: priceDecimalCorrected,
+                zeroDisplay: '0',
+            });
 
-            const invertedPriceTruncated =
-                invPriceDecimalCorrected === 0
-                    ? '0'
-                    : invPriceDecimalCorrected < 0.0001
-                    ? invPriceDecimalCorrected.toExponential(2)
-                    : invPriceDecimalCorrected < 2
-                    ? invPriceDecimalCorrected.toPrecision(3)
-                    : invPriceDecimalCorrected >= 100000
-                    ? formatAmountOld(invPriceDecimalCorrected)
-                    : invPriceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const invertedPriceTruncated = getFormattedNumber({
+                value: invPriceDecimalCorrected,
+                zeroDisplay: '0',
+            });
 
             const truncatedDisplayPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
@@ -352,22 +294,9 @@ export const useProcessOrder = (
                 ? askTickPrice
                 : bidTickPrice;
 
-            const startPriceDisplay =
-                startPriceDisplayNum === 0
-                    ? '0'
-                    : startPriceDisplayNum < 0.0001
-                    ? startPriceDisplayNum.toExponential(2)
-                    : startPriceDisplayNum < 1
-                    ? startPriceDisplayNum.toPrecision(3)
-                    : startPriceDisplayNum < 2
-                    ? startPriceDisplayNum.toPrecision(5)
-                    : startPriceDisplayNum >= 100000
-                    ? formatAmountOld(startPriceDisplayNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      startPriceDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const startPriceDisplay = getFormattedNumber({
+                value: startPriceDisplayNum,
+            });
 
             const startPriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
@@ -378,22 +307,9 @@ export const useProcessOrder = (
                     ? bidTickInvPrice
                     : askTickInvPrice;
 
-            const startPriceDisplayDenomByMoneyness =
-                startPriceDenomByMoneyness === 0
-                    ? '0'
-                    : startPriceDenomByMoneyness < 0.0001
-                    ? startPriceDenomByMoneyness.toExponential(2)
-                    : startPriceDenomByMoneyness < 1
-                    ? startPriceDenomByMoneyness.toPrecision(3)
-                    : startPriceDenomByMoneyness < 2
-                    ? startPriceDenomByMoneyness.toPrecision(5)
-                    : startPriceDenomByMoneyness >= 100000
-                    ? formatAmountOld(startPriceDenomByMoneyness)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      startPriceDenomByMoneyness.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const startPriceDisplayDenomByMoneyness = getFormattedNumber({
+                value: startPriceDenomByMoneyness,
+            });
 
             const middlePriceDisplayNum = isDenomBase
                 ? isBid
@@ -403,22 +319,9 @@ export const useProcessOrder = (
                 ? priceHalfBelow
                 : priceHalfAbove;
 
-            const middlePriceDisplay =
-                middlePriceDisplayNum === 0
-                    ? '0'
-                    : middlePriceDisplayNum < 0.0001
-                    ? middlePriceDisplayNum.toExponential(2)
-                    : middlePriceDisplayNum < 1
-                    ? middlePriceDisplayNum.toPrecision(3)
-                    : middlePriceDisplayNum < 2
-                    ? middlePriceDisplayNum.toPrecision(5)
-                    : middlePriceDisplayNum >= 100000
-                    ? formatAmountOld(middlePriceDisplayNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      middlePriceDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const middlePriceDisplay = getFormattedNumber({
+                value: middlePriceDisplayNum,
+            });
 
             const middlePriceDenomByMoneyness =
                 isBaseTokenMoneynessGreaterOrEqual
@@ -429,22 +332,9 @@ export const useProcessOrder = (
                     ? 1 / priceHalfBelow
                     : 1 / priceHalfAbove;
 
-            const middlePriceDisplayDenomByMoneyness =
-                middlePriceDenomByMoneyness === 0
-                    ? '0'
-                    : middlePriceDenomByMoneyness < 0.0001
-                    ? middlePriceDenomByMoneyness.toExponential(2)
-                    : middlePriceDenomByMoneyness < 1
-                    ? middlePriceDenomByMoneyness.toPrecision(3)
-                    : middlePriceDenomByMoneyness < 2
-                    ? middlePriceDenomByMoneyness.toPrecision(5)
-                    : middlePriceDenomByMoneyness >= 100000
-                    ? formatAmountOld(middlePriceDenomByMoneyness)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      middlePriceDenomByMoneyness.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const middlePriceDisplayDenomByMoneyness = getFormattedNumber({
+                value: middlePriceDenomByMoneyness,
+            });
 
             const finishPriceDisplayNum = isDenomBase
                 ? isBid
@@ -454,22 +344,9 @@ export const useProcessOrder = (
                 ? bidTickPrice
                 : askTickPrice;
 
-            const finishPriceDisplay =
-                finishPriceDisplayNum === 0
-                    ? '0'
-                    : finishPriceDisplayNum < 0.0001
-                    ? finishPriceDisplayNum.toExponential(2)
-                    : finishPriceDisplayNum < 1
-                    ? finishPriceDisplayNum.toPrecision(3)
-                    : startPriceDisplayNum < 2
-                    ? startPriceDisplayNum.toPrecision(5)
-                    : finishPriceDisplayNum >= 100000
-                    ? formatAmountOld(finishPriceDisplayNum)
-                    : // ? baseLiqDisplayNum.toExponential(2)
-                      finishPriceDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+            const finishPriceDisplay = getFormattedNumber({
+                value: finishPriceDisplayNum,
+            });
 
             setStartPriceDisplay(startPriceDisplay);
             setStartPriceDisplayDenomByMoneyness(
@@ -487,32 +364,17 @@ export const useProcessOrder = (
             const intialTokenQtyNum = middlePriceDisplayNum * finalTokenQty;
             const invIntialTokenQtyNum =
                 (1 / middlePriceDisplayNum) * finalTokenQty;
-            const intialTokenQtyTruncated =
-                intialTokenQtyNum === 0
-                    ? '0'
-                    : intialTokenQtyNum < 0.0001
-                    ? intialTokenQtyNum.toExponential(2)
-                    : intialTokenQtyNum < 2
-                    ? intialTokenQtyNum.toPrecision(3)
-                    : intialTokenQtyNum >= 100000
-                    ? formatAmountOld(intialTokenQtyNum)
-                    : intialTokenQtyNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            const invIntialTokenQtyTruncated =
-                invIntialTokenQtyNum === 0
-                    ? '0'
-                    : invIntialTokenQtyNum < 0.0001
-                    ? invIntialTokenQtyNum.toExponential(2)
-                    : invIntialTokenQtyNum < 2
-                    ? invIntialTokenQtyNum.toPrecision(3)
-                    : invIntialTokenQtyNum >= 100000
-                    ? formatAmountOld(invIntialTokenQtyNum)
-                    : invIntialTokenQtyNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+
+            const intialTokenQtyTruncated = getFormattedNumber({
+                value: intialTokenQtyNum,
+                zeroDisplay: '0',
+            });
+
+            const invIntialTokenQtyTruncated = getFormattedNumber({
+                value: invIntialTokenQtyNum,
+                zeroDisplay: '0',
+            });
+
             setInitialTokenQty(
                 (isBid && !isDenomBase) || (!isBid && isDenomBase)
                     ? intialTokenQtyTruncated
@@ -541,7 +403,6 @@ export const useProcessOrder = (
 
         // Value data
         usdValue,
-        usdValueLocaleString,
 
         // Token Qty data
         baseQty,

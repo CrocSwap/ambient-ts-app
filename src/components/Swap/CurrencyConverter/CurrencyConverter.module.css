@@ -1,29 +1,23 @@
-.currency_converter_switch {
-    display: flex;
-    flex-direction: column-reverse;
-    transition: all 1s ease-in-out;
-}
-
 .currency_converter {
     display: flex;
     flex-direction: column;
     transition: all 1s ease-in-out;
 }
 
-.arrow_container {
-    cursor: pointer;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.currency_converter_switch {
+    flex-direction: column-reverse;
 }
 
-.arrow_container_disabled {
-    cursor: wait;
+.arrow_container {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-bottom: 16px;
+}
+
+.arrow_container_disabled svg:hover {
+    cursor: wait !important;
 }
 
 .arrow_container img {

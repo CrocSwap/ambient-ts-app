@@ -9,6 +9,7 @@ import { useLocation } from 'react-router-dom';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 type ItemIF = {
     slug: string;
@@ -34,8 +35,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
-        baseQuantityDisplayShort,
-        quoteQuantityDisplayShort,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
@@ -43,7 +44,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-        txUsdValueLocaleString,
         baseTokenCharacter,
         quoteTokenCharacter,
     } = useProcessTransaction(tx, userAddress);
@@ -58,12 +58,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
                 <TokenIcon
-                    src={baseTokenLogo}
+                    src={uriToHttp(baseTokenLogo)}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
-                    src={quoteTokenLogo}
+                    src={uriToHttp(quoteTokenLogo)}
                     alt={quoteTokenSymbol}
                     size='2xl'
                 />
@@ -87,7 +87,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 <span>Total Value: </span>
                 <DefaultTooltip
                     interactive
-                    title={txUsdValueLocaleString}
+                    title={usdValue}
                     placement={'right-end'}
                     arrow
                     enterDelay={750}
@@ -127,10 +127,18 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     );
 
     const buySellBaseToken = (
-        <TokenIcon src={baseTokenLogo} alt={baseTokenSymbol} size='xs' />
+        <TokenIcon
+            src={uriToHttp(baseTokenLogo)}
+            alt={baseTokenSymbol}
+            size='xs'
+        />
     );
     const buySellQuoteToken = (
-        <TokenIcon src={quoteTokenLogo} alt={quoteTokenSymbol} size='xs' />
+        <TokenIcon
+            src={uriToHttp(quoteTokenLogo)}
+            alt={quoteTokenSymbol}
+            size='xs'
+        />
     );
 
     const isBuyTransactionDetails = (
@@ -143,7 +151,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 </p>
 
                 <div>
-                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
+                    {quoteQuantityDisplay.replace(/[()]/g, '')}
                     {buySellQuoteToken}
                 </div>
             </Row>
@@ -156,7 +164,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         : 'Sell: '}
                 </p>
                 <div>
-                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
+                    {baseQuantityDisplay.replace(/[()]/g, '')}
                     {buySellBaseToken}
                 </div>
             </Row>
@@ -173,7 +181,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 </p>
 
                 <div>
-                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
+                    {baseQuantityDisplay.replace(/[()]/g, '')}
                     {buySellBaseToken}
                 </div>
             </Row>
@@ -185,7 +193,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         : 'Sell: '}
                 </p>
                 <div>
-                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
+                    {quoteQuantityDisplay.replace(/[()]/g, '')}
                     {buySellQuoteToken}
                 </div>
             </Row>

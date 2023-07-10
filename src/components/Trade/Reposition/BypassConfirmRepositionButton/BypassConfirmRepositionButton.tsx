@@ -19,6 +19,7 @@ import {
 import styles from './BypassConfirmRepositionButton.module.css';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../utils/interfaces/exports';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     txErrorCode: string;
@@ -62,7 +63,7 @@ function BypassConfirmRepositionButton(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
             noAnimation
             reposition

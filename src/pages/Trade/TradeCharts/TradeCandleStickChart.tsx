@@ -261,6 +261,25 @@ function TradeCandleStickChart(props: propsIF) {
         setIsCandleAdded(true);
     }, [diffHashSigCandles(candleData), denominationsInBase]);
 
+    const clearLiquidityData = () => {
+        if (liquidityData) {
+            liquidityData.liqAskData = [];
+            liquidityData.liqBidData = [];
+            liquidityData.depthLiqBidData = [];
+            liquidityData.depthLiqAskData = [];
+            liquidityData.topBoundary = 0;
+            liquidityData.lowBoundary = 0;
+            liquidityData.liqTransitionPointforCurve = 0;
+            liquidityData.liqTransitionPointforDepth = 0;
+        }
+    };
+
+    useEffect(() => {
+        if (unparsedCandleData === undefined) {
+            clearLiquidityData();
+        }
+    }, [unparsedCandleData === undefined]);
+
     // Parse liquidtiy data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
         if (
@@ -574,8 +593,12 @@ function TradeCandleStickChart(props: propsIF) {
                 depthLiqAskData: depthLiqAskData,
                 topBoundary: topBoundary,
                 lowBoundary: lowBoundary,
-                liqTransitionPointforCurve: liqBoundary,
-                liqTransitionPointforDepth: liqBoundaryDepth,
+                liqTransitionPointforCurve: liqBoundary
+                    ? liqBoundary
+                    : poolPriceDisplay,
+                liqTransitionPointforDepth: liqBoundaryDepth
+                    ? liqBoundaryDepth
+                    : poolPriceDisplay,
             };
         } else {
             setIsLoading(true);
@@ -584,17 +607,9 @@ function TradeCandleStickChart(props: propsIF) {
     }, [liqBoundary]);
 
     useEffect(() => {
-        if (!(unparsedCandleData?.length && unparsedCandleData.length > 0)) {
-            setScaleData(() => {
-                return undefined;
-            });
-        } else {
+        if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
         }
-    }, [unparsedCandleData?.length && unparsedCandleData.length > 0]);
-
-    useEffect(() => {
-        setScaleForChart(unparsedCandleData);
     }, [unparsedCandleData === undefined]);
 
     // Liq Scale
@@ -687,10 +702,9 @@ function TradeCandleStickChart(props: propsIF) {
                 .accessors([(d: any) => d.volumeUSD]);
 
             volumeScale.domain(yExtentVolume(candleData?.candles));
-
-            setScaleData(() => {
+            setScaleData((prev: scaleData | undefined) => {
                 return {
-                    xScale: xScale,
+                    xScale: prev?.xScale ? prev.xScale : xScale,
                     xScaleTime: xScaleTime,
                     yScale: yScale,
                     volumeScale: volumeScale,

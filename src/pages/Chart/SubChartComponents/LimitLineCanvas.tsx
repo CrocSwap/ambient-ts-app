@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
 import { createTriangle } from '../ChartUtils/triangle';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import { diffHashSigScaleData } from '../../../utils/functions/diffHashSig';
 import { useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { tickToPrice } from '@crocswap-libs/sdk';
@@ -43,7 +43,7 @@ export default function LimitLineCanvas(props: propsIF) {
         limit,
     } = props;
 
-    const d3CanvasLimitLine = useRef<HTMLInputElement | null>(null);
+    const d3CanvasLimitLine = useRef<HTMLCanvasElement | null>(null);
 
     const location = useLocation();
 
@@ -83,7 +83,12 @@ export default function LimitLineCanvas(props: propsIF) {
                 return limitLine;
             });
         }
-    }, [diffHashSig(scaleData), lineSellColor, lineBuyColor, isUserConnected]);
+    }, [
+        diffHashSigScaleData(scaleData),
+        lineSellColor,
+        lineBuyColor,
+        isUserConnected,
+    ]);
 
     useEffect(() => {
         if (location.pathname.includes('/limit')) {
