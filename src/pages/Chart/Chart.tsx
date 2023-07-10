@@ -5178,6 +5178,11 @@ export default function Chart(props: propsIF) {
         const nearest = snapForCandle(event, filtered);
         const dateControl =
             nearest?.time * 1000 > startDate && nearest?.time * 1000 < lastDate;
+
+        const tempFilterData = filtered.filter(
+            (item) => item.time === nearest.time,
+        );
+
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
         const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
@@ -5193,13 +5198,27 @@ export default function Chart(props: propsIF) {
                     : false
                 : false;
 
-        const close = denomInBase
+        let close = denomInBase
             ? nearest?.invPriceCloseExclMEVDecimalCorrected
             : nearest?.priceCloseExclMEVDecimalCorrected;
 
-        const open = denomInBase
+        let open = denomInBase
             ? nearest?.invPriceOpenExclMEVDecimalCorrected
             : nearest?.priceOpenExclMEVDecimalCorrected;
+
+        if (tempFilterData.length > 1) {
+            close = d3.max(tempFilterData, (d: any) =>
+                denomInBase
+                    ? d?.invPriceCloseExclMEVDecimalCorrected
+                    : d?.priceCloseExclMEVDecimalCorrected,
+            );
+
+            open = d3.min(tempFilterData, (d: any) =>
+                denomInBase
+                    ? d?.invPriceOpenExclMEVDecimalCorrected
+                    : d?.priceOpenExclMEVDecimalCorrected,
+            );
+        }
 
         const diff = Math.abs(close - open);
         const scale = Math.abs(

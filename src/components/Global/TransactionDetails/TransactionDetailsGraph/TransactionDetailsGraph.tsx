@@ -882,6 +882,14 @@ export default function TransactionDetailsGraph(
                                     horizontalBandData,
                                 ]).call(horizontalBand);
                             } else if (tx.claimableLiq > 0) {
+                                // fake data added
+                                graphData.push({
+                                    time: tx.timeFirstMint,
+                                    invPriceCloseExclMEVDecimalCorrected:
+                                        tx.askTickInvPriceDecimalCorrected,
+                                    priceCloseExclMEVDecimalCorrected:
+                                        tx.askTickPriceDecimalCorrected,
+                                });
                                 crossPointJoin(svg, [
                                     [
                                         {
@@ -969,7 +977,9 @@ export default function TransactionDetailsGraph(
                             }
                         }
 
-                        lineJoin(svg, [graphData]).call(lineSeries);
+                        lineJoin(svg, [
+                            graphData.sort((a: any, b: any) => b.time - a.time),
+                        ]).call(lineSeries);
 
                         if (transactionType === 'swap' && tx !== undefined) {
                             crossPointJoin(svg, [
