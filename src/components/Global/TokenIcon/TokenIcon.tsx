@@ -1,4 +1,4 @@
-import { Suspense, memo } from 'react';
+import { Suspense, memo, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 
@@ -34,18 +34,21 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
         }
     };
 
+    const [fetchError, setFetchError] = useState<boolean>(false);
+
     const noTokenIcon: JSX.Element = (
         <NoTokenIcon tokenInitial={alt?.charAt(0)} width={getIconWidth(size)} />
     );
 
     return (
         <Suspense fallback={noTokenIcon}>
-            {src !== '' ? (
+            {!fetchError && src !== '' ? (
                 <img
                     className={styles.token_icon}
                     style={{ width: getIconWidth(size) }}
                     src={src}
                     alt={alt}
+                    onError={() => setFetchError(true)}
                 />
             ) : (
                 noTokenIcon
