@@ -43,7 +43,7 @@ export default function SoloTokenImport(props: propsIF) {
                 <div>
                     <TokenIcon
                         src={uriToHttp(customToken.logoURI)}
-                        alt={customToken.name}
+                        alt={customToken.symbol}
                         size='2xl'
                     />
                     <h2>{customToken?.symbol}</h2>
