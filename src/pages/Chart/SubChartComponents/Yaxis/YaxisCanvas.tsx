@@ -17,7 +17,10 @@ import {
     standardDeviation,
 } from '../../Chart';
 import { createRectLabel } from './YaxisUtils';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../utils/functions/diffHashSig';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useLocation } from 'react-router-dom';
 
@@ -833,7 +836,7 @@ export default function YaxisCanvas(props: yAxisIF) {
             renderSubchartCrCanvas();
         }
     }, [
-        diffHashSig(scaleData),
+        diffHashSigScaleData(scaleData),
         market,
         diffHashSig(crosshairData),
         limit,

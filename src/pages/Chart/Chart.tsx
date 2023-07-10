@@ -2264,7 +2264,6 @@ export default function Chart(props: propsIF) {
     }
     useEffect(() => {
         if (
-            yAxis &&
             xAxis &&
             zoomUtils &&
             zoomUtils?.zoom &&
