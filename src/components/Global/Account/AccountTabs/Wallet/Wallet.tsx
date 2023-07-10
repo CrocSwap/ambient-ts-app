@@ -124,7 +124,9 @@ export default function Wallet(props: propsIF) {
         <div className={styles.container}>
             <WalletHeader />
             <div className={styles.item_container}>
-                {userTokens && userTokens.length > 0 ? (
+                {userTokens &&
+                userTokens.length > 0 &&
+                userTokens[0] !== undefined ? (
                     sequenceTokens(userTokens as TokenIF[]).map((token) => (
                         <WalletCard
                             key={JSON.stringify(token)}
