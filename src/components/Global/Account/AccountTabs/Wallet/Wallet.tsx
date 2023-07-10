@@ -32,23 +32,26 @@ export default function Wallet(props: propsIF) {
     const { nativeToken, erc20Tokens } = useAppSelector(
         (state) => state.userData.tokens,
     );
-    const connectedUserTokens = [nativeToken]
+    const connectedUserTokens: Array<TokenIF | undefined> = [nativeToken]
         .concat(erc20Tokens)
         .filter((token) => token);
 
-    const userTokens = connectedAccountActive
+    const userTokens: Array<TokenIF | undefined> = connectedAccountActive
         ? connectedUserTokens
         : resolvedAddressTokens;
 
-    function sequenceTokens(tkns: TokenIF[]) {
-        const tokensWithOrigins: TokenIF[] = tkns.map((tkn: TokenIF) => {
-            return {
-                ...tkn,
-                listedBy: tokens.getTokenByAddress(tkn.address)?.listedBy ?? [
-                    'unknown',
-                ],
-            };
-        });
+    function sequenceTokens(tkns: TokenIF[]): TokenIF[] {
+        const tokensWithOrigins: TokenIF[] = tkns
+            // remove `undefined` values from the array
+            .filter((tkn: TokenIF) => !!tkn)
+            // patch in data showing where the token data originated
+            .map((tkn: TokenIF) => {
+                return {
+                    ...tkn,
+                    listedBy: tokens.getTokenByAddress(tkn.address)
+                        ?.listedBy ?? ['unknown'],
+                };
+            });
         const sequencedTokens: TokenIF[] = tokensWithOrigins
             .sort((a: TokenIF, b: TokenIF) => {
                 // output value
@@ -124,10 +127,8 @@ export default function Wallet(props: propsIF) {
         <div className={styles.container}>
             <WalletHeader />
             <div className={styles.item_container}>
-                {userTokens &&
-                userTokens.length > 0 &&
-                userTokens[0] !== undefined ? (
-                    sequenceTokens(userTokens as TokenIF[]).map((token) => (
+                {userTokens && userTokens.length > 0 ? (
+                    sequenceTokens(userTokens).map((token) => (
                         <WalletCard
                             key={JSON.stringify(token)}
                             token={token}
