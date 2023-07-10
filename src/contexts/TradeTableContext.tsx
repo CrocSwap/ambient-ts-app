@@ -12,6 +12,9 @@ interface TradeTableContextIF {
     setCurrentTxActiveInTransactions: (val: string) => void;
     expandTradeTable: boolean;
     setExpandTradeTable: (val: boolean) => void;
+    resetTradeTableSize: boolean;
+    setResetTradeTableSize: (val: boolean) => void;
+    setTradeTableViewRatioPreference: (val: number) => void;
     showAllData: boolean;
     setShowAllData: (val: boolean) => void;
     selectedOutsideTab: number;
@@ -37,6 +40,7 @@ export const TradeTableContextProvider = (props: {
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
     const [expandTradeTable, setExpandTradeTable] = useState(false);
+    const [tradeTableViewRatioPreference, setTradeTableViewRatioPreference] = useState(0.4);
 
     const [showSwapPulseAnimation, setShowSwapPulseAnimation] = useState(false);
     const [showOrderPulseAnimation, setShowOrderPulseAnimation] =
@@ -55,6 +59,8 @@ export const TradeTableContextProvider = (props: {
         setCurrentPositionActive,
         expandTradeTable,
         setExpandTradeTable,
+        tradeTableViewRatioPreference,
+        setTradeTableViewRatioPreference,
         showSwapPulseAnimation,
         showOrderPulseAnimation,
         showRangePulseAnimation,

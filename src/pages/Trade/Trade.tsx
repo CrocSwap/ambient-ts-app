@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
+import { Resizable } from 're-resizable';
 import { useEffect, useState, useContext, useCallback, memo } from 'react';
 import {
     useParams,
@@ -32,6 +33,7 @@ import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
+import TradeChartsTokenInfo from './TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 
 // React functional component
 function Trade() {
@@ -46,6 +48,8 @@ function Trade() {
     const { tokens } = useContext(TokenContext);
     const { expandTradeTable, setOutsideControl, setSelectedOutsideTab } =
         useContext(TradeTableContext);
+
+    const enableResize = { bottom: true };
 
     const {
         baseToken: { address: baseTokenAddress },
@@ -294,6 +298,9 @@ function Trade() {
         setSelectedDate: setSelectedDate,
     };
 
+    const [height, setHeight] = useState(500);
+    const handleClasses = { bottom: styles.resizableBox };
+
     const tradeTabsProps = {
         filter: transactionFilter,
         setTransactionFilter: setTransactionFilter,
@@ -354,6 +361,24 @@ function Trade() {
     );
     if (showActiveMobileComponent) return mobileTrade;
 
+    const tvlDisplay = <p className={styles.tvl_display}></p>;
+    const tokenInfo = (
+        <div className={styles.token_info_container}>
+            <TradeChartsTokenInfo />
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '8px',
+                }}
+            >
+                <div>{tvlDisplay}</div>
+            </div>
+            {/* <div>{graphSettingsContent}</div> */}
+        </div>
+    );
+
     return (
         <section className={`${styles.main_layout}`}>
             {poolNotInitializedContent}
@@ -361,18 +386,33 @@ function Trade() {
                 className={`${styles.middle_col}
                 ${expandTradeTable ? styles.flex_column : ''}`}
             >
-                <div
-                    className={` ${expandGraphStyle} ${
-                        activeMobileComponent !== 'chart' ? styles.hide : ''
-                    } ${fullScreenStyle}`}
+                {tokenInfo}
+                <Resizable
+                    className={styles.chartBox}
+                    enable={enableResize}
+                    size={{ width: '100%', height: height }}
+                    onResizeStop={(e, direction, ref, d) => {
+                        setHeight(height + d.height);
+                    }}
+                    handleClasses={handleClasses}
+                    bounds={'parent'}
                 >
-                    <div className={styles.main__chart_container}>
-                        {!isCandleDataNull && (
-                            <TradeCharts {...tradeChartsProps} />
-                        )}
+                    <div
+                        className={` ${expandGraphStyle} ${
+                            activeMobileComponent !== 'chart' ? styles.hide : ''
+                        } ${fullScreenStyle}`}
+                    >
+                        <div className={styles.main__chart_container}>
+                            {!isCandleDataNull && (
+                                <TradeCharts {...tradeChartsProps} />
+                            )}
+                        </div>
                     </div>
+                </Resizable>
+                <div className={styles.tableBox}>
+                    <TradeTabs2 {...tradeTabsProps} />
                 </div>
-                <TradeTabs2 {...tradeTabsProps} />
+
             </div>
             {mainContent}
         </section>

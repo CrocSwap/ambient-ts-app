@@ -1,7 +1,7 @@
 import styles from './PositionsOnlyToggle.module.css';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
-import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
+import { MdExpand, MdCloseFullscreen, MdTablet } from 'react-icons/md';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
@@ -39,6 +39,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
         expandTradeTable,
         setExpandTradeTable,
+        resetTradeTableSize,
+        setResetTradeTableSize,
         showAllData,
         setShowAllData,
     } = useContext(TradeTableContext);
@@ -48,6 +50,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     );
 
     const expandIcon = (
+        // save previous state as current state if user change, otherwise previous state is tracked for non user interaction
+        
         <div
             className={styles.icon}
             onClick={() => {
@@ -56,6 +60,22 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
             }}
         >
             {expandTradeTable ? <MdCloseFullscreen /> : <MdExpand />}
+            {isCandleArrived && <span className={styles.graph_indicaor}></span>}
+        </div>
+    );
+
+    const resetIcon = (
+        // save previous state as current state if user change, otherwise previous state is tracked for non user interaction
+        // TradeChartsTokenInfo_tokens_info_simplify_content__1UxfW - in table
+        // TradeCharts_token_info_container__1PHcB - in chart
+        <div
+            className={styles.icon}
+            onClick={() => {
+                setResetTradeTableSize(!resetTradeTableSize);
+                setIsCandleDataArrived(false);
+            }}
+        >
+            {resetTradeTableSize ? <MdExpand /> : < MdTablet/>}
             {isCandleArrived && <span className={styles.graph_indicaor}></span>}
         </div>
     );
@@ -121,6 +141,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 {/* {clearButtonOrNull} */}
                 {toggleOrNull}
             </div>
+            {(!isCandleDataNull || isCandleArrived) && resetIcon}
             {(!isCandleDataNull || isCandleArrived) && expandIcon}
         </div>
     );

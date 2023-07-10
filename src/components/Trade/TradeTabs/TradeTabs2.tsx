@@ -449,7 +449,7 @@ function TradeTabs2(props: propsIF) {
                 }
             >
                 {isCandleSelected ? selectedMessageContent : null}
-                {(expandTradeTable || showActiveMobileComponent) && (
+                {( showActiveMobileComponent) && (
                     <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
                 )}
                 <TabComponent
