@@ -34,6 +34,7 @@ import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import TradeChartsTokenInfo from './TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
+import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
 // React functional component
 function Trade() {
@@ -361,24 +362,6 @@ function Trade() {
     );
     if (showActiveMobileComponent) return mobileTrade;
 
-    const tvlDisplay = <p className={styles.tvl_display}></p>;
-    const tokenInfo = (
-        <div className={styles.token_info_container}>
-            <TradeChartsTokenInfo />
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '8px',
-                }}
-            >
-                <div>{tvlDisplay}</div>
-            </div>
-            {/* <div>{graphSettingsContent}</div> */}
-        </div>
-    );
-
     return (
         <section className={`${styles.main_layout}`}>
             {poolNotInitializedContent}
@@ -386,7 +369,7 @@ function Trade() {
                 className={`${styles.middle_col}
                 ${expandTradeTable ? styles.flex_column : ''}`}
             >
-                {tokenInfo}
+                <TradeChartsHeader />
                 <Resizable
                     className={styles.chartBox}
                     enable={enableResize}
@@ -412,7 +395,6 @@ function Trade() {
                 <div className={styles.tableBox}>
                     <TradeTabs2 {...tradeTabsProps} />
                 </div>
-
             </div>
             {mainContent}
         </section>

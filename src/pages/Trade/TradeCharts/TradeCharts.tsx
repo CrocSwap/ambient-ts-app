@@ -3,23 +3,14 @@ import {
     Dispatch,
     useState,
     useEffect,
-    useRef,
     useContext,
     memo,
     useMemo,
 } from 'react';
-import { AiOutlineFullscreen } from 'react-icons/ai';
-import { FiCopy } from 'react-icons/fi';
-
-// START: Import JSX Components
-import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
-import printDomToImage from '../../../utils/functions/printDomToImage';
-
 import TradeCandleStickChart from './TradeCandleStickChart';
-import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
@@ -32,7 +23,6 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
-import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 // interface for React functional component props
@@ -79,6 +69,7 @@ function TradeCharts(props: propsIF) {
         chartSettings,
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
+        canvasRef,
     } = useContext(ChartContext);
     const { expandTradeTable } = useContext(TradeTableContext);
 
@@ -98,23 +89,6 @@ function TradeCharts(props: propsIF) {
     const [reset, setReset] = useState(false);
 
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
-
-    // GRAPH SETTINGS CONTENT------------------------------------------------------
-    const canvasRef = useRef(null);
-    const [, copy] = useCopyToClipboard();
-    const {
-        snackbar: { open: openSnackbar },
-    } = useContext(AppStateContext);
-
-    const copyChartToClipboard = async () => {
-        if (canvasRef.current) {
-            const blob = await printDomToImage(canvasRef.current, '#171d27');
-            if (blob) {
-                copy(blob);
-                openSnackbar('Chart image copied to clipboard', 'info');
-            }
-        }
-    };
 
     // CHART SETTINGS------------------------------------------------------------
     const subchartState: {
@@ -164,43 +138,6 @@ function TradeCharts(props: propsIF) {
         };
     });
 
-    const graphSettingsContent = (
-        <div className={styles.graph_settings_container}>
-            <DefaultTooltip
-                interactive
-                title={'Toggle Full Screen Chart'}
-                enterDelay={500}
-            >
-                <button
-                    onClick={() => setIsChartFullScreen(!isChartFullScreen)}
-                    className={styles.fullscreen_button}
-                >
-                    <AiOutlineFullscreen
-                        size={20}
-                        id='trade_chart_full_screen_button'
-                        aria-label='Full screen chart button'
-                    />
-                </button>
-            </DefaultTooltip>
-            <DefaultTooltip
-                interactive
-                title={'Copy to Clipboard'}
-                enterDelay={500}
-            >
-                <button
-                    onClick={copyChartToClipboard}
-                    className={styles.fullscreen_button}
-                >
-                    <FiCopy
-                        size={20}
-                        id='trade_chart_save_image'
-                        aria-label='Copy chart image button'
-                    />
-                </button>
-            </DefaultTooltip>
-        </div>
-    );
-
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
     const timeFrameContent = (
@@ -248,26 +185,7 @@ function TradeCharts(props: propsIF) {
     const [currentVolumeData, setCurrentVolumeData] = useState<
         number | undefined
     >();
-
-    const tvlDisplay = <p className={styles.tvl_display}></p>;
-
-    const tokenInfo = (
-        <div className={styles.token_info_container}>
-            <TradeChartsTokenInfo />
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '8px',
-                }}
-            >
-                <div>{tvlDisplay}</div>
-            </div>
-            <div>{graphSettingsContent}</div>
-        </div>
-    );
-    // END OF TOKEN INFO----------------------------------------------------------------
+    // END OF CURRENT DATA INFO----------------------------------------------------------------
 
     const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
 
@@ -293,8 +211,6 @@ function TradeCharts(props: propsIF) {
                         </button>
                     </div>
                 )}
-
-                {tokenInfo}
                 {timeFrameContent}
 
                 <CurrentDataInfo

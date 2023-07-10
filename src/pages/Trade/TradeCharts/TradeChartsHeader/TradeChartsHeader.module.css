@@ -1,0 +1,54 @@
+.token_info_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 12px;
+    padding-bottom: 0px;
+
+    align-items: center;
+}
+
+.token_info_container .amount {
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text2);
+}
+
+.token_info_container .change_positive {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--positive);
+}
+
+.token_info_container .change_negative {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--negative);
+}
+
+.token_info_container .tvl_display {
+    color: var(--text2);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+}
+
+.fullscreen_button {
+    outline: none;
+    border: none;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.graph_settings_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+}
+
+.graph_settings_container svg {
+    cursor: pointer;
+}

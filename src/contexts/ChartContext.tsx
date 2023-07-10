@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
     chartSettingsMethodsIF,
@@ -10,12 +10,14 @@ interface ChartContextIF {
     isFullScreen: boolean;
     setIsFullScreen: (val: boolean) => void;
     isEnabled: boolean;
+    canvasRef: React.MutableRefObject<null>;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
 
 export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const { pathname: currentLocation } = useLocation();
+    const canvasRef = useRef(null);
 
     const [fullScreenChart, setFullScreenChart] = useState(false);
     const isChartEnabled =
@@ -30,6 +32,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         isFullScreen: fullScreenChart,
         setIsFullScreen: setFullScreenChart,
         isEnabled: isChartEnabled,
+        canvasRef,
     };
 
     useEffect(() => {

@@ -28,7 +28,6 @@ import { setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
-import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
@@ -328,10 +327,6 @@ function TradeTabs2(props: propsIF) {
         setHasUserSelectedViewAll,
     };
 
-    const TradeChartsTokenInfoProps = {
-        simplifyVersion: true,
-    };
-
     // data for headings of each of the three tabs
     const tradeTabData = isCandleSelected
         ? [
@@ -449,9 +444,6 @@ function TradeTabs2(props: propsIF) {
                 }
             >
                 {isCandleSelected ? selectedMessageContent : null}
-                {( showActiveMobileComponent) && (
-                    <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
-                )}
                 <TabComponent
                     data={tradeTabData}
                     rightTabOptions={
