@@ -88,6 +88,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
 
     const poolContext = {
         poolList,
+
         pool,
         isPoolInitialized,
         poolPriceDisplay,
