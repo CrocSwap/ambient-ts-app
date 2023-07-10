@@ -111,13 +111,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 }
             })();
         }
-    }, [
-        isServerEnabled,
-        userData.isUserIdle,
-        lastBlockNumber,
-        chainId,
-        crocEnv,
-    ]);
+    }, [isServerEnabled, userData.isUserIdle, chainId, crocEnv]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
@@ -257,12 +251,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     useEffect(() => {
         if (isServerEnabled && !userData.isUserIdle) fetchPoolStats();
-    }, [
-        isServerEnabled,
-        userData.isUserIdle,
-        lastBlockNumber,
-        shouldInvertDisplay,
-    ]);
+    }, [isServerEnabled, userData.isUserIdle, shouldInvertDisplay]);
 
     return {
         poolName,

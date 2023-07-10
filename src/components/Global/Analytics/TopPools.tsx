@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { memo, useContext } from 'react';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import TokenIcon from '../TokenIcon/TokenIcon';
@@ -15,10 +15,10 @@ type HeaderItem = {
     clickable: boolean;
     pxValue?: number;
 };
-export default function TopPools() {
+function TopPools() {
     const { poolList } = useContext(PoolContext);
 
-    const PoolRow = (pool: PoolIF) => {
+    const PoolRow = memo((pool: PoolIF) => {
         const poolData = useFetchPoolStats(pool);
         const {
             poolName,
@@ -39,6 +39,8 @@ export default function TopPools() {
             navigate(poolLink);
         };
 
+        const placeHolderText = '';
+
         return (
             <tr
                 className='hover:bg-dark2 cursor-pointer analaytics-pools-table '
@@ -48,19 +50,19 @@ export default function TopPools() {
                     <div className='flex items-center'>
                         <div className='flex-shrink-0 flex items-center'>
                             <TokenIcon
-                                src={uriToHttp(baseLogoUri ?? '...')}
+                                src={uriToHttp(baseLogoUri ?? placeHolderText)}
                                 alt={poolName}
                                 size='2xl'
                             />
                             <TokenIcon
-                                src={uriToHttp(quoteLogoUri ?? '...')}
+                                src={uriToHttp(quoteLogoUri ?? placeHolderText)}
                                 alt={poolName}
                                 size='2xl'
                             />
                         </div>
                         <div className='ml-4  sm:hidden '>
                             <div className='text-text1'>
-                                {poolName ?? '...'}
+                                {poolName ?? placeHolderText}
                             </div>
                         </div>
                     </div>
@@ -69,20 +71,26 @@ export default function TopPools() {
                     className='hidden sm:table-cell px-6  whitespace-nowrap'
                     style={{ height: '40px' }}
                 >
-                    <div className=' text-text1'>{poolName ?? '...'}</div>
+                    <div className=' text-text1'>
+                        {poolName ?? placeHolderText}
+                    </div>
                 </td>
                 <td
                     className='hidden sm:table-cell px-6  whitespace-nowrap'
                     style={{ height: '40px' }}
                 >
-                    <div className=' text-accent5'>{poolPrice ?? '...'}</div>
+                    <div className=' text-accent5'>
+                        {poolPrice ?? placeHolderText}
+                    </div>
                 </td>
                 <td
                     className='hidden sm:table-cell px-6  whitespace-nowrap'
                     style={{ height: '40px' }}
                 >
                     <div className=' text-text1'>
-                        {!poolTvl || poolTvl.includes('NaN') ? '...' : poolTvl}
+                        {!poolTvl || poolTvl.includes('NaN')
+                            ? placeHolderText
+                            : poolTvl}
                     </div>
                 </td>
                 <td
@@ -96,14 +104,16 @@ export default function TopPools() {
                                 : 'text-negative'
                         }`}
                     >
-                        {poolApy ? poolApy + '%' : '...'}
+                        {poolApy ? poolApy + '%' : placeHolderText}
                     </div>
                 </td>
                 <td
                     className=' px-6  whitespace-nowrap'
                     style={{ height: '40px' }}
                 >
-                    <div className=' text-text1'>{poolVolume ?? '...'}</div>
+                    <div className=' text-text1'>
+                        {poolVolume ?? placeHolderText}
+                    </div>
                 </td>
                 <td
                     className='hidden lg:table-cell px-6  whitespace-nowrap'
@@ -116,7 +126,7 @@ export default function TopPools() {
                                 : 'text-negative'
                         }`}
                     >
-                        {poolPriceChangePercent ?? '...'}
+                        {poolPriceChangePercent ?? placeHolderText}
                     </div>
                 </td>
                 <td
@@ -137,7 +147,8 @@ export default function TopPools() {
                 </td>
             </tr>
         );
-    };
+    });
+    PoolRow.displayName = 'PoolRow';
 
     const TableHead = ({ headerItems }: { headerItems: HeaderItem[] }) => {
         return (
@@ -239,3 +250,5 @@ export default function TopPools() {
         </div>
     );
 }
+
+export default memo(TopPools);
