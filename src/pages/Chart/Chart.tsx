@@ -197,7 +197,8 @@ export default function Chart(props: propsIF) {
     } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
     const chainId = chainData.chainId;
-    const { setCandleDomains, setCandleScale } = useContext(CandleContext);
+    const { setCandleDomains, setCandleScale, isFetchedFirstCandle } =
+        useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
     const {
@@ -2840,6 +2841,7 @@ export default function Chart(props: propsIF) {
             renderSubchartCrCanvas();
         }
     }, [
+        isFetchedFirstCandle,
         diffHashSig(scaleData),
         market,
         diffHashSig(crosshairData),
@@ -3424,15 +3426,14 @@ export default function Chart(props: propsIF) {
                 if (
                     d.date.getTime() !== lastCrDate &&
                     !(
-                        (
-                            xScale(d.date) > firstCrDateLocation - _width / 2 &&
-                            xScale(d.date) < firstCrDateLocation + _width / 2
-                        )
-                        /*   ||
+                        (xScale(d.date) > firstCrDateLocation - _width / 2 &&
+                            xScale(d.date) <
+                                firstCrDateLocation + _width / 2) ||
                         (xScale(d.date) >
                             firstCandleDateLocation - _width / 2 &&
                             xScale(d.date) <
-                                firstCandleDateLocation + _width / 2) */
+                                firstCandleDateLocation + _width / 2 &&
+                            isFetchedFirstCandle)
                     )
                 ) {
                     if (formatValue) {
@@ -3514,11 +3515,6 @@ export default function Chart(props: propsIF) {
         if (
             xScale(crosshairData[0].x) > firstCrDateLocation - (_width - 15) &&
             xScale(crosshairData[0].x) < firstCrDateLocation + (_width - 15) &&
-            /*   ||
-                (xScale(crosshairData[0].x) >
-                    firstCandleDateLocation - (_width - 15) &&
-                    xScale(crosshairData[0].x) <
-                        firstCandleDateLocation + (_width - 15)) */
             crosshairActive !== 'none'
         ) {
             context.filter = ' blur(7px)';
@@ -3526,8 +3522,21 @@ export default function Chart(props: propsIF) {
 
         context.fillText('🐊', firstCrDateLocation, Y + tickSize);
 
-        context.fillText('', firstCandleDateLocation, Y + tickSize);
-        // context.fillText('🥚', firstCandleDateLocation, Y + tickSize);
+        if (isFetchedFirstCandle) {
+            context.filter = ' blur(0px)';
+
+            if (
+                xScale(crosshairData[0].x) >
+                    firstCandleDateLocation - (_width - 15) &&
+                xScale(crosshairData[0].x) <
+                    firstCandleDateLocation + (_width - 15) &&
+                isFetchedFirstCandle &&
+                crosshairActive !== 'none'
+            ) {
+                context.filter = ' blur(7px)';
+            }
+            context.fillText('🥚', firstCandleDateLocation, Y + tickSize);
+        }
 
         context.restore();
 
@@ -5746,14 +5755,25 @@ export default function Chart(props: propsIF) {
             d3.select(d3Xaxis.current).on('mousemove', (event: any) => {
                 d3.select(event.currentTarget).style('cursor', 'col-resize');
 
-                if (
-                    scaleData &&
+                const firstCandle =
+                    unparsedCandleData[unparsedCandleData.length - 1]?.time *
+                    1000;
+                const isEgg =
+                    isFetchedFirstCandle &&
+                    event.layerX > scaleData?.xScale(firstCandle) - 15 &&
+                    event.layerX < scaleData?.xScale(firstCandle) + 15;
+                const isCroc =
                     scaleData.xScale(scaleData.xScale.invert(event.layerX)) >
                         scaleData.xScale(lastCrDate) - 15 &&
                     scaleData.xScale(scaleData.xScale.invert(event.layerX)) <
                         scaleData.xScale(lastCrDate) + 15 &&
-                    scaleData.xScale.invert(event.layerX) !== lastCrDate
-                ) {
+                    scaleData.xScale.invert(event.layerX) !== lastCrDate;
+
+                if (isEgg) {
+                    d3.select(event.currentTarget).style('cursor', 'default');
+                }
+
+                if (scaleData && isCroc) {
                     d3.select(event.currentTarget).style('cursor', 'pointer');
 
                     setIsCrDataIndActive(true);
