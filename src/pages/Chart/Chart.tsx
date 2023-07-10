@@ -1004,10 +1004,10 @@ export default function Chart(props: propsIF) {
                     event: any,
                     unparsedCandleData: Array<CandleData>,
                 ) => {
-                    let dx = event.sourceEvent.deltaY / 3;
-
-                    dx =
-                        Math.abs(dx) === 0 ? -event.sourceEvent.deltaX / 3 : dx;
+                    const dx =
+                        Math.abs(event.sourceEvent.deltaX) != 0
+                            ? event.sourceEvent.deltaX / 3
+                            : event.sourceEvent.deltaY / 3;
 
                     const domainX = scaleData?.xScale.domain();
                     const linearX = d3
@@ -1031,8 +1031,11 @@ export default function Chart(props: propsIF) {
                     const deltaX = linearX(dx);
                     if (lastCandleTime && firstCandleTime) {
                         if (
-                            event.sourceEvent.shiftKey ||
-                            event.sourceEvent.altKey
+                            (event.sourceEvent.shiftKey ||
+                                event.sourceEvent.altKey ||
+                                event.sourceEvent.deltaX !== 0) &&
+                            !event.sourceEvent.ctrlKey &&
+                            !event.sourceEvent.metaKey
                         ) {
                             getNewCandleData(
                                 firstTime + deltaX,
@@ -3424,13 +3427,15 @@ export default function Chart(props: propsIF) {
                 if (
                     d.date.getTime() !== lastCrDate &&
                     !(
-                        (xScale(d.date) > firstCrDateLocation - _width / 2 &&
-                            xScale(d.date) <
-                                firstCrDateLocation + _width / 2) ||
+                        (
+                            xScale(d.date) > firstCrDateLocation - _width / 2 &&
+                            xScale(d.date) < firstCrDateLocation + _width / 2
+                        )
+                        /*   ||
                         (xScale(d.date) >
                             firstCandleDateLocation - _width / 2 &&
                             xScale(d.date) <
-                                firstCandleDateLocation + _width / 2)
+                                firstCandleDateLocation + _width / 2) */
                     )
                 ) {
                     if (formatValue) {
@@ -3510,14 +3515,13 @@ export default function Chart(props: propsIF) {
         }
 
         if (
-            ((xScale(crosshairData[0].x) >
-                firstCrDateLocation - (_width - 15) &&
-                xScale(crosshairData[0].x) <
-                    firstCrDateLocation + (_width - 15)) ||
+            xScale(crosshairData[0].x) > firstCrDateLocation - (_width - 15) &&
+            xScale(crosshairData[0].x) < firstCrDateLocation + (_width - 15) &&
+            /*   ||
                 (xScale(crosshairData[0].x) >
                     firstCandleDateLocation - (_width - 15) &&
                     xScale(crosshairData[0].x) <
-                        firstCandleDateLocation + (_width - 15))) &&
+                        firstCandleDateLocation + (_width - 15)) */
             crosshairActive !== 'none'
         ) {
             context.filter = ' blur(7px)';
@@ -5177,6 +5181,11 @@ export default function Chart(props: propsIF) {
         const nearest = snapForCandle(event, filtered);
         const dateControl =
             nearest?.time * 1000 > startDate && nearest?.time * 1000 < lastDate;
+
+        const tempFilterData = filtered.filter(
+            (item) => item.time === nearest.time,
+        );
+
         const yValue = scaleData?.yScale.invert(event.offsetY);
 
         const yValueVolume = scaleData?.volumeScale.invert(event.offsetY / 2);
@@ -5192,13 +5201,27 @@ export default function Chart(props: propsIF) {
                     : false
                 : false;
 
-        const close = denomInBase
+        let close = denomInBase
             ? nearest?.invPriceCloseExclMEVDecimalCorrected
             : nearest?.priceCloseExclMEVDecimalCorrected;
 
-        const open = denomInBase
+        let open = denomInBase
             ? nearest?.invPriceOpenExclMEVDecimalCorrected
             : nearest?.priceOpenExclMEVDecimalCorrected;
+
+        if (tempFilterData.length > 1) {
+            close = d3.max(tempFilterData, (d: any) =>
+                denomInBase
+                    ? d?.invPriceCloseExclMEVDecimalCorrected
+                    : d?.priceCloseExclMEVDecimalCorrected,
+            );
+
+            open = d3.min(tempFilterData, (d: any) =>
+                denomInBase
+                    ? d?.invPriceOpenExclMEVDecimalCorrected
+                    : d?.priceOpenExclMEVDecimalCorrected,
+            );
+        }
 
         const diff = Math.abs(close - open);
         const scale = Math.abs(
