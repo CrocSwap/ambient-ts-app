@@ -114,7 +114,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     <div>
                         <TokenIcon
                             src={uriToHttp(baseToken.logoURI)}
-                            alt={baseToken.name}
+                            alt={baseToken.symbol}
                             size='m'
                         />
                         <span>Current {baseToken.symbol} Collateral</span>
@@ -126,7 +126,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     <div>
                         <TokenIcon
                             src={uriToHttp(baseToken.logoURI)}
-                            alt={baseToken.name}
+                            alt={baseToken.symbol}
                             size='m'
                         />
                         <span> {baseToken.symbol} After Reposition</span>
@@ -139,7 +139,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     <div>
                         <TokenIcon
                             src={uriToHttp(quoteToken.logoURI)}
-                            alt={quoteToken.name}
+                            alt={quoteToken.symbol}
                             size='m'
                         />
                         <span>Current {quoteToken.symbol} Collateral</span>
@@ -150,7 +150,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     <div>
                         <TokenIcon
                             src={uriToHttp(quoteToken.logoURI)}
-                            alt={quoteToken.name}
+                            alt={quoteToken.symbol}
                             size='m'
                         />
                         <span>{quoteToken.symbol} After Reposition</span>
@@ -173,12 +173,12 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     <div className={styles.tokens}>
                         <TokenIcon
                             src={uriToHttp(tokenA.logoURI)}
-                            alt={tokenA.name}
+                            alt={tokenA.symbol}
                             size='2xl'
                         />
                         <TokenIcon
                             src={uriToHttp(tokenB.logoURI)}
-                            alt={tokenB.name}
+                            alt={tokenB.symbol}
                             size='2xl'
                         />
                     </div>
