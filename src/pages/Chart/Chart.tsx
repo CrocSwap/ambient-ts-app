@@ -16,10 +16,6 @@ import {
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    formatAmountChartData,
-    formatPoolPriceAxis,
-} from '../../utils/numbers';
 import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
@@ -183,6 +179,7 @@ export const renderSubchartCrCanvas = () => {
         .select('#d3CanvasCrosshair');
 
     if (feeRateCrCanvas) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nd = feeRateCrCanvas.node() as any;
         if (nd) nd.requestRedraw();
     }
@@ -190,6 +187,7 @@ export const renderSubchartCrCanvas = () => {
     const tvlCrCanvas = d3.select('#tvl_chart').select('#d3CanvasCrosshair');
 
     if (tvlCrCanvas) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nd = tvlCrCanvas.node() as any;
         if (nd) nd.requestRedraw();
     }
@@ -197,6 +195,7 @@ export const renderSubchartCrCanvas = () => {
     const tvlYaxisCanvas = d3.select('#tvl_chart').select('#y-axis-canvas_tvl');
 
     if (tvlYaxisCanvas) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nd = tvlYaxisCanvas.node() as any;
         if (nd) nd.requestRedraw();
     }
@@ -222,7 +221,8 @@ export function standardDeviation(arr: any, usePopulation = false) {
 
 export function fillLiqAdvanced(
     standardDeviation: number,
-    scaleData: any,
+    scaleData: scaleData,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liquidityData: any,
 ) {
     const border = scaleData?.yScale.domain()[1];
@@ -443,8 +443,6 @@ export default function Chart(props: propsIF) {
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
 
     // Axis
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [yAxis, setYaxis] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [xAxis, setXaxis] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2164,12 +2162,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (scaleData) {
-            const _xAxis = d3fc
-                .axisBottom()
-                .scale(scaleData?.xScale)
-                .tickFormat((d: any) => {
-                    return d3.timeFormat('%d/%m/%y')(d);
-                });
+            const _xAxis = d3fc.axisBottom().scale(scaleData?.xScale);
 
             setXaxis(() => {
                 return _xAxis;
@@ -2214,54 +2207,6 @@ export default function Chart(props: propsIF) {
         liquidityData?.liqTransitionPointforDepth,
     ]);
 
-    function createRectLabel(
-        context: CanvasRenderingContext2D,
-        y: number,
-        x: number,
-        color: string,
-        textColor: string,
-        text: string,
-        stroke: string | undefined = undefined,
-        yAxisWidth: number | undefined = 70,
-        subString: number | undefined = undefined,
-    ) {
-        context.beginPath();
-        context.fillStyle = color;
-        context.fillRect(0, y - 10, yAxisWidth + yAxisWidth / 2, 20);
-        context.fillStyle = textColor;
-        context.font = '13';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        if (subString) {
-            const textHeight =
-                context.measureText('0.0').actualBoundingBoxAscent +
-                context.measureText('0.0').actualBoundingBoxDescent;
-
-            context.fillText(
-                '0.0',
-                x -
-                    context.measureText('0.0').width / 2 -
-                    context.measureText(subString.toString()).width / 2,
-                y,
-            );
-            context.fillText(subString.toString(), x + 1, y + textHeight / 3);
-            context.fillText(
-                text,
-                x +
-                    3 +
-                    context.measureText('0.0').width / 2 +
-                    context.measureText(subString.toString()).width / 2,
-                y,
-            );
-        } else {
-            context.fillText(text, x, y + 2);
-        }
-
-        if (stroke !== undefined) {
-            context.strokeStyle = stroke;
-            context.strokeRect(1, y - 10, yAxisWidth + yAxisWidth / 2, 20);
-        }
-    }
     useEffect(() => {
         if (
             xAxis &&
@@ -2308,7 +2253,11 @@ export default function Chart(props: propsIF) {
         d3.select('#limit-line-canvas')?.node(),
     ]);
 
-    const drawXaxis = (context: any, xScale: any, Y: any) => {
+    const drawXaxis = (
+        context: CanvasRenderingContext2D,
+        xScale: d3.ScaleLinear<number, number>,
+        Y: number,
+    ) => {
         if (scaleData) {
             const _width = 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
@@ -2986,7 +2935,7 @@ export default function Chart(props: propsIF) {
         }
     }, [market, marketLine]);
 
-    function noGoZone(poolPrice: any) {
+    function noGoZone(poolPrice: number) {
         setLimitTickNearNoGoZone(poolPrice * 0.99, poolPrice * 1.01);
         return [[poolPrice * 0.99, poolPrice * 1.01]];
     }
@@ -3777,6 +3726,8 @@ export default function Chart(props: propsIF) {
         denomInBase,
         setYaxisWidth,
         yAxisWidth,
+        simpleRangeWidth,
+        poolPriceDisplay,
     };
 
     return (

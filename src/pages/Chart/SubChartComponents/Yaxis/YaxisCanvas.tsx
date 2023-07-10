@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { useEffect, useRef, useState, MouseEvent } from 'react';
 import {
     formatAmountChartData,
     formatPoolPriceAxis,
@@ -23,9 +22,14 @@ import {
 } from '../../../../utils/functions/diffHashSig';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useLocation } from 'react-router-dom';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
+import {
+    liquidityChartData,
+    scaleData,
+} from '../../../Trade/TradeCharts/TradeCandleStickChart';
 
 interface yAxisIF {
-    scaleData: any;
+    scaleData: scaleData | undefined;
     market: Array<lineValue>;
     liqMode: string;
     liqTransitionPointforCurve: number;
@@ -41,17 +45,24 @@ interface yAxisIF {
     crosshairData: Array<crosshair>;
     reset: boolean | undefined;
     isLineDrag: boolean | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setMarketLineValue: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     render: any;
-    liquidityData: any;
+    liquidityData: liquidityChartData | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dragRange: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dragLimit: any;
     denomInBase: boolean;
     setYaxisWidth: React.Dispatch<React.SetStateAction<string>>;
     yAxisWidth: string;
+    simpleRangeWidth: number;
+    poolPriceDisplay: number;
 }
 
 type yLabel = {
@@ -90,15 +101,19 @@ export default function YaxisCanvas(props: yAxisIF) {
         denomInBase,
         setYaxisWidth,
         yAxisWidth,
+        simpleRangeWidth,
+        poolPriceDisplay,
     } = props;
 
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
 
     const [yAxisLabels] = useState<yLabel[]>([]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [yAxis, setYaxis] = useState<any>();
 
-    const [yAxisZoom, setYaxisZoom] = useState<any>();
+    const [yAxisZoom, setYaxisZoom] =
+        useState<d3.ZoomBehavior<Element, unknown>>();
 
     const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
 
@@ -120,7 +135,7 @@ export default function YaxisCanvas(props: yAxisIF) {
         let yTickValueLength =
             formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
         let result = false;
-        scaleData?.yScale.ticks().forEach((element: any) => {
+        scaleData?.yScale.ticks().forEach((element: number) => {
             if (formatPoolPriceAxis(element).length > 4) {
                 result = true;
                 yTickValueLength =
@@ -166,10 +181,11 @@ export default function YaxisCanvas(props: yAxisIF) {
 
     const sameLocationRange = () => {
         if (scaleData) {
-            const low = ranges.filter((target: any) => target.name === 'Min')[0]
-                .value;
+            const low = ranges.filter(
+                (target: lineValue) => target.name === 'Min',
+            )[0].value;
             const high = ranges.filter(
-                (target: any) => target.name === 'Max',
+                (target: lineValue) => target.name === 'Max',
             )[0].value;
 
             if (high >= low) {
@@ -231,12 +247,18 @@ export default function YaxisCanvas(props: yAxisIF) {
         };
     };
 
-    const drawYaxis = (context: any, yScale: any, X: any) => {
+    const drawYaxis = (
+        context: CanvasRenderingContext2D,
+        yScale: d3.ScaleLinear<number, number>,
+        X: number,
+    ) => {
         yAxisLabels.length = 0;
-        const low = ranges.filter((target: any) => target.name === 'Min')[0]
-            .value;
-        const high = ranges.filter((target: any) => target.name === 'Max')[0]
-            .value;
+        const low = ranges.filter(
+            (target: lineValue) => target.name === 'Min',
+        )[0].value;
+        const high = ranges.filter(
+            (target: lineValue) => target.name === 'Max',
+        )[0].value;
 
         const canvas = d3
             .select(d3Yaxis.current)
@@ -258,7 +280,7 @@ export default function YaxisCanvas(props: yAxisIF) {
 
             let switchFormatter = false;
 
-            yScaleTicks.forEach((element: any) => {
+            yScaleTicks.forEach((element: number) => {
                 if (element > 99999) {
                     switchFormatter = true;
                 }
@@ -294,17 +316,22 @@ export default function YaxisCanvas(props: yAxisIF) {
                         '0.0',
                         X -
                             context.measureText('0.0').width / 2 -
-                            context.measureText(subString).width / 2,
+                            context.measureText(subString.toString()).width / 2,
                         yScale(d),
                     );
-                    context.fillText(subString, X, yScale(d) + textHeight / 3);
                     context.fillText(
-                        factor * Number(precision),
+                        subString.toString(),
+                        X,
+                        yScale(d) + textHeight / 3,
+                    );
+                    context.fillText(
+                        (factor * Number(precision)).toString(),
                         X +
-                            context.measureText(factor * Number(precision))
-                                .width /
+                            context.measureText(
+                                (factor * Number(precision)).toString(),
+                            ).width /
                                 2 +
-                            context.measureText(subString).width / 2,
+                            context.measureText(subString.toString()).width / 2,
                         yScale(d),
                     );
                 } else {
@@ -372,12 +399,13 @@ export default function YaxisCanvas(props: yAxisIF) {
                     sameLocationDataMax: sameLocationDataMax,
                 } = sameLocationRange();
 
-                const passValue =
-                    liqMode === 'curve'
+                const passValue = liquidityData
+                    ? liqMode === 'curve'
                         ? liqTransitionPointforCurve
-                        : liqTransitionPointforDepth;
+                        : liqTransitionPointforDepth
+                    : poolPriceDisplay;
 
-                if (isAmbientOrAdvanced) {
+                if (simpleRangeWidth !== 100 || tradeData.advancedMode) {
                     const isScientificlowTick = low.toString().includes('e');
 
                     let lowTick: number | string = formatTicks(low, undefined);
@@ -569,9 +597,10 @@ export default function YaxisCanvas(props: yAxisIF) {
                     }
                 }
 
+                const crosshairY = parseFloat(crosshairData[0].y.toString());
                 createRectLabel(
                     context,
-                    yScale(crosshairData[0].y),
+                    yScale(crosshairY),
                     X,
                     '#242F3F',
                     'white',
@@ -587,14 +616,15 @@ export default function YaxisCanvas(props: yAxisIF) {
     };
 
     useEffect(() => {
-        let previousTouch: any | undefined = undefined;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let previousTouch: any | undefined = undefined; // event
 
-        let firstLocation: any;
-        let newCenter: any;
-        let previousDeltaTouchYaxis: any;
-
+        let firstLocation: number;
+        let newCenter: number;
+        let previousDeltaTouchYaxis: number;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const startZoom = (event: any) => {
-            if (event.sourceEvent.type.includes('touch')) {
+            if (event.sourceEvent.type.includes('touch') && scaleData) {
                 // mobile
                 previousTouch = event.sourceEvent.changedTouches[0];
                 firstLocation = previousTouch.pageY;
@@ -619,113 +649,120 @@ export default function YaxisCanvas(props: yAxisIF) {
             .on('start', (event) => {
                 startZoom(event);
             })
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .on('zoom', async (event: any) => {
                 (async () => {
-                    const domainY = scaleData?.yScale.domain();
-                    const center =
-                        domainY[1] !== domainY[0]
-                            ? (domainY[1] + domainY[0]) / 2
-                            : domainY[0] / 2;
-                    let deltaY;
+                    if (scaleData) {
+                        const domainY = scaleData?.yScale.domain();
+                        const center =
+                            domainY[1] !== domainY[0]
+                                ? (domainY[1] + domainY[0]) / 2
+                                : domainY[0] / 2;
+                        let deltaY;
 
-                    if (event.sourceEvent.type === 'touchmove') {
-                        const touch = event.sourceEvent.changedTouches[0];
+                        if (event.sourceEvent.type === 'touchmove') {
+                            const touch = event.sourceEvent.changedTouches[0];
 
-                        const _currentPageY = touch.pageY;
-                        const previousTouchPageY = previousTouch.pageY;
-                        const _movementY = _currentPageY - previousTouchPageY;
-                        deltaY = _movementY;
-                    } else {
-                        deltaY = event.sourceEvent.movementY / 1.5;
-                        newCenter = scaleData?.yScale.invert(firstLocation);
-                    }
-
-                    const dy = event.sourceEvent.deltaY / 3;
-
-                    const factor = Math.pow(
-                        2,
-                        event.sourceEvent.type === 'wheel'
-                            ? -dy * 0.003
-                            : event.sourceEvent.type === 'mousemove'
-                            ? -deltaY * 0.003
-                            : event.sourceEvent.type === 'touchmove'
-                            ? -deltaY * 0.005
-                            : 1,
-                    );
-
-                    if (
-                        event.sourceEvent.type !== 'touchmove' ||
-                        event.sourceEvent.touches.length === 1
-                    ) {
-                        const size = (domainY[1] - domainY[0]) / factor;
-
-                        const diff = domainY[1] - domainY[0];
-
-                        const distance =
-                            newCenter > center
-                                ? Math.abs(
-                                      newCenter - scaleData?.yScale.domain()[1],
-                                  )
-                                : Math.abs(
-                                      newCenter - scaleData?.yScale.domain()[0],
-                                  );
-                        const diffFactor = (diff - distance) / distance;
-
-                        const bottomDiff = size / (diffFactor + 1);
-                        const topDiff = size - bottomDiff;
-
-                        if (newCenter > center) {
-                            const domain = [
-                                newCenter - topDiff,
-                                newCenter + bottomDiff,
-                            ];
-                            await scaleData?.yScale.domain(domain);
+                            const _currentPageY = touch.pageY;
+                            const previousTouchPageY = previousTouch.pageY;
+                            const _movementY =
+                                _currentPageY - previousTouchPageY;
+                            deltaY = _movementY;
                         } else {
-                            const domain = [
-                                newCenter - bottomDiff,
-                                newCenter + topDiff,
-                            ];
-                            await scaleData?.yScale.domain(domain);
+                            deltaY = event.sourceEvent.movementY / 1.5;
+                            newCenter = scaleData?.yScale.invert(firstLocation);
                         }
-                    } else if (event.sourceEvent.touches.length > 1) {
-                        const touch1 = event.sourceEvent.touches[0];
-                        const touch2 = event.sourceEvent.touches[1];
-                        const deltaTouch = Math.hypot(
-                            0,
-                            touch1.pageY - touch2.pageY,
+
+                        const dy = event.sourceEvent.deltaY / 3;
+
+                        const factor = Math.pow(
+                            2,
+                            event.sourceEvent.type === 'wheel'
+                                ? -dy * 0.003
+                                : event.sourceEvent.type === 'mousemove'
+                                ? -deltaY * 0.003
+                                : event.sourceEvent.type === 'touchmove'
+                                ? -deltaY * 0.005
+                                : 1,
                         );
 
-                        const currentDelta =
-                            scaleData?.yScale.invert(deltaTouch);
-                        const delta = Math.abs(currentDelta - newCenter) * 0.03;
+                        if (
+                            event.sourceEvent.type !== 'touchmove' ||
+                            event.sourceEvent.touches.length === 1
+                        ) {
+                            const size = (domainY[1] - domainY[0]) / factor;
 
-                        if (previousDeltaTouchYaxis > deltaTouch) {
-                            const domainMax =
-                                scaleData?.yScale.domain()[1] + delta;
-                            const domainMin =
-                                scaleData?.yScale.domain()[0] - delta;
+                            const diff = domainY[1] - domainY[0];
 
-                            scaleData?.yScale.domain([
-                                Math.min(domainMin, domainMax),
-                                Math.max(domainMin, domainMax),
-                            ]);
-                        }
-                        if (previousDeltaTouchYaxis < deltaTouch) {
-                            const domainMax =
-                                scaleData?.yScale.domain()[1] - delta * 0.5;
-                            const domainMin =
-                                scaleData?.yScale.domain()[0] + delta * 0.5;
+                            const distance =
+                                newCenter > center
+                                    ? Math.abs(
+                                          newCenter -
+                                              scaleData?.yScale.domain()[1],
+                                      )
+                                    : Math.abs(
+                                          newCenter -
+                                              scaleData?.yScale.domain()[0],
+                                      );
+                            const diffFactor = (diff - distance) / distance;
 
-                            if (domainMax === domainMin) {
-                                scaleData?.yScale.domain([
-                                    Math.min(domainMin, domainMax) + delta,
-                                    Math.max(domainMin, domainMax) - delta,
-                                ]);
+                            const bottomDiff = size / (diffFactor + 1);
+                            const topDiff = size - bottomDiff;
+
+                            if (newCenter > center) {
+                                const domain = [
+                                    newCenter - topDiff,
+                                    newCenter + bottomDiff,
+                                ];
+                                await scaleData?.yScale.domain(domain);
                             } else {
+                                const domain = [
+                                    newCenter - bottomDiff,
+                                    newCenter + topDiff,
+                                ];
+                                await scaleData?.yScale.domain(domain);
+                            }
+                        } else if (event.sourceEvent.touches.length > 1) {
+                            const touch1 = event.sourceEvent.touches[0];
+                            const touch2 = event.sourceEvent.touches[1];
+                            const deltaTouch = Math.hypot(
+                                0,
+                                touch1.pageY - touch2.pageY,
+                            );
+
+                            const currentDelta =
+                                scaleData?.yScale.invert(deltaTouch);
+                            const delta =
+                                Math.abs(currentDelta - newCenter) * 0.03;
+
+                            if (previousDeltaTouchYaxis > deltaTouch) {
+                                const domainMax =
+                                    scaleData?.yScale.domain()[1] + delta;
+                                const domainMin =
+                                    scaleData?.yScale.domain()[0] - delta;
+
                                 scaleData?.yScale.domain([
                                     Math.min(domainMin, domainMax),
                                     Math.max(domainMin, domainMax),
                                 ]);
+                            }
+                            if (previousDeltaTouchYaxis < deltaTouch) {
+                                const domainMax =
+                                    scaleData?.yScale.domain()[1] - delta * 0.5;
+                                const domainMin =
+                                    scaleData?.yScale.domain()[0] + delta * 0.5;
+
+                                if (domainMax === domainMin) {
+                                    scaleData?.yScale.domain([
+                                        Math.min(domainMin, domainMax) + delta,
+                                        Math.max(domainMin, domainMax) - delta,
+                                    ]);
+                                } else {
+                                    scaleData?.yScale.domain([
+                                        Math.min(domainMin, domainMax),
+                                        Math.max(domainMin, domainMax),
+                                    ]);
+                                }
                             }
                         }
                     }
@@ -745,11 +782,17 @@ export default function YaxisCanvas(props: yAxisIF) {
                 });
                 if (tradeData.advancedMode && liquidityData) {
                     const liqAllBidPrices = liquidityData?.liqBidData.map(
-                        (liqPrices: any) => liqPrices.liqPrices,
+                        (liqData: LiquidityDataLocal) => liqData.liqPrices,
                     );
                     const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-                    fillLiqAdvanced(liqBidDeviation, scaleData, liquidityData);
+                    if (scaleData) {
+                        fillLiqAdvanced(
+                            liqBidDeviation,
+                            scaleData,
+                            liquidityData,
+                        );
+                    }
                 }
 
                 setZoomAndYdragControl(event);
@@ -777,11 +820,11 @@ export default function YaxisCanvas(props: yAxisIF) {
         setYaxisZoom(() => {
             return yAxisZoom;
         });
-    }, []);
+    }, [diffHashSigScaleData(scaleData), liquidityData?.liqBidData]);
 
     useEffect(() => {
-        if (yAxis && yAxisZoom) {
-            d3.select(d3Yaxis.current)
+        if (yAxis && yAxisZoom && d3Yaxis.current) {
+            d3.select<Element, unknown>(d3Yaxis.current)
                 .call(yAxisZoom)
                 .on('dblclick.zoom', null);
 
@@ -863,9 +906,12 @@ export default function YaxisCanvas(props: yAxisIF) {
     }
 
     useEffect(() => {
-        d3.select(d3Yaxis.current).on('mousemove', (event: any) => {
-            d3.select(event.currentTarget).style('cursor', 'row-resize');
-        });
+        d3.select(d3Yaxis.current).on(
+            'mousemove',
+            (event: MouseEvent<HTMLDivElement>) => {
+                d3.select(event.currentTarget).style('cursor', 'row-resize');
+            },
+        );
         d3.select(d3Yaxis.current).on('mouseover', () => {
             setCrosshairActive('none');
         });
