@@ -53,8 +53,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     );
 
     const expandIcon = (
-        // save previous state as current state if user change, otherwise previous state is tracked for non user interaction
-        
         <div
             className={styles.icon}
             onClick={() => {
@@ -70,7 +68,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const resetTableHeightIcon = (
         <IconTooltip
             interactive
-            title={'Reset Preffered Height'}
+            title={'Reset Preferred Height'}
             placement={'top'}
             arrow
             enterDelay={400}
@@ -90,7 +88,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const setTableHeightPreferenceIcon = (
         <IconTooltip
             interactive
-            title={'Save Preffered Height'}
+            title={'Save Preferred Height'}
             placement={'top'}
             arrow
             enterDelay={400}

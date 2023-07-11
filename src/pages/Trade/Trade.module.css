@@ -432,7 +432,6 @@ background-size: 300% 100%;
 
         display: flex;
         gap: 8px;
-        /* grid-template-rows: auto 300px; */
 
         position: relative;
     }
