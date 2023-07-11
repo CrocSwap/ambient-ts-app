@@ -33,7 +33,6 @@ import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
-import TradeChartsTokenInfo from './TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
 // React functional component
