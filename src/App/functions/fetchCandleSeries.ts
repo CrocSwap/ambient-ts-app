@@ -74,6 +74,8 @@ export async function fetchCandleSeriesHybrid(
     if (!candles) {
         return undefined;
     }
+    const PRE_BURN_TIME = 1686176723; // Based on mainnet deployment
+    candles.candles = candles.candles.filter((c) => c.time > PRE_BURN_TIME);
 
     // Check to see if Croc candles are sufficient
     if (candles.candles.length >= nCandles) {
@@ -89,8 +91,10 @@ export async function fetchCandleSeriesHybrid(
             endTime,
             ...candles.candles.map((c) => c.time),
         );
+
         const stitchN = nCandles - candles.candles.length;
 
+        console.log('Stitching candles', stitchTime, stitchN);
         // If not backfill with Uniswap candles
         const uniCandles = await fetchCandleSeriesUniswap(
             isFetchEnabled,
