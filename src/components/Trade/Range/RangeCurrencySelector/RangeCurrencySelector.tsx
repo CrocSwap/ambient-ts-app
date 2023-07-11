@@ -125,7 +125,7 @@ function RangeCurrencySelector(props: propsIF) {
         ? tokenADexBalance
             ? (
                   parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-              ).toLocaleString(undefined, {
+              ).toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
@@ -133,7 +133,7 @@ function RangeCurrencySelector(props: propsIF) {
         : tokenBDexBalance
         ? (
               parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
-          ).toLocaleString(undefined, {
+          ).toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
@@ -159,13 +159,13 @@ function RangeCurrencySelector(props: propsIF) {
 
     const walletBalanceLocaleString = isTokenASelector
         ? tokenABalance
-            ? parseFloat(tokenABalance).toLocaleString(undefined, {
+            ? parseFloat(tokenABalance).toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
             : '...'
         : tokenBBalance
-        ? parseFloat(tokenBBalance).toLocaleString(undefined, {
+        ? parseFloat(tokenBBalance).toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })

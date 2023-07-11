@@ -1,4 +1,6 @@
 import numbro from 'numbro';
+import { precisionOfInput } from './getPrecisionOfInput';
+import truncateDecimals from '../../utils/data/truncateDecimals';
 
 type FormatParams = {
     value?: number;
@@ -11,6 +13,7 @@ type FormatParams = {
     isUSD?: boolean;
     isInput?: boolean;
     isTvl?: boolean;
+    isToken?: boolean;
     removeCommas?: boolean;
 };
 
@@ -25,6 +28,7 @@ export function getFormattedNumber({
     isUSD = false,
     isInput = false,
     isTvl = false,
+    isToken = false,
     removeCommas = false,
 }: FormatParams) {
     let valueString = '';
@@ -36,13 +40,24 @@ export function getFormattedNumber({
         valueString = '∞';
     } else if (isUSD) {
         // only display two decimal points for USD values
-        valueString = value.toFixed(2);
+        valueString = value.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    } else if (isToken) {
+        if (isNaN(value)) {
+            valueString = '';
+        } else if (precisionOfInput(value.toString()) <= maxFracDigits) {
+            valueString = value.toString();
+        } else {
+            valueString = truncateDecimals(value, maxFracDigits);
+        }
     } else if (isInput) {
         removeCommas = true;
         if (value < 0.0001) {
             valueString = value.toExponential(2);
         } else if (value < 2) {
-            valueString = value.toLocaleString(undefined, {
+            valueString = value.toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 6,
             });
@@ -50,7 +65,7 @@ export function getFormattedNumber({
             // prevent scientific notation for inputs
             valueString = Number(value?.toPrecision(3)).toString();
         } else {
-            valueString = value.toLocaleString(undefined, {
+            valueString = value.toLocaleString('en-US', {
                 minimumFractionDigits: minFracDigits,
                 maximumFractionDigits: maxFracDigits,
             });
@@ -68,7 +83,7 @@ export function getFormattedNumber({
         // use abbreviations (k, M, B, T) for big numbers
         valueString = formatAbbrev(value, isTvl);
     } else {
-        valueString = value.toLocaleString(undefined, {
+        valueString = value.toLocaleString('en-US', {
             minimumFractionDigits: minFracDigits,
             maximumFractionDigits: maxFracDigits,
         });

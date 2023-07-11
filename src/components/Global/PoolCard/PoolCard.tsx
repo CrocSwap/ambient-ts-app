@@ -15,6 +15,8 @@ import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { estimateFrom24HrRangeApr } from '../../../App/functions/fetchAprEst';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import TokenIcon from '../TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     pool: topPoolIF;
@@ -165,7 +167,6 @@ export default function PoolCard(props: propsIF) {
                 const apyResult = await apyEst;
 
                 if (tvlResult) {
-                    console.log('TVL: ', tvlResult);
                     const tvlString = getFormattedNumber({
                         value: tvlResult,
                         isTvl: true,
@@ -173,14 +174,13 @@ export default function PoolCard(props: propsIF) {
                     setPoolTvl(tvlString);
                 }
                 if (volumeResult) {
-                    console.log('Vol: ', volumeResult);
                     const volumeString = getFormattedNumber({
                         value: volumeResult,
                     });
                     setPoolVolume(volumeString);
                 }
                 if (apyResult) {
-                    const apyString = apyResult.toLocaleString(undefined, {
+                    const apyString = apyResult.toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     });
@@ -218,12 +218,12 @@ export default function PoolCard(props: propsIF) {
                         const priceChangeString =
                             priceChangePercent > 0
                                 ? '+' +
-                                  priceChangePercent.toLocaleString(undefined, {
+                                  priceChangePercent.toLocaleString('en-US', {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) +
                                   '%'
-                                : priceChangePercent.toLocaleString(undefined, {
+                                : priceChangePercent.toLocaleString('en-US', {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) + '%';
@@ -300,29 +300,31 @@ export default function PoolCard(props: propsIF) {
             <div className={styles.main_container}>
                 <div className={styles.row} style={{ padding: '4px' }}>
                     <div className={styles.token_images}>
-                        <img
-                            src={
+                        <TokenIcon
+                            size='2xl'
+                            src={uriToHttp(
                                 shouldInvertDisplay
                                     ? pool.base.logoURI
-                                    : pool.quote.logoURI
+                                    : pool.quote.logoURI,
+                            )}
+                            alt={
+                                shouldInvertDisplay
+                                    ? pool.base.symbol
+                                    : pool.quote.symbol
                             }
-                            alt={`logo for token ${
-                                shouldInvertDisplay
-                                    ? pool.base.logoURI
-                                    : pool.quote.logoURI
-                            }`}
                         />
-                        <img
-                            src={
+                        <TokenIcon
+                            size='2xl'
+                            src={uriToHttp(
                                 shouldInvertDisplay
                                     ? pool.quote.logoURI
-                                    : pool.base.logoURI
-                            }
-                            alt={`logo for token ${
+                                    : pool.base.logoURI,
+                            )}
+                            alt={
                                 shouldInvertDisplay
-                                    ? pool.quote.name
-                                    : pool.base.name
-                            }`}
+                                    ? pool.quote.symbol
+                                    : pool.base.symbol
+                            }
                         />
                     </div>
                     <div className={styles.tokens_name}>

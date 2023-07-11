@@ -282,9 +282,13 @@ function TradeCandleStickChart(props: propsIF) {
                 poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
             const domainLeft = Math.min(
-                ...unparsedLiquidityData.ranges.map((o: any) => {
-                    return o.activeLiq !== undefined ? o.activeLiq : Infinity;
-                }),
+                ...unparsedLiquidityData.ranges
+                    .filter((item) => item.activeLiq > 0)
+                    .map((o: any) => {
+                        return o.activeLiq !== undefined
+                            ? o.activeLiq
+                            : Infinity;
+                    }),
             );
             const domainRight = Math.max(
                 ...unparsedLiquidityData.ranges.map((o: any) => {

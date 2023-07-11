@@ -10,7 +10,6 @@ import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton
 import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
 // import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
@@ -73,6 +72,7 @@ import { isStablePair } from '../../../utils/data/stablePairs';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
 
 function Range() {
     const {
@@ -1155,6 +1155,8 @@ function Range() {
         sendTransaction: sendTransaction,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
         showBypassConfirmButton: showBypassConfirmButton,
+        tokenAInputQty: tokenAInputQty,
+        tokenBInputQty: tokenBInputQty,
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -1422,9 +1424,10 @@ function Range() {
             )}
 
             <ContentContainer isOnTradeRoute>
-                <RangeHeader
-                    mintSlippage={mintSlippage}
-                    isTokenABase={isTokenABase}
+                <OrderHeader
+                    slippage={mintSlippage}
+                    bypassConfirm={bypassConfirmRange}
+                    settingsTitle='Pool'
                 />
                 {navigationMenu}
                 <motion.div

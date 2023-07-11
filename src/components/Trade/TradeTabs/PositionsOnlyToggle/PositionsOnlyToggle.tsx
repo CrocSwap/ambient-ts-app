@@ -1,6 +1,6 @@
 import styles from './PositionsOnlyToggle.module.css';
 import { Dispatch, SetStateAction, useContext } from 'react';
-import Toggle2 from '../../../Global/Toggle/Toggle2';
+import Toggle from '../../../Global/Toggle/Toggle';
 import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
@@ -65,7 +65,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         isCandleSelected ||
         // hide toggle if current tab is leaderboard since React state takes time to update
         props.currentTab == LeaderboardTabName ? null : (
-            <Toggle2
+            <Toggle
                 isOn={!showAllData}
                 handleToggle={() => {
                     setHasUserSelectedViewAll(true);
@@ -85,12 +85,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         changeState(false, undefined);
         setIsCandleSelected(false);
     };
-
-    // const clearButtonOrNull = isCandleSelected ? (
-    //     <button className={styles.option_button} onClick={() => unselectCandle()}>
-    //         Clear
-    //     </button>
-    // ) : null;
 
     return (
         <div className={styles.main_container}>
@@ -117,8 +111,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                         ? `My ${props.currentTab}`
                         : null}
                 </p>
-                {/* <p>{`All ${props.currentTab}`}</p> */}
-                {/* {clearButtonOrNull} */}
                 {toggleOrNull}
             </div>
             {(!isCandleDataNull || isCandleArrived) && expandIcon}
