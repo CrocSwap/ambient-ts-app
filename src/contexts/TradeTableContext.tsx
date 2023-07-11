@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
+import { ChartContext, CHART_DEFAULT_HEIGHT } from './ChartContext';
 
 interface TradeTableContextIF {
     showOrderPulseAnimation: boolean;
@@ -10,12 +11,9 @@ interface TradeTableContextIF {
     setCurrentPositionActive: (val: string) => void;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: (val: string) => void;
-    expandTradeTable: boolean;
+    isTradeTableExpanded: boolean;
+    setIsTradeTableExpanded: (val: boolean) => void;
     setExpandTradeTable: (val: boolean) => void;
-    tradeTableHeight: number;
-    setTradeTableHeight: (val: number) => void;
-    tradeTableHeightPreference : number;
-    setTradeTableHeightPreference: (val: number) => void;
     showAllData: boolean;
     setShowAllData: (val: boolean) => void;
     selectedOutsideTab: number;
@@ -33,6 +31,7 @@ export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { isCandleSelected } = useContext(CandleContext);
+    const { chartHeight, setChartHeight } = useContext(ChartContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -40,10 +39,7 @@ export const TradeTableContextProvider = (props: {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
-    const [expandTradeTable, setExpandTradeTable] = useState(false);
-    const [tradeTableHeightPreference, setTradeTableHeightPreference] = useState(400);
-    const [tradeTableHeight, setTradeTableHeight] = useState(400);
-
+    const [isTradeTableExpanded, setIsTradeTableExpanded] = useState(false);
 
     const [showSwapPulseAnimation, setShowSwapPulseAnimation] = useState(false);
     const [showOrderPulseAnimation, setShowOrderPulseAnimation] =
@@ -60,12 +56,15 @@ export const TradeTableContextProvider = (props: {
         setCurrentTxActiveInTransactions,
         currentPositionActive,
         setCurrentPositionActive,
-        expandTradeTable,
-        setExpandTradeTable,
-        tradeTableHeight,
-        setTradeTableHeight,
-        tradeTableHeightPreference,
-        setTradeTableHeightPreference,
+        isTradeTableExpanded,
+        setIsTradeTableExpanded,
+        // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
+        setExpandTradeTable: () => {
+            chartHeight === 4
+                ? setChartHeight(CHART_DEFAULT_HEIGHT)
+                : setChartHeight(4);
+            setIsTradeTableExpanded(!isTradeTableExpanded);
+        },
         showSwapPulseAnimation,
         showOrderPulseAnimation,
         showRangePulseAnimation,

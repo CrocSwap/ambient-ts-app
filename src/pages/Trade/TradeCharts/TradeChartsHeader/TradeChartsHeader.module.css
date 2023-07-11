@@ -52,3 +52,13 @@
 .graph_settings_container svg {
     cursor: pointer;
 }
+
+@media (max-width: 680px) {
+    .token_info_container {
+        padding: 4px;
+        padding-bottom: 8px;
+    }
+    .graph_settings_container {
+        display: none;
+    }
+}

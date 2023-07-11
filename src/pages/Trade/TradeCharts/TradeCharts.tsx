@@ -71,7 +71,6 @@ function TradeCharts(props: propsIF) {
         setIsFullScreen: setIsChartFullScreen,
         canvasRef,
     } = useContext(ChartContext);
-    const { expandTradeTable } = useContext(TradeTableContext);
 
     const { pathname } = useLocation();
 
@@ -187,8 +186,6 @@ function TradeCharts(props: propsIF) {
     >();
     // END OF CURRENT DATA INFO----------------------------------------------------------------
 
-    const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
-
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
@@ -200,7 +197,7 @@ function TradeCharts(props: propsIF) {
             }}
             ref={canvasRef}
         >
-            <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
+            <div className={`${styles.graph_style}`}>
                 {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button

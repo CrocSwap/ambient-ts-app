@@ -41,7 +41,7 @@ function Ranges(props: propsIF) {
 
     const {
         showAllData: showAllDataSelection,
-        expandTradeTable: expandTradeTableSelection,
+        isTradeTableExpanded: expandTradeTableSelection,
         setExpandTradeTable,
     } = useContext(TradeTableContext);
     const {
@@ -50,7 +50,7 @@ function Ranges(props: propsIF) {
     const { setCurrentRangeInReposition } = useContext(RangeContext);
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
-    const expandTradeTable = !isAccountView && expandTradeTableSelection;
+    const isTradeTableExpanded = !isAccountView && expandTradeTableSelection;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -165,7 +165,7 @@ function Ranges(props: propsIF) {
     ) => {
         changeRowsPerPage(parseInt(event.target.value, 10));
     };
-    const tradePageCheck = expandTradeTable && rangeData.length > 10;
+    const tradePageCheck = isTradeTableExpanded && rangeData.length > 10;
 
     const listRef = useRef<HTMLUListElement>(null);
     const sPagination = useMediaQuery('(max-width: 800px)');
@@ -389,12 +389,12 @@ function Ranges(props: propsIF) {
     }, [mobileView]);
 
     useEffect(() => {
-        if (_DATA.currentData.length && !expandTradeTable) {
+        if (_DATA.currentData.length && !isTradeTableExpanded) {
             setCurrentPage(1);
             const mockEvent = {} as React.ChangeEvent<unknown>;
             handleChange(mockEvent, 1);
         }
-    }, [expandTradeTable]);
+    }, [isTradeTableExpanded]);
 
     const shouldDisplayNoTableData = !isLoading && !rangeData.length;
 
@@ -404,7 +404,7 @@ function Ranges(props: propsIF) {
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
-                !expandTradeTable &&
+                !isTradeTableExpanded &&
                     !props.isAccountView &&
                     sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
                         <div className={styles.view_more_container}>
@@ -429,7 +429,7 @@ function Ranges(props: propsIF) {
     return (
         <section
             className={`${styles.main_list_container} ${
-                expandTradeTable && styles.main_list_expanded
+                isTradeTableExpanded && styles.main_list_expanded
             }`}
         >
             <div>{headerColumnsDisplay}</div>

@@ -21,15 +21,6 @@ export const TextOnlyTooltip = withStyles({
     },
 })(Tooltip);
 
-export const IconTooltip = withStyles({
-    tooltip: {
-        color: 'var(--text1)',
-        backgroundColor: 'transparent',
-        zIndex: 999,
-        fontSize: '.8rem',
-    },
-})(Tooltip);
-
 export const NoColorTooltip = withStyles({
     tooltip: {
         backgroundColor: 'transparent',

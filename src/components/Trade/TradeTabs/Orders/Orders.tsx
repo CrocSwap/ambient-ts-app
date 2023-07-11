@@ -38,7 +38,7 @@ function Orders(props: propsIF) {
     } = props;
     const {
         showAllData: showAllDataSelection,
-        expandTradeTable: expandTradeTableSelection,
+        isTradeTableExpanded: expandTradeTableSelection,
         setExpandTradeTable,
     } = useContext(TradeTableContext);
     const {
@@ -47,7 +47,7 @@ function Orders(props: propsIF) {
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
-    const expandTradeTable = !isAccountView && expandTradeTableSelection;
+    const isTradeTableExpanded = !isAccountView && expandTradeTableSelection;
 
     const graphData = useAppSelector((state) => state?.graphData);
     const { addressCurrent: userAddress } = useAppSelector(
@@ -311,7 +311,7 @@ function Orders(props: propsIF) {
         changeRowsPerPage(parseInt(event.target.value, 10));
     };
 
-    const tradePageCheck = expandTradeTable && limitOrderData.length > 10;
+    const tradePageCheck = isTradeTableExpanded && limitOrderData.length > 10;
 
     const listRef = useRef<HTMLUListElement>(null);
     const sPagination = useMediaQuery('(max-width: 800px)');
@@ -420,7 +420,7 @@ function Orders(props: propsIF) {
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
-                !expandTradeTable &&
+                !isTradeTableExpanded &&
                     !isAccountView &&
                     sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
                         <div className={styles.view_more_container}>
@@ -447,19 +447,19 @@ function Orders(props: propsIF) {
     }, [mobileView]);
 
     useEffect(() => {
-        if (_DATA.currentData.length && !expandTradeTable) {
+        if (_DATA.currentData.length && !isTradeTableExpanded) {
             setCurrentPage(1);
             const mockEvent = {} as React.ChangeEvent<unknown>;
             handleChange(mockEvent, 1);
         }
-    }, [expandTradeTable]);
+    }, [isTradeTableExpanded]);
 
     const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
         <div
             className={`${styles.main_list_container} ${
-                expandTradeTable && styles.main_list_expanded
+                isTradeTableExpanded && styles.main_list_expanded
             }`}
         >
             <div>{headerColumnsDisplay}</div>

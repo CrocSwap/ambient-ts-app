@@ -385,6 +385,9 @@ background-size: 300% 100%;
     }
 
     .resizableParent{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
         overflow: hidden;
     }
 
@@ -398,6 +401,7 @@ background-size: 300% 100%;
     .chartBox {
         /* background-color: rgb(0, 255, 0); */
         max-height: calc(100% - 52px);
+        min-height: 0px;
       }
       
     .tableBox {
@@ -408,12 +412,7 @@ background-size: 300% 100%;
 
     .resizableBox {
         background-color: var(--dark3);
-        margin-top: 8px;
         z-index: 99;
-    }
-
-    .hide_graph {
-        display: none;
     }
 
     .expand_table {

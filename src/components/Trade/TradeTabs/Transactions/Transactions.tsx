@@ -63,7 +63,7 @@ function Transactions(props: propsIF) {
     } = useContext(CrocEnvContext);
     const {
         showAllData: showAllDataSelection,
-        expandTradeTable: expandTradeTableSelection,
+        isTradeTableExpanded: expandTradeTableSelection,
         setExpandTradeTable,
     } = useContext(TradeTableContext);
     const {
@@ -76,7 +76,7 @@ function Transactions(props: propsIF) {
 
     // only show all data and expand when on trade tab page
     const showAllData = !isAccountView && showAllDataSelection;
-    const expandTradeTable = !isAccountView && expandTradeTableSelection;
+    const isTradeTableExpanded = !isAccountView && expandTradeTableSelection;
 
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.
@@ -414,7 +414,7 @@ function Transactions(props: propsIF) {
     ) => {
         changeRowsPerPage(parseInt(event.target.value, 10));
     };
-    const tradePageCheck = expandTradeTable && transactionData.length > 30;
+    const tradePageCheck = isTradeTableExpanded && transactionData.length > 30;
 
     const listRef = useRef<HTMLUListElement>(null);
     const sPagination = useMediaQuery('(max-width: 800px)');
@@ -499,7 +499,7 @@ function Transactions(props: propsIF) {
     };
 
     const showViewMoreButton =
-        !expandTradeTable &&
+        !isTradeTableExpanded &&
         !isAccountView &&
         sortedRowItemContent.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
 
@@ -540,19 +540,19 @@ function Transactions(props: propsIF) {
     }, [mobileView]);
 
     useEffect(() => {
-        if (_DATA.currentData.length && !expandTradeTable) {
+        if (_DATA.currentData.length && !isTradeTableExpanded) {
             setCurrentPage(1);
             const mockEvent = {} as React.ChangeEvent<unknown>;
             handleChange(mockEvent, 1);
         }
-    }, [expandTradeTable]);
+    }, [isTradeTableExpanded]);
 
     const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
         <div
             className={`${styles.main_list_container} ${
-                expandTradeTable && styles.main_list_expanded
+                isTradeTableExpanded && styles.main_list_expanded
             }`}
         >
             <div>{headerColumnsDisplay}</div>

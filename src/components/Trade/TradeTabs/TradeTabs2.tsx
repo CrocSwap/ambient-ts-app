@@ -58,7 +58,6 @@ interface propsIF {
     unselectCandle: () => void;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
-    showActiveMobileComponent?: boolean;
 }
 
 function TradeTabs2(props: propsIF) {
@@ -73,7 +72,6 @@ function TradeTabs2(props: propsIF) {
         unselectCandle,
         isCandleArrived,
         setIsCandleDataArrived,
-        showActiveMobileComponent,
     } = props;
 
     const {
@@ -105,7 +103,7 @@ function TradeTabs2(props: propsIF) {
         setShowAllData,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
-        expandTradeTable,
+        isTradeTableExpanded,
         outsideControl,
         selectedOutsideTab,
     } = useContext(TradeTableContext);
@@ -438,7 +436,7 @@ function TradeTabs2(props: propsIF) {
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
             <div
                 className={
-                    !expandTradeTable
+                    !isTradeTableExpanded
                         ? styles.round_container
                         : styles.flex_column
                 }
