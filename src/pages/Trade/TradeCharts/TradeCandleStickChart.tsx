@@ -150,10 +150,6 @@ function TradeCandleStickChart(props: propsIF) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
-    const liquidityPullData = useAppSelector(
-        (state) => state.graphData.liquidityData,
-    );
-
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
@@ -193,7 +189,7 @@ function TradeCandleStickChart(props: propsIF) {
             setLiqBoundary(() => liqBoundary);
         }
     }, [
-        diffHashSigLiquidity(liquidityPullData),
+        diffHashSigLiquidity(unparsedLiquidityData),
         denominationsInBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
     ]);
@@ -228,7 +224,7 @@ function TradeCandleStickChart(props: propsIF) {
             setLiqBoundary(() => liqBoundary);
         }
     }, [
-        diffHashSigLiquidity(liquidityPullData),
+        diffHashSigLiquidity(unparsedLiquidityData),
         denominationsInBase,
         poolPriceDisplay !== undefined && poolPriceDisplay > 0,
     ]);
