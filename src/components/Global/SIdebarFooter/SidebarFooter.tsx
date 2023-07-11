@@ -1,7 +1,6 @@
 import styles from './SidebarFooter.module.css';
 
 import { Link, useLocation } from 'react-router-dom';
-import { FaHome } from 'react-icons/fa';
 import { MdAccountBox } from 'react-icons/md';
 // import { IoMdAnalytics } from 'react-icons/io';
 import { RiSwapBoxFill } from 'react-icons/ri';
