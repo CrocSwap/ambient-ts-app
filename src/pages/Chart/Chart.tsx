@@ -197,7 +197,7 @@ export default function Chart(props: propsIF) {
     } = useContext(SidebarContext);
     const { chainData } = useContext(CrocEnvContext);
     const chainId = chainData.chainId;
-    const { setCandleDomains, setCandleScale, isFetchEndOfCandle } =
+    const { setCandleDomains, setCandleScale, timeOfEndCandle } =
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
@@ -1373,12 +1373,12 @@ export default function Chart(props: propsIF) {
                                     );
                                 }
 
-                                const endOfCandle =
-                                    unparsedCandleData[
-                                        unparsedCandleData.length - 1
-                                    ]?.time * 1000;
-
-                                relocateTooltip(eggTooltip, endOfCandle);
+                                if (timeOfEndCandle) {
+                                    relocateTooltip(
+                                        eggTooltip,
+                                        timeOfEndCandle,
+                                    );
+                                }
                             }
                         }
 
@@ -1775,6 +1775,7 @@ export default function Chart(props: propsIF) {
         canUserDragRange,
         canUserDragLimit,
         showVolume,
+        timeOfEndCandle,
     ]);
 
     useEffect(() => {
@@ -2851,7 +2852,7 @@ export default function Chart(props: propsIF) {
             renderSubchartCrCanvas();
         }
     }, [
-        isFetchEndOfCandle,
+        timeOfEndCandle,
         diffHashSig(scaleData),
         market,
         diffHashSig(crosshairData),
@@ -3364,10 +3365,7 @@ export default function Chart(props: propsIF) {
     const drawXaxis = (context: any, xScale: any, Y: any) => {
         const _width = 65; // magic number of pixels to blur surrounding price
         const tickSize = 6;
-
-        const endOfCandle =
-            unparsedCandleData[unparsedCandleData.length - 1]?.time;
-        const firstCandleDateLocation = xScale(endOfCandle * 1000);
+        const timeOfEndCandleLocation = xScale(timeOfEndCandle);
         const firstCrDateLocation = xScale(lastCrDate);
 
         scaleData.xScaleTime.domain(xScale.domain());
@@ -3440,10 +3438,10 @@ export default function Chart(props: propsIF) {
                             xScale(d.date) <
                                 firstCrDateLocation + _width / 2) ||
                         (xScale(d.date) >
-                            firstCandleDateLocation - _width / 2 &&
+                            timeOfEndCandleLocation - _width / 2 &&
                             xScale(d.date) <
-                                firstCandleDateLocation + _width / 2 &&
-                            isFetchEndOfCandle)
+                                timeOfEndCandleLocation + _width / 2 &&
+                            timeOfEndCandle)
                     )
                 ) {
                     if (formatValue) {
@@ -3532,20 +3530,20 @@ export default function Chart(props: propsIF) {
 
         context.fillText('🐊', firstCrDateLocation, Y + tickSize);
 
-        if (isFetchEndOfCandle) {
+        if (timeOfEndCandle) {
             context.filter = ' blur(0px)';
 
             if (
                 xScale(crosshairData[0].x) >
-                    firstCandleDateLocation - (_width - 15) &&
+                    timeOfEndCandleLocation - (_width - 15) &&
                 xScale(crosshairData[0].x) <
-                    firstCandleDateLocation + (_width - 15) &&
-                isFetchEndOfCandle &&
+                    timeOfEndCandleLocation + (_width - 15) &&
+                timeOfEndCandle &&
                 crosshairActive !== 'none'
             ) {
                 context.filter = ' blur(7px)';
             }
-            context.fillText('🥚', firstCandleDateLocation, Y + tickSize);
+            context.fillText('🥚', timeOfEndCandleLocation, Y + tickSize);
         }
 
         context.restore();
@@ -5168,6 +5166,7 @@ export default function Chart(props: propsIF) {
         isCrDataToolTipActive,
         showVolume,
         isOpenEggTooltip,
+        timeOfEndCandle,
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -5719,18 +5718,11 @@ export default function Chart(props: propsIF) {
                 isOpenEggTooltip ? 'visible' : 'hidden',
             );
 
-            const firstCandle =
-                unparsedCandleData[unparsedCandleData.length - 1]?.time * 1000;
-
-            relocateTooltip(eggTooltip, firstCandle);
+            if (timeOfEndCandle) {
+                relocateTooltip(eggTooltip, timeOfEndCandle);
+            }
         }
-    }, [
-        eggTooltip,
-        isOpenEggTooltip,
-        diffHashSigChart(unparsedCandleData),
-        reset,
-        latest,
-    ]);
+    }, [eggTooltip, isOpenEggTooltip, timeOfEndCandle, reset, latest]);
 
     const relocateTooltip = (tooltip: any, data: number) => {
         if (tooltip) {
@@ -5812,13 +5804,10 @@ export default function Chart(props: propsIF) {
             d3.select(d3Xaxis.current).on('mousemove', (event: any) => {
                 d3.select(event.currentTarget).style('cursor', 'col-resize');
 
-                const endOfCandle =
-                    unparsedCandleData[unparsedCandleData.length - 1]?.time *
-                    1000;
                 const isEgg =
-                    isFetchEndOfCandle &&
-                    event.layerX > scaleData?.xScale(endOfCandle) - 15 &&
-                    event.layerX < scaleData?.xScale(endOfCandle) + 15;
+                    timeOfEndCandle &&
+                    event.layerX > scaleData?.xScale(timeOfEndCandle) - 15 &&
+                    event.layerX < scaleData?.xScale(timeOfEndCandle) + 15;
                 const isCroc =
                     scaleData.xScale(scaleData.xScale.invert(event.layerX)) >
                         scaleData.xScale(lastCrDate) - 15 &&
@@ -5841,14 +5830,10 @@ export default function Chart(props: propsIF) {
             });
 
             d3.select(d3Xaxis.current).on('click', (event: any) => {
-                const endOfCandle =
-                    unparsedCandleData[unparsedCandleData.length - 1]?.time *
-                    1000;
-
                 const isEgg =
-                    isFetchEndOfCandle &&
-                    event.offsetX > scaleData?.xScale(endOfCandle) - 15 &&
-                    event.offsetX < scaleData?.xScale(endOfCandle) + 15;
+                    timeOfEndCandle &&
+                    event.offsetX > scaleData?.xScale(timeOfEndCandle) - 15 &&
+                    event.offsetX < scaleData?.xScale(timeOfEndCandle) + 15;
 
                 if (isEgg) {
                     if (!isOpenEggTooltip) {
@@ -5967,6 +5952,7 @@ export default function Chart(props: propsIF) {
             isCrDataToolTipActive,
             showVolume,
             isOpenEggTooltip,
+            timeOfEndCandle,
         ],
     );
 
