@@ -47,7 +47,7 @@ function Trade() {
         useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
-    const { expandTradeTable, setOutsideControl, setSelectedOutsideTab } =
+    const { expandTradeTable, setOutsideControl, setSelectedOutsideTab, tradeTableHeight, setTradeTableHeight } =
         useContext(TradeTableContext);
 
     const enableResize = { bottom: true };
@@ -299,7 +299,7 @@ function Trade() {
         setSelectedDate: setSelectedDate,
     };
 
-    const [height, setHeight] = useState(500);
+
     const handleClasses = { bottom: styles.resizableBox };
 
     const tradeTabsProps = {
@@ -370,30 +370,33 @@ function Trade() {
                 ${expandTradeTable ? styles.flex_column : ''}`}
             >
                 <TradeChartsHeader />
-                <Resizable
-                    className={styles.chartBox}
-                    enable={enableResize}
-                    size={{ width: '100%', height: height }}
-                    onResizeStop={(e, direction, ref, d) => {
-                        setHeight(height + d.height);
-                    }}
-                    handleClasses={handleClasses}
-                    bounds={'parent'}
-                >
-                    <div
-                        className={` ${expandGraphStyle} ${
-                            activeMobileComponent !== 'chart' ? styles.hide : ''
-                        } ${fullScreenStyle}`}
+                {/* This div acts as a parent to maintain a min/max for the resizable element below */}
+                <div className={styles.resizableParent}>
+                    <Resizable
+                        className={styles.chartBox}
+                        enable={enableResize}
+                        size={{ width: '100%', height: tradeTableHeight }}
+                        onResizeStop={(e, direction, ref, d) => {
+                            setTradeTableHeight(tradeTableHeight + d.height);
+                        }}
+                        handleClasses={handleClasses}
+                        bounds={'parent'}
                     >
-                        <div className={styles.main__chart_container}>
-                            {!isCandleDataNull && (
-                                <TradeCharts {...tradeChartsProps} />
-                            )}
+                        <div
+                            className={` ${expandGraphStyle} ${
+                                activeMobileComponent !== 'chart' ? styles.hide : ''
+                            } ${fullScreenStyle}`}
+                        >
+                            <div className={styles.main__chart_container}>
+                                {!isCandleDataNull && (
+                                    <TradeCharts {...tradeChartsProps} />
+                                )}
+                            </div>
                         </div>
+                    </Resizable>
+                    <div className={styles.tableBox}>
+                        <TradeTabs2 {...tradeTabsProps} />
                     </div>
-                </Resizable>
-                <div className={styles.tableBox}>
-                    <TradeTabs2 {...tradeTabsProps} />
                 </div>
             </div>
             {mainContent}

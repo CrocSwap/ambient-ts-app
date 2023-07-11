@@ -1,11 +1,12 @@
 import styles from './PositionsOnlyToggle.module.css';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
-import { MdExpand, MdCloseFullscreen, MdTablet } from 'react-icons/md';
+import { MdExpand, MdCloseFullscreen, MdTablet, MdEmergency } from 'react-icons/md';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { DefaultTooltip, IconTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 interface PositionsOnlyToggleProps {
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
@@ -39,8 +40,10 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
         expandTradeTable,
         setExpandTradeTable,
-        resetTradeTableSize,
-        setResetTradeTableSize,
+        tradeTableHeightPreference,
+        setTradeTableHeightPreference,
+        tradeTableHeight,
+        setTradeTableHeight,
         showAllData,
         setShowAllData,
     } = useContext(TradeTableContext);
@@ -64,21 +67,46 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         </div>
     );
 
-    const resetIcon = (
-        // save previous state as current state if user change, otherwise previous state is tracked for non user interaction
-        // TradeChartsTokenInfo_tokens_info_simplify_content__1UxfW - in table
-        // TradeCharts_token_info_container__1PHcB - in chart
-        <div
-            className={styles.icon}
-            onClick={() => {
-                setResetTradeTableSize(!resetTradeTableSize);
-                setIsCandleDataArrived(false);
-            }}
+    const resetTableHeightIcon = (
+        <IconTooltip
+            interactive
+            title={'Reset Preffered Height'}
+            placement={'top'}
+            arrow
+            enterDelay={400}
+            leaveDelay={100}
         >
-            {resetTradeTableSize ? <MdExpand /> : < MdTablet/>}
-            {isCandleArrived && <span className={styles.graph_indicaor}></span>}
-        </div>
+            <div
+                className={styles.icon}
+                onClick={() => {
+                    setTradeTableHeight(tradeTableHeightPreference);
+                }}
+            >
+                < MdTablet/>
+            </div>
+        </IconTooltip>
     );
+
+    const setTableHeightPreferenceIcon = (
+        <IconTooltip
+            interactive
+            title={'Save Preffered Height'}
+            placement={'top'}
+            arrow
+            enterDelay={400}
+            leaveDelay={100}
+        >
+            <div
+                className={styles.icon}
+                onClick={() => {
+                    setTradeTableHeightPreference(tradeTableHeight);
+                }}
+            >
+                < MdEmergency/>
+            </div>
+        </IconTooltip>
+    );
+
 
     const toggleOrNull =
         !isUserConnected ||
@@ -141,7 +169,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 {/* {clearButtonOrNull} */}
                 {toggleOrNull}
             </div>
-            {(!isCandleDataNull || isCandleArrived) && resetIcon}
+            {(!isCandleDataNull || isCandleArrived) && resetTableHeightIcon}
+            {(!isCandleDataNull || isCandleArrived) && setTableHeightPreferenceIcon}
             {(!isCandleDataNull || isCandleArrived) && expandIcon}
         </div>
     );

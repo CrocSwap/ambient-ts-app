@@ -40,8 +40,6 @@ function Orders(props: propsIF) {
         showAllData: showAllDataSelection,
         expandTradeTable: expandTradeTableSelection,
         setExpandTradeTable,
-        resetTradeTableSize,
-        setResetTradeTableSize,
     } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -455,14 +453,6 @@ function Orders(props: propsIF) {
             handleChange(mockEvent, 1);
         }
     }, [expandTradeTable]);
-
-    useEffect(() => {
-        if (_DATA.currentData.length && !resetTradeTableSize) {
-            setCurrentPage(1);
-            const mockEvent = {} as React.ChangeEvent<unknown>;
-            handleChange(mockEvent, 1);
-        }
-    }, [resetTradeTableSize]);
 
     const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
