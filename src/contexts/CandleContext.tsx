@@ -38,7 +38,7 @@ interface CandleContextIF {
     candleScale: candleScale;
     setCandleScale: Dispatch<SetStateAction<candleScale>>;
     candleTimeLocal: number;
-    isFetchEndOfCandle: boolean;
+    timeOfEndCandle: number | undefined;
 }
 
 export const CandleContext = createContext<CandleContextIF>(
@@ -76,7 +76,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         boolean | undefined
     >();
 
-    const [isFetchEndOfCandle, setIsFetchedEndOfCandle] = useState(false);
+    const [timeOfEndCandle, setTimeOfEndCandle] = useState<
+        number | undefined
+    >();
 
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
     const [candleDomains, setCandleDomains] = useState<candleDomain>({
@@ -110,7 +112,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleScale,
         setCandleScale,
         candleTimeLocal,
-        isFetchEndOfCandle,
+        timeOfEndCandle,
     };
 
     const {
@@ -146,7 +148,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             const candleTime = candleScale?.lastCandleDate || 0;
             const nCandles =
                 candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
-            setIsFetchedEndOfCandle(false);
+            setTimeOfEndCandle(undefined);
             setIsFetchingCandle(true);
             fetchCandleSeriesHybrid(
                 true,
@@ -233,7 +235,13 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 if (incrCandles && candleData) {
                     const newCandles: CandleData[] = [];
                     if (incrCandles.candles.length === 0) {
-                        setIsFetchedEndOfCandle(true);
+                        candleData.candles.sort(
+                            (a: CandleData, b: CandleData) => b.time - a.time,
+                        );
+                        setTimeOfEndCandle(
+                            candleData.candles[candleData.candles.length - 1]
+                                .time * 1000,
+                        );
                     }
 
                     for (
