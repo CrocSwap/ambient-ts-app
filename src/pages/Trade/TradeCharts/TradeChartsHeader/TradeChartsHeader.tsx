@@ -8,6 +8,7 @@ import printDomToImage from '../../../../utils/functions/printDomToImage';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 import styles from './TradeChartsHeader.module.css';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 export const TradeChartsHeader = () => {
     const {
@@ -20,6 +21,9 @@ export const TradeChartsHeader = () => {
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
+
+    const { isTradeTableExpanded } =
+        useContext(TradeTableContext);
 
     const copyChartToClipboard = async () => {
         if (canvasRef.current) {
@@ -71,7 +75,7 @@ export const TradeChartsHeader = () => {
     return (
         <div className={styles.token_info_container}>
             <TradeChartsTokenInfo />
-            {graphSettingsContent}
+            {isTradeTableExpanded ? null : graphSettingsContent}
         </div>
     );
 };
