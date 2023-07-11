@@ -16,10 +16,6 @@ import {
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    formatAmountChartData,
-    formatPoolPriceAxis,
-} from '../../utils/numbers';
 import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
@@ -63,6 +59,7 @@ import {
 import VolumeBarCanvas from './SubChartComponents/VolumeBarCanvas';
 import RangeLineCanvas from './SubChartComponents/RangeLineCanvas';
 import LimitLineCanvas from './SubChartComponents/LimitLineCanvas';
+import YaxisCanvas from './SubChartComponents/Yaxis/YaxisCanvas';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
 
@@ -86,7 +83,7 @@ declare global {
     }
 }
 
-type crosshair = {
+export type crosshair = {
     x: number | Date;
     y: number | string;
 };
@@ -95,13 +92,6 @@ export type chartItemStates = {
     showVolume: boolean;
     showFeeRate: boolean;
     liqMode: string;
-};
-
-type yLabel = {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
 };
 
 export type lineValue = {
@@ -116,7 +106,6 @@ interface SubChartValue {
 
 type zoomUtils = {
     zoom: d3.ZoomBehavior<Element, unknown>;
-    yAxisZoom: d3.ZoomBehavior<Element, unknown>;
     xAxisZoom: d3.ZoomBehavior<Element, unknown>;
 };
 interface propsIF {
@@ -182,6 +171,95 @@ export function renderCanvasArray(
             if (container) container.requestRedraw();
         }
     });
+}
+
+export const renderSubchartCrCanvas = () => {
+    const feeRateCrCanvas = d3
+        .select('#fee_rate_chart')
+        .select('#d3CanvasCrosshair');
+
+    if (feeRateCrCanvas) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const nd = feeRateCrCanvas.node() as any;
+        if (nd) nd.requestRedraw();
+    }
+
+    const tvlCrCanvas = d3.select('#tvl_chart').select('#d3CanvasCrosshair');
+
+    if (tvlCrCanvas) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const nd = tvlCrCanvas.node() as any;
+        if (nd) nd.requestRedraw();
+    }
+
+    const tvlYaxisCanvas = d3.select('#tvl_chart').select('#y-axis-canvas_tvl');
+
+    if (tvlYaxisCanvas) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const nd = tvlYaxisCanvas.node() as any;
+        if (nd) nd.requestRedraw();
+    }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function standardDeviation(arr: any, usePopulation = false) {
+    const mean =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
+    return Math.sqrt(
+        arr
+            .reduce(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (acc: any, val: any) => acc.concat((val - mean) ** 2),
+                [],
+            )
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .reduce((acc: any, val: any) => acc + val, 0) /
+            (arr.length - (usePopulation ? 0 : 1)),
+    );
+}
+
+export function fillLiqAdvanced(
+    standardDeviation: number,
+    scaleData: scaleData,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    liquidityData: any,
+) {
+    const border = scaleData?.yScale.domain()[1];
+
+    const filledTickNumber = Math.min(border / standardDeviation, 150);
+
+    standardDeviation =
+        filledTickNumber === 150
+            ? (border - liquidityData?.liqBidData[0]?.liqPrices) / 150
+            : standardDeviation;
+
+    if (scaleData !== undefined) {
+        if (
+            border + standardDeviation >=
+            liquidityData?.liqBidData[0]?.liqPrices
+        ) {
+            for (let index = 0; index < filledTickNumber; index++) {
+                liquidityData?.liqBidData.unshift({
+                    activeLiq: 30,
+                    liqPrices:
+                        liquidityData?.liqBidData[0]?.liqPrices +
+                        standardDeviation,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+
+                liquidityData?.depthLiqBidData.unshift({
+                    activeLiq: liquidityData?.depthLiqBidData[1]?.activeLiq,
+                    liqPrices:
+                        liquidityData?.depthLiqBidData[0]?.liqPrices +
+                        standardDeviation,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+            }
+        }
+    }
 }
 
 export default function Chart(props: propsIF) {
@@ -271,8 +349,7 @@ export default function Chart(props: propsIF) {
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
 
-    const d3Xaxis = useRef<HTMLCanvasElement | null>(null);
-    const d3Yaxis = useRef<HTMLDivElement | null>(null);
+    const d3Xaxis = useRef<HTMLInputElement | null>(null);
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
 
     const dispatch = useAppDispatch();
@@ -367,8 +444,6 @@ export default function Chart(props: propsIF) {
 
     // Axis
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [yAxis, setYaxis] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [xAxis, setXaxis] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [marketLine, setMarketLine] = useState<any>();
@@ -401,17 +476,16 @@ export default function Chart(props: propsIF) {
     > | null>(initialDragState);
 
     const [mouseLocationY, setMouseLocationY] = useState<number>();
-    const [yAxisWidth, setYaxisWidth] = useState('4rem');
     const [bandwidth, setBandwidth] = useState(5);
-    const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
     const [mainCanvasBoundingClientRect, setMainCanvasBoundingClientRect] =
         useState<DOMRect | undefined>();
+
+    const [yAxisWidth, setYaxisWidth] = useState('4rem');
 
     const [
         isOnCandleOrVolumeMouseLocation,
         setIsOnCandleOrVolumeMouseLocation,
     ] = useState(false);
-    const [yAxisLabels] = useState<yLabel[]>([]);
 
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
@@ -438,67 +512,6 @@ export default function Chart(props: propsIF) {
         }
     }, [diffHashSigChart(unparsedCandleData)]);
 
-    const standardDeviation = (arr: number[], usePopulation = false) => {
-        const mean =
-            arr.reduce((acc: number, val: number) => acc + val, 0) / arr.length;
-        return Math.sqrt(
-            arr
-                .reduce(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (acc: any, val: any) => acc.concat((val - mean) ** 2),
-                    [],
-                )
-
-                .reduce((acc: number, val: number) => acc + val, 0) /
-                (arr.length - (usePopulation ? 0 : 1)),
-        );
-    };
-
-    const fillLiqAdvanced = (
-        standardDeviation: number,
-        scaleData: scaleData,
-    ) => {
-        const border = scaleData?.yScale.domain()[1];
-
-        const filledTickNumber = Math.min(border / standardDeviation, 150);
-
-        standardDeviation =
-            filledTickNumber === 150
-                ? (border - liquidityData?.liqBidData[0]?.liqPrices) / 150
-                : standardDeviation;
-
-        if (scaleData !== undefined && liquidityData !== undefined) {
-            if (
-                border + standardDeviation >=
-                liquidityData?.liqBidData[0]?.liqPrices
-            ) {
-                for (let index = 0; index < filledTickNumber; index++) {
-                    liquidityData?.liqBidData.unshift({
-                        activeLiq: 30,
-                        liqPrices:
-                            liquidityData?.liqBidData[0]?.liqPrices +
-                            standardDeviation,
-                        deltaAverageUSD: 0,
-                        cumAverageUSD: 0,
-                        lowerBound: 0,
-                        upperBound: 0,
-                    });
-
-                    liquidityData?.depthLiqBidData.unshift({
-                        activeLiq: liquidityData?.depthLiqBidData[1]?.activeLiq,
-                        liqPrices:
-                            liquidityData?.depthLiqBidData[0]?.liqPrices +
-                            standardDeviation,
-                        deltaAverageUSD: 0,
-                        cumAverageUSD: 0,
-                        lowerBound: 0,
-                        upperBound: 0,
-                    });
-                }
-            }
-        }
-    };
-
     useEffect(() => {
         setRescale(true);
     }, [denomInBase]);
@@ -508,73 +521,6 @@ export default function Chart(props: propsIF) {
         const nd = d3.select('#d3fc_group').node() as any;
         if (nd) nd.requestRedraw();
     }, []);
-
-    const sameLocationLimit = () => {
-        if (scaleData) {
-            const resultData =
-                scaleData?.yScale(limit[0].value) -
-                scaleData?.yScale(market[0].value);
-            const resultLocationData = resultData < 0 ? -20 : 20;
-            const isSameLocation = Math.abs(resultData) < 20;
-            const sameLocationData =
-                scaleData?.yScale(market[0].value) + resultLocationData;
-            return {
-                isSameLocation: isSameLocation,
-                sameLocationData: sameLocationData,
-            };
-        }
-        return {
-            isSameLocation: false,
-            sameLocationData: 0,
-        };
-    };
-    const sameLocationRange = () => {
-        if (scaleData) {
-            const low = ranges.filter(
-                (target: lineValue) => target.name === 'Min',
-            )[0].value;
-            const high = ranges.filter(
-                (target: lineValue) => target.name === 'Max',
-            )[0].value;
-
-            if (high >= low) {
-                const resultData =
-                    scaleData?.yScale(low) - scaleData?.yScale(high);
-                const resultLocationData = resultData < 0 ? -20 : 20;
-                const isSameLocation = Math.abs(resultData) < 20;
-                const sameLocationData =
-                    scaleData?.yScale(high) + resultLocationData;
-
-                return {
-                    isSameLocationMin: isSameLocation,
-                    sameLocationDataMin: sameLocationData,
-                    isSameLocationMax: false,
-                    sameLocationDataMax: 0,
-                };
-            } else {
-                const resultData =
-                    scaleData?.yScale(low) - scaleData?.yScale(high);
-                const resultLocationData = resultData < 0 ? -20 : 20;
-                const isSameLocation = Math.abs(resultData) < 20;
-                const sameLocationData =
-                    scaleData?.yScale(low) - resultLocationData;
-
-                return {
-                    isSameLocationMin: false,
-                    sameLocationDataMin: 0,
-                    isSameLocationMax: isSameLocation,
-                    sameLocationDataMax: sameLocationData,
-                };
-            }
-        }
-
-        return {
-            isSameLocationMin: false,
-            sameLocationDataMin: 0,
-            isSameLocationMax: false,
-            sameLocationDataMax: 0,
-        };
-    };
 
     const canUserDragRange = useMemo<boolean>(() => {
         if (
@@ -642,54 +588,6 @@ export default function Chart(props: propsIF) {
             );
         }
     }, [canUserDragLimit, canUserDragRange, isOnCandleOrVolumeMouseLocation]);
-
-    function changeyAxisWidth() {
-        let yTickValueLength =
-            formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
-        let result = false;
-        scaleData?.yScale.ticks().forEach((element: number) => {
-            if (formatPoolPriceAxis(element).length > 4) {
-                result = true;
-                yTickValueLength =
-                    yTickValueLength > formatPoolPriceAxis(element).length - 1
-                        ? yTickValueLength
-                        : formatPoolPriceAxis(element).length - 1;
-            }
-        });
-        if (result) {
-            if (yTickValueLength > 4 && yTickValueLength < 8) {
-                setYaxisWidth('6rem');
-                setYaxisCanvasWidth(70);
-            }
-            if (yTickValueLength >= 8) {
-                setYaxisWidth('7rem');
-                setYaxisCanvasWidth(85);
-            }
-            if (yTickValueLength >= 10) {
-                setYaxisWidth('8rem');
-                setYaxisCanvasWidth(100);
-            }
-            if (yTickValueLength >= 13) {
-                setYaxisWidth('9rem');
-                setYaxisCanvasWidth(117);
-            }
-            if (yTickValueLength >= 15) {
-                setYaxisWidth('10rem');
-                setYaxisCanvasWidth(134);
-            }
-            if (yTickValueLength >= 16) {
-                setYaxisCanvasWidth(142);
-            }
-            if (yTickValueLength >= 17) {
-                setYaxisCanvasWidth(147);
-            }
-            if (yTickValueLength >= 20) {
-                setYaxisWidth('11rem');
-                setYaxisCanvasWidth(152);
-            }
-        }
-        if (yTickValueLength <= 4) setYaxisWidth('5rem');
-    }
 
     useEffect(() => {
         setRescale(true);
@@ -1214,6 +1112,7 @@ export default function Chart(props: propsIF) {
                                         fillLiqAdvanced(
                                             liqBidDeviation,
                                             scaleData,
+                                            liquidityData,
                                         );
                                     }
                                 }
@@ -1298,212 +1197,8 @@ export default function Chart(props: propsIF) {
                         }
                     });
 
-                let firstLocation: number;
-                let newCenter: number;
-                let previousDeltaTouchYaxis: number;
-
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const startZoom = (event: any) => {
-                    if (event.sourceEvent.type.includes('touch')) {
-                        // mobile
-                        previousTouch = event.sourceEvent.changedTouches[0];
-                        firstLocation = previousTouch.pageY;
-                        newCenter = scaleData?.yScale.invert(firstLocation);
-
-                        if (event.sourceEvent.touches.length > 1) {
-                            previousDeltaTouchYaxis = Math.hypot(
-                                0,
-                                event.sourceEvent.touches[0].pageY -
-                                    event.sourceEvent.touches[1].pageY,
-                            );
-                            firstLocation = previousDeltaTouchYaxis;
-                            newCenter = scaleData?.yScale.invert(firstLocation);
-                        }
-                    } else {
-                        firstLocation = event.sourceEvent.offsetY;
-                    }
-                };
-
-                const yAxisZoom = d3
-                    .zoom()
-                    .on('start', (event) => {
-                        startZoom(event);
-                    })
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .on('zoom', async (event: any) => {
-                        (async () => {
-                            const domainY = scaleData?.yScale.domain();
-                            const center =
-                                domainY[1] !== domainY[0]
-                                    ? (domainY[1] + domainY[0]) / 2
-                                    : domainY[0] / 2;
-                            let deltaY;
-
-                            if (event.sourceEvent.type === 'touchmove') {
-                                const touch =
-                                    event.sourceEvent.changedTouches[0];
-
-                                const _currentPageY = touch.pageY;
-                                const previousTouchPageY = previousTouch.pageY;
-                                const _movementY =
-                                    _currentPageY - previousTouchPageY;
-                                deltaY = _movementY;
-                            } else {
-                                deltaY = event.sourceEvent.movementY / 1.5;
-                                newCenter =
-                                    scaleData?.yScale.invert(firstLocation);
-                            }
-
-                            const dy = event.sourceEvent.deltaY / 3;
-
-                            const factor = Math.pow(
-                                2,
-                                event.sourceEvent.type === 'wheel'
-                                    ? -dy * 0.003
-                                    : event.sourceEvent.type === 'mousemove'
-                                    ? -deltaY * 0.003
-                                    : event.sourceEvent.type === 'touchmove'
-                                    ? -deltaY * 0.005
-                                    : 1,
-                            );
-
-                            if (
-                                event.sourceEvent.type !== 'touchmove' ||
-                                event.sourceEvent.touches.length === 1
-                            ) {
-                                const size = (domainY[1] - domainY[0]) / factor;
-
-                                const diff = domainY[1] - domainY[0];
-
-                                const distance =
-                                    newCenter > center
-                                        ? Math.abs(
-                                              newCenter -
-                                                  scaleData?.yScale.domain()[1],
-                                          )
-                                        : Math.abs(
-                                              newCenter -
-                                                  scaleData?.yScale.domain()[0],
-                                          );
-                                const diffFactor = (diff - distance) / distance;
-
-                                const bottomDiff = size / (diffFactor + 1);
-                                const topDiff = size - bottomDiff;
-
-                                if (newCenter > center) {
-                                    const domain = [
-                                        newCenter - topDiff,
-                                        newCenter + bottomDiff,
-                                    ];
-                                    await scaleData?.yScale.domain(domain);
-                                } else {
-                                    const domain = [
-                                        newCenter - bottomDiff,
-                                        newCenter + topDiff,
-                                    ];
-                                    await scaleData?.yScale.domain(domain);
-                                }
-                            } else if (event.sourceEvent.touches.length > 1) {
-                                const touch1 = event.sourceEvent.touches[0];
-                                const touch2 = event.sourceEvent.touches[1];
-                                const deltaTouch = Math.hypot(
-                                    0,
-                                    touch1.pageY - touch2.pageY,
-                                );
-
-                                const currentDelta =
-                                    scaleData?.yScale.invert(deltaTouch);
-                                const delta =
-                                    Math.abs(currentDelta - newCenter) * 0.03;
-
-                                if (previousDeltaTouchYaxis > deltaTouch) {
-                                    const domainMax =
-                                        scaleData?.yScale.domain()[1] + delta;
-                                    const domainMin =
-                                        scaleData?.yScale.domain()[0] - delta;
-
-                                    scaleData?.yScale.domain([
-                                        Math.min(domainMin, domainMax),
-                                        Math.max(domainMin, domainMax),
-                                    ]);
-                                }
-                                if (previousDeltaTouchYaxis < deltaTouch) {
-                                    const domainMax =
-                                        scaleData?.yScale.domain()[1] -
-                                        delta * 0.5;
-                                    const domainMin =
-                                        scaleData?.yScale.domain()[0] +
-                                        delta * 0.5;
-
-                                    if (domainMax === domainMin) {
-                                        scaleData?.yScale.domain([
-                                            Math.min(domainMin, domainMax) +
-                                                delta,
-                                            Math.max(domainMin, domainMax) -
-                                                delta,
-                                        ]);
-                                    } else {
-                                        scaleData?.yScale.domain([
-                                            Math.min(domainMin, domainMax),
-                                            Math.max(domainMin, domainMax),
-                                        ]);
-                                    }
-                                }
-                            }
-                        })().then(() => {
-                            if (event.sourceEvent.type.includes('touch')) {
-                                // mobile
-                                previousTouch =
-                                    event.sourceEvent.changedTouches[0];
-
-                                if (event.sourceEvent.touches.length > 1) {
-                                    previousDeltaTouchYaxis = Math.hypot(
-                                        0,
-                                        event.sourceEvent.touches[0].pageY -
-                                            event.sourceEvent.touches[1].pageY,
-                                    );
-                                }
-                            }
-                        });
-                        if (tradeData.advancedMode && liquidityData) {
-                            const liqAllBidPrices =
-                                liquidityData?.liqBidData.map(
-                                    (liqData: LiquidityDataLocal) =>
-                                        liqData.liqPrices,
-                                );
-                            const liqBidDeviation =
-                                standardDeviation(liqAllBidPrices);
-
-                            fillLiqAdvanced(liqBidDeviation, scaleData);
-                        }
-
-                        setZoomAndYdragControl(event);
-                        setRescale(() => {
-                            return false;
-                        });
-
-                        setMarketLineValue();
-                        render();
-                    })
-                    .filter((event) => {
-                        const isWheel = event.type === 'wheel';
-
-                        const isLabel =
-                            yAxisLabels?.find((element: yLabel) => {
-                                return (
-                                    event.offsetY > element?.y &&
-                                    event.offsetY < element?.y + element?.height
-                                );
-                            }) !== undefined;
-
-                        return !isLabel || isWheel;
-                    });
-
                 const xAxisZoom = d3
                     .zoom()
-                    .on('start', (event) => {
-                        startZoom(event);
-                    })
                     .on('zoom', async (event) => {
                         if (event.sourceEvent.type === 'wheel') {
                             zoomWithWhell(event, unparsedCandleData);
@@ -1598,7 +1293,6 @@ export default function Chart(props: propsIF) {
                 setZoomUtils(() => {
                     return {
                         zoom: zoom,
-                        yAxisZoom: yAxisZoom,
                         xAxisZoom: xAxisZoom,
                     };
                 });
@@ -1615,7 +1309,6 @@ export default function Chart(props: propsIF) {
         ranges,
         diffHashSig(limit),
         isLineDrag,
-        diffHashSig(yAxisLabels),
         minTickForLimit,
         maxTickForLimit,
         canUserDragRange,
@@ -1662,7 +1355,7 @@ export default function Chart(props: propsIF) {
                     );
                     const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-                    fillLiqAdvanced(liqBidDeviation, scaleData);
+                    fillLiqAdvanced(liqBidDeviation, scaleData, liquidityData);
                 }
             }
         }
@@ -1696,19 +1389,38 @@ export default function Chart(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        setRanges((prevState) => {
-            const newTargets = [...prevState];
+        if (!tradeData.advancedMode && simpleRangeWidth === 100) {
+            const lowTick = currentPoolPriceTick - simpleRangeWidth * 100;
+            const highTick = currentPoolPriceTick + simpleRangeWidth * 100;
 
-            newTargets.filter(
-                (target: lineValue) => target.name === 'Max',
-            )[0].value = maxPrice !== undefined ? maxPrice : 0;
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                isDenomBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                lowTick,
+                highTick,
+                lookupChain(chainId).gridSize,
+            );
 
-            newTargets.filter(
-                (target: lineValue) => target.name === 'Min',
-            )[0].value = minPrice !== undefined ? minPrice : 0;
+            const low = 0;
+            const high = parseFloat(
+                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            );
+            setRanges(() => {
+                const newTargets = [
+                    {
+                        name: 'Min',
+                        value: low,
+                    },
+                    {
+                        name: 'Max',
+                        value: high,
+                    },
+                ];
 
-            return newTargets;
-        });
+                return newTargets;
+            });
+        }
     }, [denomInBase]);
 
     const setAdvancedLines = () => {
@@ -1768,7 +1480,7 @@ export default function Chart(props: propsIF) {
             );
             const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-            fillLiqAdvanced(liqBidDeviation, scaleData);
+            fillLiqAdvanced(liqBidDeviation, scaleData, liquidityData);
         } else {
             setBoundaries(denomInBase);
         }
@@ -1914,7 +1626,7 @@ export default function Chart(props: propsIF) {
                     document.addEventListener('keydown', cancelDragEvent);
                     d3.select(d3CanvasMain.current).style('cursor', 'none');
 
-                    d3.select(d3Yaxis.current).style('cursor', 'none');
+                    d3.select('#y-axis-canvas').style('cursor', 'none');
 
                     const advancedValue = scaleData?.yScale.invert(
                         event.sourceEvent.clientY - rectCanvas.top,
@@ -1989,7 +1701,6 @@ export default function Chart(props: propsIF) {
                                           liquidityData?.lowBoundary
                                         ? dragedValue
                                         : 0;
-
                                 setRanges((prevState) => {
                                     const newTargets = [...prevState];
 
@@ -2279,7 +1990,7 @@ export default function Chart(props: propsIF) {
                     }
                     d3.select(d3CanvasMain.current).style('cursor', 'default');
 
-                    d3.select(d3Yaxis.current).style('cursor', 'default');
+                    d3.select('#y-axis-canvas').style('cursor', 'default');
 
                     setCrosshairActive('none');
                 });
@@ -2292,7 +2003,7 @@ export default function Chart(props: propsIF) {
 
                     document.addEventListener('keydown', cancelDragEvent);
 
-                    d3.select(d3Yaxis.current).style('cursor', 'none');
+                    d3.select('#y-axis-canvas').style('cursor', 'none');
 
                     oldLimitValue = limit[0].value;
                 })
@@ -2414,7 +2125,7 @@ export default function Chart(props: propsIF) {
 
                     d3.select(d3CanvasMain.current).style('cursor', 'default');
 
-                    d3.select(d3Yaxis.current).style('cursor', 'default');
+                    d3.select('#y-axis-canvas').style('cursor', 'default');
 
                     setCrosshairActive('none');
                 });
@@ -2451,12 +2162,6 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (scaleData) {
-            const _yAxis = d3fc.axisRight().scale(scaleData?.yScale);
-
-            setYaxis(() => {
-                return _yAxis;
-            });
-
             const _xAxis = d3fc.axisBottom().scale(scaleData?.xScale);
 
             setXaxis(() => {
@@ -2468,26 +2173,6 @@ export default function Chart(props: propsIF) {
     // Axis's
     useEffect(() => {
         if (scaleData) {
-            const d3YaxisCanvas = d3
-                .select(d3Yaxis.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
-
-            const d3YaxisContext = d3YaxisCanvas.getContext(
-                '2d',
-            ) as CanvasRenderingContext2D;
-
-            d3.select(d3Yaxis.current).on('draw', function () {
-                if (yAxis && scaleData) {
-                    setCanvasResolution(d3YaxisCanvas);
-                    drawYaxis(
-                        d3YaxisContext,
-                        scaleData?.yScale,
-                        d3YaxisCanvas.width / (2 * window.devicePixelRatio),
-                    );
-                }
-            });
-
             const canvas = d3
                 .select(d3Xaxis.current)
                 .select('canvas')
@@ -2501,7 +2186,7 @@ export default function Chart(props: propsIF) {
                 }
             });
 
-            renderCanvasArray([d3CanvasCrosshair, d3Xaxis, d3Yaxis]);
+            renderCanvasArray([d3CanvasCrosshair, d3Xaxis]);
             renderSubchartCrCanvas();
         }
     }, [
@@ -2512,7 +2197,6 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         ranges,
         simpleRangeWidth !== 100 || tradeData.advancedMode,
-        yAxisCanvasWidth,
         bandwidth,
         reset,
         sellOrderStyle,
@@ -2523,75 +2207,13 @@ export default function Chart(props: propsIF) {
         liquidityData?.liqTransitionPointforDepth,
     ]);
 
-    function createRectLabel(
-        context: CanvasRenderingContext2D,
-        y: number,
-        x: number,
-        color: string,
-        textColor: string,
-        text: string,
-        stroke: string | undefined = undefined,
-        yAxisWidth: number | undefined = 70,
-        subString: number | undefined = undefined,
-    ) {
-        context.beginPath();
-        context.fillStyle = color;
-        context.fillRect(0, y - 10, yAxisWidth + yAxisWidth / 2, 20);
-        context.fillStyle = textColor;
-        context.font = '13';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        if (subString) {
-            const textHeight =
-                context.measureText('0.0').actualBoundingBoxAscent +
-                context.measureText('0.0').actualBoundingBoxDescent;
-
-            context.fillText(
-                '0.0',
-                x -
-                    context.measureText('0.0').width / 2 -
-                    context.measureText(subString.toString()).width / 2,
-                y,
-            );
-            context.fillText(subString.toString(), x + 1, y + textHeight / 3);
-            context.fillText(
-                text,
-                x +
-                    3 +
-                    context.measureText('0.0').width / 2 +
-                    context.measureText(subString.toString()).width / 2,
-                y,
-            );
-        } else {
-            context.fillText(text, x, y + 2);
-        }
-
-        if (stroke !== undefined) {
-            context.strokeStyle = stroke;
-            context.strokeRect(1, y - 10, yAxisWidth + yAxisWidth / 2, 20);
-        }
-    }
-
-    function addYaxisLabel(y: number) {
-        const rect = {
-            x: 0,
-            y: y - 10,
-            width: 70,
-            height: 20,
-        };
-        yAxisLabels?.push(rect);
-    }
-
     useEffect(() => {
         if (
-            yAxis &&
             xAxis &&
             zoomUtils &&
             zoomUtils?.zoom &&
             zoomUtils?.xAxisZoom &&
-            zoomUtils?.yAxisZoom &&
-            d3CanvasMain.current &&
-            d3Yaxis.current
+            d3CanvasMain.current
         ) {
             d3.select<Element, unknown>(d3CanvasMain.current).call(
                 zoomUtils?.zoom,
@@ -2600,12 +2222,7 @@ export default function Chart(props: propsIF) {
                 d3.select<Element, unknown>(d3Xaxis.current).call(
                     zoomUtils?.xAxisZoom,
                 );
-
-            d3.select<Element, unknown>(d3Yaxis.current)
-                .call(zoomUtils?.yAxisZoom)
-                .on('dblclick.zoom', null);
             if (location.pathname.includes('market')) {
-                d3.select(d3Yaxis.current).on('.drag', null);
                 d3.select(d3CanvasMain.current).on('.drag', null);
             }
             if (
@@ -2614,9 +2231,6 @@ export default function Chart(props: propsIF) {
             ) {
                 if (dragRange) {
                     d3.select<d3.DraggedElementBaseType, unknown>(
-                        d3Yaxis.current,
-                    ).call(dragRange);
-                    d3.select<d3.DraggedElementBaseType, unknown>(
                         d3CanvasMain.current,
                     ).call(dragRange);
                 }
@@ -2624,14 +2238,11 @@ export default function Chart(props: propsIF) {
             if (location.pathname.includes('/limit')) {
                 if (dragLimit) {
                     d3.select<d3.DraggedElementBaseType, unknown>(
-                        d3Yaxis.current,
-                    ).call(dragLimit);
-                    d3.select<d3.DraggedElementBaseType, unknown>(
                         d3CanvasMain.current,
                     ).call(dragLimit);
                 }
             }
-            renderCanvasArray([d3Yaxis, d3CanvasMain]);
+            renderCanvasArray([d3CanvasMain]);
         }
     }, [
         location.pathname,
@@ -2641,415 +2252,6 @@ export default function Chart(props: propsIF) {
         d3.select('#range-line-canvas')?.node(),
         d3.select('#limit-line-canvas')?.node(),
     ]);
-
-    const drawYaxis = (
-        context: CanvasRenderingContext2D,
-        yScale: d3.ScaleLinear<number, number>,
-        X: number,
-    ) => {
-        if (unparsedCandleData !== undefined) {
-            yAxisLabels.length = 0;
-            const low = ranges.filter(
-                (target: lineValue) => target.name === 'Min',
-            )[0].value;
-            const high = ranges.filter(
-                (target: lineValue) => target.name === 'Max',
-            )[0].value;
-
-            const canvas = d3
-                .select(d3Yaxis.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
-
-            if (canvas !== null) {
-                const height = canvas.height;
-
-                const factor = height < 500 ? 5 : height.toString().length * 2;
-
-                context.stroke();
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-                context.fillStyle = 'rgba(189,189,189,0.8)';
-                context.font = '12.425px Lexend Deca';
-
-                const yScaleTicks = yScale.ticks(factor);
-
-                let switchFormatter = false;
-
-                yScaleTicks.forEach((element: number) => {
-                    if (element > 99999) {
-                        switchFormatter = true;
-                    }
-                });
-
-                const formatTicks = switchFormatter
-                    ? formatPoolPriceAxis
-                    : formatAmountChartData;
-
-                yScaleTicks.forEach((d: number) => {
-                    const digit = d.toString().split('.')[1]?.length;
-
-                    const isScientific = d.toString().includes('e');
-
-                    if (isScientific) {
-                        const splitNumber = d.toString().split('e');
-                        const subString =
-                            Math.abs(Number(splitNumber[1])) -
-                            (splitNumber.includes('.') ? 2 : 1);
-
-                        const precision = splitNumber[0]
-                            .toString()
-                            .replace('.', '');
-
-                        const factor = Math.pow(10, 3 - precision.length);
-
-                        const textHeight =
-                            context.measureText('0.0').actualBoundingBoxAscent +
-                            context.measureText('0.0').actualBoundingBoxDescent;
-
-                        context.beginPath();
-                        context.fillText(
-                            '0.0',
-                            X -
-                                context.measureText('0.0').width / 2 -
-                                context.measureText(subString.toString())
-                                    .width /
-                                    2,
-                            yScale(d),
-                        );
-                        context.fillText(
-                            subString.toString(),
-                            X,
-                            yScale(d) + textHeight / 3,
-                        );
-                        context.fillText(
-                            (factor * Number(precision)).toString(),
-                            X +
-                                context.measureText(
-                                    (factor * Number(precision)).toString(),
-                                ).width /
-                                    2 +
-                                context.measureText(subString.toString())
-                                    .width /
-                                    2,
-                            yScale(d),
-                        );
-                    } else {
-                        context.beginPath();
-                        context.fillText(
-                            formatTicks(d, digit ? digit : 2),
-                            X,
-                            yScale(d),
-                        );
-                    }
-                });
-
-                if (market) {
-                    const isScientificMarketTick = market[0].value
-                        .toString()
-                        .includes('e');
-
-                    let marketTick: number | string = formatTicks(
-                        market[0].value,
-                        undefined,
-                    );
-
-                    let marketSubString = undefined;
-
-                    if (isScientificMarketTick) {
-                        const splitNumber = market[0].value
-                            .toString()
-                            .split('e');
-                        marketSubString =
-                            Math.abs(Number(splitNumber[1])) -
-                            (splitNumber.includes('.') ? 2 : 1);
-
-                        const precision = splitNumber[0]
-                            .toString()
-                            .replace('.', '');
-
-                        if (precision.length > 3) {
-                            marketTick = precision.slice(0, 3);
-                        } else {
-                            const factor = Math.pow(10, 3 - precision.length);
-
-                            marketTick = (
-                                factor * Number(precision)
-                            ).toString();
-                        }
-                    }
-
-                    createRectLabel(
-                        context,
-                        yScale(market[0].value),
-                        X,
-                        'white',
-                        'black',
-                        marketTick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        marketSubString,
-                    );
-                }
-
-                if (
-                    location.pathname.includes('pool') ||
-                    location.pathname.includes('reposition')
-                ) {
-                    const {
-                        isSameLocationMin: isSameLocationMin,
-                        sameLocationDataMin: sameLocationDataMin,
-                        isSameLocationMax: isSameLocationMax,
-                        sameLocationDataMax: sameLocationDataMax,
-                    } = sameLocationRange();
-
-                    const passValue = liquidityData
-                        ? liqMode === 'curve'
-                            ? liquidityData?.liqTransitionPointforCurve
-                            : liquidityData?.liqTransitionPointforDepth
-                        : poolPriceDisplay;
-
-                    if (simpleRangeWidth !== 100 || tradeData.advancedMode) {
-                        const isScientificlowTick = low
-                            .toString()
-                            .includes('e');
-
-                        let lowTick: number | string = formatTicks(
-                            low,
-                            undefined,
-                        );
-
-                        let lowSubString = undefined;
-
-                        if (isScientificlowTick) {
-                            const splitNumber = low.toString().split('e');
-                            lowSubString =
-                                Math.abs(Number(splitNumber[1])) -
-                                (splitNumber.includes('.') ? 2 : 1);
-
-                            const precision = splitNumber[0]
-                                .toString()
-                                .replace('.', '');
-
-                            if (precision.length > 3) {
-                                lowTick = precision.slice(0, 3);
-                            } else {
-                                const factor = Math.pow(
-                                    10,
-                                    3 - precision.length,
-                                );
-
-                                lowTick = (
-                                    factor * Number(precision)
-                                ).toString();
-                            }
-                        }
-
-                        createRectLabel(
-                            context,
-                            isSameLocationMin
-                                ? sameLocationDataMin
-                                : yScale(low),
-                            X,
-                            low > passValue ? lineSellColor : lineBuyColor,
-                            low > passValue ? 'white' : 'black',
-                            lowTick,
-                            undefined,
-                            yAxisCanvasWidth,
-                            lowSubString,
-                        );
-                        addYaxisLabel(
-                            isSameLocationMin
-                                ? sameLocationDataMin
-                                : yScale(low),
-                        );
-
-                        const isScientificHighTick = high
-                            .toString()
-                            .includes('e');
-
-                        let highTick: number | string = formatTicks(
-                            high,
-                            undefined,
-                        );
-
-                        let highSubString = undefined;
-
-                        if (isScientificHighTick) {
-                            const splitNumber = high.toString().split('e');
-
-                            highSubString =
-                                Math.abs(Number(splitNumber[1])) -
-                                (splitNumber.includes('.') ? 2 : 1);
-
-                            const precision = splitNumber[0]
-                                .toString()
-                                .replace('.', '');
-
-                            if (precision.length > 3) {
-                                highTick = precision.slice(0, 3);
-                            } else {
-                                const factor = Math.pow(
-                                    10,
-                                    3 - precision.length,
-                                );
-
-                                highTick = (
-                                    factor * Number(precision)
-                                ).toString();
-                            }
-                        }
-
-                        createRectLabel(
-                            context,
-                            isSameLocationMax
-                                ? sameLocationDataMax
-                                : yScale(high),
-                            X,
-                            high > passValue ? lineSellColor : lineBuyColor,
-                            high > passValue ? 'white' : 'black',
-                            highTick,
-                            undefined,
-                            yAxisCanvasWidth,
-                            highSubString,
-                        );
-                        addYaxisLabel(
-                            isSameLocationMax
-                                ? sameLocationDataMax
-                                : yScale(high),
-                        );
-                    }
-                }
-
-                if (location.pathname.includes('/limit')) {
-                    const { isSameLocation, sameLocationData } =
-                        sameLocationLimit();
-
-                    const isScientificLimitTick = limit[0].value
-                        .toString()
-                        .includes('e');
-
-                    let limitTick: number | string = formatTicks(
-                        limit[0].value,
-                        undefined,
-                    );
-
-                    let limitSubString = undefined;
-
-                    if (isScientificLimitTick) {
-                        const splitNumber = limit[0].value
-                            .toString()
-                            .split('e');
-
-                        limitSubString =
-                            Math.abs(Number(splitNumber[1])) -
-                            (splitNumber.includes('.') ? 2 : 1);
-
-                        const precision = splitNumber[0]
-                            .toString()
-                            .replace('.', '');
-
-                        if (precision.length > 3) {
-                            limitTick = precision.slice(0, 3);
-                        } else {
-                            const factor = Math.pow(10, 3 - precision.length);
-
-                            limitTick = (factor * Number(precision)).toString();
-                        }
-                    }
-
-                    if (checkLimitOrder) {
-                        createRectLabel(
-                            context,
-                            isSameLocation
-                                ? sameLocationData
-                                : yScale(limit[0].value),
-                            X,
-                            sellOrderStyle === 'order_sell'
-                                ? lineSellColor
-                                : lineBuyColor,
-                            sellOrderStyle === 'order_sell' ? 'white' : 'black',
-                            limitTick,
-                            undefined,
-                            yAxisCanvasWidth,
-                            limitSubString,
-                        );
-                    } else {
-                        createRectLabel(
-                            context,
-                            isSameLocation
-                                ? sameLocationData
-                                : yScale(limit[0].value),
-                            X,
-                            '#7772FE',
-                            'white',
-                            limitTick,
-                            undefined,
-                            yAxisCanvasWidth,
-                            limitSubString,
-                        );
-                    }
-                    addYaxisLabel(
-                        isSameLocation
-                            ? sameLocationData
-                            : yScale(limit[0].value),
-                    );
-                }
-
-                if (crosshairActive === 'chart') {
-                    const isScientificCrTick = crosshairData[0].y
-                        .toString()
-                        .includes('e');
-
-                    let crTick: number | string = formatTicks(
-                        Number(crosshairData[0].y),
-                        undefined,
-                    );
-
-                    let crSubString = undefined;
-
-                    if (isScientificCrTick) {
-                        const splitNumber = crosshairData[0].y
-                            .toString()
-                            .split('e');
-
-                        crSubString =
-                            Math.abs(Number(splitNumber[1])) -
-                            (splitNumber.includes('.') ? 2 : 1);
-
-                        const precision = splitNumber[0]
-                            .toString()
-                            .replace('.', '');
-
-                        if (precision.length > 3) {
-                            crTick = precision.slice(0, 3);
-                        } else {
-                            const factor = Math.pow(10, 3 - precision.length);
-
-                            crTick = (factor * Number(precision)).toString();
-                        }
-                    }
-
-                    const crosshairY = parseFloat(
-                        crosshairData[0].y.toString(),
-                    );
-                    createRectLabel(
-                        context,
-                        yScale(crosshairY),
-                        X,
-                        '#242F3F',
-                        'white',
-                        crTick,
-                        undefined,
-                        yAxisCanvasWidth,
-                        crSubString,
-                    );
-                }
-
-                changeyAxisWidth();
-            }
-        }
-    };
 
     const drawXaxis = (
         context: CanvasRenderingContext2D,
@@ -3421,7 +2623,6 @@ export default function Chart(props: propsIF) {
                     clickedValue < liquidityData?.lowBoundary
                 ) {
                     rangeWidthPercentage = 100;
-
                     setRanges((prevState) => {
                         const newTargets = [...prevState];
 
@@ -3487,6 +2688,7 @@ export default function Chart(props: propsIF) {
                     scaleData?.yScale.invert(event.offsetY) < 0
                         ? 0.1
                         : scaleData?.yScale.invert(event.offsetY);
+
                 let pinnedDisplayPrices: {
                     pinnedMinPriceDisplay: string;
                     pinnedMaxPriceDisplay: string;
@@ -3497,6 +2699,7 @@ export default function Chart(props: propsIF) {
                     pinnedMinPriceNonDisplay: number;
                     pinnedMaxPriceNonDisplay: number;
                 };
+
                 if (lineToBeSet === 'Max') {
                     pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                         denomInBase,
@@ -3736,38 +2939,6 @@ export default function Chart(props: propsIF) {
         }
     }, [market, marketLine]);
 
-    const renderSubchartCrCanvas = () => {
-        const feeRateCrCanvas = d3
-            .select('#fee_rate_chart')
-            .select('#d3CanvasCrosshair');
-
-        if (feeRateCrCanvas) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const nd = feeRateCrCanvas.node() as any;
-            if (nd) nd.requestRedraw();
-        }
-
-        const tvlCrCanvas = d3
-            .select('#tvl_chart')
-            .select('#d3CanvasCrosshair');
-
-        if (tvlCrCanvas) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const nd = tvlCrCanvas.node() as any;
-            if (nd) nd.requestRedraw();
-        }
-
-        const tvlYaxisCanvas = d3
-            .select('#tvl_chart')
-            .select('#y-axis-canvas_tvl');
-
-        if (tvlYaxisCanvas) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const nd = tvlYaxisCanvas.node() as any;
-            if (nd) nd.requestRedraw();
-        }
-    };
-
     function noGoZone(poolPrice: number) {
         setLimitTickNearNoGoZone(poolPrice * 0.99, poolPrice * 1.01);
         return [[poolPrice * 0.99, poolPrice * 1.01]];
@@ -3986,20 +3157,6 @@ export default function Chart(props: propsIF) {
                     mousemove(event);
                 },
             );
-
-            d3.select(d3Yaxis.current).on(
-                'mousemove',
-                (event: MouseEvent<HTMLDivElement>) => {
-                    d3.select(event.currentTarget).style(
-                        'cursor',
-                        'row-resize',
-                    );
-                },
-            );
-            d3.select(d3Yaxis.current).on('mouseover', () => {
-                mouseLeaveCanvas();
-            });
-
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             d3.select(d3Xaxis.current).on('mousemove', (event: any) => {
                 d3.select(event.currentTarget).style('cursor', 'col-resize');
@@ -4541,6 +3698,42 @@ export default function Chart(props: propsIF) {
         setCheckLimitOrder,
     };
 
+    const yAxisCanvasProps = {
+        scaleData,
+        market,
+        liqMode,
+        liqTransitionPointforCurve: liquidityData
+            ? liquidityData?.liqTransitionPointforCurve
+            : poolPriceDisplay,
+        liqTransitionPointforDepth: liquidityData
+            ? liquidityData?.liqTransitionPointforDepth
+            : poolPriceDisplay,
+        lineSellColor,
+        lineBuyColor,
+        ranges,
+        limit,
+        isAmbientOrAdvanced: simpleRangeWidth !== 100 || tradeData.advancedMode,
+        checkLimitOrder,
+        sellOrderStyle,
+        crosshairActive,
+        crosshairData,
+        reset,
+        isLineDrag,
+        setZoomAndYdragControl,
+        setRescale,
+        setMarketLineValue,
+        render,
+        liquidityData,
+        dragRange,
+        dragLimit,
+        setCrosshairActive,
+        denomInBase,
+        setYaxisWidth,
+        yAxisWidth,
+        simpleRangeWidth,
+        poolPriceDisplay,
+    };
+
     return (
         <div
             ref={d3Container}
@@ -4617,15 +3810,7 @@ export default function Chart(props: propsIF) {
                             className='main-canvas'
                         ></d3fc-canvas>
 
-                        <d3fc-canvas
-                            className='y-axis-canvas'
-                            ref={d3Yaxis}
-                            style={{
-                                width: yAxisWidth,
-                                gridColumn: 4,
-                                gridRow: 3,
-                            }}
-                        ></d3fc-canvas>
+                        <YaxisCanvas {...yAxisCanvasProps} />
                     </div>
                     {showFeeRate && (
                         <>
