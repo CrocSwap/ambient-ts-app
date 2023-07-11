@@ -26,6 +26,8 @@ export const APP_ENVIRONMENT: AppEnvironment =
 
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
+export const GCGO_CANDLES_URL = 'http://34.173.105.247:8080/gcgo';
+
 export const GRAPHCACHE_URL =
     process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
 
