@@ -5692,7 +5692,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (lastCrDataTooltip && scaleData) {
-            lastCrDataTooltip.html('<p> 🐊 Start of Ambient Data </p>');
+            lastCrDataTooltip.html('<p> 🐊 Beginning of Ambient Data </p>');
 
             lastCrDataTooltip.style(
                 'visibility',
@@ -5714,7 +5714,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (eggTooltip && scaleData) {
-            eggTooltip.html('<p> 🥚 End of Data </p>');
+            eggTooltip.html('<p> 🥚 Beginning of Historical Data </p>');
 
             eggTooltip.style(
                 'visibility',
