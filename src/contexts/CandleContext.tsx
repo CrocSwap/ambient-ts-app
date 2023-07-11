@@ -146,7 +146,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             const candleTime = candleScale?.lastCandleDate || 0;
             const nCandles =
                 candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
-
+            setIsFetchedFirstCandle(false);
             setIsFetchingCandle(true);
             fetchCandleSeriesHybrid(
                 true,
@@ -234,8 +234,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     const newCandles: CandleData[] = [];
                     if (incrCandles.candles.length === 0) {
                         setIsFetchedFirstCandle(true);
-                    } else {
-                        setIsFetchedFirstCandle(false);
                     }
 
                     for (
