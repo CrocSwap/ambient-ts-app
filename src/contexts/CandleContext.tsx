@@ -13,7 +13,6 @@ import {
 } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
 import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
@@ -65,7 +64,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const [abortController, setAbortController] =
         useState<AbortController | null>(null);
-    const { isUserIdle } = useAppSelector((state) => state.userData);
 
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDuration | undefined
@@ -114,17 +112,22 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
 
     useEffect(() => {
-        isChartEnabled && !isUserIdle && fetchCandles();
+        isChartEnabled && fetchCandles();
+        if (isChartEnabled) {
+            const interval = setInterval(() => {
+                fetchCandles(true);
+            }, 60000);
+            return () => clearInterval(interval);
+        }
     }, [
         isChartEnabled,
         mainnetBaseTokenAddress,
         mainnetQuoteTokenAddress,
-        isUserIdle,
         candleScale?.isFetchForTimeframe,
         candleTimeLocal,
     ]);
 
-    const fetchCandles = () => {
+    const fetchCandles = (bypassSpinner = false) => {
         if (
             isServerEnabled &&
             baseTokenAddress &&
@@ -142,7 +145,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             const nCandles =
                 candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
 
-            setIsFetchingCandle(true);
+            !bypassSpinner && setIsFetchingCandle(true);
             fetchCandleSeriesHybrid(
                 true,
                 chainData,
