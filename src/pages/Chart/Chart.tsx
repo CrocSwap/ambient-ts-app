@@ -2691,13 +2691,7 @@ export default function Chart(props: propsIF) {
                                         ? tp
                                         : 1 / tp;
 
-                                    if (
-                                        displayPriceWithDenom
-                                            .toString()
-                                            .includes('e')
-                                    ) {
-                                        newLimitValue = displayPriceWithDenom;
-                                    }
+                                    newLimitValue = displayPriceWithDenom;
                                     if (
                                         !(
                                             newLimitValue >= noGoZoneMin &&
