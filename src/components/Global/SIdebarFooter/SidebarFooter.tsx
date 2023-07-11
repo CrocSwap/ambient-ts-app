@@ -40,7 +40,6 @@ function SidebarFooter() {
     );
 
     const linksData = [
-        { title: 'Home', destination: '/', icon: FaHome },
         {
             title: 'Swap',
             destination: '/swap/' + paramsSlug,
