@@ -1,24 +1,22 @@
 export function createRectLabel(
-    context: any,
+    context: CanvasRenderingContext2D,
     y: number,
     x: number,
     color: string,
     textColor: string,
     text: string,
     stroke: string | undefined = undefined,
-    yAxisWidth: any = 70,
+    yAxisWidth: number | undefined = 70,
     subString: number | undefined = undefined,
 ) {
     context.beginPath();
     context.fillStyle = color;
     context.fillRect(0, y - 10, yAxisWidth + yAxisWidth / 2, 20);
     context.fillStyle = textColor;
-    context.fontSize = '13';
+    context.font = '13';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
-    context.letterSpacing = 'normal';
     if (subString) {
-        context.letterSpacing = '1px';
         const textHeight =
             context.measureText('0.0').actualBoundingBoxAscent +
             context.measureText('0.0').actualBoundingBoxDescent;
@@ -27,15 +25,16 @@ export function createRectLabel(
             '0.0',
             x -
                 context.measureText('0.0').width / 2 -
-                context.measureText(subString).width / 2,
+                context.measureText(subString.toString()).width / 2,
             y,
         );
-        context.fillText(subString, x, y + textHeight / 3);
+        context.fillText(subString.toString(), x + 1, y + textHeight / 3);
         context.fillText(
             text,
             x +
+                3 +
                 context.measureText('0.0').width / 2 +
-                context.measureText(subString).width / 2,
+                context.measureText(subString.toString()).width / 2,
             y,
         );
     } else {

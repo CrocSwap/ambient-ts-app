@@ -1337,6 +1337,7 @@ export default function Chart(props: propsIF) {
         canUserDragLimit,
         showVolume,
         timeOfEndCandle,
+        lastCrDate,
     ]);
 
     useEffect(() => {
@@ -3641,6 +3642,7 @@ export default function Chart(props: propsIF) {
         lastCrDate,
         reset,
         latest,
+        diffHashSigScaleData(scaleData),
     ]);
 
     useEffect(() => {
