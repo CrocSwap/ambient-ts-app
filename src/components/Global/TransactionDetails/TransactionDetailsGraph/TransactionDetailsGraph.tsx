@@ -164,7 +164,10 @@ export default function TransactionDetailsGraph(
 
                 const minDate = time() * 1000 - oneHourMiliseconds * 24 * 7;
 
-                const diff = new Date().getTime() - minDate;
+                const diff =
+                    new Date().getTime() - minDate < 43200000
+                        ? 43200000
+                        : new Date().getTime() - minDate;
 
                 const period = decidePeriod(Math.floor(diff / 1000 / 200));
                 setPeriod(period);
