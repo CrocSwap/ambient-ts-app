@@ -18,7 +18,7 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 // react functional component
 function Leaderboard() {
-    const { isTradeTableExpanded, showAllData } = useContext(TradeTableContext);
+    const { tradeTableState, showAllData } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -59,13 +59,12 @@ function Leaderboard() {
         setCurrentPage(pageNumber);
     };
 
-    const usePaginateDataOrNull = isTradeTableExpanded
-        ? currentRangess
-        : sortedPositions;
+    const usePaginateDataOrNull =
+        tradeTableState === 'Expanded' ? currentRangess : sortedPositions;
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {isTradeTableExpanded && sortedPositions.length > 30 && (
+            {tradeTableState === 'Expanded' && sortedPositions.length > 30 && (
                 <Pagination
                     itemsPerPage={rangesPerPage}
                     totalItems={sortedPositions.length}

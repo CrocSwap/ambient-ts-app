@@ -41,8 +41,8 @@ function Ranges(props: propsIF) {
 
     const {
         showAllData: showAllDataSelection,
-        isTradeTableExpanded: expandTradeTableSelection,
-        setExpandTradeTable,
+        tradeTableState,
+        toggleTradeTable,
     } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -50,7 +50,8 @@ function Ranges(props: propsIF) {
     const { setCurrentRangeInReposition } = useContext(RangeContext);
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
-    const isTradeTableExpanded = !isAccountView && expandTradeTableSelection;
+    const isTradeTableExpanded =
+        !isAccountView && tradeTableState === 'Expanded';
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -384,7 +385,7 @@ function Ranges(props: propsIF) {
 
     useEffect(() => {
         if (mobileView) {
-            setExpandTradeTable(true);
+            toggleTradeTable();
         }
     }, [mobileView]);
 
@@ -411,7 +412,7 @@ function Ranges(props: propsIF) {
                             <button
                                 className={styles.view_more_button}
                                 onClick={() => {
-                                    setExpandTradeTable(true);
+                                    toggleTradeTable();
                                 }}
                             >
                                 View More

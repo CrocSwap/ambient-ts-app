@@ -10,7 +10,7 @@ import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo'
 import styles from './TradeChartsHeader.module.css';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
-export const TradeChartsHeader = () => {
+export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
@@ -22,8 +22,7 @@ export const TradeChartsHeader = () => {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { isTradeTableExpanded } =
-        useContext(TradeTableContext);
+    const { tradeTableState } = useContext(TradeTableContext);
 
     const copyChartToClipboard = async () => {
         if (canvasRef.current) {
@@ -73,9 +72,13 @@ export const TradeChartsHeader = () => {
     );
 
     return (
-        <div className={styles.token_info_container}>
+        <div
+            className={`${styles.token_info_container} ${
+                props.tradePage && styles.trade_page_container_padding
+            }`}
+        >
             <TradeChartsTokenInfo />
-            {isTradeTableExpanded ? null : graphSettingsContent}
+            {tradeTableState === 'Expanded' ? null : graphSettingsContent}
         </div>
     );
 };

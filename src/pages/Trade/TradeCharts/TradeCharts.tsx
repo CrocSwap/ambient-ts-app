@@ -23,6 +23,7 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
 
 // interface for React functional component props
 interface propsIF {
@@ -207,6 +208,7 @@ function TradeCharts(props: propsIF) {
                         </button>
                     </div>
                 )}
+                {isChartFullScreen && <TradeChartsHeader />}
                 {timeFrameContent}
 
                 <CurrentDataInfo

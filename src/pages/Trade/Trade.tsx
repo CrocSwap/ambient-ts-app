@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Resizable } from 're-resizable';
-import { useEffect, useState, useContext, useCallback, memo } from 'react';
+import {
+    useEffect,
+    useState,
+    useContext,
+    useCallback,
+    memo,
+    useRef,
+} from 'react';
 import {
     useParams,
     Outlet,
@@ -51,8 +58,8 @@ function Trade() {
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
     const {
-        isTradeTableExpanded,
-        setIsTradeTableExpanded,
+        tradeTableState,
+        setTradeTableState,
         setOutsideControl,
         setSelectedOutsideTab,
     } = useContext(TradeTableContext);
@@ -101,6 +108,8 @@ function Trade() {
     const quoteTokenSymbol = isDenomBase
         ? tradeData.quoteToken.symbol
         : tradeData.baseToken.symbol;
+
+    const tradeTableRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (
@@ -369,9 +378,9 @@ function Trade() {
             {poolNotInitializedContent}
             <div
                 className={`${styles.middle_col}
-                ${isTradeTableExpanded ? styles.flex_column : ''}`}
+                ${tradeTableState === 'Expanded' ? styles.flex_column : ''}`}
             >
-                <TradeChartsHeader />
+                <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                 <div className={styles.resizableParent}>
                     <Resizable
@@ -380,13 +389,18 @@ function Trade() {
                         size={{ width: '100%', height: chartHeight }}
                         minHeight={4}
                         onResizeStart={() => {
-                            setIsTradeTableExpanded(false);
+                            setTradeTableState(undefined);
                         }}
                         onResizeStop={(e, direction, ref, d) => {
                             console.log(chartHeight + d.height);
                             // the resizable bar is 4px in height
                             if (chartHeight + d.height === 4)
-                                setIsTradeTableExpanded(true);
+                                setTradeTableState('Expanded');
+                            if (
+                                tradeTableRef?.current &&
+                                tradeTableRef.current.offsetHeight === 54
+                            )
+                                setTradeTableState('Collapsed');
                             setChartHeight(chartHeight + d.height);
                         }}
                         handleClasses={{ bottom: styles.resizableBox }}
@@ -406,7 +420,7 @@ function Trade() {
                             </div>
                         </div>
                     </Resizable>
-                    <div className={styles.tableBox}>
+                    <div className={styles.tableBox} ref={tradeTableRef}>
                         <TradeTabs2 {...tradeTabsProps} />
                     </div>
                 </div>

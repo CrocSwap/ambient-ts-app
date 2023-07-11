@@ -38,8 +38,8 @@ function Orders(props: propsIF) {
     } = props;
     const {
         showAllData: showAllDataSelection,
-        isTradeTableExpanded: expandTradeTableSelection,
-        setExpandTradeTable,
+        tradeTableState,
+        toggleTradeTable,
     } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -47,7 +47,8 @@ function Orders(props: propsIF) {
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
-    const isTradeTableExpanded = !isAccountView && expandTradeTableSelection;
+    const isTradeTableExpanded =
+        !isAccountView && tradeTableState === 'Expanded';
 
     const graphData = useAppSelector((state) => state?.graphData);
     const { addressCurrent: userAddress } = useAppSelector(
@@ -427,7 +428,7 @@ function Orders(props: propsIF) {
                             <button
                                 className={styles.view_more_button}
                                 onClick={() => {
-                                    setExpandTradeTable(true);
+                                    toggleTradeTable();
                                 }}
                             >
                                 View More
@@ -442,7 +443,7 @@ function Orders(props: propsIF) {
 
     useEffect(() => {
         if (mobileView) {
-            setExpandTradeTable(true);
+            toggleTradeTable();
         }
     }, [mobileView]);
 

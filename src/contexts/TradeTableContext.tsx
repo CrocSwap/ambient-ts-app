@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
 import { ChartContext, CHART_DEFAULT_HEIGHT } from './ChartContext';
 
+type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
+
 interface TradeTableContextIF {
     showOrderPulseAnimation: boolean;
     showRangePulseAnimation: boolean;
@@ -11,9 +13,9 @@ interface TradeTableContextIF {
     setCurrentPositionActive: (val: string) => void;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: (val: string) => void;
-    isTradeTableExpanded: boolean;
-    setIsTradeTableExpanded: (val: boolean) => void;
-    setExpandTradeTable: (val: boolean) => void;
+    tradeTableState: TradeTableState;
+    setTradeTableState: (val: TradeTableState) => void;
+    toggleTradeTable: () => void;
     showAllData: boolean;
     setShowAllData: (val: boolean) => void;
     selectedOutsideTab: number;
@@ -31,7 +33,7 @@ export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { isCandleSelected } = useContext(CandleContext);
-    const { chartHeight, setChartHeight } = useContext(ChartContext);
+    const { setChartHeight } = useContext(ChartContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -39,7 +41,9 @@ export const TradeTableContextProvider = (props: {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
-    const [isTradeTableExpanded, setIsTradeTableExpanded] = useState(false);
+    const [tradeTableState, setTradeTableState] =
+        useState<TradeTableState>(undefined);
+    const [isTradeTableMinimized, setIsTradeTableMinimized] = useState(false);
 
     const [showSwapPulseAnimation, setShowSwapPulseAnimation] = useState(false);
     const [showOrderPulseAnimation, setShowOrderPulseAnimation] =
@@ -56,15 +60,20 @@ export const TradeTableContextProvider = (props: {
         setCurrentTxActiveInTransactions,
         currentPositionActive,
         setCurrentPositionActive,
-        isTradeTableExpanded,
-        setIsTradeTableExpanded,
+        tradeTableState,
+        setTradeTableState,
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
-        setExpandTradeTable: () => {
-            chartHeight === 4
-                ? setChartHeight(CHART_DEFAULT_HEIGHT)
-                : setChartHeight(4);
-            setIsTradeTableExpanded(!isTradeTableExpanded);
+        toggleTradeTable: () => {
+            if (!tradeTableState) {
+                setChartHeight(4);
+                setTradeTableState('Expanded');
+            } else {
+                setChartHeight(CHART_DEFAULT_HEIGHT);
+                setTradeTableState(undefined);
+            }
         },
+        isTradeTableMinimized,
+        setIsTradeTableMinimized,
         showSwapPulseAnimation,
         showOrderPulseAnimation,
         showRangePulseAnimation,

@@ -63,8 +63,8 @@ function Transactions(props: propsIF) {
     } = useContext(CrocEnvContext);
     const {
         showAllData: showAllDataSelection,
-        isTradeTableExpanded: expandTradeTableSelection,
-        setExpandTradeTable,
+        tradeTableState,
+        toggleTradeTable,
     } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -76,7 +76,8 @@ function Transactions(props: propsIF) {
 
     // only show all data and expand when on trade tab page
     const showAllData = !isAccountView && showAllDataSelection;
-    const isTradeTableExpanded = !isAccountView && expandTradeTableSelection;
+    const isTradeTableExpanded =
+        !isAccountView && tradeTableState === 'Expanded';
 
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.
@@ -521,7 +522,7 @@ function Transactions(props: propsIF) {
                 <div className={styles.view_more_container}>
                     <button
                         className={styles.view_more_button}
-                        onClick={() => setExpandTradeTable(true)}
+                        onClick={() => toggleTradeTable()}
                     >
                         View More
                     </button>
@@ -535,7 +536,7 @@ function Transactions(props: propsIF) {
 
     useEffect(() => {
         if (mobileView) {
-            setExpandTradeTable(true);
+            toggleTradeTable();
         }
     }, [mobileView]);
 

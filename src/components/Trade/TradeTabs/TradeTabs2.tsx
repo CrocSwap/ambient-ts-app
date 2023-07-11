@@ -103,7 +103,7 @@ function TradeTabs2(props: propsIF) {
         setShowAllData,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
-        isTradeTableExpanded,
+        tradeTableState,
         outsideControl,
         selectedOutsideTab,
     } = useContext(TradeTableContext);
@@ -436,7 +436,7 @@ function TradeTabs2(props: propsIF) {
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
             <div
                 className={
-                    !isTradeTableExpanded
+                    tradeTableState !== 'Expanded'
                         ? styles.round_container
                         : styles.flex_column
                 }
