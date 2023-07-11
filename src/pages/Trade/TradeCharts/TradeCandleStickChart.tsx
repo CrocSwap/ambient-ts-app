@@ -195,41 +195,6 @@ function TradeCandleStickChart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (unparsedLiquidityData !== undefined) {
-            const barThreshold =
-                poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
-
-            const liqBoundaryData = unparsedLiquidityData.ranges.find(
-                (liq: any) => {
-                    return denominationsInBase
-                        ? liq.upperBoundInvPriceDecimalCorrected <
-                              barThreshold &&
-                              liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
-                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
-                              liq.upperBoundPriceDecimalCorrected !== '+inf';
-                },
-            );
-
-            const liqBoundaryArg =
-                liqBoundaryData !== undefined
-                    ? denominationsInBase
-                        ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
-                        : liqBoundaryData.upperBoundPriceDecimalCorrected
-                    : barThreshold;
-            const liqBoundary =
-                typeof liqBoundaryArg === 'number'
-                    ? liqBoundaryArg
-                    : parseFloat(liqBoundaryArg);
-
-            setLiqBoundary(() => liqBoundary);
-        }
-    }, [
-        diffHashSigLiquidity(unparsedLiquidityData),
-        denominationsInBase,
-        poolPriceDisplay !== undefined && poolPriceDisplay > 0,
-    ]);
-
-    useEffect(() => {
         IS_LOCAL_ENV && console.debug('setting candle added to true');
         setIsCandleAdded(true);
     }, [diffHashSigCandles(candleData), denominationsInBase]);
