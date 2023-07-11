@@ -44,6 +44,16 @@ export default function CandleChart(props: candlePropsIF) {
     const { expandTradeTable } = useContext(TradeTableContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
+    const selectedCandleColor = '#E480FF';
+    const crocCandleLightColor = '#CDC1FF';
+    const crocCandleBorderLightColor = '#CDC1FF';
+    const crocCandleDarkColor = '#24243e';
+    const crocCandleBorderDarkColor = '#7371FC';
+
+    const uniswapCandleLightColor = '#4a5a76';
+    const uniswapCandleBorderLightColor = '#4a5a76';
+    const uniswapCandleDarkColor = '#252f40';
+    const uniswapCandleBorderDarkColor = '#5e6b81';
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
@@ -127,21 +137,41 @@ export default function CandleChart(props: candlePropsIF) {
                         ? d.invPriceOpenExclMEVDecimalCorrected
                         : d.priceOpenExclMEVDecimalCorrected;
 
+                    const crocColor =
+                        close > open
+                            ? crocCandleLightColor
+                            : crocCandleDarkColor;
+
+                    const uniswapColor =
+                        close > open
+                            ? uniswapCandleLightColor
+                            : uniswapCandleDarkColor;
+
+                    const crocBorderColor =
+                        close > open
+                            ? crocCandleBorderLightColor
+                            : crocCandleBorderDarkColor;
+
+                    const uniswapBorderColor =
+                        close > open
+                            ? uniswapCandleBorderLightColor
+                            : uniswapCandleBorderDarkColor;
+
                     context.fillStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#24243e';
+                            ? selectedCandleColor
+                            : d.tvlData.tvl === 0
+                            ? uniswapColor
+                            : crocColor;
 
                     context.strokeStyle =
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
-                            ? '#E480FF'
-                            : close > open
-                            ? '#CDC1FF'
-                            : '#7371FC';
+                            ? selectedCandleColor
+                            : d.tvlData.tvl === 0
+                            ? uniswapBorderColor
+                            : crocBorderColor;
                 },
             );
         }

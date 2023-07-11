@@ -203,6 +203,8 @@ function FeeRateSubChart(props: FreeRateData) {
 
     useEffect(() => {
         if (feeData !== undefined) {
+            const _feeData = feeData.filter((item) => item.tvlData.tvl !== 0);
+
             const canvas = d3
                 .select(d3CanvasArea.current)
                 .select('canvas')
@@ -213,7 +215,7 @@ function FeeRateSubChart(props: FreeRateData) {
                 d3.select(d3CanvasArea.current)
                     .on('draw', () => {
                         setCanvasResolution(canvas);
-                        lineSeries(feeData);
+                        lineSeries(_feeData);
                         if (isCrDataIndActive || isCrDataToolTipActive) {
                             ctx.setLineDash([0.6, 0.6]);
                             crDataIndicator([lastCrDate]);
