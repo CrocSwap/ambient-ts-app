@@ -162,7 +162,7 @@ export default function TransactionDetailsGraph(
                     }
                 };
 
-                const minDate = time() * 1000 - oneHourMiliseconds * 8;
+                const minDate = time() * 1000 - oneHourMiliseconds * 24 * 7;
 
                 const diff =
                     new Date().getTime() - minDate < 43200000
@@ -814,7 +814,7 @@ export default function TransactionDetailsGraph(
                 const minDomain = scaleData.xScale.domain()[0].getTime();
                 const maxDomain = scaleData.xScale.domain()[1].getTime();
 
-                const buffer = oneHourMiliseconds * 5;
+                const buffer = oneHourMiliseconds * 24 * 3;
 
                 if (transactionType === 'limitOrder' && tx !== undefined) {
                     if (tx.timeFirstMint * 1000 + buffer >= maxDomain) {
