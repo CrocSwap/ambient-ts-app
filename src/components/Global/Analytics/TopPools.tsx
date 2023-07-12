@@ -62,7 +62,7 @@ function TopPools(props: propsIF) {
                             onClick={() => {
                                 item.sortable &&
                                     sortedPools.updateSort(
-                                        item.label as sortType,
+                                        item.label.toLowerCase() as sortType,
                                     );
                             }}
                         >
