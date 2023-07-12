@@ -11,32 +11,38 @@ export interface SortedPoolMethodsIF {
     updateSort: (type: sortType) => void;
 }
 
+// hook to sort pools in the Explore module
 export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
+    // default sort values
     const DEFAULT_SORT: sortType = 'tvl';
     const DEFAULT_DIRECTION: directionType = 'ascending';
+    // hooks to hold current sort values
     const [sortBy, setSortBy] = useState<sortType>(DEFAULT_SORT);
     const [direction, setDirection] =
         useState<directionType>(DEFAULT_DIRECTION);
 
+    // logic to apply the correct sort as specified by the user
     const sortedPools = useMemo<PoolDataIF[]>(() => {
+        // declare an output variable
         let output: PoolDataIF[];
-        const sortPrice = (): PoolDataIF[] => {
-            return allPools;
-        };
-        const sortTvl = (): PoolDataIF[] => {
-            return allPools;
-        };
-        const sortApr = (): PoolDataIF[] => {
-            return allPools;
-        };
-        const sortVolume = (): PoolDataIF[] => {
-            return allPools;
-        };
+        // fn to sort by total value locked
+        const sortTvl = (): PoolDataIF[] =>
+            allPools.sort(
+                (poolA: PoolDataIF, poolB: PoolDataIF) => poolB.tvl - poolA.tvl,
+            );
+        // fn to sort by apr/apy
+        const sortApr = (): PoolDataIF[] =>
+            allPools.sort(
+                (poolA: PoolDataIF, poolB: PoolDataIF) => poolB.apy - poolA.apy,
+            );
+        // fn to sort by total volume
+        const sortVolume = (): PoolDataIF[] =>
+            allPools.sort(
+                (poolA: PoolDataIF, poolB: PoolDataIF) =>
+                    poolB.volume - poolA.volume,
+            );
         // logic router for sort mechanism, default goes last
         switch (sortBy) {
-            case 'price':
-                output = sortPrice();
-                break;
             case 'apr':
                 output = sortApr();
                 break;
@@ -52,6 +58,7 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
         return direction === 'ascending' ? output : output.reverse();
     }, [sortBy, direction, allPools]);
 
+    // fn to respond to user clicks and update sort values correctly
     function updateSort(sort: sortType) {
         if (sort === sortBy) {
             setDirection(
@@ -63,12 +70,14 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
         }
     }
 
-    console.log({ sortedPools });
-
     return {
+        // pools post-sorting
         pools: sortedPools,
+        // current value to sort by
         current: sortBy,
+        // ascending or descending sort
         direction,
-        updateSort: updateSort,
+        // fn to update the sort values
+        updateSort,
     };
 };

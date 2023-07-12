@@ -98,7 +98,7 @@ function TopPools(props: propsIF) {
             hidden: true,
             align: 'left',
             responsive: 'sm',
-            sortable: true,
+            sortable: false,
         },
         {
             label: 'TVL',
