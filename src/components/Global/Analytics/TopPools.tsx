@@ -7,6 +7,7 @@ import {
     sortType,
     useSortedPools,
 } from './useSortedPools';
+import styled from 'styled-components';
 
 type HeaderItem = {
     label: string;
@@ -40,8 +41,12 @@ function TopPools(props: propsIF) {
     const TableHead = ({ headerItems }: { headerItems: HeaderItem[] }) => {
         return (
             <thead
-                className='sticky top-0 h-25'
-                style={{ height: '25px', zIndex: '2' }}
+                className='sticky top-0 h-25 '
+                style={{
+                    height: '25px',
+                    zIndex: '2',
+                    borderBottom: '1px solid red',
+                }}
             >
                 <tr className='text-text2 text-body font-regular capitalize leading-body'>
                     {headerItems.map((item, index) => (
@@ -124,36 +129,95 @@ function TopPools(props: propsIF) {
     ];
 
     return (
-        <div className='flex flex-col h-full'>
-            <div className='flex-grow overflow-auto h-full hide-scrollbar'>
-                <div className='py-2 h-full'>
-                    <div className='shadow rounded-lg bg-dark1 h-full py-2'>
-                        <table className='divide-y divide-dark3 relative w-full top-pools-analytics-table'>
-                            <TableHead headerItems={topPoolsHeaderItems} />
+        <FlexContainer>
+            <ScrollableContainer>
+                <ShadowBox>
+                    <Table>
+                        <TableHead headerItems={topPoolsHeaderItems} />
 
-                            <tbody className='bg-dark1 text-white text-body font-regular capitalize leading-body overflow-y-auto max-h-96'>
-                                {
+                        <TableBody>
+                            {sortedPools.pools.map(
+                                (pool: PoolDataIF, idx: number) => (
                                     // using index in key gen logic because there are duplicate
                                     // ... pool entries, we need to either filter out the dupes
                                     // ... (hacky but acceptable) or figure out why dupes are
                                     // ... being returned by PoolContext (preferable)
-                                    sortedPools.pools.map(
-                                        (pool: PoolDataIF, idx: number) => (
-                                            <PoolRow
-                                                key={JSON.stringify(pool) + idx}
-                                                pool={pool}
-                                                goToMarket={goToMarket}
-                                            />
-                                        ),
-                                    )
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                    <PoolRow
+                                        key={JSON.stringify(pool) + idx}
+                                        pool={pool}
+                                        goToMarket={goToMarket}
+                                    />
+                                ),
+                            )}
+                        </TableBody>
+                    </Table>
+                </ShadowBox>
+            </ScrollableContainer>
+        </FlexContainer>
     );
 }
 
 export default memo(TopPools);
+
+// Main container
+const FlexContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+`;
+
+const ScrollableContainer = styled.div`
+    flex-grow: 1;
+    overflow-y: auto;
+    height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: var(--dark3) var(--dark1);
+
+    &::-webkit-scrollbar {
+        display: 'none';
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: var(--dark1);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--dark3);
+    }
+`;
+
+const ShadowBox = styled.div`
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 0.375rem;
+    background-color: var(--dark1);
+    height: 100%;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+`;
+
+const Table = styled.table`
+    border-collapse: collapse;
+    width: 100%;
+    position: relative;
+    table-layout: fixed;
+
+    @media only screen and (min-width: 1280px) {
+        td,
+        th {
+            min-width: 180px;
+        }
+    }
+`;
+
+const TableBody = styled.tbody`
+    //   border-top: 1px solid var(--dark3);
+    background-color: var(--dark1);
+    color: var(--white);
+    font-size: 12px;
+    font-family: 'Roboto', sans-serif;
+    text-transform: capitalize;
+    line-height: 1.5rem;
+    overflow-y: auto;
+    max-height: 96px;
+`;
