@@ -50,7 +50,7 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
         }
         // reverse data if user has indicated descending sort sequence
         return direction === 'ascending' ? output : output.reverse();
-    }, [sortBy, direction]);
+    }, [sortBy, direction, allPools]);
 
     function updateSort(sort: sortType) {
         if (sort === sortBy) {
@@ -62,6 +62,8 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
             setSortBy(sort);
         }
     }
+
+    console.log({ sortedPools });
 
     return {
         pools: sortedPools,

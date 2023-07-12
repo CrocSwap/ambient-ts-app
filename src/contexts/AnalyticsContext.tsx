@@ -160,9 +160,14 @@ export const AnalyticsContextProvider = (props: { children: ReactNode }) => {
         const allPoolData = poolList.map((pool: PoolIF) =>
             getPoolData(pool, crocEnv, chainId),
         );
-        Promise.all(allPoolData).then((results: PoolDataIF[]) =>
-            setAllPools(results),
-        );
+        Promise.all(allPoolData)
+            .then((results: PoolDataIF[]) => {
+                console.log({ results });
+                setAllPools(results);
+            })
+            .catch((err) => {
+                console.error('DANGER WILL ROBINSON', err);
+            });
     }
 
     const analyticsContext = { allPools, getAllPoolData };

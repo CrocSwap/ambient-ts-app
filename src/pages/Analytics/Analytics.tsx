@@ -13,8 +13,11 @@ export default function Analytics() {
     const getPools = async () => {
         if (crocEnv && poolList && cont.allPools.length === 0) {
             cont.getAllPoolData(poolList, crocEnv, chainData.chainId);
+            console.log('sending a new fetch!');
         }
     };
+
+    useEffect(() => console.log(cont.allPools), [cont.allPools]);
 
     useEffect(() => {
         getPools();
@@ -29,7 +32,13 @@ export default function Analytics() {
                 Top Pools on Ambient
                 <button className='bg-dark3 rounded-md p-1'>
                     {' '}
-                    <FiRefreshCw size={18} onClick={() => getPools()} />
+                    <FiRefreshCw
+                        size={18}
+                        onClick={() => {
+                            console.log('woah there');
+                            getPools();
+                        }}
+                    />
                 </button>
             </p>
 
