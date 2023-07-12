@@ -36,7 +36,7 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
                 break;
         }
         return direction ? output : output.reverse();
-    }, [sortBy]);
+    }, [sortBy, direction]);
 
     function updateSort(sort: sortType) {
         if (sort === sortBy) {
