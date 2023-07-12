@@ -162,7 +162,13 @@ export default function TransactionDetailsGraph(
                     }
                 };
 
-                const minDate = time() * 1000 - oneHourMiliseconds * 24 * 7;
+                let minDateDiff = oneHourMiliseconds * 24 * 7;
+
+                if (transactionType === 'swap') {
+                    minDateDiff = oneHourMiliseconds * 8;
+                }
+
+                const minDate = time() * 1000 - minDateDiff;
 
                 const diff =
                     new Date().getTime() - minDate < 43200000
