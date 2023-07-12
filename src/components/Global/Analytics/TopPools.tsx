@@ -2,12 +2,9 @@ import { memo } from 'react';
 import PoolRow from './PoolRow';
 import { PoolDataIF } from '../../../contexts/AnalyticsContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import {
-    SortedPoolMethodsIF,
-    sortType,
-    useSortedPools,
-} from './useSortedPools';
+import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
 import styled from 'styled-components';
+import TableHead from './TableHead';
 
 type HeaderItem = {
     label: string;
@@ -16,6 +13,7 @@ type HeaderItem = {
     responsive?: string;
     sortable: boolean;
     pxValue?: number;
+    onClick?: any;
 };
 
 interface propsIF {
@@ -37,47 +35,6 @@ function TopPools(props: propsIF) {
     }
 
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
-
-    const TableHead = ({ headerItems }: { headerItems: HeaderItem[] }) => {
-        return (
-            <thead
-                className='sticky top-0 h-25 '
-                style={{
-                    height: '25px',
-                    zIndex: '2',
-                    borderBottom: '1px solid red',
-                }}
-            >
-                <tr className='text-text2 text-body font-regular capitalize leading-body'>
-                    {headerItems.map((item, index) => (
-                        <th
-                            key={index}
-                            scope='col'
-                            className={`${item.hidden ? 'hidden' : ''} ${
-                                item.responsive
-                                    ? `${item.responsive}:table-cell`
-                                    : ''
-                            } sticky top-0 ${
-                                item.pxValue ? `px-${item.pxValue}` : 'px-6'
-                            } text-${item.align} tracking-wider ${
-                                item.sortable
-                                    ? 'hover:bg-dark2 cursor-pointer'
-                                    : ''
-                            }`}
-                            onClick={() => {
-                                item.sortable &&
-                                    sortedPools.updateSort(
-                                        item.label.toLowerCase() as sortType,
-                                    );
-                            }}
-                        >
-                            {item.label}
-                        </th>
-                    ))}
-                </tr>
-            </thead>
-        );
-    };
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
@@ -133,7 +90,10 @@ function TopPools(props: propsIF) {
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>
-                        <TableHead headerItems={topPoolsHeaderItems} />
+                        <TableHead
+                            headerItems={topPoolsHeaderItems}
+                            sortedPools={sortedPools}
+                        />
 
                         <TableBody>
                             {sortedPools.pools.map(
