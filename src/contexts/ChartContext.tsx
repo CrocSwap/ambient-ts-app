@@ -5,7 +5,8 @@ import {
     useChartSettings,
 } from '../App/hooks/useChartSettings';
 
-export const CHART_DEFAULT_HEIGHT = 400;
+// 2:1 ratio of the window height subtracted by main header and token info header
+export const CHART_DEFAULT_HEIGHT = ((window.innerHeight - 98) * 2) / 3;
 
 interface ChartContextIF {
     chartSettings: chartSettingsMethodsIF;
