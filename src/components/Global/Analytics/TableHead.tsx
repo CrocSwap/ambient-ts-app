@@ -38,7 +38,7 @@ const TableHead = ({
         position: sticky;
         top: 0;
         text-align: ${({ align }) => align};
-        padding: ${({ pxValue }) => (pxValue ? `0 ${pxValue}px` : '0 6px')};
+
         cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
         background-color: ${({ label }) =>
             sortedPools.current === label.toLowerCase()

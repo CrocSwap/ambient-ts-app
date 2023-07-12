@@ -5,6 +5,8 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
 import styled from 'styled-components';
 import TableHead from './TableHead';
+import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
+import { PoolIF } from '../../../utils/interfaces/PoolIF';
 
 type HeaderItem = {
     label: string;
@@ -58,7 +60,7 @@ function TopPools(props: propsIF) {
             hidden: true,
             align: 'right',
             responsive: 'sm',
-            sortable: true,
+            sortable: false,
         },
         {
             label: 'TVL',
@@ -96,19 +98,19 @@ function TopPools(props: propsIF) {
                         />
 
                         <TableBody>
-                            {sortedPools.pools.map(
-                                (pool: PoolDataIF, idx: number) => (
-                                    // using index in key gen logic because there are duplicate
-                                    // ... pool entries, we need to either filter out the dupes
-                                    // ... (hacky but acceptable) or figure out why dupes are
-                                    // ... being returned by PoolContext (preferable)
+                            {sortedPools.pools
+                                .filter(
+                                    (pool: PoolIF) =>
+                                        !checkPoolForWETH(pool, chainId),
+                                )
+                                .slice(0, 20)
+                                .map((pool: PoolDataIF, idx: number) => (
                                     <PoolRow
                                         key={JSON.stringify(pool) + idx}
                                         pool={pool}
                                         goToMarket={goToMarket}
                                     />
-                                ),
-                            )}
+                                ))}
                         </TableBody>
                     </Table>
                 </ShadowBox>

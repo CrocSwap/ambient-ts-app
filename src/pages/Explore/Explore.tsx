@@ -6,7 +6,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import styled from 'styled-components';
 
-export default function Analytics() {
+export default function Explore() {
     const cont = useContext(AnalyticsContext);
     const { poolList } = useContext(PoolContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);

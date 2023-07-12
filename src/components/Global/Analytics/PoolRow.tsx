@@ -151,9 +151,7 @@ export default function PoolRow(props: propsIF) {
                 <p>{pool.displayPrice}</p>
             </TableCell>
             <TableCell hidden sm>
-                <p>
-                    {!pool.tvl || pool.tvl.includes('NaN') ? '...' : pool.tvl}
-                </p>
+                <p>{!pool.tvl ? '...' : pool.tvl}</p>
             </TableCell>
             <TableCell hidden xl>
                 <p
@@ -168,11 +166,7 @@ export default function PoolRow(props: propsIF) {
                 </p>
             </TableCell>
             <TableCell>
-                <p>
-                    {!pool.volume || pool.volume.includes('NaN')
-                        ? '...'
-                        : pool.volume}
-                </p>
+                <p>{!pool.volume ? '...' : pool.volume}</p>
             </TableCell>
             <TableCell hidden lg>
                 <p

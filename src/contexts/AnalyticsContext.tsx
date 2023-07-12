@@ -18,9 +18,12 @@ export interface PoolDataIF extends PoolIF {
     spotPrice: number;
     displayPrice: string;
     poolIdx: number;
-    tvl: string;
-    volume: string;
-    apy: string;
+    tvl: number;
+    tvlStr: string;
+    volume: number;
+    volumeStr: string;
+    apy: number;
+    apyStr: string;
     priceChange: string;
 }
 
@@ -139,9 +142,12 @@ export const AnalyticsContextProvider = (props: { children: ReactNode }) => {
             spotPrice,
             displayPrice: getFormattedNumber({ value: displayPrice }),
             poolIdx,
-            tvl: tvlDisplay,
-            volume: volumeDisplay,
-            apy: apyDisplay,
+            tvl: poolStats.tvlTotalUsd,
+            tvlStr: tvlDisplay,
+            volume: poolStats.volumeTotalUsd,
+            volumeStr: volumeDisplay,
+            apy: apyEst,
+            apyStr: apyDisplay,
             priceChange: priceChangePercent,
         };
         // write a pool name should it not be there already
