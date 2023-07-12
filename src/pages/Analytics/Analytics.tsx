@@ -4,6 +4,7 @@ import TopPools from '../../components/Global/Analytics/TopPools';
 import { AnalyticsContext } from '../../contexts/AnalyticsContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
+import styled from 'styled-components';
 
 export default function Analytics() {
     const cont = useContext(AnalyticsContext);
@@ -24,25 +25,50 @@ export default function Analytics() {
     }, [crocEnv, chainData.chainId]);
 
     return (
-        <section
-            style={{ background: 'var(--dark2)', height: 'calc(100vh - 56px)' }}
-            className=' p-4 space-y-4 flex flex-col'
-        >
-            <p className='text-header1 leading-header1 text-text1 flex items-center justify-between flex-row px-1'>
+        <Section>
+            <MainWrapper>
                 Top Pools on Ambient
-                <button className='bg-dark3 rounded-md p-1'>
-                    {' '}
-                    <FiRefreshCw
-                        size={18}
+                <Button>
+                    <RefreshIcon
                         onClick={() => {
                             console.log('woah there');
                             getPools();
                         }}
                     />
-                </button>
-            </p>
+                </Button>
+            </MainWrapper>
 
             <TopPools allPools={cont.allPools} chainId={chainData.chainId} />
-        </section>
+        </Section>
     );
 }
+
+const Section = styled.section`
+    background: var(--dark2);
+    height: calc(100vh - 56px);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+`;
+
+const MainWrapper = styled.p`
+    font-size: var(--header1-size);
+    line-height: var(--header1-lh);
+    color: var(--text1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+`;
+
+const Button = styled.button`
+    background-color: var(--dark3);
+    border-radius: 4px;
+    padding: 4px;
+`;
+
+const RefreshIcon = styled(FiRefreshCw)`
+    font-size: 18px;
+    cursor: pointer;
+`;
