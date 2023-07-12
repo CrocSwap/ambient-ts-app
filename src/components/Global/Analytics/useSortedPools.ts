@@ -32,7 +32,7 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
         const sortVolume = (): PoolDataIF[] => {
             return allPools;
         };
-        // logic router for sort mechanism
+        // logic router for sort mechanism, default goes last
         switch (sortBy) {
             case 'price':
                 output = sortPrice();
