@@ -13,7 +13,7 @@ type HeaderItem = {
     responsive?: string;
     sortable: boolean;
     pxValue?: number;
-    onClick?: any;
+    onClick?: () => void;
 };
 
 interface propsIF {
@@ -49,36 +49,36 @@ function TopPools(props: propsIF) {
         {
             label: 'Pool',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'sm',
             sortable: false,
         },
         {
             label: 'Price',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'sm',
             sortable: true,
         },
         {
             label: 'TVL',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'sm',
             sortable: true,
         },
         {
             label: 'APR',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'xl',
             sortable: true,
         },
-        { label: 'Volume', hidden: false, align: 'left', sortable: true },
+        { label: 'Volume', hidden: false, align: 'right', sortable: true },
         {
             label: 'Change',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'lg',
             sortable: false,
         },
@@ -152,8 +152,8 @@ const ShadowBox = styled.div`
     border-radius: 0.375rem;
     background-color: var(--dark1);
     height: 100%;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+
+    padding: 8px;
 `;
 
 const Table = styled.table`
@@ -171,7 +171,6 @@ const Table = styled.table`
 `;
 
 const TableBody = styled.tbody`
-    //   border-top: 1px solid var(--dark3);
     background-color: var(--dark1);
     color: var(--white);
     font-size: 12px;

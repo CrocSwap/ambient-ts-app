@@ -1,8 +1,5 @@
-import {
-    SortedPoolMethodsIF,
-    sortType,
-    useSortedPools,
-} from './useSortedPools';
+import { MouseEventHandler } from 'react';
+import { SortedPoolMethodsIF, sortType } from './useSortedPools';
 import styled from 'styled-components';
 
 type HeaderItem = {
@@ -12,7 +9,7 @@ type HeaderItem = {
     responsive?: string;
     sortable: boolean;
     pxValue?: number;
-    onClick?: any;
+    onClick?: MouseEventHandler<HTMLTableCellElement> | undefined;
 };
 const TableHead = ({
     headerItems,
@@ -26,7 +23,7 @@ const TableHead = ({
         top: 0;
         height: 25px;
         z-index: 2;
-        border-bottom: 1px solid red;
+        border-bottom: 1px solid var(--dark3);
     `;
 
     const TableRow = styled.tr`
@@ -43,8 +40,10 @@ const TableHead = ({
         text-align: ${({ align }) => align};
         padding: ${({ pxValue }) => (pxValue ? `0 ${pxValue}px` : '0 6px')};
         cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
-        background-color: ${({ sortable }) =>
-            sortable ? 'var(--dark2)' : 'transparent'};
+        background-color: ${({ label }) =>
+            sortedPools.current === label.toLowerCase()
+                ? 'var(--dark2)'
+                : 'transparent'};
         color: var(--text2);
         font-size: 12px;
         font-weight: 300;
