@@ -212,7 +212,7 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth: rangeSimpleRangeWidth,
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
-    const { expandTradeTable, handlePulseAnimation } =
+    const { tradeTableState, handlePulseAnimation } =
         useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
@@ -608,7 +608,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
-        if (expandTradeTable) return;
+        if (tradeTableState === 'Expanded') return;
 
         if (unparsedCandleData && unparsedCandleData.length > 0) {
             if (
@@ -638,7 +638,7 @@ export default function Chart(props: propsIF) {
         renderCanvasArray([d3CanvasCandle]);
     }, [
         diffHashSig(props.chartItemStates),
-        expandTradeTable,
+        tradeTableState,
         lastCandleData,
         firstCandle,
     ]);

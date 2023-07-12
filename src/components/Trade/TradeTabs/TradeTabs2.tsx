@@ -28,7 +28,6 @@ import { setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
-import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
@@ -59,7 +58,6 @@ interface propsIF {
     unselectCandle: () => void;
     isCandleArrived: boolean;
     setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
-    showActiveMobileComponent?: boolean;
 }
 
 function TradeTabs2(props: propsIF) {
@@ -74,7 +72,6 @@ function TradeTabs2(props: propsIF) {
         unselectCandle,
         isCandleArrived,
         setIsCandleDataArrived,
-        showActiveMobileComponent,
     } = props;
 
     const {
@@ -106,7 +103,7 @@ function TradeTabs2(props: propsIF) {
         setShowAllData,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
-        expandTradeTable,
+        tradeTableState,
         outsideControl,
         selectedOutsideTab,
     } = useContext(TradeTableContext);
@@ -328,10 +325,6 @@ function TradeTabs2(props: propsIF) {
         setHasUserSelectedViewAll,
     };
 
-    const TradeChartsTokenInfoProps = {
-        simplifyVersion: true,
-    };
-
     // data for headings of each of the three tabs
     const tradeTabData = isCandleSelected
         ? [
@@ -443,15 +436,12 @@ function TradeTabs2(props: propsIF) {
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
             <div
                 className={
-                    !expandTradeTable
+                    tradeTableState !== 'Expanded'
                         ? styles.round_container
                         : styles.flex_column
                 }
             >
                 {isCandleSelected ? selectedMessageContent : null}
-                {(expandTradeTable || showActiveMobileComponent) && (
-                    <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
-                )}
                 <TabComponent
                     data={tradeTabData}
                     rightTabOptions={
