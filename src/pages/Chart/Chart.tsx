@@ -1337,7 +1337,7 @@ export default function Chart(props: propsIF) {
                                                 deltaY,
                                         ];
 
-                                        scaleData?.yScale.domain(domain);
+                                        setYaxisDomain(domain[0], domain[1]);
                                     }
 
                                     if (
@@ -1546,13 +1546,13 @@ export default function Chart(props: propsIF) {
                                         newCenter - topDiff,
                                         newCenter + bottomDiff,
                                     ];
-                                    await scaleData?.yScale.domain(domain);
+                                    await setYaxisDomain(domain[0], domain[1]); // scaleData?.yScale.domain(domain);
                                 } else {
                                     const domain = [
                                         newCenter - bottomDiff,
                                         newCenter + topDiff,
                                     ];
-                                    await scaleData?.yScale.domain(domain);
+                                    await setYaxisDomain(domain[0], domain[1]); // scaleData?.yScale.domain(domain);
                                 }
                             } else if (event.sourceEvent.touches.length > 1) {
                                 const touch1 = event.sourceEvent.touches[0];
@@ -1573,10 +1573,10 @@ export default function Chart(props: propsIF) {
                                     const domainMin =
                                         scaleData?.yScale.domain()[0] - delta;
 
-                                    scaleData?.yScale.domain([
+                                    setYaxisDomain(
                                         Math.min(domainMin, domainMax),
                                         Math.max(domainMin, domainMax),
-                                    ]);
+                                    );
                                 }
                                 if (previousDeltaTouchYaxis < deltaTouch) {
                                     const domainMax =
@@ -3889,7 +3889,7 @@ export default function Chart(props: propsIF) {
 
                 const domain = [centerY - diffY / 2, centerY + diffY / 2];
 
-                scaleData?.yScale.domain(domain);
+                setYaxisDomain(domain[0], domain[1]);
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
                     centerX + diff * 0.2,
@@ -5078,7 +5078,7 @@ export default function Chart(props: propsIF) {
                             Math.min(low, high) - bufferForRange,
                             Math.max(low, high) + bufferForRange / 2,
                         ];
-                        scaleData?.yScale.domain(domain);
+                        setYaxisDomain(domain[0], domain[1]);
                     } else if (location.pathname.includes('/limit')) {
                         const value = limit[0].value;
                         const low = Math.min(
@@ -5100,7 +5100,7 @@ export default function Chart(props: propsIF) {
                                 Math.max(low, high) + bufferForLimit / 2,
                             ];
 
-                            scaleData?.yScale.domain(domain);
+                            setYaxisDomain(domain[0], domain[1]);
                         }
                     } else {
                         const domain = [
@@ -5108,7 +5108,7 @@ export default function Chart(props: propsIF) {
                             Math.max(minYBoundary, maxYBoundary) + buffer / 2,
                         ];
 
-                        scaleData?.yScale.domain(domain);
+                        setYaxisDomain(domain[0], domain[1]);
                     }
 
                     renderCanvasArray([
@@ -5146,6 +5146,18 @@ export default function Chart(props: propsIF) {
         prevPeriod === period,
         candleTimeInSeconds === period,
     ]);
+
+    function setYaxisDomain(minDomain: number, maxDomain: number) {
+        if (minDomain === maxDomain) {
+            const delta = minDomain / 8;
+            const tempMinDomain = minDomain - delta;
+            const tempMaxDomain = minDomain + delta;
+
+            scaleData.yScale.domain([tempMinDomain, tempMaxDomain]);
+        } else {
+            scaleData.yScale.domain([minDomain, maxDomain]);
+        }
+    }
 
     // Call drawChart()
     useEffect(() => {
@@ -5471,9 +5483,12 @@ export default function Chart(props: propsIF) {
             (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
         ).toFixed(1);
 
+        const container = d3.select(d3Container.current).node() as any;
+
+        const rectContainer = container.getBoundingClientRect();
         liqTooltip
             .style('visibility', percentage !== '0.0' ? 'visible' : 'hidden')
-            .style('top', event.pageY - 80 + 'px')
+            .style('top', event.clientY - rectContainer.top + 50 + 'px')
             .style('left', event.offsetX - 80 + 'px');
 
         liquidityData.liqHighligtedAskSeries = [];
@@ -5558,9 +5573,12 @@ export default function Chart(props: propsIF) {
             (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
         ).toFixed(1);
 
+        const container = d3.select(d3Container.current).node() as any;
+
+        const rectContainer = container.getBoundingClientRect();
         liqTooltip
             .style('visibility', percentage !== '0.0' ? 'visible' : 'hidden')
-            .style('top', event.pageY - 80 + 'px')
+            .style('top', event.clientY - rectContainer.top + 50 + 'px')
             .style('left', event.offsetX - 80 + 'px');
 
         const canvas = d3
