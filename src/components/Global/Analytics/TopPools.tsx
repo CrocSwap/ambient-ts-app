@@ -7,6 +7,8 @@ import {
     sortType,
     useSortedPools,
 } from './useSortedPools';
+import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
+import { PoolIF } from '../../../utils/interfaces/exports';
 
 type HeaderItem = {
     label: string;
@@ -137,15 +139,27 @@ function TopPools(props: propsIF) {
                                     // ... pool entries, we need to either filter out the dupes
                                     // ... (hacky but acceptable) or figure out why dupes are
                                     // ... being returned by PoolContext (preferable)
-                                    sortedPools.pools.map(
-                                        (pool: PoolDataIF, idx: number) => (
-                                            <PoolRow
-                                                key={JSON.stringify(pool) + idx}
-                                                pool={pool}
-                                                goToMarket={goToMarket}
-                                            />
-                                        ),
-                                    )
+                                    sortedPools.pools
+                                        .filter(
+                                            (pool: PoolIF) =>
+                                                !checkPoolForWETH(
+                                                    pool,
+                                                    chainId,
+                                                ),
+                                        )
+                                        .slice(0, 20)
+                                        .map(
+                                            (pool: PoolDataIF, idx: number) => (
+                                                <PoolRow
+                                                    key={
+                                                        JSON.stringify(pool) +
+                                                        idx
+                                                    }
+                                                    pool={pool}
+                                                    goToMarket={goToMarket}
+                                                />
+                                            ),
+                                        )
                                 }
                             </tbody>
                         </table>
