@@ -373,7 +373,7 @@ export default function Chart(props: propsIF) {
     const [lastCrDataTooltip, setLastCrDataTooltip] = useState<any>();
     const [eggTooltip, setEggTooltip] = useState<any>();
 
-    const [crosshairActive, setCrosshairActive] = useState<string>('chart');
+    const [crosshairActive, setCrosshairActive] = useState<string>('none');
     const [isCrDataIndActive, setIsCrDataIndActive] = useState<boolean>(false);
     const [isOpenEggTooltip, setIsOpenEggTooltip] = useState<boolean>(false);
 
