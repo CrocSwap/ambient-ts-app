@@ -224,6 +224,8 @@ const PageHeader = function () {
             document.title = 'Chat ~ Ambient';
         } else if (location.pathname.includes('initpool')) {
             document.title = 'Pool Initialization ~ Ambient';
+        } else if (location.pathname.includes('explore')) {
+            document.title = 'Explore ~ Ambient';
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
@@ -244,7 +246,7 @@ const PageHeader = function () {
         {
             title: t('common:homeTitle'),
             destination: '/',
-            shouldDisplay: desktopScreen,
+            shouldDisplay: false,
         },
         {
             title: t('common:swapTitle'),
@@ -257,18 +259,13 @@ const PageHeader = function () {
             shouldDisplay: true,
         },
         {
-            title: t('common:analyticsTitle'),
-            destination: '/analytics',
-            shouldDisplay: false,
-        },
-        {
             title: t('common:poolTitle'),
             destination: '/trade/pool/' + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:analyticsTitle'),
-            destination: '/analytics',
+            title: t('common:exploreTitle'),
+            destination: '/explore',
             shouldDisplay: true,
         },
         {
