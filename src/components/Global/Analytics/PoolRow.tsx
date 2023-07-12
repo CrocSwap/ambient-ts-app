@@ -51,7 +51,9 @@ export default function PoolRow(props: propsIF) {
                 style={{ height: '40px' }}
             >
                 <div className=' text-text1'>
-                    {!pool.tvl || pool.tvl.includes('NaN') ? '' : pool.tvl}
+                    {!pool.tvlStr || pool.tvlStr.includes('NaN')
+                        ? ''
+                        : pool.tvlStr}
                 </div>
             </td>
             <td
@@ -60,14 +62,16 @@ export default function PoolRow(props: propsIF) {
             >
                 <div
                     className={`text-text1 ${
-                        Number(pool.apy) > 0 ? 'text-positive' : 'text-negative'
+                        Number(pool.apyStr) > 0
+                            ? 'text-positive'
+                            : 'text-negative'
                     }`}
                 >
-                    {pool.apy}
+                    {pool.apyStr}
                 </div>
             </td>
             <td className=' px-6  whitespace-nowrap' style={{ height: '40px' }}>
-                <div className=' text-text1'>{pool.volume}</div>
+                <div className=' text-text1'>{pool.volumeStr}</div>
             </td>
             <td
                 className='hidden lg:table-cell px-6  whitespace-nowrap'
