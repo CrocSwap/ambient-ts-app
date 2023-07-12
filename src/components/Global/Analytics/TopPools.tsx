@@ -8,7 +8,7 @@ type HeaderItem = {
     hidden: boolean;
     align: string;
     responsive?: string;
-    clickable: boolean;
+    sortable: boolean;
     pxValue?: number;
 };
 
@@ -50,7 +50,7 @@ function TopPools(props: propsIF) {
                                     ? `px-${headerItem.pxValue}`
                                     : 'px-6'
                             } text-${headerItem.align} tracking-wider ${
-                                headerItem.clickable
+                                headerItem.sortable
                                     ? 'hover:bg-dark2 cursor-pointer'
                                     : ''
                             }`}
@@ -68,7 +68,7 @@ function TopPools(props: propsIF) {
             label: 'Tokens',
             hidden: false,
             align: 'left',
-            clickable: false,
+            sortable: false,
             pxValue: 8,
         },
         {
@@ -76,38 +76,38 @@ function TopPools(props: propsIF) {
             hidden: true,
             align: 'left',
             responsive: 'sm',
-            clickable: false,
+            sortable: false,
         },
         {
             label: 'Price',
             hidden: true,
             align: 'left',
             responsive: 'sm',
-            clickable: true,
+            sortable: true,
         },
         {
             label: 'TVL',
             hidden: true,
             align: 'left',
             responsive: 'sm',
-            clickable: true,
+            sortable: true,
         },
         {
             label: 'APR',
             hidden: true,
             align: 'left',
             responsive: 'xl',
-            clickable: true,
+            sortable: true,
         },
-        { label: 'Volume', hidden: false, align: 'left', clickable: true },
+        { label: 'Volume', hidden: false, align: 'left', sortable: true },
         {
             label: 'Change',
             hidden: true,
             align: 'left',
             responsive: 'lg',
-            clickable: false,
+            sortable: false,
         },
-        { label: '', hidden: false, align: 'right', clickable: false },
+        { label: '', hidden: false, align: 'right', sortable: false },
     ];
 
     return (
