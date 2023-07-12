@@ -1,154 +1,41 @@
-import { memo, useContext } from 'react';
-import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import { PoolIF } from '../../../utils/interfaces/PoolIF';
-import TokenIcon from '../TokenIcon/TokenIcon';
-import uriToHttp from '../../../utils/functions/uriToHttp';
-import { useNavigate } from 'react-router-dom';
-
-import { PoolContext } from '../../../contexts/PoolContext';
+import { memo } from 'react';
+import PoolRow from './PoolRow';
+import { PoolDataIF } from '../../../contexts/AnalyticsContext';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import {
+    SortedPoolMethodsIF,
+    sortType,
+    useSortedPools,
+} from './useSortedPools';
 
 type HeaderItem = {
     label: string;
     hidden: boolean;
     align: string;
     responsive?: string;
-    clickable: boolean;
+    sortable: boolean;
     pxValue?: number;
 };
-function TopPools() {
-    const { poolList } = useContext(PoolContext);
 
-    const PoolRow = memo((pool: PoolIF) => {
-        const poolData = useFetchPoolStats(pool);
-        const {
-            poolName,
-            baseLogoUri,
-            quoteLogoUri,
-            poolVolume,
-            poolPrice,
-            poolTvl,
-            poolApy,
-            poolPriceChangePercent,
-            isPoolPriceChangePositive,
-            poolLink,
-        } = poolData;
+interface propsIF {
+    allPools: PoolDataIF[];
+    chainId: string;
+}
 
-        const navigate = useNavigate();
+function TopPools(props: propsIF) {
+    const { allPools, chainId } = props;
 
-        const navigateToTrade = () => {
-            navigate(poolLink);
-        };
+    // logic to handle onClick navigation action
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('pool');
+    function goToMarket(tknA: string, tknB: string): void {
+        linkGenMarket.navigate({
+            chain: chainId,
+            tokenA: tknA,
+            tokenB: tknB,
+        });
+    }
 
-        const placeHolderText = '';
-
-        return (
-            <tr
-                className='hover:bg-dark2 cursor-pointer analaytics-pools-table '
-                onClick={navigateToTrade}
-            >
-                <td className='px-6  whitespace-nowrap'>
-                    <div className='flex items-center'>
-                        <div className='flex-shrink-0 flex items-center'>
-                            <TokenIcon
-                                src={uriToHttp(baseLogoUri ?? placeHolderText)}
-                                alt={poolName}
-                                size='2xl'
-                            />
-                            <TokenIcon
-                                src={uriToHttp(quoteLogoUri ?? placeHolderText)}
-                                alt={poolName}
-                                size='2xl'
-                            />
-                        </div>
-                        <div className='ml-4  sm:hidden '>
-                            <div className='text-text1'>
-                                {poolName ?? placeHolderText}
-                            </div>
-                        </div>
-                    </div>
-                </td>
-                <td
-                    className='hidden sm:table-cell px-6  whitespace-nowrap'
-                    style={{ height: '40px' }}
-                >
-                    <div className=' text-text1'>
-                        {poolName ?? placeHolderText}
-                    </div>
-                </td>
-                <td
-                    className='hidden sm:table-cell px-6  whitespace-nowrap'
-                    style={{ height: '40px' }}
-                >
-                    <div className=' text-accent5'>
-                        {poolPrice ?? placeHolderText}
-                    </div>
-                </td>
-                <td
-                    className='hidden sm:table-cell px-6  whitespace-nowrap'
-                    style={{ height: '40px' }}
-                >
-                    <div className=' text-text1'>
-                        {!poolTvl || poolTvl.includes('NaN')
-                            ? placeHolderText
-                            : poolTvl}
-                    </div>
-                </td>
-                <td
-                    className='hidden xl:table-cell px-6  whitespace-nowrap'
-                    style={{ height: '40px' }}
-                >
-                    <div
-                        className={`text-text1 ${
-                            Number(poolApy) > 0
-                                ? 'text-positive'
-                                : 'text-negative'
-                        }`}
-                    >
-                        {poolApy ? poolApy + '%' : placeHolderText}
-                    </div>
-                </td>
-                <td
-                    className=' px-6  whitespace-nowrap'
-                    style={{ height: '40px' }}
-                >
-                    <div className=' text-text1'>
-                        {poolVolume ?? placeHolderText}
-                    </div>
-                </td>
-                <td
-                    className='hidden lg:table-cell px-6  whitespace-nowrap'
-                    style={{ height: '40px' }}
-                >
-                    <div
-                        className={`text-text1 ${
-                            isPoolPriceChangePositive
-                                ? 'text-positive'
-                                : 'text-negative'
-                        }`}
-                    >
-                        {poolPriceChangePercent ?? placeHolderText}
-                    </div>
-                </td>
-                <td
-                    className='px-6 whitespace-nowrap'
-                    style={{ height: '40px' }}
-                >
-                    <div className='flex items-center justify-end h-full'>
-                        <button
-                            className='flex items-center justify-center text-bg-dark1 border-dark3 border rounded-full hover:text-accent1 hover:border-accent1'
-                            style={{
-                                width: '48px',
-                                height: '25px',
-                            }}
-                        >
-                            <span className='px-2 py-1'>Trade</span>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        );
-    });
-    PoolRow.displayName = 'PoolRow';
+    const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
 
     const TableHead = ({ headerItems }: { headerItems: HeaderItem[] }) => {
         return (
@@ -157,25 +44,29 @@ function TopPools() {
                 style={{ height: '25px', zIndex: '2' }}
             >
                 <tr className='text-text2 text-body font-regular capitalize leading-body'>
-                    {headerItems.map((headerItem, index) => (
+                    {headerItems.map((item, index) => (
                         <th
                             key={index}
                             scope='col'
-                            className={`${headerItem.hidden ? 'hidden' : ''} ${
-                                headerItem.responsive
-                                    ? `${headerItem.responsive}:table-cell`
+                            className={`${item.hidden ? 'hidden' : ''} ${
+                                item.responsive
+                                    ? `${item.responsive}:table-cell`
                                     : ''
                             } sticky top-0 ${
-                                headerItem.pxValue
-                                    ? `px-${headerItem.pxValue}`
-                                    : 'px-6'
-                            } text-${headerItem.align} tracking-wider ${
-                                headerItem.clickable
+                                item.pxValue ? `px-${item.pxValue}` : 'px-6'
+                            } text-${item.align} tracking-wider ${
+                                item.sortable
                                     ? 'hover:bg-dark2 cursor-pointer'
                                     : ''
                             }`}
+                            onClick={() => {
+                                item.sortable &&
+                                    sortedPools.updateSort(
+                                        item.label.toLowerCase() as sortType,
+                                    );
+                            }}
                         >
-                            {headerItem.label}
+                            {item.label}
                         </th>
                     ))}
                 </tr>
@@ -183,12 +74,14 @@ function TopPools() {
         );
     };
 
+    // !important:  any changes to `sortable` values must be accompanied by an update
+    // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
     const topPoolsHeaderItems: HeaderItem[] = [
         {
             label: 'Tokens',
             hidden: false,
             align: 'left',
-            clickable: false,
+            sortable: false,
             pxValue: 8,
         },
         {
@@ -196,38 +89,38 @@ function TopPools() {
             hidden: true,
             align: 'left',
             responsive: 'sm',
-            clickable: false,
+            sortable: false,
         },
         {
             label: 'Price',
             hidden: true,
             align: 'left',
             responsive: 'sm',
-            clickable: true,
+            sortable: true,
         },
         {
             label: 'TVL',
             hidden: true,
             align: 'left',
             responsive: 'sm',
-            clickable: true,
+            sortable: true,
         },
         {
             label: 'APR',
             hidden: true,
             align: 'left',
             responsive: 'xl',
-            clickable: true,
+            sortable: true,
         },
-        { label: 'Volume', hidden: false, align: 'left', clickable: true },
+        { label: 'Volume', hidden: false, align: 'left', sortable: true },
         {
             label: 'Change',
             hidden: true,
             align: 'left',
             responsive: 'lg',
-            clickable: false,
+            sortable: false,
         },
-        { label: '', hidden: false, align: 'right', clickable: false },
+        { label: '', hidden: false, align: 'right', sortable: false },
     ];
 
     return (
@@ -239,9 +132,21 @@ function TopPools() {
                             <TableHead headerItems={topPoolsHeaderItems} />
 
                             <tbody className='bg-dark1 text-white text-body font-regular capitalize leading-body overflow-y-auto max-h-96'>
-                                {poolList.map((pool, index) => (
-                                    <PoolRow key={index} {...pool} />
-                                ))}
+                                {
+                                    // using index in key gen logic because there are duplicate
+                                    // ... pool entries, we need to either filter out the dupes
+                                    // ... (hacky but acceptable) or figure out why dupes are
+                                    // ... being returned by PoolContext (preferable)
+                                    sortedPools.pools.map(
+                                        (pool: PoolDataIF, idx: number) => (
+                                            <PoolRow
+                                                key={JSON.stringify(pool) + idx}
+                                                pool={pool}
+                                                goToMarket={goToMarket}
+                                            />
+                                        ),
+                                    )
+                                }
                             </tbody>
                         </table>
                     </div>

@@ -97,7 +97,7 @@ export default function ExchangeCard(props: propsIF) {
                             ? token?.logoURI
                             : ETH_ICON_URL,
                     )}
-                    alt=''
+                    alt={token?.symbol}
                     size='2xl'
                 />
                 <p className={styles.token_key}>

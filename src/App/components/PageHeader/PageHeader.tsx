@@ -244,7 +244,7 @@ const PageHeader = function () {
         {
             title: t('common:homeTitle'),
             destination: '/',
-            shouldDisplay: desktopScreen,
+            shouldDisplay: false,
         },
         {
             title: t('common:swapTitle'),
