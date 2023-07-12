@@ -1,0 +1,572 @@
+import { useState, useEffect, useContext, memo } from 'react';
+import { useLocation } from 'react-router-dom';
+import { CrocImpact } from '@crocswap-libs/sdk';
+import { useProvider } from 'wagmi';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
+import { useTradeData } from '../../../App/hooks/useTradeData';
+import { useModal } from '../../../components/Global/Modal/useModal';
+import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
+import ConfirmSwapModal from '../../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
+import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
+import { IS_LOCAL_ENV } from '../../../constants';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { isStablePair } from '../../../utils/data/stablePairs';
+import {
+    useAppSelector,
+    useAppDispatch,
+} from '../../../utils/hooks/reduxToolkit';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import {
+    addPendingTx,
+    addTransactionByType,
+    removePendingTx,
+    addReceipt,
+} from '../../../utils/state/receiptDataSlice';
+import {
+    TransactionError,
+    isTransactionReplacedError,
+    isTransactionFailedError,
+} from '../../../utils/TransactionError';
+import Button from '../../../components/Global/Button/Button';
+import Modal from '../../../components/Global/Modal/Modal';
+import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
+import CurrencyConverter from '../../../components/Swap/CurrencyConverter/CurrencyConverter';
+import ExtraInfo from '../../../components/Swap/ExtraInfo/ExtraInfo';
+import SwapButton from '../../../components/Swap/SwapButton/SwapButton';
+import BypassConfirmSwapButton from '../../../components/Swap/SwapButton/BypassConfirmSwapButton';
+import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
+import styles from './Swap.module.css';
+
+interface propsIF {
+    isOnTradeRoute?: boolean;
+}
+
+function Swap(props: propsIF) {
+    const { isOnTradeRoute } = props;
+    const {
+        crocEnv,
+        chainData: { chainId },
+        ethMainnetUsdPrice,
+    } = useContext(CrocEnvContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { isPoolInitialized } = useContext(PoolContext);
+    const { tokens } = useContext(TokenContext);
+    const {
+        isTokenABase: isSellTokenBase,
+        setRecheckTokenAApproval,
+        tokenAAllowance,
+    } = useContext(TradeTokenContext);
+    const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
+        UserPreferenceContext,
+    );
+
+    const provider = useProvider();
+
+    const [isModalOpen, openModal, closeModal] = useModal();
+
+    const dispatch = useAppDispatch();
+
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+
+    // this apparently different from the `bypassConfirm` that I am working with
+    // it should possibly be renamed something different or better documented
+    const [showBypassConfirm, setShowBypassConfirm] = useState(false);
+    const [showExtraInfo, setShowExtraInfo] = useState(false);
+    const [isLiquidityInsufficient, setIsLiquidityInsufficient] =
+        useState<boolean>(false);
+
+    const receiptData = useAppSelector((state) => state.receiptData);
+
+    const sessionReceipts = receiptData.sessionReceipts;
+
+    const pendingTransactions = receiptData.pendingTransactions;
+    let receiveReceiptHashes: Array<string> = [];
+
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
+    // get URL pathway for user relative to index
+    const { pathname } = useLocation();
+
+    // use URL pathway to determine if user is in swap or market page
+    // depending on location we pull data on the tx in progress differently
+    const { tradeData } = pathname.includes('/trade')
+        ? useTradeData()
+        : useAppSelector((state) => state);
+
+    const { tokenA, tokenB, baseToken, quoteToken } = tradeData;
+
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
+
+    const [sellQtyString, setSellQtyString] = useState<string>(
+        tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+    );
+    const [buyQtyString, setBuyQtyString] = useState<string>(
+        !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+    );
+
+    const slippageTolerancePercentage = isStablePair(
+        tokenA.address,
+        tokenB.address,
+        chainId,
+    )
+        ? swapSlippage.stable
+        : swapSlippage.volatile;
+
+    const [swapAllowed, setSwapAllowed] = useState<boolean>(
+        tradeData.primaryQuantity !== '',
+    );
+
+    // hooks to track whether user will use dex or wallet funds in transaction, this is
+    // ... abstracted away from the central hook because the hook manages preference
+    // ... and does not consider whether dex balance is sufficient
+    const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
+        useState<boolean>(false);
+    const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
+        useState<boolean>(dexBalSwap.outputToDexBal.isEnabled);
+
+    const [swapButtonErrorMessage, setSwapButtonErrorMessage] =
+        useState<string>('');
+    const isTokenAPrimary = tradeData.isTokenAPrimary;
+    const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState('');
+    const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
+    const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
+    const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
+
+    useEffect(() => {
+        if (
+            !currentPendingTransactionsArray.length &&
+            !isWaitingForWallet &&
+            txErrorCode === '' &&
+            bypassConfirmSwap.isEnabled
+        ) {
+            setNewSwapTransactionHash('');
+            setShowBypassConfirm(false);
+        }
+    }, [
+        currentPendingTransactionsArray.length,
+        isWaitingForWallet,
+        txErrorCode === '',
+        bypassConfirmSwap.isEnabled,
+    ]);
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode('');
+    };
+
+    useEffect(() => {
+        setNewSwapTransactionHash('');
+        setShowBypassConfirm(false);
+    }, [baseToken.address + quoteToken.address]);
+
+    async function initiateSwap() {
+        resetConfirmation();
+        setIsWaitingForWallet(true);
+        if (!crocEnv) return;
+
+        const sellTokenAddress = tokenA.address;
+        const buyTokenAddress = tokenB.address;
+
+        const qty = isTokenAPrimary
+            ? sellQtyString.replaceAll(',', '')
+            : buyQtyString.replaceAll(',', '');
+
+        const isQtySell = isTokenAPrimary;
+
+        let tx;
+        try {
+            const plan = isQtySell
+                ? crocEnv.sell(sellTokenAddress, qty).for(buyTokenAddress, {
+                      slippage: slippageTolerancePercentage / 100,
+                  })
+                : crocEnv.buy(buyTokenAddress, qty).with(sellTokenAddress, {
+                      slippage: slippageTolerancePercentage / 100,
+                  });
+            tx = await plan.swap({
+                surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
+            });
+            setIsWaitingForWallet(false);
+
+            setNewSwapTransactionHash(tx?.hash);
+            dispatch(addPendingTx(tx?.hash));
+            if (tx.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                    }),
+                );
+        } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
+            console.error({ error });
+            setTxErrorCode(error?.code);
+            setIsWaitingForWallet(false);
+        }
+
+        let receipt;
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            console.error({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                IS_LOCAL_ENV && console.debug('repriced');
+                dispatch(removePendingTx(error.hash));
+
+                const newTransactionHash = error.replacement.hash;
+                dispatch(addPendingTx(newTransactionHash));
+
+                setNewSwapTransactionHash(newTransactionHash);
+                IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                receipt = error.receipt;
+            } else if (isTransactionFailedError(error)) {
+                receipt = error.receipt;
+            }
+        }
+
+        if (receipt) {
+            dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
+        }
+    }
+
+    const handleModalClose = () => {
+        closeModal();
+        setNewSwapTransactionHash('');
+        resetConfirmation();
+    };
+
+    const approve = async (tokenAddress: string, tokenSymbol: string) => {
+        if (!crocEnv) return;
+        try {
+            setIsApprovalPending(true);
+            const tx = await crocEnv.token(tokenAddress).approve();
+            if (tx) dispatch(addPendingTx(tx?.hash));
+            if (tx?.hash)
+                dispatch(
+                    addTransactionByType({
+                        txHash: tx.hash,
+                        txType: `Approval of ${tokenSymbol}`,
+                    }),
+                );
+            let receipt;
+            try {
+                if (tx) receipt = await tx.wait();
+            } catch (e) {
+                const error = e as TransactionError;
+                console.error({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    IS_LOCAL_ENV && console.debug('repriced');
+                    dispatch(removePendingTx(error.hash));
+
+                    const newTransactionHash = error.replacement.hash;
+                    dispatch(addPendingTx(newTransactionHash));
+
+                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    receipt = error.receipt;
+                }
+            }
+            if (receipt) {
+                dispatch(addReceipt(JSON.stringify(receipt)));
+                dispatch(removePendingTx(receipt.transactionHash));
+            }
+        } catch (error) {
+            if (error.reason === 'sending a transaction requires a signer') {
+                location.reload();
+            }
+            console.error({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAApproval(true);
+        }
+    };
+
+    const effectivePrice =
+        parseFloat(priceImpact?.buyQty || '0') /
+        parseFloat(priceImpact?.sellQty || '1');
+
+    const isPriceInverted =
+        (tradeData.isDenomBase && !isSellTokenBase) ||
+        (!tradeData.isDenomBase && isSellTokenBase);
+
+    const effectivePriceWithDenom = effectivePrice
+        ? isPriceInverted
+            ? 1 / effectivePrice
+            : effectivePrice
+        : undefined;
+
+    useEffect(() => {
+        receiveReceiptHashes = sessionReceipts.map(
+            (receipt) => JSON.parse(receipt)?.transactionHash,
+        );
+    }, [sessionReceipts]);
+
+    const confirmSwapModalProps = {
+        tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
+        isDenomBase: tradeData.isDenomBase,
+        baseTokenSymbol: tradeData.baseToken.symbol,
+        quoteTokenSymbol: tradeData.quoteToken.symbol,
+        initiateSwapMethod: initiateSwap,
+        newSwapTransactionHash: newSwapTransactionHash,
+        txErrorCode: txErrorCode,
+        showConfirmation: showConfirmation,
+        setShowConfirmation: setShowConfirmation,
+        resetConfirmation: resetConfirmation,
+        slippageTolerancePercentage: slippageTolerancePercentage,
+        effectivePrice: effectivePrice,
+        isSellTokenBase: isSellTokenBase,
+        sellQtyString: sellQtyString,
+        buyQtyString: buyQtyString,
+        setShowBypassConfirm: setShowBypassConfirm,
+        setNewSwapTransactionHash: setNewSwapTransactionHash,
+        showBypassConfirm,
+        showExtraInfo: showExtraInfo,
+        setShowExtraInfo: setShowExtraInfo,
+    };
+
+    const byPassConfirmSwapButtonProps = {
+        initiateSwapMethod: initiateSwap,
+        newSwapTransactionHash: newSwapTransactionHash,
+        setNewSwapTransactionHash: setNewSwapTransactionHash,
+        txErrorCode: txErrorCode,
+        sellQtyString: sellQtyString,
+        buyQtyString: buyQtyString,
+        tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
+        resetConfirmation: resetConfirmation,
+        setShowBypassConfirm: setShowBypassConfirm,
+        showExtraInfo: showExtraInfo,
+        setShowExtraInfo: setShowExtraInfo,
+    };
+
+    // calculate price of gas for swap
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageSwapCostInGasDrops = 106000;
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                averageSwapCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
+
+            setSwapGasPriceinDollars(
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
+    const [
+        tokenAQtyCoveredByWalletBalance,
+        setTokenAQtyCoveredByWalletBalance,
+    ] = useState<number>(0);
+
+    const isTokenAAllowanceSufficient =
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+
+    // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
+
+    const currencyConverterProps = {
+        isLiquidityInsufficient: isLiquidityInsufficient,
+        setIsLiquidityInsufficient: setIsLiquidityInsufficient,
+        provider: provider,
+        slippageTolerancePercentage: slippageTolerancePercentage,
+        setPriceImpact: setPriceImpact,
+        priceImpact: priceImpact,
+        isLiq: false,
+        isTokenAPrimary: isTokenAPrimary,
+        sellQtyString: sellQtyString,
+        setSellQtyString: setSellQtyString,
+        buyQtyString: buyQtyString,
+        setBuyQtyString: setBuyQtyString,
+        isWithdrawFromDexChecked: isWithdrawFromDexChecked,
+        setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
+        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
+        setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
+        setSwapAllowed: setSwapAllowed,
+        setSwapButtonErrorMessage: setSwapButtonErrorMessage,
+        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+    };
+
+    const handleSwapButtonClickWithBypass = () => {
+        IS_LOCAL_ENV && console.debug('setting  bypass confirm to true');
+        setShowBypassConfirm(true);
+        initiateSwap();
+    };
+
+    const priceImpactNum = !priceImpact?.percentChange
+        ? undefined
+        : Math.abs(priceImpact.percentChange) * 100;
+
+    const liquidityInsufficientWarning = isLiquidityInsufficient ? (
+        <div className={styles.price_impact}>
+            <div className={styles.align_center}>
+                <div
+                    style={{
+                        color: '#f6385b',
+                    }}
+                >
+                    Current Pool Liquidity is Insufficient for this Swap
+                </div>
+            </div>
+            <div>
+                <TooltipComponent
+                    title='Current Pool Liquidity is Insufficient for this Swap'
+                    placement='bottom'
+                />
+            </div>
+        </div>
+    ) : undefined;
+
+    const priceImpactWarning =
+        !isLiquidityInsufficient && priceImpactNum && priceImpactNum > 2 ? (
+            <div className={styles.price_impact}>
+                <div className={styles.align_center}>
+                    <div>Price Impact Warning</div>
+                    <TooltipComponent
+                        title='Difference Between Current (Spot) Price and Final Price'
+                        placement='bottom'
+                    />
+                </div>
+                <div className={styles.data}>
+                    {getPriceImpactString(priceImpactNum)}%
+                </div>
+            </div>
+        ) : undefined;
+
+    // values if either token needs to be confirmed before transacting
+    const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
+
+    // value showing if no acknowledgement is necessary
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+
+    // logic to acknowledge one or both tokens as necessary
+    const ackAsNeeded = (): void => {
+        needConfirmTokenA && tokens.ackToken(tokenA);
+        needConfirmTokenB && tokens.ackToken(tokenB);
+    };
+
+    const liquidityProviderFeeString = (
+        tradeData.liquidityFee * 100
+    ).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    return (
+        <TradeModuleSkeleton
+            isSwapPage={!isOnTradeRoute}
+            header={
+                <OrderHeader
+                    slippage={swapSlippage}
+                    bypassConfirm={bypassConfirmSwap}
+                    settingsTitle='Swap'
+                    isSwapPage={!isOnTradeRoute}
+                />
+            }
+            input={<CurrencyConverter {...currencyConverterProps} />}
+            transactionDetails={
+                <ExtraInfo
+                    priceImpact={priceImpact}
+                    effectivePriceWithDenom={effectivePriceWithDenom}
+                    slippageTolerance={slippageTolerancePercentage}
+                    liquidityProviderFeeString={liquidityProviderFeeString}
+                    swapGasPriceinDollars={swapGasPriceinDollars}
+                    isQtyEntered={tradeData?.primaryQuantity !== ''}
+                />
+            }
+            modal={
+                isModalOpen ? (
+                    <Modal
+                        onClose={handleModalClose}
+                        title='Swap Confirmation'
+                        centeredTitle
+                    >
+                        <ConfirmSwapModal {...confirmSwapModalProps} />
+                    </Modal>
+                ) : undefined
+            }
+            button={
+                <SwapButton
+                    onClickFn={
+                        areBothAckd
+                            ? bypassConfirmSwap.isEnabled
+                                ? handleSwapButtonClickWithBypass
+                                : openModal
+                            : ackAsNeeded
+                    }
+                    swapAllowed={
+                        swapAllowed &&
+                        sellQtyString !== '' &&
+                        buyQtyString !== ''
+                    }
+                    swapButtonErrorMessage={swapButtonErrorMessage}
+                    bypassConfirmSwap={bypassConfirmSwap}
+                    areBothAckd={areBothAckd}
+                />
+            }
+            bypassConfirm={
+                showBypassConfirm ? (
+                    <BypassConfirmSwapButton
+                        {...byPassConfirmSwapButtonProps}
+                    />
+                ) : undefined
+            }
+            approveButton={
+                isPoolInitialized &&
+                !isTokenAAllowanceSufficient &&
+                parseFloat(sellQtyString) > 0 &&
+                sellQtyString !== 'Infinity' ? (
+                    <Button
+                        title={
+                            !isApprovalPending
+                                ? `Approve ${tokenA.symbol}`
+                                : `${tokenA.symbol} Approval Pending`
+                        }
+                        disabled={isApprovalPending}
+                        action={async () => {
+                            await approve(tokenA.address, tokenA.symbol);
+                        }}
+                        flat
+                    />
+                ) : undefined
+            }
+            warnings={
+                priceImpactWarning || liquidityInsufficientWarning ? (
+                    <>
+                        {priceImpactWarning && priceImpactWarning}
+                        {liquidityInsufficientWarning &&
+                            liquidityInsufficientWarning}
+                    </>
+                ) : undefined
+            }
+            tutorialSteps={swapTutorialSteps}
+        />
+    );
+}
+
+export default memo(Swap);

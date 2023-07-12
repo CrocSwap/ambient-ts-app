@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 
 // START: Import JSX Elements
-import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
 import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton';
 import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
@@ -19,7 +18,6 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { FiExternalLink } from 'react-icons/fi';
 // START: Import Local Files
 import styles from './Range.module.css';
 import {
@@ -53,34 +51,25 @@ import {
 } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
-import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
-import {
-    rangeTutorialSteps,
-    rangeTutorialStepsAdvanced,
-} from '../../../utils/tutorial/Range';
+import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
-import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
+import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 
 function Range() {
     const {
-        tutorial: { isActive: isTutorialActive },
-        wagmiModal: { open: openWagmiModal },
-    } = useContext(AppStateContext);
-    const {
-        chainData: { chainId, gridSize, blockExplorer },
+        chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -152,9 +141,6 @@ function Range() {
         (state) => state.graphData,
     ).positionsByUser.positions.filter((x) => x.chainId === chainId);
 
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
     const {
         tradeData: {
             isDenomBase,
@@ -172,8 +158,6 @@ function Range() {
         },
         receiptData,
     } = useAppSelector((state) => state);
-
-    const { navigationMenu } = useTradeData();
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
 
@@ -1279,12 +1263,6 @@ function Range() {
     const isTokenBAllowanceSufficient =
         parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
 
-    const loginButton = (
-        <button onClick={openWagmiModal} className={styles.authenticate_button}>
-            Connect Wallet
-        </button>
-    );
-
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
@@ -1337,69 +1315,9 @@ function Range() {
         }
     };
 
-    const tokenAApprovalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Approve ${tokenA.symbol}`
-                    : `${tokenA.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenA.address, tokenA.symbol);
-            }}
-            flat={true}
-        />
-    );
-
-    const tokenBApprovalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Approve ${tokenB.symbol}`
-                    : `${tokenB.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenB.address, tokenB.symbol);
-            }}
-            flat={true}
-        />
-    );
-
-    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
-
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
     const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
-
-    // token acknowledgement needed message (empty string if none needed)
-    const ackTokenMessage = useMemo<string>(() => {
-        // !Important   any changes to verbiage in this code block must be approved
-        // !Important   ... by Doug, get in writing by email or request specific
-        // !Important   ... review for a pull request on GitHub
-        let text: string;
-        if (needConfirmTokenA && needConfirmTokenB) {
-            text = `The tokens ${tokenA.symbol || tokenA.name} and ${
-                tokenB.symbol || tokenB.name
-            } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
-        } else if (needConfirmTokenA) {
-            text = `The token ${
-                tokenA.symbol || tokenA.name
-            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
-        } else if (needConfirmTokenB) {
-            text = `The token ${
-                tokenB.symbol || tokenB.name
-            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
-        } else {
-            text = '';
-        }
-        return text;
-    }, [needConfirmTokenA, needConfirmTokenB]);
-    const formattedAckTokenMessage = ackTokenMessage.replace(
-        /\b(not)\b/g,
-        '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
-    );
 
     // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
@@ -1411,176 +1329,126 @@ function Range() {
     };
 
     return (
-        <section data-testid={'range'} className={styles.scrollable_container}>
-            {isTutorialActive && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
-                    >
-                        Tutorial Mode
-                    </button>
-                </div>
-            )}
-
-            <ContentContainer isOnTradeRoute>
+        <TradeModuleSkeleton
+            header={
                 <OrderHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmRange}
                     settingsTitle='Pool'
                 />
-                {navigationMenu}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
+            }
+            input={
+                <>
                     <RangeCurrencyConverter
                         {...rangeCurrencyConverterProps}
                         isAdvancedMode
                     />
                     {advancedModeToggle}
-                </motion.div>
-                {advancedMode ? advancedModeContent : baseModeContent}
-                <div className={styles.info_button_container}>
-                    <RangeExtraInfo {...rangeExtraInfoProps} />
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
-                        poolPriceNonDisplay !== 0 &&
-                        parseFloat(tokenAInputQty) > 0 &&
-                        !isTokenAAllowanceSufficient ? (
-                            tokenAApprovalButton
-                        ) : poolPriceNonDisplay !== 0 &&
-                          parseFloat(tokenBInputQty) > 0 &&
-                          !isTokenBAllowanceSufficient ? (
-                            tokenBApprovalButton
-                        ) : showBypassConfirmButton ? (
-                            <BypassConfirmRangeButton
-                                {...bypassConfirmButtonProps}
-                            />
-                        ) : (
-                            <>
-                                <RangeButton
-                                    onClickFn={
-                                        areBothAckd
-                                            ? bypassConfirmRange.isEnabled
-                                                ? handleRangeButtonClickWithBypass
-                                                : openConfirmationModal
-                                            : ackAsNeeded
-                                    }
-                                    rangeAllowed={
-                                        isPoolInitialized === true &&
-                                        rangeAllowed &&
-                                        !isInvalidRange
-                                    }
-                                    rangeButtonErrorMessage={
-                                        rangeButtonErrorMessage
-                                    }
-                                    isAmbient={isAmbient}
-                                    isAdd={isAdd}
-                                    areBothAckd={areBothAckd}
-                                />
-                                {ackTokenMessage && (
-                                    <p
-                                        className={styles.acknowledge_text}
-                                        dangerouslySetInnerHTML={{
-                                            __html: formattedAckTokenMessage,
-                                        }}
-                                    ></p>
-                                )}
-
-                                <div
-                                    className={
-                                        styles.acknowledge_etherscan_links
-                                    }
-                                >
-                                    {needConfirmTokenA && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenA.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenA.symbol}
-                                        >
-                                            {tokenA.symbol || tokenA.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                    {needConfirmTokenB && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenB.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenB.symbol}
-                                        >
-                                            {tokenB.symbol || tokenB.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                </div>
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                </div>
-            </ContentContainer>
-            {isConfirmationModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title={'Pool Confirmation'}
-                    centeredTitle
-                >
-                    <ConfirmRangeModal
-                        tokenAQtyLocal={tokenAQtyLocal}
-                        tokenBQtyLocal={tokenBQtyLocal}
-                        spotPriceDisplay={getFormattedNumber({
-                            value: displayPriceWithDenom,
-                        })}
-                        isTokenABase={isTokenABase}
-                        isAmbient={isAmbient}
-                        isAdd={isAdd}
-                        maxPriceDisplay={maxPriceDisplay}
-                        minPriceDisplay={minPriceDisplay}
-                        sendTransaction={sendTransaction}
-                        newRangeTransactionHash={newRangeTransactionHash}
-                        resetConfirmation={resetConfirmation}
-                        showConfirmation={showConfirmation}
-                        setShowConfirmation={setShowConfirmation}
-                        txErrorCode={txErrorCode}
-                        isInRange={!isOutOfRange}
-                        pinnedMinPriceDisplayTruncatedInBase={
-                            pinnedMinPriceDisplayTruncatedInBase
+                </>
+            }
+            inputOptions={advancedMode ? advancedModeContent : baseModeContent}
+            transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
+            modal={
+                isConfirmationModalOpen ? (
+                    <Modal
+                        onClose={handleModalClose}
+                        title={'Pool Confirmation'}
+                        centeredTitle
+                    >
+                        <ConfirmRangeModal
+                            tokenAQtyLocal={tokenAQtyLocal}
+                            tokenBQtyLocal={tokenBQtyLocal}
+                            spotPriceDisplay={getFormattedNumber({
+                                value: displayPriceWithDenom,
+                            })}
+                            isTokenABase={isTokenABase}
+                            isAmbient={isAmbient}
+                            isAdd={isAdd}
+                            maxPriceDisplay={maxPriceDisplay}
+                            minPriceDisplay={minPriceDisplay}
+                            sendTransaction={sendTransaction}
+                            newRangeTransactionHash={newRangeTransactionHash}
+                            resetConfirmation={resetConfirmation}
+                            showConfirmation={showConfirmation}
+                            setShowConfirmation={setShowConfirmation}
+                            txErrorCode={txErrorCode}
+                            isInRange={!isOutOfRange}
+                            pinnedMinPriceDisplayTruncatedInBase={
+                                pinnedMinPriceDisplayTruncatedInBase
+                            }
+                            pinnedMinPriceDisplayTruncatedInQuote={
+                                pinnedMinPriceDisplayTruncatedInQuote
+                            }
+                            pinnedMaxPriceDisplayTruncatedInBase={
+                                pinnedMaxPriceDisplayTruncatedInBase
+                            }
+                            pinnedMaxPriceDisplayTruncatedInQuote={
+                                pinnedMaxPriceDisplayTruncatedInQuote
+                            }
+                        />
+                    </Modal>
+                ) : undefined
+            }
+            button={
+                <RangeButton
+                    onClickFn={
+                        areBothAckd
+                            ? bypassConfirmRange.isEnabled
+                                ? handleRangeButtonClickWithBypass
+                                : openConfirmationModal
+                            : ackAsNeeded
+                    }
+                    rangeAllowed={
+                        isPoolInitialized === true &&
+                        rangeAllowed &&
+                        !isInvalidRange
+                    }
+                    rangeButtonErrorMessage={rangeButtonErrorMessage}
+                    isAmbient={isAmbient}
+                    isAdd={isAdd}
+                    areBothAckd={areBothAckd}
+                />
+            }
+            bypassConfirm={
+                showBypassConfirmButton ? (
+                    <BypassConfirmRangeButton {...bypassConfirmButtonProps} />
+                ) : undefined
+            }
+            approveButton={
+                poolPriceNonDisplay !== 0 &&
+                parseFloat(tokenAInputQty) > 0 &&
+                !isTokenAAllowanceSufficient ? (
+                    <Button
+                        title={
+                            !isApprovalPending
+                                ? `Approve ${tokenA.symbol}`
+                                : `${tokenA.symbol} Approval Pending`
                         }
-                        pinnedMinPriceDisplayTruncatedInQuote={
-                            pinnedMinPriceDisplayTruncatedInQuote
-                        }
-                        pinnedMaxPriceDisplayTruncatedInBase={
-                            pinnedMaxPriceDisplayTruncatedInBase
-                        }
-                        pinnedMaxPriceDisplayTruncatedInQuote={
-                            pinnedMaxPriceDisplayTruncatedInQuote
-                        }
+                        disabled={isApprovalPending}
+                        action={async () => {
+                            await approve(tokenA.address, tokenA.symbol);
+                        }}
+                        flat={true}
                     />
-                </Modal>
-            )}
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={
-                    !advancedMode
-                        ? rangeTutorialStepsAdvanced
-                        : rangeTutorialSteps
-                }
-            />
-        </section>
+                ) : poolPriceNonDisplay !== 0 &&
+                  parseFloat(tokenBInputQty) > 0 &&
+                  !isTokenBAllowanceSufficient ? (
+                    <Button
+                        title={
+                            !isApprovalPending
+                                ? `Approve ${tokenB.symbol}`
+                                : `${tokenB.symbol} Approval Pending`
+                        }
+                        disabled={isApprovalPending}
+                        action={async () => {
+                            await approve(tokenB.address, tokenB.symbol);
+                        }}
+                        flat={true}
+                    />
+                ) : undefined
+            }
+            tutorialSteps={rangeTutorialSteps}
+        />
     );
 }
 

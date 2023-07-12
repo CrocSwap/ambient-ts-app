@@ -1,0 +1,119 @@
+.scrollable_container {
+    height: auto;
+    overflow-y: scroll;
+}
+
+.scrollable_container::-webkit-scrollbar {
+    display: none;
+}
+
+.tutorial_button_container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 0 8px;
+}
+
+.tutorial_button {
+    outline: none;
+    background: var(--dark2);
+    border: 1px solid var(--accent1);
+    color: var(--text2);
+    border-radius: 4px;
+    padding: 0 4px;
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+
+    box-shadow: var(--trade-box-shadow);
+}
+
+.tutorial_button:hover {
+    color: var(--text1);
+}
+
+.info_button_container {
+    margin-top: 8px;
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.acknowledge_text {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    border: 1px var(--dark3);
+    border-radius: var(--border-radius);
+    border: 0.1px solid var(--text3);
+    text-align: center;
+    padding: 4px;
+    margin-top: 8px;
+}
+
+.acknowledge_etherscan_links {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 4px 0;
+}
+
+.acknowledge_etherscan_links a {
+    border: 1px solid transparent;
+    border-bottom: 1px solid var(--accent1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    transition: all var(--animation-speed) ease-in-out;
+}
+
+.acknowledge_etherscan_links a:hover {
+    color: var(--text1);
+    border: 1px solid var(--accent1);
+}
+
+.authenticate_button {
+    width: 100%;
+    outline: none;
+
+    padding: 12px 16px;
+    margin-bottom: 40px;
+    font-size: 16px;
+
+    line-height: 24px;
+
+    display: block;
+
+    height: auto;
+    cursor: pointer;
+    text-align: center;
+
+    background: transparent;
+    text-transform: capitalize;
+
+    border-radius: 4px;
+    transition: box-shadow var(--animation-speed) ease-in-out;
+
+    background: var(--title-gradient);
+    border: none;
+    outline: none;
+    color: var(--dark2);
+    font-weight: 200;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.authenticate_button:hover,
+.authenticate_button:focus-visible {
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
+        0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2),
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+        0px 0px 2px rgba(205, 193, 255, 0.2);
+}
+
+@media only screen and (min-width: 1280px) {
+    .scrollable_container {
+        height: 100vh;
+    }
+}
