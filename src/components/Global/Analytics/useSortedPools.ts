@@ -18,24 +18,38 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
     const [direction, setDirection] =
         useState<directionType>(DEFAULT_DIRECTION);
 
-    // logic router for sort mechanism
     const sortedPools = useMemo<PoolDataIF[]>(() => {
         let output: PoolDataIF[];
+        const sortPrice = (): PoolDataIF[] => {
+            return allPools;
+        };
+        const sortTvl = (): PoolDataIF[] => {
+            return allPools;
+        };
+        const sortApr = (): PoolDataIF[] => {
+            return allPools;
+        };
+        const sortVolume = (): PoolDataIF[] => {
+            return allPools;
+        };
+        // logic router for sort mechanism
         switch (sortBy) {
             case 'price':
-                output = allPools;
-                break;
-            case 'tvl':
-                output = allPools;
+                output = sortPrice();
                 break;
             case 'apr':
-                output = allPools;
+                output = sortApr();
                 break;
             case 'volume':
-                output = allPools;
+                output = sortVolume();
+                break;
+            case 'tvl':
+            default:
+                output = sortTvl();
                 break;
         }
-        return direction ? output : output.reverse();
+        // reverse data if user has indicated descending sort sequence
+        return direction === 'ascending' ? output : output.reverse();
     }, [sortBy, direction]);
 
     function updateSort(sort: sortType) {
