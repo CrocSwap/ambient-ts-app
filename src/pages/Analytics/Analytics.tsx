@@ -28,13 +28,13 @@ export default function Analytics() {
         <Section>
             <MainWrapper>
                 Top Pools on Ambient
-                <Button>
-                    <RefreshIcon
-                        onClick={() => {
-                            console.log('woah there');
-                            getPools();
-                        }}
-                    />
+                <Button
+                    onClick={() => {
+                        console.log('woah there');
+                        getPools();
+                    }}
+                >
+                    <RefreshIcon />
                 </Button>
             </MainWrapper>
 
@@ -65,7 +65,9 @@ const MainWrapper = styled.p`
 const Button = styled.button`
     background-color: var(--dark3);
     border-radius: 4px;
-    padding: 4px;
+    padding: 4px 8px;
+    border: none;
+    outline: none;
 `;
 
 const RefreshIcon = styled(FiRefreshCw)`

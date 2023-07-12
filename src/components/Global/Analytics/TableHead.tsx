@@ -22,7 +22,7 @@ const TableHead = ({
         position: sticky;
         top: 0;
         height: 25px;
-        z-index: 2;
+        z-index: 3;
         border-bottom: 1px solid var(--dark3);
     `;
 

@@ -153,13 +153,14 @@ const ShadowBox = styled.div`
     background-color: var(--dark1);
     height: 100%;
 
+    position: relative;
+
     padding: 8px;
 `;
 
 const Table = styled.table`
     border-collapse: collapse;
     width: 100%;
-    position: relative;
     table-layout: fixed;
 
     @media only screen and (min-width: 1280px) {
