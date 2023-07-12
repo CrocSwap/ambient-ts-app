@@ -27,7 +27,7 @@
     background: var(--dark1);
 
     height: 100vh;
-    padding-left: 50px;
+    /* padding-left: 50px; */
 }
 
 .menu_container {
