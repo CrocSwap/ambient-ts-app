@@ -2,6 +2,11 @@ import { memo } from 'react';
 import PoolRow from './PoolRow';
 import { PoolDataIF } from '../../../contexts/AnalyticsContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import {
+    SortedPoolMethodsIF,
+    sortType,
+    useSortedPools,
+} from './useSortedPools';
 
 type HeaderItem = {
     label: string;
@@ -30,6 +35,8 @@ function TopPools(props: propsIF) {
         });
     }
 
+    const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
+
     const TableHead = ({ headerItems }: { headerItems: HeaderItem[] }) => {
         return (
             <thead
@@ -37,25 +44,29 @@ function TopPools(props: propsIF) {
                 style={{ height: '25px', zIndex: '2' }}
             >
                 <tr className='text-text2 text-body font-regular capitalize leading-body'>
-                    {headerItems.map((headerItem, index) => (
+                    {headerItems.map((item, index) => (
                         <th
                             key={index}
                             scope='col'
-                            className={`${headerItem.hidden ? 'hidden' : ''} ${
-                                headerItem.responsive
-                                    ? `${headerItem.responsive}:table-cell`
+                            className={`${item.hidden ? 'hidden' : ''} ${
+                                item.responsive
+                                    ? `${item.responsive}:table-cell`
                                     : ''
                             } sticky top-0 ${
-                                headerItem.pxValue
-                                    ? `px-${headerItem.pxValue}`
-                                    : 'px-6'
-                            } text-${headerItem.align} tracking-wider ${
-                                headerItem.sortable
+                                item.pxValue ? `px-${item.pxValue}` : 'px-6'
+                            } text-${item.align} tracking-wider ${
+                                item.sortable
                                     ? 'hover:bg-dark2 cursor-pointer'
                                     : ''
                             }`}
+                            onClick={() => {
+                                item.sortable &&
+                                    sortedPools.updateSort(
+                                        item.label as sortType,
+                                    );
+                            }}
                         >
-                            {headerItem.label}
+                            {item.label}
                         </th>
                     ))}
                 </tr>
@@ -63,6 +74,8 @@ function TopPools(props: propsIF) {
         );
     };
 
+    // !important:  any changes to `sortable` values must be accompanied by an update
+    // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
     const topPoolsHeaderItems: HeaderItem[] = [
         {
             label: 'Tokens',
@@ -124,7 +137,7 @@ function TopPools(props: propsIF) {
                                     // ... pool entries, we need to either filter out the dupes
                                     // ... (hacky but acceptable) or figure out why dupes are
                                     // ... being returned by PoolContext (preferable)
-                                    allPools.map(
+                                    sortedPools.pools.map(
                                         (pool: PoolDataIF, idx: number) => (
                                             <PoolRow
                                                 key={JSON.stringify(pool) + idx}
