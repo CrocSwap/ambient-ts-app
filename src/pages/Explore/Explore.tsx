@@ -12,17 +12,15 @@ export default function Explore() {
     const { crocEnv, chainData } = useContext(CrocEnvContext);
 
     const getPools = async () => {
-        if (crocEnv && poolList && cont.allPools.length === 0) {
-            cont.getAllPoolData(poolList, crocEnv, chainData.chainId);
-            console.log('sending a new fetch!');
+        if (crocEnv && poolList.length && cont.pools.all.length === 0) {
+            cont.pools.getAll(poolList, crocEnv, chainData.chainId);
+            cont.pools.autopoll.disable();
         }
     };
 
-    useEffect(() => console.log(cont.allPools), [cont.allPools]);
-
     useEffect(() => {
-        getPools();
-    }, [crocEnv, chainData.chainId]);
+        cont.pools.autopoll.allowed && getPools();
+    }, [crocEnv, chainData.chainId, poolList.length]);
 
     return (
         <Section>
@@ -38,7 +36,7 @@ export default function Explore() {
                 </Button>
             </MainWrapper>
 
-            <TopPools allPools={cont.allPools} chainId={chainData.chainId} />
+            <TopPools allPools={cont.pools.all} chainId={chainData.chainId} />
         </Section>
     );
 }

@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useState } from 'react';
+import { ReactNode, createContext, useContext, useRef, useState } from 'react';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -10,8 +10,15 @@ import { estimateFrom24HrRangeApr } from '../App/functions/fetchAprEst';
 import { get24hChange } from '../App/functions/getPoolStats';
 
 export interface AnalyticsContextIF {
-    allPools: PoolDataIF[];
-    getAllPoolData(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
+    pools: {
+        all: PoolDataIF[];
+        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+        autopoll: {
+            allowed: boolean;
+            enable: () => void;
+            disable: () => void;
+        };
+    };
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -167,16 +174,34 @@ export const AnalyticsContextProvider = (props: { children: ReactNode }) => {
             getPoolData(pool, crocEnv, chainId),
         );
         Promise.all(allPoolData)
-            .then((results: PoolDataIF[]) => {
-                console.log({ results });
-                setAllPools(results);
-            })
+            .then((results: PoolDataIF[]) => setAllPools(results))
             .catch((err) => {
-                console.error('DANGER WILL ROBINSON', err);
+                console.warn(err);
+                // re-enable autopolling to attempt more data fetches
+                enableAutopollPools();
             });
     }
 
-    const analyticsContext = { allPools, getAllPoolData };
+    // limiter and controllers to prevent rapid-fire autopolling of infura
+    const allowAutopollPools = useRef(true);
+    function enableAutopollPools() {
+        allowAutopollPools.current = true;
+    }
+    function disableAutopollPools() {
+        allowAutopollPools.current = false;
+    }
+
+    const analyticsContext: AnalyticsContextIF = {
+        pools: {
+            all: allPools,
+            getAll: getAllPoolData,
+            autopoll: {
+                allowed: allowAutopollPools.current,
+                enable: () => enableAutopollPools(),
+                disable: () => disableAutopollPools(),
+            },
+        },
+    };
 
     return (
         <AnalyticsContext.Provider value={analyticsContext}>
