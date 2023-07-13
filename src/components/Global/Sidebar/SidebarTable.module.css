@@ -29,7 +29,6 @@
     line-height: var(--body-lh);
     color: var(--accent4);
     cursor: pointer;
-
     white-space: nowrap;
     overflow: hidden;
 }

@@ -3,6 +3,7 @@ import { useState, ReactNode, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 // START: Import Local Files
+import { Link } from 'react-router-dom';
 import styles from '../Sidebar.module.css';
 import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -127,7 +128,6 @@ export default function SidebarAccordion(props: propsIF) {
                             />
                         )}
                         <img src={item.icon} alt={item.name} width='20px' />
-
                         <span className={styles.link_text}>{item.name}</span>
                     </div>
                 </div>
