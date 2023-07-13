@@ -1,22 +1,11 @@
 // START: Import React and Dongles
-import {
-    ChangeEvent,
-    Dispatch,
-    memo,
-    SetStateAction,
-    useContext,
-    useState,
-} from 'react';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { ChangeEvent, Dispatch, memo, SetStateAction, useContext } from 'react';
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
-import Modal from '../../../../components/Global/Modal/Modal';
-import { useModal } from '../../../../components/Global/Modal/useModal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
-import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
@@ -25,10 +14,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
-import TokenQuantityInput from '../../../Global/TokenQuantityInput/TokenQuantityInput';
+import TokenInput from '../../../Global/TokenInput/TokenInput';
 
 // interface for component props
 interface propsIF {
@@ -74,59 +60,16 @@ function LimitCurrencySelector(props: propsIF) {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { setInput } = useContext(TokenContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
     const { dexBalLimit } = useContext(UserPreferenceContext);
 
-    const thisToken = fieldId === 'sell' ? tokenA : tokenB;
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const isSellTokenSelector = fieldId === 'sell';
-
-    // IMPORTANT!  The Limit Order module is the one only transaction configurator
-    // ... in the app which has an input field with no token selector.  For that
-    // ... reason, `LimitCurrencySelector.tsx` file needs to be coded separately
-    // ... from its counterparts in the Swap/Market/Pool modules, even if we use
-    // ... a common element for those modules in the future.
-
-    const modalCloseCustom = (): void => setInput('');
-
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
-        useState(true);
-
-    const handleInputClear = (): void => {
-        setInput('');
-        const soloTokenSelectInput = document.getElementById(
-            'solo-token-select-input',
-        ) as HTMLInputElement;
-        soloTokenSelectInput.value = '';
-    };
-
-    const tokenSelect = (
-        <button
-            className={`${styles.token_select} ${
-                showOrderPulseAnimation && styles.pulse_animation
-            }`}
-            onClick={openTokenModal}
-            tabIndex={0}
-            aria-label={`Open swap ${fieldId} token modal.`}
-            id='limit_token_selector'
-        >
-            <TokenIcon
-                src={uriToHttp(thisToken.logoURI)}
-                alt={thisToken.symbol}
-                size='2xl'
-            />
-            <span className={styles.token_list_text}>{thisToken.symbol}</span>
-            <RiArrowDownSLine size={27} />
-        </button>
-    );
 
     const walletBalanceNonLocaleString =
         tokenABalance && gasPriceInGwei
@@ -330,45 +273,17 @@ function LimitCurrencySelector(props: propsIF) {
     ) : null;
 
     return (
-        <div className={styles.swapbox}>
-            <div className={styles.swapbox_top}>
-                <div className={styles.swap_input} id='limit_sell_qty'>
-                    <TokenQuantityInput
-                        value={
-                            tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty
-                        }
-                        token={thisToken}
-                        fieldId={fieldId}
-                        onEventChange={handleChangeEvent}
-                        parseInput={parseInput}
-                    />
-                </div>
-                {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}
-            </div>
-            {balanceDisplayOrNull}
-            {isTokenModalOpen && (
-                <Modal
-                    onClose={closeTokenModal}
-                    title='Select Token'
-                    centeredTitle
-                    handleBack={handleInputClear}
-                    showBackButton={false}
-                    footer={null}
-                >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        closeModal={closeTokenModal}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
-                        isSingleToken={false}
-                        tokenAorB={tokenAorB}
-                        reverseTokens={reverseTokens}
-                    />
-                </Modal>
-            )}
-        </div>
+        <TokenInput
+            fieldId={fieldId}
+            token={isSellTokenSelector ? tokenA : tokenB}
+            tokenAorB={tokenAorB}
+            value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
+            handleChangeEvent={handleChangeEvent}
+            reverseTokens={reverseTokens}
+            includeWallet={balanceDisplayOrNull}
+            showPulseAnimation={showOrderPulseAnimation}
+            parseInput={parseInput}
+        />
     );
 }
 

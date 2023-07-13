@@ -43,7 +43,6 @@ interface propsIF {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
-    openTokenModal: () => void;
 }
 
 export default function Transfer(props: propsIF) {
@@ -55,7 +54,6 @@ export default function Transfer(props: propsIF) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
-        openTokenModal,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
@@ -344,7 +342,6 @@ export default function Transfer(props: propsIF) {
             />
             <TransferCurrencySelector
                 fieldId='exchange-balance-transfer'
-                onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setTransferQty={setTransferQtyNonDisplay}
                 inputValue={inputValue}

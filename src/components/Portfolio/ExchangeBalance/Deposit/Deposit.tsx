@@ -40,7 +40,6 @@ interface propsIF {
     tokenWalletBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
-    openTokenModal: () => void;
     selectedTokenDecimals: number;
 }
 
@@ -51,7 +50,6 @@ export default function Deposit(props: propsIF) {
         tokenWalletBalance,
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        openTokenModal,
         selectedTokenDecimals,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
@@ -390,7 +388,6 @@ export default function Deposit(props: propsIF) {
             </div>
             <DepositCurrencySelector
                 fieldId='exchange-balance-deposit'
-                onClick={() => openTokenModal()}
                 disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQtyNonDisplay}

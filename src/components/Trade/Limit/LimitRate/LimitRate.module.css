@@ -32,13 +32,10 @@
 /* swapbox */
 .swapbox {
     display: flex;
-    overflow: auto;
     flex-direction: column;
-    overflow-y: hidden;
     color: white;
 
     margin-top: 8px;
-
 }
 
 .direction {

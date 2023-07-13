@@ -1,20 +1,9 @@
-import {
-    ChangeEvent,
-    Dispatch,
-    memo,
-    SetStateAction,
-    useContext,
-    useState,
-} from 'react';
+import { ChangeEvent, Dispatch, memo, SetStateAction, useContext } from 'react';
 import styles from './RangeCurrencySelector.module.css';
-import { RiArrowDownSLine } from 'react-icons/ri';
-import { useModal } from '../../../../components/Global/Modal/useModal';
-import Modal from '../../../../components/Global/Modal/Modal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
-import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -23,10 +12,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
-import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
-import TokenQuantityInput from '../../../Global/TokenQuantityInput/TokenQuantityInput';
+import TokenInput from '../../../Global/TokenInput/TokenInput';
 
 interface propsIF {
     fieldId: string;
@@ -71,8 +57,6 @@ function RangeCurrencySelector(props: propsIF) {
         tokenAInputQty,
         tokenBInputQty,
         tokenBDexBalance,
-        isTokenADisabled,
-        isTokenBDisabled,
         isAdvancedMode,
         handleChangeClick,
         tokenAorB,
@@ -84,18 +68,14 @@ function RangeCurrencySelector(props: propsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { setInput } = useContext(TokenContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const isTokenASelector = fieldId === 'A';
-
-    const thisToken = isTokenASelector ? tokenA : tokenB;
 
     const walletAndSurplusBalanceNonLocaleString = isTokenASelector
         ? tokenADexBalance && gasPriceInGwei
@@ -170,25 +150,6 @@ function RangeCurrencySelector(props: propsIF) {
               maximumFractionDigits: 2,
           })
         : '...';
-
-    const isFieldDisabled =
-        (isTokenASelector && isTokenADisabled) ||
-        (!isTokenASelector && isTokenBDisabled);
-
-    const modalCloseCustom = (): void => setInput('');
-
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
-        useState(true);
-
-    const handleInputClear = (): void => {
-        setInput('');
-        const soloTokenSelectInput = document.getElementById(
-            'solo-token-select-input',
-        ) as HTMLInputElement;
-        soloTokenSelectInput.value = '';
-    };
 
     const balanceLocaleString =
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
@@ -352,75 +313,28 @@ function RangeCurrencySelector(props: propsIF) {
     );
 
     return (
-        <div className={styles.swapbox}>
-            <div className={styles.swapbox_top}>
-                <div className={styles.swap_input} id='range_sell_qty'>
-                    <TokenQuantityInput
-                        value={
-                            tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty
-                        }
-                        token={thisToken}
-                        fieldId={fieldId}
-                        onEventChange={updateOtherQuantity}
-                        disable={isFieldDisabled}
-                        disabledContent={
-                            <div className={styles.overlay_container}>
-                                <div className={styles.disabled_text}>
-                                    The market is outside your specified range.
-                                    <div className={styles.warning_text}>
-                                        Single-asset deposit only.
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                        isAdvancedMode={isAdvancedMode}
-                        parseInput={parseInput}
-                    />
+        <TokenInput
+            fieldId={fieldId}
+            token={isTokenASelector ? tokenA : tokenB}
+            tokenAorB={tokenAorB}
+            value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
+            handleChangeEvent={updateOtherQuantity}
+            reverseTokens={reverseTokens}
+            includeWallet={swapboxBottomOrNull}
+            disabledContent={
+                <div className={styles.overlay_container}>
+                    <div className={styles.disabled_text}>
+                        The market is outside your specified range.
+                        <div className={styles.warning_text}>
+                            Single-asset deposit only.
+                        </div>
+                    </div>
                 </div>
-                <button
-                    className={`${styles.token_select} ${
-                        showRangePulseAnimation && styles.pulse_animation
-                    }`}
-                    onClick={() => openTokenModal()}
-                    id='range_token_selector'
-                    tabIndex={0}
-                    aria-label={`Open range ${fieldId} token modal.`}
-                >
-                    <TokenIcon
-                        src={uriToHttp(thisToken.logoURI)}
-                        alt={thisToken.name + 'token logo'}
-                        size='2xl'
-                    />
-                    <span className={styles.token_list_text}>
-                        {thisToken.symbol}
-                    </span>
-                    <RiArrowDownSLine size={27} />
-                </button>
-            </div>
-            {swapboxBottomOrNull}
-            {isTokenModalOpen && (
-                <Modal
-                    onClose={closeTokenModal}
-                    title='Select Token'
-                    centeredTitle
-                    handleBack={handleInputClear}
-                    showBackButton={false}
-                    footer={null}
-                >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        closeModal={closeTokenModal}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
-                        isSingleToken={false}
-                        tokenAorB={tokenAorB}
-                        reverseTokens={reverseTokens}
-                    />
-                </Modal>
-            )}
-        </div>
+            }
+            isAdvancedMode={isAdvancedMode}
+            parseInput={parseInput}
+            showPulseAnimation={showRangePulseAnimation}
+        />
     );
 }
 

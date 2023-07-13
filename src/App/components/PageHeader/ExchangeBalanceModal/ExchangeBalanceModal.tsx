@@ -7,12 +7,12 @@ import useKeyPress from '../../../hooks/useKeyPress';
 
 export const ExchangeBalanceModal = () => {
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
-    const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
+    // const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
 
     const escapePressed = useKeyPress('Escape');
 
     useEffect(() => {
-        if (fullLayoutActive && !isTokenModalOpen && escapePressed) {
+        if (fullLayoutActive && escapePressed) {
             setFullLayoutActive(false);
         }
     }, [escapePressed]);
@@ -22,13 +22,13 @@ export const ExchangeBalanceModal = () => {
             icon={<img src={coins} />}
             open={fullLayoutActive}
             setOpen={setFullLayoutActive}
-            allowClicksOutside={isTokenModalOpen}
+            // allowClicksOutside={isTokenModalOpen}
         >
             <div className={styles.dropdown}>
                 <ExchangeBalance
                     fullLayoutActive={fullLayoutActive}
                     setFullLayoutActive={setFullLayoutActive}
-                    setIsTokenModalOpen={setIsTokenModalOpen}
+                    // setIsTokenModalOpen={setIsTokenModalOpen}
                     isModalView
                 />
             </div>
