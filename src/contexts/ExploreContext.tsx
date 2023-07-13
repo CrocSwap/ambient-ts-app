@@ -131,17 +131,17 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         );
         if (!priceChangeRaw) {
             priceChangePercent = '';
-        } else if (priceChangeRaw >= 0.01) {
+        } else if (priceChangeRaw * 100 >= 0.01) {
             priceChangePercent =
                 '+ ' +
-                priceChangeRaw.toLocaleString(undefined, {
+                (priceChangeRaw * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                 }) +
                 '%';
-        } else if (priceChangeRaw <= -0.01) {
+        } else if (priceChangeRaw * 100 <= -0.01) {
             priceChangePercent =
-                priceChangeRaw.toLocaleString(undefined, {
+                (priceChangeRaw * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                 }) + '%';
