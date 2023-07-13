@@ -52,7 +52,7 @@ export default function Investors() {
     );
     const row6 = (
         <div className={styles.row6}>
-            <img src={PreSeed} alt='pre-seed' width='80px' />
+            <h3>Pre-Seed</h3>
         </div>
     );
     const row7 = (

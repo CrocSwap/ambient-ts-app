@@ -1,7 +1,7 @@
 import styles from './SidebarFooter.module.css';
 
 import { Link, useLocation } from 'react-router-dom';
-import { MdAccountBox } from 'react-icons/md';
+import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
 // import { IoMdAnalytics } from 'react-icons/io';
 import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
@@ -48,6 +48,11 @@ function SidebarFooter() {
             title: 'Trade',
             destination: tradeDestination + paramsSlug,
             icon: GiTrade,
+        },
+        {
+            title: 'Explore',
+            destination: '/explore',
+            icon: MdOutlineExplore,
         },
         { title: 'Account', destination: '/account/', icon: MdAccountBox },
         { title: 'Chat', destination: '/chat/', icon: BsFillChatDotsFill },
