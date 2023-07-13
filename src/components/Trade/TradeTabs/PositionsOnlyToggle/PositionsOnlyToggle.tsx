@@ -136,11 +136,11 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 {toggleOrNull}
             </div>
             {(!isCandleDataNull || isCandleArrived) &&
-                tradeTableState != 'Expanded' &&
-                expandIcon}
-            {(!isCandleDataNull || isCandleArrived) &&
                 tradeTableState != 'Collapsed' &&
                 collapseIcon}
+            {(!isCandleDataNull || isCandleArrived) &&
+                tradeTableState != 'Expanded' &&
+                expandIcon}
         </div>
     );
 }
