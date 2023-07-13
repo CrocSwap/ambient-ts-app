@@ -15,7 +15,7 @@ function Swap() {
 
     return (
         <div className={styles.swap_page_container}>
-            {!isPoolInitialized && (
+            {isPoolInitialized === false && (
                 <PoolNotInitalized
                     chainId={chainId}
                     tokenA={tokenA}

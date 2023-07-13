@@ -288,7 +288,7 @@ function Trade() {
 
     return (
         <section className={`${styles.main_layout}`}>
-            {!isPoolInitialized && (
+            {isPoolInitialized === false && (
                 <PoolNotInitalized
                     chainId={chainId}
                     tokenA={

@@ -7,7 +7,6 @@ import {
     useState,
 } from 'react';
 import styles from './RangeCurrencySelector.module.css';
-import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
@@ -27,6 +26,7 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import TokenQuantityInput from '../../../Global/TokenQuantityInput/TokenQuantityInput';
 
 interface propsIF {
     fieldId: string;
@@ -355,14 +355,24 @@ function RangeCurrencySelector(props: propsIF) {
         <div className={styles.swapbox}>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='range_sell_qty'>
-                    <RangeCurrencyQuantity
+                    <TokenQuantityInput
                         value={
                             tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty
                         }
-                        thisToken={thisToken}
+                        token={thisToken}
                         fieldId={fieldId}
-                        updateOtherQuantity={updateOtherQuantity}
+                        onEventChange={updateOtherQuantity}
                         disable={isFieldDisabled}
+                        disabledContent={
+                            <div className={styles.overlay_container}>
+                                <div className={styles.disabled_text}>
+                                    The market is outside your specified range.
+                                    <div className={styles.warning_text}>
+                                        Single-asset deposit only.
+                                    </div>
+                                </div>
+                            </div>
+                        }
                         isAdvancedMode={isAdvancedMode}
                         parseInput={parseInput}
                     />

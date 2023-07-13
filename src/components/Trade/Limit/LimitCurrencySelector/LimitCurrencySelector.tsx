@@ -8,10 +8,6 @@ import {
     useState,
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
-
-// START: Import React Functional Components
-import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantity';
-
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
 import Modal from '../../../../components/Global/Modal/Modal';
@@ -32,6 +28,7 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import TokenQuantityInput from '../../../Global/TokenQuantityInput/TokenQuantityInput';
 
 // interface for component props
 interface propsIF {
@@ -336,13 +333,13 @@ function LimitCurrencySelector(props: propsIF) {
         <div className={styles.swapbox}>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='limit_sell_qty'>
-                    <LimitCurrencyQuantity
+                    <TokenQuantityInput
                         value={
                             tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty
                         }
-                        thisToken={thisToken}
+                        token={thisToken}
                         fieldId={fieldId}
-                        handleChangeEvent={handleChangeEvent}
+                        onEventChange={handleChangeEvent}
                         parseInput={parseInput}
                     />
                 </div>

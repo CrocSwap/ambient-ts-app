@@ -1,5 +1,4 @@
 import styles from './CurrencySelector.module.css';
-import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 import {
@@ -30,6 +29,7 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import TokenQuantityInput from '../../Global/TokenQuantityInput/TokenQuantityInput';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -51,7 +51,7 @@ interface propsIF {
     setIsBuyLoading: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    handleChangeEvent: (evt?: ChangeEvent<HTMLInputElement>) => void;
+    handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     handleChangeClick?: (value: string) => void;
     reverseTokens: () => void;
     setDisableReverseTokens: Dispatch<SetStateAction<boolean>>;
@@ -505,16 +505,11 @@ function CurrencySelector(props: propsIF) {
         <div className={styles.swapbox}>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='swap_sell_qty'>
-                    <CurrencyQuantity
+                    <TokenQuantityInput
                         value={tokenAorB === 'A' ? sellQtyString : buyQtyString}
-                        thisToken={thisToken}
-                        setSellQtyString={setSellQtyString}
-                        setBuyQtyString={setBuyQtyString}
+                        token={thisToken}
                         fieldId={fieldId}
-                        handleChangeEvent={handleChangeEvent}
-                        setDisableReverseTokens={setDisableReverseTokens}
-                        setIsSellLoading={setIsSellLoading}
-                        setIsBuyLoading={setIsBuyLoading}
+                        onEventChange={handleChangeEvent}
                         isLoading={isLoading}
                     />
                 </div>

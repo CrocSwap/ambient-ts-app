@@ -35,6 +35,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import useDebounce from '../../../App/hooks/useDebounce';
 
 interface propsIF {
     slippageTolerancePercentage: number;
@@ -434,6 +435,51 @@ function CurrencyConverter(props: propsIF) {
         }
     }
 
+    const [lastEvent, setLastEvent] = useState<
+        ChangeEvent<HTMLInputElement> | undefined
+    >();
+
+    // Let input rest 3/4 of a second before triggering an update
+    const debouncedLastEvent = useDebounce(lastEvent, 750);
+
+    useEffect(() => {
+        if (debouncedLastEvent) {
+            isBuyLoading
+                ? handleTokenAChangeEvent(debouncedLastEvent)
+                : handleTokenBChangeEvent(debouncedLastEvent);
+        }
+    }, [debouncedLastEvent]);
+
+    const debouncedTokenAChangeEvent = (
+        event: ChangeEvent<HTMLInputElement>,
+    ) => {
+        const { value } = event.target;
+        setBuyQtyString('');
+        if (value && parseFloat(value) !== 0) {
+            setIsBuyLoading(true);
+            setSellQtyString(value);
+        }
+        value || setIsBuyLoading(false);
+
+        setDisableReverseTokens(true);
+        setLastEvent(event);
+    };
+
+    const debouncedTokenBChangeEvent = (
+        event: ChangeEvent<HTMLInputElement>,
+    ) => {
+        const { value } = event.target;
+        setSellQtyString('');
+        if (value && parseFloat(value) !== 0) {
+            setIsSellLoading(true);
+            setBuyQtyString(value);
+        }
+        value || setIsSellLoading(false);
+
+        setDisableReverseTokens(true);
+        setLastEvent(event);
+    };
+
     const handleTokenAChangeEvent = useMemo(
         () => async (evt?: ChangeEvent<HTMLInputElement>) => {
             if (!crocEnv) return;
@@ -587,7 +633,7 @@ function CurrencyConverter(props: propsIF) {
                 isLoading={isSellLoading}
                 tokenAorB={'A'}
                 sellToken
-                handleChangeEvent={handleTokenAChangeEvent}
+                handleChangeEvent={debouncedTokenAChangeEvent}
                 handleChangeClick={handleTokenAChangeClick}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
@@ -630,7 +676,7 @@ function CurrencyConverter(props: propsIF) {
                     fieldId='buy'
                     isLoading={isBuyLoading}
                     tokenAorB={'B'}
-                    handleChangeEvent={handleTokenBChangeEvent}
+                    handleChangeEvent={debouncedTokenBChangeEvent}
                     tokenABalance={tokenABalance}
                     tokenBBalance={tokenBBalance}
                     tokenADexBalance={tokenADexBalance}
