@@ -1,5 +1,6 @@
 import { SortedPoolMethodsIF, sortType } from './useSortedPools';
 import styled from 'styled-components';
+import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { HeaderItem } from './TopPools';
 
 const TableHead = ({
@@ -23,14 +24,21 @@ const TableHead = ({
         font-weight: 300;
         line-height: normal;
         text-transform: capitalize;
+        width: 100%;
+        height: 100%;
     `;
 
     const TableHeaderCell = styled.th<HeaderItem>`
         position: sticky;
         top: 0;
+        width: 100%;
+        height: 25px;
+        padding: 0 4px;
+
         text-align: ${({ align }) => align};
 
         cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
+
         background-color: ${({ label }) =>
             sortedPools.current === label?.toLowerCase()
                 ? 'var(--dark2)'
@@ -74,6 +82,19 @@ const TableHead = ({
         }
     `;
 
+    const AssignSort: React.FC<{ label: string }> = ({ label }) => {
+        const isCurrentSort = sortedPools.current === label.toLowerCase();
+        const sortedArrow =
+            sortedPools.direction === 'ascending' ? (
+                <BsSortUpAlt />
+            ) : (
+                <BsSortDown />
+            );
+        const showArrow = isCurrentSort ? sortedArrow : null;
+
+        return showArrow;
+    };
+
     return (
         <TableHeadWrapper>
             <TableRow>
@@ -95,7 +116,21 @@ const TableHead = ({
                                 );
                         }}
                     >
-                        {item.label}
+                        <div
+                            style={{
+                                background:
+                                    sortedPools.current ===
+                                    item.label.toLowerCase()
+                                        ? 'var(--dark2)'
+                                        : 'transparent',
+                                width: '100%',
+                                height: '100%',
+                            }}
+                        >
+                            {item.label}
+
+                            <AssignSort label={item.label} />
+                        </div>
                     </TableHeaderCell>
                 ))}
             </TableRow>

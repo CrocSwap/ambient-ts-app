@@ -9,7 +9,7 @@ import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 
 export interface HeaderItem {
-    label: string | null;
+    label: string;
     hidden: boolean;
     align: string;
     responsive?: string;
@@ -51,7 +51,7 @@ function TopPools(props: propsIF) {
         {
             label: 'Pool',
             hidden: true,
-            align: 'right',
+            align: 'left',
             responsive: 'sm',
             sortable: false,
         },
@@ -84,7 +84,7 @@ function TopPools(props: propsIF) {
             responsive: 'lg',
             sortable: true,
         },
-        { label: null, hidden: false, align: 'right', sortable: false },
+        { label: '', hidden: false, align: 'right', sortable: false },
     ];
 
     return (
