@@ -275,6 +275,15 @@ function decorateCandleData(
                 p.priceOpen = p.priceOpen / priceDecMult;
                 p.priceClose = p.priceClose / priceDecMult;
             }
+            if (!isCrocData) {
+                // Wipe out these values for grey scale coloring in chart
+                p.tvlBase = 0;
+                p.tvlQuote = 0;
+                p.volumeBase = 0;
+                p.volumeQuote = 0;
+                p.feeRateOpen = 0;
+                p.feeRateClose = 0;
+            }
             return {
                 time: p.time,
                 period: p.period,
