@@ -7,7 +7,6 @@ import yunt from '../../../assets/images/investors/yunt.svg';
 import susa from '../../../assets/images/investors/susa.svg';
 import quantstamp from '../../../assets/images/investors/quantstamp.svg';
 import hypotenuse from '../../../assets/images/investors/hypotenuse.svg';
-import PreSeed from '../../../assets/images/investors/Pre-Seed.svg';
 import PositiveSum from '../../../assets/images/investors/positivesum.svg';
 import motivate from '../../../assets/images/investors/motivate.svg';
 import styles from './Investors.module.css';
