@@ -15,6 +15,7 @@ export default function PoolCard(props: propsIF) {
     const { pool } = props;
 
     const poolData = useFetchPoolStats(pool);
+
     const {
         poolVolume,
         poolPrice,

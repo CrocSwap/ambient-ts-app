@@ -4,7 +4,6 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
@@ -30,8 +29,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-
-    const userData = useAppSelector((state) => state.userData);
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<
         string | undefined
@@ -59,12 +56,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
-        if (
-            isServerEnabled &&
-            !userData.isUserIdle &&
-            crocEnv &&
-            lastBlockNumber !== 0
-        ) {
+        if (isServerEnabled && crocEnv && lastBlockNumber !== 0) {
             (async () => {
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
@@ -111,7 +103,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 }
             })();
         }
-    }, [isServerEnabled, userData.isUserIdle, chainId, crocEnv]);
+    }, [isServerEnabled, chainId, crocEnv, lastBlockNumber]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
@@ -250,8 +242,14 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     });
 
     useEffect(() => {
-        if (isServerEnabled && !userData.isUserIdle) fetchPoolStats();
-    }, [isServerEnabled, userData.isUserIdle, shouldInvertDisplay]);
+        if (isServerEnabled) fetchPoolStats();
+    }, [
+        isServerEnabled,
+        shouldInvertDisplay,
+        lastBlockNumber,
+        crocEnv,
+        poolIndex,
+    ]);
 
     return {
         poolName,

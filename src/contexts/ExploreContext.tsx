@@ -33,6 +33,10 @@ export interface PoolDataIF extends PoolIF {
     apyStr: string;
     priceChange: number;
     priceChangeStr: string;
+    moneyness: {
+        base: number;
+        quote: number;
+    };
 }
 
 export const ExploreContext = createContext<ExploreContextIF>(
@@ -105,11 +109,18 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         );
         // format TVL, use empty string as backup value
         const tvlDisplay: string = poolStats.tvlTotalUsd
-            ? getFormattedNumber({ value: poolStats.tvlTotalUsd, isTvl: true })
+            ? getFormattedNumber({
+                  value: poolStats.tvlTotalUsd,
+                  isTvl: true,
+                  prefix: '$',
+              })
             : '';
         // format volume, use empty string as backup value
         const volumeDisplay: string = poolStats.volumeTotalUsd
-            ? getFormattedNumber({ value: poolStats.volumeTotalUsd })
+            ? getFormattedNumber({
+                  value: poolStats.volumeTotalUsd,
+                  prefix: '$',
+              })
             : '';
         // format estimated APY, use empty string as backup value
         const apyDisplay: string = apyEst.toLocaleString(undefined, {
@@ -127,17 +138,17 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         );
         if (!priceChangeRaw) {
             priceChangePercent = '';
-        } else if (priceChangeRaw >= 0.01) {
+        } else if (priceChangeRaw * 100 >= 0.01) {
             priceChangePercent =
                 '+ ' +
-                priceChangeRaw.toLocaleString(undefined, {
+                (priceChangeRaw * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                 }) +
                 '%';
-        } else if (priceChangeRaw <= -0.01) {
+        } else if (priceChangeRaw * 100 <= -0.01) {
             priceChangePercent =
-                priceChangeRaw.toLocaleString(undefined, {
+                (priceChangeRaw * 100).toLocaleString(undefined, {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                 }) + '%';
@@ -158,11 +169,16 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             apyStr: apyDisplay,
             priceChange: priceChangeRaw ?? 0,
             priceChangeStr: priceChangePercent,
+            moneyness: {
+                base: baseMoneyness,
+                quote: quoteMoneyness,
+            },
         };
         // write a pool name should it not be there already
-        poolData.name = shouldInvert
-            ? `${pool.quote.symbol} / ${pool.base.symbol}`
-            : `${pool.base.symbol} / ${pool.quote.symbol}`;
+        poolData.name =
+            baseMoneyness < quoteMoneyness
+                ? `${pool.base.symbol} / ${pool.quote.symbol}`
+                : `${pool.quote.symbol} / ${pool.base.symbol}`;
         return poolData;
     }
 
