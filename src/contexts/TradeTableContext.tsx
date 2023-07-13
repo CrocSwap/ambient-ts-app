@@ -5,6 +5,8 @@ import { ChartContext, CHART_DEFAULT_HEIGHT } from './ChartContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
+// 54 is the height of the trade table header
+export const TRADE_TABLE_HEADER_HEIGHT = 54;
 interface TradeTableContextIF {
     showOrderPulseAnimation: boolean;
     showRangePulseAnimation: boolean;

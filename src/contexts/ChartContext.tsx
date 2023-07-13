@@ -4,6 +4,7 @@ import {
     chartSettingsMethodsIF,
     useChartSettings,
 } from '../App/hooks/useChartSettings';
+import { TRADE_TABLE_HEADER_HEIGHT } from './TradeTableContext';
 
 // 2:1 ratio of the window height subtracted by main header and token info header
 export const CHART_MAX_HEIGHT = window.innerHeight - 98;
@@ -29,7 +30,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const [fullScreenChart, setFullScreenChart] = useState(false);
     const [chartHeight, setChartHeight] = useState(CHART_DEFAULT_HEIGHT);
-    const [maxChartSize, setMaxChartSize] = useState(CHART_MAX_HEIGHT - 62);
+    // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
+    const [maxChartSize, setMaxChartSize] = useState(CHART_MAX_HEIGHT - TRADE_TABLE_HEADER_HEIGHT - 8);
     const isChartEnabled =
         !!process.env.REACT_APP_CHART_IS_ENABLED &&
         process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
