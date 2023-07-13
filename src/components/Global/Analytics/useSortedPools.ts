@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 
-export type sortType = 'price' | 'tvl' | 'apr' | 'volume';
-export type directionType = 'ascending' | 'descending';
+export type sortType = '' | 'price' | 'tvl' | 'apr' | 'volume';
+export type directionType = '' | 'ascending' | 'descending';
 
 export interface SortedPoolMethodsIF {
     pools: PoolDataIF[];
@@ -50,20 +50,33 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
                 output = sortVolume();
                 break;
             case 'tvl':
+            case '':
             default:
                 output = sortTvl();
                 break;
         }
         // reverse data if user has indicated descending sort sequence
-        return direction === 'ascending' ? output : output.reverse();
+        return direction === 'descending' ? output.reverse() : output;
     }, [sortBy, direction, allPools]);
 
     // fn to respond to user clicks and update sort values correctly
     function updateSort(sort: sortType) {
         if (sort === sortBy) {
-            setDirection(
-                direction === 'ascending' ? 'descending' : 'ascending',
-            );
+            let updatedDirection: directionType;
+            switch (direction) {
+                case '':
+                    updatedDirection = 'ascending';
+                    break;
+                case 'ascending':
+                    updatedDirection = 'descending';
+                    break;
+                case 'descending':
+                default:
+                    updatedDirection = '';
+                    setSortBy('');
+                    break;
+            }
+            setDirection(updatedDirection);
         } else {
             setDirection('ascending');
             setSortBy(sort);
