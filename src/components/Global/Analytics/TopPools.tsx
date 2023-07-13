@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import PoolRow from './PoolRow';
-import { PoolDataIF } from '../../../contexts/AnalyticsContext';
+import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
 import styled from 'styled-components';

@@ -1,25 +1,25 @@
 import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
-import { AnalyticsContext } from '../../contexts/AnalyticsContext';
+import { ExploreContext } from '../../contexts/ExploreContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import styled from 'styled-components';
 
 export default function Explore() {
-    const cont = useContext(AnalyticsContext);
+    const { pools } = useContext(ExploreContext);
     const { poolList } = useContext(PoolContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
 
     const getPools = async () => {
-        if (crocEnv && poolList.length && cont.pools.all.length === 0) {
-            cont.pools.getAll(poolList, crocEnv, chainData.chainId);
-            cont.pools.autopoll.disable();
+        if (crocEnv && poolList.length && pools.all.length === 0) {
+            pools.getAll(poolList, crocEnv, chainData.chainId);
+            pools.autopoll.disable();
         }
     };
 
     useEffect(() => {
-        cont.pools.autopoll.allowed && getPools();
+        pools.autopoll.allowed && getPools();
     }, [crocEnv, chainData.chainId, poolList.length]);
 
     return (
@@ -36,7 +36,7 @@ export default function Explore() {
                 </Button>
             </MainWrapper>
 
-            <TopPools allPools={cont.pools.all} chainId={chainData.chainId} />
+            <TopPools allPools={pools.all} chainId={chainData.chainId} />
         </Section>
     );
 }

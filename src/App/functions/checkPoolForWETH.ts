@@ -1,4 +1,4 @@
-import { PoolDataIF } from '../../contexts/AnalyticsContext';
+import { PoolDataIF } from '../../contexts/ExploreContext';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { WETH } from '../../utils/tokens/WETH';

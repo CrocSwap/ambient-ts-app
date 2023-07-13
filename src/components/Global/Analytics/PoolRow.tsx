@@ -1,6 +1,6 @@
 import TokenIcon from '../TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
-import { PoolDataIF } from '../../../contexts/AnalyticsContext';
+import { PoolDataIF } from '../../../contexts/ExploreContext';
 import styled, { css } from 'styled-components';
 
 interface propsIF {

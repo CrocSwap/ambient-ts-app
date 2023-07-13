@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { PoolDataIF } from '../../../contexts/AnalyticsContext';
+import { PoolDataIF } from '../../../contexts/ExploreContext';
 
 export type sortType = 'price' | 'tvl' | 'apr' | 'volume';
 export type directionType = 'ascending' | 'descending';

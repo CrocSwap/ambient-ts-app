@@ -9,7 +9,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { estimateFrom24HrRangeApr } from '../App/functions/fetchAprEst';
 import { get24hChange } from '../App/functions/getPoolStats';
 
-export interface AnalyticsContextIF {
+export interface ExploreContextIF {
     pools: {
         all: PoolDataIF[];
         getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
@@ -34,11 +34,11 @@ export interface PoolDataIF extends PoolIF {
     priceChange: string;
 }
 
-export const AnalyticsContext = createContext<AnalyticsContextIF>(
-    {} as AnalyticsContextIF,
+export const ExploreContext = createContext<ExploreContextIF>(
+    {} as ExploreContextIF,
 );
 
-export const AnalyticsContextProvider = (props: { children: ReactNode }) => {
+export const ExploreContextProvider = (props: { children: ReactNode }) => {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         cachedPoolStatsFetch,
@@ -191,7 +191,7 @@ export const AnalyticsContextProvider = (props: { children: ReactNode }) => {
         allowAutopollPools.current = false;
     }
 
-    const analyticsContext: AnalyticsContextIF = {
+    const exploreContext: ExploreContextIF = {
         pools: {
             all: allPools,
             getAll: getAllPoolData,
@@ -204,8 +204,8 @@ export const AnalyticsContextProvider = (props: { children: ReactNode }) => {
     };
 
     return (
-        <AnalyticsContext.Provider value={analyticsContext}>
+        <ExploreContext.Provider value={exploreContext}>
             {props.children}
-        </AnalyticsContext.Provider>
+        </ExploreContext.Provider>
     );
 };
