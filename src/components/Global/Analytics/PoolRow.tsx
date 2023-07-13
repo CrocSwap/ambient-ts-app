@@ -125,6 +125,11 @@ const TradeButton = styled.button`
 export default function PoolRow(props: propsIF) {
     const { pool, goToMarket } = props;
 
+    const [firstLogoURI, secondLogoURI]: [string, string] =
+        pool.moneyness.base < pool.moneyness.quote
+            ? [pool.base.logoURI, pool.quote.logoURI]
+            : [pool.quote.logoURI, pool.base.logoURI];
+
     return (
         <TableRow
             onClick={() => goToMarket(pool.base.address, pool.quote.address)}
@@ -134,13 +139,13 @@ export default function PoolRow(props: propsIF) {
                 <FlexCenter>
                     <TokenWrapper>
                         <TokenIcon
-                            src={uriToHttp(pool.base.logoURI)}
-                            alt={'logo for token: ' + pool.base.name}
+                            src={uriToHttp(firstLogoURI)}
+                            alt={'logo for token'}
                             size='2xl'
                         />
                         <TokenIcon
-                            src={uriToHttp(pool.quote.logoURI)}
-                            alt={'logo for token: ' + pool.quote.name}
+                            src={uriToHttp(secondLogoURI)}
+                            alt={'logo for token'}
                             size='2xl'
                         />
                     </TokenWrapper>

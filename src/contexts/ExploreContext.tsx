@@ -33,6 +33,10 @@ export interface PoolDataIF extends PoolIF {
     apyStr: string;
     priceChange: number;
     priceChangeStr: string;
+    moneyness: {
+        base: number;
+        quote: number;
+    };
 }
 
 export const ExploreContext = createContext<ExploreContextIF>(
@@ -158,11 +162,16 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             apyStr: apyDisplay,
             priceChange: priceChangeRaw ?? 0,
             priceChangeStr: priceChangePercent,
+            moneyness: {
+                base: baseMoneyness,
+                quote: quoteMoneyness,
+            },
         };
         // write a pool name should it not be there already
-        poolData.name = shouldInvert
-            ? `${pool.quote.symbol} / ${pool.base.symbol}`
-            : `${pool.base.symbol} / ${pool.quote.symbol}`;
+        poolData.name =
+            baseMoneyness < quoteMoneyness
+                ? `${pool.base.symbol} / ${pool.quote.symbol}`
+                : `${pool.quote.symbol} / ${pool.base.symbol}`;
         return poolData;
     }
 
