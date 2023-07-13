@@ -162,7 +162,7 @@ export default function PoolRow(props: propsIF) {
                                 : 'var(--negative)',
                     }}
                 >
-                    {pool.apyStr}
+                    {pool.apyStr + '%'}
                 </p>
             </TableCell>
             <TableCell>
@@ -173,7 +173,7 @@ export default function PoolRow(props: propsIF) {
                     style={{
                         color:
                             pool.priceChangeStr.includes('No') ||
-                            !pool.priceChange
+                            !pool.priceChangeStr
                                 ? 'var(--text1)'
                                 : pool.priceChangeStr.startsWith('-')
                                 ? 'var(--negative)'
