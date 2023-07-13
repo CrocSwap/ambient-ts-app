@@ -109,11 +109,18 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         );
         // format TVL, use empty string as backup value
         const tvlDisplay: string = poolStats.tvlTotalUsd
-            ? getFormattedNumber({ value: poolStats.tvlTotalUsd, isTvl: true })
+            ? getFormattedNumber({
+                  value: poolStats.tvlTotalUsd,
+                  isTvl: true,
+                  prefix: '$',
+              })
             : '';
         // format volume, use empty string as backup value
         const volumeDisplay: string = poolStats.volumeTotalUsd
-            ? getFormattedNumber({ value: poolStats.volumeTotalUsd })
+            ? getFormattedNumber({
+                  value: poolStats.volumeTotalUsd,
+                  prefix: '$',
+              })
             : '';
         // format estimated APY, use empty string as backup value
         const apyDisplay: string = apyEst.toLocaleString(undefined, {
