@@ -28,12 +28,15 @@ function RangeCurrencyQuantity(props: propsIF) {
     } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
+    // trigger useEffect to update display value if the parsed value is the same as existing (12 -> 0000012 -> 12)
+    const [inputChanged, setInputChanged] = useState(false);
 
     useEffect(() => {
         setDisplayValue(value);
-    }, [value]);
+    }, [inputChanged, value]);
 
     const onBlur = (input: string) => {
+        setInputChanged(!inputChanged);
         parseInput && parseInput(input);
     };
 

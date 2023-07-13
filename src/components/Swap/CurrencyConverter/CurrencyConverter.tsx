@@ -626,9 +626,7 @@ function CurrencyConverter(props: propsIF) {
             <CurrencySelector
                 disableReverseTokens={disableReverseTokens}
                 sellQtyString={sellQtyString}
-                setSellQtyString={setSellQtyString}
                 buyQtyString={buyQtyString}
-                setBuyQtyString={setBuyQtyString}
                 fieldId='sell'
                 isLoading={isSellLoading}
                 tokenAorB={'A'}
@@ -670,8 +668,6 @@ function CurrencyConverter(props: propsIF) {
                 <CurrencySelector
                     disableReverseTokens={disableReverseTokens}
                     sellQtyString={sellQtyString}
-                    setSellQtyString={setSellQtyString}
-                    setBuyQtyString={setBuyQtyString}
                     buyQtyString={buyQtyString}
                     fieldId='buy'
                     isLoading={isBuyLoading}
