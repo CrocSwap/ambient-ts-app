@@ -151,7 +151,7 @@ export default function PoolRow(props: propsIF) {
                 <p>{pool.displayPrice}</p>
             </TableCell>
             <TableCell hidden sm>
-                <p>{!pool.tvl ? '...' : pool.tvl}</p>
+                <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
             </TableCell>
             <TableCell hidden xl>
                 <p
@@ -162,11 +162,11 @@ export default function PoolRow(props: propsIF) {
                                 : 'var(--negative)',
                     }}
                 >
-                    {pool.apy}
+                    {pool.apyStr}
                 </p>
             </TableCell>
             <TableCell>
-                <p>{!pool.volume ? '...' : pool.volume}</p>
+                <p>{pool.volumeStr || '...'}</p>
             </TableCell>
             <TableCell hidden lg>
                 <p
