@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import { AnalyticsContext } from '../../contexts/AnalyticsContext';
@@ -12,21 +12,16 @@ export default function Explore() {
     const { crocEnv, chainData } = useContext(CrocEnvContext);
 
     const getPools = async () => {
-        if (crocEnv && poolList && cont.allPools.length === 0) {
-            cont.getAllPoolData(poolList, crocEnv, chainData.chainId);
+        if (crocEnv && poolList && cont.pools.all.length === 0) {
+            cont.pools.getAll(poolList, crocEnv, chainData.chainId);
             console.log('sending a new fetch!');
         }
     };
 
-    useEffect(() => console.log(cont.allPools), [cont.allPools]);
-
-    const notYetPolled = useRef(true);
+    useEffect(() => console.log(cont.pools.all), [cont.pools.all]);
 
     useEffect(() => {
-        if (crocEnv && chainData.chainId && notYetPolled.current) {
-            getPools();
-            notYetPolled.current = false;
-        }
+        getPools();
     }, [crocEnv, chainData.chainId]);
 
     return (
@@ -42,7 +37,8 @@ export default function Explore() {
                     <RefreshIcon />
                 </Button>
             </MainWrapper>
-            <TopPools allPools={cont.allPools} chainId={chainData.chainId} />
+
+            <TopPools allPools={cont.pools.all} chainId={chainData.chainId} />
         </Section>
     );
 }

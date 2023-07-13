@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext, useState } from 'react';
+import { ReactNode, createContext, useContext, useRef, useState } from 'react';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
@@ -10,8 +10,10 @@ import { estimateFrom24HrRangeApr } from '../App/functions/fetchAprEst';
 import { get24hChange } from '../App/functions/getPoolStats';
 
 export interface AnalyticsContextIF {
-    allPools: PoolDataIF[];
-    getAllPoolData(poolList: PoolIF[], crocEnv: CrocEnv, chainId: string): void;
+    pools: {
+        all: PoolDataIF[];
+        getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
+    };
 }
 
 export interface PoolDataIF extends PoolIF {
@@ -176,7 +178,12 @@ export const AnalyticsContextProvider = (props: { children: ReactNode }) => {
             });
     }
 
-    const analyticsContext = { allPools, getAllPoolData };
+    const analyticsContext = {
+        pools: {
+            all: allPools,
+            getAll: getAllPoolData,
+        },
+    };
 
     return (
         <AnalyticsContext.Provider value={analyticsContext}>
