@@ -496,10 +496,10 @@ export default function Chart(props: propsIF) {
                 time: data[0].time + period,
                 invMinPriceExclMEVDecimalCorrected:
                     data[0].invPriceOpenExclMEVDecimalCorrected,
-                maxPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                minPriceExclMEVDecimalCorrected:
+                maxPriceExclMEVDecimalCorrected:
                     data[0].priceOpenExclMEVDecimalCorrected,
+                invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
+                minPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
                 invPriceOpenExclMEVDecimalCorrected:
                     data[0].invPriceOpenExclMEVDecimalCorrected,
                 priceOpenExclMEVDecimalCorrected:
