@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { useState, useRef, useContext, memo } from 'react';
-import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
@@ -44,8 +43,6 @@ function Sidebar() {
     const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { sidebar } = useContext(SidebarContext);
-
-    const location = useLocation();
 
     const graphData = useAppSelector((state) => state.graphData);
 
@@ -171,40 +168,6 @@ function Sidebar() {
         inputField.focus();
     };
 
-    const handleInputClearExplore = () => {
-        const currentInput = document.getElementById(
-            'search_input_explore',
-        ) as HTMLInputElement;
-
-        currentInput.value = '';
-    };
-    const ExploreSearchContainer = (
-        <div className={styles.search_container}>
-            <div
-                className={styles.search__icon}
-                onClick={() => sidebar.toggle()}
-            >
-                <BiSearch size={18} color='#CDC1FF' />
-            </div>
-            <input
-                type='text'
-                id='search_input_explore'
-                placeholder='Search token or pools...'
-                className={styles.search__box}
-                onChange={(e) => setExploreSearchInput(e.target.value)}
-            />
-            {!searchInput && (
-                <div
-                    onClick={handleInputClearExplore}
-                    className={styles.close_icon}
-                >
-                    <MdClose size={18} color='#ebebeb66' />{' '}
-                </div>
-            )}
-        </div>
-        // ---------------------------END OF Explore SEARCH CONTAINER-----------------------
-    );
-
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
         searchData.setInput(e.target.value);
@@ -262,9 +225,7 @@ function Sidebar() {
                 styles.main_search_container
             } ${!sidebar.isOpen && styles.sidebar_link_search_closed}`}
         >
-            {location.pathname.includes('explore')
-                ? ExploreSearchContainer
-                : searchContainer}
+            {searchContainer}
             {sidebar.isOpen ? (
                 <div style={{ cursor: 'pointer', display: 'flex' }}>
                     <DefaultTooltip
