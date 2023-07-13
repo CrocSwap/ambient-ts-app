@@ -94,7 +94,6 @@ export async function fetchCandleSeriesHybrid(
 
         const stitchN = nCandles - candles.candles.length;
 
-        console.log('Stitching candles', stitchTime, stitchN);
         // If not backfill with Uniswap candles
         const uniCandles = await fetchCandleSeriesUniswap(
             isFetchEnabled,
@@ -112,16 +111,6 @@ export async function fetchCandleSeriesHybrid(
             return candles;
         }
 
-        console.log('Normal Candles', candles.candles);
-        console.log('Unicandles', uniCandles);
-
-        // // Sanitize volume, tvl and fee data from Uni data
-        // uniCandles.forEach((u) => {
-        //     u.tvlData.tvl = 0;
-        //     u.volumeUSD = 0;
-        //     u.averageLiquidityFee = 0;
-        // });
-
         candles.candles = candles.candles.concat(
             await expandPoolStats(
                 uniCandles,
@@ -137,7 +126,6 @@ export async function fetchCandleSeriesHybrid(
     } catch (e) {
         console.warn(e);
     }
-    console.log(candles);
     return candles;
 }
 
@@ -345,8 +333,6 @@ async function fetchCandleSeriesUniswap(
         chainData.chainId,
     );
 
-    console.log({ mainnetBase, mainnetQuote });
-
     const httpGraphCacheServerDomain = GCGO_CANDLES_URL;
     if (isFetchEnabled) {
         try {
@@ -360,21 +346,10 @@ async function fetchCandleSeriesUniswap(
                             base: mainnetBase.toLowerCase(),
                             quote: mainnetQuote.toLowerCase(),
                             poolIdx: '36000',
-                            // poolIdx: chainData.poolIndex.toString(),
                             period: period.toString(),
                             time: time, // optional
                             n: candleNeeded, // positive integer
                             chainId: '0x1',
-                            // dex: 'all',
-                            // poolStats: 'true',
-                            // concise: 'true',
-                            // poolStatsChainIdOverride: chainData.chainId,
-                            // poolStatsBaseOverride:
-                            //     baseTokenAddress.toLowerCase(),
-                            // poolStatsQuoteOverride:
-                            //     quoteTokenAddress.toLowerCase(),
-                            // poolStatsPoolIdxOverride:
-                            //     chainData.poolIndex.toString(),
                         }),
                 )
                     .then((response) => response?.json())
