@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import { AnalyticsContext } from '../../contexts/AnalyticsContext';
@@ -20,8 +20,13 @@ export default function Explore() {
 
     useEffect(() => console.log(cont.allPools), [cont.allPools]);
 
+    const notYetPolled = useRef(true);
+
     useEffect(() => {
-        getPools();
+        if (crocEnv && chainData.chainId && notYetPolled.current) {
+            getPools();
+            notYetPolled.current = false;
+        }
     }, [crocEnv, chainData.chainId]);
 
     return (
@@ -37,7 +42,6 @@ export default function Explore() {
                     <RefreshIcon />
                 </Button>
             </MainWrapper>
-
             <TopPools allPools={cont.allPools} chainId={chainData.chainId} />
         </Section>
     );
