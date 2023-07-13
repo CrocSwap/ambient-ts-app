@@ -16,6 +16,7 @@ interface TradeTableContextIF {
     tradeTableState: TradeTableState;
     setTradeTableState: (val: TradeTableState) => void;
     toggleTradeTable: () => void;
+    toggleTradeTableCollapse: () => void;
     showAllData: boolean;
     setShowAllData: (val: boolean) => void;
     selectedOutsideTab: number;
@@ -33,7 +34,8 @@ export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { isCandleSelected } = useContext(CandleContext);
-    const { setChartHeight } = useContext(ChartContext);
+    const { setChartHeight, chartHeight, maxChartSize } =
+        useContext(ChartContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -65,8 +67,25 @@ export const TradeTableContextProvider = (props: {
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
         toggleTradeTable: () => {
             if (!tradeTableState) {
-                setChartHeight(4);
-                setTradeTableState('Expanded');
+                if (chartHeight > CHART_DEFAULT_HEIGHT) {
+                    setChartHeight(CHART_DEFAULT_HEIGHT);
+                } else {
+                    setChartHeight(4);
+                    setTradeTableState('Expanded');
+                }
+            } else {
+                setChartHeight(CHART_DEFAULT_HEIGHT);
+                setTradeTableState(undefined);
+            }
+        },
+        toggleTradeTableCollapse: () => {
+            if (!tradeTableState) {
+                if (chartHeight < CHART_DEFAULT_HEIGHT) {
+                    setChartHeight(CHART_DEFAULT_HEIGHT);
+                } else {
+                    setChartHeight(maxChartSize);
+                    setTradeTableState('Collapsed');
+                }
             } else {
                 setChartHeight(CHART_DEFAULT_HEIGHT);
                 setTradeTableState(undefined);

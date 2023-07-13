@@ -5,7 +5,9 @@ import {
     useChartSettings,
 } from '../App/hooks/useChartSettings';
 
-export const CHART_DEFAULT_HEIGHT = 400;
+// 2:1 ratio of the window height subtracted by main header and token info header
+export const CHART_MAX_HEIGHT = window.innerHeight - 98;
+export const CHART_DEFAULT_HEIGHT = Math.floor((CHART_MAX_HEIGHT * 2) / 3);
 
 interface ChartContextIF {
     chartSettings: chartSettingsMethodsIF;
@@ -13,6 +15,8 @@ interface ChartContextIF {
     setIsFullScreen: (val: boolean) => void;
     chartHeight: number;
     setChartHeight: (val: number) => void;
+    maxChartSize: number;
+    setMaxChartSize: (val: number) => void;
     isEnabled: boolean;
     canvasRef: React.MutableRefObject<null>;
 }
@@ -25,6 +29,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const [fullScreenChart, setFullScreenChart] = useState(false);
     const [chartHeight, setChartHeight] = useState(CHART_DEFAULT_HEIGHT);
+    const [maxChartSize, setMaxChartSize] = useState(CHART_MAX_HEIGHT - 62);
     const isChartEnabled =
         !!process.env.REACT_APP_CHART_IS_ENABLED &&
         process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
@@ -38,6 +43,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setIsFullScreen: setFullScreenChart,
         chartHeight,
         setChartHeight,
+        maxChartSize,
+        setMaxChartSize,
         isEnabled: isChartEnabled,
         canvasRef,
     };
