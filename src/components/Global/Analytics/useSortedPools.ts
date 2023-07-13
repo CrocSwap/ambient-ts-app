@@ -41,6 +41,7 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
                 (poolA: PoolDataIF, poolB: PoolDataIF) =>
                     poolB.volume - poolA.volume,
             );
+        // fn to sort by 24hr price change
         const sortChange = (): PoolDataIF[] =>
             allPools.sort(
                 (poolA: PoolDataIF, poolB: PoolDataIF) =>
