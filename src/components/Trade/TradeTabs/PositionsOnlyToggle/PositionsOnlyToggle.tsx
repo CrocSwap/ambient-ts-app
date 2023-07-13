@@ -36,8 +36,13 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
 
     const { isCandleSelected, setIsCandleSelected, isCandleDataNull } =
         useContext(CandleContext);
-    const { tradeTableState, toggleTradeTable, showAllData, setShowAllData } =
-        useContext(TradeTableContext);
+    const {
+        tradeTableState,
+        toggleTradeTable,
+        toggleTradeTableCollapse,
+        showAllData,
+        setShowAllData,
+    } = useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -51,11 +56,20 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 setIsCandleDataArrived(false);
             }}
         >
-            {tradeTableState === 'Expanded' ? (
-                <MdCloseFullscreen />
-            ) : (
-                <MdExpand />
-            )}
+            <MdExpand />
+            {isCandleArrived && <span className={styles.graph_indicaor}></span>}
+        </div>
+    );
+
+    const collapseIcon = (
+        <div
+            className={styles.icon}
+            onClick={() => {
+                toggleTradeTableCollapse();
+                setIsCandleDataArrived(false);
+            }}
+        >
+            <MdCloseFullscreen />
             {isCandleArrived && <span className={styles.graph_indicaor}></span>}
         </div>
     );
@@ -121,7 +135,12 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 {/* {clearButtonOrNull} */}
                 {toggleOrNull}
             </div>
-            {(!isCandleDataNull || isCandleArrived) && expandIcon}
+            {(!isCandleDataNull || isCandleArrived) &&
+                tradeTableState != 'Expanded' &&
+                expandIcon}
+            {(!isCandleDataNull || isCandleArrived) &&
+                tradeTableState != 'Collapsed' &&
+                collapseIcon}
         </div>
     );
 }
