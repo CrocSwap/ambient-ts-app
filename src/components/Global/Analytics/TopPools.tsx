@@ -51,7 +51,7 @@ function TopPools(props: propsIF) {
         {
             label: 'Pool',
             hidden: true,
-            align: 'right',
+            align: 'left',
             responsive: 'sm',
             sortable: false,
         },

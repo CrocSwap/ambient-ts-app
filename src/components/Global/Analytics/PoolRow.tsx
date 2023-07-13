@@ -12,6 +12,7 @@ interface TableCellProps {
     sm?: boolean;
     lg?: boolean;
     xl?: boolean;
+    left?: boolean;
 }
 // Media queries
 const media = {
@@ -68,7 +69,8 @@ const TableRow = styled.tr`
 const TableCell = styled.td<TableCellProps>`
     white-space: nowrap;
     color: var(--text1);
-    text-align: right;
+
+    text-align: ${({ left }) => (left ? 'left' : 'right')};
 
     ${({ hidden }) =>
         hidden &&
@@ -83,6 +85,7 @@ ${({ xl }) => xl && mediaStyles.xl}
 
 const PoolNameWrapper = styled.p`
     margin-left: 1rem;
+
     @media (min-width: 640px) {
         display: none;
     }
@@ -144,11 +147,11 @@ export default function PoolRow(props: propsIF) {
                     <PoolNameWrapper>{pool.name}</PoolNameWrapper>
                 </FlexCenter>
             </TableCell>
-            <TableCell hidden sm>
+            <TableCell hidden sm left>
                 <p>{pool.name}</p>
             </TableCell>
             <TableCell hidden sm>
-                <p>{pool.displayPrice}</p>
+                <p>{pool.displayPrice ?? '...'}</p>
             </TableCell>
             <TableCell hidden sm>
                 <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
