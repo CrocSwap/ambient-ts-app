@@ -3,6 +3,7 @@ import { PoolDataIF } from '../../../contexts/ExploreContext';
 
 export type sortType = '' | 'price' | 'tvl' | 'apr' | 'volume' | 'change';
 export type directionType = '' | 'ascending' | 'descending';
+type sortableKeysType = 'priceChange' | 'tvl' | 'volume' | 'apy';
 
 export interface SortedPoolMethodsIF {
     pools: PoolDataIF[];
@@ -25,44 +26,27 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
     const sortedPools = useMemo<PoolDataIF[]>(() => {
         // declare an output variable
         let output: PoolDataIF[];
-        // fn to sort by total value locked
-        const sortTvl = (): PoolDataIF[] =>
-            allPools.sort(
-                (poolA: PoolDataIF, poolB: PoolDataIF) => poolB.tvl - poolA.tvl,
-            );
-        // fn to sort by apr/apy
-        const sortApr = (): PoolDataIF[] =>
-            allPools.sort(
-                (poolA: PoolDataIF, poolB: PoolDataIF) => poolB.apy - poolA.apy,
-            );
-        // fn to sort by total volume
-        const sortVolume = (): PoolDataIF[] =>
+        // fn to sort data
+        const sort = (key: sortableKeysType): PoolDataIF[] =>
             allPools.sort(
                 (poolA: PoolDataIF, poolB: PoolDataIF) =>
-                    poolB.volume - poolA.volume,
-            );
-        // fn to sort by 24hr price change
-        const sortChange = (): PoolDataIF[] =>
-            allPools.sort(
-                (poolA: PoolDataIF, poolB: PoolDataIF) =>
-                    poolB.priceChange - poolA.priceChange,
+                    poolB[key] - poolA[key],
             );
         // logic router for sort mechanism, default goes last
-        console.clear();
         switch (sortBy) {
             case 'apr':
-                output = sortApr();
+                output = sort('apy');
                 break;
             case 'volume':
-                output = sortVolume();
+                output = sort('volume');
                 break;
             case 'change':
-                output = sortChange();
+                output = sort('priceChange');
                 break;
             case 'tvl':
             case '':
             default:
-                output = sortTvl();
+                output = sort('tvl');
                 break;
         }
         // reverse data if user has indicated descending sort sequence

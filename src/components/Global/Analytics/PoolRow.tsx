@@ -121,7 +121,6 @@ const TradeButton = styled.button`
 `;
 export default function PoolRow(props: propsIF) {
     const { pool, goToMarket } = props;
-    console.log(pool.priceChange);
 
     return (
         <TableRow
