@@ -348,8 +348,6 @@ export default function Chart(props: propsIF) {
     const [selectedLiq, setSelectedLiq] = useState('');
     const [firstCandle, setFirstCandle] = useState<number>();
 
-    // d3
-
     const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
     });
@@ -471,9 +469,16 @@ export default function Chart(props: propsIF) {
     }, [d3Container === null]);
 
     const lastCrDate = useMemo(() => {
+        const nowDate = new Date();
+
         const lastCrocDate = Math.max(
             ...unparsedCandleData
-                .filter((item) => item.tvlData.tvl === 0)
+                .filter((item) => {
+                    return (
+                        item.tvlData.tvl === 0 &&
+                        item.time * 1000 < nowDate.getTime()
+                    );
+                })
                 .map((o) => {
                     return o.time;
                 }),
@@ -483,6 +488,53 @@ export default function Chart(props: propsIF) {
             return lastCrocDate * 1000;
         }
     }, [diffHashSigChart(unparsedCandleData)]);
+
+    useEffect(() => {
+        if (poolPriceWithoutDenom && unparsedCandleData) {
+            const data = unparsedData.candles;
+            const fakeData = {
+                time: data[0].time + period,
+                invMinPriceExclMEVDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                maxPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
+                invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
+                minPriceExclMEVDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                invPriceOpenExclMEVDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                priceOpenExclMEVDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                invPriceCloseExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
+                priceCloseExclMEVDecimalCorrected: poolPriceWithoutDenom,
+                period: period,
+                tvlData: {
+                    time: data[0].time,
+                    tvl: data[0].tvlData.tvl,
+                },
+                volumeUSD: 0,
+                averageLiquidityFee: 0,
+                minPriceDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                maxPriceDecimalCorrected: 0,
+                priceOpenDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                priceCloseDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                invMinPriceDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                invMaxPriceDecimalCorrected: 0,
+                invPriceOpenDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                invPriceCloseDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                isCrocData: false,
+            };
+
+            if (data[0].isCrocData) {
+                data.unshift(fakeData);
+            }
+        }
+    }, [unparsedCandleData === undefined]);
 
     useEffect(() => {
         if (
@@ -4160,6 +4212,8 @@ export default function Chart(props: propsIF) {
                 .autoBandwidth(d3fc.seriesCanvasCandlestick())
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .decorate((context: any, d: any) => {
+                    const nowDate = new Date();
+
                     const close = denomInBase
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected;
@@ -4192,7 +4246,8 @@ export default function Chart(props: propsIF) {
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
                             ? selectedCandleColor
-                            : d.tvlData.tvl === 0
+                            : d.tvlData.tvl === 0 &&
+                              d.time * 1000 < nowDate.getTime()
                             ? uniswapColor
                             : crocColor;
 
@@ -4200,7 +4255,8 @@ export default function Chart(props: propsIF) {
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
                             ? selectedCandleColor
-                            : d.tvlData.tvl === 0
+                            : d.tvlData.tvl === 0 &&
+                              d.time * 1000 < nowDate.getTime()
                             ? uniswapBorderColor
                             : crocBorderColor;
 
