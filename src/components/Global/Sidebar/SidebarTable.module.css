@@ -26,7 +26,8 @@
     display: flex;
     justify-content: center;
     font-size: var(--body-size);
-    line-height: var(--body-lh);
+    /* line-height: var(--body-lh); */
+    line-height: 12px;
     color: var(--accent4);
     cursor: pointer;
     white-space: nowrap;
