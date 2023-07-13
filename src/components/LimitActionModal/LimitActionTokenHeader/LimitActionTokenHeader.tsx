@@ -5,7 +5,6 @@ import styles from './LimitActionTokenHeader.module.css';
 
 interface ILimitActionTokenHeaderProps {
     isOrderFilled: boolean;
-
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
