@@ -54,18 +54,6 @@ const TableRow = styled.tr`
  ]
 `;
 
-// const Overlay = styled.div`
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100%;
-//   background-color: var(--dark2); /* Replace with your desired color */
-//   opacity:1; /* Adjust the opacity as desired */
-// z-index: 2;
-//   display: block;
-
-// `;
 const TableCell = styled.td<TableCellProps>`
     white-space: nowrap;
     color: var(--text1);
@@ -129,7 +117,6 @@ export default function PoolRow(props: propsIF) {
         <TableRow
             onClick={() => goToMarket(pool.base.address, pool.quote.address)}
         >
-            {/* <Overlay/> */}
             <TableCell>
                 <FlexCenter>
                     <TokenWrapper>
