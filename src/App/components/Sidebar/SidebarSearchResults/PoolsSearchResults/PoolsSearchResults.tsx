@@ -1,5 +1,5 @@
 import styles from '../SidebarSearchResults.module.css';
-import { PoolIF, TokenIF } from '../../../../../utils/interfaces/exports';
+import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolLI from './PoolLI';
 import { useContext } from 'react';
@@ -10,7 +10,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
-import { WETH } from '../../../../../utils/tokens/exports';
+import checkPoolForWETH from '../../../../functions/checkPoolForWETH';
 
 interface propsIF {
     searchedPools: PoolIF[];
@@ -45,20 +45,6 @@ export default function PoolsSearchResults(props: propsIF) {
         });
     };
 
-    // fm to determine if the pool in question has WETH
-    function checkPoolForWETH(pool: PoolIF): boolean {
-        // check for a canonical WETH address on the current chain
-        const addrWETH: string = WETH[chainId as keyof typeof WETH];
-        // if found then check if either token is WETH
-        const checkWETH = (tkn: TokenIF): boolean => {
-            return addrWETH
-                ? tkn.address.toLowerCase() === addrWETH.toLowerCase()
-                : false;
-        };
-        // return `true` if either token is verified as WETH
-        return checkWETH(pool.base) || checkWETH(pool.quote);
-    }
-
     return (
         <div>
             <h4 className={styles.card_title}>Pools</h4>
@@ -71,7 +57,10 @@ export default function PoolsSearchResults(props: propsIF) {
                     </header>
                     <ol className={styles.main_result_container}>
                         {searchedPools
-                            .filter((pool: PoolIF) => !checkPoolForWETH(pool))
+                            .filter(
+                                (pool: PoolIF) =>
+                                    !checkPoolForWETH(pool, chainId),
+                            )
                             // max five elements before content overflows container
                             .slice(0, 5)
                             .map((pool: PoolIF) => (

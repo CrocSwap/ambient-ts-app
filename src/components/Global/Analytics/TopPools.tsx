@@ -2,11 +2,11 @@ import { memo } from 'react';
 import PoolRow from './PoolRow';
 import { PoolDataIF } from '../../../contexts/AnalyticsContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import {
-    SortedPoolMethodsIF,
-    sortType,
-    useSortedPools,
-} from './useSortedPools';
+import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
+import styled from 'styled-components';
+import TableHead from './TableHead';
+import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
+import { PoolIF } from '../../../utils/interfaces/PoolIF';
 
 type HeaderItem = {
     label: string;
@@ -15,6 +15,7 @@ type HeaderItem = {
     responsive?: string;
     sortable: boolean;
     pxValue?: number;
+    onClick?: () => void;
 };
 
 interface propsIF {
@@ -37,43 +38,6 @@ function TopPools(props: propsIF) {
 
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
 
-    const TableHead = ({ headerItems }: { headerItems: HeaderItem[] }) => {
-        return (
-            <thead
-                className='sticky top-0 h-25'
-                style={{ height: '25px', zIndex: '2' }}
-            >
-                <tr className='text-text2 text-body font-regular capitalize leading-body'>
-                    {headerItems.map((item, index) => (
-                        <th
-                            key={index}
-                            scope='col'
-                            className={`${item.hidden ? 'hidden' : ''} ${
-                                item.responsive
-                                    ? `${item.responsive}:table-cell`
-                                    : ''
-                            } sticky top-0 ${
-                                item.pxValue ? `px-${item.pxValue}` : 'px-6'
-                            } text-${item.align} tracking-wider ${
-                                item.sortable
-                                    ? 'hover:bg-dark2 cursor-pointer'
-                                    : ''
-                            }`}
-                            onClick={() => {
-                                item.sortable &&
-                                    sortedPools.updateSort(
-                                        item.label.toLowerCase() as sortType,
-                                    );
-                            }}
-                        >
-                            {item.label}
-                        </th>
-                    ))}
-                </tr>
-            </thead>
-        );
-    };
-
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
     const topPoolsHeaderItems: HeaderItem[] = [
@@ -87,36 +51,36 @@ function TopPools(props: propsIF) {
         {
             label: 'Pool',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'sm',
             sortable: false,
         },
         {
             label: 'Price',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'sm',
-            sortable: true,
+            sortable: false,
         },
         {
             label: 'TVL',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'sm',
             sortable: true,
         },
         {
             label: 'APR',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'xl',
             sortable: true,
         },
-        { label: 'Volume', hidden: false, align: 'left', sortable: true },
+        { label: 'Volume', hidden: false, align: 'right', sortable: true },
         {
             label: 'Change',
             hidden: true,
-            align: 'left',
+            align: 'right',
             responsive: 'lg',
             sortable: false,
         },
@@ -124,36 +88,98 @@ function TopPools(props: propsIF) {
     ];
 
     return (
-        <div className='flex flex-col h-full'>
-            <div className='flex-grow overflow-auto h-full hide-scrollbar'>
-                <div className='py-2 h-full'>
-                    <div className='shadow rounded-lg bg-dark1 h-full py-2'>
-                        <table className='divide-y divide-dark3 relative w-full top-pools-analytics-table'>
-                            <TableHead headerItems={topPoolsHeaderItems} />
+        <FlexContainer>
+            <ScrollableContainer>
+                <ShadowBox>
+                    <Table>
+                        <TableHead
+                            headerItems={topPoolsHeaderItems}
+                            sortedPools={sortedPools}
+                        />
 
-                            <tbody className='bg-dark1 text-white text-body font-regular capitalize leading-body overflow-y-auto max-h-96'>
-                                {
-                                    // using index in key gen logic because there are duplicate
-                                    // ... pool entries, we need to either filter out the dupes
-                                    // ... (hacky but acceptable) or figure out why dupes are
-                                    // ... being returned by PoolContext (preferable)
-                                    sortedPools.pools.map(
-                                        (pool: PoolDataIF, idx: number) => (
-                                            <PoolRow
-                                                key={JSON.stringify(pool) + idx}
-                                                pool={pool}
-                                                goToMarket={goToMarket}
-                                            />
-                                        ),
-                                    )
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <TableBody>
+                            {sortedPools.pools
+                                .filter(
+                                    (pool: PoolIF) =>
+                                        !checkPoolForWETH(pool, chainId),
+                                )
+                                .slice(0, 20)
+                                .map((pool: PoolDataIF, idx: number) => (
+                                    <PoolRow
+                                        key={JSON.stringify(pool) + idx}
+                                        pool={pool}
+                                        goToMarket={goToMarket}
+                                    />
+                                ))}
+                        </TableBody>
+                    </Table>
+                </ShadowBox>
+            </ScrollableContainer>
+        </FlexContainer>
     );
 }
 
 export default memo(TopPools);
+
+// Main container
+const FlexContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+`;
+
+const ScrollableContainer = styled.div`
+    flex-grow: 1;
+    overflow-y: auto;
+    height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: var(--dark3) var(--dark1);
+
+    &::-webkit-scrollbar {
+        display: 'none';
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: var(--dark1);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: var(--dark3);
+    }
+`;
+
+const ShadowBox = styled.div`
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 0.375rem;
+    background-color: var(--dark1);
+    height: 100%;
+
+    position: relative;
+
+    padding: 8px;
+`;
+
+const Table = styled.table`
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+
+    @media only screen and (min-width: 1280px) {
+        td,
+        th {
+            min-width: 180px;
+        }
+    }
+`;
+
+const TableBody = styled.tbody`
+    background-color: var(--dark1);
+    color: var(--white);
+    font-size: 12px;
+    font-family: 'Roboto', sans-serif;
+    text-transform: capitalize;
+    line-height: 1.5rem;
+    overflow-y: auto;
+    max-height: 96px;
+`;
