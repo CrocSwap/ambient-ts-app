@@ -12,17 +12,15 @@ export default function Explore() {
     const { crocEnv, chainData } = useContext(CrocEnvContext);
 
     const getPools = async () => {
-        if (crocEnv && poolList && cont.pools.all.length === 0) {
+        if (crocEnv && poolList.length && cont.pools.all.length === 0) {
             cont.pools.getAll(poolList, crocEnv, chainData.chainId);
-            console.log('sending a new fetch!');
+            cont.pools.autopoll.disable();
         }
     };
 
-    useEffect(() => console.log(cont.pools.all), [cont.pools.all]);
-
     useEffect(() => {
-        getPools();
-    }, [crocEnv, chainData.chainId]);
+        cont.pools.autopoll.allowed && getPools();
+    }, [crocEnv, chainData.chainId, poolList.length]);
 
     return (
         <Section>
