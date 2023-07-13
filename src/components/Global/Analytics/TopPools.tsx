@@ -8,7 +8,7 @@ import TableHead from './TableHead';
 import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 
-type HeaderItem = {
+export interface HeaderItem {
     label: string;
     hidden: boolean;
     align: string;
@@ -16,7 +16,7 @@ type HeaderItem = {
     sortable: boolean;
     pxValue?: number;
     onClick?: () => void;
-};
+}
 
 interface propsIF {
     allPools: PoolDataIF[];
@@ -82,7 +82,7 @@ function TopPools(props: propsIF) {
             hidden: true,
             align: 'right',
             responsive: 'lg',
-            sortable: false,
+            sortable: true,
         },
         { label: '', hidden: false, align: 'right', sortable: false },
     ];

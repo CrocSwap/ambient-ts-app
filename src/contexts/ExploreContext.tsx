@@ -31,7 +31,8 @@ export interface PoolDataIF extends PoolIF {
     volumeStr: string;
     apy: number;
     apyStr: string;
-    priceChange: string;
+    priceChange: number;
+    priceChangeStr: string;
 }
 
 export const ExploreContext = createContext<ExploreContextIF>(
@@ -126,7 +127,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         );
         if (!priceChangeRaw) {
             priceChangePercent = '';
-        } else if (priceChangeRaw >= 0.0001) {
+        } else if (priceChangeRaw >= 0.01) {
             priceChangePercent =
                 '+ ' +
                 priceChangeRaw.toLocaleString(undefined, {
@@ -134,7 +135,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                     maximumFractionDigits: 2,
                 }) +
                 '%';
-        } else if (priceChangeRaw <= -0.0001) {
+        } else if (priceChangeRaw <= -0.01) {
             priceChangePercent =
                 priceChangeRaw.toLocaleString(undefined, {
                     minimumFractionDigits: 2,
@@ -155,7 +156,8 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             volumeStr: volumeDisplay,
             apy: apyEst,
             apyStr: apyDisplay,
-            priceChange: priceChangePercent,
+            priceChange: priceChangeRaw ?? 0,
+            priceChangeStr: priceChangePercent,
         };
         // write a pool name should it not be there already
         poolData.name = shouldInvert

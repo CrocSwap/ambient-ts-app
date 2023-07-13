@@ -1,17 +1,8 @@
-import { MouseEventHandler } from 'react';
 import { SortedPoolMethodsIF, sortType } from './useSortedPools';
 import styled from 'styled-components';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
+import { HeaderItem } from './TopPools';
 
-type HeaderItem = {
-    label: string;
-    hidden: boolean;
-    align: string;
-    responsive?: string;
-    sortable: boolean;
-    pxValue?: number;
-    onClick?: MouseEventHandler<HTMLTableCellElement> | undefined;
-};
 const TableHead = ({
     headerItems,
     sortedPools,
@@ -48,6 +39,10 @@ const TableHead = ({
 
         cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
 
+        background-color: ${({ label }) =>
+            sortedPools.current === label?.toLowerCase()
+                ? 'var(--dark2)'
+                : 'transparent'};
         color: var(--text2);
         font-size: 12px;
         font-weight: 300;
@@ -115,7 +110,9 @@ const TableHead = ({
                         onClick={() => {
                             item.sortable &&
                                 sortedPools.updateSort(
-                                    item.label.toLowerCase() as sortType,
+                                    (item.label
+                                        ? item.label.toLowerCase()
+                                        : '') as sortType,
                                 );
                         }}
                     >

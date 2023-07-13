@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 
-export type sortType = 'price' | 'tvl' | 'apr' | 'volume';
-export type directionType = 'ascending' | 'descending';
+export type sortType = '' | 'price' | 'tvl' | 'apr' | 'volume' | 'change';
+export type directionType = '' | 'ascending' | 'descending';
+type sortableKeysType = 'priceChange' | 'tvl' | 'volume' | 'apy';
 
 export interface SortedPoolMethodsIF {
     pools: PoolDataIF[];
@@ -25,45 +26,51 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
     const sortedPools = useMemo<PoolDataIF[]>(() => {
         // declare an output variable
         let output: PoolDataIF[];
-        // fn to sort by total value locked
-        const sortTvl = (): PoolDataIF[] =>
-            allPools.sort(
-                (poolA: PoolDataIF, poolB: PoolDataIF) => poolB.tvl - poolA.tvl,
-            );
-        // fn to sort by apr/apy
-        const sortApr = (): PoolDataIF[] =>
-            allPools.sort(
-                (poolA: PoolDataIF, poolB: PoolDataIF) => poolB.apy - poolA.apy,
-            );
-        // fn to sort by total volume
-        const sortVolume = (): PoolDataIF[] =>
+        // fn to sort data
+        const sort = (key: sortableKeysType): PoolDataIF[] =>
             allPools.sort(
                 (poolA: PoolDataIF, poolB: PoolDataIF) =>
-                    poolB.volume - poolA.volume,
+                    poolB[key] - poolA[key],
             );
         // logic router for sort mechanism, default goes last
         switch (sortBy) {
             case 'apr':
-                output = sortApr();
+                output = sort('apy');
                 break;
             case 'volume':
-                output = sortVolume();
+                output = sort('volume');
+                break;
+            case 'change':
+                output = sort('priceChange');
                 break;
             case 'tvl':
+            case '':
             default:
-                output = sortTvl();
+                output = sort('tvl');
                 break;
         }
         // reverse data if user has indicated descending sort sequence
-        return direction === 'ascending' ? output : output.reverse();
+        return direction === 'descending' ? output.reverse() : output;
     }, [sortBy, direction, allPools]);
 
     // fn to respond to user clicks and update sort values correctly
     function updateSort(sort: sortType) {
         if (sort === sortBy) {
-            setDirection(
-                direction === 'ascending' ? 'descending' : 'ascending',
-            );
+            let updatedDirection: directionType;
+            switch (direction) {
+                case '':
+                    updatedDirection = 'ascending';
+                    break;
+                case 'ascending':
+                    updatedDirection = 'descending';
+                    break;
+                case 'descending':
+                default:
+                    updatedDirection = '';
+                    setSortBy('');
+                    break;
+            }
+            setDirection(updatedDirection);
         } else {
             setDirection('ascending');
             setSortBy(sort);

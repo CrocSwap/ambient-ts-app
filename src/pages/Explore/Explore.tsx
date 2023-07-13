@@ -7,12 +7,14 @@ import { PoolContext } from '../../contexts/PoolContext';
 import styled from 'styled-components';
 
 export default function Explore() {
-    const { pools } = useContext(ExploreContext);
-    const { poolList } = useContext(PoolContext);
     const { crocEnv, chainData } = useContext(CrocEnvContext);
+    // metadata only
+    const { poolList } = useContext(PoolContext);
+    // full expanded data set
+    const { pools } = useContext(ExploreContext);
 
     const getPools = async () => {
-        if (crocEnv && poolList.length && pools.all.length === 0) {
+        if (crocEnv && poolList.length) {
             pools.getAll(poolList, crocEnv, chainData.chainId);
             pools.autopoll.disable();
         }
@@ -26,16 +28,10 @@ export default function Explore() {
         <Section>
             <MainWrapper>
                 Top Pools on Ambient
-                <Button
-                    onClick={() => {
-                        console.log('woah there');
-                        getPools();
-                    }}
-                >
+                <Button onClick={() => getPools()}>
                     <RefreshIcon />
                 </Button>
             </MainWrapper>
-
             <TopPools allPools={pools.all} chainId={chainData.chainId} />
         </Section>
     );
