@@ -5,6 +5,7 @@ import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { useLinkGen } from '../../../../utils/hooks/useLinkGen';
+import { useLocation } from 'react-router-dom';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -15,6 +16,8 @@ export default function TopPools(props: propsIF) {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
 
     const { topPools, crocEnv } = useContext(CrocEnvContext);
+    const location = useLocation();
+    const onExploreRoute = location.pathname.includes('explore');
 
     const linkGenExplore = useLinkGen('explore');
 
@@ -35,12 +38,14 @@ export default function TopPools(props: propsIF) {
                         crocEnv={crocEnv}
                     />
                 ))}
-                <div
-                    className={styles.view_more}
-                    onClick={() => linkGenExplore.navigate()}
-                >
-                    View More
-                </div>
+                {onExploreRoute ? undefined : (
+                    <div
+                        className={styles.view_more}
+                        onClick={() => linkGenExplore.navigate()}
+                    >
+                        View More
+                    </div>
+                )}
             </div>
         </div>
     );
