@@ -82,7 +82,7 @@ function TopPools(props: propsIF) {
             hidden: true,
             align: 'right',
             responsive: 'lg',
-            sortable: false,
+            sortable: true,
         },
         { label: '', hidden: false, align: 'right', sortable: false },
     ];

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 
-export type sortType = '' | 'price' | 'tvl' | 'apr' | 'volume';
+export type sortType = '' | 'price' | 'tvl' | 'apr' | 'volume' | 'change';
 export type directionType = '' | 'ascending' | 'descending';
 
 export interface SortedPoolMethodsIF {
@@ -41,13 +41,22 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
                 (poolA: PoolDataIF, poolB: PoolDataIF) =>
                     poolB.volume - poolA.volume,
             );
+        const sortChange = (): PoolDataIF[] =>
+            allPools.sort(
+                (poolA: PoolDataIF, poolB: PoolDataIF) =>
+                    poolB.priceChange - poolA.priceChange,
+            );
         // logic router for sort mechanism, default goes last
+        console.clear();
         switch (sortBy) {
             case 'apr':
                 output = sortApr();
                 break;
             case 'volume':
                 output = sortVolume();
+                break;
+            case 'change':
+                output = sortChange();
                 break;
             case 'tvl':
             case '':

@@ -121,6 +121,7 @@ const TradeButton = styled.button`
 `;
 export default function PoolRow(props: propsIF) {
     const { pool, goToMarket } = props;
+    console.log(pool.priceChange);
 
     return (
         <TableRow
@@ -172,16 +173,17 @@ export default function PoolRow(props: propsIF) {
                 <p
                     style={{
                         color:
-                            pool.priceChange.includes('No') || !pool.priceChange
+                            pool.priceChangeStr.includes('No') ||
+                            !pool.priceChange
                                 ? 'var(--text1)'
-                                : pool.priceChange.startsWith('-')
+                                : pool.priceChangeStr.startsWith('-')
                                 ? 'var(--negative)'
                                 : 'var(--positive)',
                     }}
                 >
-                    {!pool.priceChange || pool.priceChange.includes('NaN')
+                    {!pool.priceChangeStr || pool.priceChangeStr.includes('NaN')
                         ? '...'
-                        : pool.priceChange}
+                        : pool.priceChangeStr}
                 </p>
             </TableCell>
             <TableCell>
