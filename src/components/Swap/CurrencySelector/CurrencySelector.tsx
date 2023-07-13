@@ -37,9 +37,7 @@ interface propsIF {
     tokenAorB: string | null;
     sellToken?: boolean;
     sellQtyString: string;
-    setSellQtyString: Dispatch<SetStateAction<string>>;
     buyQtyString: string;
-    setBuyQtyString: Dispatch<SetStateAction<string>>;
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;
@@ -72,9 +70,7 @@ function CurrencySelector(props: propsIF) {
     const {
         setDisableReverseTokens,
         sellQtyString,
-        setSellQtyString,
         buyQtyString,
-        setBuyQtyString,
         fieldId,
         tokenAorB,
         handleChangeEvent,
