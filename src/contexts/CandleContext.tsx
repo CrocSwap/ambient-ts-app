@@ -118,13 +118,30 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         quoteToken: mainnetQuoteTokenAddress,
     } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
 
+    const [forceIntervalRefresh, setForceIntervalRefresh] =
+        useState<boolean>(true);
+
     useEffect(() => {
-        isChartEnabled && fetchCandles();
+        // force the candle retrieval interval to restart every 10 minutes
+        const interval = setInterval(() => {
+            setForceIntervalRefresh(true);
+        }, 600000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
         if (isChartEnabled) {
-            const interval = setInterval(() => {
-                fetchCandles(true);
-            }, 60000);
-            return () => clearInterval(interval);
+            fetchCandles();
+            if (forceIntervalRefresh) {
+                const interval = setInterval(() => {
+                    fetchCandles(true);
+                }, 60000);
+
+                return () => {
+                    clearInterval(interval);
+                };
+            }
+            setForceIntervalRefresh(false);
         }
     }, [
         isChartEnabled,
@@ -132,6 +149,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         mainnetQuoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         candleTimeLocal,
+        forceIntervalRefresh,
     ]);
 
     const fetchCandles = (bypassSpinner = false) => {
