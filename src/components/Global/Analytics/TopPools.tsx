@@ -38,6 +38,9 @@ function TopPools(props: propsIF) {
 
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
 
+    // number of pools to show in the DOM
+    const POOL_COUNT = 20;
+
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
     const topPoolsHeaderItems: HeaderItem[] = [
@@ -96,7 +99,7 @@ function TopPools(props: propsIF) {
                                     (pool: PoolIF) =>
                                         !checkPoolForWETH(pool, chainId),
                                 )
-                                .slice(0, 20)
+                                .slice(0, POOL_COUNT)
                                 .map((pool: PoolDataIF, idx: number) => (
                                     <PoolRow
                                         key={JSON.stringify(pool) + idx}
