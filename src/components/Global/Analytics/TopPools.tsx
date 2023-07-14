@@ -36,6 +36,7 @@ function TopPools(props: propsIF) {
         });
     }
 
+    // logic to take raw pool list and sort them based on user input
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
 
     // number of pools to show in the DOM
