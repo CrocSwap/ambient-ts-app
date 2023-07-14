@@ -134,7 +134,7 @@ div.liqTooltip {
     border-radius: var(--border-radius);
 }
 
-div.lastCrDataTooltip , div.eggTooltip {
+div.xAxisTooltip  {
     position: absolute;
     text-align: center;
     align-items: center;
