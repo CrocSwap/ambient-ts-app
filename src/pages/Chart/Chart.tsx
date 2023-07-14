@@ -57,6 +57,7 @@ import { RangeContext } from '../../contexts/RangeContext';
 import { createTriangle } from './ChartUtils/triangle';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
+import LimitButton from '../../components/Trade/Limit/LimitButton/LimitButton';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -349,6 +350,12 @@ export default function Chart(props: propsIF) {
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles;
         if (poolPriceWithoutDenom) {
+            const nowDate = Date.now();
+
+            const snapDiff = nowDate % (period * 1000);
+
+            const snappedTime = Math.floor((nowDate + snapDiff) / 1000);
+
             const fakeData = {
                 time: data[0].time + period,
                 invMinPriceExclMEVDecimalCorrected:
@@ -393,7 +400,7 @@ export default function Chart(props: propsIF) {
         }
 
         return data;
-    }, [unparsedData.candles]);
+    }, [diffHashSigChart(unparsedData.candles)]);
 
     const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
@@ -415,7 +422,6 @@ export default function Chart(props: propsIF) {
     // Crosshairs
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] = useState<any>();
-    // const [eggTooltip, setEggTooltip] = useState<any>();
     const [xAxisTooltip, setXaxisTooltip] = useState<any>();
 
     const [crosshairActive, setCrosshairActive] = useState<string>('none');
@@ -5353,14 +5359,40 @@ export default function Chart(props: propsIF) {
             );
         }
 
+        const checkYLocation =
+            limitTop > limitBot
+                ? limitTop > yValue && limitBot < yValue
+                : limitTop < yValue && limitBot > yValue;
+        if (
+            nearest.time === unparsedCandleData[0].time &&
+            dateControl &&
+            checkYLocation
+        ) {
+            xAxisTooltip.html('<p> Please click other candle </p>');
+
+            const width = xAxisTooltip.style('width').split('p')[0] / 2;
+
+            xAxisTooltip.style('visibility', 'visible');
+            const container = d3.select(d3Container.current).node() as any;
+
+            const rectContainer = container.getBoundingClientRect();
+
+            xAxisTooltip
+                .style('bottom', scaleData.yScale(poolPriceDisplay) + 'px')
+                .style(
+                    'left',
+                    scaleData.xScale(nearest.time * 1000) - width + 'px',
+                );
+        } else {
+            xAxisTooltip.style('visibility', 'hidden');
+        }
+
         return {
             isHoverCandleOrVolumeData:
                 nearest &&
                 dateControl &&
-                ((limitTop > limitBot
-                    ? limitTop > yValue && limitBot < yValue
-                    : limitTop < yValue && limitBot > yValue) ||
-                    isSelectedVolume),
+                nearest.time !== unparsedCandleData[0].time &&
+                (checkYLocation || isSelectedVolume),
             _selectedDate: nearest?.time * 1000,
             nearest: nearest,
         };
