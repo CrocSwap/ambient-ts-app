@@ -82,7 +82,7 @@ export default function CandleChart(props: candlePropsIF) {
 
         renderCanvasArray([d3CanvasCandle]);
     }, [
-        diffHashSig(props.chartItemStates),
+        diffHashSig(chartItemStates),
         tradeTableState,
         lastCandleData,
         firstCandle,
