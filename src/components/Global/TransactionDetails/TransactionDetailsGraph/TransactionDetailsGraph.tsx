@@ -816,7 +816,7 @@ export default function TransactionDetailsGraph(
         askTickInvPriceDecimalCorrected: number,
         askTickPriceDecimalCorrected: number,
     ) => {
-        graphData.push({
+        graphData?.push({
             time: time,
             invPriceCloseExclMEVDecimalCorrected:
                 askTickInvPriceDecimalCorrected,
