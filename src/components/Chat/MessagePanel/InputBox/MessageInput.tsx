@@ -42,7 +42,6 @@ interface MessageInputProps {
     isLinkInCrocodileLabsLinksForInput(word: string): boolean;
     setPopUpText: Dispatch<SetStateAction<string>>;
     popUpText: string;
-    count: number;
 }
 
 export default function MessageInput(props: MessageInputProps) {

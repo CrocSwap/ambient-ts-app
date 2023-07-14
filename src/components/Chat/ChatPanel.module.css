@@ -92,6 +92,14 @@
     background: var(--dark3);
 }
 
+.scroll_up
+{
+    position: absolute;
+    right: 1rem;
+    top: 5rem;
+    z-index: 9;
+}
+
 .text {
     display: block;
     margin-top: -32px;

@@ -3,7 +3,7 @@ import SentMessagePanel from './MessagePanel/SentMessagePanel/SentMessagePanel';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import useChatSocket from './Service/useChatSocket';
 import { PoolIF } from '../../utils/interfaces/exports';
@@ -58,9 +58,12 @@ function ChatPanel(props: propsIF) {
     const [scrollDirection, setScrollDirection] = useState(String);
     const [notification, setNotification] = useState(0);
     const [isMessageDeleted, setIsMessageDeleted] = useState(false);
+    const [showPreviousMessagesButton, setShowPreviousMessagesButton] =
+        useState(false);
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
+    const [page, setPage] = useState(0);
     const {
         messages,
         getMsg,
@@ -69,6 +72,7 @@ function ChatPanel(props: propsIF) {
         sendMsg,
         deleteMsgFromList,
         users,
+        getMsgWithRest2,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -236,6 +240,8 @@ function ChatPanel(props: propsIF) {
         scrollToBottom();
         setNotification(0);
         getMsg();
+        setShowPreviousMessagesButton(false);
+        setPage(0);
     }, [room, isChatOpen === false]);
 
     useEffect(() => {
@@ -264,6 +270,26 @@ function ChatPanel(props: propsIF) {
         setScrollDirection('Scroll Down');
     };
 
+    const getPreviousMessages = async () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+
+        const data = await getMsgWithRest2(room, nextPage);
+        if (data.length === 0) {
+            setShowPreviousMessagesButton(false);
+        } else {
+            const scrollContainer = messageEnd.current; // Referring to the scrollable container
+            const scrollPositionBefore = scrollContainer.scrollTop;
+            const scrollPositionAfter = scrollContainer.scrollHeight / 4;
+            scrollContainer.scrollTo(
+                0,
+                scrollPositionAfter - scrollPositionBefore,
+            );
+        }
+
+        // Scroll to the middle of the container
+    };
+
     const scrollToBottom = async () => {
         const timer = setTimeout(() => {
             messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
@@ -282,6 +308,14 @@ function ChatPanel(props: propsIF) {
             setScrollDirection('Scroll Down');
         } else {
             setScrollDirection('Scroll Up');
+        }
+        if (
+            e.target.scrollTop === 0 &&
+            e.target.clientHeight !== e.target.scrollHeight
+        ) {
+            setShowPreviousMessagesButton(true);
+        } else {
+            setShowPreviousMessagesButton(false);
         }
     };
 
@@ -585,7 +619,21 @@ function ChatPanel(props: propsIF) {
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
-
+                    <div className={styles.scroll_up}>
+                        {showPreviousMessagesButton ? (
+                            <RiArrowUpSLine
+                                role='button'
+                                size={27}
+                                color='#7371fc'
+                                onClick={() => getPreviousMessages()}
+                                tabIndex={0}
+                                aria-label='Read previous messages'
+                                style={{ cursor: 'pointer' }}
+                            />
+                        ) : (
+                            ''
+                        )}
+                    </div>
                     {messageList}
                     {showPopUp ? sendingLink : ''}
                     {chatNotification}

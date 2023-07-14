@@ -22,18 +22,36 @@ const useChatSocket = (
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
 
-    async function getMsgWithRest(roomInfo: string) {
+    async function getMsgWithRest(roomInfo: string, p?: number) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
-        const response = await fetch(
-            CHAT_BACKEND_URL +
-                '/chat/api/messages/getMsgWithoutWebSocket/' +
-                encodedRoomInfo,
-            {
-                method: 'GET',
-            },
-        );
+        const queryParams = 'p=' + p;
+        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getMsgWithoutWebSocket/${encodedRoomInfo}?${queryParams}`;
+        const response = await fetch(url, {
+            method: 'GET',
+        });
         const data = await response.json();
-        return data;
+        setMessages(data.reverse());
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
+        return data.reverse();
+    }
+
+    async function getMsgWithRest2(roomInfo: string, p?: number) {
+        const encodedRoomInfo = encodeURIComponent(roomInfo);
+        const queryParams = 'p=' + p;
+        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getMsgWithoutWebSocket/${encodedRoomInfo}?${queryParams}`;
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        console.log(data);
+        setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
+
+        return data.reverse();
     }
 
     async function getUserListWithRest() {
@@ -134,6 +152,7 @@ const useChatSocket = (
         lastMessageText,
         deleteMsgFromList,
         users,
+        getMsgWithRest2,
     };
 };
 

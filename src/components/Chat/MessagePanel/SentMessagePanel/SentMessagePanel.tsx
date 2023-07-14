@@ -65,13 +65,14 @@ function SentMessagePanel(props: SentMessageProps) {
             props.previousMessage?.createdAt,
             props.message?.createdAt,
         );
+
         if (props.previousMessage?.sender === props.message?.sender) {
-            if (currentPreviousDiffInMs < 10 * 60 * 1000) {
+            if (currentPreviousDiffInMs < 1 * 60 * 1000) {
                 setShowAvatar(false);
                 setShowName(false);
                 setOk(true);
                 if (
-                    nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                    nextCurrentDiffInMs < 1 * 60 * 1000 &&
                     props.nextMessage?.sender === props.message?.sender
                 ) {
                     setHasSeparator(false);
@@ -80,7 +81,7 @@ function SentMessagePanel(props: SentMessageProps) {
                 }
             } else {
                 if (
-                    nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                    nextCurrentDiffInMs < 1 * 60 * 1000 &&
                     props.message?.sender === props.nextMessage?.sender
                 ) {
                     setShowAvatar(true);
@@ -96,7 +97,7 @@ function SentMessagePanel(props: SentMessageProps) {
             setShowAvatar(true);
             setShowName(true);
             if (
-                nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                nextCurrentDiffInMs < 1 * 60 * 1000 &&
                 props.nextMessage?.sender === props.message?.sender
             ) {
                 setHasSeparator(false);
@@ -104,24 +105,31 @@ function SentMessagePanel(props: SentMessageProps) {
                 setHasSeparator(true);
             }
         }
-
-        if (props.message?.sender === props.currentUser) {
-            if (count >= 3) {
-                const currentTime = new Date().getTime();
-                const timeDifference = currentTime - lastMessageTime;
-                if (timeDifference < 60000) {
-                    props.setShowPopUp(true);
-                    props.setPopUpText(
-                        'You cannot send more than three messages in a minute',
-                    );
-                    return;
-                }
-            }
-
-            setCount((prevCount) => prevCount + 1);
-            setLastMessageTime(currentMessageDate.getTime());
-        }
     }, [props.message, props.nextMessage, props.previousMessage]);
+
+    useEffect(() => {
+        if (
+            props.previousMessage &&
+            props.message &&
+            props.previousMessage.sender === props.message.sender
+        ) {
+            const previousMessageDate = new Date(
+                props.previousMessage.createdAt,
+            );
+            const currentMessageDate = new Date(props.message.createdAt);
+            const currentPreviousDiffInMs = Math.abs(
+                currentMessageDate.getTime() - previousMessageDate.getTime(),
+            );
+
+            if (currentPreviousDiffInMs < 1 * 60 * 1000) {
+                setCount((prevCount) => prevCount + 1);
+            } else {
+                setCount(0);
+            }
+        } else {
+            setCount(0);
+        }
+    }, [props.previousMessage, props.message]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
