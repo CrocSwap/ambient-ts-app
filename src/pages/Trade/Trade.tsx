@@ -52,7 +52,7 @@ function Trade() {
     const {
         isFullScreen: isChartFullScreen,
         chartSettings,
-        chartHeight,
+        chartHeights,
         setChartHeight,
     } = useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
@@ -386,14 +386,14 @@ function Trade() {
                     <Resizable
                         className={styles.chartBox}
                         enable={{ bottom: true }}
-                        size={{ width: '100%', height: chartHeight }}
+                        size={{ width: '100%', height: chartHeights.current }}
                         minHeight={4}
                         onResizeStart={() => {
                             setTradeTableState(undefined);
                         }}
                         onResizeStop={(e, direction, ref, d) => {
                             // the resizable bar is 4px in height
-                            if (chartHeight + d.height <= 4) {
+                            if (chartHeights.current + d.height <= 4) {
                                 setTradeTableState('Expanded');
                             }
                             if (
@@ -402,7 +402,7 @@ function Trade() {
                             ) {
                                 setTradeTableState('Collapsed');
                             }
-                            setChartHeight(chartHeight + d.height);
+                            setChartHeight(chartHeights.current + d.height);
                         }}
                         handleClasses={{ bottom: styles.resizableBox }}
                         bounds={'parent'}
