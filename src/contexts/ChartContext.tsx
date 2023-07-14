@@ -4,7 +4,6 @@ import {
     chartSettingsMethodsIF,
     useChartSettings,
 } from '../App/hooks/useChartSettings';
-import { TRADE_TABLE_HEADER_HEIGHT } from './TradeTableContext';
 
 interface ChartHeights {
     current: number;
