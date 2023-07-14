@@ -162,7 +162,13 @@ export default function TransactionDetailsGraph(
                     }
                 };
 
-                const minDate = time() * 1000 - oneHourMiliseconds * 24 * 7;
+                let minDateDiff = oneHourMiliseconds * 24 * 7;
+
+                if (transactionType === 'swap') {
+                    minDateDiff = oneHourMiliseconds * 8;
+                }
+
+                const minDate = time() * 1000 - minDateDiff;
 
                 const diff =
                     new Date().getTime() - minDate < 43200000
@@ -814,9 +820,9 @@ export default function TransactionDetailsGraph(
                 const minDomain = scaleData.xScale.domain()[0].getTime();
                 const maxDomain = scaleData.xScale.domain()[1].getTime();
 
-                const buffer = oneHourMiliseconds * 24 * 3;
-
                 if (transactionType === 'limitOrder' && tx !== undefined) {
+                    const buffer = oneHourMiliseconds * 24 * 3;
+
                     if (tx.timeFirstMint * 1000 + buffer >= maxDomain) {
                         scaleData?.xScale.domain([
                             minDomain,
@@ -827,6 +833,24 @@ export default function TransactionDetailsGraph(
                     if (tx.timeFirstMint * 1000 - buffer <= minDomain) {
                         scaleData?.xScale.domain([
                             tx.timeFirstMint * 1000 - buffer,
+                            maxDomain,
+                        ]);
+                    }
+                }
+
+                if (transactionType === 'swap') {
+                    const buffer = oneHourMiliseconds * 1;
+
+                    if (tx.txTime * 1000 + buffer >= maxDomain) {
+                        scaleData?.xScale.domain([
+                            minDomain,
+                            maxDomain + buffer,
+                        ]);
+                    }
+
+                    if (tx.txTime * 1000 - buffer <= minDomain) {
+                        scaleData?.xScale.domain([
+                            tx.txTime * 1000 - buffer,
                             maxDomain,
                         ]);
                     }

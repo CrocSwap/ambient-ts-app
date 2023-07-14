@@ -212,7 +212,7 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth: rangeSimpleRangeWidth,
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
-    const { expandTradeTable, handlePulseAnimation } =
+    const { tradeTableState, handlePulseAnimation } =
         useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
@@ -373,7 +373,7 @@ export default function Chart(props: propsIF) {
     const [lastCrDataTooltip, setLastCrDataTooltip] = useState<any>();
     const [eggTooltip, setEggTooltip] = useState<any>();
 
-    const [crosshairActive, setCrosshairActive] = useState<string>('chart');
+    const [crosshairActive, setCrosshairActive] = useState<string>('none');
     const [isCrDataIndActive, setIsCrDataIndActive] = useState<boolean>(false);
     const [isOpenEggTooltip, setIsOpenEggTooltip] = useState<boolean>(false);
 
@@ -608,7 +608,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
-        if (expandTradeTable) return;
+        if (tradeTableState === 'Expanded') return;
 
         if (unparsedCandleData && unparsedCandleData.length > 0) {
             if (
@@ -638,7 +638,7 @@ export default function Chart(props: propsIF) {
         renderCanvasArray([d3CanvasCandle]);
     }, [
         diffHashSig(props.chartItemStates),
-        expandTradeTable,
+        tradeTableState,
         lastCandleData,
         firstCandle,
     ]);
@@ -5811,6 +5811,7 @@ export default function Chart(props: propsIF) {
                     timeOfEndCandle &&
                     event.layerX > scaleData?.xScale(timeOfEndCandle) - 15 &&
                     event.layerX < scaleData?.xScale(timeOfEndCandle) + 15;
+
                 const isCroc =
                     scaleData.xScale(scaleData.xScale.invert(event.layerX)) >
                         scaleData.xScale(lastCrDate) - 15 &&
@@ -5819,7 +5820,11 @@ export default function Chart(props: propsIF) {
                     scaleData.xScale.invert(event.layerX) !== lastCrDate;
 
                 if (isEgg) {
-                    d3.select(event.currentTarget).style('cursor', 'pointer');
+                    d3.select(event.currentTarget).style('cursor', 'default');
+
+                    setIsOpenEggTooltip(true);
+                } else {
+                    setIsOpenEggTooltip(false);
                 }
 
                 if (scaleData && isCroc) {
@@ -5833,19 +5838,6 @@ export default function Chart(props: propsIF) {
             });
 
             d3.select(d3Xaxis.current).on('click', (event: any) => {
-                const isEgg =
-                    timeOfEndCandle &&
-                    event.offsetX > scaleData?.xScale(timeOfEndCandle) - 15 &&
-                    event.offsetX < scaleData?.xScale(timeOfEndCandle) + 15;
-
-                if (isEgg) {
-                    if (!isOpenEggTooltip) {
-                        setIsOpenEggTooltip(true);
-                    } else {
-                        setIsOpenEggTooltip(false);
-                    }
-                }
-
                 if (
                     scaleData &&
                     scaleData.xScale(scaleData.xScale.invert(event.offsetX)) >
@@ -5925,6 +5917,7 @@ export default function Chart(props: propsIF) {
             });
             d3.select(d3Xaxis.current).on('mouseleave', () => {
                 mouseLeaveCanvas();
+                setIsOpenEggTooltip(false);
             });
 
             const mouseEnterCanvas = () => {
