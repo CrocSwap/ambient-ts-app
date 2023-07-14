@@ -31,7 +31,10 @@ import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
-import { TRADE_TABLE_HEADER_HEIGHT, TradeTableContext } from '../../contexts/TradeTableContext';
+import {
+    TRADE_TABLE_HEADER_HEIGHT,
+    TradeTableContext,
+} from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -398,13 +401,18 @@ function Trade() {
                             }
                             if (
                                 tradeTableRef?.current &&
-                                tradeTableRef.current.offsetHeight === TRADE_TABLE_HEADER_HEIGHT
+                                tradeTableRef.current.offsetHeight ===
+                                    TRADE_TABLE_HEADER_HEIGHT
                             ) {
                                 setTradeTableState('Collapsed');
                             }
                             setChartHeight(chartHeights.current + d.height);
                         }}
-                        handleClasses={{ bottom: styles.resizableBox }}
+                        handleClasses={
+                            isChartFullScreen
+                                ? undefined
+                                : { bottom: styles.resizableBox }
+                        }
                         bounds={'parent'}
                     >
                         <div
