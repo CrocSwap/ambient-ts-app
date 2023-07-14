@@ -25,7 +25,7 @@ interface FreeRateData {
     setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
     lastCrDate: number | undefined;
     isCrDataIndActive: boolean;
-    isCrDataToolTipActive: boolean;
+    xAxisActiveTooltip: string;
 }
 
 function FeeRateSubChart(props: FreeRateData) {
@@ -45,7 +45,7 @@ function FeeRateSubChart(props: FreeRateData) {
         crosshairActive,
         lastCrDate,
         isCrDataIndActive,
-        isCrDataToolTipActive,
+        xAxisActiveTooltip,
     } = props;
 
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
@@ -216,7 +216,10 @@ function FeeRateSubChart(props: FreeRateData) {
                     .on('draw', () => {
                         setCanvasResolution(canvas);
                         lineSeries(_feeData);
-                        if (isCrDataIndActive || isCrDataToolTipActive) {
+                        if (
+                            isCrDataIndActive ||
+                            xAxisActiveTooltip === 'croc'
+                        ) {
                             ctx.setLineDash([0.6, 0.6]);
                             crDataIndicator([lastCrDate]);
                         }
@@ -236,7 +239,7 @@ function FeeRateSubChart(props: FreeRateData) {
         crDataIndicator,
         lastCrDate,
         isCrDataIndActive,
-        isCrDataToolTipActive,
+        xAxisActiveTooltip,
     ]);
 
     useEffect(() => {

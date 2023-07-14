@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getChainStats } from '../../../App/functions/getPoolStats';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -44,8 +43,6 @@ export default function Stats() {
     const { lastBlockNumber } = useContext(ChainDataContext);
 
     const { isUserIdle } = useAppSelector((state) => state.userData);
-
-    const { t } = useTranslation();
 
     const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
     const [totalVolumeString, setTotalVolumeString] = useState<
@@ -105,10 +102,10 @@ export default function Stats() {
         <div className={styles.container}>
             <div
                 className={styles.title}
-                aria-label={t('homeStatsTitle')}
+                aria-label='Ambient Finance Stats'
                 tabIndex={0}
             >
-                {t('homeStatsTitle')}
+                Ambient Finance Stats
             </div>
             <ul className={styles.content}>
                 {statCardData.map((card, idx) => (

@@ -127,7 +127,6 @@ export default function SidebarAccordion(props: propsIF) {
                             />
                         )}
                         <img src={item.icon} alt={item.name} width='20px' />
-
                         <span className={styles.link_text}>{item.name}</span>
                     </div>
                 </div>
