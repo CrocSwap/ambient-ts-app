@@ -431,6 +431,13 @@ export default function TransactionDetailsGraph(
             xScale.domain(xExtent(graphData));
 
             if (transactionType === 'swap') {
+                if (tx !== undefined) {
+                    addExtraCandle(
+                        tx.txTime,
+                        tx.swapInvPriceDecimalCorrected,
+                        tx.swapPriceDecimalCorrected,
+                    );
+                }
                 yScale.domain(yExtent(graphData));
             } else if (transactionType === 'limitOrder') {
                 if (tx !== undefined) {
@@ -804,6 +811,19 @@ export default function TransactionDetailsGraph(
         triangleLimit,
     ]);
 
+    const addExtraCandle = (
+        time: number,
+        askTickInvPriceDecimalCorrected: number,
+        askTickPriceDecimalCorrected: number,
+    ) => {
+        graphData?.push({
+            time: time,
+            invPriceCloseExclMEVDecimalCorrected:
+                askTickInvPriceDecimalCorrected,
+            priceCloseExclMEVDecimalCorrected: askTickPriceDecimalCorrected,
+        });
+    };
+
     const drawChart = useCallback(
         (
             graphData: any,
@@ -906,14 +926,11 @@ export default function TransactionDetailsGraph(
                                     horizontalBandData,
                                 ]).call(horizontalBand);
                             } else if (tx.claimableLiq > 0) {
-                                // fake data added
-                                graphData.push({
-                                    time: tx.timeFirstMint,
-                                    invPriceCloseExclMEVDecimalCorrected:
-                                        tx.askTickInvPriceDecimalCorrected,
-                                    priceCloseExclMEVDecimalCorrected:
-                                        tx.askTickPriceDecimalCorrected,
-                                });
+                                addExtraCandle(
+                                    tx.timeFirstMint,
+                                    tx.askTickInvPriceDecimalCorrected,
+                                    tx.askTickPriceDecimalCorrected,
+                                );
                                 crossPointJoin(svg, [
                                     [
                                         {
@@ -1001,10 +1018,6 @@ export default function TransactionDetailsGraph(
                             }
                         }
 
-                        lineJoin(svg, [
-                            graphData.sort((a: any, b: any) => b.time - a.time),
-                        ]).call(lineSeries);
-
                         if (transactionType === 'swap' && tx !== undefined) {
                             crossPointJoin(svg, [
                                 [
@@ -1021,6 +1034,10 @@ export default function TransactionDetailsGraph(
                                 ],
                             ]).call(crossPoint);
                         }
+
+                        lineJoin(svg, [
+                            graphData.sort((a: any, b: any) => b.time - a.time),
+                        ]).call(lineSeries);
                     },
                 );
 
