@@ -67,6 +67,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
+        "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@playwright/test": "^1.21.1",
         "@testing-library/jest-dom": "^5.16.4",
         "@testing-library/react": "^13.2.0",
