@@ -90,9 +90,9 @@ const TableHead = ({
         const isCurrentSort = sortedPools.current === label.toLowerCase();
         const sortedArrow =
             sortedPools.direction === 'ascending' ? (
-                <BsSortUpAlt />
-            ) : (
                 <BsSortDown />
+            ) : (
+                <BsSortUpAlt />
             );
         const showArrow = isCurrentSort ? sortedArrow : null;
 
