@@ -151,7 +151,6 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm>
                 <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
             </TableCell>
-
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>
             </TableCell>

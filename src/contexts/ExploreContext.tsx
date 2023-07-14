@@ -6,7 +6,6 @@ import { PoolIF } from '../utils/interfaces/exports';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { getFormattedNumber } from '../App/functions/getFormattedNumber';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { estimateFrom24HrRangeApr } from '../App/functions/fetchAprEst';
 import { get24hChange } from '../App/functions/getPoolStats';
 
 export interface ExploreContextIF {
@@ -29,8 +28,6 @@ export interface PoolDataIF extends PoolIF {
     tvlStr: string;
     volume: number;
     volumeStr: string;
-    apy: number;
-    apyStr: string;
     priceChange: number;
     priceChangeStr: string;
     moneyness: {
@@ -59,8 +56,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         crocEnv: CrocEnv,
         chainId: string,
     ): Promise<PoolDataIF> {
-        // range width (hardcoded in reference materials I'm using)
-        const RANGE_WIDTH = 0.1;
         // moneyness of base token
         const baseMoneyness: number = getMoneynessRank(
             pool.base.address.toLowerCase() + '_' + chainId,
@@ -90,14 +85,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
               );
         // pool index
         const poolIdx: number = lookupChain(chainId).poolIndex;
-        // estimated APY of the pool
-        const apyEst: number = await estimateFrom24HrRangeApr(
-            RANGE_WIDTH,
-            pool.base.address,
-            pool.quote.address,
-            crocEnv,
-            lastBlockNumber,
-        );
+
         const poolStats = await cachedPoolStatsFetch(
             chainId,
             pool.base.address,
@@ -122,11 +110,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
                   prefix: '$',
               })
             : '';
-        // format estimated APY, use empty string as backup value
-        const apyDisplay: string = apyEst.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
         // human readable price change over last 24 hours
         let priceChangePercent: string;
         const priceChangeRaw: number | undefined = await get24hChange(
@@ -165,8 +148,6 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             tvlStr: tvlDisplay,
             volume: poolStats.volumeTotalUsd,
             volumeStr: volumeDisplay,
-            apy: apyEst,
-            apyStr: apyDisplay,
             priceChange: priceChangeRaw ?? 0,
             priceChangeStr: priceChangePercent,
             moneyness: {

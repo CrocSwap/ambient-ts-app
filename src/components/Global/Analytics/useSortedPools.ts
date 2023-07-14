@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 
-export type sortType = '' | 'price' | 'tvl' | 'apr' | 'volume' | 'change';
+export type sortType = '' | 'price' | 'tvl' | 'volume' | 'change';
 export type directionType = '' | 'ascending' | 'descending';
-type sortableKeysType = 'priceChange' | 'tvl' | 'volume' | 'apy';
+type sortableKeysType = 'priceChange' | 'tvl' | 'volume';
 
 export interface SortedPoolMethodsIF {
     pools: PoolDataIF[];
@@ -34,9 +34,6 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
             );
         // logic router for sort mechanism, default goes last
         switch (sortBy) {
-            case 'apr':
-                output = sort('apy');
-                break;
             case 'volume':
                 output = sort('volume');
                 break;
