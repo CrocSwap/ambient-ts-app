@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { useState, useRef, useContext, memo } from 'react';
-import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
@@ -45,12 +44,10 @@ function Sidebar() {
     const { tokens } = useContext(TokenContext);
     const { sidebar } = useContext(SidebarContext);
 
-    const location = useLocation();
-
     const graphData = useAppSelector((state) => state.graphData);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
+    const [exploreSearchInput, setExploreSearchInput] = useState('');
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainData.chainId;
@@ -161,7 +158,7 @@ function Sidebar() {
     };
 
     // ------------------------------------------
-    // ---------------------------ANALYTICS SEARCH CONTAINER-----------------------
+    // ---------------------------Explore SEARCH CONTAINER-----------------------
 
     const focusInput = () => {
         const inputField = document.getElementById(
@@ -170,40 +167,6 @@ function Sidebar() {
 
         inputField.focus();
     };
-
-    const handleInputClearAnalytics = () => {
-        const currentInput = document.getElementById(
-            'search_input_analytics',
-        ) as HTMLInputElement;
-
-        currentInput.value = '';
-    };
-    const AnalyticsSearchContainer = (
-        <div className={styles.search_container}>
-            <div
-                className={styles.search__icon}
-                onClick={() => sidebar.toggle()}
-            >
-                <BiSearch size={18} color='#CDC1FF' />
-            </div>
-            <input
-                type='text'
-                id='search_input_analytics'
-                placeholder='Search token or pools...'
-                className={styles.search__box}
-                onChange={(e) => setAnalyticsSearchInput(e.target.value)}
-            />
-            {!searchInput && (
-                <div
-                    onClick={handleInputClearAnalytics}
-                    className={styles.close_icon}
-                >
-                    <MdClose size={18} color='#ebebeb66' />{' '}
-                </div>
-            )}
-        </div>
-        // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
-    );
 
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
@@ -262,9 +225,7 @@ function Sidebar() {
                 styles.main_search_container
             } ${!sidebar.isOpen && styles.sidebar_link_search_closed}`}
         >
-            {location.pathname.includes('analytics')
-                ? AnalyticsSearchContainer
-                : searchContainer}
+            {searchContainer}
             {sidebar.isOpen ? (
                 <div style={{ cursor: 'pointer', display: 'flex' }}>
                     <DefaultTooltip

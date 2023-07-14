@@ -1,5 +1,6 @@
 @import url(../css/reset.css);
 @import url('../css/GlobalCssClassnames.css');
+
 * {
     box-sizing: border-box;
     padding: 0;

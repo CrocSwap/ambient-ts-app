@@ -15,6 +15,7 @@ type FormatParams = {
     isTvl?: boolean;
     isToken?: boolean;
     removeCommas?: boolean;
+    abbrevThreshold?: number;
 };
 
 export function getFormattedNumber({
@@ -30,6 +31,7 @@ export function getFormattedNumber({
     isTvl = false,
     isToken = false,
     removeCommas = false,
+    abbrevThreshold = 10000,
 }: FormatParams) {
     let valueString = '';
     if (value === 0) {
@@ -79,7 +81,7 @@ export function getFormattedNumber({
     } else if (value < 2) {
         // restrict to 3 places after decimal
         valueString = value.toFixed(3);
-    } else if (value >= 10000 && !isInput) {
+    } else if (value >= abbrevThreshold && !isInput) {
         // use abbreviations (k, M, B, T) for big numbers
         valueString = formatAbbrev(value, isTvl);
     } else {
