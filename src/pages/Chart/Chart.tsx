@@ -5732,7 +5732,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (xAxisTooltip) {
-            xAxisTooltip.html('<p> 🐊 Start of Ambient Data </p>');
+            xAxisTooltip.html('<p> 🐊 Beginning of Ambient Data </p>');
 
             xAxisTooltip.style(
                 'visibility',
@@ -5754,7 +5754,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
-            xAxisTooltip.html('<p> 🥚 End of Data </p>');
+            xAxisTooltip.html('<p> 🥚 Beginning of Historical Data </p>');
 
             xAxisTooltip.style(
                 'visibility',

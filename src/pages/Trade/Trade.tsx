@@ -392,15 +392,16 @@ function Trade() {
                             setTradeTableState(undefined);
                         }}
                         onResizeStop={(e, direction, ref, d) => {
-                            console.log(chartHeight + d.height);
                             // the resizable bar is 4px in height
-                            if (chartHeight + d.height === 4)
+                            if (chartHeight + d.height <= 4) {
                                 setTradeTableState('Expanded');
+                            }
                             if (
                                 tradeTableRef?.current &&
                                 tradeTableRef.current.offsetHeight === 54
-                            )
+                            ) {
                                 setTradeTableState('Collapsed');
+                            }
                             setChartHeight(chartHeight + d.height);
                         }}
                         handleClasses={{ bottom: styles.resizableBox }}
