@@ -5079,7 +5079,10 @@ export default function Chart(props: propsIF) {
                 );
 
                 if (minYBoundary && maxYBoundary) {
-                    const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                    const diffBoundray = Math.abs(maxYBoundary - minYBoundary);
+                    const buffer = diffBoundray
+                        ? diffBoundray / 6
+                        : minYBoundary / 2;
                     if (
                         location.pathname.includes('pool') ||
                         location.pathname.includes('reposition')
