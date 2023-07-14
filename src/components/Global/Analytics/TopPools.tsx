@@ -123,6 +123,7 @@ const FlexContainer = styled.div`
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow-y: hidden;
 `;
 
 const ScrollableContainer = styled.div`
@@ -131,6 +132,7 @@ const ScrollableContainer = styled.div`
     height: 100%;
     scrollbar-width: thin;
     scrollbar-color: var(--dark3) var(--dark1);
+    background: var(--dark1);
 
     &::-webkit-scrollbar {
         display: 'none';
@@ -153,7 +155,7 @@ const ShadowBox = styled.div`
     height: 100%;
 
     position: relative;
-    padding: 8px 0;
+    padding: 0 1rem;
 `;
 
 const Table = styled.table`
@@ -173,12 +175,8 @@ const TableBody = styled.tbody`
     background-color: var(--dark1);
     color: var(--white);
     font-size: 12px;
-    font-family: 'Roboto', sans-serif;
     text-transform: capitalize;
     line-height: 1.5rem;
-    overflow-y: auto;
     max-height: 96px;
-    border-left: 1rem solid transparent;
-    border-right: 1rem solid transparent;
     overflow-y: scroll;
 `;
