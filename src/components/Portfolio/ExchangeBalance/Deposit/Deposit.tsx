@@ -387,7 +387,6 @@ export default function Deposit(props: propsIF) {
                 Deposit collateral for future trading at lower gas costs:
             </div>
             <DepositCurrencySelector
-                fieldId='exchange-balance-deposit'
                 disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQtyNonDisplay}

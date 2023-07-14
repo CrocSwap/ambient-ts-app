@@ -341,7 +341,6 @@ export default function Transfer(props: propsIF) {
                 disable={isAddressFieldDisabled}
             />
             <TransferCurrencySelector
-                fieldId='exchange-balance-transfer'
                 selectedToken={selectedToken}
                 setTransferQty={setTransferQtyNonDisplay}
                 inputValue={inputValue}

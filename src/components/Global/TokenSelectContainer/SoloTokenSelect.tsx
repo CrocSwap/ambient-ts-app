@@ -30,7 +30,7 @@ interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
     isSingleToken: boolean;
-    tokenAorB: string | null;
+    tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
 }
 

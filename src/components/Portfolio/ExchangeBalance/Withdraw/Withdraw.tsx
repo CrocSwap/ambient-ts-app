@@ -350,7 +350,6 @@ export default function Withdraw(props: propsIF) {
             {toggleContent}
             {transferAddressOrNull}
             <WithdrawCurrencySelector
-                fieldId='exchange-balance-withdraw'
                 selectedToken={selectedToken}
                 setWithdrawQty={setWithdrawQtyNonDisplay}
                 inputValue={inputValue}

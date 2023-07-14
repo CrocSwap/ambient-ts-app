@@ -2,10 +2,9 @@ import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { Dispatch, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
-import TokenInput from '../../../../Global/TokenInput/TokenInput';
+import TokenInputQuantity from '../../../../Global/TokenInput/TokenInputQuantity';
 
 interface propsIF {
-    fieldId: string;
     disable?: boolean;
     selectedToken: TokenIF;
     setDepositQty: Dispatch<SetStateAction<string | undefined>>;
@@ -14,14 +13,8 @@ interface propsIF {
 }
 
 export default function DepositCurrencySelector(props: propsIF) {
-    const {
-        fieldId,
-        disable,
-        selectedToken,
-        setDepositQty,
-        inputValue,
-        setInputValue,
-    } = props;
+    const { disable, selectedToken, setDepositQty, inputValue, setInputValue } =
+        props;
 
     const handleOnChange = (input: string) => {
         setInputValue(input);
@@ -50,12 +43,11 @@ export default function DepositCurrencySelector(props: propsIF) {
     };
 
     return (
-        <TokenInput
+        <TokenInputQuantity
             label='Select Token'
-            fieldId={fieldId}
             tokenAorB={null}
             value={inputValue}
-            handleChangeEvent={(e) => handleOnChange(e.target.value)}
+            handleTokenInputEvent={handleOnChange}
             parseInput={parseInput}
             disable={disable}
             token={selectedToken}

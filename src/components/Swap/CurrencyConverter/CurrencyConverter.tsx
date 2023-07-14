@@ -1,5 +1,4 @@
 import {
-    ChangeEvent,
     Dispatch,
     memo,
     SetStateAction,
@@ -11,7 +10,6 @@ import {
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
-import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import {
     setIsTokenAPrimary,
     setPrimaryQuantity,
@@ -27,7 +25,6 @@ import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import { ZERO_ADDRESS } from '../../../constants';
 import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
-import { useAccount } from 'wagmi';
 import { shallowEqual } from 'react-redux';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -36,6 +33,9 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import useDebounce from '../../../App/hooks/useDebounce';
+import TokenInput from '../../Global/TokenInput/TokenInput';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 
 interface propsIF {
     slippageTolerancePercentage: number;
@@ -69,8 +69,6 @@ function CurrencyConverter(props: propsIF) {
         setIsSaveAsDexSurplusChecked,
         setSwapAllowed,
         setSwapButtonErrorMessage,
-        sellQtyString,
-        buyQtyString,
         setSellQtyString,
         setBuyQtyString,
         setTokenAQtyCoveredByWalletBalance,
@@ -91,6 +89,12 @@ function CurrencyConverter(props: propsIF) {
             dexBalance: quoteTokenDexBalance,
         },
     } = useContext(TradeTokenContext);
+    const { showSwapPulseAnimation } = useContext(TradeTableContext);
+    const { dexBalSwap } = useContext(UserPreferenceContext);
+
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
 
     const dispatch = useAppDispatch();
 
@@ -119,6 +123,7 @@ function CurrencyConverter(props: propsIF) {
     const [isBuyLoading, setIsBuyLoading] = useState(false);
 
     const isSellTokenEth = tokenA.address === ZERO_ADDRESS;
+    const isBuyTokenEth = tokenB.address === ZERO_ADDRESS;
 
     useEffect(() => {
         setTokenALocal(tokenA.address);
@@ -190,9 +195,6 @@ function CurrencyConverter(props: propsIF) {
         setUserOverrodeSurplusWithdrawalDefault,
     ] = useState<boolean>(false);
 
-    const [userClickedCombinedMax, setUserClickedCombinedMax] =
-        useState<boolean>(false);
-
     useEffect(() => {
         if (
             !isWithdrawFromDexChecked &&
@@ -252,7 +254,6 @@ function CurrencyConverter(props: propsIF) {
             return;
         } else {
             setDisableReverseTokens(true);
-            setUserClickedCombinedMax(false);
             setSwitchBoxes(!switchBoxes);
 
             isTokenAPrimaryLocal
@@ -339,14 +340,6 @@ function CurrencyConverter(props: propsIF) {
         slippageTolerancePercentage,
         isLiquidityInsufficient,
     ]);
-
-    const { address: account } = useAccount();
-
-    useEffect(() => {
-        if (account) {
-            setUserClickedCombinedMax(false);
-        }
-    }, [account]);
 
     const [isImpactCalculating, setImpactCalculating] =
         useState<boolean>(false);
@@ -435,60 +428,54 @@ function CurrencyConverter(props: propsIF) {
         }
     }
 
-    const [lastEvent, setLastEvent] = useState<
-        ChangeEvent<HTMLInputElement> | undefined
-    >();
+    const [lastEvent, setLastEvent] = useState<string | undefined>();
 
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastEvent = useDebounce(lastEvent, 750);
 
     useEffect(() => {
-        if (debouncedLastEvent) {
+        if (debouncedLastEvent !== undefined) {
             isBuyLoading
                 ? handleTokenAChangeEvent(debouncedLastEvent)
                 : handleTokenBChangeEvent(debouncedLastEvent);
         }
     }, [debouncedLastEvent]);
 
-    const debouncedTokenAChangeEvent = (
-        event: ChangeEvent<HTMLInputElement>,
-    ) => {
-        const { value } = event.target;
+    const debouncedTokenAChangeEvent = (value: string) => {
         setBuyQtyString('');
         if (value && parseFloat(value) !== 0) {
             setIsBuyLoading(true);
             setSellQtyString(value);
+        } else {
+            setTokenBQtyLocal('');
         }
         value || setIsBuyLoading(false);
 
         setDisableReverseTokens(true);
-        setLastEvent(event);
+        setLastEvent(value);
     };
 
-    const debouncedTokenBChangeEvent = (
-        event: ChangeEvent<HTMLInputElement>,
-    ) => {
-        const { value } = event.target;
+    const debouncedTokenBChangeEvent = (value: string) => {
         setSellQtyString('');
         if (value && parseFloat(value) !== 0) {
             setIsSellLoading(true);
             setBuyQtyString(value);
+        } else {
+            setTokenAQtyLocal('');
         }
         value || setIsSellLoading(false);
 
         setDisableReverseTokens(true);
-        setLastEvent(event);
+        setLastEvent(value);
     };
 
     const handleTokenAChangeEvent = useMemo(
-        () => async (evt?: ChangeEvent<HTMLInputElement>) => {
+        () => async (value?: string) => {
             if (!crocEnv) return;
             let rawTokenBQty = undefined;
-            if (evt) {
-                setUserClickedCombinedMax(false);
-
+            if (value !== undefined) {
                 // parse input
-                const inputStr = evt.target.value.replaceAll(',', '');
+                const inputStr = value.replaceAll(',', '');
                 const inputNum = parseFloat(inputStr);
 
                 const truncatedInputStr = getFormattedNumber({
@@ -530,57 +517,14 @@ function CurrencyConverter(props: propsIF) {
         ],
     );
 
-    const handleTokenAChangeClick = useMemo(
-        () => async (value: string) => {
-            if (!crocEnv) return;
-            let rawTokenBQty;
-            const tokenAInputField = document.getElementById('sell-quantity');
-            if (tokenAInputField) {
-                (tokenAInputField as HTMLInputElement).value = value;
-            }
-            if (value) {
-                const input = value.replaceAll(',', '');
-                setSellQtyString(input);
-                setTokenAQtyLocal(input);
-                setIsTokenAPrimaryLocal(true);
-                dispatch(setIsTokenAPrimary(true));
-                dispatch(setPrimaryQuantity(input));
-
-                rawTokenBQty = await refreshImpact(input, true);
-            } else {
-                rawTokenBQty = await refreshImpact(tokenAQtyLocal, true);
-            }
-
-            const truncatedTokenBQty = rawTokenBQty
-                ? rawTokenBQty < 2
-                    ? rawTokenBQty.toPrecision(3)
-                    : truncateDecimals(rawTokenBQty, 2)
-                : '';
-
-            setTokenBQtyLocal(truncatedTokenBQty);
-            setBuyQtyString(truncatedTokenBQty);
-        },
-        [
-            crocEnv,
-            poolPriceDisplay,
-            isPoolInitialized,
-            tokenALocal,
-            tokenBLocal,
-            slippageTolerancePercentage,
-            isTokenAPrimaryLocal,
-        ],
-    );
-
     const handleTokenBChangeEvent = useMemo(
-        () => async (evt?: ChangeEvent<HTMLInputElement>) => {
+        () => async (value?: string) => {
             if (!crocEnv) return;
 
             let rawTokenAQty: number | undefined;
-            if (evt) {
-                setUserClickedCombinedMax(false);
-
+            if (value !== undefined) {
                 // parse input
-                const inputStr = evt.target.value.replaceAll(',', '');
+                const inputStr = value.replaceAll(',', '');
                 const inputNum = parseFloat(inputStr);
 
                 const truncatedInputStr = getFormattedNumber({
@@ -621,36 +565,50 @@ function CurrencyConverter(props: propsIF) {
         ],
     );
 
+    const refreshTokenData = async () => {
+        if (isTokenAPrimaryLocal) {
+            setIsBuyLoading(true);
+            handleTokenAChangeEvent && (await handleTokenAChangeEvent());
+            setIsBuyLoading(false);
+        } else {
+            setIsSellLoading(true);
+            handleTokenBChangeEvent && (await handleTokenBChangeEvent());
+            setIsSellLoading(false);
+        }
+    };
+
+    const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (tokenAorB === 'A') {
+            setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked);
+            if (!!tokenADexBalance && parseFloat(tokenADexBalance) > 0) {
+                setUserOverrodeSurplusWithdrawalDefault(true);
+            }
+        } else {
+            if (isSaveAsDexSurplusChecked) dexBalSwap.outputToDexBal.disable();
+            else dexBalSwap.outputToDexBal.enable();
+            setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked);
+        }
+    };
+
     return (
         <section className={`${styles.currency_converter}`}>
-            <CurrencySelector
-                disableReverseTokens={disableReverseTokens}
-                sellQtyString={sellQtyString}
-                buyQtyString={buyQtyString}
-                fieldId='sell'
+            <TokenInput
+                tokenAorB='A'
+                token={tokenA}
+                tokenInput={tokenAQtyLocal}
+                tokenBalance={tokenABalance}
+                tokenDexBalance={tokenADexBalance}
+                isTokenEth={isSellTokenEth}
+                isDexSelected={isWithdrawFromDexChecked}
                 isLoading={isSellLoading}
-                tokenAorB={'A'}
-                sellToken
-                handleChangeEvent={debouncedTokenAChangeEvent}
-                handleChangeClick={handleTokenAChangeClick}
-                tokenABalance={tokenABalance}
-                tokenBBalance={tokenBBalance}
-                tokenADexBalance={tokenADexBalance}
-                tokenBDexBalance={tokenBDexBalance}
-                isSellTokenEth={isSellTokenEth}
-                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                showPulseAnimation={showSwapPulseAnimation}
+                handleTokenInputEvent={debouncedTokenAChangeEvent}
                 reverseTokens={reverseTokens}
-                setDisableReverseTokens={setDisableReverseTokens}
-                setUserOverrodeSurplusWithdrawalDefault={
-                    setUserOverrodeSurplusWithdrawalDefault
-                }
-                setUserClickedCombinedMax={setUserClickedCombinedMax}
-                userClickedCombinedMax={userClickedCombinedMax}
-                setIsSellLoading={setIsSellLoading}
-                setIsBuyLoading={setIsBuyLoading}
+                handleToggleDexSelection={() => toggleDexSelection('A')}
+                parseTokenInput={() => {
+                    // TODO
+                }}
+                showWallet={isUserConnected}
             />
             <div
                 className={`${styles.arrow_container} ${
@@ -665,34 +623,24 @@ function CurrencyConverter(props: propsIF) {
                 )}
             </div>
             <div id='swap_currency_converter'>
-                <CurrencySelector
-                    disableReverseTokens={disableReverseTokens}
-                    sellQtyString={sellQtyString}
-                    buyQtyString={buyQtyString}
-                    fieldId='buy'
+                <TokenInput
+                    tokenAorB='B'
+                    token={tokenB}
+                    tokenInput={tokenBQtyLocal}
+                    tokenBalance={tokenBBalance}
+                    tokenDexBalance={tokenBDexBalance}
+                    isTokenEth={isBuyTokenEth}
+                    isDexSelected={isSaveAsDexSurplusChecked}
                     isLoading={isBuyLoading}
-                    tokenAorB={'B'}
-                    handleChangeEvent={debouncedTokenBChangeEvent}
-                    tokenABalance={tokenABalance}
-                    tokenBBalance={tokenBBalance}
-                    tokenADexBalance={tokenADexBalance}
-                    tokenBDexBalance={tokenBDexBalance}
-                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    showPulseAnimation={showSwapPulseAnimation}
+                    handleTokenInputEvent={debouncedTokenBChangeEvent}
                     reverseTokens={reverseTokens}
-                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    setDisableReverseTokens={setDisableReverseTokens}
-                    setUserOverrodeSurplusWithdrawalDefault={
-                        setUserOverrodeSurplusWithdrawalDefault
-                    }
-                    setUserClickedCombinedMax={setUserClickedCombinedMax}
-                    userClickedCombinedMax={userClickedCombinedMax}
-                    setIsSellLoading={setIsSellLoading}
-                    setIsBuyLoading={setIsBuyLoading}
-                    isTokenAPrimaryLocal={isTokenAPrimaryLocal}
-                    handleTokenAChangeEvent={handleTokenAChangeEvent}
-                    handleTokenBChangeEvent={handleTokenBChangeEvent}
+                    handleToggleDexSelection={() => toggleDexSelection('B')}
+                    parseTokenInput={() => {
+                        // TODO
+                    }}
+                    showWallet={isUserConnected}
+                    handleRefresh={refreshTokenData}
                 />
             </div>
         </section>

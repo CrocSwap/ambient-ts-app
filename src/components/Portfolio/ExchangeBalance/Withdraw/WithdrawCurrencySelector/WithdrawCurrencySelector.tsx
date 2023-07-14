@@ -2,10 +2,9 @@ import { Dispatch, SetStateAction } from 'react';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
-import TokenInput from '../../../../Global/TokenInput/TokenInput';
+import TokenInputQuantity from '../../../../Global/TokenInput/TokenInputQuantity';
 
 interface propsIF {
-    fieldId: string;
     disable?: boolean;
     selectedToken: TokenIF;
     setWithdrawQty: Dispatch<SetStateAction<string | undefined>>;
@@ -15,7 +14,6 @@ interface propsIF {
 
 export default function WithdrawCurrencySelector(props: propsIF) {
     const {
-        fieldId,
         disable,
         selectedToken,
         setWithdrawQty,
@@ -50,12 +48,11 @@ export default function WithdrawCurrencySelector(props: propsIF) {
     };
 
     return (
-        <TokenInput
+        <TokenInputQuantity
             label='Select Token'
-            fieldId={fieldId}
             tokenAorB={null}
             value={inputValue}
-            handleChangeEvent={(e) => handleOnChange(e.target.value)}
+            handleTokenInputEvent={handleOnChange}
             parseInput={parseInput}
             disable={disable}
             token={selectedToken}

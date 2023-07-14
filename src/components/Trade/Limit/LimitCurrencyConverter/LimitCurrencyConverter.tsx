@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import {
-    ChangeEvent,
     Dispatch,
     memo,
     SetStateAction,
@@ -23,7 +22,6 @@ import {
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // START: Import React Functional Components
-import LimitCurrencySelector from '../LimitCurrencySelector/LimitCurrencySelector';
 import LimitRate from '../LimitRate/LimitRate';
 
 // START: Import Local Files
@@ -39,6 +37,9 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import TokenInput from '../../../Global/TokenInput/TokenInput';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 
 // interface for component props
 interface propsIF {
@@ -103,11 +104,14 @@ function LimitCurrencyConverter(props: propsIF) {
             dexBalance: quoteTokenDexBalance,
         },
     } = useContext(TradeTokenContext);
+    const { showOrderPulseAnimation } = useContext(TradeTableContext);
+    const { dexBalLimit } = useContext(UserPreferenceContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
 
@@ -116,8 +120,6 @@ function LimitCurrencyConverter(props: propsIF) {
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
         isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
-
-    const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
 
     const tokenABalance = isSellTokenBase
         ? baseTokenBalance
@@ -295,10 +297,10 @@ function LimitCurrencyConverter(props: propsIF) {
         setTokenBInputQty(truncatedInputStr);
     };
 
-    const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    const handleTokenAChangeEvent = (value?: string) => {
         let rawTokenBQty = 0;
-        if (evt) {
-            const inputStr = evt.target.value.replaceAll(',', '');
+        if (value !== undefined) {
+            const inputStr = value.replaceAll(',', '');
             const inputNum = parseFloat(inputStr);
             const truncatedInputStr = getFormattedNumber({
                 value: inputNum,
@@ -306,6 +308,7 @@ function LimitCurrencyConverter(props: propsIF) {
                 maxFracDigits: tradeData.tokenA.decimals,
             });
 
+            setTokenAInputQty(truncatedInputStr);
             setTokenAQtyLocal(truncatedInputStr);
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
@@ -347,46 +350,13 @@ function LimitCurrencyConverter(props: propsIF) {
         setTokenBInputQty(truncatedTokenBQty);
     };
 
-    const handleTokenAChangeClick = (value: string) => {
-        let rawTokenBQty;
-        const tokenAInputField = document.getElementById('sell-limit-quantity');
-        if (tokenAInputField) {
-            (tokenAInputField as HTMLInputElement).value = value;
-        }
-        const input = value;
-        setTokenAQtyLocal(input);
-        setTokenAInputQty(input);
-        setIsTokenAPrimaryLocal(true);
-        dispatch(setIsTokenAPrimary(true));
-        dispatch(setPrimaryQuantity(input));
-
-        if (!tradeData.isDenomBase) {
-            rawTokenBQty = isSellTokenBase
-                ? (1 / limitTickDisplayPrice) * parseFloat(input)
-                : limitTickDisplayPrice * parseFloat(input);
-        } else {
-            rawTokenBQty = !isSellTokenBase
-                ? (1 / limitTickDisplayPrice) * parseFloat(input)
-                : limitTickDisplayPrice * parseFloat(input);
-        }
-
-        const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 2
-                ? rawTokenBQty.toPrecision(3)
-                : truncateDecimals(rawTokenBQty, 2)
-            : '';
-        handleLimitButtonMessage(parseFloat(input));
-
-        setTokenBInputQty(truncatedTokenBQty);
-    };
-
     const [userSetTokenBToZero, setUserSetTokenBToZero] =
         useState<boolean>(false);
 
-    const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    const handleTokenBChangeEvent = (value?: string) => {
         let rawTokenAQty = 0;
-        if (evt) {
-            const inputStr = evt.target.value.replaceAll(',', '');
+        if (value !== undefined) {
+            const inputStr = value.replaceAll(',', '');
             const inputNum = parseFloat(inputStr);
             const truncatedInputStr = getFormattedNumber({
                 value: inputNum,
@@ -394,6 +364,7 @@ function LimitCurrencyConverter(props: propsIF) {
                 maxFracDigits: tradeData.tokenB.decimals,
             });
 
+            setTokenBInputQty(truncatedInputStr);
             setUserSetTokenBToZero(false);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
@@ -448,28 +419,35 @@ function LimitCurrencyConverter(props: propsIF) {
         setTokenAQtyCoveredByWalletBalance(tokenAQtyCoveredByWalletBalance);
     }, [tokenAQtyCoveredByWalletBalance]);
 
+    const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (tokenAorB === 'A') {
+            setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked);
+            if (!!tokenADexBalance && parseFloat(tokenADexBalance) > 0) {
+                setUserOverrodeSurplusWithdrawalDefault(true);
+            }
+        } else {
+            if (isSaveAsDexSurplusChecked) dexBalLimit.outputToDexBal.disable();
+            else dexBalLimit.outputToDexBal.enable();
+            setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked);
+        }
+    };
+
     return (
         <section className={styles.currency_converter}>
-            <LimitCurrencySelector
-                tokenAInputQty={tokenAInputQty}
-                tokenBInputQty={tokenBInputQty}
-                fieldId='sell'
-                sellToken
-                isSellTokenEth={isSellTokenEth}
-                handleChangeEvent={handleTokenAChangeEvent}
-                handleChangeClick={handleTokenAChangeClick}
+            <TokenInput
+                tokenAorB='A'
+                token={tokenA}
+                tokenInput={tokenAInputQty}
+                tokenBalance={tokenABalance}
+                tokenDexBalance={tokenADexBalance}
+                isTokenEth={tokenA.address === ZERO_ADDRESS}
+                isDexSelected={isWithdrawFromDexChecked}
+                showPulseAnimation={showOrderPulseAnimation}
+                handleTokenInputEvent={handleTokenAChangeEvent}
                 reverseTokens={reverseTokens}
-                tokenABalance={tokenABalance}
-                tokenADexBalance={tokenADexBalance}
-                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                tokenAorB={'A'}
-                setUserOverrodeSurplusWithdrawalDefault={
-                    setUserOverrodeSurplusWithdrawalDefault
-                }
-                parseInput={parseTokenAInput}
+                handleToggleDexSelection={() => toggleDexSelection('A')}
+                parseTokenInput={parseTokenAInput}
+                showWallet={isUserConnected}
             />
             <div
                 className={`${styles.arrow_container} ${
@@ -487,23 +465,17 @@ function LimitCurrencyConverter(props: propsIF) {
                 </IconWithTooltip>
             </div>
             <div id='limit_currency_converter'>
-                <LimitCurrencySelector
-                    tokenAInputQty={tokenAInputQty}
-                    tokenBInputQty={tokenBInputQty}
-                    fieldId='buy'
-                    handleChangeEvent={handleTokenBChangeEvent}
+                <TokenInput
+                    tokenAorB='B'
+                    token={tokenB}
+                    tokenInput={tokenBInputQty}
+                    isTokenEth={tokenB.address === ZERO_ADDRESS}
+                    isDexSelected={isSaveAsDexSurplusChecked}
+                    showPulseAnimation={showOrderPulseAnimation}
+                    handleTokenInputEvent={handleTokenBChangeEvent}
                     reverseTokens={reverseTokens}
-                    tokenABalance={tokenABalance}
-                    tokenADexBalance={tokenADexBalance}
-                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    tokenAorB={'B'}
-                    setUserOverrodeSurplusWithdrawalDefault={
-                        setUserOverrodeSurplusWithdrawalDefault
-                    }
-                    parseInput={parseTokenBInput}
+                    handleToggleDexSelection={() => toggleDexSelection('B')}
+                    parseTokenInput={parseTokenBInput}
                 />
             </div>
             <LimitRate

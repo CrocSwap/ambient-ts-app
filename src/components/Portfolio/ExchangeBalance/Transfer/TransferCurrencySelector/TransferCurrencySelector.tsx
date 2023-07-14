@@ -2,10 +2,9 @@ import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { Dispatch, memo, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
-import TokenInput from '../../../../Global/TokenInput/TokenInput';
+import TokenInputQuantity from '../../../../Global/TokenInput/TokenInputQuantity';
 
 interface propsIF {
-    fieldId: string;
     disable?: boolean;
     selectedToken: TokenIF;
     setTransferQty: Dispatch<SetStateAction<string | undefined>>;
@@ -15,7 +14,6 @@ interface propsIF {
 
 function TransferCurrencySelector(props: propsIF) {
     const {
-        fieldId,
         disable,
         selectedToken,
         setTransferQty,
@@ -50,12 +48,11 @@ function TransferCurrencySelector(props: propsIF) {
     };
 
     return (
-        <TokenInput
+        <TokenInputQuantity
             label='Select Token'
-            fieldId={fieldId}
             tokenAorB={null}
             value={inputValue}
-            handleChangeEvent={(e) => handleOnChange(e.target.value)}
+            handleTokenInputEvent={handleOnChange}
             parseInput={parseInput}
             disable={disable}
             token={selectedToken}

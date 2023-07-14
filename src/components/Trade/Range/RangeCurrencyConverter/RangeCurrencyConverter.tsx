@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import {
-    ChangeEvent,
     Dispatch,
     SetStateAction,
     useState,
@@ -10,7 +9,6 @@ import {
 } from 'react';
 
 // START: Import React Functional Components
-import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // START: Import Local Files
@@ -36,6 +34,8 @@ import {
 } from '../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import TokenInput from '../../../Global/TokenInput/TokenInput';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 // interface for component props
 interface propsIF {
@@ -83,8 +83,6 @@ function RangeCurrencyConverter(props: propsIF) {
         setTokenBInputQty,
         setRangeButtonErrorMessage,
         setRangeAllowed,
-        isTokenADisabled,
-        isTokenBDisabled,
         isAdvancedMode,
         isOutOfRange,
         rangeSpanAboveCurrentPrice,
@@ -110,12 +108,15 @@ function RangeCurrencyConverter(props: propsIF) {
             dexBalance: quoteTokenDexBalance,
         },
     } = useContext(TradeTokenContext);
+    const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const dispatch = useAppDispatch();
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
+
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const [tokenAAllowed, setTokenAAllowed] = useState(false);
     const [tokenBAllowed, setTokenBAllowed] = useState(false);
@@ -428,16 +429,13 @@ function RangeCurrencyConverter(props: propsIF) {
         setTokenBInputQty(truncatedInputStr);
     };
 
-    const handleTokenAQtyFieldUpdate = (
-        evt?: ChangeEvent<HTMLInputElement>,
-    ) => {
-        if (evt) {
-            const input = evt.target.value.startsWith('.')
-                ? '0' + evt.target.value
-                : evt.target.value;
+    const handleTokenAQtyFieldUpdate = (value?: string) => {
+        if (value !== undefined) {
+            const input = value.startsWith('.') ? '0' + value : value;
 
             const parsedInput = parseFloat(input);
 
+            setTokenAInputQty(input);
             setTokenAQtyValue(!isNaN(parsedInput) ? parsedInput : 0);
             dispatch(setIsTokenAPrimaryRange(true));
             dispatch(setPrimaryQuantityRange(input));
@@ -491,41 +489,12 @@ function RangeCurrencyConverter(props: propsIF) {
         }
     };
 
-    const handleTokenAChangeClick = (input: string) => {
-        if (input === '' || parseFloat(input) <= 0) {
-            setTokenAAllowed(false);
-            setRangeButtonErrorMessage('Enter an Amount');
-            setTokenAQtyValue(0);
-        } else {
-            setTokenAQtyValue(parseFloat(input));
-        }
-        dispatch(setIsTokenAPrimaryRange(true));
-        dispatch(setPrimaryQuantityRange(input));
-        setTokenAInputQty(input);
-    };
-
-    const handleTokenBChangeClick = (input: string) => {
-        if (input === '' || parseFloat(input) <= 0) {
-            setTokenBAllowed(false);
-            setRangeButtonErrorMessage('Enter an Amount');
-            setTokenBQtyValue(0);
-        } else {
-            setTokenBQtyValue(parseFloat(input));
-        }
-        dispatch(setIsTokenAPrimaryRange(false));
-        dispatch(setPrimaryQuantityRange(input));
-        setTokenBInputQty(input);
-    };
-
-    const handleTokenBQtyFieldUpdate = (
-        evt?: ChangeEvent<HTMLInputElement>,
-    ) => {
-        if (evt) {
-            const input = evt.target.value.startsWith('.')
-                ? '0' + evt.target.value
-                : evt.target.value;
+    const handleTokenBQtyFieldUpdate = (value?: string) => {
+        if (value !== undefined) {
+            const input = value.startsWith('.') ? '0' + value : value;
             const parsedInput = parseFloat(input);
 
+            setTokenBInputQty(input);
             setTokenBQtyValue(!isNaN(parsedInput) ? parsedInput : 0);
             dispatch(setIsTokenAPrimaryRange(false));
             dispatch(setPrimaryQuantityRange(input));
@@ -627,54 +596,57 @@ function RangeCurrencyConverter(props: propsIF) {
     }, [tokenBQtyCoveredByWalletBalance]);
 
     // props for <RangeCurrencyConverter/> React element
-    const rangeCurrencySelectorCommonProps = {
-        isTokenAEth,
-        isTokenBEth,
-        tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
-        isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
-        setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
-        isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
-        setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        reverseTokens: reverseTokens,
-        tokenABalance: tokenABalance,
-        tokenBBalance: tokenBBalance,
-        tokenADexBalance: tokenADexBalance,
-        tokenBDexBalance: tokenBDexBalance,
-        isTokenADisabled: isTokenADisabled,
-        isTokenBDisabled: isTokenBDisabled,
-        setUserOverrodeSurplusWithdrawalDefault:
-            setUserOverrodeSurplusWithdrawalDefault,
+
+    const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (tokenAorB === 'A') {
+            setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
+            if (!!tokenADexBalance && parseFloat(tokenADexBalance) > 0) {
+                setUserOverrodeSurplusWithdrawalDefault(true);
+            }
+        } else {
+            setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
+            if (!!tokenBDexBalance && parseFloat(tokenBDexBalance) > 0) {
+                setUserOverrodeSurplusWithdrawalDefault(true);
+            }
+        }
     };
 
     return (
         <section className={styles.currency_converter}>
-            <RangeCurrencySelector
-                fieldId='A'
-                updateOtherQuantity={(event) =>
-                    handleTokenAQtyFieldUpdate(event)
-                }
-                {...rangeCurrencySelectorCommonProps}
-                isAdvancedMode={isAdvancedMode}
-                handleChangeClick={handleTokenAChangeClick}
-                tokenAorB={'A'}
-                parseInput={parseTokenAInput}
+            <TokenInput
+                tokenAorB='A'
+                token={tokenA}
+                tokenInput={tokenAInputQty}
+                tokenBalance={tokenABalance}
+                tokenDexBalance={tokenADexBalance}
+                isTokenEth={isTokenAEth}
+                isDexSelected={isWithdrawTokenAFromDexChecked}
+                showPulseAnimation={showRangePulseAnimation}
+                handleTokenInputEvent={handleTokenAQtyFieldUpdate}
+                reverseTokens={reverseTokens}
+                handleToggleDexSelection={() => toggleDexSelection('A')}
+                parseTokenInput={parseTokenAInput}
+                showWallet={isUserConnected}
             />
             <div className={styles.arrow_container}>
                 <img src={tokenArrow} height={28} alt='plus sign' />
                 {isLiq ? null : <span className={styles.arrow} />}
             </div>
             <div id='range_currency_converter'>
-                <RangeCurrencySelector
-                    fieldId='B'
-                    updateOtherQuantity={(event) =>
-                        handleTokenBQtyFieldUpdate(event)
-                    }
-                    {...rangeCurrencySelectorCommonProps}
-                    isAdvancedMode={isAdvancedMode}
-                    handleChangeClick={handleTokenBChangeClick}
-                    tokenAorB={'B'}
-                    parseInput={parseTokenBInput}
+                <TokenInput
+                    tokenAorB='B'
+                    token={tokenB}
+                    tokenInput={tokenBInputQty}
+                    tokenBalance={tokenBBalance}
+                    tokenDexBalance={tokenBDexBalance}
+                    isTokenEth={isTokenBEth}
+                    isDexSelected={isWithdrawTokenBFromDexChecked}
+                    showPulseAnimation={showRangePulseAnimation}
+                    handleTokenInputEvent={handleTokenBQtyFieldUpdate}
+                    reverseTokens={reverseTokens}
+                    handleToggleDexSelection={() => toggleDexSelection('B')}
+                    parseTokenInput={parseTokenBInput}
+                    showWallet={isUserConnected}
                 />
             </div>
         </section>
