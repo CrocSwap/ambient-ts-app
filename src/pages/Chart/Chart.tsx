@@ -224,8 +224,6 @@ export default function Chart(props: propsIF) {
     const [minTickForLimit, setMinTickForLimit] = useState<any>();
     const [maxTickForLimit, setMaxTickForLimit] = useState<any>();
 
-    const unparsedCandleData = unparsedData.candles;
-
     const period = unparsedData.duration;
 
     const isDenomBase = tradeData.isDenomBase;
@@ -347,6 +345,55 @@ export default function Chart(props: propsIF) {
     });
     const [selectedLiq, setSelectedLiq] = useState('');
     const [firstCandle, setFirstCandle] = useState<number>();
+
+    const unparsedCandleData = useMemo(() => {
+        const data = unparsedData.candles;
+        if (poolPriceWithoutDenom) {
+            const fakeData = {
+                time: data[0].time + period,
+                invMinPriceExclMEVDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                maxPriceExclMEVDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
+                minPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
+                invPriceOpenExclMEVDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                priceOpenExclMEVDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                invPriceCloseExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
+                priceCloseExclMEVDecimalCorrected: poolPriceWithoutDenom,
+                period: period,
+                tvlData: {
+                    time: data[0].time,
+                    tvl: data[0].tvlData.tvl,
+                },
+                volumeUSD: 0,
+                averageLiquidityFee: 0,
+                minPriceDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                maxPriceDecimalCorrected: 0,
+                priceOpenDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                priceCloseDecimalCorrected:
+                    data[0].priceOpenExclMEVDecimalCorrected,
+                invMinPriceDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                invMaxPriceDecimalCorrected: 0,
+                invPriceOpenDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                invPriceCloseDecimalCorrected:
+                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                isCrocData: false,
+            };
+
+            if (data[0].isCrocData) {
+                data.unshift(fakeData);
+            }
+        }
+
+        return data;
+    }, [unparsedData.candles]);
 
     const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
@@ -488,53 +535,6 @@ export default function Chart(props: propsIF) {
             return lastCrocDate * 1000;
         }
     }, [diffHashSigChart(unparsedCandleData)]);
-
-    useEffect(() => {
-        if (poolPriceWithoutDenom && unparsedCandleData) {
-            const data = unparsedData.candles;
-            const fakeData = {
-                time: data[0].time + period,
-                invMinPriceExclMEVDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                maxPriceExclMEVDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                minPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                invPriceOpenExclMEVDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                priceOpenExclMEVDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invPriceCloseExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                priceCloseExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                period: period,
-                tvlData: {
-                    time: data[0].time,
-                    tvl: data[0].tvlData.tvl,
-                },
-                volumeUSD: 0,
-                averageLiquidityFee: 0,
-                minPriceDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                maxPriceDecimalCorrected: 0,
-                priceOpenDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                priceCloseDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invMinPriceDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                invMaxPriceDecimalCorrected: 0,
-                invPriceOpenDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                invPriceCloseDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                isCrocData: false,
-            };
-
-            if (data[0].isCrocData) {
-                data.unshift(fakeData);
-            }
-        }
-    }, [unparsedCandleData === undefined]);
 
     useEffect(() => {
         if (
