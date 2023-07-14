@@ -69,13 +69,6 @@ function TopPools(props: propsIF) {
             responsive: 'sm',
             sortable: true,
         },
-        {
-            label: 'APR',
-            hidden: true,
-            align: 'right',
-            responsive: 'xl',
-            sortable: true,
-        },
         { label: 'Volume', hidden: false, align: 'right', sortable: true },
         {
             label: 'Change',

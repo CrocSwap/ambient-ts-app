@@ -148,18 +148,6 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm>
                 <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
             </TableCell>
-            <TableCell hidden xl>
-                <p
-                    style={{
-                        color:
-                            Number(pool.apy) > 0
-                                ? 'var(--positive)'
-                                : 'var(--negative)',
-                    }}
-                >
-                    {pool.apyStr + '%'}
-                </p>
-            </TableCell>
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>
             </TableCell>
