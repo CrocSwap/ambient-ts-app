@@ -176,4 +176,5 @@ const TableBody = styled.tbody`
     max-height: 96px;
     border-left: 1rem solid transparent;
     border-right: 1rem solid transparent;
+    overflow-y: scroll;
 `;

@@ -34,9 +34,7 @@ const TableHead = ({
         width: 100%;
         height: 25px;
         padding: 0 4px;
-
         text-align: ${({ align }) => align};
-
         cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
 
         background-color: ${({ label }) =>
@@ -134,7 +132,6 @@ const TableHead = ({
                             }}
                         >
                             {item.label}
-
                             <AssignSort label={item.label} />
                         </div>
                     </TableHeaderCell>

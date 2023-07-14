@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 
-export type sortType = '' | 'price' | 'tvl' | 'volume' | 'change';
-export type directionType = '' | 'ascending' | 'descending';
+export type sortType = 'price' | 'tvl' | 'volume' | 'change' | null;
+export type directionType = 'ascending' | 'descending' | null;
 type sortableKeysType = 'priceChange' | 'tvl' | 'volume';
 
 export interface SortedPoolMethodsIF {
@@ -14,8 +14,8 @@ export interface SortedPoolMethodsIF {
 
 // hook to sort pools in the Explore module
 export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
-    // default sort values
-    const DEFAULT_SORT: sortType = 'tvl';
+    // default sort values (`null` will sort by TVL)
+    const DEFAULT_SORT: sortType = null;
     const DEFAULT_DIRECTION: directionType = 'ascending';
     // hooks to hold current sort values
     const [sortBy, setSortBy] = useState<sortType>(DEFAULT_SORT);
@@ -41,7 +41,7 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
                 output = sort('priceChange');
                 break;
             case 'tvl':
-            case '':
+            case null:
             default:
                 output = sort('tvl');
                 break;
@@ -55,7 +55,7 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
         if (sort === sortBy) {
             let updatedDirection: directionType;
             switch (direction) {
-                case '':
+                case null:
                     updatedDirection = 'ascending';
                     break;
                 case 'ascending':
@@ -63,8 +63,8 @@ export const useSortedPools = (allPools: PoolDataIF[]): SortedPoolMethodsIF => {
                     break;
                 case 'descending':
                 default:
-                    updatedDirection = '';
-                    setSortBy('');
+                    updatedDirection = null;
+                    setSortBy(null);
                     break;
             }
             setDirection(updatedDirection);
