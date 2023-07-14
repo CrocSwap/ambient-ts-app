@@ -106,6 +106,7 @@ const TableHead = ({
         justify-content: ${({ align }) => align};
         align-items: center;
         padding: 4px;
+        gap: 4px;
 
         &:hover {
             background-color: ${({ sortable }) =>
