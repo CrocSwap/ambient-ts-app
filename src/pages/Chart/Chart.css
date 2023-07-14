@@ -134,7 +134,7 @@ div.liqTooltip {
     border-radius: var(--border-radius);
 }
 
-div.lastCrDataTooltip {
+div.xAxisTooltip  {
     position: absolute;
     text-align: center;
     align-items: center;
@@ -146,6 +146,7 @@ div.lastCrDataTooltip {
     -webkit-backdrop-filter: blur(4px);
     border-radius: var(--border-radius);
 }
+
 
 .liqTooltip {
     position: absolute;

@@ -30,7 +30,7 @@ interface TvlData {
     setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
     lastCrDate: number | undefined;
     isCrDataIndActive: boolean;
-    isCrDataToolTipActive: boolean;
+    xAxisActiveTooltip: string;
 }
 
 function TvlSubChart(props: TvlData) {
@@ -50,7 +50,7 @@ function TvlSubChart(props: TvlData) {
         crosshairActive,
         lastCrDate,
         isCrDataIndActive,
-        isCrDataToolTipActive,
+        xAxisActiveTooltip,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -372,7 +372,7 @@ function TvlSubChart(props: TvlData) {
                     areaSeries(tvlData);
                     lineSeries(tvlData);
 
-                    if (isCrDataIndActive || isCrDataToolTipActive) {
+                    if (isCrDataIndActive || xAxisActiveTooltip === 'croc') {
                         ctx.setLineDash([0.6, 0.6]);
                         crDataIndicator([lastCrDate]);
                     }
@@ -393,7 +393,7 @@ function TvlSubChart(props: TvlData) {
         crDataIndicator,
         lastCrDate,
         isCrDataIndActive,
-        isCrDataToolTipActive,
+        xAxisActiveTooltip,
     ]);
 
     useEffect(() => {

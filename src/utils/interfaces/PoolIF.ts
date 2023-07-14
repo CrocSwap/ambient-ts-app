@@ -5,5 +5,5 @@ export interface PoolIF {
     base: TokenIF;
     quote: TokenIF;
     chainId: string;
-    poolId: number;
+    poolIdx: number;
 }

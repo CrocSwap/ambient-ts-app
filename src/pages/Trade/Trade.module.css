@@ -371,6 +371,7 @@ background-size: 300% 100%;
     .main__chart {
         flex: 1 0;
         min-height: 350px;
+        padding-bottom: 10px;
     }
     .main__chart_container {
         align-items: stretch;
@@ -379,13 +380,41 @@ background-size: 300% 100%;
         width: 100%;
         height: 100%;
         overflow: auto;
+        padding-bottom: 10px;
     }
     .graph_style {
         width: 100%;
     }
 
-    .hide_graph {
-        display: none;
+    .resizableParent{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .chartBox, .tableBox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .chartBox {
+        /* background-color: rgb(0, 255, 0); */
+        max-height: calc(100% - 54px);
+        min-height: 0px;
+      }
+      
+    .tableBox {
+        /* background-color: rgb(255, 0, 0); */
+        flex: 1;
+        min-height: 54px;
+      }
+
+    .resizableBox {
+        background-color: var(--dark3);
+        z-index: 99;
     }
 
     .expand_table {
@@ -402,9 +431,8 @@ background-size: 300% 100%;
         height: 100%;
         background: var(--dark2);
 
-        display: grid;
+        display: flex;
         gap: 8px;
-        grid-template-rows: auto 300px;
 
         position: relative;
     }
@@ -431,6 +459,7 @@ background-size: 300% 100%;
     .main__chart {
         flex: 1 0;
         min-height: 350px;
+        height: 100%
     }
     .main__chart_container {
         background: var(--dark2);
@@ -441,7 +470,7 @@ background-size: 300% 100%;
         height: 100%;
         overflow: auto;
         padding: 8px;
-        padding-bottom: 0px;
+        padding-bottom: 10px;
     }
     .main__chart_container::-webkit-scrollbar {
         display: none;
