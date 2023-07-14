@@ -41,7 +41,7 @@ export default function CandleChart(props: candlePropsIF) {
     } = props;
     const d3CanvasCandle = useRef<HTMLCanvasElement | null>(null);
     const [firstCandle, setFirstCandle] = useState<number>();
-    const { expandTradeTable } = useContext(TradeTableContext);
+    const { tradeTableState } = useContext(TradeTableContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
     const selectedCandleColor = '#E480FF';
@@ -57,7 +57,7 @@ export default function CandleChart(props: candlePropsIF) {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
-        if (expandTradeTable) return;
+        if (tradeTableState === 'Expanded') return;
 
         if (data && data.length > 0 && scaleData) {
             if (!showLatest && firstCandle && data[0].time !== firstCandle) {
@@ -82,8 +82,8 @@ export default function CandleChart(props: candlePropsIF) {
 
         renderCanvasArray([d3CanvasCandle]);
     }, [
-        diffHashSig(chartItemStates),
-        expandTradeTable,
+        diffHashSig(props.chartItemStates),
+        tradeTableState,
         lastCandleData,
         firstCandle,
     ]);
@@ -129,6 +129,8 @@ export default function CandleChart(props: candlePropsIF) {
         if (candlestick) {
             candlestick.decorate(
                 (context: CanvasRenderingContext2D, d: CandleData) => {
+                    const nowDate = new Date();
+
                     const close = denomInBase
                         ? d.invPriceCloseExclMEVDecimalCorrected
                         : d.priceCloseExclMEVDecimalCorrected;
@@ -161,7 +163,8 @@ export default function CandleChart(props: candlePropsIF) {
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
                             ? selectedCandleColor
-                            : d.tvlData.tvl === 0
+                            : d.tvlData.tvl === 0 &&
+                              d.time * 1000 < nowDate.getTime()
                             ? uniswapColor
                             : crocColor;
 
@@ -169,7 +172,8 @@ export default function CandleChart(props: candlePropsIF) {
                         selectedDate !== undefined &&
                         selectedDate === d.time * 1000
                             ? selectedCandleColor
-                            : d.tvlData.tvl === 0
+                            : d.tvlData.tvl === 0 &&
+                              d.time * 1000 < nowDate.getTime()
                             ? uniswapBorderColor
                             : crocBorderColor;
                 },
