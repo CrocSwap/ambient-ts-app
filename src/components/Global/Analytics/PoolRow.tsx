@@ -47,6 +47,7 @@ const TableRow = styled.tr`
     height: 40px;
     cursor: pointer;
     margin-bottom: 2px;
+  
     &:hover {
         background-color: var(--dark2);
     }
@@ -104,12 +105,14 @@ const TradeButton = styled.button`
     cursor: pointer;
     width: 48px;
     height: 25px;
+    color: var(--text1);
 
     &:hover {
         color: var(--accent1);
         border-color: var(--accent1);
     }
 `;
+
 export default function PoolRow(props: propsIF) {
     const { pool, goToMarket } = props;
 
@@ -148,18 +151,7 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm>
                 <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
             </TableCell>
-            <TableCell hidden xl>
-                <p
-                    style={{
-                        color:
-                            Number(pool.apy) > 0
-                                ? 'var(--positive)'
-                                : 'var(--negative)',
-                    }}
-                >
-                    {pool.apyStr + '%'}
-                </p>
-            </TableCell>
+
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>
             </TableCell>
@@ -182,16 +174,7 @@ export default function PoolRow(props: propsIF) {
             </TableCell>
             <TableCell>
                 <FlexEnd>
-                    <TradeButton>
-                        <span
-                            style={{
-                                padding: '0.25rem 0.5rem',
-                                color: 'var(--text1)',
-                            }}
-                        >
-                            Trade
-                        </span>
-                    </TradeButton>
+                    <TradeButton>Trade</TradeButton>
                 </FlexEnd>
             </TableCell>
         </TableRow>

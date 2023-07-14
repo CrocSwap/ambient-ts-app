@@ -49,6 +49,12 @@ const TableHead = ({
         white-space: nowrap;
         border-collapse: collapse;
         transition: background-color 0.3s ease-in-out;
+        &:first-of-type {
+            border-left: 1rem solid transparent;
+        }
+        &:last-of-type {
+            border-right: 1rem solid transparent;
+        }
 
         &:hover {
             background-color: ${({ sortable }) =>

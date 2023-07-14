@@ -69,13 +69,7 @@ function TopPools(props: propsIF) {
             responsive: 'sm',
             sortable: true,
         },
-        {
-            label: 'APR',
-            hidden: true,
-            align: 'right',
-            responsive: 'xl',
-            sortable: true,
-        },
+
         { label: 'Volume', hidden: false, align: 'right', sortable: true },
         {
             label: 'Change',
@@ -156,8 +150,7 @@ const ShadowBox = styled.div`
     height: 100%;
 
     position: relative;
-
-    padding: 8px;
+    padding: 8px 0;
 `;
 
 const Table = styled.table`
@@ -182,4 +175,6 @@ const TableBody = styled.tbody`
     line-height: 1.5rem;
     overflow-y: auto;
     max-height: 96px;
+    border-left: 1rem solid transparent;
+    border-right: 1rem solid transparent;
 `;
