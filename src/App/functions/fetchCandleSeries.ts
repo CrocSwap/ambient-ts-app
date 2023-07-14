@@ -1,6 +1,13 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { GCGO_CANDLES_URL, GRAPHCACHE_SMALL_URL } from '../../constants';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
+import {
+    GCGO_CANDLES_URL,
+    GRAPHCACHE_SMALL_URL,
+    GRAPHCACHE_URL,
+} from '../../constants';
+import {
+    getMainnetEquivalent,
+    translateMainnetForGraphcache,
+} from '../../utils/data/testTokenMap';
 import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -18,6 +25,69 @@ interface CandleDataServerIF {
     period: number;
     time: number;
     isDecimalized: boolean;
+}
+
+const GCGO_CANDLES = process.env.REACT_APP_GCGO_CANDLES === 'true';
+
+function fetchUniswapCandles(
+    mainnetBaseTokenAddress: string,
+    mainnetQuoteTokenAddress: string,
+    period: number,
+    time: string,
+    candleNeeded: string,
+    chainData: ChainSpec,
+    baseTokenAddress: string,
+    quoteTokenAddress: string,
+) {
+    if (GCGO_CANDLES) {
+        const { token: mainnetBase } = getMainnetEquivalent(
+            baseTokenAddress,
+            chainData.chainId,
+        );
+        const { token: mainnetQuote } = getMainnetEquivalent(
+            quoteTokenAddress,
+            chainData.chainId,
+        );
+        return fetch(
+            GCGO_CANDLES_URL +
+                '/pool_candles?' +
+                new URLSearchParams({
+                    base: mainnetBase.toLowerCase(),
+                    quote: mainnetQuote.toLowerCase(),
+                    poolIdx: '36000',
+                    period: period.toString(),
+                    time: time, // optional
+                    n: candleNeeded, // positive integer
+                    chainId: '0x1',
+                }),
+        );
+    } else {
+        const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
+            translateMainnetForGraphcache(
+                mainnetBaseTokenAddress,
+                mainnetQuoteTokenAddress,
+            );
+        return fetch(
+            GRAPHCACHE_URL +
+                '/candle_series?' +
+                new URLSearchParams({
+                    base: mainnetBase.toLowerCase(),
+                    quote: mainnetQuote.toLowerCase(),
+                    poolIdx: '36000',
+                    period: period.toString(),
+                    time: time, // optional
+                    n: candleNeeded, // positive integer
+                    chainId: chainData.chainId,
+                    dex: 'all',
+                    poolStats: 'true',
+                    concise: 'true',
+                    poolStatsChainIdOverride: chainData.chainId,
+                    poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                    poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                    poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                }),
+        );
+    }
 }
 
 export interface CandleData {
@@ -333,43 +403,26 @@ async function fetchCandleSeriesUniswap(
     time: string,
     candleNeeded: string,
 ): Promise<CandleDataServerIF[] | undefined | void> {
-    const { token: mainnetBase } = getMainnetEquivalent(
-        baseTokenAddress,
-        chainData.chainId,
-    );
-    const { token: mainnetQuote } = getMainnetEquivalent(
-        quoteTokenAddress,
-        chainData.chainId,
-    );
-
-    const httpGraphCacheServerDomain = GCGO_CANDLES_URL;
     if (isFetchEnabled) {
         try {
-            if (httpGraphCacheServerDomain) {
-                const candleSeriesCacheEndpoint =
-                    GCGO_CANDLES_URL + '/pool_candles?';
-
-                return fetch(
-                    candleSeriesCacheEndpoint +
-                        new URLSearchParams({
-                            base: mainnetBase.toLowerCase(),
-                            quote: mainnetQuote.toLowerCase(),
-                            poolIdx: '36000',
-                            period: period.toString(),
-                            time: time, // optional
-                            n: candleNeeded, // positive integer
-                            chainId: '0x1',
-                        }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const candles = json?.data;
-                        if (candles) {
-                            return candles as CandleDataServerIF[];
-                        }
-                    })
-                    .catch(console.warn);
-            }
+            return fetchUniswapCandles(
+                mainnetBaseTokenAddress,
+                mainnetQuoteTokenAddress,
+                period,
+                time,
+                candleNeeded,
+                chainData,
+                baseTokenAddress,
+                quoteTokenAddress,
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const candles = json?.data;
+                    if (candles) {
+                        return candles as CandleDataServerIF[];
+                    }
+                })
+                .catch(console.warn);
         } catch (error) {
             console.warn({ error });
         }
