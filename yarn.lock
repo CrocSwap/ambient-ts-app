@@ -7534,9 +7534,9 @@ d3@^7.4.4:
     d3-transition "3"
     d3-zoom "3"
 
-d3fc@^15.2.4:
+d3fc@^15.2.6:
   version "15.2.6"
-  resolved "https://registry.npmjs.org/d3fc/-/d3fc-15.2.6.tgz"
+  resolved "https://registry.yarnpkg.com/d3fc/-/d3fc-15.2.6.tgz#2af17b2b546c62caa24bd8950d856b048289ce4c"
   integrity sha512-Au6wq4zTChMy8SyACbbPFZUFJ14ga6iCctQlOIIsA2wFo6Bf/85NTss53Y+sYjUsBTa05Cc2DwCHzCkEs0ctig==
   dependencies:
     "@d3fc/d3fc-annotation" "^3.0.12"
