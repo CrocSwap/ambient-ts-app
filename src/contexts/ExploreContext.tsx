@@ -142,7 +142,10 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         const poolData: PoolDataIF = {
             ...pool,
             spotPrice,
-            displayPrice: getFormattedNumber({ value: displayPrice }),
+            displayPrice: getFormattedNumber({
+                value: displayPrice,
+                abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+            }),
             poolIdx,
             tvl: poolStats.tvlTotalUsd,
             tvlStr: tvlDisplay,

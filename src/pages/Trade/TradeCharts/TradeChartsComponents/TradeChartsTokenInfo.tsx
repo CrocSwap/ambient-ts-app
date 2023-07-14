@@ -64,6 +64,7 @@ function TradeChartsTokenInfo(props: propsIF) {
 
     const truncatedPoolPrice = getFormattedNumber({
         value: poolPriceDisplayWithDenom,
+        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
     });
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
