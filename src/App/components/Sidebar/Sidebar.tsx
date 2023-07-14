@@ -189,7 +189,7 @@ function Sidebar() {
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
-                autoFocus
+                tabIndex={1}
             />
             {searchInput && (
                 <div onClick={handleInputClear} className={styles.close_icon}>

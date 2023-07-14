@@ -1,6 +1,5 @@
 import { useEffect, useState, memo, useContext, useCallback } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
@@ -54,8 +53,6 @@ const PageHeader = function () {
     } = useContext(TradeTokenContext);
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
-
-    const { t } = useTranslation();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -244,32 +241,32 @@ const PageHeader = function () {
 
     const linkData = [
         {
-            title: t('common:homeTitle'),
+            title: 'Home',
             destination: '/',
             shouldDisplay: false,
         },
         {
-            title: t('common:swapTitle'),
+            title: 'Swap',
             destination: '/swap/' + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:tradeTitle'),
+            title: 'Trade',
             destination: tradeDestination + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:poolTitle'),
+            title: 'Pool',
             destination: '/trade/pool/' + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:exploreTitle'),
+            title: 'Explore',
             destination: '/explore',
             shouldDisplay: true,
         },
         {
-            title: t('common:accountTitle'),
+            title: 'Account',
             destination: '/account',
             shouldDisplay: isConnected,
         },
