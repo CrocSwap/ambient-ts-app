@@ -369,7 +369,7 @@ export default function Chart(props: propsIF) {
                     tvl: data[0].tvlData.tvl,
                 },
                 volumeUSD: 0,
-                averageLiquidityFee: 0,
+                averageLiquidityFee: data[0].averageLiquidityFee,
                 minPriceDecimalCorrected:
                     data[0].priceOpenExclMEVDecimalCorrected,
                 maxPriceDecimalCorrected: 0,
