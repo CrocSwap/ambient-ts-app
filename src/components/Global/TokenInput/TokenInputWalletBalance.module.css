@@ -11,6 +11,7 @@
     color: var(--text2);
 
     padding: 8px 16px;
+    padding-bottom: 0px;
 }
 
 .balance_with_pointer {

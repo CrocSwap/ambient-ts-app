@@ -13,7 +13,7 @@ interface propsIF {
     handleTokenInputEvent: (val: string) => void;
     reverseTokens: () => void;
     handleToggleDexSelection: () => void;
-    parseTokenInput: (val: string) => void;
+    parseTokenInput?: (val: string) => void;
     handleRefresh?: () => void;
     isLoading?: boolean;
     showWallet?: boolean;

@@ -1,15 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// START: Import React and Dongles
 import { useState, useEffect, useMemo, useContext, memo } from 'react';
 import { motion } from 'framer-motion';
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
-
-// START: Import JSX Elements
 import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton';
-import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
+import RangeCurrencyConverter from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-// import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
@@ -18,7 +13,6 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-// START: Import Local Files
 import styles from './Range.module.css';
 import {
     getPinnedPriceValuesFromDisplayPrices,
@@ -36,7 +30,7 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { PositionIF } from '../../../utils/interfaces/exports';
+import { PositionIF, TokenIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setAdvancedHighTick,
@@ -94,6 +88,8 @@ function Range() {
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
+        baseToken: { dexBalance: baseTokenDexBalance },
+        quoteToken: { dexBalance: quoteTokenDexBalance },
     } = useContext(TradeTokenContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
@@ -105,20 +101,7 @@ function Range() {
         closeConfirmationModal,
     ] = useModal();
 
-    const [
-        tokenAQtyCoveredByWalletBalance,
-        setTokenAQtyCoveredByWalletBalance,
-    ] = useState<number>(0);
-
-    const [
-        tokenBQtyCoveredByWalletBalance,
-        setTokenBQtyCoveredByWalletBalance,
-    ] = useState<number>(0);
-
     const [isAmbient, setIsAmbient] = useState(false);
-
-    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
-    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
     const dispatch = useAppDispatch();
 
@@ -458,55 +441,6 @@ function Range() {
             setRangeButtonErrorMessage('Enter an Amount');
         }
     }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
-
-    const [isTokenADisabled, setIsTokenADisabled] = useState(false);
-    const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
-
-    useEffect(() => {
-        if (!isAmbient) {
-            if (isTokenABase) {
-                if (defaultHighTick < currentPoolPriceTick) {
-                    setIsTokenBDisabled(true);
-                    if (defaultHighTick > defaultLowTick) {
-                        setIsTokenADisabled(false);
-                    } else setIsTokenADisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
-                    setIsTokenADisabled(true);
-                    if (defaultLowTick < defaultHighTick) {
-                        setIsTokenBDisabled(false);
-                    } else setIsTokenBDisabled(true);
-                } else {
-                    setIsTokenADisabled(false);
-                    setIsTokenBDisabled(false);
-                }
-            } else {
-                if (defaultHighTick < currentPoolPriceTick) {
-                    setIsTokenADisabled(true);
-                    if (defaultHighTick > defaultLowTick) {
-                        setIsTokenBDisabled(false);
-                    } else setIsTokenBDisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
-                    setIsTokenBDisabled(true);
-                    if (defaultLowTick < defaultHighTick) {
-                        setIsTokenADisabled(false);
-                    } else setIsTokenBDisabled(true);
-                } else {
-                    setIsTokenBDisabled(false);
-                    setIsTokenADisabled(false);
-                }
-            }
-        } else {
-            setIsTokenBDisabled(false);
-            setIsTokenADisabled(false);
-        }
-    }, [
-        isAmbient,
-        isTokenABase,
-        currentPoolPriceTick,
-        defaultLowTick,
-        defaultHighTick,
-        isDenomBase,
-    ]);
 
     const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
         useState(0);
@@ -1132,6 +1066,83 @@ function Range() {
         sendTransaction();
     };
 
+    const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (tokenAorB === 'A') {
+            setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
+        } else {
+            setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
+        }
+    };
+
+    const tokenADexBalance = isTokenABase
+        ? baseTokenDexBalance
+        : quoteTokenDexBalance;
+
+    const tokenBDexBalance = isTokenABase
+        ? quoteTokenDexBalance
+        : baseTokenDexBalance;
+
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+
+    const tokenBSurplusMinusTokenBRemainderNum =
+        parseFloat(tokenBDexBalance || '0') - parseFloat(tokenBInputQty || '0');
+
+    const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenAInputQty || '0');
+
+    const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
+        ? tokenBSurplusMinusTokenBRemainderNum < 0
+            ? tokenBSurplusMinusTokenBRemainderNum * -1
+            : 0
+        : parseFloat(tokenBInputQty || '0');
+
+    const handleRangeButtonMessage = (
+        token: TokenIF,
+        tokenAmount: string,
+        isWithdrawFromDexChecked: boolean,
+        availableBalance: string,
+        availableDexBalance: string,
+    ) => {
+        if (poolPriceNonDisplay === 0) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage('Invalid Token Pair');
+        } else if (
+            isNaN(parseFloat(tokenAmount)) ||
+            parseFloat(tokenAmount) <= 0
+        ) {
+            setRangeAllowed(false);
+            setRangeButtonErrorMessage('Enter an Amount');
+        } else {
+            if (isWithdrawFromDexChecked) {
+                if (
+                    parseFloat(tokenAmount) >
+                    parseFloat(availableDexBalance) +
+                        parseFloat(availableBalance)
+                ) {
+                    setRangeAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${token.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                    );
+                } else {
+                    setRangeAllowed(true);
+                }
+            } else {
+                if (parseFloat(tokenAmount) > parseFloat(availableBalance)) {
+                    setRangeAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${token.symbol} Amount Exceeds Wallet Balance`,
+                    );
+                } else {
+                    setRangeAllowed(true);
+                }
+            }
+        }
+    };
+
     const bypassConfirmButtonProps = {
         newRangeTransactionHash: newRangeTransactionHash,
         txErrorCode: txErrorCode,
@@ -1146,29 +1157,15 @@ function Range() {
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
         isAmbient: isAmbient,
-        isTokenABase: isTokenABase,
         depositSkew: depositSkew,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
-        setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
-        setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        setTokenAInputQty: setTokenAInputQty,
-        setTokenBInputQty: setTokenBInputQty,
-        setRangeButtonErrorMessage: setRangeButtonErrorMessage,
-        setRangeAllowed: setRangeAllowed,
-        isTokenADisabled: isTokenADisabled,
-        isTokenBDisabled: isTokenBDisabled,
         isOutOfRange: isOutOfRange,
-        rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
-        rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
-        tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
-        tokenAQtyLocal,
-        tokenBQtyLocal,
-        setTokenAQtyLocal,
-        setTokenBQtyLocal,
-        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
-        setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
+        tokenAInputQty: { value: tokenAInputQty, set: setTokenAInputQty },
+        tokenBInputQty: { value: tokenBInputQty, set: setTokenBInputQty },
+        toggleDexSelection,
+        isRangeSpanBelowCurrentPrice: currentPoolPriceTick > defaultHighTick,
+        handleRangeButtonMessage,
     };
 
     // props for <RangeWidth/> React element
@@ -1339,14 +1336,15 @@ function Range() {
             }
             input={
                 <>
-                    <RangeCurrencyConverter
-                        {...rangeCurrencyConverterProps}
-                        isAdvancedMode
-                    />
-                    {advancedModeToggle}
+                    <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
                 </>
             }
-            inputOptions={advancedMode ? advancedModeContent : baseModeContent}
+            inputOptions={
+                <>
+                    {advancedModeToggle}
+                    {advancedMode ? advancedModeContent : baseModeContent}
+                </>
+            }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
                 isConfirmationModalOpen ? (
@@ -1356,8 +1354,8 @@ function Range() {
                         centeredTitle
                     >
                         <ConfirmRangeModal
-                            tokenAQtyLocal={tokenAQtyLocal}
-                            tokenBQtyLocal={tokenBQtyLocal}
+                            tokenAQtyLocal={parseFloat(tokenAInputQty)}
+                            tokenBQtyLocal={parseFloat(tokenBInputQty)}
                             spotPriceDisplay={getFormattedNumber({
                                 value: displayPriceWithDenom,
                             })}

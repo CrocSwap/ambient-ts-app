@@ -36,8 +36,8 @@ import {
 import Button from '../../../components/Global/Button/Button';
 import Modal from '../../../components/Global/Modal/Modal';
 import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
-import CurrencyConverter from '../../../components/Swap/CurrencyConverter/CurrencyConverter';
-import ExtraInfo from '../../../components/Swap/ExtraInfo/ExtraInfo';
+import CurrencyConverter from '../../../components/Swap/SwapTokenInput/SwapTokenInput';
+import ExtraInfo from '../../../components/Swap/SwapExtraInfo/SwapExtraInfo';
 import SwapButton from '../../../components/Swap/SwapButton/SwapButton';
 import BypassConfirmSwapButton from '../../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
@@ -55,16 +55,31 @@ function Swap(props: propsIF) {
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { isPoolInitialized } = useContext(PoolContext);
+    const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
     const {
         isTokenABase: isSellTokenBase,
         setRecheckTokenAApproval,
         tokenAAllowance,
+        baseToken: {
+            balance: baseTokenBalance,
+            dexBalance: baseTokenDexBalance,
+        },
+        quoteToken: {
+            balance: quoteTokenBalance,
+            dexBalance: quoteTokenDexBalance,
+        },
     } = useContext(TradeTokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
+
+    const tokenABalance = isSellTokenBase
+        ? baseTokenBalance
+        : quoteTokenBalance;
+    const tokenADexBalance = isSellTokenBase
+        ? baseTokenDexBalance
+        : quoteTokenDexBalance;
 
     const provider = useProvider();
 
@@ -112,6 +127,9 @@ function Swap(props: propsIF) {
         !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
     );
 
+    const [isSellLoading, setIsSellLoading] = useState(false);
+    const [isBuyLoading, setIsBuyLoading] = useState(false);
+
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
@@ -144,6 +162,57 @@ function Swap(props: propsIF) {
     >();
 
     const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
+
+    useEffect(() => {
+        if (isSellLoading || isBuyLoading) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('...');
+        } else if (isPoolInitialized === false) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Pool Not Initialized');
+        } else if (isNaN(parseFloat(sellQtyString))) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Enter an Amount');
+        } else if (isLiquidityInsufficient) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Liquidity Insufficient');
+        } else if (parseFloat(sellQtyString) <= 0) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Enter an Amount');
+        } else {
+            const hurdle = isWithdrawFromDexChecked
+                ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                : parseFloat(tokenABalance);
+            const balanceLabel = isWithdrawFromDexChecked
+                ? 'Exchange'
+                : 'Wallet';
+
+            setSwapAllowed(parseFloat(sellQtyString) <= hurdle);
+
+            if (parseFloat(sellQtyString) > hurdle) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage(
+                    `${tokenA.symbol} Exceeds ${balanceLabel} Balance`,
+                );
+            } else {
+                setSwapAllowed(true);
+            }
+        }
+    }, [
+        crocEnv,
+        isPoolInitialized,
+        isPoolInitialized === undefined, // Needed to distinguish false from undefined
+        poolPriceDisplay,
+        tokenA.address,
+        tokenB.address,
+        slippageTolerancePercentage,
+        isTokenAPrimary,
+        sellQtyString,
+        buyQtyString,
+        isWithdrawFromDexChecked,
+        isBuyLoading,
+        isSellLoading,
+    ]);
 
     useEffect(() => {
         if (
@@ -379,36 +448,41 @@ function Swap(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    const [
-        tokenAQtyCoveredByWalletBalance,
-        setTokenAQtyCoveredByWalletBalance,
-    ] = useState<number>(0);
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') - parseFloat(sellQtyString || '0');
+    const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(sellQtyString || '0');
 
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
+    const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (tokenAorB === 'A') {
+            setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked);
+        } else {
+            if (isSaveAsDexSurplusChecked) dexBalSwap.outputToDexBal.disable();
+            else dexBalSwap.outputToDexBal.enable();
+            setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked);
+        }
+    };
+
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
     const currencyConverterProps = {
-        isLiquidityInsufficient: isLiquidityInsufficient,
-        setIsLiquidityInsufficient: setIsLiquidityInsufficient,
-        provider: provider,
-        slippageTolerancePercentage: slippageTolerancePercentage,
-        setPriceImpact: setPriceImpact,
-        priceImpact: priceImpact,
-        isLiq: false,
-        isTokenAPrimary: isTokenAPrimary,
-        sellQtyString: sellQtyString,
-        setSellQtyString: setSellQtyString,
-        buyQtyString: buyQtyString,
-        setBuyQtyString: setBuyQtyString,
-        isWithdrawFromDexChecked: isWithdrawFromDexChecked,
-        setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
-        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
-        setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
-        setSwapAllowed: setSwapAllowed,
-        setSwapButtonErrorMessage: setSwapButtonErrorMessage,
-        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        setIsLiquidityInsufficient,
+        slippageTolerancePercentage,
+        setPriceImpact,
+        sellQtyString: { value: sellQtyString, set: setSellQtyString },
+        buyQtyString: { value: buyQtyString, set: setBuyQtyString },
+        isSellLoading: { value: isSellLoading, set: setIsSellLoading },
+        isBuyLoading: { value: isBuyLoading, set: setIsBuyLoading },
+        isWithdrawFromDexChecked,
+        isSaveAsDexSurplusChecked,
+        setSwapAllowed,
+        toggleDexSelection,
     };
 
     const handleSwapButtonClickWithBypass = () => {

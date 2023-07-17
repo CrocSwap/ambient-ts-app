@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useEffect, useMemo, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 
 import {
     tickToPrice,
@@ -11,7 +11,7 @@ import {
 
 // START: Import React Functional Components
 import LimitButton from '../../../components/Trade/Limit/LimitButton/LimitButton';
-import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter';
+import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitTokenInput/LimitTokenInput';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
@@ -53,6 +53,7 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
+import LimitRate from '../../../components/Trade/Limit/LimitRate/LimitRate';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -62,10 +63,20 @@ export default function Limit() {
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
-    const { pool } = useContext(PoolContext);
+    const { pool, isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
-    const { tokenAAllowance, setRecheckTokenAApproval } =
-        useContext(TradeTokenContext);
+    const {
+        tokenAAllowance,
+        setRecheckTokenAApproval,
+        baseToken: {
+            balance: baseTokenBalance,
+            dexBalance: baseTokenDexBalance,
+        },
+        quoteToken: {
+            balance: quoteTokenBalance,
+            dexBalance: quoteTokenDexBalance,
+        },
+    } = useContext(TradeTokenContext);
     const { mintSlippage, dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
@@ -82,8 +93,12 @@ export default function Limit() {
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
-    const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
-    const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
+    const [tokenAInputQty, setTokenAInputQty] = useState<string>(
+        tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+    );
+    const [tokenBInputQty, setTokenBInputQty] = useState<string>(
+        !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+    );
 
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState(false);
@@ -130,11 +145,7 @@ export default function Limit() {
 
     const { baseToken, quoteToken } = tradeData;
 
-    const isSellTokenBase = useMemo(() => {
-        dispatch(setLimitTick(undefined));
-
-        return pool?.baseToken.tokenAddr === tokenA.address;
-    }, [pool?.baseToken, tokenA.address]);
+    const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
     useEffect(() => {
         (async () => {
@@ -483,6 +494,52 @@ export default function Limit() {
         }
     };
 
+    const handleLimitButtonMessage = (tokenAAmount: number) => {
+        if (!isPoolInitialized) {
+            setLimitAllowed(false);
+            if (isPoolInitialized === undefined)
+                setLimitButtonErrorMessage('...');
+            if (isPoolInitialized === false)
+                setLimitButtonErrorMessage('Pool Not Initialized');
+        } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage('Enter an Amount');
+        } else if (!isOrderValid) {
+            setLimitAllowed(false);
+            setLimitButtonErrorMessage(
+                `Limit ${
+                    (isSellTokenBase && !tradeData.isDenomBase) ||
+                    (!isSellTokenBase && tradeData.isDenomBase)
+                        ? 'Above Maximum'
+                        : 'Below Minimum'
+                }  Price`,
+            );
+        } else {
+            if (isWithdrawFromDexChecked) {
+                if (
+                    tokenAAmount >
+                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                ) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        `${tradeData.tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                    );
+                } else {
+                    setLimitAllowed(true);
+                }
+            } else {
+                if (tokenAAmount > parseFloat(tokenABalance)) {
+                    setLimitAllowed(false);
+                    setLimitButtonErrorMessage(
+                        `${tradeData.tokenA.symbol} Amount Exceeds Wallet Balance`,
+                    );
+                } else {
+                    setLimitAllowed(true);
+                }
+            }
+        }
+    };
+
     const handleModalClose = (): void => {
         closeModal();
         setNewLimitOrderTransactionHash('');
@@ -501,10 +558,22 @@ export default function Limit() {
         setNewLimitOrderTransactionHash: setNewLimitOrderTransactionHash,
     };
 
-    const [
-        tokenAQtyCoveredByWalletBalance,
-        setTokenAQtyCoveredByWalletBalance,
-    ] = useState<number>(0);
+    const tokenABalance = isSellTokenBase
+        ? baseTokenBalance
+        : quoteTokenBalance;
+
+    const tokenADexBalance = isSellTokenBase
+        ? baseTokenDexBalance
+        : quoteTokenDexBalance;
+
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+
+    const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenAInputQty || '0');
 
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
@@ -595,26 +664,25 @@ export default function Limit() {
         />
     );
 
+    const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (tokenAorB === 'A') {
+            setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked);
+        } else {
+            if (isSaveAsDexSurplusChecked) dexBalLimit.outputToDexBal.disable();
+            else dexBalLimit.outputToDexBal.enable();
+            setIsSaveAsDexSurplusChecked(!isSaveAsDexSurplusChecked);
+        }
+    };
+
     const currencyConverterProps = {
-        displayPrice: displayPrice,
-        previousDisplayPrice: previousDisplayPrice,
-        setDisplayPrice: setDisplayPrice,
-        setPreviousDisplayPrice: setPreviousDisplayPrice,
-        setPriceInputFieldBlurred: setPriceInputFieldBlurred,
-        isSellTokenBase: isSellTokenBase,
-        setLimitAllowed: setLimitAllowed,
-        tokenAInputQty: tokenAInputQty,
-        setTokenAInputQty: setTokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
-        setTokenBInputQty: setTokenBInputQty,
-        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
-        setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
-        setLimitButtonErrorMessage: setLimitButtonErrorMessage,
-        isWithdrawFromDexChecked: isWithdrawFromDexChecked,
-        setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
+        tokenAInputQty: { value: tokenAInputQty, set: setTokenAInputQty },
+        tokenBInputQty: { value: tokenBInputQty, set: setTokenBInputQty },
+        isSaveAsDexSurplusChecked,
+        isWithdrawFromDexChecked,
         limitTickDisplayPrice: middleDisplayPrice,
-        isOrderValid: isOrderValid,
-        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
+        isOrderValid,
+        handleLimitButtonMessage,
+        toggleDexSelection,
     };
 
     // TODO: @Emily refactor this to take a token data object
@@ -648,6 +716,17 @@ export default function Limit() {
                 />
             }
             input={<LimitCurrencyConverter {...currencyConverterProps} />}
+            inputOptions={
+                <LimitRate
+                    previousDisplayPrice={previousDisplayPrice}
+                    displayPrice={displayPrice}
+                    setDisplayPrice={setDisplayPrice}
+                    setPreviousDisplayPrice={setPreviousDisplayPrice}
+                    isSellTokenBase={isSellTokenBase}
+                    setPriceInputFieldBlurred={setPriceInputFieldBlurred}
+                    fieldId='limit-rate'
+                />
+            }
             transactionDetails={
                 <LimitExtraInfo
                     isQtyEntered={

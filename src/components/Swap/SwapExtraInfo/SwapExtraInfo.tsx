@@ -4,7 +4,7 @@ import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 
 // START: Import Local Files
-import styles from './ExtraInfo.module.css';
+import styles from './SwapExtraInfo.module.css';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import makePriceDisplay from './makePriceDisplay';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
