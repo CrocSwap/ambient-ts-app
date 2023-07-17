@@ -44,8 +44,13 @@ export default function TabComponent(props: TabPropsIF) {
         isModalView = false,
         shouldSyncWithTradeModules = true,
     } = props;
-    const { outsideControl, setOutsideControl, selectedOutsideTab } =
-        useContext(TradeTableContext);
+    const {
+        outsideControl,
+        setOutsideControl,
+        selectedOutsideTab,
+        tradeTableState,
+        toggleTradeTable,
+    } = useContext(TradeTableContext);
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
@@ -67,6 +72,8 @@ export default function TabComponent(props: TabPropsIF) {
         }
         setOutsideControl(false);
         setSelectedTab(item);
+
+        if (tradeTableState === 'Collapsed') toggleTradeTable();
     }
 
     useEffect(() => {

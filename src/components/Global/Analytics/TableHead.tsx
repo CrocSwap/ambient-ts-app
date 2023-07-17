@@ -11,11 +11,31 @@ const TableHead = ({
     sortedPools: SortedPoolMethodsIF;
 }) => {
     const TableHeadWrapper = styled.thead`
+        background: var(--dark1);
         position: sticky;
         top: 0;
         height: 25px;
-        z-index: 3;
-        border-bottom: 1px solid var(--dark3);
+        z-index: 999;
+        &::before,
+        &::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            z-index: 999;
+        }
+
+        &::before {
+            top: 0;
+            background-color: var(--dark1);
+            height: 1px;
+        }
+
+        &::after {
+            height: 1px;
+            background-color: var(--dark3);
+            bottom: 0;
+        }
     `;
 
     const TableRow = styled.tr`
@@ -29,35 +49,20 @@ const TableHead = ({
     `;
 
     const TableHeaderCell = styled.th<HeaderItem>`
-        position: sticky;
-        top: 0;
         width: 100%;
         height: 25px;
-        padding: 0 4px;
+
+        display: table-cell;
+
         text-align: ${({ align }) => align};
         cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
 
-        background-color: ${({ label }) =>
-            sortedPools.current === label?.toLowerCase()
-                ? 'var(--dark2)'
-                : 'transparent'};
         color: var(--text2);
         font-size: 12px;
         font-weight: 300;
         white-space: nowrap;
         border-collapse: collapse;
         transition: background-color 0.3s ease-in-out;
-        &:first-of-type {
-            border-left: 1rem solid transparent;
-        }
-        &:last-of-type {
-            border-right: 1rem solid transparent;
-        }
-
-        &:hover {
-            background-color: ${({ sortable }) =>
-                sortable ? 'var(--dark2)' : 'transparent'};
-        }
 
         ${({ hidden }) => hidden && 'display: none;'}
 
@@ -83,6 +88,29 @@ const TableHead = ({
                 `
             display: table-cell;
           `}
+        }
+    `;
+
+    const LabelWrapper = styled.div<{
+        align: string;
+        label: string;
+        sortable: boolean;
+    }>`
+        background-color: ${({ label }) =>
+            sortedPools.current === label?.toLowerCase()
+                ? 'var(--dark2)'
+                : 'transparent'};
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: ${({ align }) => align};
+        align-items: center;
+        padding: 4px;
+        gap: 4px;
+
+        &:hover {
+            background-color: ${({ sortable }) =>
+                sortable ? 'var(--dark2)' : 'transparent'};
         }
     `;
 
@@ -120,20 +148,14 @@ const TableHead = ({
                                 );
                         }}
                     >
-                        <div
-                            style={{
-                                background:
-                                    sortedPools.current ===
-                                    item.label.toLowerCase()
-                                        ? 'var(--dark2)'
-                                        : 'transparent',
-                                width: '100%',
-                                height: '100%',
-                            }}
+                        <LabelWrapper
+                            align={item.align}
+                            label={item.label}
+                            sortable={item.sortable}
                         >
                             {item.label}
                             <AssignSort label={item.label} />
-                        </div>
+                        </LabelWrapper>
                     </TableHeaderCell>
                 ))}
             </TableRow>
