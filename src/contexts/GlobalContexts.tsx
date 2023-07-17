@@ -13,6 +13,7 @@ import { TradeTableContextProvider } from './TradeTableContext';
 import { TradeTokenContextProvider } from './TradeTokenContext';
 import { UserDataContextProvider } from './UserDataContext';
 import { UserPreferenceContextProvider } from './UserPreferenceContext';
+import { ExploreContextProvider } from './ExploreContext';
 
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
     return (
@@ -30,7 +31,11 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                                                     <TradeTableContextProvider>
                                                         <UserPreferenceContextProvider>
                                                             <SidebarContextProvider>
-                                                                {props.children}
+                                                                <ExploreContextProvider>
+                                                                    {
+                                                                        props.children
+                                                                    }
+                                                                </ExploreContextProvider>
                                                             </SidebarContextProvider>
                                                         </UserPreferenceContextProvider>
                                                     </TradeTableContextProvider>

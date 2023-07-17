@@ -1,17 +1,10 @@
-.share_button {
-    background: transparent;
-    outline: none;
-    border: none;
-    height: 20px;
-}
-.share_button:hover {
-    color: var(--accent1) !important;
-}
-.settings_icon,
-.share_button {
-    cursor: pointer;
+.swap_page_header {
+    padding-bottom: 16px;
 }
 
+.title {
+    color: var(--text1);
+}
 
 .hoverable_icon{
     fill: var(--text2) !important;
@@ -29,10 +22,16 @@
     color: var(--text1);
 }
 
-.title {
-    color: var(--text1);
+.share_button {
+    background: transparent;
+    outline: none;
+    border: none;
+    height: 20px;
 }
-
-.swap_page_header {
-    padding-bottom: 16px;;
+.share_button:hover {
+    color: var(--accent1) !important;
+}
+.settings_icon,
+.share_button {
+    cursor: pointer;
 }

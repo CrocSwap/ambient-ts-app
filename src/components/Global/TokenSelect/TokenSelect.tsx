@@ -51,7 +51,7 @@ export default function TokenSelect(props: propsIF) {
                     <div className={styles.modal_tokens_info}>
                         <TokenIcon
                             src={token.logoURI ? uriToHttp(token.logoURI) : ''}
-                            alt={token.symbol?.charAt(0)}
+                            alt={token.symbol}
                             size='xl'
                         />
                         <div className={styles.name_container}>
