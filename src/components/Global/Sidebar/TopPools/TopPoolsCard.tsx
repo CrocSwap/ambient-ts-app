@@ -51,7 +51,7 @@ export default function TopPoolsCard(props: propsIF) {
             );
             output = 'market';
         }
-        return output as pageNames;
+        return output;
     }, [pathname]);
 
     // hook to generate navigation actions with pre-loaded path

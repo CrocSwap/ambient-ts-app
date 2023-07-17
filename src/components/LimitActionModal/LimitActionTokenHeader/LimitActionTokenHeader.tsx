@@ -1,6 +1,7 @@
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './LimitActionTokenHeader.module.css';
 
 interface ILimitActionTokenHeaderProps {
@@ -18,31 +19,34 @@ export default function LimitActionTokenHeader(
     const dispatch = useAppDispatch();
 
     return (
-        <div className={styles.container}>
+        <div
+            className={styles.container}
+            style={{ paddingBottom: '1rem', margin: '0 1rem 1rem' }}
+        >
             <div
                 className={styles.token_info}
                 onClick={() => {
                     dispatch(toggleDidUserFlipDenom());
                 }}
             >
-                <img
+                <TokenIcon
                     src={
                         props.isDenomBase
                             ? props.baseTokenLogoURI
                             : props.quoteTokenLogoURI
                     }
-                    // src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/580px-Ethereum-icon-purple.svg.png'
-                    alt=''
+                    alt={props.quoteTokenSymbol}
+                    size='2xl'
                 />
-                <img
+                <TokenIcon
                     src={
                         props.isDenomBase
                             ? props.quoteTokenLogoURI
                             : props.baseTokenLogoURI
                     }
-                    alt=''
+                    alt={props.baseTokenSymbol}
+                    size='2xl'
                 />
-                {/* <img src='https://cryptologos.cc/logos/usd-coin-usdc-logo.png' alt='' /> */}
                 <span>
                     {props.isDenomBase
                         ? props.baseTokenSymbol

@@ -55,7 +55,7 @@ export default function RecentPoolsCard(props: propsIF) {
             );
             page = 'market';
         }
-        return page as pageNames;
+        return page;
     }, [pathname]);
 
     // hook to generate navigation actions with pre-loaded path
