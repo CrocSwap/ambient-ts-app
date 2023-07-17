@@ -59,6 +59,7 @@ import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
 import { CSSTransition } from 'react-transition-group';
 import { ChartContext } from '../../contexts/ChartContext';
+import Divider from '../../components/Global/Divider/Divider';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -6388,7 +6389,14 @@ export default function Chart(props: propsIF) {
                             bandwidth * 2,
                     }}
                 >
-                    <p> Please click another candle </p>
+                    <div>
+                        A placeholder candle to align the latest candle close
+                        price with the current pool price{' '}
+                    </div>
+                    <Divider />
+                    <div>
+                        Click any other candle to view relevant transactions
+                    </div>
                 </div>
             </CSSTransition>
         </div>
