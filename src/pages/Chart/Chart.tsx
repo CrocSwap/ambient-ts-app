@@ -6384,8 +6384,8 @@ export default function Chart(props: propsIF) {
                             scaleData?.yScale(lastCandleDataCenter) +
                             (fullScreenChart ? 130 : 65),
                         left:
-                            scaleData?.xScale(lastCandleData?.time * 1000) -
-                            (bandwidth + 240),
+                            scaleData?.xScale(lastCandleData?.time * 1000) +
+                            bandwidth * 2,
                     }}
                 >
                     <p> Please click another candle </p>
