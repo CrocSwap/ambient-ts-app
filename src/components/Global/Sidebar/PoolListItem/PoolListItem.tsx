@@ -38,8 +38,6 @@ export default function PoolListItem(props: propsIF) {
         crocEnv,
     );
 
-    const { tokenB } = useAppSelector((state) => state.tradeData);
-
     const { pathname } = useLocation();
 
     const navTarget = useMemo<pageNames>(() => {
@@ -56,12 +54,14 @@ export default function PoolListItem(props: propsIF) {
             output = 'pool';
         } else {
             console.warn(
-                'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to PoolsCard.tsx for troubleshooting.',
+                'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
             );
             output = 'market';
         }
-        return output;
+        return output as pageNames;
     }, [pathname]);
+
+    const { tokenB } = useAppSelector((state) => state.tradeData);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);

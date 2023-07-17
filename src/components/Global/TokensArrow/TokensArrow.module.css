@@ -44,6 +44,7 @@
 .display_container:hover .token_arrow,
 .display_container:focus-visible .token_arrow {
     transform: none;
+    cursor: unset !important;
 }
 
 /* .clicked{
