@@ -57,7 +57,8 @@ import { RangeContext } from '../../contexts/RangeContext';
 import { createTriangle } from './ChartUtils/triangle';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
-import LimitButton from '../../components/Trade/Limit/LimitButton/LimitButton';
+import { CSSTransition } from 'react-transition-group';
+import { ChartContext } from '../../contexts/ChartContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -216,6 +217,8 @@ export default function Chart(props: propsIF) {
     const { tradeTableState, handlePulseAnimation } =
         useContext(TradeTableContext);
 
+    const { isFullScreen: fullScreenChart } = useContext(ChartContext);
+
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
@@ -291,6 +294,8 @@ export default function Chart(props: propsIF) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
+    const [isShowLastCandleTooltip, setIsShowLastCandleTooltip] =
+        useState(false);
     const [ranges, setRanges] = useState<lineValue[]>([
         {
             name: 'Min',
@@ -350,12 +355,6 @@ export default function Chart(props: propsIF) {
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles;
         if (poolPriceWithoutDenom) {
-            const nowDate = Date.now();
-
-            const snapDiff = nowDate % (period * 1000);
-
-            const snappedTime = Math.floor((nowDate + snapDiff) / 1000);
-
             const fakeData = {
                 time: data[0].time + period,
                 invMinPriceExclMEVDecimalCorrected:
@@ -405,6 +404,18 @@ export default function Chart(props: propsIF) {
     const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
     });
+
+    const lastCandleDataCenter = useMemo(() => {
+        const close = denomInBase
+            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
+            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
+
+        const open = denomInBase
+            ? lastCandleData?.invPriceOpenExclMEVDecimalCorrected
+            : lastCandleData?.priceOpenExclMEVDecimalCorrected;
+
+        return (open + close) / 2;
+    }, [lastCandleData, isDenomBase]);
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -2828,6 +2839,12 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (candlestick) {
+            setBandwidth(candlestick.bandwidth());
+        }
+    }, [scaleData?.xScale.domain(), isSidebarOpen, fullScreenChart]);
+
+    useEffect(() => {
         setBandwidth(defaultCandleBandwith);
 
         if (reset) {
@@ -5216,6 +5233,7 @@ export default function Chart(props: propsIF) {
         xAxisActiveTooltip,
         timeOfEndCandle,
         isCrDataIndActive,
+        bandwidth,
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -5371,23 +5389,9 @@ export default function Chart(props: propsIF) {
             dateControl &&
             checkYLocation
         ) {
-            xAxisTooltip.html('<p> Please click other candle </p>');
-
-            const width = xAxisTooltip.style('width').split('p')[0] / 2;
-
-            xAxisTooltip.style('visibility', 'visible');
-            const container = d3.select(d3Container.current).node() as any;
-
-            const rectContainer = container.getBoundingClientRect();
-
-            xAxisTooltip
-                .style('bottom', scaleData.yScale(poolPriceDisplay) + 'px')
-                .style(
-                    'left',
-                    scaleData.xScale(nearest.time * 1000) - width + 'px',
-                );
+            setIsShowLastCandleTooltip(true);
         } else {
-            xAxisTooltip.style('visibility', 'hidden');
+            setIsShowLastCandleTooltip(false);
         }
 
         return {
@@ -6017,6 +6021,7 @@ export default function Chart(props: propsIF) {
             showVolume,
             xAxisActiveTooltip,
             timeOfEndCandle,
+            bandwidth,
         ],
     );
 
@@ -6365,6 +6370,27 @@ export default function Chart(props: propsIF) {
                     </div>
                 </div>
             </d3fc-group>
+
+            <CSSTransition
+                in={isShowLastCandleTooltip}
+                timeout={500}
+                classNames='lastCandleTooltip'
+                unmountOnExit
+            >
+                <div
+                    className='lastCandleDiv'
+                    style={{
+                        top:
+                            scaleData?.yScale(lastCandleDataCenter) +
+                            (fullScreenChart ? 130 : 65),
+                        left:
+                            scaleData?.xScale(lastCandleData?.time * 1000) +
+                            bandwidth * 2,
+                    }}
+                >
+                    <p> Please click another candle </p>
+                </div>
+            </CSSTransition>
         </div>
     );
 }
