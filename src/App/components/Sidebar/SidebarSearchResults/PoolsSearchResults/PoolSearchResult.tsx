@@ -13,7 +13,7 @@ interface propsIF {
     crocEnv?: CrocEnv;
 }
 
-export default function PoolLI(props: propsIF) {
+export default function PoolSearchResult(props: propsIF) {
     const {
         pool,
         handleClick,

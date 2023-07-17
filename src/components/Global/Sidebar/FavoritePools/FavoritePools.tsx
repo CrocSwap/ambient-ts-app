@@ -28,15 +28,13 @@ export default function FavoritePools(props: propsIF) {
         poolId,
     );
 
-    // TODO:   @Junior  please refactor the header <div> as a <header> element
-
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
+            <header className={styles.header}>
                 <div>Pool</div>
                 <div>Volume</div>
                 <div>TVL</div>
-            </div>
+            </header>
             {isAlreadyFavorited || (
                 <div
                     className={styles.view_more}

@@ -1,9 +1,9 @@
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import styles from '../SidebarTable.module.css';
-import TopPoolsCard from './TopPoolsCard';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
+import PoolListItem from '../PoolListItem/PoolListItem';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -13,7 +13,7 @@ interface propsIF {
 export default function TopPools(props: propsIF) {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
 
-    const { topPools, crocEnv } = useContext(CrocEnvContext);
+    const { topPools } = useContext(CrocEnvContext);
 
     return (
         <div className={styles.container}>
@@ -24,12 +24,11 @@ export default function TopPools(props: propsIF) {
             </header>
             <div className={styles.content}>
                 {topPools.map((pool, idx) => (
-                    <TopPoolsCard
+                    <PoolListItem
                         pool={pool}
                         key={idx}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
                         cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        crocEnv={crocEnv}
                     />
                 ))}
             </div>

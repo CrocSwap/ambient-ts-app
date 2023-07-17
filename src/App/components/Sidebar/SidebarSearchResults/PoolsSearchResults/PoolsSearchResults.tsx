@@ -1,7 +1,7 @@
 import styles from '../SidebarSearchResults.module.css';
 import { PoolIF, TokenIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
-import PoolLI from './PoolLI';
+import PoolSearchResult from './PoolSearchResult';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
@@ -75,7 +75,7 @@ export default function PoolsSearchResults(props: propsIF) {
                             // max five elements before content overflows container
                             .slice(0, 5)
                             .map((pool: PoolIF) => (
-                                <PoolLI
+                                <PoolSearchResult
                                     key={`sidebar_searched_pool_${JSON.stringify(
                                         pool,
                                     )}`}

@@ -6,7 +6,6 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { get24hChange } from '../../../App/functions/getPoolStats';
 import { getMoneynessRank } from '../../../utils/functions/getMoneynessRank';
-import { topPoolIF } from '../../../App/hooks/useTopPools';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
@@ -17,9 +16,10 @@ import { estimateFrom24HrRangeApr } from '../../../App/functions/fetchAprEst';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import { PoolIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
-    pool: topPoolIF;
+    pool: PoolIF;
 }
 
 export default function PoolCard(props: propsIF) {
