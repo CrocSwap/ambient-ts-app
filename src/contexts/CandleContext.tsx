@@ -120,6 +120,15 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         isChartEnabled && fetchCandles();
+    }, [
+        isChartEnabled,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        candleScale?.isFetchForTimeframe,
+        candleTimeLocal,
+    ]);
+
+    useEffect(() => {
         if (isChartEnabled) {
             const interval = setInterval(() => {
                 fetchCandles(true);
@@ -132,6 +141,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         mainnetQuoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         candleTimeLocal,
+        candleScale.nCandles,
     ]);
 
     const fetchCandles = (bypassSpinner = false) => {
@@ -151,7 +161,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
             const candleTime = candleScale?.lastCandleDate || 0;
             const nCandles =
-                candleScale?.nCandles > 1000 ? 1000 : candleScale?.nCandles;
+                candleScale?.nCandles > 3000 ? 3000 : candleScale?.nCandles;
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
