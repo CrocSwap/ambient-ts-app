@@ -39,6 +39,26 @@ const useChatSocket = (
         return data;
     }
 
+    async function updateLikeDislike(messageId: string, like: boolean) {
+        const payload = {
+            _id: messageId,
+            likes: like ? 1 : 0,
+            dislikes: like ? 0 : 1,
+        };
+
+        const response = await fetch(
+            CHAT_BACKEND_URL + '/chat/api/messages/updateLikeDislikeCount',
+            {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            },
+        );
+        const data = await response.json();
+
+        return data;
+    }
+
     async function getMentionsWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const response = await fetch(
@@ -180,6 +200,7 @@ const useChatSocket = (
         deleteMsgFromList,
         users,
         notis,
+        updateLikeDislike,
     };
 };
 

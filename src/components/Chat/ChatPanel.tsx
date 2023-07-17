@@ -17,6 +17,7 @@ import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import Toggle2 from '../Global/Toggle/Toggle2';
+import { ethers } from 'ethers';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -63,6 +64,8 @@ function ChatPanel(props: propsIF) {
 
     const [mentIndex, setMentIndex] = useState(-1);
     const [hasNewMention, setHasNewMention] = useState(false);
+    const [messageCheckerInterval, setMessageCheckerInterval] = useState<any>();
+    const [inputDisabled, setInputDisabled] = useState<boolean>(false);
 
     const {
         messages,
@@ -73,6 +76,7 @@ function ChatPanel(props: propsIF) {
         deleteMsgFromList,
         users,
         notis,
+        updateLikeDislike,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -240,6 +244,32 @@ function ChatPanel(props: propsIF) {
         if (notis?.get(room)) {
             console.log('i got new message');
         }
+
+        if (messages.length == 0) return;
+
+        if (messageCheckerInterval != undefined) {
+            clearInterval(messageCheckerInterval);
+        }
+        const checkerInterval = setInterval(() => {
+            const currentTS = new Date().getTime();
+            const lastMinMessages = messages.filter(
+                (item) =>
+                    //  (currentTS - Number(item.createdAt)) <= 1000 * 60 && item.sender == currentUser
+                    currentTS - new Date(item.createdAt).getTime() <=
+                        1000 * 60 && item.sender == currentUser,
+            );
+
+            // console.log('......................................')
+            // console.log(lastMinMessages.length)
+
+            if (lastMinMessages.length > 4) {
+                setInputDisabled(true);
+            } else {
+                setInputDisabled(false);
+            }
+        }, 1000);
+
+        setMessageCheckerInterval(checkerInterval);
     }, [messages]);
 
     function handleCloseChatPanel() {
@@ -372,6 +402,23 @@ function ChatPanel(props: propsIF) {
         }
     };
 
+    const connectWallet = () => {
+        const message = 'Your verification message';
+
+        window.ethereum
+            .request({
+                method: 'personal_sign',
+                params: [message, address],
+            })
+            .then((signedMessage: any) => {
+                console.log(signedMessage);
+                // The signed message is available here, which you can send to your server for verification
+            })
+            .catch((error: any) => {
+                // Handle error
+            });
+    };
+
     const header = (
         <div
             className={styles.chat_header}
@@ -463,6 +510,7 @@ function ChatPanel(props: propsIF) {
                                     ? mentIndexPointer - 1
                                     : undefined
                             }
+                            updateLikeDislike={updateLikeDislike}
                         />
                     );
                 })}
@@ -574,6 +622,7 @@ function ChatPanel(props: propsIF) {
             users={users}
             isLinkInCrocodileLabsLinks={isLinkInCrocodileLabsLinks}
             isLink={isLink}
+            disabled={inputDisabled}
         />
     );
 
@@ -641,6 +690,11 @@ function ChatPanel(props: propsIF) {
                     {messageList}
 
                     {chatNotification}
+
+                    <div
+                        className={styles.verify_button}
+                        onClick={connectWallet}
+                    ></div>
 
                     {messageInput}
                     {/* {mentionAutoComplete} */}

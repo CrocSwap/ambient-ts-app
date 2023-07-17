@@ -31,6 +31,7 @@ interface MessageInputProps {
     users: User[];
     isLinkInCrocodileLabsLinks(word: string): boolean;
     isLink(url: string): boolean;
+    disabled: boolean;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -111,6 +112,14 @@ export default function MessageInput(props: MessageInputProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
+        if (props.disabled) {
+            if (message !== '') {
+                setMessage('');
+            }
+
+            return;
+        }
+
         if (e.key === 'Enter') {
             if (
                 props.isLink(message) &&
@@ -130,7 +139,6 @@ export default function MessageInput(props: MessageInputProps) {
                 }
                 // assign user for ment
                 else {
-                    console.log('>>>>>>>>>>>>>>>>>assigning user for ment');
                     setMentUser(possibleMentUser);
 
                     const reg = /@([^\s]*)/g;
@@ -264,130 +272,146 @@ export default function MessageInput(props: MessageInputProps) {
     );
 
     return (
-        <div
-            className={
-                !isConnected ? styles.input_box_not_allowed : styles.input_box
-            }
-        >
-            <PositionBox
-                message={message}
-                isInput={true}
-                isPosition={isPosition}
-                setIsPosition={setIsPosition}
-                walletExplorer={
-                    props.ensName === undefined ? address : props.ensName
-                }
-            />
-
-            <div
-                className={
-                    !isConnected ? styles.input_not_allowed : styles.input
-                }
-            >
-                <input
-                    type='text'
-                    id='box'
-                    placeholder={messageInputText()}
-                    disabled={!isConnected}
-                    className={
-                        !isConnected
-                            ? styles.input_text_not_allowed
-                            : styles.input_text
-                    }
-                    onKeyDown={_handleKeyDown}
-                    value={message}
-                    onChange={onChangeMessage}
-                    autoComplete={'off'}
-                    tabIndex={-1}
-                    autoFocus={props.appPage}
-                />
-
-                <BsEmojiSmile
-                    className={
-                        isUserLoggedIn
-                            ? styles.svgButton
-                            : styles.not_LoggedIn_svgButton
-                    }
-                    onClick={handleEmojiPickerHideShow}
-                />
-                {}
+        <>
+            {props.disabled && (
+                <div className={styles.disabled_text}>
+                    Message limit per minute exceeded, please wait.
+                </div>
+            )}
+            {!props.disabled && (
                 <div
                     className={
-                        isUserLoggedIn
-                            ? styles.send_message_button
-                            : styles.not_LoggedIn_send_message_button
+                        !isConnected
+                            ? styles.input_box_not_allowed
+                            : styles.input_box
                     }
-                    onClick={() => handleSendMessageButton()}
                 >
-                    <svg
-                        width='16'
-                        height='16'
-                        viewBox='0 0 16 16'
-                        fill='none'
-                        xmlns='http://www.w3.org/2000/svg'
+                    <PositionBox
+                        message={message}
+                        isInput={true}
+                        isPosition={isPosition}
+                        setIsPosition={setIsPosition}
+                        walletExplorer={
+                            props.ensName === undefined
+                                ? address
+                                : props.ensName
+                        }
+                    />
+
+                    <div
+                        className={
+                            !isConnected
+                                ? styles.input_not_allowed
+                                : styles.input
+                        }
                     >
-                        <path
-                            d='M14.6663 1.3335L7.33301 8.66683M14.6663 1.3335L9.99967 14.6668L7.33301 8.66683M14.6663 1.3335L1.33301 6.00016L7.33301 8.66683'
-                            stroke='#EBEBFF'
-                            strokeOpacity='0.25'
-                            strokeLinecap='round'
-                            strokeLinejoin='round'
+                        <input
+                            type='text'
+                            id='box'
+                            placeholder={messageInputText()}
+                            disabled={!isConnected || props.disabled}
+                            className={
+                                !isConnected
+                                    ? styles.input_text_not_allowed
+                                    : styles.input_text
+                            }
+                            onKeyDown={_handleKeyDown}
+                            value={message}
+                            onChange={onChangeMessage}
+                            autoComplete={'off'}
+                            tabIndex={-1}
+                            autoFocus={props.appPage}
+                        />
+
+                        <BsEmojiSmile
                             className={
                                 isUserLoggedIn
                                     ? styles.svgButton
                                     : styles.not_LoggedIn_svgButton
                             }
-                            id='send message button'
+                            onClick={handleEmojiPickerHideShow}
                         />
-                        <title>Send Message</title>
-                    </svg>
-                </div>
-            </div>
-            {showEmojiPicker && (
-                <div className={styles.emojiPicker}>
-                    <span className={styles.emoji_close_button}>
-                        <RiCloseFill
-                            size={20}
-                            title='Close Emoji Picker'
-                            onClick={() => setShowEmojiPicker(false)}
-                            id='close emoji panel button'
-                            style={{ cursor: 'pointer' }}
-                        />
-                    </span>
-                    <span
-                        className={styles.emoji_close_button}
-                        onClick={() => setIsInfoPressed(!isInfoPressed)}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <RiInformationLine title='Info' id='info' />
-                    </span>
-                    {isInfoPressed ? (
-                        <ul>
-                            <h5>Keyboard Shortcuts</h5>
-                            <hr></hr>
-                            <li>Ctrl + Alt + C - opens/closes chat</li>
-                            <li>Esc- closes chat</li>
-                            <li>
-                                Alt + X - opens emoji panel when chat is open
-                            </li>
-                            <li>Alt+ Q - close emoji panel</li>
-                            <li>Ctrl + M - opens info</li>
-                            <li>Enter - sends message directly</li>
-                        </ul>
-                    ) : (
-                        <Picker
-                            pickerStyle={{
-                                width: '100%',
-                                height: '89%',
-                            }}
-                            onEmojiClick={handleEmojiClick}
-                            disableSkinTonePicker={true}
-                        />
+                        {}
+                        <div
+                            className={
+                                isUserLoggedIn
+                                    ? styles.send_message_button
+                                    : styles.not_LoggedIn_send_message_button
+                            }
+                            onClick={() => handleSendMessageButton()}
+                        >
+                            <svg
+                                width='16'
+                                height='16'
+                                viewBox='0 0 16 16'
+                                fill='none'
+                                xmlns='http://www.w3.org/2000/svg'
+                            >
+                                <path
+                                    d='M14.6663 1.3335L7.33301 8.66683M14.6663 1.3335L9.99967 14.6668L7.33301 8.66683M14.6663 1.3335L1.33301 6.00016L7.33301 8.66683'
+                                    stroke='#EBEBFF'
+                                    strokeOpacity='0.25'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    className={
+                                        isUserLoggedIn
+                                            ? styles.svgButton
+                                            : styles.not_LoggedIn_svgButton
+                                    }
+                                    id='send message button'
+                                />
+                                <title>Send Message</title>
+                            </svg>
+                        </div>
+                    </div>
+                    {showEmojiPicker && (
+                        <div className={styles.emojiPicker}>
+                            <span className={styles.emoji_close_button}>
+                                <RiCloseFill
+                                    size={20}
+                                    title='Close Emoji Picker'
+                                    onClick={() => setShowEmojiPicker(false)}
+                                    id='close emoji panel button'
+                                    style={{ cursor: 'pointer' }}
+                                />
+                            </span>
+                            <span
+                                className={styles.emoji_close_button}
+                                onClick={() => setIsInfoPressed(!isInfoPressed)}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                <RiInformationLine title='Info' id='info' />
+                            </span>
+                            {isInfoPressed ? (
+                                <ul>
+                                    <h5>Keyboard Shortcuts</h5>
+                                    <hr></hr>
+                                    <li>Ctrl + Alt + C - opens/closes chat</li>
+                                    <li>Esc- closes chat</li>
+                                    <li>
+                                        Alt + X - opens emoji panel when chat is
+                                        open
+                                    </li>
+                                    <li>Alt+ Q - close emoji panel</li>
+                                    <li>Ctrl + M - opens info</li>
+                                    <li>Enter - sends message directly</li>
+                                </ul>
+                            ) : (
+                                <Picker
+                                    pickerStyle={{
+                                        width: '100%',
+                                        height: '89%',
+                                    }}
+                                    onEmojiClick={handleEmojiClick}
+                                    disableSkinTonePicker={true}
+                                />
+                            )}
+                        </div>
                     )}
+
+                    {mentionAutoComplete}
                 </div>
             )}
-
-            {mentionAutoComplete}
-        </div>
+        </>
     );
 }

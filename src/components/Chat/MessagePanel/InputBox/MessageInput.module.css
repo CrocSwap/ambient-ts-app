@@ -233,3 +233,9 @@
     order: 0;
     flex-grow: 1;
 }
+
+
+.disabled_text{
+    text-align: center;
+    font-size: .82rem;
+}

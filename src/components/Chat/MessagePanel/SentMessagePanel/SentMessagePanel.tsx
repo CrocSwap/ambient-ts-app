@@ -27,6 +27,7 @@ interface SentMessageProps {
     deleteMsgFromList: (id: string) => void;
     isLinkInCrocodileLabsLinks(word: string): boolean;
     mentionIndex?: number;
+    updateLikeDislike: (messageId: string, like: boolean) => void;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -36,6 +37,11 @@ function SentMessagePanel(props: SentMessageProps) {
     const [showName, setShowName] = useState<boolean>(true);
     const [daySeparator, setdaySeparator] = useState('');
     const [ok, setOk] = useState(false);
+    const [flipped, setFlipped] = useState(false);
+    const [flipRead, setFlipRead] = useState(false);
+
+    const likeCount = props.message.likes ? props.message.likes : 0;
+    const dislikeCount = props.message.dislikes ? props.message.dislikes : 0;
 
     const { deleteMessage } = useChatApi();
 
@@ -305,109 +311,215 @@ function SentMessagePanel(props: SentMessageProps) {
                 props.mentionIndex !== undefined
                     ? 'mentionedMessage mentIndex-' + props.mentionIndex
                     : ''
-            }  `}
+            }  ${flipped ? styles.flipped : ''}  ${
+                flipRead ? styles.flip_read : ''
+            } `}
             style={messageStyle()}
             data-ment-index={props.mentionIndex}
         >
-            <div>
-                {daySeparator === '' ? (
-                    ''
-                ) : daySeparator !== '' ? (
-                    <p className={styles.separator}>{daySeparator}</p>
-                ) : (
-                    ''
-                )}
+            <div className={styles.msg_bubble_content}>
+                <div className={styles.msg_bubble_front}>
+                    <div
+                        className={styles.flip_trigger}
+                        onClick={() => {
+                            setFlipped(true);
+                        }}
+                    ></div>
+                    <div>
+                        {daySeparator === '' ? (
+                            ''
+                        ) : daySeparator !== '' ? (
+                            <p className={styles.separator}>{daySeparator}</p>
+                        ) : (
+                            ''
+                        )}
 
-                <div
-                    className={
-                        props.isUserLoggedIn
-                            ? props.message.isMentionMessage === false
-                                ? styles.sent_message_body
-                                : props.message.mentionedName?.trim() ===
-                                      props.ensName?.trim() ||
-                                  props.message.mentionedName?.trim() ===
-                                      props.connectedAccountActive?.trim()
-                                ? styles.sent_message_body_with_mention
-                                : styles.sent_message_body
-                            : styles.sent_message_body
-                    }
-                >
-                    {showAvatar && (
-                        <div className={styles.avatar_jazzicons}>
-                            {myJazzicon}
-                        </div>
-                    )}
-                    {!showAvatar && (
-                        <div style={{ display: 'none', marginLeft: '10px' }}>
-                            <div className={styles.nft_container}>
-                                {myJazzicon}
-                            </div>
-                        </div>
-                    )}
-                    <div className={styles.message_item}>
                         <div
                             className={
-                                showName && props.isCurrentUser
-                                    ? styles.current_user_name
-                                    : showName && !props.isCurrentUser
-                                    ? styles.name
-                                    : !showName && !props.isCurrentUser
-                                    ? ''
-                                    : ''
+                                props.isUserLoggedIn
+                                    ? props.message.isMentionMessage === false
+                                        ? styles.sent_message_body
+                                        : props.message.mentionedName?.trim() ===
+                                              props.ensName?.trim() ||
+                                          props.message.mentionedName?.trim() ===
+                                              props.connectedAccountActive?.trim()
+                                        ? styles.sent_message_body_with_mention
+                                        : styles.sent_message_body
+                                    : styles.sent_message_body
                             }
+                        >
+                            {showAvatar && (
+                                <div className={styles.avatar_jazzicons}>
+                                    {myJazzicon}
+                                </div>
+                            )}
+                            {!showAvatar && (
+                                <div
+                                    style={{
+                                        display: 'none',
+                                        marginLeft: '10px',
+                                    }}
+                                >
+                                    <div className={styles.nft_container}>
+                                        {myJazzicon}
+                                    </div>
+                                </div>
+                            )}
+                            <div className={styles.message_item}>
+                                <div
+                                    className={
+                                        showName && props.isCurrentUser
+                                            ? styles.current_user_name
+                                            : showName && !props.isCurrentUser
+                                            ? styles.name
+                                            : !showName && !props.isCurrentUser
+                                            ? ''
+                                            : ''
+                                    }
+                                    onClick={() => {
+                                        if (
+                                            location.pathname !==
+                                            `/${
+                                                props.message.ensName ===
+                                                'defaultValue'
+                                                    ? props.message.walletID
+                                                    : props.message.ensName
+                                            }`
+                                        ) {
+                                            navigate(
+                                                `/${
+                                                    props.isCurrentUser
+                                                        ? 'account'
+                                                        : props.message
+                                                              .ensName ===
+                                                          'defaultValue'
+                                                        ? props.message.walletID
+                                                        : props.message.ensName
+                                                }`,
+                                            );
+                                        }
+                                    }}
+                                >
+                                    {showName && getName()}
+                                </div>
+                                <PositionBox
+                                    message={props.message.message}
+                                    isInput={false}
+                                    isPosition={isPosition}
+                                    setIsPosition={setIsPosition}
+                                    walletExplorer={getName()}
+                                    isCurrentUser={props.isCurrentUser}
+                                    showAvatar={showAvatar}
+                                />
+                                {!isPosition && mentionedMessage()}
+                            </div>
+                            {props.moderator ? (
+                                <FiDelete
+                                    color='red'
+                                    onClick={() =>
+                                        deleteMessages(props.message._id)
+                                    }
+                                    style={{ cursor: 'pointer' }}
+                                />
+                            ) : (
+                                ''
+                            )}
+                            <div>
+                                <p className={styles.message_date}>
+                                    {formatAMPM(props.message.createdAt)}
+                                </p>
+                            </div>
+
+                            {/* {snackbarContent} */}
+                        </div>
+                        {hasSeparator ? (
+                            <hr style={{ cursor: 'default' }} />
+                        ) : (
+                            ''
+                        )}
+                    </div>
+                </div>
+
+                <div className={styles.msg_bubble_back}>
+                    <div
+                        className={styles.flip_trigger}
+                        onClick={() => {
+                            setFlipped(false);
+                            setFlipRead(false);
+                        }}
+                    ></div>
+                    <div
+                        className={styles.flip_trigger_lefted}
+                        onMouseEnter={() => {
+                            setFlipRead(true);
+                        }}
+                        onMouseLeave={() => {
+                            setFlipRead(false);
+                        }}
+                    >
+                        💬
+                    </div>
+                    {/* <div className={styles.like_btn_base}> + </div>
+                    <div className={styles.like_btn_base}> - </div> */}
+
+                    <div className={styles.msg_bubble_back_content}>
+                        <div
+                            className={styles.like_btn_base}
                             onClick={() => {
-                                if (
-                                    location.pathname !==
-                                    `/${
-                                        props.message.ensName === 'defaultValue'
-                                            ? props.message.walletID
-                                            : props.message.ensName
-                                    }`
-                                ) {
-                                    navigate(
-                                        `/${
-                                            props.isCurrentUser
-                                                ? 'account'
-                                                : props.message.ensName ===
-                                                  'defaultValue'
-                                                ? props.message.walletID
-                                                : props.message.ensName
-                                        }`,
-                                    );
-                                }
+                                props.updateLikeDislike(
+                                    props.message._id,
+                                    true,
+                                );
                             }}
                         >
-                            {showName && getName()}
+                            {' '}
+                            👍{' '}
                         </div>
-                        <PositionBox
-                            message={props.message.message}
-                            isInput={false}
-                            isPosition={isPosition}
-                            setIsPosition={setIsPosition}
-                            walletExplorer={getName()}
-                            isCurrentUser={props.isCurrentUser}
-                            showAvatar={showAvatar}
-                        />
-                        {!isPosition && mentionedMessage()}
-                    </div>
-                    {props.moderator ? (
-                        <FiDelete
-                            color='red'
-                            onClick={() => deleteMessages(props.message._id)}
-                            style={{ cursor: 'pointer' }}
-                        />
-                    ) : (
-                        ''
-                    )}
-                    <div>
-                        <p className={styles.message_date}>
-                            {formatAMPM(props.message.createdAt)}
-                        </p>
-                    </div>
+                        <div
+                            className={
+                                styles.like_btn_base + ' ' + styles.dislike_btn
+                            }
+                            onClick={() => {
+                                props.updateLikeDislike(
+                                    props.message._id,
+                                    false,
+                                );
+                            }}
+                        >
+                            {' '}
+                            👎{' '}
+                        </div>
 
-                    {/* {snackbarContent} */}
+                        <div className={styles.like_dislike_bar_wrapper}>
+                            <div
+                                className={styles.like_dislike_node_wrapper}
+                                style={{
+                                    width:
+                                        (likeCount /
+                                            (dislikeCount + likeCount)) *
+                                            100 +
+                                        '%',
+                                }}
+                            >
+                                <div className={styles.like_dislike_node}></div>
+                            </div>
+                            <div
+                                className={styles.like_dislike_node_wrapper}
+                                style={{
+                                    width:
+                                        (dislikeCount /
+                                            (dislikeCount + likeCount)) *
+                                            100 +
+                                        '%',
+                                }}
+                            >
+                                <div
+                                    className={`${styles.like_dislike_node} ${styles.dislike_node}`}
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                {hasSeparator ? <hr style={{ cursor: 'default' }} /> : ''}
             </div>
         </div>
     );
