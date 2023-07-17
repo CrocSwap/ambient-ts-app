@@ -87,18 +87,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
         </div>
     );
 
-    // const nfts = (
-    <>
-        {/* {imageData.map((img) => (
-                <img
-                    onClick={() => openGlobalModal(nftModalContent, 'NFTs')}
-                    key={img}
-                    src={img}
-                    alt=''
-                />
-            ))} */}
-    </>;
-    // );
     const nftsPlaceholder = (
         <>
             {Array(3)

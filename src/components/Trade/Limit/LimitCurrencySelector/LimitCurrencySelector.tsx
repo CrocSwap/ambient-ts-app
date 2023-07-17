@@ -123,7 +123,7 @@ function LimitCurrencySelector(props: propsIF) {
         >
             <TokenIcon
                 src={uriToHttp(thisToken.logoURI)}
-                alt={thisToken.name + 'token logo'}
+                alt={thisToken.symbol}
                 size='2xl'
             />
             <span className={styles.token_list_text}>{thisToken.symbol}</span>

@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
-import { ChartContext, CHART_DEFAULT_HEIGHT } from './ChartContext';
+import { ChartContext } from './ChartContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
+// 54 is the height of the trade table header
+export const TRADE_TABLE_HEADER_HEIGHT = 54;
 interface TradeTableContextIF {
     showOrderPulseAnimation: boolean;
     showRangePulseAnimation: boolean;
@@ -34,7 +36,7 @@ export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { isCandleSelected } = useContext(CandleContext);
-    const { setChartHeight, chartHeight, maxChartSize } =
+    const { setChartHeight, chartHeights } =
         useContext(ChartContext);
 
     const { pathname: currentLocation } = useLocation();
@@ -67,27 +69,27 @@ export const TradeTableContextProvider = (props: {
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
         toggleTradeTable: () => {
             if (!tradeTableState) {
-                if (chartHeight > CHART_DEFAULT_HEIGHT) {
-                    setChartHeight(CHART_DEFAULT_HEIGHT);
+                if (chartHeights.current > chartHeights.default) {
+                    setChartHeight(chartHeights.default);
                 } else {
                     setChartHeight(4);
                     setTradeTableState('Expanded');
                 }
             } else {
-                setChartHeight(CHART_DEFAULT_HEIGHT);
+                setChartHeight(chartHeights.default);
                 setTradeTableState(undefined);
             }
         },
         toggleTradeTableCollapse: () => {
             if (!tradeTableState) {
-                if (chartHeight < CHART_DEFAULT_HEIGHT) {
-                    setChartHeight(CHART_DEFAULT_HEIGHT);
+                if (chartHeights.current < chartHeights.default) {
+                    setChartHeight(chartHeights.default);
                 } else {
-                    setChartHeight(maxChartSize);
+                    setChartHeight(chartHeights.max);
                     setTradeTableState('Collapsed');
                 }
             } else {
-                setChartHeight(CHART_DEFAULT_HEIGHT);
+                setChartHeight(chartHeights.default);
                 setTradeTableState(undefined);
             }
         },
