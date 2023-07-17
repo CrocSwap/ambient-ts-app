@@ -1077,7 +1077,7 @@ export default function Chart(props: propsIF) {
                 ) => {
                     const dx =
                         Math.abs(event.sourceEvent.deltaX) != 0
-                            ? event.sourceEvent.deltaX / 3
+                            ? -event.sourceEvent.deltaX / 3
                             : event.sourceEvent.deltaY / 3;
 
                     const domainX = scaleData?.xScale.domain();
@@ -1117,6 +1117,8 @@ export default function Chart(props: propsIF) {
                                 lastTime + deltaX,
                             ]);
                         } else {
+                            console.log({ deltaX });
+
                             if (
                                 (deltaX < 0 ||
                                     Math.abs(lastTime - firstTime) <=
