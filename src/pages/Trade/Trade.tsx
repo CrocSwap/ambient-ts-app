@@ -10,7 +10,6 @@ import {
     memo,
     useRef,
 } from 'react';
-import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
 // START: Import JSX Components
