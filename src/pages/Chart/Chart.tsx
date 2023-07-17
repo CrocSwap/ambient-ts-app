@@ -57,6 +57,8 @@ import { RangeContext } from '../../contexts/RangeContext';
 import { createTriangle } from './ChartUtils/triangle';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
+import { CSSTransition } from 'react-transition-group';
+import { ChartContext } from '../../contexts/ChartContext';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -215,6 +217,8 @@ export default function Chart(props: propsIF) {
     const { tradeTableState, handlePulseAnimation } =
         useContext(TradeTableContext);
 
+    const { isFullScreen: fullScreenChart } = useContext(ChartContext);
+
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
@@ -290,6 +294,8 @@ export default function Chart(props: propsIF) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
+    const [isShowLastCandleTooltip, setIsShowLastCandleTooltip] =
+        useState(false);
     const [ranges, setRanges] = useState<lineValue[]>([
         {
             name: 'Min',
@@ -393,11 +399,23 @@ export default function Chart(props: propsIF) {
         }
 
         return data;
-    }, [unparsedData.candles]);
+    }, [diffHashSigChart(unparsedData.candles)]);
 
     const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
     });
+
+    const lastCandleDataCenter = useMemo(() => {
+        const close = denomInBase
+            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
+            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
+
+        const open = denomInBase
+            ? lastCandleData?.invPriceOpenExclMEVDecimalCorrected
+            : lastCandleData?.priceOpenExclMEVDecimalCorrected;
+
+        return (open + close) / 2;
+    }, [lastCandleData, isDenomBase]);
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -415,7 +433,6 @@ export default function Chart(props: propsIF) {
     // Crosshairs
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] = useState<any>();
-    // const [eggTooltip, setEggTooltip] = useState<any>();
     const [xAxisTooltip, setXaxisTooltip] = useState<any>();
 
     const [crosshairActive, setCrosshairActive] = useState<string>('none');
@@ -2822,6 +2839,12 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (candlestick) {
+            setBandwidth(candlestick.bandwidth());
+        }
+    }, [scaleData?.xScale.domain(), isSidebarOpen, fullScreenChart]);
+
+    useEffect(() => {
         setBandwidth(defaultCandleBandwith);
 
         if (reset) {
@@ -5210,6 +5233,7 @@ export default function Chart(props: propsIF) {
         xAxisActiveTooltip,
         timeOfEndCandle,
         isCrDataIndActive,
+        bandwidth,
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -5356,14 +5380,26 @@ export default function Chart(props: propsIF) {
             );
         }
 
+        const checkYLocation =
+            limitTop > limitBot
+                ? limitTop > yValue && limitBot < yValue
+                : limitTop < yValue && limitBot > yValue;
+        if (
+            nearest.time === unparsedCandleData[0].time &&
+            dateControl &&
+            checkYLocation
+        ) {
+            setIsShowLastCandleTooltip(true);
+        } else {
+            setIsShowLastCandleTooltip(false);
+        }
+
         return {
             isHoverCandleOrVolumeData:
                 nearest &&
                 dateControl &&
-                ((limitTop > limitBot
-                    ? limitTop > yValue && limitBot < yValue
-                    : limitTop < yValue && limitBot > yValue) ||
-                    isSelectedVolume),
+                nearest.time !== unparsedCandleData[0].time &&
+                (checkYLocation || isSelectedVolume),
             _selectedDate: nearest?.time * 1000,
             nearest: nearest,
         };
@@ -5985,6 +6021,7 @@ export default function Chart(props: propsIF) {
             showVolume,
             xAxisActiveTooltip,
             timeOfEndCandle,
+            bandwidth,
         ],
     );
 
@@ -6333,6 +6370,27 @@ export default function Chart(props: propsIF) {
                     </div>
                 </div>
             </d3fc-group>
+
+            <CSSTransition
+                in={isShowLastCandleTooltip}
+                timeout={500}
+                classNames='lastCandleTooltip'
+                unmountOnExit
+            >
+                <div
+                    className='lastCandleDiv'
+                    style={{
+                        top:
+                            scaleData?.yScale(lastCandleDataCenter) +
+                            (fullScreenChart ? 130 : 65),
+                        left:
+                            scaleData?.xScale(lastCandleData?.time * 1000) +
+                            bandwidth * 2,
+                    }}
+                >
+                    <p> Please click another candle </p>
+                </div>
+            </CSSTransition>
         </div>
     );
 }
