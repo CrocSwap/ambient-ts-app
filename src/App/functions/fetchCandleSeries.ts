@@ -74,19 +74,11 @@ export async function fetchCandleSeriesHybrid(
     );
 
     if (!candles) {
-        console.warn('fetchCandleSeriesCroc: !candles');
         return undefined;
     }
 
     // Check to see if Croc candles are sufficient
     if (candles.candles.length >= nCandles) {
-        // HERE!!!
-        console.warn(
-            'fetchCandleSeriesCroc: candles.candles.length >= nCandles',
-            candles.candles.length,
-            '>=',
-            nCandles,
-        );
         return candles;
     }
 
@@ -115,7 +107,6 @@ export async function fetchCandleSeriesHybrid(
         );
 
         if (!uniCandles) {
-            console.warn('fetchCandleSeriesUniswap: !uniCandles');
             return candles;
         }
 
@@ -172,7 +163,6 @@ export async function fetchCandleSeriesCroc(
         .then((response) => response?.json())
         .then(async (json) => {
             if (!json?.data) {
-                console.warn('fetchCandleSeriesCroc: !json?.data');
                 return undefined;
             }
             const payload = json?.data as CandleDataServerIF[];

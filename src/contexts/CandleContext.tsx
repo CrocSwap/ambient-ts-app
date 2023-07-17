@@ -145,7 +145,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     const fetchCandles = (bypassSpinner = false) => {
-        console.warn('CALLING CandleContext.fetchCandles');
         if (
             isServerEnabled &&
             baseTokenAddress &&
@@ -228,8 +227,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
     const fetchCandlesByNumDurations = (numDurations: number) => {
-        console.warn('CALLING CandleContext.fetchCandlesByNumDurations');
-
         const controller = new AbortController();
         setAbortController(controller);
 
