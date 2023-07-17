@@ -86,7 +86,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const [candleScale, setCandleScale] = useState<candleScale>({
         lastCandleDate: undefined,
-        nCandle: 200,
+        nCandles: 200,
         isFetchForTimeframe: false,
     });
 
@@ -135,6 +135,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     const fetchCandles = (bypassSpinner = false) => {
+        console.warn('CALLING CandleContext.fetchCandles');
         if (
             isServerEnabled &&
             baseTokenAddress &&
@@ -150,7 +151,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
             const candleTime = candleScale?.lastCandleDate || 0;
             const nCandles =
-                candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
+                candleScale?.nCandles > 1000 ? 1000 : candleScale?.nCandles;
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
@@ -217,6 +218,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
     const fetchCandlesByNumDurations = (numDurations: number) => {
+        console.warn('CALLING CandleContext.fetchCandlesByNumDurations');
+
         const controller = new AbortController();
         setAbortController(controller);
 
