@@ -1117,8 +1117,6 @@ export default function Chart(props: propsIF) {
                                 lastTime + deltaX,
                             ]);
                         } else {
-                            console.log({ deltaX });
-
                             if (
                                 (deltaX < 0 ||
                                     Math.abs(lastTime - firstTime) <=
