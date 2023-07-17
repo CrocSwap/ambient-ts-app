@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { useEffect, useState, useContext, useCallback, memo } from 'react';
 import { useParams, Outlet, NavLink } from 'react-router-dom';
+import { Resizable } from 're-resizable';
+import {
+    useEffect,
+    useState,
+    useContext,
+    useCallback,
+    memo,
+    useRef,
+} from 'react';
+import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
 // START: Import JSX Components
@@ -16,12 +25,16 @@ import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
-import { TradeTableContext } from '../../contexts/TradeTableContext';
+import {
+    TRADE_TABLE_HEADER_HEIGHT,
+    TradeTableContext,
+} from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { PoolNotInitalized } from '../../components/PoolNotInitialized/PoolNotInitialized';
+import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
 // React functional component
 function Trade() {
@@ -30,12 +43,20 @@ function Trade() {
     } = useContext(CrocEnvContext);
     const { candleData, setIsCandleSelected, isCandleDataNull } =
         useContext(CandleContext);
-    const { isFullScreen: isChartFullScreen, chartSettings } =
-        useContext(ChartContext);
+    const {
+        isFullScreen: isChartFullScreen,
+        chartSettings,
+        chartHeights,
+        setChartHeight,
+    } = useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
-    const { expandTradeTable, setOutsideControl, setSelectedOutsideTab } =
-        useContext(TradeTableContext);
+    const {
+        tradeTableState,
+        setTradeTableState,
+        setOutsideControl,
+        setSelectedOutsideTab,
+    } = useContext(TradeTableContext);
 
     const routes = [
         {
@@ -62,6 +83,8 @@ function Trade() {
 
     const { tradeData } = useAppSelector((state) => state);
     const { isDenomBase, limitTick } = tradeData;
+
+    const tradeTableRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (
@@ -105,7 +128,6 @@ function Trade() {
             />
         </div>
     );
-    const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
     const fullScreenStyle = isChartFullScreen
         ? styles.chart_full_screen
         : styles.main__chart;
@@ -229,7 +251,6 @@ function Trade() {
         setIsCandleDataArrived: setIsCandleDataArrived,
         candleTime: chartSettings.candleTime.global,
         tokens,
-        showActiveMobileComponent: showActiveMobileComponent,
     };
 
     const mobileTrade = (
@@ -260,6 +281,7 @@ function Trade() {
                     className={` ${fullScreenStyle}`}
                     style={{ marginLeft: '2rem' }}
                 >
+                    <TradeChartsHeader />
                     {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
                 </div>
             )}
@@ -269,6 +291,7 @@ function Trade() {
                     className={styles.full_table_height}
                     style={{ marginLeft: '2rem', flex: 1 }}
                 >
+                    <TradeChartsHeader />
                     <TradeTabs2 {...tradeTabsProps} />
                 </div>
             )}
@@ -301,20 +324,58 @@ function Trade() {
             )}
             <div
                 className={`${styles.middle_col}
-                ${expandTradeTable ? styles.flex_column : ''}`}
+                ${tradeTableState === 'Expanded' ? styles.flex_column : ''}`}
             >
-                <div
-                    className={` ${expandGraphStyle} ${
-                        activeMobileComponent !== 'chart' ? styles.hide : ''
-                    } ${fullScreenStyle}`}
-                >
-                    <div className={styles.main__chart_container}>
-                        {!isCandleDataNull && (
-                            <TradeCharts {...tradeChartsProps} />
-                        )}
+                <TradeChartsHeader tradePage />
+                {/* This div acts as a parent to maintain a min/max for the resizable element below */}
+                <div className={styles.resizableParent}>
+                    <Resizable
+                        className={styles.chartBox}
+                        enable={{ bottom: true }}
+                        size={{ width: '100%', height: chartHeights.current }}
+                        minHeight={4}
+                        onResizeStart={() => {
+                            setTradeTableState(undefined);
+                        }}
+                        onResizeStop={(e, direction, ref, d) => {
+                            // the resizable bar is 4px in height
+                            if (chartHeights.current + d.height <= 4) {
+                                setTradeTableState('Expanded');
+                            }
+                            if (
+                                tradeTableRef?.current &&
+                                tradeTableRef.current.offsetHeight ===
+                                    TRADE_TABLE_HEADER_HEIGHT
+                            ) {
+                                setTradeTableState('Collapsed');
+                            }
+                            setChartHeight(chartHeights.current + d.height);
+                        }}
+                        handleClasses={
+                            isChartFullScreen
+                                ? undefined
+                                : { bottom: styles.resizableBox }
+                        }
+                        bounds={'parent'}
+                    >
+                        <div
+                            className={`${
+                                activeMobileComponent !== 'chart'
+                                    ? styles.hide
+                                    : ''
+                            } ${fullScreenStyle}`}
+                        >
+                            <div className={styles.main__chart_container}>
+                                {!isCandleDataNull && (
+                                    <TradeCharts {...tradeChartsProps} />
+                                )}
+                            </div>
+                        </div>
+                    </Resizable>
+                    <div className={styles.tableBox} ref={tradeTableRef}>
+                        <TradeTabs2 {...tradeTabsProps} />
                     </div>
                 </div>
-                <TradeTabs2 {...tradeTabsProps} />
             </div>
             {mainContent}
         </section>

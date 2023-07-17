@@ -12,6 +12,7 @@
     text-align: center;
     letter-spacing: -0.02em;
     color: var(--text1);
+    font-weight: 400;
 }
 
 .title:focus-visible {
@@ -33,4 +34,13 @@
     gap: 1rem;
 }
 
+
+.view_more{
+    color: var(--accent1);
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    font-weight: 400;
+    text-decoration: underline;
+    
+}
 

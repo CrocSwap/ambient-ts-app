@@ -43,6 +43,7 @@ import { SidebarContext } from '../contexts/SidebarContext';
 import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
+import Explore from '../pages/Explore/Explore';
 
 /** ***** React Function *******/
 export default function App() {
@@ -249,6 +250,7 @@ export default function App() {
                                 <Navigate replace to={defaultUrlParams.swap} />
                             }
                         />
+                        <Route path='explore' element={<Explore />} />
                         <Route path='swap/:params' element={<Swap />} />
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
