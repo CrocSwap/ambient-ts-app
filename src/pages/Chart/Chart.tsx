@@ -57,6 +57,9 @@ import { RangeContext } from '../../contexts/RangeContext';
 import { createTriangle } from './ChartUtils/triangle';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
+import { CSSTransition } from 'react-transition-group';
+import { ChartContext } from '../../contexts/ChartContext';
+import Divider from '../../components/Global/Divider/Divider';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -215,6 +218,8 @@ export default function Chart(props: propsIF) {
     const { tradeTableState, handlePulseAnimation } =
         useContext(TradeTableContext);
 
+    const { isFullScreen: fullScreenChart } = useContext(ChartContext);
+
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
@@ -290,6 +295,8 @@ export default function Chart(props: propsIF) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
+    const [isShowLastCandleTooltip, setIsShowLastCandleTooltip] =
+        useState(false);
     const [ranges, setRanges] = useState<lineValue[]>([
         {
             name: 'Min',
@@ -328,6 +335,8 @@ export default function Chart(props: propsIF) {
 
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [isChartZoom, setIsChartZoom] = useState(false);
+    const [chartZoomEvent, setChartZoomEvent] = useState('');
+
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
     // Data
@@ -393,11 +402,23 @@ export default function Chart(props: propsIF) {
         }
 
         return data;
-    }, [unparsedData.candles]);
+    }, [diffHashSigChart(unparsedData.candles)]);
 
     const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
     });
+
+    const lastCandleDataCenter = useMemo(() => {
+        const close = denomInBase
+            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
+            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
+
+        const open = denomInBase
+            ? lastCandleData?.invPriceOpenExclMEVDecimalCorrected
+            : lastCandleData?.priceOpenExclMEVDecimalCorrected;
+
+        return (open + close) / 2;
+    }, [lastCandleData, isDenomBase]);
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -415,7 +436,6 @@ export default function Chart(props: propsIF) {
     // Crosshairs
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqTooltip, setLiqTooltip] = useState<any>();
-    // const [eggTooltip, setEggTooltip] = useState<any>();
     const [xAxisTooltip, setXaxisTooltip] = useState<any>();
 
     const [crosshairActive, setCrosshairActive] = useState<string>('none');
@@ -803,6 +823,14 @@ export default function Chart(props: propsIF) {
         }
     }, [canUserDragLimit, canUserDragRange, isOnCandleOrVolumeMouseLocation]);
 
+    useEffect(() => {
+        if (isChartZoom && chartZoomEvent !== 'wheel') {
+            d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
+        } else {
+            d3.select(d3CanvasMain.current).style('cursor', 'default');
+        }
+    }, [isChartZoom]);
+
     function changeyAxisWidth() {
         let yTickValueLength =
             formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
@@ -914,7 +942,7 @@ export default function Chart(props: propsIF) {
                 ? new Date().getTime()
                 : new Date(xDomain[1]).getTime();
 
-            const nCandle = Math.floor(
+            const nCandles = Math.floor(
                 (xDomain[1] - xDomain[0]) / (period * 1000),
             );
 
@@ -922,15 +950,20 @@ export default function Chart(props: propsIF) {
 
             domainMax = domainMax < minDate ? minDate : domainMax;
 
+            const isShowLatestCandle =
+                xDomain[0] < lastCandleData?.time * 1000 &&
+                lastCandleData?.time * 1000 < xDomain[1];
+
             setCandleScale((prev: candleScale) => {
                 return {
                     isFetchForTimeframe: prev.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),
-                    nCandle: nCandle,
+                    nCandles: nCandles,
+                    isShowLatestCandle: isShowLatestCandle,
                 };
             });
         }
-    }, [diffHashSig(scaleData?.xScale.domain())]);
+    }, [diffHashSig(scaleData?.xScale.domain()), lastCandleData]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getNewCandleData = (
@@ -1060,7 +1093,7 @@ export default function Chart(props: propsIF) {
                 ) => {
                     const dx =
                         Math.abs(event.sourceEvent.deltaX) != 0
-                            ? event.sourceEvent.deltaX / 3
+                            ? -event.sourceEvent.deltaX / 3
                             : event.sourceEvent.deltaY / 3;
 
                     const domainX = scaleData?.xScale.domain();
@@ -1086,18 +1119,17 @@ export default function Chart(props: propsIF) {
                     if (lastCandleTime && firstCandleTime) {
                         if (
                             (event.sourceEvent.shiftKey ||
-                                event.sourceEvent.altKey ||
-                                event.sourceEvent.deltaX !== 0) &&
+                                event.sourceEvent.altKey) &&
                             !event.sourceEvent.ctrlKey &&
                             !event.sourceEvent.metaKey
                         ) {
                             getNewCandleData(
-                                firstTime + deltaX,
+                                firstTime - deltaX,
                                 lastCandleDate,
                             );
                             scaleData?.xScale.domain([
-                                firstTime + deltaX,
-                                lastTime + deltaX,
+                                firstTime - deltaX,
+                                lastTime - deltaX,
                             ]);
                         } else {
                             if (
@@ -1229,16 +1261,7 @@ export default function Chart(props: propsIF) {
                             event.sourceEvent.type !== 'dblclick'
                         ) {
                             clickedForLine = false;
-
-                            if (
-                                event.sourceEvent &&
-                                event.sourceEvent.type != 'wheel'
-                            ) {
-                                d3.select(d3CanvasMain.current).style(
-                                    'cursor',
-                                    'grabbing',
-                                );
-                            }
+                            setChartZoomEvent(event.sourceEvent.type);
                         }
                     })
                     .on('zoom', (event: any) => {
@@ -1438,15 +1461,11 @@ export default function Chart(props: propsIF) {
                     })
                     .on('end', (event: any) => {
                         setIsChartZoom(false);
+                        setChartZoomEvent('');
                         if (
                             event.sourceEvent &&
                             event.sourceEvent.type != 'wheel'
                         ) {
-                            d3.select(d3CanvasMain.current).style(
-                                'cursor',
-                                'pointer',
-                            );
-
                             d3.select(d3Container.current).style(
                                 'cursor',
                                 'default',
@@ -2820,6 +2839,12 @@ export default function Chart(props: propsIF) {
         maxTickForLimit,
         simpleRangeWidth,
     ]);
+
+    useEffect(() => {
+        if (candlestick) {
+            setBandwidth(candlestick.bandwidth());
+        }
+    }, [scaleData?.xScale.domain(), isSidebarOpen, fullScreenChart]);
 
     useEffect(() => {
         setBandwidth(defaultCandleBandwith);
@@ -5210,6 +5235,7 @@ export default function Chart(props: propsIF) {
         xAxisActiveTooltip,
         timeOfEndCandle,
         isCrDataIndActive,
+        bandwidth,
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -5356,14 +5382,26 @@ export default function Chart(props: propsIF) {
             );
         }
 
+        const checkYLocation =
+            limitTop > limitBot
+                ? limitTop > yValue && limitBot < yValue
+                : limitTop < yValue && limitBot > yValue;
+        if (
+            nearest.time === unparsedCandleData[0].time &&
+            dateControl &&
+            checkYLocation
+        ) {
+            setIsShowLastCandleTooltip(true);
+        } else {
+            setIsShowLastCandleTooltip(false);
+        }
+
         return {
             isHoverCandleOrVolumeData:
                 nearest &&
                 dateControl &&
-                ((limitTop > limitBot
-                    ? limitTop > yValue && limitBot < yValue
-                    : limitTop < yValue && limitBot > yValue) ||
-                    isSelectedVolume),
+                nearest.time !== unparsedCandleData[0].time &&
+                (checkYLocation || isSelectedVolume),
             _selectedDate: nearest?.time * 1000,
             nearest: nearest,
         };
@@ -5985,6 +6023,7 @@ export default function Chart(props: propsIF) {
             showVolume,
             xAxisActiveTooltip,
             timeOfEndCandle,
+            bandwidth,
         ],
     );
 
@@ -6333,6 +6372,35 @@ export default function Chart(props: propsIF) {
                     </div>
                 </div>
             </d3fc-group>
+
+            <CSSTransition
+                in={isShowLastCandleTooltip}
+                timeout={500}
+                classNames='lastCandleTooltip'
+                unmountOnExit
+            >
+                <div
+                    className='lastCandleDiv'
+                    style={{
+                        top:
+                            scaleData?.yScale(lastCandleDataCenter) +
+                            (fullScreenChart ? 130 : 65),
+                        left:
+                            scaleData?.xScale(lastCandleData?.time * 1000) +
+                            bandwidth * 2,
+                    }}
+                >
+                    <div>
+                        A placeholder candle to align the latest candle close
+                        price with the current pool price{' '}
+                    </div>
+                    <Divider />
+                    <div>
+                        Click any other price candle or volume bar to view
+                        transactions
+                    </div>
+                </div>
+            </CSSTransition>
         </div>
     );
 }
