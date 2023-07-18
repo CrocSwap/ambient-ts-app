@@ -43,12 +43,14 @@ export default function Explore() {
         pools.autopoll.allowed && getPools();
     }, [crocEnv, chainData.chainId, poolList.length]);
 
+    const isPoolsEmpty = pools?.all?.length === 0;
+
     return (
         <Section>
             <MainWrapper>
                 <h2>Top Pools on Ambient</h2>
                 <Refresh>
-                    <p>{timeSince.value}</p>
+                    {!isPoolsEmpty ? <p>{timeSince.value}</p> : undefined}
                     <Button onClick={() => getPools()}>
                         <RefreshIcon />
                     </Button>
