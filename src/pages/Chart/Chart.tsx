@@ -1093,7 +1093,7 @@ export default function Chart(props: propsIF) {
                 ) => {
                     const dx =
                         Math.abs(event.sourceEvent.deltaX) != 0
-                            ? event.sourceEvent.deltaX / 3
+                            ? -event.sourceEvent.deltaX / 3
                             : event.sourceEvent.deltaY / 3;
 
                     const domainX = scaleData?.xScale.domain();
@@ -1119,18 +1119,17 @@ export default function Chart(props: propsIF) {
                     if (lastCandleTime && firstCandleTime) {
                         if (
                             (event.sourceEvent.shiftKey ||
-                                event.sourceEvent.altKey ||
-                                event.sourceEvent.deltaX !== 0) &&
+                                event.sourceEvent.altKey) &&
                             !event.sourceEvent.ctrlKey &&
                             !event.sourceEvent.metaKey
                         ) {
                             getNewCandleData(
-                                firstTime + deltaX,
+                                firstTime - deltaX,
                                 lastCandleDate,
                             );
                             scaleData?.xScale.domain([
-                                firstTime + deltaX,
-                                lastTime + deltaX,
+                                firstTime - deltaX,
+                                lastTime - deltaX,
                             ]);
                         } else {
                             if (
