@@ -88,6 +88,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         lastCandleDate: undefined,
         nCandle: 200,
         isFetchForTimeframe: false,
+        isShowLatestCandle: true,
     });
 
     // local logic to determine current chart period

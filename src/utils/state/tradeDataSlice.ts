@@ -18,6 +18,7 @@ export interface candleScale {
     lastCandleDate: number | undefined;
     nCandle: number;
     isFetchForTimeframe: boolean;
+    isShowLatestCandle: boolean;
 }
 
 export interface TradeDataIF {
