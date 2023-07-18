@@ -21,16 +21,15 @@ export const useTimeElapsed = (
     function updateTime(): void {
         // run logic if the hook has a `retrieved` at value (or return default)
         if (retrievedAt) {
-            // time elapsed since fetch in ms
-            const elapsedTimeInSecondsNum = moment(Date.now()).diff(
+            // time elapsed since fetch in seconds
+            const elapsedTime: number = moment(Date.now()).diff(
                 retrievedAt,
                 'seconds',
             );
-            // logic router to get human-readable string for DOM
-            const elapsedTimeString = getElapsedTime(elapsedTimeInSecondsNum);
-
             // update the DOM with a readable text string
-            setTimeSince('Last Updated: ' + elapsedTimeString + ' ago');
+            setTimeSince(
+                'Last Updated: ' + getElapsedTime(elapsedTime) + ' ago',
+            );
         } else {
             resetTime();
         }

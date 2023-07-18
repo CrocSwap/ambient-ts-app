@@ -37,22 +37,18 @@ export default function Explore() {
     };
 
     // get expanded pool metadata
-    // run when crocEnv, current chain, or number of pools changes
     useEffect(() => {
         // prevent rapid-fire of requests to infura
         pools.autopoll.allowed && getPools();
     }, [crocEnv, chainData.chainId, poolList.length]);
-
-    const isPoolsEmpty = pools?.all?.length === 0;
 
     return (
         <Section>
             <MainWrapper>
                 <TitleText>Top Pools on Ambient</TitleText>
                 <Refresh>
-                    {!isPoolsEmpty && (
-                        <RefreshText>{timeSince.value}</RefreshText>
-                    )}
+                    <RefreshText>{timeSince.value}</RefreshText>
+
                     <RefreshButton onClick={() => getPools()}>
                         <RefreshIcon />
                     </RefreshButton>
@@ -72,7 +68,7 @@ const Section = styled.section`
     gap: 16px;
 
     @media (max-width: 1280px) {
-        margin-left: 2rem;
+        margin-left: 1rem;
     }
 `;
 
