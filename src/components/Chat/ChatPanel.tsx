@@ -18,6 +18,7 @@ import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import Toggle2 from '../Global/Toggle/Toggle2';
 import { ethers } from 'ethers';
+import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -77,6 +78,9 @@ function ChatPanel(props: propsIF) {
         users,
         notis,
         updateLikeDislike,
+        socketRef,
+        isVerified,
+        verifyUser,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -402,8 +406,8 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const connectWallet = (e: any) => {
-        e.preventDefault();
+    const verifyWallet = (e: any) => {
+        e.stopPropagation();
         const message = 'Your verification message';
 
         window.ethereum
@@ -412,7 +416,9 @@ function ChatPanel(props: propsIF) {
                 params: [message, address],
             })
             .then((signedMessage: any) => {
-                console.log(signedMessage);
+                // setIsVerified(true);
+                verifyUser(signedMessage, new Date().getMonth());
+
                 // The signed message is available here, which you can send to your server for verification
             })
             .catch((error: any) => {
@@ -427,7 +433,31 @@ function ChatPanel(props: propsIF) {
         >
             <h2 className={styles.chat_title}>Chat</h2>
 
-            <div className={styles.verify_button} onClick={connectWallet}></div>
+            <div
+                className={`${styles.verify_button} ${
+                    isVerified ? styles.verified : ''
+                } `}
+                onClick={verifyWallet}
+            >
+                {isVerified ? (
+                    <>
+                        <AiOutlineCheck
+                            className={styles.verify_button_icon}
+                            color='var(--other-green)'
+                            size={10}
+                        />
+                        <span> Verified</span>
+                    </>
+                ) : (
+                    <>
+                        <AiOutlineClose
+                            className={styles.verify_button_icon}
+                            size={10}
+                        />
+                        <span> Not Verified</span>
+                    </>
+                )}
+            </div>
             <section style={{ paddingRight: '10px' }}>
                 {isFullScreen || !isChatOpen ? (
                     <></>
@@ -514,6 +544,7 @@ function ChatPanel(props: propsIF) {
                                     : undefined
                             }
                             updateLikeDislike={updateLikeDislike}
+                            socketRef={socketRef}
                         />
                     );
                 })}

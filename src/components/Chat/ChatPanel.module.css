@@ -217,11 +217,27 @@
 
 .verify_button{
     display: block;
-    width: 6rem;
-    height: 1rem;
+    min-width: 6rem;
+    text-align: center;
     background: rgba(0,0,0, .2);
     border-radius: .4rem;
     position: absolute;
     top: .5rem;
-    right: 3rem;
+    right: 2.5rem;
+    font-size: .72rem;
+    color: rgba(255,255,255, .5);
+    border: 1px solid rgba(255,255,255, .1);
+    padding: 0 .4rem;
+}
+
+
+.verify_button.verified{
+    border-color: rgba(21, 190, 111, 0.75);
+    cursor: default;
+    color: var(--positive);
+}
+
+
+.verify_button_icon{
+    margin: 0 .2rem; 
 }

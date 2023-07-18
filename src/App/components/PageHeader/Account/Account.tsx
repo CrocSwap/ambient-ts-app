@@ -43,14 +43,11 @@ export default function Account(props: propsIF) {
 
     const {
         snackbar: { open: openSnackbar },
-        isUserVerified: isUserVerified,
-        setIsUserVerified: setIsUserVerified,
     } = useContext(AppStateContext);
     const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { connector, isConnected } = useAccount();
 
     const isUserLoggedIn = isConnected;
-    // const [isVerified, setIsVerified] = useState(false);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -113,28 +110,6 @@ export default function Account(props: propsIF) {
 
     const isEscapePressed = useKeyPress('Escape');
 
-    const verifyUser = (e: any) => {
-        const message = 'Your verification message';
-
-        window.ethereum
-            .request({
-                method: 'personal_sign',
-                params: [message, props.accountAddressFull],
-            })
-            .then((signedMessage: any) => {
-                setIsUserVerified(true);
-                console.log(signedMessage);
-                // The signed message is available here, which you can send to your server for verification
-            })
-            .catch((error: any) => {
-                // Handle error
-            });
-    };
-
-    console.log('............... is verified');
-    console.log(isUserVerified);
-    console.log('............... ');
-
     useEffect(() => {
         if (isEscapePressed) {
             setShowWalletDropdown(false);
@@ -147,27 +122,17 @@ export default function Account(props: propsIF) {
             // tabIndex={0}
             aria-label={mainAriaLabel}
         >
-            <span className={styles.inlineb}>
-                <button
-                    tabIndex={0}
-                    className={`${styles.title_gradient} `}
-                    onClick={() => setShowWalletDropdown(!showWalletDropdown)}
-                    aria-label={ariaLabel}
-                >
-                    <MdAccountBalanceWallet color='var(--text1)' />
-                    <p className={styles.wallet_name}>
-                        {connectedEnsOrAddressTruncated || '...'}
-                    </p>
-                </button>
-            </span>
-            <span
-                className={`${styles.verify_button} ${
-                    isUserVerified == true ? styles.verified : ''
-                } `}
-                onClick={verifyUser}
+            <button
+                tabIndex={0}
+                className={`${styles.title_gradient} `}
+                onClick={() => setShowWalletDropdown(!showWalletDropdown)}
+                aria-label={ariaLabel}
             >
-                {isUserVerified == true ? 'Verified' : 'Not Verified'}
-            </span>
+                <MdAccountBalanceWallet color='var(--text1)' />
+                <p className={styles.wallet_name}>
+                    {connectedEnsOrAddressTruncated || '...'}
+                </p>
+            </button>
 
             {showWalletDropdown ? (
                 <WalletDropdown

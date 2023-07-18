@@ -21,6 +21,7 @@ const useChatSocket = (
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
     const [notis, setNotis] = useState<Map<string, number>>();
+    const [isVerified, setIsVerified] = useState<boolean>(false);
 
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
@@ -87,7 +88,49 @@ const useChatSocket = (
         return data;
     }
 
+    async function isUserVerified() {
+        if (address) {
+            const encodedAddress = encodeURIComponent(address);
+            const response = await fetch(
+                CHAT_BACKEND_URL +
+                    '/chat/api/auth/isUserVerified/' +
+                    encodedAddress,
+                {
+                    method: 'GET',
+                },
+            );
+            const data = await response.json();
+            return data.verified;
+        }
+    }
+
+    async function verifyUser(verifyToken: string, verifySalt: number) {
+        const response = await fetch(
+            CHAT_BACKEND_URL + '/chat/api/auth/verifyUser',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    walletID: address,
+                    verifyToken: verifyToken,
+                    verifySalt: verifySalt,
+                }),
+            },
+        );
+        const data = await response.json();
+        setIsVerified(data.isVerified);
+
+        return data;
+    }
+
     useEffect(() => {
+        async function checkVerified() {
+            const verified = await isUserVerified();
+            setIsVerified(verified);
+        }
+
+        checkVerified();
+
         if (!areSubscriptionsEnabled || !isChatOpen) return;
 
         if (address !== undefined && address != 'undefined') {
@@ -201,6 +244,9 @@ const useChatSocket = (
         users,
         notis,
         updateLikeDislike,
+        socketRef,
+        isVerified,
+        verifyUser,
     };
 };
 

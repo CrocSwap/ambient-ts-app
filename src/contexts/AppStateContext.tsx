@@ -40,8 +40,6 @@ interface AppStateContextIF {
         open: () => void;
         close: () => void;
     };
-    isUserVerified: boolean;
-    setIsUserVerified: (val: boolean) => void;
 }
 
 export const AppStateContext = createContext<AppStateContextIF>(
@@ -56,7 +54,6 @@ export const AppStateContextProvider = (props: {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
-    const [isUserVerified, setIsUserVerified] = useState(false);
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
@@ -113,8 +110,6 @@ export const AppStateContextProvider = (props: {
                 open: openWagmiModalWallet,
                 close: closeWagmiModalWallet,
             },
-            isUserVerified: isUserVerified,
-            setIsUserVerified: setIsUserVerified,
         }),
         [
             // Dependency list includes the memoized use*() values from above and any primitives
@@ -131,7 +126,6 @@ export const AppStateContextProvider = (props: {
             isTutorialMode,
             theme,
             isWagmiModalOpenWallet,
-            isUserVerified,
         ],
     );
 

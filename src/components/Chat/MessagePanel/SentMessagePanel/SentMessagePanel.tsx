@@ -28,6 +28,7 @@ interface SentMessageProps {
     isLinkInCrocodileLabsLinks(word: string): boolean;
     mentionIndex?: number;
     updateLikeDislike: (messageId: string, like: boolean) => void;
+    socketRef: any;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -47,6 +48,13 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        props.socketRef.current.on('message-like-dislike', (data: any) => {
+            console.log('......... MESSAGE LIKE DISLIKE ............');
+            console.log(data);
+        });
+    }, []);
 
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
