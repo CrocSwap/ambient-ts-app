@@ -55,7 +55,7 @@ export default function Explore() {
                 // logic tree for variable section of the text
                 if (elapsedTime < ONE_SECOND * 10) {
                     elapsedText = 'just now';
-                } else if (elapsedTime < ONE_SECOND * 12) {
+                } else if (elapsedTime < ONE_SECOND * 30) {
                     elapsedText = '30 sec';
                 } else if (elapsedTime < ONE_SECOND * 60) {
                     elapsedText = '1 min';
