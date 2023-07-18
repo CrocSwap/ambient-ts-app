@@ -18,7 +18,7 @@ export default function Explore() {
     const timeSince: useTimeElapsedIF = useTimeElapsed(pools.retrievedAt);
 
     // fn wrapper to get pools
-    const getPools = async () => {
+    const getPools = async (): Promise<void> => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
