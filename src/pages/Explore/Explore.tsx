@@ -48,12 +48,14 @@ export default function Explore() {
     return (
         <Section>
             <MainWrapper>
-                <h2>Top Pools on Ambient</h2>
+                <TitleText>Top Pools on Ambient</TitleText>
                 <Refresh>
-                    {!isPoolsEmpty ? <p>{timeSince.value}</p> : undefined}
-                    <Button onClick={() => getPools()}>
+                    {!isPoolsEmpty && (
+                        <RefreshText>{timeSince.value}</RefreshText>
+                    )}
+                    <RefreshButton onClick={() => getPools()}>
                         <RefreshIcon />
-                    </Button>
+                    </RefreshButton>
                 </Refresh>
             </MainWrapper>
             <TopPools allPools={pools.all} chainId={chainData.chainId} />
@@ -68,9 +70,13 @@ const Section = styled.section`
     display: flex;
     flex-direction: column;
     gap: 16px;
+
+    @media (max-width: 1280px) {
+        margin-left: 2rem;
+    }
 `;
 
-const MainWrapper = styled.p`
+const MainWrapper = styled.div`
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     color: var(--text1);
@@ -81,22 +87,45 @@ const MainWrapper = styled.p`
     user-select: none;
 `;
 
-const Button = styled.button`
+const TitleText = styled.h2`
+    /* Responsive font size for smaller screens */
+    @media (max-width: 768px) {
+        font-size: 24px;
+    }
+
+    /* Responsive font size for even smaller screens */
+    @media (max-width: 480px) {
+        font-size: 20px;
+    }
+`;
+const Refresh = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--text1);
+    gap: 8px;
+`;
+const RefreshButton = styled.button`
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: var(--dark3);
     border-radius: 4px;
-    padding: 4px 8px;
+
     border: none;
     outline: none;
 `;
 
-const Refresh = styled.div`
-    display: flex;
-    flex-direction: row;
-    font-size: 12px;
-    font-style: italic;
-    color: var(--text1);
+const RefreshText = styled.p`
+    /* Hide the RefreshText on screens smaller than 600px */
+    @media (max-width: 600px) {
+        display: none;
+    }
 `;
-
 const RefreshIcon = styled(FiRefreshCw)`
     font-size: 18px;
     cursor: pointer;
