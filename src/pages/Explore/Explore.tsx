@@ -50,40 +50,23 @@ export default function Explore() {
             if (retrievedAt) {
                 // time elapsed since fetch in ms
                 const elapsedTime: number = Date.now() - retrievedAt;
-                // string for DOM
+                // logic router to get human-readable string for DOM
                 let elapsedText: string;
-                // logic tree for variable section of the text
-                if (elapsedTime < ONE_SECOND * 10) {
-                    elapsedText = 'just now';
-                } else if (elapsedTime < ONE_SECOND * 30) {
-                    elapsedText = '30 sec';
-                } else if (elapsedTime < ONE_SECOND * 60) {
-                    elapsedText = '1 min';
-                } else if (elapsedTime < ONE_SECOND * 120) {
-                    elapsedText = '2 min';
-                } else if (elapsedTime < ONE_SECOND * 180) {
-                    elapsedText = '3 min';
-                } else if (elapsedTime < ONE_SECOND * 240) {
-                    elapsedText = '4 min';
-                } else if (elapsedTime < ONE_SECOND * 300) {
-                    elapsedText = '5 min';
-                } else if (elapsedTime < ONE_SECOND * 600) {
-                    elapsedText = '10 min';
-                } else if (elapsedTime < ONE_SECOND * 900) {
-                    elapsedText = '15 min';
-                } else if (elapsedTime < ONE_SECOND * 1200) {
-                    elapsedText = '20 min';
-                } else if (elapsedTime < ONE_SECOND * 1800) {
-                    elapsedText = '30 min';
+                if (elapsedTime > ONE_SECOND * 1800) {
+                    elapsedText = '> 30 min';
+                } else if (elapsedTime >= ONE_SECOND * 60) {
+                    elapsedText = calcTime(elapsedTime, 'minutes') + ' min';
+                } else if (elapsedTime >= ONE_SECOND) {
+                    elapsedText = calcTime(elapsedTime, 'seconds') + ' sec';
                 } else {
-                    elapsedText = '> 30 minutes';
+                    elapsedText = 'just now';
                 }
                 // update the DOM with a readable text string
                 setTimeSince('updated: ' + elapsedText);
                 // call recursively at 10s
                 timeoutId.current = setTimeout(
                     updateRetrievedAt,
-                    ONE_SECOND * 10,
+                    ONE_SECOND * 15,
                 );
             } else {
                 // re-check data in two seconds if fetch is not yet complete
@@ -91,6 +74,15 @@ export default function Explore() {
                     updateRetrievedAt,
                     ONE_SECOND * 2,
                 );
+            }
+            // logic to convert elapsed time in ms to seconds or minutes
+            function calcTime(
+                timeInMs: number,
+                denom: 'minutes' | 'seconds',
+            ): string {
+                return Math.floor(
+                    timeInMs / (denom === 'minutes' ? 60000 : 1000),
+                ).toString();
             }
         };
         // run recursive text-updating fn
