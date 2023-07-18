@@ -55,9 +55,9 @@ export default function Explore() {
                 if (elapsedTime > ONE_SECOND * 1800) {
                     elapsedText = '> 30 min';
                 } else if (elapsedTime >= ONE_SECOND * 60) {
-                    elapsedText = calcTime(elapsedTime, 'minutes') + ' min';
+                    elapsedText = calcTime(elapsedTime, 'minutes') + ' min ago';
                 } else if (elapsedTime >= ONE_SECOND) {
-                    elapsedText = calcTime(elapsedTime, 'seconds') + ' sec';
+                    elapsedText = calcTime(elapsedTime, 'seconds') + ' sec ago';
                 } else {
                     elapsedText = 'just now';
                 }
