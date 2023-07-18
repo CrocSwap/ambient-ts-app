@@ -49,6 +49,7 @@
     color: white;
     background: var(--dark2);
     cursor: pointer;
+    position: relative;
 }
 
 .chat_header section {
@@ -218,6 +219,9 @@
     display: block;
     width: 6rem;
     height: 1rem;
-    background: red;
+    background: rgba(0,0,0, .2);
     border-radius: .4rem;
+    position: absolute;
+    top: .5rem;
+    right: 3rem;
 }

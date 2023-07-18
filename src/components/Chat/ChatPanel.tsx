@@ -402,7 +402,8 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const connectWallet = () => {
+    const connectWallet = (e: any) => {
+        e.preventDefault();
         const message = 'Your verification message';
 
         window.ethereum
@@ -425,6 +426,8 @@ function ChatPanel(props: propsIF) {
             onClick={() => setIsChatOpen(!isChatOpen)}
         >
             <h2 className={styles.chat_title}>Chat</h2>
+
+            <div className={styles.verify_button} onClick={connectWallet}></div>
             <section style={{ paddingRight: '10px' }}>
                 {isFullScreen || !isChatOpen ? (
                     <></>
@@ -690,11 +693,6 @@ function ChatPanel(props: propsIF) {
                     {messageList}
 
                     {chatNotification}
-
-                    <div
-                        className={styles.verify_button}
-                        onClick={connectWallet}
-                    ></div>
 
                     {messageInput}
                     {/* {mentionAutoComplete} */}
