@@ -35,7 +35,7 @@ function TopPools(props: propsIF) {
     const { allPools, chainId } = props;
 
     // logic to handle onClick navigation action
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('pool');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     function goToMarket(tknA: string, tknB: string): void {
         linkGenMarket.navigate({
             chain: chainId,
