@@ -110,11 +110,13 @@ function TopPools(props: propsIF) {
                                         />
                                     ))
                             ) : (
-                                <Spinner
-                                    size={100}
-                                    bg='var(--dark1)'
-                                    centered
-                                />
+                                <SpinnerContainer>
+                                    <Spinner
+                                        size={100}
+                                        bg='var(--dark1)'
+                                        centered
+                                    />
+                                </SpinnerContainer>
                             )}
                         </TableBody>
                     </Table>
@@ -135,6 +137,7 @@ const FlexContainer = styled.div`
 `;
 
 const ScrollableContainer = styled.div`
+    position: relative;
     flex-grow: 1;
     overflow-y: auto;
     height: 100%;
@@ -162,13 +165,13 @@ const ShadowBox = styled.div`
     background-color: var(--dark1);
     height: 100%;
 
-    position: relative;
     padding: 0 1rem;
 `;
 
 const Table = styled.table`
     border-collapse: collapse;
     width: 100%;
+
     table-layout: fixed;
 
     @media only screen and (min-width: 1280px) {
@@ -187,4 +190,15 @@ const TableBody = styled.tbody`
     line-height: 1.5rem;
     max-height: 96px;
     overflow-y: scroll;
+`;
+
+const SpinnerContainer = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
