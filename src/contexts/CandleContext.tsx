@@ -88,6 +88,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         lastCandleDate: undefined,
         nCandles: 200,
         isFetchForTimeframe: false,
+        isShowLatestCandle: true,
     });
 
     // local logic to determine current chart period
@@ -129,7 +130,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     useEffect(() => {
-        if (isChartEnabled) {
+        if (isChartEnabled && candleScale.isShowLatestCandle) {
             const interval = setInterval(() => {
                 fetchCandles(true);
             }, 60000);
@@ -142,6 +143,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleScale?.isFetchForTimeframe,
         candleTimeLocal,
         candleScale.nCandles,
+        candleScale.isShowLatestCandle,
     ]);
 
     const fetchCandles = (bypassSpinner = false) => {

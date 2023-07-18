@@ -335,6 +335,8 @@ export default function Chart(props: propsIF) {
 
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [isChartZoom, setIsChartZoom] = useState(false);
+    const [chartZoomEvent, setChartZoomEvent] = useState('');
+
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
     // Data
@@ -821,6 +823,14 @@ export default function Chart(props: propsIF) {
         }
     }, [canUserDragLimit, canUserDragRange, isOnCandleOrVolumeMouseLocation]);
 
+    useEffect(() => {
+        if (isChartZoom && chartZoomEvent !== 'wheel') {
+            d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
+        } else {
+            d3.select(d3CanvasMain.current).style('cursor', 'default');
+        }
+    }, [isChartZoom]);
+
     function changeyAxisWidth() {
         let yTickValueLength =
             formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
@@ -940,15 +950,20 @@ export default function Chart(props: propsIF) {
 
             domainMax = domainMax < minDate ? minDate : domainMax;
 
+            const isShowLatestCandle =
+                xDomain[0] < lastCandleData?.time * 1000 &&
+                lastCandleData?.time * 1000 < xDomain[1];
+
             setCandleScale((prev: candleScale) => {
                 return {
                     isFetchForTimeframe: prev.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),
                     nCandles: nCandles,
+                    isShowLatestCandle: isShowLatestCandle,
                 };
             });
         }
-    }, [diffHashSig(scaleData?.xScale.domain())]);
+    }, [diffHashSig(scaleData?.xScale.domain()), lastCandleData]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getNewCandleData = (
@@ -1078,7 +1093,7 @@ export default function Chart(props: propsIF) {
                 ) => {
                     const dx =
                         Math.abs(event.sourceEvent.deltaX) != 0
-                            ? event.sourceEvent.deltaX / 3
+                            ? -event.sourceEvent.deltaX / 3
                             : event.sourceEvent.deltaY / 3;
 
                     const domainX = scaleData?.xScale.domain();
@@ -1104,18 +1119,17 @@ export default function Chart(props: propsIF) {
                     if (lastCandleTime && firstCandleTime) {
                         if (
                             (event.sourceEvent.shiftKey ||
-                                event.sourceEvent.altKey ||
-                                event.sourceEvent.deltaX !== 0) &&
+                                event.sourceEvent.altKey) &&
                             !event.sourceEvent.ctrlKey &&
                             !event.sourceEvent.metaKey
                         ) {
                             getNewCandleData(
-                                firstTime + deltaX,
+                                firstTime - deltaX,
                                 lastCandleDate,
                             );
                             scaleData?.xScale.domain([
-                                firstTime + deltaX,
-                                lastTime + deltaX,
+                                firstTime - deltaX,
+                                lastTime - deltaX,
                             ]);
                         } else {
                             if (
@@ -1247,16 +1261,7 @@ export default function Chart(props: propsIF) {
                             event.sourceEvent.type !== 'dblclick'
                         ) {
                             clickedForLine = false;
-
-                            if (
-                                event.sourceEvent &&
-                                event.sourceEvent.type != 'wheel'
-                            ) {
-                                d3.select(d3CanvasMain.current).style(
-                                    'cursor',
-                                    'grabbing',
-                                );
-                            }
+                            setChartZoomEvent(event.sourceEvent.type);
                         }
                     })
                     .on('zoom', (event: any) => {
@@ -1456,15 +1461,11 @@ export default function Chart(props: propsIF) {
                     })
                     .on('end', (event: any) => {
                         setIsChartZoom(false);
+                        setChartZoomEvent('');
                         if (
                             event.sourceEvent &&
                             event.sourceEvent.type != 'wheel'
                         ) {
-                            d3.select(d3CanvasMain.current).style(
-                                'cursor',
-                                'pointer',
-                            );
-
                             d3.select(d3Container.current).style(
                                 'cursor',
                                 'default',
