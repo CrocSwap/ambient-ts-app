@@ -185,7 +185,7 @@ export default function MobileLandingSections() {
 
     return (
         <div className={styles.main_container}>
-            {heroSection3}
+            {heroSection2}
 
             {topPoolsSection}
 
