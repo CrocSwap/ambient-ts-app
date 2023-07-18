@@ -1,13 +1,13 @@
-import styles from './PoolDisplay.module.css';
-
+import { PoolDisplayContainer } from './Analytics.styles';
 interface TokenNameData {
     token0: string;
     token1: string;
 }
+
 export default function PoolDisplay(props: TokenNameData) {
     return (
-        <section className={styles.account_pool_display}>
+        <PoolDisplayContainer>
             {props.token0}/{props.token1}
-        </section>
+        </PoolDisplayContainer>
     );
 }
