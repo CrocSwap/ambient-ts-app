@@ -84,20 +84,13 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
 
-    const localeSellString =
-        parseFloat(sellQtyString) > 999
-            ? parseFloat(sellQtyString).toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : sellQtyString;
-    const localeBuyString =
-        parseFloat(buyQtyString) > 999
-            ? parseFloat(buyQtyString).toLocaleString('en-US', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : buyQtyString;
+    const localeSellString = getFormattedNumber({
+        value: parseFloat(sellQtyString),
+    });
+
+    const localeBuyString = getFormattedNumber({
+        value: parseFloat(buyQtyString),
+    });
 
     const [baselineBlockNumber, setBaselineBlockNumber] =
         useState<number>(lastBlockNumber);
