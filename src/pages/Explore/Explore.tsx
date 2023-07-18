@@ -18,6 +18,7 @@ export default function Explore() {
 
     // hook to produce human-readable time since fetch for DOM
     const timeSince: useTimeElapsedIF = useTimeElapsed(
+        pools.all.length,
         pools.retrievedAt,
         lastBlockNumber,
     );

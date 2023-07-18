@@ -6,13 +6,14 @@ export interface useTimeElapsedIF {
 }
 
 export const useTimeElapsed = (
+    poolCount: number,
     retrievedAt: number | null,
     block: number,
 ): useTimeElapsedIF => {
     // time since data was retrieved to display in DOM
     const [timeSince, setTimeSince] = useState<string>('');
     // logic to update DOM text with time since data was retrieved
-    useEffect((): void => updateTime(), [block]);
+    useEffect((): void => updateTime(), [block, poolCount]);
 
     // fn to update DOM string
     function updateTime(): void {
