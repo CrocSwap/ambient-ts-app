@@ -42,7 +42,6 @@ import {
     removePendingTx,
 } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -59,6 +58,7 @@ import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
+import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
 
 function Range() {
     const {
@@ -1142,17 +1142,6 @@ function Range() {
         }
     };
 
-    const bypassConfirmButtonProps = {
-        newRangeTransactionHash: newRangeTransactionHash,
-        txErrorCode: txErrorCode,
-        resetConfirmation: resetConfirmation,
-        sendTransaction: sendTransaction,
-        setShowBypassConfirmButton: setShowBypassConfirmButton,
-        showBypassConfirmButton: showBypassConfirmButton,
-        tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
-    };
-
     // props for <RangeWidth/> React element
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
@@ -1430,7 +1419,19 @@ function Range() {
             }
             bypassConfirm={
                 showBypassConfirmButton ? (
-                    <BypassConfirmRangeButton {...bypassConfirmButtonProps} />
+                    <BypassConfirmButton
+                        newTransactionHash={newRangeTransactionHash}
+                        txErrorCode={txErrorCode}
+                        resetConfirmation={resetConfirmation}
+                        setShowBypassConfirmButton={setShowBypassConfirmButton}
+                        sendTransaction={sendTransaction}
+                        setNewTransactionHash={setNewRangeTransactionHash}
+                        transactionPendingDisplayString={`Minting a Position with ${
+                            tokenAInputQty ?? '0'
+                        } ${tokenA.symbol} and ${tokenBInputQty ?? '0'} ${
+                            tokenB.symbol
+                        }.`}
+                    />
                 ) : undefined
             }
             approveButton={

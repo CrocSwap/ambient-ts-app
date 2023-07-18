@@ -35,12 +35,12 @@ import {
 } from '../../../utils/TransactionError';
 import Button from '../../../components/Global/Button/Button';
 import Modal from '../../../components/Global/Modal/Modal';
-import BypassConfirmSwapButton from '../../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import styles from './Swap.module.css';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import SwapTokenInput from '../../../components/Swap/SwapTokenInput/SwapTokenInput';
 import SwapExtraInfo from '../../../components/Swap/SwapExtraInfo/SwapExtraInfo';
+import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -413,20 +413,6 @@ function Swap(props: propsIF) {
         setShowExtraInfo: setShowExtraInfo,
     };
 
-    const byPassConfirmSwapButtonProps = {
-        initiateSwapMethod: initiateSwap,
-        newSwapTransactionHash: newSwapTransactionHash,
-        setNewSwapTransactionHash: setNewSwapTransactionHash,
-        txErrorCode: txErrorCode,
-        sellQtyString: sellQtyString,
-        buyQtyString: buyQtyString,
-        tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
-        resetConfirmation: resetConfirmation,
-        setShowBypassConfirm: setShowBypassConfirm,
-        showExtraInfo: showExtraInfo,
-        setShowExtraInfo: setShowExtraInfo,
-    };
-
     // calculate price of gas for swap
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -622,8 +608,14 @@ function Swap(props: propsIF) {
             }
             bypassConfirm={
                 showBypassConfirm ? (
-                    <BypassConfirmSwapButton
-                        {...byPassConfirmSwapButtonProps}
+                    <BypassConfirmButton
+                        newTransactionHash={newSwapTransactionHash}
+                        txErrorCode={txErrorCode}
+                        resetConfirmation={resetConfirmation}
+                        setShowBypassConfirmButton={setShowBypassConfirm}
+                        sendTransaction={initiateSwap}
+                        setNewTransactionHash={setNewSwapTransactionHash}
+                        transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}
                     />
                 ) : undefined
             }

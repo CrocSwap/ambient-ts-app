@@ -2,7 +2,7 @@ import { memo, useContext } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { TradeModuleExtraInfo } from '../../TradeModules/TradeModuleExtraInfo';
+import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
 
 interface propsIF {
     orderGasPriceInDollars: string | undefined;
@@ -100,7 +100,7 @@ function LimitExtraInfo(props: propsIF) {
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
     return (
-        <TradeModuleExtraInfo
+        <ExtraInfo
             extraInfo={extraInfo}
             conversionRate={conversionRate}
             gasPrice={orderGasPriceInDollars}

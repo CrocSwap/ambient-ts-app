@@ -4,7 +4,7 @@ import { CrocImpact } from '@crocswap-libs/sdk';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { TradeModuleExtraInfo } from '../../Trade/TradeModules/TradeModuleExtraInfo';
+import { ExtraInfo } from '../../Trade/TradeModules/ExtraInfo/ExtraInfo';
 
 interface propsIF {
     priceImpact: CrocImpact | undefined;
@@ -100,7 +100,7 @@ function SwapExtraInfo(props: propsIF) {
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
     return (
-        <TradeModuleExtraInfo
+        <ExtraInfo
             extraInfo={extraInfo}
             conversionRate={conversionRate}
             gasPrice={swapGasPriceinDollars}

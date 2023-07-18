@@ -36,7 +36,6 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../utils/TransactionError';
-import BypassConfirmLimitButton from '../../../components/Trade/Limit/BypassConfirmLimitButton/BypassConfirmLimitButton';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -53,6 +52,7 @@ import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/Trad
 import LimitRate from '../../../components/Trade/Limit/LimitRate/LimitRate';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/LimitTokenInput';
+import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -545,18 +545,6 @@ export default function Limit() {
         resetConfirmation();
     };
 
-    const bypassConfirmLimitButtonProps = {
-        newLimitOrderTransactionHash: newLimitOrderTransactionHash,
-        txErrorCode: txErrorCode,
-        tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
-        resetConfirmation: resetConfirmation,
-        showBypassConfirmButton: showBypassConfirmButton,
-        setShowBypassConfirmButton: setShowBypassConfirmButton,
-        sendLimitOrder: sendLimitOrder,
-        setNewLimitOrderTransactionHash: setNewLimitOrderTransactionHash,
-    };
-
     const tokenABalance = isSellTokenBase
         ? baseTokenBalance
         : quoteTokenBalance;
@@ -799,8 +787,14 @@ export default function Limit() {
             }
             bypassConfirm={
                 showBypassConfirmButton ? (
-                    <BypassConfirmLimitButton
-                        {...bypassConfirmLimitButtonProps}
+                    <BypassConfirmButton
+                        newTransactionHash={newLimitOrderTransactionHash}
+                        txErrorCode={txErrorCode}
+                        resetConfirmation={resetConfirmation}
+                        setShowBypassConfirmButton={setShowBypassConfirmButton}
+                        sendTransaction={sendLimitOrder}
+                        setNewTransactionHash={setNewLimitOrderTransactionHash}
+                        transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}
                     />
                 ) : undefined
             }

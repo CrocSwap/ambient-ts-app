@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { TradeModuleExtraInfo } from '../../TradeModules/TradeModuleExtraInfo';
+import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
 interface propsIF {
     poolPriceDisplay: string;
     slippageTolerance: number;
@@ -52,7 +52,7 @@ function RangeExtraInfo(props: propsIF) {
         : `1 ${tokenA.symbol} ≈ ${poolPriceDisplay} ${tokenB.symbol}`;
 
     return (
-        <TradeModuleExtraInfo
+        <ExtraInfo
             extraInfo={extraInfo}
             conversionRate={conversionRate}
             gasPrice={rangeGasPriceinDollars}

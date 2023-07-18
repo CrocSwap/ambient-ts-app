@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import styles from './TradeModuleExtraInfo.module.css';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import styles from './ExtraInfo.module.css';
 
 interface PropsIF {
     extraInfo: {
@@ -17,7 +17,7 @@ interface PropsIF {
     showDropdown: boolean;
 }
 
-export const TradeModuleExtraInfo = (props: PropsIF) => {
+export const ExtraInfo = (props: PropsIF) => {
     const { extraInfo, showDropdown, conversionRate, gasPrice } = props;
 
     const dispatch = useAppDispatch();
