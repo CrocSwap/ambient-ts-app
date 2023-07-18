@@ -940,15 +940,20 @@ export default function Chart(props: propsIF) {
 
             domainMax = domainMax < minDate ? minDate : domainMax;
 
+            const isShowLatestCandle =
+                xDomain[0] < lastCandleData?.time * 1000 &&
+                lastCandleData?.time * 1000 < xDomain[1];
+
             setCandleScale((prev: candleScale) => {
                 return {
                     isFetchForTimeframe: prev.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),
                     nCandle: nCandle,
+                    isShowLatestCandle: isShowLatestCandle,
                 };
             });
         }
-    }, [diffHashSig(scaleData?.xScale.domain())]);
+    }, [diffHashSig(scaleData?.xScale.domain()), lastCandleData]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getNewCandleData = (
