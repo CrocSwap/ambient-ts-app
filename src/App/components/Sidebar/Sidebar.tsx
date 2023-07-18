@@ -4,8 +4,8 @@ import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
-import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
-import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
+import TopPools from '../../../components/Global/Sidebar/TopPools';
+import FavoritePools from '../../../components/Global/Sidebar/FavoritePools';
 import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
 import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
 import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
@@ -25,7 +25,7 @@ import { MdClose } from 'react-icons/md';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
-import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
+import RecentPools from '../../../components/Global/Sidebar/RecentPools';
 import {
     useSidebarSearch,
     sidebarSearchIF,

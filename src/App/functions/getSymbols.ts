@@ -4,6 +4,6 @@ export const getSymbols = (
     quoteSymbol: string,
 ) => {
     return isDenomBase
-        ? `${baseSymbol}/${quoteSymbol}`
-        : `${quoteSymbol}/${baseSymbol}`;
+        ? `${baseSymbol} / ${quoteSymbol}`
+        : `${quoteSymbol} / ${baseSymbol}`;
 };

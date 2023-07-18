@@ -1,9 +1,9 @@
-import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
+import { PoolStatsFn } from '../../../App/functions/getPoolStats';
 import { useContext } from 'react';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
-import PoolListItem from '../PoolListItem/PoolListItem';
-import { useLinkGen } from '../../../../utils/hooks/useLinkGen';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
+import PoolsListItem from './PoolsListItem';
+import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useLocation } from 'react-router-dom';
 import {
     SidebarPoolsListContainer,
@@ -11,7 +11,7 @@ import {
     SidebarPoolsListHeaderContainer,
     SidebarPoolsListItemsContainer,
     SidebarPoolsListViewMoreContainer,
-} from '../../../../styled/Sidebar';
+} from '../../../styled/Sidebar';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -36,7 +36,7 @@ export default function TopPools(props: propsIF) {
             </SidebarPoolsListHeaderContainer>
             <SidebarPoolsListItemsContainer>
                 {topPools.map((pool, idx) => (
-                    <PoolListItem
+                    <PoolsListItem
                         pool={pool}
                         key={idx}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}

@@ -6,9 +6,9 @@ import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
 import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { formSlugForPairParams } from '../../../App/functions/urlSlugs';
 import { memo } from 'react';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 
 function SidebarFooter() {
     const location = useLocation();

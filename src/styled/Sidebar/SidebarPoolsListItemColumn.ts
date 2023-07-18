@@ -1,4 +1,6 @@
-.container {
+import styled from 'styled-components';
+
+const SidebarPoolsListItemColumn = styled.div`
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -6,23 +8,17 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text2);
-    cursor: pointer;
     padding: 5px;
     max-height: 25px;
     overflow: hidden;
     white-space: nowrap;
     border-radius: var(--border-radius);
-
-}
-.container:hover{
-    transition: all var(--animation-speed) ease-in-out;
-    background: var(--dark2);
     cursor: pointer;
-    
-}
 
-.container div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    &:hover {
+        transition: all var(--animation-speed) ease-in-out;
+        background: var(--dark2);
+    }
+`;
+
+export default SidebarPoolsListItemColumn;

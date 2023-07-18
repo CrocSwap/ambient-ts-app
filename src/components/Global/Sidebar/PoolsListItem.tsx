@@ -1,18 +1,19 @@
-import styles from './PoolListItem.module.css';
-import { PoolIF } from '../../../../utils/interfaces/exports';
-import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { Link, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { usePoolStats } from '../../../../App/hooks/usePoolStats';
+import { PoolIF } from '../../../utils/interfaces/exports';
+import { PoolStatsFn } from '../../../App/functions/getPoolStats';
+import { useLocation } from 'react-router-dom';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { usePoolStats } from '../../../App/hooks/usePoolStats';
 import { useContext, useMemo } from 'react';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
     pageNames,
-} from '../../../../utils/hooks/useLinkGen';
-import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
+} from '../../../utils/hooks/useLinkGen';
+import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
+import SidebarPoolsListItemContainer from '../../../styled/Sidebar/SidebarPoolsListItemContainer';
+import SidebarPoolsListItemColumn from '../../../styled/Sidebar/SidebarPoolsListItemColumn';
 
 interface propsIF {
     pool: PoolIF;
@@ -20,7 +21,7 @@ interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
-export default function PoolListItem(props: propsIF) {
+export default function PoolsListItem(props: propsIF) {
     const { pool, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
 
     const {
@@ -72,19 +73,18 @@ export default function PoolListItem(props: propsIF) {
             : [pool.base.address, pool.quote.address];
 
     return (
-        <Link
-            className={styles.container}
+        <SidebarPoolsListItemContainer
             to={linkGenMarket.getFullURL({
                 chain: chainId,
                 tokenA: addrTokenA,
                 tokenB: addrTokenB,
             })}
         >
-            <div>
+            <SidebarPoolsListItemColumn>
                 {pool.base.symbol} / {pool.quote.symbol}
-            </div>
-            <div>{volume}</div>
-            <div>{tvl}</div>
-        </Link>
+            </SidebarPoolsListItemColumn>
+            <SidebarPoolsListItemColumn>{volume}</SidebarPoolsListItemColumn>
+            <SidebarPoolsListItemColumn>{tvl}</SidebarPoolsListItemColumn>
+        </SidebarPoolsListItemContainer>
     );
 }

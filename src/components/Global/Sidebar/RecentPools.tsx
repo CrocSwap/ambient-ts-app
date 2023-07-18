@@ -1,15 +1,15 @@
-import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
+import { PoolStatsFn } from '../../../App/functions/getPoolStats';
 import { memo, useContext } from 'react';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
-import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
-import { PoolIF } from '../../../../utils/interfaces/exports';
-import PoolListItem from '../PoolListItem/PoolListItem';
+import { SidebarContext } from '../../../contexts/SidebarContext';
+import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
+import { PoolIF } from '../../../utils/interfaces/exports';
+import PoolsListItem from './PoolsListItem';
 import {
     SidebarPoolsListContainer,
     SidebarPoolsListHeader,
     SidebarPoolsListHeaderContainer,
     SidebarPoolsListItemsContainer,
-} from '../../../../styled/Sidebar';
+} from '../../../styled/Sidebar';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -30,7 +30,7 @@ function RecentPools(props: propsIF) {
             </SidebarPoolsListHeaderContainer>
             <SidebarPoolsListItemsContainer>
                 {recentPools.get(5).map((pool: PoolIF) => (
-                    <PoolListItem
+                    <PoolsListItem
                         pool={pool}
                         key={'recent_pool_' + JSON.stringify(pool)}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}

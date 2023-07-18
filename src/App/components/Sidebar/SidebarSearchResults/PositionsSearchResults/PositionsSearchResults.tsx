@@ -4,12 +4,12 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import styles from '../SidebarSearchResults.module.css';
-import { getRangeDisplay } from './functions/exports';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
+import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 
 interface propsIF {
     searchedPositions: PositionIF[];
@@ -22,6 +22,24 @@ interface PositionLiPropsIF {
 function PositionLI(props: PositionLiPropsIF) {
     const { position, handleClick } = props;
     const { isDenomBase } = useAppSelector((state) => state.tradeData);
+
+    const getRangeDisplay = (position: PositionIF, isDenomBase: boolean) => {
+        const baseTokenCharacter = position?.baseSymbol
+            ? getUnicodeCharacter(position?.baseSymbol)
+            : '';
+        const quoteTokenCharacter = position?.quoteSymbol
+            ? getUnicodeCharacter(position?.quoteSymbol)
+            : '';
+
+        const rangeDisplay =
+            position?.positionType === 'ambient'
+                ? 'ambient'
+                : isDenomBase
+                ? `${quoteTokenCharacter}${position?.lowRangeShortDisplayInBase}-${quoteTokenCharacter}${position?.highRangeShortDisplayInBase}`
+                : `${baseTokenCharacter}${position?.lowRangeShortDisplayInQuote}-${baseTokenCharacter}${position?.highRangeShortDisplayInQuote}`;
+
+        return rangeDisplay;
+    };
 
     // fn to generate human-readable range output (from X to Y)
     const rangeDisplay = getRangeDisplay(position, isDenomBase);

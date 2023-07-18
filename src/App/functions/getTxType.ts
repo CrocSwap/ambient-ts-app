@@ -1,5 +1,7 @@
+export type EntityType = 'swap' | 'limitOrder' | 'liqchange';
+
 // fn to access tx metadata and produce a human-readable output for DOM for tx type
-export const getTxType = (entityType: string): string => {
+export const getTxType = (entityType: EntityType): string => {
     // declare an output variable
     let output: string;
 

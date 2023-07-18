@@ -1,17 +1,17 @@
-import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { PoolStatsFn } from '../../../App/functions/getPoolStats';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
-import PoolListItem from '../PoolListItem/PoolListItem';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import {
     SidebarPoolsListContainer,
     SidebarPoolsListHeader,
     SidebarPoolsListHeaderContainer,
     SidebarPoolsListItemsContainer,
     SidebarPoolsListViewMoreContainer,
-} from '../../../../styled/Sidebar';
+} from '../../../styled/Sidebar';
+import PoolsListItem from './PoolsListItem';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -57,7 +57,7 @@ export default function FavoritePools(props: propsIF) {
             )}
             <SidebarPoolsListItemsContainer>
                 {favePools.pools.map((pool, idx) => (
-                    <PoolListItem
+                    <PoolsListItem
                         key={idx}
                         pool={pool}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}

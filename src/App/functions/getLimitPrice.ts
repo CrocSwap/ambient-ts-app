@@ -1,7 +1,7 @@
-import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import { tokenMethodsIF } from '../../../../../App/hooks/useTokens';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import { LimitOrderIF } from '../../utils/interfaces/exports';
+import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import { tokenMethodsIF } from '../hooks/useTokens';
+import { getFormattedNumber } from './getFormattedNumber';
 
 export const getLimitPrice = (
     limitOrder: LimitOrderIF,

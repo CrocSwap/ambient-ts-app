@@ -1,10 +1,10 @@
 import styles from './SidebarLimitOrdersCard.module.css';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
-import { getLimitPrice } from './functions/exports';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getLimitPrice } from '../../../../App/functions/getLimitPrice';
 
 interface propsIF {
     order: LimitOrderIF;
