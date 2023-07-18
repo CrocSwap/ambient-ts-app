@@ -1,10 +1,13 @@
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import styles from '../SidebarTable.module.css';
 import { memo, useContext } from 'react';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 import PoolListItem from '../PoolListItem/PoolListItem';
+import SidebarPoolsListContainer from '../../../../styled/Sidebar/SidebarPoolsListContainer';
+import SidebarPoolsListHeader from '../../../../styled/Sidebar/SidebarPoolsListHeader';
+import SidebarPoolsListItemsContainer from '../../../../styled/Sidebar/SidebarPoolsListItemsContainer';
+import SidebarPoolsListHeaderContainer from '../../../../styled/Sidebar/SidebarPoolsListHeaderContainer';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -17,13 +20,13 @@ function RecentPools(props: propsIF) {
     const { recentPools } = useContext(SidebarContext);
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <div>Pool</div>
-                <div>Volume</div>
-                <div>TVL</div>
-            </header>
-            <div className={styles.content}>
+        <SidebarPoolsListContainer>
+            <SidebarPoolsListHeaderContainer>
+                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>Volume</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>TVL</SidebarPoolsListHeader>
+            </SidebarPoolsListHeaderContainer>
+            <SidebarPoolsListItemsContainer>
                 {recentPools.get(5).map((pool: PoolIF) => (
                     <PoolListItem
                         pool={pool}
@@ -32,8 +35,8 @@ function RecentPools(props: propsIF) {
                         cachedFetchTokenPrice={cachedFetchTokenPrice}
                     />
                 ))}
-            </div>
-        </div>
+            </SidebarPoolsListItemsContainer>
+        </SidebarPoolsListContainer>
     );
 }
 
