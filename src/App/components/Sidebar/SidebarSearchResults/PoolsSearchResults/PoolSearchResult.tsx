@@ -1,9 +1,9 @@
 import styles from '../SidebarSearchResults.module.css';
 import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
-import { poolStatsIF, usePoolStats } from './usePoolStats';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { usePoolStats } from '../../../../hooks/usePoolStats';
 
 interface propsIF {
     pool: PoolIF;
@@ -23,8 +23,9 @@ export default function PoolSearchResult(props: propsIF) {
     } = props;
 
     // hook to get volume and TVL for the current pool
-    const poolStats: poolStatsIF = usePoolStats(
+    const [volume, tvl] = usePoolStats(
         pool,
+        undefined,
         cachedPoolStatsFetch,
         cachedFetchTokenPrice,
         crocEnv,
@@ -38,8 +39,8 @@ export default function PoolSearchResult(props: propsIF) {
             <p>
                 {pool.base.symbol ?? '--'} / {pool.quote.symbol ?? '--'}
             </p>
-            <p style={{ textAlign: 'center' }}>{poolStats.volume ?? '--'}</p>
-            <p style={{ textAlign: 'center' }}>{poolStats.tvl ?? '--'}</p>
+            <p style={{ textAlign: 'center' }}>{volume}</p>
+            <p style={{ textAlign: 'center' }}>{tvl}</p>
         </li>
     );
 }

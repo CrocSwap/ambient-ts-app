@@ -1,11 +1,17 @@
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import styles from '../SidebarTable.module.css';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import PoolListItem from '../PoolListItem/PoolListItem';
 import { useLinkGen } from '../../../../utils/hooks/useLinkGen';
 import { useLocation } from 'react-router-dom';
+import {
+    SidebarPoolsListContainer,
+    SidebarPoolsListHeader,
+    SidebarPoolsListHeaderContainer,
+    SidebarPoolsListItemsContainer,
+    SidebarPoolsListViewMoreContainer,
+} from '../../../../styled/Sidebar';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -22,13 +28,13 @@ export default function TopPools(props: propsIF) {
     const linkGenExplore = useLinkGen('explore');
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <div>Pool</div>
-                <div>Volume</div>
-                <div>TVL</div>
-            </header>
-            <div className={styles.content}>
+        <SidebarPoolsListContainer>
+            <SidebarPoolsListHeaderContainer>
+                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>Volume</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>TVL</SidebarPoolsListHeader>
+            </SidebarPoolsListHeaderContainer>
+            <SidebarPoolsListItemsContainer>
                 {topPools.map((pool, idx) => (
                     <PoolListItem
                         pool={pool}
@@ -38,14 +44,13 @@ export default function TopPools(props: propsIF) {
                     />
                 ))}
                 {onExploreRoute ? undefined : (
-                    <div
-                        className={styles.view_more}
+                    <SidebarPoolsListViewMoreContainer
                         onClick={() => linkGenExplore.navigate()}
                     >
                         View More
-                    </div>
+                    </SidebarPoolsListViewMoreContainer>
                 )}
-            </div>
-        </div>
+            </SidebarPoolsListItemsContainer>
+        </SidebarPoolsListContainer>
     );
 }

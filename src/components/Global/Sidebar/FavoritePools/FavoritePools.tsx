@@ -1,4 +1,3 @@
-import styles from '../SidebarTable.module.css';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
@@ -6,6 +5,13 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import PoolListItem from '../PoolListItem/PoolListItem';
+import {
+    SidebarPoolsListContainer,
+    SidebarPoolsListHeader,
+    SidebarPoolsListHeaderContainer,
+    SidebarPoolsListItemsContainer,
+    SidebarPoolsListViewMoreContainer,
+} from '../../../../styled/Sidebar';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -29,15 +35,14 @@ export default function FavoritePools(props: propsIF) {
     );
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <div>Pool</div>
-                <div>Volume</div>
-                <div>TVL</div>
-            </header>
+        <SidebarPoolsListContainer>
+            <SidebarPoolsListHeaderContainer>
+                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>Volume</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>TVL</SidebarPoolsListHeader>
+            </SidebarPoolsListHeaderContainer>
             {isAlreadyFavorited || (
-                <div
-                    className={styles.view_more}
+                <SidebarPoolsListViewMoreContainer
                     onClick={() =>
                         favePools.add(
                             tradeData.baseToken,
@@ -48,9 +53,9 @@ export default function FavoritePools(props: propsIF) {
                     }
                 >
                     Add Current Pool
-                </div>
+                </SidebarPoolsListViewMoreContainer>
             )}
-            <div className={styles.content}>
+            <SidebarPoolsListItemsContainer>
                 {favePools.pools.map((pool, idx) => (
                     <PoolListItem
                         key={idx}
@@ -59,7 +64,7 @@ export default function FavoritePools(props: propsIF) {
                         cachedFetchTokenPrice={props.cachedFetchTokenPrice}
                     />
                 ))}
-            </div>
-        </div>
+            </SidebarPoolsListItemsContainer>
+        </SidebarPoolsListContainer>
     );
 }

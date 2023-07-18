@@ -4,10 +4,12 @@ import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 import PoolListItem from '../PoolListItem/PoolListItem';
-import SidebarPoolsListContainer from '../../../../styled/Sidebar/SidebarPoolsListContainer';
-import SidebarPoolsListHeader from '../../../../styled/Sidebar/SidebarPoolsListHeader';
-import SidebarPoolsListItemsContainer from '../../../../styled/Sidebar/SidebarPoolsListItemsContainer';
-import SidebarPoolsListHeaderContainer from '../../../../styled/Sidebar/SidebarPoolsListHeaderContainer';
+import {
+    SidebarPoolsListContainer,
+    SidebarPoolsListHeader,
+    SidebarPoolsListHeaderContainer,
+    SidebarPoolsListItemsContainer,
+} from '../../../../styled/Sidebar';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;

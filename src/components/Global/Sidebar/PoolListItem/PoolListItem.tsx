@@ -3,7 +3,7 @@ import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { usePoolStats } from '../FavoritePools/hooks/usePoolStats';
+import { usePoolStats } from '../../../../App/hooks/usePoolStats';
 import { useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
-import { PoolIF } from '../../../../../utils/interfaces/exports';
-import { PoolStatsFn } from '../../../../../App/functions/getPoolStats';
+import { PoolIF } from '../../utils/interfaces/exports';
+import { PoolStatsFn } from '../functions/getPoolStats';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import { TokenPriceFn } from '../functions/fetchTokenPrice';
+import { getFormattedNumber } from '../functions/getFormattedNumber';
 
 export const usePoolStats = (
     pool: PoolIF,
-    lastBlockNumber: number,
+    lastBlockNumber: number | undefined,
     cachedPoolStatsFetch: PoolStatsFn,
     cachedFetchTokenPrice: TokenPriceFn,
     crocEnv?: CrocEnv,
@@ -44,7 +44,7 @@ export const usePoolStats = (
 
     useEffect(() => {
         fetchPoolStats(); // NOTE: we assume that a block occurs more frequently than once a minute
-    }, [lastBlockNumber]);
+    }, [lastBlockNumber ?? []]);
 
     return [poolVolume ?? '…', poolTvl ?? '…'];
 };
