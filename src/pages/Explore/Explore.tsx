@@ -6,16 +6,21 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import styled from 'styled-components';
 import { useTimeElapsed, useTimeElapsedIF } from './useTimeElapsed';
+import { ChainDataContext } from '../../contexts/ChainDataContext';
 
 export default function Explore() {
     const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     // metadata only
     const { poolList } = useContext(PoolContext);
     // full expanded data set
     const { pools } = useContext(ExploreContext);
 
     // hook to produce human-readable time since fetch for DOM
-    const timeSince: useTimeElapsedIF = useTimeElapsed(pools.retrievedAt);
+    const timeSince: useTimeElapsedIF = useTimeElapsed(
+        pools.retrievedAt,
+        lastBlockNumber,
+    );
 
     // fn wrapper to get pools
     const getPools = async (): Promise<void> => {
