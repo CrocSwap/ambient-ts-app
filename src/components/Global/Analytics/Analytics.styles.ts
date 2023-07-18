@@ -225,6 +225,7 @@ const TableHeadWrapper = styled.thead`
         background-color: var(--dark3);
         bottom: 0;
     }
+    user-select: none;
 `;
 const TableHeadRow = styled.tr`
     font-size: 12px;
