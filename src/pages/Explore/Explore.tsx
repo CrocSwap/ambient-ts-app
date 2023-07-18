@@ -37,20 +37,17 @@ export default function Explore() {
     };
 
     // get expanded pool metadata
-    // run when crocEnv, current chain, or number of pools changes
     useEffect(() => {
         // prevent rapid-fire of requests to infura
         pools.autopoll.allowed && getPools();
     }, [crocEnv, chainData.chainId, poolList.length]);
-
-    const isPoolsEmpty = pools?.all?.length === 0;
 
     return (
         <Section>
             <MainWrapper>
                 <h2>Top Pools on Ambient</h2>
                 <Refresh>
-                    {!isPoolsEmpty ? <p>{timeSince.value}</p> : undefined}
+                    <p>{timeSince.value}</p>
                     <Button onClick={() => getPools()}>
                         <RefreshIcon />
                     </Button>
