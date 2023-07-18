@@ -942,7 +942,7 @@ export default function Chart(props: propsIF) {
                 ? new Date().getTime()
                 : new Date(xDomain[1]).getTime();
 
-            const nCandle = Math.floor(
+            const nCandles = Math.floor(
                 (xDomain[1] - xDomain[0]) / (period * 1000),
             );
 
@@ -958,7 +958,7 @@ export default function Chart(props: propsIF) {
                 return {
                     isFetchForTimeframe: prev.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),
-                    nCandle: nCandle,
+                    nCandles: nCandles,
                     isShowLatestCandle: isShowLatestCandle,
                 };
             });

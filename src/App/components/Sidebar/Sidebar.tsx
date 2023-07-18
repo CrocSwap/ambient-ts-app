@@ -281,7 +281,7 @@ function Sidebar() {
                 <BiSearch
                     size={20}
                     color='#CDC1FF'
-                    onClick={() => sidebar.open(true)}
+                    onClick={() => sidebar.open(false)}
                 />
             )}
         </div>
@@ -369,7 +369,7 @@ function Sidebar() {
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
                 onClick={() => {
-                    sidebar.isOpen || sidebar.open(true);
+                    sidebar.isOpen || sidebar.open(false);
                 }}
                 style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
             >
