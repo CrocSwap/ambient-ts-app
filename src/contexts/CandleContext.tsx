@@ -130,7 +130,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     ]);
 
     useEffect(() => {
-        if (isChartEnabled) {
+        if (isChartEnabled && candleScale.isShowLatestCandle) {
             const interval = setInterval(() => {
                 fetchCandles(true);
             }, 60000);
@@ -143,6 +143,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleScale?.isFetchForTimeframe,
         candleTimeLocal,
         candleScale.nCandles,
+        candleScale.isShowLatestCandle,
     ]);
 
     const fetchCandles = (bypassSpinner = false) => {
