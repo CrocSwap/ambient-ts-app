@@ -10,6 +10,7 @@ import { get24hChange } from '../App/functions/getPoolStats';
 
 export interface ExploreContextIF {
     pools: {
+        retrievedAt: number | null;
         all: PoolDataIF[];
         getAll: (poolList: PoolIF[], crocEnv: CrocEnv, chainId: string) => void;
         autopoll: {
@@ -49,6 +50,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
     } = useContext(CachedDataContext);
 
     const [allPools, setAllPools] = useState<PoolDataIF[]>([]);
+    const [retrievedAt, setRetrievedAt] = useState<number | null>(null);
 
     // fn to get data on a single pool
     async function getPoolData(
@@ -177,11 +179,15 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
             getPoolData(pool, crocEnv, chainId),
         );
         Promise.all(allPoolData)
-            .then((results: PoolDataIF[]) => setAllPools(results))
+            .then((results: PoolDataIF[]) => {
+                setAllPools(results);
+                setRetrievedAt(Date.now());
+            })
             .catch((err) => {
                 console.warn(err);
                 // re-enable autopolling to attempt more data fetches
                 enableAutopollPools();
+                setRetrievedAt(null);
             });
     }
 
@@ -196,6 +202,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
 
     const exploreContext: ExploreContextIF = {
         pools: {
+            retrievedAt,
             all: allPools,
             getAll: getAllPoolData,
             autopoll: {
