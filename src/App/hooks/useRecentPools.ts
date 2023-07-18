@@ -59,8 +59,7 @@ export const useRecentPools = (chainId: string): recentPoolsMethodsIF => {
                 pool.base.address.toLowerCase() ===
                     baseTokenAddr.toLowerCase() &&
                 pool.quote.address.toLowerCase() ===
-                    quoteTokenAddr.toLowerCase() &&
-                pool.chainId === baseToken.chainId.toString()
+                    quoteTokenAddr.toLowerCase()
             );
         }
 
