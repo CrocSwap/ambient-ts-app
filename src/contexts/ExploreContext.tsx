@@ -172,6 +172,7 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         crocEnv: CrocEnv,
         chainId: string,
     ): void {
+        setAllPools([]);
         const allPoolData = poolList.map((pool: PoolIF) =>
             getPoolData(pool, crocEnv, chainId),
         );

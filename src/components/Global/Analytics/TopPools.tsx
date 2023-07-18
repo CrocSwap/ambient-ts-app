@@ -12,7 +12,10 @@ import {
     ShadowBox,
     Table,
     TableBody,
+    SpinnerContainer,
 } from './Analytics.styles';
+import Spinner from '../Spinner/Spinner';
+
 export interface HeaderItem {
     label: string;
     hidden: boolean;
@@ -98,21 +101,30 @@ function TopPools(props: propsIF) {
                             headerItems={topPoolsHeaderItems}
                             sortedPools={sortedPools}
                         />
-
                         <TableBody>
-                            {sortedPools.pools
-                                .filter(
-                                    (pool: PoolIF) =>
-                                        !checkPoolForWETH(pool, chainId),
-                                )
-                                .slice(0, POOL_COUNT)
-                                .map((pool: PoolDataIF, idx: number) => (
-                                    <PoolRow
-                                        key={JSON.stringify(pool) + idx}
-                                        pool={pool}
-                                        goToMarket={goToMarket}
+                            {sortedPools.pools.length ? (
+                                sortedPools.pools
+                                    .filter(
+                                        (pool: PoolIF) =>
+                                            !checkPoolForWETH(pool, chainId),
+                                    )
+                                    .slice(0, POOL_COUNT)
+                                    .map((pool: PoolDataIF, idx: number) => (
+                                        <PoolRow
+                                            key={JSON.stringify(pool) + idx}
+                                            pool={pool}
+                                            goToMarket={goToMarket}
+                                        />
+                                    ))
+                            ) : (
+                                <SpinnerContainer>
+                                    <Spinner
+                                        size={100}
+                                        bg='var(--dark1)'
+                                        centered
                                     />
-                                ))}
+                                </SpinnerContainer>
+                            )}
                         </TableBody>
                     </Table>
                 </ShadowBox>

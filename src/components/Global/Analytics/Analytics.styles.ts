@@ -51,6 +51,7 @@ const FlexContainer = styled.div`
 `;
 
 const ScrollableContainer = styled.div`
+    position: relative;
     flex-grow: 1;
     overflow-y: auto;
     height: 100%;
@@ -78,7 +79,6 @@ const ShadowBox = styled.div`
     background-color: var(--dark1);
     height: 100%;
 
-    position: relative;
     padding: 0 1rem;
 `;
 
@@ -297,6 +297,17 @@ const LabelWrapper = styled.div<LabelWrapperProps>`
             sortable ? 'var(--dark2)' : 'transparent'};
     }
 `;
+
+const SpinnerContainer = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
 export {
     PoolDisplayContainer,
     TableCell,
@@ -315,4 +326,5 @@ export {
     TableHeadRow,
     TableHeaderCell,
     LabelWrapper,
+    SpinnerContainer,
 };
