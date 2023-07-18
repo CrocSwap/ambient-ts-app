@@ -16,7 +16,7 @@ export interface candleDomain {
 
 export interface candleScale {
     lastCandleDate: number | undefined;
-    nCandle: number;
+    nCandles: number;
     isFetchForTimeframe: boolean;
     isShowLatestCandle: boolean;
 }

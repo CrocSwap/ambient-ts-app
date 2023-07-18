@@ -732,7 +732,7 @@ function TradeCandleStickChart(props: propsIF) {
                 const firstTime = Math.floor(fethcingCandles / 1000);
 
                 if (firstTime > minDate && fethcingCandles > domainLeft) {
-                    const nCandle = Math.floor(
+                    const nCandles = Math.floor(
                         (fethcingCandles - domainLeft) / (period * 1000),
                     );
 
@@ -740,7 +740,7 @@ function TradeCandleStickChart(props: propsIF) {
                         return {
                             isFetchForTimeframe: !prev.isFetchForTimeframe,
                             lastCandleDate: firstTime,
-                            nCandle: nCandle,
+                            nCandles: nCandles,
                             isShowLatestCandle: true,
                         };
                     });
@@ -754,7 +754,7 @@ function TradeCandleStickChart(props: propsIF) {
                         return {
                             isFetchForTimeframe: !prev.isFetchForTimeframe,
                             lastCandleDate: undefined,
-                            nCandle: 200,
+                            nCandles: 200,
                             isShowLatestCandle: true,
                         };
                     });
@@ -775,7 +775,7 @@ function TradeCandleStickChart(props: propsIF) {
                 return {
                     isFetchForTimeframe: !prev.isFetchForTimeframe,
                     lastCandleDate: undefined,
-                    nCandle: 200,
+                    nCandles: 200,
                     isShowLatestCandle: true,
                 };
             });
