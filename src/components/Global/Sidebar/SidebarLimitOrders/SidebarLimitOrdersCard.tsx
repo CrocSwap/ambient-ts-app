@@ -28,8 +28,8 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
         <div className={styles.container} onClick={() => handleClick(order)}>
             <div>
                 {isDenomBase
-                    ? `${order?.baseSymbol}/${order?.quoteSymbol}`
-                    : `${order?.quoteSymbol}/${order?.baseSymbol}`}
+                    ? `${order?.baseSymbol} / ${order?.quoteSymbol}`
+                    : `${order?.quoteSymbol} / ${order?.baseSymbol}`}
             </div>
             <div>{price}</div>
             <div className={styles.status_display}>{value}</div>
