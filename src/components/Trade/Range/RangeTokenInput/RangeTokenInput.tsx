@@ -176,6 +176,7 @@ function RangeTokenInput(props: propsIF) {
             value: inputNum,
             isToken: true,
             maxFracDigits: token.decimals,
+            nullDisplay: '',
         });
         return truncatedInputStr;
     };
@@ -239,6 +240,7 @@ function RangeTokenInput(props: propsIF) {
     return (
         <section className={styles.token_input_container}>
             <TokenInput
+                fieldId='range_A'
                 tokenAorB='A'
                 token={tokenA}
                 tokenInput={tokenAInputQty}
@@ -258,25 +260,24 @@ function RangeTokenInput(props: propsIF) {
             <div className={styles.operation_container}>
                 <img src={tokenArrow} height={28} alt='plus sign' />
             </div>
-            <div id='range_currency_converter'>
-                <TokenInput
-                    tokenAorB='B'
-                    token={tokenB}
-                    tokenInput={tokenBInputQty}
-                    tokenBalance={tokenBBalance}
-                    tokenDexBalance={tokenBDexBalance}
-                    isTokenEth={isTokenBEth}
-                    isDexSelected={isWithdrawTokenBFromDexChecked}
-                    showPulseAnimation={showRangePulseAnimation}
-                    handleTokenInputEvent={handleTokenBChangeEvent}
-                    reverseTokens={reverseTokens}
-                    handleToggleDexSelection={() => toggleDexSelection('B')}
-                    parseTokenInput={(val: string) => {
-                        setTokenBInputQty(parseTokenInput(val, tokenB));
-                    }}
-                    showWallet={isUserConnected}
-                />
-            </div>
+            <TokenInput
+                fieldId='range_B'
+                tokenAorB='B'
+                token={tokenB}
+                tokenInput={tokenBInputQty}
+                tokenBalance={tokenBBalance}
+                tokenDexBalance={tokenBDexBalance}
+                isTokenEth={isTokenBEth}
+                isDexSelected={isWithdrawTokenBFromDexChecked}
+                showPulseAnimation={showRangePulseAnimation}
+                handleTokenInputEvent={handleTokenBChangeEvent}
+                reverseTokens={reverseTokens}
+                handleToggleDexSelection={() => toggleDexSelection('B')}
+                parseTokenInput={(val: string) => {
+                    setTokenBInputQty(parseTokenInput(val, tokenB));
+                }}
+                showWallet={isUserConnected}
+            />
         </section>
     );
 }

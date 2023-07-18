@@ -131,6 +131,7 @@ function LimitTokenInput(props: propsIF) {
             value: inputNum,
             isToken: true,
             maxFracDigits: token.decimals,
+            nullDisplay: '',
         });
         return truncatedInputStr;
     };
@@ -230,6 +231,7 @@ function LimitTokenInput(props: propsIF) {
     return (
         <section className={styles.token_input_container}>
             <TokenInput
+                fieldId='limit_sell'
                 tokenAorB='A'
                 token={tokenA}
                 tokenInput={tokenAInputQty}
@@ -256,22 +258,21 @@ function LimitTokenInput(props: propsIF) {
                     <TokensArrow />
                 </IconWithTooltip>
             </div>
-            <div id='limit_currency_converter'>
-                <TokenInput
-                    tokenAorB='B'
-                    token={tokenB}
-                    tokenInput={tokenBInputQty}
-                    isTokenEth={tokenB.address === ZERO_ADDRESS}
-                    isDexSelected={isSaveAsDexSurplusChecked}
-                    showPulseAnimation={showOrderPulseAnimation}
-                    handleTokenInputEvent={handleTokenBChangeEvent}
-                    reverseTokens={reverseTokens}
-                    handleToggleDexSelection={() => toggleDexSelection('B')}
-                    parseTokenInput={(val: string) => {
-                        setTokenBInputQty(parseTokenInput(val, tokenB));
-                    }}
-                />
-            </div>
+            <TokenInput
+                fieldId='limit_buy'
+                tokenAorB='B'
+                token={tokenB}
+                tokenInput={tokenBInputQty}
+                isTokenEth={tokenB.address === ZERO_ADDRESS}
+                isDexSelected={isSaveAsDexSurplusChecked}
+                showPulseAnimation={showOrderPulseAnimation}
+                handleTokenInputEvent={handleTokenBChangeEvent}
+                reverseTokens={reverseTokens}
+                handleToggleDexSelection={() => toggleDexSelection('B')}
+                parseTokenInput={(val: string) => {
+                    setTokenBInputQty(parseTokenInput(val, tokenB));
+                }}
+            />
         </section>
     );
 }

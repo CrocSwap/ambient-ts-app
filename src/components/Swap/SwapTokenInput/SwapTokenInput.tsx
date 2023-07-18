@@ -243,14 +243,13 @@ function SwapTokenInput(props: propsIF) {
         if (value && parseFloat(value) !== 0) {
             setIsBuyLoading(true);
             setSellQtyString(value);
+            setDisableReverseTokens(true);
+            setLastEvent(value);
         } else {
-            setBuyQtyString('');
+            dispatch(setPrimaryQuantity(''));
         }
         value || setIsBuyLoading(false);
-
         dispatch(setIsTokenAPrimary(true));
-        setDisableReverseTokens(true);
-        setLastEvent(value);
     };
 
     const debouncedTokenBChangeEvent = (value: string) => {
@@ -258,14 +257,13 @@ function SwapTokenInput(props: propsIF) {
         if (value && parseFloat(value) !== 0) {
             setIsSellLoading(true);
             setBuyQtyString(value);
+            setDisableReverseTokens(true);
+            setLastEvent(value);
         } else {
-            setSellQtyString('');
+            dispatch(setPrimaryQuantity(''));
         }
         value || setIsSellLoading(false);
-
         dispatch(setIsTokenAPrimary(false));
-        setDisableReverseTokens(true);
-        setLastEvent(value);
     };
 
     const handleTokenAChangeEvent = useMemo(
@@ -366,6 +364,7 @@ function SwapTokenInput(props: propsIF) {
     return (
         <section className={`${styles.token_input_container}`}>
             <TokenInput
+                fieldId='swap_sell'
                 tokenAorB='A'
                 token={tokenA}
                 tokenInput={sellQtyString}
@@ -390,24 +389,23 @@ function SwapTokenInput(props: propsIF) {
                     onClick={reverseTokens}
                 />
             </div>
-            <div id='swap_currency_converter'>
-                <TokenInput
-                    tokenAorB='B'
-                    token={tokenB}
-                    tokenInput={buyQtyString}
-                    tokenBalance={tokenBBalance}
-                    tokenDexBalance={tokenBDexBalance}
-                    isTokenEth={isBuyTokenEth}
-                    isDexSelected={isSaveAsDexSurplusChecked}
-                    isLoading={isBuyLoading}
-                    showPulseAnimation={showSwapPulseAnimation}
-                    handleTokenInputEvent={debouncedTokenBChangeEvent}
-                    reverseTokens={reverseTokens}
-                    handleToggleDexSelection={() => toggleDexSelection('B')}
-                    showWallet={isUserConnected}
-                    handleRefresh={refreshTokenData}
-                />
-            </div>
+            <TokenInput
+                fieldId='swap_buy'
+                tokenAorB='B'
+                token={tokenB}
+                tokenInput={buyQtyString}
+                tokenBalance={tokenBBalance}
+                tokenDexBalance={tokenBDexBalance}
+                isTokenEth={isBuyTokenEth}
+                isDexSelected={isSaveAsDexSurplusChecked}
+                isLoading={isBuyLoading}
+                showPulseAnimation={showSwapPulseAnimation}
+                handleTokenInputEvent={debouncedTokenBChangeEvent}
+                reverseTokens={reverseTokens}
+                handleToggleDexSelection={() => toggleDexSelection('B')}
+                showWallet={isUserConnected}
+                handleRefresh={refreshTokenData}
+            />
         </section>
     );
 }

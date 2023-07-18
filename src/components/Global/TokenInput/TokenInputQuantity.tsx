@@ -12,6 +12,7 @@ import Spinner from '../Spinner/Spinner';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface propsIF {
+    fieldId?: string;
     tokenAorB: 'A' | 'B' | null;
     value: string;
     handleTokenInputEvent: (val: string) => void;
@@ -29,6 +30,7 @@ interface propsIF {
 
 function TokenInputQuantity(props: propsIF) {
     const {
+        fieldId,
         value,
         tokenAorB,
         handleTokenInputEvent,
@@ -44,9 +46,9 @@ function TokenInputQuantity(props: propsIF) {
         token,
     } = props;
 
-    const { setInput } = useContext(TokenContext);
+    const { setInput: setTokenSelectInput } = useContext(TokenContext);
 
-    const modalCloseCustom = (): void => setInput('');
+    const modalCloseCustom = (): void => setTokenSelectInput('');
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] =
         useModal(modalCloseCustom);
@@ -82,14 +84,6 @@ function TokenInputQuantity(props: propsIF) {
         }
     };
 
-    const handleInputClear = (): void => {
-        setInput('');
-        const soloTokenSelectInput = document.getElementById(
-            'solo-token-select-input',
-        ) as HTMLInputElement;
-        soloTokenSelectInput.value = '';
-    };
-
     const tokenSymbol =
         token?.symbol?.length > 4 ? (
             <DefaultTooltip
@@ -106,12 +100,12 @@ function TokenInputQuantity(props: propsIF) {
         );
 
     return (
-        <div className={styles.swapbox}>
+        <div className={styles.swapbox} id={fieldId}>
             {label && <span className={styles.direction}>{label}</span>}
             <div
                 className={`${styles.swapbox_top} ${
                     showPulseAnimation && styles.pulse_animation
-                }`}
+                } ${!includeWallet && styles.bottom_padding}`}
             >
                 <div>
                     <div className={styles.token_quantity_input}>
@@ -128,6 +122,7 @@ function TokenInputQuantity(props: propsIF) {
                                 {isAdvancedMode && disable && disabledContent}
 
                                 <input
+                                    id={fieldId ? `${fieldId}_qty` : undefined}
                                     className={styles.input}
                                     placeholder={isLoading ? '' : '0.0'}
                                     onChange={(event) => onChange(event)}
@@ -149,11 +144,11 @@ function TokenInputQuantity(props: propsIF) {
                     </div>
                 </div>
                 <button
+                    id={fieldId ? `${fieldId}_token_selector` : undefined}
                     className={styles.token_select}
                     onClick={openTokenModal}
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
-                    id='swap_token_selector'
                 >
                     <TokenIcon
                         src={uriToHttp(token.logoURI)}
@@ -172,7 +167,7 @@ function TokenInputQuantity(props: propsIF) {
                     onClose={closeTokenModal}
                     title='Select Token'
                     centeredTitle
-                    handleBack={handleInputClear}
+                    handleBack={() => setTokenSelectInput('')}
                     showBackButton={false}
                     footer={null}
                 >

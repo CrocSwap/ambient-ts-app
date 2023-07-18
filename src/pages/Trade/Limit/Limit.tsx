@@ -10,8 +10,6 @@ import {
 } from '@crocswap-libs/sdk';
 
 // START: Import React Functional Components
-import LimitButton from '../../../components/Trade/Limit/LimitButton/LimitButton';
-import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitTokenInput/LimitTokenInput';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
@@ -51,9 +49,10 @@ import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import LimitRate from '../../../components/Trade/Limit/LimitRate/LimitRate';
+import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
+import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/LimitTokenInput';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -674,17 +673,6 @@ export default function Limit() {
         }
     };
 
-    const currencyConverterProps = {
-        tokenAInputQty: { value: tokenAInputQty, set: setTokenAInputQty },
-        tokenBInputQty: { value: tokenBInputQty, set: setTokenBInputQty },
-        isSaveAsDexSurplusChecked,
-        isWithdrawFromDexChecked,
-        limitTickDisplayPrice: middleDisplayPrice,
-        isOrderValid,
-        handleLimitButtonMessage,
-        toggleDexSelection,
-    };
-
     // TODO: @Emily refactor this to take a token data object
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
@@ -709,13 +697,29 @@ export default function Limit() {
     return (
         <TradeModuleSkeleton
             header={
-                <OrderHeader
+                <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmLimit}
                     settingsTitle='Limit Order'
                 />
             }
-            input={<LimitCurrencyConverter {...currencyConverterProps} />}
+            input={
+                <LimitTokenInput
+                    tokenAInputQty={{
+                        value: tokenAInputQty,
+                        set: setTokenAInputQty,
+                    }}
+                    tokenBInputQty={{
+                        value: tokenBInputQty,
+                        set: setTokenBInputQty,
+                    }}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    limitTickDisplayPrice={middleDisplayPrice}
+                    handleLimitButtonMessage={handleLimitButtonMessage}
+                    toggleDexSelection={toggleDexSelection}
+                />
+            }
             inputOptions={
                 <LimitRate
                     previousDisplayPrice={previousDisplayPrice}
@@ -729,7 +733,7 @@ export default function Limit() {
             }
             transactionDetails={
                 <LimitExtraInfo
-                    isQtyEntered={
+                    showExtraInfoDropdown={
                         tokenAInputQty !== '' || tokenBInputQty !== ''
                     }
                     orderGasPriceInDollars={orderGasPriceInDollars}
@@ -767,22 +771,30 @@ export default function Limit() {
                 ) : undefined
             }
             button={
-                <LimitButton
-                    onClickFn={
+                <Button
+                    title={
+                        areBothAckd
+                            ? limitAllowed
+                                ? bypassConfirmLimit.isEnabled
+                                    ? 'Submit Limit Order'
+                                    : 'Confirm'
+                                : limitButtonErrorMessage
+                            : 'Acknowledge'
+                    }
+                    action={
                         areBothAckd
                             ? bypassConfirmLimit.isEnabled
                                 ? handleLimitButtonClickWithBypass
                                 : openModal
                             : ackAsNeeded
                     }
-                    limitAllowed={
-                        isOrderValid &&
-                        poolPriceNonDisplay !== 0 &&
-                        limitAllowed
+                    disabled={
+                        (!limitAllowed ||
+                            !isOrderValid ||
+                            poolPriceNonDisplay === 0) &&
+                        areBothAckd
                     }
-                    limitButtonErrorMessage={limitButtonErrorMessage}
-                    isBypassConfirmEnabled={bypassConfirmLimit.isEnabled}
-                    areBothAckd={areBothAckd}
+                    flat
                 />
             }
             bypassConfirm={

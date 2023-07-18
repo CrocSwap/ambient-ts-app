@@ -35,13 +35,12 @@ import {
 } from '../../../utils/TransactionError';
 import Button from '../../../components/Global/Button/Button';
 import Modal from '../../../components/Global/Modal/Modal';
-import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
-import CurrencyConverter from '../../../components/Swap/SwapTokenInput/SwapTokenInput';
-import ExtraInfo from '../../../components/Swap/SwapExtraInfo/SwapExtraInfo';
-import SwapButton from '../../../components/Swap/SwapButton/SwapButton';
 import BypassConfirmSwapButton from '../../../components/Swap/SwapButton/BypassConfirmSwapButton';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import styles from './Swap.module.css';
+import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
+import SwapTokenInput from '../../../components/Swap/SwapTokenInput/SwapTokenInput';
+import SwapExtraInfo from '../../../components/Swap/SwapExtraInfo/SwapExtraInfo';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -471,20 +470,6 @@ function Swap(props: propsIF) {
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
-    const currencyConverterProps = {
-        setIsLiquidityInsufficient,
-        slippageTolerancePercentage,
-        setPriceImpact,
-        sellQtyString: { value: sellQtyString, set: setSellQtyString },
-        buyQtyString: { value: buyQtyString, set: setBuyQtyString },
-        isSellLoading: { value: isSellLoading, set: setIsSellLoading },
-        isBuyLoading: { value: isBuyLoading, set: setIsBuyLoading },
-        isWithdrawFromDexChecked,
-        isSaveAsDexSurplusChecked,
-        setSwapAllowed,
-        toggleDexSelection,
-    };
-
     const handleSwapButtonClickWithBypass = () => {
         IS_LOCAL_ENV && console.debug('setting  bypass confirm to true');
         setShowBypassConfirm(true);
@@ -555,22 +540,42 @@ function Swap(props: propsIF) {
         <TradeModuleSkeleton
             isSwapPage={!isOnTradeRoute}
             header={
-                <OrderHeader
+                <TradeModuleHeader
                     slippage={swapSlippage}
                     bypassConfirm={bypassConfirmSwap}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
                 />
             }
-            input={<CurrencyConverter {...currencyConverterProps} />}
+            input={
+                <SwapTokenInput
+                    setIsLiquidityInsufficient={setIsLiquidityInsufficient}
+                    slippageTolerancePercentage={slippageTolerancePercentage}
+                    setPriceImpact={setPriceImpact}
+                    sellQtyString={{
+                        value: sellQtyString,
+                        set: setSellQtyString,
+                    }}
+                    buyQtyString={{ value: buyQtyString, set: setBuyQtyString }}
+                    isSellLoading={{
+                        value: isSellLoading,
+                        set: setIsSellLoading,
+                    }}
+                    isBuyLoading={{ value: isBuyLoading, set: setIsBuyLoading }}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    setSwapAllowed={setSwapAllowed}
+                    toggleDexSelection={toggleDexSelection}
+                />
+            }
             transactionDetails={
-                <ExtraInfo
+                <SwapExtraInfo
                     priceImpact={priceImpact}
                     effectivePriceWithDenom={effectivePriceWithDenom}
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFeeString={liquidityProviderFeeString}
                     swapGasPriceinDollars={swapGasPriceinDollars}
-                    isQtyEntered={tradeData?.primaryQuantity !== ''}
+                    showExtraInfoDropdown={tradeData?.primaryQuantity !== ''}
                 />
             }
             modal={
@@ -585,22 +590,34 @@ function Swap(props: propsIF) {
                 ) : undefined
             }
             button={
-                <SwapButton
-                    onClickFn={
+                <Button
+                    title={
+                        areBothAckd
+                            ? bypassConfirmSwap.isEnabled
+                                ? swapAllowed
+                                    ? 'Submit Swap'
+                                    : swapButtonErrorMessage
+                                : swapAllowed
+                                ? bypassConfirmSwap.isEnabled
+                                    ? 'Submit Swap'
+                                    : 'Confirm'
+                                : swapButtonErrorMessage
+                            : 'Acknowledge'
+                    }
+                    action={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
                                 ? handleSwapButtonClickWithBypass
                                 : openModal
                             : ackAsNeeded
                     }
-                    swapAllowed={
-                        swapAllowed &&
-                        sellQtyString !== '' &&
-                        buyQtyString !== ''
+                    disabled={
+                        (!swapAllowed ||
+                            sellQtyString === '' ||
+                            buyQtyString !== '') &&
+                        areBothAckd
                     }
-                    swapButtonErrorMessage={swapButtonErrorMessage}
-                    bypassConfirmSwap={bypassConfirmSwap}
-                    areBothAckd={areBothAckd}
+                    flat
                 />
             }
             bypassConfirm={

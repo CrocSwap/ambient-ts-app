@@ -112,3 +112,7 @@
     line-height: var(--body-lh);
     color: var(--text1);
 }
+
+.bottom_padding {
+    margin-bottom: 8px;
+}

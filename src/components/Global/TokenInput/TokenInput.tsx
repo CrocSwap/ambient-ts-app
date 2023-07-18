@@ -4,6 +4,7 @@ import TokenInputQuantity from '../../Global/TokenInput/TokenInputQuantity';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface propsIF {
+    fieldId?: string;
     tokenAorB: 'A' | 'B';
     token: TokenIF;
     tokenInput: string;
@@ -23,6 +24,7 @@ interface propsIF {
 
 function TokenInput(props: propsIF) {
     const {
+        fieldId,
         tokenAorB,
         token,
         tokenInput,
@@ -88,6 +90,7 @@ function TokenInput(props: propsIF) {
 
     return (
         <TokenInputQuantity
+            fieldId={fieldId}
             token={token}
             tokenAorB={tokenAorB}
             value={tokenInput}

@@ -1,25 +1,11 @@
-// START: Import React and Dongles
-import { memo, useContext, useState } from 'react';
-import { FaGasPump } from 'react-icons/fa';
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-
-// START: Import Local Files
-import styles from './SwapExtraInfo.module.css';
-// import truncateDecimals from '../../../utils/data/truncateDecimals';
-// import makePriceDisplay from './makePriceDisplay';
-import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
+import { memo, useContext } from 'react';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocImpact } from '@crocswap-libs/sdk';
-// import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
-import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { TradeModuleExtraInfo } from '../../Trade/TradeModules/TradeModuleExtraInfo';
 
-// interface for props in this file
 interface propsIF {
     priceImpact: CrocImpact | undefined;
     slippageTolerance: number;
@@ -27,23 +13,20 @@ interface propsIF {
     swapGasPriceinDollars: string | undefined;
     isOnTradeRoute?: boolean;
     effectivePriceWithDenom: number | undefined;
-    isQtyEntered: boolean;
+    showExtraInfoDropdown: boolean;
 }
 
-// central react functional component
-function ExtraInfo(props: propsIF) {
+function SwapExtraInfo(props: propsIF) {
     const {
         priceImpact,
         effectivePriceWithDenom,
         slippageTolerance,
         liquidityProviderFeeString,
         swapGasPriceinDollars,
-        isQtyEntered,
+        showExtraInfoDropdown,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
-
-    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -70,23 +53,18 @@ function ExtraInfo(props: propsIF) {
         ? undefined
         : Math.abs(priceImpact.percentChange) * 100;
 
-    const feesAndSlippageData = [
+    const extraInfo = [
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'This can be changed in settings.',
-            // eslint-disable-next-line no-irregular-whitespace
-            data: `${slippageTolerance} %`,
+            data: `${slippageTolerance} %`,
         },
         {
             title: 'Liquidity Provider Fee',
             tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
-            // eslint-disable-next-line no-irregular-whitespace
-            data: `${liquidityProviderFeeString} %`,
+            data: `${liquidityProviderFeeString} %`,
             placement: 'bottom',
         },
-    ];
-
-    const extraInfoData = [
         {
             title: 'Avg. Rate',
             tooltipTitle:
@@ -112,131 +90,23 @@ function ExtraInfo(props: propsIF) {
             title: 'Price Impact',
             tooltipTitle:
                 'Difference Between Current (Spot) Price and Final Price',
-            // eslint-disable-next-line no-irregular-whitespace
-            data: `${getPriceImpactString(priceImpactNum)} %`,
+            data: `${getPriceImpactString(priceImpactNum)} %`,
             placement: 'bottom',
         },
     ];
 
-    const extraInfoDetails = (
-        <div className={styles.extra_details_container}>
-            <div className={styles.extra_details}>
-                {extraInfoData.map((item, idx) =>
-                    item ? (
-                        <div
-                            className={styles.extra_row}
-                            key={idx}
-                            tabIndex={0}
-                            aria-label={`${item.title} is ${item.data}`}
-                        >
-                            <div className={styles.align_center}>
-                                <div>{item.title}</div>
-                                <TooltipComponent
-                                    title={item.tooltipTitle}
-                                    placement={item.placement as 'bottom'}
-                                />
-                            </div>
-                            <div className={styles.data}>{item.data}</div>
-                        </div>
-                    ) : null,
-                )}
-                {feesAndSlippageData.map((item, idx) =>
-                    item ? (
-                        <div
-                            className={styles.extra_row}
-                            key={idx}
-                            tabIndex={0}
-                            aria-label={`${item.title} is ${item.data}`}
-                        >
-                            <div className={styles.align_center}>
-                                <div>{item.title}</div>
-                                <TooltipComponent
-                                    title={item.tooltipTitle}
-                                    placement={item.placement as 'bottom'}
-                                />
-                            </div>
-                            <div className={styles.data}>{item.data}</div>
-                        </div>
-                    ) : null,
-                )}
-            </div>
-        </div>
-    );
-
-    const [isConvHovered, setIsConHovered] = useState(false);
-
-    const dispatch = useAppDispatch();
-
-    const conversionRateDisplay = isDenomBase
+    const conversionRate = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
-    const gasCostAriaLabel = `Gas cost is ${swapGasPriceinDollars}. Conversion rate is ${conversionRateDisplay} `;
-    const extraDetailsDropdown = (
-        <button
-            className={`${styles.extra_info_content} ${
-                isQtyEntered && styles.extra_info_content_active
-            }`}
-            onClick={
-                priceImpact
-                    ? () => {
-                          setShowExtraDetails(!showExtraDetails);
-                      }
-                    : undefined
-            }
-            tabIndex={0}
-            aria-label={gasCostAriaLabel}
-        >
-            <div className={styles.gas_pump}>
-                <FaGasPump size={12} />{' '}
-                {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
-            </div>
-            <div
-                className={styles.token_amount}
-                onClick={(e) => {
-                    dispatch(toggleDidUserFlipDenom());
-                    e.stopPropagation();
-                }}
-                onMouseEnter={() => setIsConHovered(true)}
-                onMouseOut={() => setIsConHovered(false)}
-            >
-                {conversionRateDisplay}
-            </div>
-
-            {isQtyEntered && !showExtraDetails && (
-                <RiArrowDownSLine
-                    size={22}
-                    className={
-                        isConvHovered
-                            ? styles.non_hovered_arrow
-                            : styles.dropdown_arrow
-                    }
-                />
-            )}
-            {isQtyEntered && showExtraDetails && (
-                <RiArrowUpSLine
-                    size={22}
-                    className={
-                        isConvHovered
-                            ? styles.non_hovered_arrow
-                            : styles.dropdown_arrow
-                    }
-                />
-            )}
-        </button>
-    );
-
-    const extraDetailsOrNull =
-        showExtraDetails && isQtyEntered && priceImpact
-            ? extraInfoDetails
-            : null;
-
     return (
-        <>
-            {extraDetailsDropdown}
-            {extraDetailsOrNull}
-        </>
+        <TradeModuleExtraInfo
+            extraInfo={extraInfo}
+            conversionRate={conversionRate}
+            gasPrice={swapGasPriceinDollars}
+            showDropdown={showExtraInfoDropdown}
+        />
     );
 }
 
-export default memo(ExtraInfo);
+export default memo(SwapExtraInfo);

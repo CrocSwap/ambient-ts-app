@@ -1,20 +1,20 @@
+import { useContext, memo } from 'react';
 import { AiOutlineShareAlt } from 'react-icons/ai';
-import ContentHeader from '../../Global/ContentHeader/ContentHeader';
-import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
-import ShareModal from '../../Global/ShareModal/ShareModal';
-import Modal from '../../../components/Global/Modal/Modal';
-import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import styles from './OrderHeader.module.css';
-import { useModal } from '../../../components/Global/Modal/useModal';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-import { memo, useContext } from 'react';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import ContentHeader from '../../Global/ContentHeader/ContentHeader';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import Modal from '../../Global/Modal/Modal';
+import { useModal } from '../../Global/Modal/useModal';
+import ShareModal from '../../Global/ShareModal/ShareModal';
+import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
+import styles from './TradeModuleHeader.module.css';
 
 interface propsIF {
     slippage: SlippageMethodsIF;
@@ -23,7 +23,7 @@ interface propsIF {
     isSwapPage?: boolean;
 }
 
-function OrderHeader(props: propsIF) {
+function TradeModuleHeader(props: propsIF) {
     const { slippage, bypassConfirm, settingsTitle, isSwapPage } = props;
 
     const {
@@ -124,4 +124,4 @@ function OrderHeader(props: propsIF) {
     );
 }
 
-export default memo(OrderHeader);
+export default memo(TradeModuleHeader);

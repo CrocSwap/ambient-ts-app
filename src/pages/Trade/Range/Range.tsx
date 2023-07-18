@@ -1,8 +1,6 @@
 import { useState, useEffect, useMemo, useContext, memo } from 'react';
 import { motion } from 'framer-motion';
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
-import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton';
-import RangeCurrencyConverter from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
@@ -58,8 +56,9 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
+import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
+import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 
 function Range() {
     const {
@@ -1154,20 +1153,6 @@ function Range() {
         tokenBInputQty: tokenBInputQty,
     };
 
-    // props for <RangeCurrencyConverter/> React element
-    const rangeCurrencyConverterProps = {
-        isAmbient: isAmbient,
-        depositSkew: depositSkew,
-        isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
-        isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
-        isOutOfRange: isOutOfRange,
-        tokenAInputQty: { value: tokenAInputQty, set: setTokenAInputQty },
-        tokenBInputQty: { value: tokenBInputQty, set: setTokenBInputQty },
-        toggleDexSelection,
-        isRangeSpanBelowCurrentPrice: currentPoolPriceTick > defaultHighTick,
-        handleRangeButtonMessage,
-    };
-
     // props for <RangeWidth/> React element
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
@@ -1328,7 +1313,7 @@ function Range() {
     return (
         <TradeModuleSkeleton
             header={
-                <OrderHeader
+                <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmRange}
                     settingsTitle='Pool'
@@ -1336,7 +1321,30 @@ function Range() {
             }
             input={
                 <>
-                    <RangeCurrencyConverter {...rangeCurrencyConverterProps} />
+                    <RangeTokenInput
+                        isAmbient={isAmbient}
+                        depositSkew={depositSkew}
+                        isWithdrawTokenAFromDexChecked={
+                            isWithdrawTokenAFromDexChecked
+                        }
+                        isWithdrawTokenBFromDexChecked={
+                            isWithdrawTokenBFromDexChecked
+                        }
+                        isOutOfRange={isOutOfRange}
+                        tokenAInputQty={{
+                            value: tokenAInputQty,
+                            set: setTokenAInputQty,
+                        }}
+                        tokenBInputQty={{
+                            value: tokenBInputQty,
+                            set: setTokenBInputQty,
+                        }}
+                        toggleDexSelection={toggleDexSelection}
+                        isRangeSpanBelowCurrentPrice={
+                            currentPoolPriceTick > defaultHighTick
+                        }
+                        handleRangeButtonMessage={handleRangeButtonMessage}
+                    />
                 </>
             }
             inputOptions={
@@ -1388,23 +1396,36 @@ function Range() {
                 ) : undefined
             }
             button={
-                <RangeButton
-                    onClickFn={
+                <Button
+                    title={
+                        areBothAckd
+                            ? rangeAllowed
+                                ? bypassConfirmRange.isEnabled
+                                    ? isAdd
+                                        ? `Add ${
+                                              isAmbient ? 'Ambient' : ''
+                                          } Liquidity`
+                                        : `Submit ${
+                                              isAmbient ? 'Ambient' : ''
+                                          } Liquidity`
+                                    : 'Confirm'
+                                : rangeButtonErrorMessage
+                            : 'Acknowledge'
+                    }
+                    action={
                         areBothAckd
                             ? bypassConfirmRange.isEnabled
                                 ? handleRangeButtonClickWithBypass
                                 : openConfirmationModal
                             : ackAsNeeded
                     }
-                    rangeAllowed={
-                        isPoolInitialized === true &&
-                        rangeAllowed &&
-                        !isInvalidRange
+                    disabled={
+                        (!isPoolInitialized ||
+                            !rangeAllowed ||
+                            isInvalidRange) &&
+                        areBothAckd
                     }
-                    rangeButtonErrorMessage={rangeButtonErrorMessage}
-                    isAmbient={isAmbient}
-                    isAdd={isAdd}
-                    areBothAckd={areBothAckd}
+                    flat={true}
                 />
             }
             bypassConfirm={

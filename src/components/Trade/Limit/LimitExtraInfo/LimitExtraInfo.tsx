@@ -1,43 +1,29 @@
-// START: Import React and Dongles
-import { memo, useContext, useState } from 'react';
-import { FaGasPump } from 'react-icons/fa';
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-
-// START: Import Local Files
-import styles from './LimitExtraInfo.module.css';
-import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+import { memo, useContext } from 'react';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { TradeModuleExtraInfo } from '../../TradeModules/TradeModuleExtraInfo';
 
-// interface for component props
 interface propsIF {
     orderGasPriceInDollars: string | undefined;
     isTokenABase: boolean;
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
-    isQtyEntered: boolean;
+    showExtraInfoDropdown: boolean;
     liquidityProviderFeeString: string;
 }
 
-// central react functional component
 function LimitExtraInfo(props: propsIF) {
     const {
         orderGasPriceInDollars,
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
-        isQtyEntered,
+        showExtraInfoDropdown,
         liquidityProviderFeeString,
     } = props;
     const { poolPriceDisplay } = useContext(PoolContext);
-
-    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -63,7 +49,7 @@ function LimitExtraInfo(props: propsIF) {
         value: endDisplayPrice,
     });
 
-    const extraInfoData = [
+    const extraInfo = [
         {
             title: 'Spot Price',
             tooltipTitle: 'Current Price of the Selected Token Pool',
@@ -109,93 +95,17 @@ function LimitExtraInfo(props: propsIF) {
         },
     ];
 
-    const limitExtraInfoDetails = (
-        <div className={styles.extra_details_container}>
-            <div className={styles.extra_details}>
-                {extraInfoData.map((item, idx) => (
-                    <div
-                        className={styles.extra_row}
-                        key={idx}
-                        tabIndex={0}
-                        aria-label={`${item.title} is ${item.data}`}
-                    >
-                        <div className={styles.align_center}>
-                            <div>{item.title}</div>
-                            <TooltipComponent title={item.tooltipTitle} />
-                        </div>
-                        <div className={styles.data}>{item.data}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-
-    const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
-
-    const dispatch = useAppDispatch();
-    const [isConvHovered, setIsConHovered] = useState(false);
-
-    const conversionRateDisplay = isDenomBase
+    const conversionRate = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
-    const gasCostAriaLabel = `Gas cost is ${orderGasPriceInDollars}. Conversion rate is ${conversionRateDisplay} `;
-
-    const extraInfoSectionOrNull = (
-        <button
-            className={`${styles.extra_info_content} ${
-                isQtyEntered && styles.extra_info_content_active
-            }`}
-            onClick={
-                isQtyEntered
-                    ? () => setShowExtraDetails(!showExtraDetails)
-                    : () => setShowExtraDetails(false)
-            }
-            tabIndex={0}
-            aria-label={gasCostAriaLabel}
-        >
-            <div className={styles.gas_pump}>
-                <FaGasPump size={15} className={styles.non_hoverable} />{' '}
-                {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
-            </div>
-            <div
-                className={styles.token_amount}
-                onClick={(e) => {
-                    dispatch(toggleDidUserFlipDenom());
-                    e.stopPropagation();
-                }}
-                onMouseEnter={() => setIsConHovered(true)}
-                onMouseOut={() => setIsConHovered(false)}
-            >
-                {conversionRateDisplay}
-            </div>
-            {isQtyEntered && !showExtraDetails && (
-                <RiArrowDownSLine
-                    size={22}
-                    className={
-                        isConvHovered
-                            ? styles.non_hovered_arrow
-                            : styles.dropdown_arrow
-                    }
-                />
-            )}
-            {isQtyEntered && showExtraDetails && (
-                <RiArrowUpSLine
-                    size={22}
-                    className={
-                        isConvHovered
-                            ? styles.non_hovered_arrow
-                            : styles.dropdown_arrow
-                    }
-                />
-            )}
-        </button>
-    );
     return (
-        <>
-            {extraInfoSectionOrNull}
-            {extraDetailsOrNull}
-        </>
+        <TradeModuleExtraInfo
+            extraInfo={extraInfo}
+            conversionRate={conversionRate}
+            gasPrice={orderGasPriceInDollars}
+            showDropdown={showExtraInfoDropdown}
+        />
     );
 }
 
