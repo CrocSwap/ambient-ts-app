@@ -10,7 +10,6 @@ import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton
 import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
 // import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
@@ -59,7 +58,6 @@ import {
     rangeTutorialSteps,
     rangeTutorialStepsAdvanced,
 } from '../../../utils/tutorial/Range';
-import { formatAmountOld } from '../../../utils/numbers';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
@@ -73,6 +71,8 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
 
 function Range() {
     const {
@@ -194,20 +194,6 @@ function Range() {
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
-
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 0.0001
-            ? displayPriceWithDenom.toExponential(2)
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toPrecision(3)
-            : displayPriceWithDenom >= 100000
-            ? formatAmountOld(displayPriceWithDenom, 1)
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
 
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
@@ -1047,11 +1033,11 @@ function Range() {
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -1067,7 +1053,9 @@ function Range() {
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
-        spotPriceDisplay: displayPriceString,
+        spotPriceDisplay: getFormattedNumber({
+            value: displayPriceWithDenom,
+        }),
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         aprPercentage: aprPercentage,
@@ -1167,6 +1155,8 @@ function Range() {
         sendTransaction: sendTransaction,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
         showBypassConfirmButton: showBypassConfirmButton,
+        tokenAInputQty: tokenAInputQty,
+        tokenBInputQty: tokenBInputQty,
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -1217,7 +1207,9 @@ function Range() {
     const rangeExtraInfoProps = {
         isQtyEntered: isQtyEntered,
         rangeGasPriceinDollars: rangeGasPriceinDollars,
-        poolPriceDisplay: displayPriceString,
+        poolPriceDisplay: getFormattedNumber({
+            value: displayPriceWithDenom,
+        }),
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFeeString: liquidityProviderFeeString,
         quoteTokenIsBuy: true,
@@ -1271,7 +1263,9 @@ function Range() {
             <DividerDark addMarginTop />
 
             <AdvancedPriceInfo
-                poolPriceDisplay={displayPriceString}
+                poolPriceDisplay={getFormattedNumber({
+                    value: displayPriceWithDenom,
+                })}
                 isTokenABase={isTokenABase}
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
@@ -1430,9 +1424,10 @@ function Range() {
             )}
 
             <ContentContainer isOnTradeRoute>
-                <RangeHeader
-                    mintSlippage={mintSlippage}
-                    isTokenABase={isTokenABase}
+                <OrderHeader
+                    slippage={mintSlippage}
+                    bypassConfirm={bypassConfirmRange}
+                    settingsTitle='Pool'
                 />
                 {navigationMenu}
                 <motion.div
@@ -1546,7 +1541,9 @@ function Range() {
                     <ConfirmRangeModal
                         tokenAQtyLocal={tokenAQtyLocal}
                         tokenBQtyLocal={tokenBQtyLocal}
-                        spotPriceDisplay={displayPriceString}
+                        spotPriceDisplay={getFormattedNumber({
+                            value: displayPriceWithDenom,
+                        })}
                         isTokenABase={isTokenABase}
                         isAmbient={isAmbient}
                         isAdd={isAdd}

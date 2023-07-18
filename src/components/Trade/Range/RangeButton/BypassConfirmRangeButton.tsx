@@ -1,9 +1,6 @@
 import styles from './BypassConfirmRangeButton.module.css';
-
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-
 import { useState, Dispatch, SetStateAction } from 'react';
-
 import {
     CircleLoader,
     CircleLoaderCompleted,
@@ -16,6 +13,7 @@ import TransactionSubmitted from '../../../Global/TransactionSubmitted/Transacti
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     newRangeTransactionHash: string;
@@ -23,6 +21,8 @@ interface propsIF {
     resetConfirmation: () => void;
     setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
     sendTransaction: () => Promise<void>;
+    tokenAInputQty: string;
+    tokenBInputQty: string;
 }
 export default function BypassConfirmRangeButton(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
@@ -33,6 +33,8 @@ export default function BypassConfirmRangeButton(props: propsIF) {
         resetConfirmation,
         setShowBypassConfirmButton,
         sendTransaction,
+        tokenAInputQty,
+        tokenBInputQty,
     } = props;
 
     const transactionApproved = newRangeTransactionHash !== '';
@@ -41,12 +43,8 @@ export default function BypassConfirmRangeButton(props: propsIF) {
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
-    const tokenAQty = (
-        document.getElementById('A-range-quantity') as HTMLInputElement
-    )?.value;
-    const tokenBQty = (
-        document.getElementById('B-range-quantity') as HTMLInputElement
-    )?.value;
+    const tokenAQty = getFormattedNumber({ value: parseFloat(tokenAInputQty) });
+    const tokenBQty = getFormattedNumber({ value: parseFloat(tokenBInputQty) });
 
     const confirmSendMessage = (
         <WaitingConfirmation

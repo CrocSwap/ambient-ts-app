@@ -4,10 +4,10 @@ import Moralis from 'moralis';
 import { Erc20Value } from '@moralisweb3/common-evm-utils';
 import { ZERO_ADDRESS } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/exports';
-import { formatAmountOld } from '../../utils/numbers';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
 import { FetchContractDetailsFn } from './fetchContractDetails';
+import { getFormattedNumber } from './getFormattedNumber';
 
 export interface IDepositedTokenBalance {
     token: string;
@@ -75,48 +75,15 @@ export const fetchNativeTokenBalance = async (
     const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
     const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
 
-    // TODO (#1569): re-usable token display formatting would cut down on copypasta here and below with ...Truncated values.
-    const combinedBalanceDisplayTruncated =
-        combinedBalanceDisplayNum !== undefined
-            ? !combinedBalanceDisplayNum
-                ? '0.00'
-                : combinedBalanceDisplayNum < 0.0001
-                ? combinedBalanceDisplayNum.toExponential(2)
-                : combinedBalanceDisplayNum < 2
-                ? combinedBalanceDisplayNum.toPrecision(3)
-                : combinedBalanceDisplayNum >= 100000
-                ? formatAmountOld(nativeWalletBalanceDisplayNum)
-                : combinedBalanceDisplayNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : undefined;
-
-    const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
-        ? nativeDexBalanceDisplayNum < 0.0001
-            ? nativeDexBalanceDisplayNum.toExponential(2)
-            : nativeDexBalanceDisplayNum < 2
-            ? nativeDexBalanceDisplayNum.toPrecision(3)
-            : nativeDexBalanceDisplayNum >= 100000
-            ? formatAmountOld(nativeDexBalanceDisplayNum)
-            : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
-
-    const nativeWalletBalanceDisplayTruncated = nativeWalletBalanceDisplayNum
-        ? nativeWalletBalanceDisplayNum < 0.0001
-            ? nativeWalletBalanceDisplayNum.toExponential(2)
-            : nativeWalletBalanceDisplayNum < 2
-            ? nativeWalletBalanceDisplayNum.toPrecision(3)
-            : nativeWalletBalanceDisplayNum >= 100000
-            ? formatAmountOld(nativeWalletBalanceDisplayNum)
-            : nativeWalletBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
+    const combinedBalanceDisplayTruncated = getFormattedNumber({
+        value: combinedBalanceDisplayNum ?? nativeWalletBalanceDisplayNum,
+    });
+    const nativeDexBalanceDisplayTruncated = getFormattedNumber({
+        value: nativeDexBalanceDisplayNum,
+    });
+    const nativeWalletBalanceDisplayTruncated = getFormattedNumber({
+        value: nativeWalletBalanceDisplayNum,
+    });
 
     const updatedNativeToken: TokenIF = {
         chainId: parseInt(chain),
@@ -178,18 +145,10 @@ export const fetchErc20TokenBalances = async (
         const moralisErc20BalanceDisplayNum = parseFloat(
             moralisErc20BalanceDisplay,
         );
-        // TODO (#1569): re-usable token display formatting
-        const moralisErc20BalanceDisplayTruncated =
-            moralisErc20BalanceDisplayNum < 0.0001
-                ? moralisErc20BalanceDisplayNum.toExponential(2)
-                : moralisErc20BalanceDisplayNum < 2
-                ? moralisErc20BalanceDisplayNum.toPrecision(3)
-                : moralisErc20BalanceDisplayNum >= 100000
-                ? formatAmountOld(moralisErc20BalanceDisplayNum)
-                : moralisErc20BalanceDisplayNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+
+        const moralisErc20BalanceDisplayTruncated = getFormattedNumber({
+            value: moralisErc20BalanceDisplayNum,
+        });
 
         return {
             chainId: parseInt(chain),
@@ -218,19 +177,9 @@ export const fetchErc20TokenBalances = async (
         const erc20DexBalanceDisplayNum = erc20DexBalanceDisplay
             ? parseFloat(erc20DexBalanceDisplay)
             : undefined;
-        // TODO (#1569): re-usable token display formatting
-        const erc20DexBalanceDisplayTruncated = erc20DexBalanceDisplayNum
-            ? erc20DexBalanceDisplayNum < 0.0001
-                ? erc20DexBalanceDisplayNum.toExponential(2)
-                : erc20DexBalanceDisplayNum < 2
-                ? erc20DexBalanceDisplayNum.toPrecision(3)
-                : erc20DexBalanceDisplayNum >= 100000
-                ? formatAmountOld(erc20DexBalanceDisplayNum)
-                : erc20DexBalanceDisplayNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : undefined;
+        const erc20DexBalanceDisplayTruncated = getFormattedNumber({
+            value: erc20DexBalanceDisplayNum,
+        });
 
         return {
             chainId: parseInt(chain),
@@ -291,23 +240,9 @@ export const fetchErc20TokenBalances = async (
                         combinedBalanceDisplay,
                     );
 
-                    // TODO (#1569): re-usable token display formatting
-                    const combinedBalanceDisplayTruncated =
-                        combinedBalanceDisplayNum
-                            ? combinedBalanceDisplayNum < 0.0001
-                                ? combinedBalanceDisplayNum.toExponential(2)
-                                : combinedBalanceDisplayNum < 2
-                                ? combinedBalanceDisplayNum.toPrecision(3)
-                                : combinedBalanceDisplayNum >= 100000
-                                ? formatAmountOld(combinedBalanceDisplayNum)
-                                : combinedBalanceDisplayNum.toLocaleString(
-                                      undefined,
-                                      {
-                                          minimumFractionDigits: 2,
-                                          maximumFractionDigits: 2,
-                                      },
-                                  )
-                            : undefined;
+                    const combinedBalanceDisplayTruncated = getFormattedNumber({
+                        value: combinedBalanceDisplayNum,
+                    });
 
                     updatedToken.dexBalance = newToken.dexBalance;
                     updatedToken.dexBalanceDisplay = newToken.dexBalanceDisplay;

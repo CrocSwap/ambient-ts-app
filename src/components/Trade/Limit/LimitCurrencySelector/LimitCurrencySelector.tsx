@@ -51,6 +51,7 @@ interface propsIF {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     tokenAorB: string;
     setUserOverrodeSurplusWithdrawalDefault: Dispatch<SetStateAction<boolean>>;
+    parseInput: (val: string) => void;
 }
 
 // central react functional component
@@ -70,6 +71,7 @@ function LimitCurrencySelector(props: propsIF) {
         handleChangeClick,
         tokenAorB,
         setUserOverrodeSurplusWithdrawalDefault,
+        parseInput,
     } = props;
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
@@ -121,7 +123,7 @@ function LimitCurrencySelector(props: propsIF) {
         >
             <TokenIcon
                 src={uriToHttp(thisToken.logoURI)}
-                alt={thisToken.name + 'token logo'}
+                alt={thisToken.symbol}
                 size='2xl'
             />
             <span className={styles.token_list_text}>{thisToken.symbol}</span>
@@ -140,7 +142,7 @@ function LimitCurrencySelector(props: propsIF) {
             : '';
 
     const walletBalanceLocaleString = tokenABalance
-        ? parseFloat(tokenABalance).toLocaleString(undefined, {
+        ? parseFloat(tokenABalance).toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
@@ -162,7 +164,7 @@ function LimitCurrencySelector(props: propsIF) {
     const walletAndSurplusBalanceLocaleString = tokenADexBalance
         ? (
               parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-          ).toLocaleString(undefined, {
+          ).toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
@@ -341,6 +343,7 @@ function LimitCurrencySelector(props: propsIF) {
                         thisToken={thisToken}
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
+                        parseInput={parseInput}
                     />
                 </div>
                 {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}

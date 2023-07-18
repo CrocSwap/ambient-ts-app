@@ -176,6 +176,40 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         !!props.crocEnv,
     ]);
 
+    // Reset loading states when token values change
+    useEffect(() => {
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'poolRangeData',
+                loadingStatus: true,
+            }),
+        );
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'poolTxData',
+                loadingStatus: true,
+            }),
+        );
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'poolOrderData',
+                loadingStatus: true,
+            }),
+        );
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'connectedUserPoolRangeData',
+                loadingStatus: true,
+            }),
+        );
+        dispatch(
+            setDataLoadingStatus({
+                datasetName: 'connectedUserPoolOrderData',
+                loadingStatus: true,
+            }),
+        );
+    }, [tradeData.tokenA.address, tradeData.tokenB.address]);
+
     // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
     // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
     useEffect(() => {
@@ -218,7 +252,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 omitEmpty: 'true',
                                 omitKnockout: 'true',
                                 addValue: 'true',
-                                n: '50',
+                                n: '200',
                             }),
                     )
                         .then((response) => response.json())
@@ -356,7 +390,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         simpleCalc: true,
                         annotateMEV: false,
                         ensResolution: true,
-                        n: 80,
+                        n: 200,
                         crocEnv: props.crocEnv,
                         lastBlockNumber: props.lastBlockNumber,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
@@ -393,7 +427,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                 quote: sortedTokens[1].toLowerCase(),
                                 poolIdx: props.chainData.poolIndex.toString(),
                                 chainId: props.chainData.chainId,
-                                n: '50',
+                                n: '200',
                             }),
                     )
                         .then((response) => response?.json())

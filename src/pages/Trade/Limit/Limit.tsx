@@ -15,7 +15,6 @@ import ContentContainer from '../../../components/Global/ContentContainer/Conten
 import LimitButton from '../../../components/Trade/Limit/LimitButton/LimitButton';
 import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
-import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
@@ -43,7 +42,7 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import { FiExternalLink } from 'react-icons/fi';
-import BypassLimitButton from '../../../components/Trade/Limit/LimitButton/BypassLimitButton';
+import BypassConfirmLimitButton from '../../../components/Trade/Limit/BypassConfirmLimitButton/BypassConfirmLimitButton';
 import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { IS_LOCAL_ENV } from '../../../constants';
@@ -57,6 +56,8 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
 
 export default function Limit() {
     const {
@@ -74,7 +75,7 @@ export default function Limit() {
     const { tokens } = useContext(TokenContext);
     const { tokenAAllowance, setRecheckTokenAApproval } =
         useContext(TradeTokenContext);
-    const { dexBalLimit, bypassConfirmLimit } = useContext(
+    const { mintSlippage, dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
 
@@ -177,18 +178,12 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
                     setEndDisplayPrice(displayPriceWithDenom);
 
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 0.0001
-                            ? displayPriceWithDenom.toExponential(2)
-                            : displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
+                    const limitRateTruncated = getFormattedNumber({
+                        value: displayPriceWithDenom,
+                        isInput: true,
+                        removeCommas: true,
+                    });
+
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -252,18 +247,11 @@ export default function Limit() {
                     const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
 
                     setEndDisplayPrice(displayPriceWithDenom);
-                    const limitRateTruncated =
-                        displayPriceWithDenom < 0.0001
-                            ? displayPriceWithDenom.toExponential(2)
-                            : displayPriceWithDenom < 2
-                            ? displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : displayPriceWithDenom.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
+                    const limitRateTruncated = getFormattedNumber({
+                        value: displayPriceWithDenom,
+                        isInput: true,
+                        removeCommas: true,
+                    });
                     setDisplayPrice(limitRateTruncated);
                     setPreviousDisplayPrice(limitRateTruncated);
                 });
@@ -513,7 +501,7 @@ export default function Limit() {
         resetConfirmation();
     };
 
-    const bypassLimitProps = {
+    const bypassConfirmLimitButtonProps = {
         newLimitOrderTransactionHash: newLimitOrderTransactionHash,
         txErrorCode: txErrorCode,
         tokenAInputQty: tokenAInputQty,
@@ -601,11 +589,11 @@ export default function Limit() {
                 ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -634,10 +622,10 @@ export default function Limit() {
         isSellTokenBase: isSellTokenBase,
         setLimitAllowed: setLimitAllowed,
         tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
         setTokenAInputQty: setTokenAInputQty,
-        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
+        tokenBInputQty: tokenBInputQty,
         setTokenBInputQty: setTokenBInputQty,
+        isSaveAsDexSurplusChecked: isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked: setIsSaveAsDexSurplusChecked,
         setLimitButtonErrorMessage: setLimitButtonErrorMessage,
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
@@ -692,7 +680,7 @@ export default function Limit() {
 
     const liquidityProviderFeeString = (
         tradeData.liquidityFee * 100
-    ).toLocaleString(undefined, {
+    ).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
@@ -710,7 +698,11 @@ export default function Limit() {
                 </div>
             )}{' '}
             <ContentContainer isOnTradeRoute>
-                <LimitHeader />
+                <OrderHeader
+                    slippage={mintSlippage}
+                    bypassConfirm={bypassConfirmLimit}
+                    settingsTitle='Limit Order'
+                />
                 {navigationMenu}
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -731,13 +723,14 @@ export default function Limit() {
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
                     />
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
+                    {isUserConnected === undefined ? null : isUserConnected ? (
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 ? (
                             approvalButton
                         ) : showBypassConfirmButton ? (
-                            <BypassLimitButton {...bypassLimitProps} />
+                            <BypassConfirmLimitButton
+                                {...bypassConfirmLimitButtonProps}
+                            />
                         ) : (
                             <>
                                 <LimitButton

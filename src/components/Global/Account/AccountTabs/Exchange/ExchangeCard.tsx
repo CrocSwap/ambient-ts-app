@@ -7,6 +7,7 @@ import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 
@@ -96,7 +97,7 @@ export default function ExchangeCard(props: propsIF) {
                             ? token?.logoURI
                             : ETH_ICON_URL,
                     )}
-                    alt=''
+                    alt={token?.symbol}
                     size='2xl'
                 />
                 <p className={styles.token_key}>
@@ -135,14 +136,11 @@ export default function ExchangeCard(props: propsIF) {
         <div className={styles.exchange_row}>
             {tokenInfo}
             <p className={styles.value}>
-                $
-                {(tokenUsdPrice * exchangeBalanceNum).toLocaleString(
-                    undefined,
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    },
-                )}
+                {getFormattedNumber({
+                    value: tokenUsdPrice * exchangeBalanceNum,
+                    isUSD: true,
+                    prefix: '$',
+                })}
             </p>
             <p className={styles.amount}>{exchangeBalanceTruncated}</p>
         </div>

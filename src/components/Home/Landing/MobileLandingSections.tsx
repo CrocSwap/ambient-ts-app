@@ -11,27 +11,9 @@ import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import TopPools from '../TopPools/TopPools';
 import Investors from './Investors';
-import { useTranslation } from 'react-i18next';
 
 export default function MobileLandingSections() {
-    const { t } = useTranslation();
-    // eslint-disable-next-line
-
-    // const heroSection = (
-    //     <section className={`${styles.mobile_card} ${styles.hero} `} id='hero'>
-    //         <>
-    //             <div className={styles.main_logo}>
-    //                 <img src={logoText} alt='ambient' />
-    //             </div>
-    //             <div style={{ padding: ' 20px' }}>
-    //                 <Stats />
-    //             </div>
-    //         </>
-
-    //         <TradeNowButton />
-    //     </section>
-    // );
-    const heroSection2 = (
+    const heroSection = (
         <section className={`${styles.mobile_card} ${styles.hero} `} id='hero'>
             <>
                 <div className={styles.main_logo}>
@@ -45,17 +27,7 @@ export default function MobileLandingSections() {
             <TradeNowButton />
         </section>
     );
-    const heroSection3 = (
-        <section className={`${styles.mobile_card} ${styles.hero} `} id='hero'>
-            <>
-                <div className={styles.main_logo}>
-                    <img src={logoText} alt='ambient' />
-                </div>
-            </>
 
-            <TradeNowButton />
-        </section>
-    );
     const topPoolsSection = (
         <section
             className={`${styles.mobile_card} ${styles.pools} `}
@@ -63,8 +35,7 @@ export default function MobileLandingSections() {
             id='toppools'
         >
             <>
-                <h3> {t('topPools')}</h3>
-                <TopPools noTitle gap='8px' />
+                <Stats />
             </>
         </section>
     );
@@ -185,7 +156,7 @@ export default function MobileLandingSections() {
 
     return (
         <div className={styles.main_container}>
-            {heroSection2}
+            {heroSection}
 
             {topPoolsSection}
 

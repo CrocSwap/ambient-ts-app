@@ -5,6 +5,13 @@
     border: 2px dashed rgba(19, 19, 134, 0.8);
 }
 
+.annotation-line > .limitPriceLine {
+    stroke:  rgba(235, 235, 255);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+    border: 2px dashed rgba(19, 19, 134, 0.8);
+}
+
 .transaction_details_graph_placeholder {
     background: none no-repeat;
     background-position: center 90%;

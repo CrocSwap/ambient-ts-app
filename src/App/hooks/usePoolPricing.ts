@@ -195,12 +195,12 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         const priceChangeString =
                             priceChangePercent > 0
                                 ? '+' +
-                                  priceChangePercent.toLocaleString(undefined, {
+                                  priceChangePercent.toLocaleString('en-US', {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) +
                                   '%'
-                                : priceChangePercent.toLocaleString(undefined, {
+                                : priceChangePercent.toLocaleString('en-US', {
                                       minimumFractionDigits: 2,
                                       maximumFractionDigits: 2,
                                   }) + '%';

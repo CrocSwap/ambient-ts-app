@@ -1,14 +1,12 @@
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import styles from './TradeNowButton.module.css';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
-interface Props {
+interface propsIF {
     inNav?: boolean;
 }
-export default function TradeNowButton(props: Props) {
+export default function TradeNowButton(props: propsIF) {
     const { inNav } = props;
-    const { t } = useTranslation();
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     const mobileButton = (
@@ -48,7 +46,7 @@ export default function TradeNowButton(props: Props) {
                         inNav && styles.nav_button_text
                     }`}
                 >
-                    {t('marketCTA')}
+                    Trade Now
                 </p>
             </div>
         </Link>

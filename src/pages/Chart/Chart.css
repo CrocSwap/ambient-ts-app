@@ -134,6 +134,19 @@ div.liqTooltip {
     border-radius: var(--border-radius);
 }
 
+div.xAxisTooltip {
+    position: absolute;
+    text-align: center;
+    align-items: center;
+
+    background: rgba(10, 10, 19, 0.47);
+    padding: 3px;
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+}
+
 .liqTooltip {
     position: absolute;
     text-align: center;
@@ -231,12 +244,43 @@ label {
     font-size: 12px;
 }
 
-/* #d3fc_group {
-    display: flex;
-    height: 100%;
-    width: 100%;
-    flex-direction: column;
-} */
+.lastCandleDiv {
+    position: absolute;
+    text-align: center;
+    cursor: pointer;
+    pointer-events: none;
+
+    background: rgba(10, 10, 19, 0.47);
+    padding: 6px;
+    font-size: medium;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.47);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+    width: 250px;
+}
+
+.lastCandleTooltip-enter {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.lastCandleTooltip-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.lastCandleTooltip-exit {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.lastCandleTooltip-exit-active {
+    opacity: 0;
+    transform: translateX(-100%);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
 
 .scroll {
     box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.47);
@@ -254,15 +298,6 @@ label {
         font-size: large;
     }
 }
-
-/* @media  (max-width: 1320px) and (min-width: 1320px) {
-    .popup {
-        font-size: medium;
-        top: 50%;
-    } 
-    
-
-} */
 
 @media only screen and (max-width: 1325px) {
     .popup {

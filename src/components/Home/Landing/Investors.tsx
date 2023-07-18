@@ -7,10 +7,10 @@ import yunt from '../../../assets/images/investors/yunt.svg';
 import susa from '../../../assets/images/investors/susa.svg';
 import quantstamp from '../../../assets/images/investors/quantstamp.svg';
 import hypotenuse from '../../../assets/images/investors/hypotenuse.svg';
-import PreSeed from '../../../assets/images/investors/Pre-Seed.svg';
 import PositiveSum from '../../../assets/images/investors/positivesum.svg';
 import motivate from '../../../assets/images/investors/motivate.svg';
 import styles from './Investors.module.css';
+
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 export default function Investors() {
     const row1 = (
@@ -48,12 +48,12 @@ export default function Investors() {
             <span>Dogetoshi</span>
             <span>afkbyte</span>
             <span>Jai Prasad</span>
-            <span>Don Sun</span>
+            <span>Don Ho</span>
         </div>
     );
     const row6 = (
         <div className={styles.row6}>
-            <img src={PreSeed} alt='pre-seed' width='80px' />
+            <h3>Pre-Seed</h3>
         </div>
     );
     const row7 = (
@@ -67,7 +67,7 @@ export default function Investors() {
     const preSeedMobile = (
         <div className={styles.pre_seed_mobile}>
             <div className={styles.title_row}>
-                <img src={PreSeed} alt='pre-seed' width='80px' />
+                <h3>Pre-Seed</h3>
             </div>
             <div className={styles.image_row}>
                 <img src={PositiveSum} alt='positive sum' />
