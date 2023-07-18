@@ -1,10 +1,11 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { FiRefreshCw } from 'react-icons/fi';
 import TopPools from '../../components/Global/Analytics/TopPools';
 import { ExploreContext } from '../../contexts/ExploreContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import styled from 'styled-components';
+import { useTimeElapsed, useTimeElapsedIF } from './useTimeElapsed';
 
 export default function Explore() {
     const { crocEnv, chainData } = useContext(CrocEnvContext);
@@ -13,15 +14,15 @@ export default function Explore() {
     // full expanded data set
     const { pools } = useContext(ExploreContext);
 
-    // time since data was retrieved to display in DOM
-    const [timeSince, setTimeSince] = useState<string>('');
+    // hook to produce human-readable time since fetch for DOM
+    const timeSince: useTimeElapsedIF = useTimeElapsed(pools.retrievedAt);
 
     // fn wrapper to get pools
     const getPools = async () => {
         // make sure crocEnv exists and pool metadata is present
         if (crocEnv && poolList.length) {
             // clear text in DOM for time since last update
-            setTimeSince('');
+            timeSince.reset();
             // use metadata to get expanded pool data
             pools.getAll(poolList, crocEnv, chainData.chainId);
             // disable autopolling of infura
@@ -36,71 +37,12 @@ export default function Explore() {
         pools.autopoll.allowed && getPools();
     }, [crocEnv, chainData.chainId, poolList.length]);
 
-    // logic to update DOM text with time since data was retrieved
-    const timeoutId = useRef<NodeJS.Timeout | null>(null);
-    useEffect(() => {
-        // timestamp when data was successfully fetched
-        const { retrievedAt } = pools;
-        // constant defining 1s in ms
-        const ONE_SECOND = 1000;
-        // logic to translate elapsed time to a readable string
-        // this logic calls itself recursively
-        const updateRetrievedAt = () => {
-            // make sure that data exists (implied by non-null value)
-            if (retrievedAt) {
-                // time elapsed since fetch in ms
-                const elapsedTime: number = Date.now() - retrievedAt;
-                // logic router to get human-readable string for DOM
-                let elapsedText: string;
-                if (elapsedTime > ONE_SECOND * 1800) {
-                    elapsedText = '> 30 min';
-                } else if (elapsedTime >= ONE_SECOND * 60) {
-                    elapsedText = calcTime(elapsedTime, 'minutes') + ' min ago';
-                } else if (elapsedTime >= ONE_SECOND) {
-                    elapsedText = calcTime(elapsedTime, 'seconds') + ' sec ago';
-                } else {
-                    elapsedText = 'just now';
-                }
-                // update the DOM with a readable text string
-                setTimeSince('updated: ' + elapsedText);
-                // call recursively at 15s
-                timeoutId.current = setTimeout(
-                    updateRetrievedAt,
-                    ONE_SECOND * 15,
-                );
-            } else {
-                // re-check data in two seconds if fetch is not yet complete
-                timeoutId.current = setTimeout(
-                    updateRetrievedAt,
-                    ONE_SECOND * 2,
-                );
-            }
-            // logic to convert elapsed time in ms to seconds or minutes
-            function calcTime(
-                timeInMs: number,
-                denom: 'minutes' | 'seconds',
-            ): string {
-                return Math.floor(
-                    timeInMs / (denom === 'minutes' ? 60000 : 1000),
-                ).toString();
-            }
-        };
-        // run recursive text-updating fn
-        updateRetrievedAt();
-        // clear timeout when the component unmounts
-        return () => {
-            if (timeoutId.current) {
-                clearTimeout(timeoutId.current);
-            }
-        };
-    }, [pools.retrievedAt]);
-
     return (
         <Section>
             <MainWrapper>
                 <h2>Top Pools on Ambient</h2>
                 <Refresh>
-                    <p>{timeSince}</p>
+                    <p>{timeSince.value}</p>
                     <Button onClick={() => getPools()}>
                         <RefreshIcon />
                     </Button>
