@@ -63,7 +63,7 @@ export default function Explore() {
                 }
                 // update the DOM with a readable text string
                 setTimeSince('updated: ' + elapsedText);
-                // call recursively at 10s
+                // call recursively at 15s
                 timeoutId.current = setTimeout(
                     updateRetrievedAt,
                     ONE_SECOND * 15,
