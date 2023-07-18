@@ -1,10 +1,10 @@
 import styled from 'styled-components';
+import { BodyText } from '..';
 
 const SidebarPoolsListViewMoreContainer = styled.div`
     display: flex;
     justify-content: center;
-    font-size: var(--body-size);
-    line-height: 12px;
+    ${BodyText}
     color: var(--accent4);
     cursor: pointer;
     white-space: nowrap;

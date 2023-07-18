@@ -1,12 +1,12 @@
 import styled from 'styled-components';
+import { BodyText } from '..';
 
 const SidebarPoolsListItemColumn = styled.div`
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     font-weight: 300;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
+    ${BodyText}
     color: var(--text2);
     padding: 5px;
     max-height: 25px;

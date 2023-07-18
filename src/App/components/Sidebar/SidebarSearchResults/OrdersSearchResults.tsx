@@ -1,15 +1,15 @@
 import { useContext } from 'react';
-import styles from '../SidebarSearchResults.module.css';
-import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import styles from './SidebarSearchResults.module.css';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     useLinkGen,
     linkGenMethodsIF,
-} from '../../../../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
+} from '../../../../utils/hooks/useLinkGen';
+import { getFormattedNumber } from '../../../functions/getFormattedNumber';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];

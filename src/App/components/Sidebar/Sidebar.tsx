@@ -3,7 +3,7 @@ import { useState, useRef, useContext, memo } from 'react';
 import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
-import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
+import SidebarAccordion from './SidebarAccordion';
 import TopPools from '../../../components/Global/Sidebar/TopPools';
 import FavoritePools from '../../../components/Global/Sidebar/FavoritePools';
 import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
@@ -29,7 +29,7 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools';
 import {
     useSidebarSearch,
     sidebarSearchIF,
-} from './useSidebarSearch/useSidebarSearch';
+} from '../../hooks/useSidebarSearch';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';

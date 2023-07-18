@@ -3,12 +3,12 @@ import { useState, ReactNode, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 // START: Import Local Files
-import styles from '../Sidebar.module.css';
+import styles from './Sidebar.module.css';
 import { useAccount } from 'wagmi';
-import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { IS_LOCAL_ENV } from '../../../../constants';
-import { sidebarMethodsIF } from '../../../hooks/useSidebar';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { IS_LOCAL_ENV } from '../../../constants';
+import { sidebarMethodsIF } from '../../hooks/useSidebar';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 // interface for React functional component props
 interface propsIF {

@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { BodyText } from '..';
 
 const SidebarPoolsListItemContainer = styled(Link)`
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     font-weight: 300;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
+    ${BodyText}
     color: var(--text2);
     padding: 5px;
     max-height: 25px;

@@ -1,15 +1,15 @@
-import { PositionIF } from '../../../../../utils/interfaces/exports';
-import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { PositionIF } from '../../../../utils/interfaces/exports';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
-import styles from '../SidebarSearchResults.module.css';
+import styles from './SidebarSearchResults.module.css';
 import {
     useLinkGen,
     linkGenMethodsIF,
-} from '../../../../../utils/hooks/useLinkGen';
-import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
+} from '../../../../utils/hooks/useLinkGen';
+import { getFormattedNumber } from '../../../functions/getFormattedNumber';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface propsIF {
     searchedPositions: PositionIF[];

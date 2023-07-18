@@ -12,12 +12,12 @@ import {
     PoolIF,
     TokenIF,
     TransactionIF,
-} from '../../../../utils/interfaces/exports';
-import matchSearchInput from './matchSearchInput';
-import { tokenMethodsIF } from '../../../hooks/useTokens';
-import { ZERO_ADDRESS } from '../../../../constants';
-import { tokenListURIs } from '../../../../utils/data/tokenListURIs';
-import { PoolContext } from '../../../../contexts/PoolContext';
+} from '../../utils/interfaces/exports';
+import matchSearchInput from '../functions/matchSearchInput';
+import { tokenMethodsIF } from './useTokens';
+import { ZERO_ADDRESS } from '../../constants';
+import { tokenListURIs } from '../../utils/data/tokenListURIs';
+import { PoolContext } from '../../contexts/PoolContext';
 
 export interface sidebarSearchIF {
     setInput: Dispatch<SetStateAction<string>>;
