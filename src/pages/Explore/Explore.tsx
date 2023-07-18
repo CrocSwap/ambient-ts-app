@@ -76,6 +76,7 @@ const MainWrapper = styled.p`
     align-items: center;
     justify-content: space-between;
     padding: 0 4px;
+    user-select: none;
 `;
 
 const Button = styled.button`
