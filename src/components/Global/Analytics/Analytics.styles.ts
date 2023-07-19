@@ -204,14 +204,14 @@ const TableHeadWrapper = styled.thead`
     position: sticky;
     top: 0;
     height: 25px;
-    z-index: 10;
+    z-index: 3;
     &::before,
     &::after {
         content: '';
         position: absolute;
         left: 0;
         right: 0;
-        z-index: 20;
+        z-index: 5;
     }
 
     &::before {
