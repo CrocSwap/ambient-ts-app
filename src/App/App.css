@@ -122,7 +122,7 @@ p:focus-visible {
     align-items: center;
     right: 0;
     bottom: 0px;
-    z-index: 2;
+    z-index: 999;
 }
 
 .primary_apr {
