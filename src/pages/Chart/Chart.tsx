@@ -356,7 +356,7 @@ export default function Chart(props: propsIF) {
     const [firstCandle, setFirstCandle] = useState<number>();
 
     const unparsedCandleData = useMemo(() => {
-        const data = unparsedData.candles;
+        const data = unparsedData.candles.sort((a, b) => b.time - a.time);
         if (poolPriceWithoutDenom) {
             const fakeData = {
                 time: data[0].time + period,
