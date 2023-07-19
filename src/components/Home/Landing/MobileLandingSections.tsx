@@ -28,15 +28,14 @@ export default function MobileLandingSections() {
         </section>
     );
 
-    const topPoolsSection = (
+    const statsSection = (
         <section
-            className={`${styles.mobile_card} ${styles.pools} `}
-            style={{ width: '100vw', paddingTop: '56px' }}
+            className={`${styles.mobile_card}  `}
+            style={{ width: '100vw' }}
             id='toppools'
         >
-            <>
-                <Stats />
-            </>
+            <div className={styles.bg_4} />
+            <Stats />
         </section>
     );
 
@@ -158,7 +157,7 @@ export default function MobileLandingSections() {
         <div className={styles.main_container}>
             {heroSection}
 
-            {topPoolsSection}
+            {statsSection}
 
             {secondRow}
 

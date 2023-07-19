@@ -13,7 +13,7 @@ interface TopPoolsPropsIF {
 export default function TopPools(props: TopPoolsPropsIF) {
     const { topPools } = useContext(CrocEnvContext);
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
-    const poolData = showMobileVersion ? topPools.slice(0, 3) : topPools;
+    const poolData = showMobileVersion ? topPools.slice(0, 2) : topPools;
 
     return (
         <div className={styles.container}>

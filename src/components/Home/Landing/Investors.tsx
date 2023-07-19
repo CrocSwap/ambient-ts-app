@@ -80,11 +80,11 @@ export default function Investors() {
         <>
             <div className={styles.mobile_container}>
                 <div className={styles.mobile_content}>
-                    <img src={blocktower} alt='block tower' />
-                    <img src={jane} alt='jane street' />
-                    <img src={circle} alt='circle' />
-                    <img src={tensai} alt='tensai capital' />
-                    <img src={naval} alt='naval ravikant' />
+                    <img src={blocktower} alt='block tower' width='180px' />
+                    <img src={jane} alt='jane street' width='180px' />
+                    <img src={circle} alt='circle' width='180px' />
+                    <img src={tensai} alt='tensai capital' width='180px' />
+                    <img src={naval} alt='naval ravikant' width='180px' />
                     <img src={yunt} alt='yunt capital' width='200px' />
                     <img src={susa} alt='susa' width='50px' />
                     <img src={quantstamp} alt='quantstamp' width='200px' />
