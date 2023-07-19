@@ -204,11 +204,12 @@ const PageHeader = function () {
             document.title = 'My Account ~ Ambient';
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
+            const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
             const ensNameOrAddressTruncated = isAddressEns
-                ? pathNoPrefix.length > 15
-                    ? trimString(pathNoPrefix, 10, 3, '…')
-                    : pathNoPrefix
-                : trimString(pathNoPrefix, 6, 0, '…');
+                ? pathNoPrefixDecoded.length > 15
+                    ? trimString(pathNoPrefixDecoded, 10, 3, '…')
+                    : pathNoPrefixDecoded
+                : trimString(pathNoPrefixDecoded, 6, 0, '…');
             document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
         } else if (
             location.pathname.includes('swap') ||
