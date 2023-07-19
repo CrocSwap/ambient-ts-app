@@ -47,7 +47,9 @@ export default function Explore() {
             <MainWrapper>
                 <TitleText>Top Pools on Ambient</TitleText>
                 <Refresh>
-                    <RefreshText>{timeSince.value}</RefreshText>
+                    {/* <RefreshText>{timeSince.value}</RefreshText> */}
+                    {/* Above line was commented to temporarily remove 'Last Updated: ' timestamp */}
+                    {/* Refer to issue #2737 */}
 
                     <RefreshButton onClick={() => getPools()}>
                         <RefreshIcon />
@@ -116,12 +118,12 @@ const RefreshButton = styled.button`
     outline: none;
 `;
 
-const RefreshText = styled.p`
-    /* Hide the RefreshText on screens smaller than 600px */
-    @media (max-width: 600px) {
-        display: none;
-    }
-`;
+// const RefreshText = styled.p`
+//     /* Hide the RefreshText on screens smaller than 600px */
+//     @media (max-width: 600px) {
+//         display: none;
+//     }
+// `;
 const RefreshIcon = styled(FiRefreshCw)`
     font-size: 18px;
     cursor: pointer;
