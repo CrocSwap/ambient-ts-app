@@ -1,28 +1,28 @@
-import { Dispatch, SetStateAction, useEffect, memo, useContext } from 'react';
-import styles from '../../../Global/TokenInput/TokenInput.module.css';
+import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { ZERO_ADDRESS } from '../../../../constants';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import {
-    setIsTokenAPrimaryRange,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import {
     setPrimaryQuantityRange,
+    setIsTokenAPrimaryRange,
     setRangeTicksCopied,
 } from '../../../../utils/state/tradeDataSlice';
-import { ZERO_ADDRESS } from '../../../../constants';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import tokenArrow from '../../../../assets/images/icons/plus.svg';
-import {
-    useLinkGen,
-    linkGenMethodsIF,
-} from '../../../../utils/hooks/useLinkGen';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import TokenInput from '../../../Global/TokenInput/TokenInput';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import styles from '../../../Global/TokenInput/TokenInput.module.css';
+import tokenArrow from '../../../../assets/images/icons/plus.svg';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -75,11 +75,11 @@ function RangeTokenInput(props: propsIF) {
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const dispatch = useAppDispatch();
-
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-
     const {
         tokenA,
         tokenB,
@@ -89,22 +89,40 @@ function RangeTokenInput(props: propsIF) {
     } = useAppSelector((state) => state.tradeData);
 
     const isTokenABase = tokenA.address === baseTokenAddress;
+    const isTokenAEth = tokenA.address === ZERO_ADDRESS;
+    const isTokenBEth = tokenB.address === ZERO_ADDRESS;
+
     const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
-
     const tokenADexBalance = isTokenABase
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
-
     const tokenBDexBalance = isTokenABase
         ? quoteTokenDexBalance
         : baseTokenDexBalance;
 
-    const isTokenAEth = tokenA.address === ZERO_ADDRESS;
-    const isTokenBEth = tokenB.address === ZERO_ADDRESS;
+    useEffect(() => {
+        if (isPoolInitialized) {
+            updateTokenQty();
+        }
+    }, [depositSkew, tokenA.address]);
 
-    // hook to generate navigation actions with pre-loaded path
-    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    useEffect(() => {
+        handleRangeButtonMessage(
+            tokenA,
+            tokenAInputQty,
+            isWithdrawTokenAFromDexChecked,
+            tokenABalance,
+            tokenADexBalance,
+        );
+        handleRangeButtonMessage(
+            tokenB,
+            tokenBInputQty,
+            isWithdrawTokenBFromDexChecked,
+            tokenBBalance,
+            tokenBDexBalance,
+        );
+    }, [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked]);
 
     const resetTokenQuantities = () => {
         setTokenAInputQty('0');
@@ -213,29 +231,6 @@ function RangeTokenInput(props: propsIF) {
             }
         }
     };
-
-    useEffect(() => {
-        if (isPoolInitialized) {
-            updateTokenQty();
-        }
-    }, [depositSkew, tokenA.address]);
-
-    useEffect(() => {
-        handleRangeButtonMessage(
-            tokenA,
-            tokenAInputQty,
-            isWithdrawTokenAFromDexChecked,
-            tokenABalance,
-            tokenADexBalance,
-        );
-        handleRangeButtonMessage(
-            tokenB,
-            tokenBInputQty,
-            isWithdrawTokenBFromDexChecked,
-            tokenBBalance,
-            tokenBDexBalance,
-        );
-    }, [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked]);
 
     return (
         <section className={styles.token_input_container}>

@@ -23,88 +23,77 @@ export const ExtraInfo = (props: PropsIF) => {
     const dispatch = useAppDispatch();
 
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
-
-    const RangeExtraInfoDetails = (
-        <div className={styles.extra_details_container}>
-            <div className={styles.extra_details}>
-                {extraInfo.map((item, idx) => (
-                    <div
-                        className={styles.extra_row}
-                        key={idx}
-                        tabIndex={0}
-                        aria-label={`${item.title} is ${item.data}`}
-                    >
-                        <div className={styles.align_center}>
-                            <div>{item.title}</div>
-                            <TooltipComponent title={item.title} />
-                        </div>
-                        <div className={styles.data}>{item.data}</div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-
-    const extraDetailsOrNull = showExtraInfo ? RangeExtraInfoDetails : null;
-
     const [isConvHovered, setIsConHovered] = useState(false);
-
-    const gasCostAriaLabel = `Gas cost is ${gasPrice}. Conversion rate is ${conversionRate} `;
-
-    const extraInfoSection = (
-        <button
-            className={`${styles.extra_info_content} ${
-                showDropdown && styles.extra_info_content_active
-            }`}
-            onClick={
-                showDropdown
-                    ? () => setShowExtraInfo(!showExtraInfo)
-                    : () => setShowExtraInfo(false)
-            }
-            aria-label={gasCostAriaLabel}
-        >
-            <div className={styles.gas_pump}>
-                <FaGasPump size={15} /> {gasPrice ?? '…'}
-            </div>
-            <div
-                className={styles.token_amount}
-                onClick={(e) => {
-                    dispatch(toggleDidUserFlipDenom());
-                    e.stopPropagation();
-                }}
-                onMouseEnter={() => setIsConHovered(true)}
-                onMouseOut={() => setIsConHovered(false)}
-            >
-                {conversionRate}
-            </div>
-
-            {showDropdown && !showExtraInfo && (
-                <RiArrowDownSLine
-                    size={22}
-                    className={
-                        isConvHovered
-                            ? styles.non_hovered_arrow
-                            : styles.dropdown_arrow
-                    }
-                />
-            )}
-            {showDropdown && showExtraInfo && (
-                <RiArrowUpSLine
-                    size={22}
-                    className={
-                        isConvHovered
-                            ? styles.non_hovered_arrow
-                            : styles.dropdown_arrow
-                    }
-                />
-            )}
-        </button>
-    );
 
     return (
         <>
-            {extraInfoSection}
-            {extraDetailsOrNull}
+            <button
+                className={`${styles.extra_info_content} ${
+                    showDropdown && styles.extra_info_content_active
+                }`}
+                onClick={
+                    showDropdown
+                        ? () => setShowExtraInfo(!showExtraInfo)
+                        : () => setShowExtraInfo(false)
+                }
+                aria-label={`Gas cost is ${gasPrice}. Conversion rate is ${conversionRate}.`}
+            >
+                <div className={styles.gas_pump}>
+                    <FaGasPump size={15} /> {gasPrice ?? '…'}
+                </div>
+                <div
+                    className={styles.token_amount}
+                    onClick={(e) => {
+                        dispatch(toggleDidUserFlipDenom());
+                        e.stopPropagation();
+                    }}
+                    onMouseEnter={() => setIsConHovered(true)}
+                    onMouseOut={() => setIsConHovered(false)}
+                >
+                    {conversionRate}
+                </div>
+
+                {showDropdown && !showExtraInfo && (
+                    <RiArrowDownSLine
+                        size={22}
+                        className={
+                            isConvHovered
+                                ? styles.non_hovered_arrow
+                                : styles.dropdown_arrow
+                        }
+                    />
+                )}
+                {showDropdown && showExtraInfo && (
+                    <RiArrowUpSLine
+                        size={22}
+                        className={
+                            isConvHovered
+                                ? styles.non_hovered_arrow
+                                : styles.dropdown_arrow
+                        }
+                    />
+                )}
+            </button>
+            {showExtraInfo && (
+                <div className={styles.extra_details_container}>
+                    <div className={styles.extra_details}>
+                        {extraInfo.map((item, idx) => (
+                            <div
+                                className={styles.extra_row}
+                                key={idx}
+                                tabIndex={0}
+                                aria-label={`${item.title} is ${item.data}`}
+                            >
+                                <div className={styles.align_center}>
+                                    <div>{item.title}</div>
+                                    <TooltipComponent title={item.title} />
+                                </div>
+                                <div className={styles.data}>{item.data}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </>
     );
 };

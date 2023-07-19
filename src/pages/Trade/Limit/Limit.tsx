@@ -1,58 +1,52 @@
-// START: Import React and Dongles
-import { useState, useEffect, useContext } from 'react';
-
 import {
-    tickToPrice,
     pinTickLower,
     pinTickUpper,
+    tickToPrice,
     priceHalfAboveTick,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
-
-// START: Import React Functional Components
-import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
-import Modal from '../../../components/Global/Modal/Modal';
+import { useContext, useState, useEffect } from 'react';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Global/Button/Button';
-import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
-
-// START: Import Local Files
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
+import Modal from '../../../components/Global/Modal/Modal';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
+import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
+import LimitRate from '../../../components/Trade/Limit/LimitRate/LimitRate';
+import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/LimitTokenInput';
+import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
+import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
+import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
+import { IS_LOCAL_ENV } from '../../../constants';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import {
+    useAppSelector,
+    useAppDispatch,
+} from '../../../utils/hooks/reduxToolkit';
+import {
+    addPendingTx,
+    addTransactionByType,
+    removePendingTx,
+    addReceipt,
+} from '../../../utils/state/receiptDataSlice';
 import {
     setLimitTick,
     setLimitTickCopied,
 } from '../../../utils/state/tradeDataSlice';
 import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-} from '../../../utils/state/receiptDataSlice';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
     TransactionError,
+    isTransactionReplacedError,
+    isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
-import { IS_LOCAL_ENV } from '../../../constants';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { useTradeData } from '../../../App/hooks/useTradeData';
-import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import LimitRate from '../../../components/Trade/Limit/LimitRate/LimitRate';
-import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
-import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/LimitTokenInput';
-import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -80,71 +74,102 @@ export default function Limit() {
         UserPreferenceContext,
     );
 
+    const dispatch = useAppDispatch();
+    const [isModalOpen, openModal, closeModal] = useModal();
+    const {
+        baseToken,
+        quoteToken,
+        tokenA,
+        tokenB,
+        isTokenAPrimary,
+        limitTick,
+        poolPriceNonDisplay,
+        liquidityFee,
+        isDenomBase,
+        limitTickCopied,
+        primaryQuantity,
+    } = useAppSelector((state) => state.tradeData);
+    const { sessionReceipts, pendingTransactions } = useAppSelector(
+        (state) => state.receiptData,
+    );
     const { limitTickFromParams } = useTradeData();
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const tokenA = tradeData.tokenA;
-    const tokenB = tradeData.tokenB;
-
-    const dispatch = useAppDispatch();
-
-    const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
-
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
-        tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+        isTokenAPrimary ? primaryQuantity : '',
     );
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
-        !tradeData.isTokenAPrimary ? tradeData?.primaryQuantity : '',
+        !isTokenAPrimary ? primaryQuantity : '',
     );
-
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] =
         useState(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(
         dexBalLimit.outputToDexBal.isEnabled,
     );
-
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] =
         useState<string>('');
     const [priceInputFieldBlurred, setPriceInputFieldBlurred] = useState(false);
-
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] =
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
-
-    const resetConfirmation = () => {
-        setShowConfirmation(true);
-        setTxErrorCode('');
-    };
-
-    const isTokenAPrimary = tradeData.isTokenAPrimary;
-    const limitTick = tradeData.limitTick;
-    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
-
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
     const [middleDisplayPrice, setMiddleDisplayPrice] = useState<number>(0);
     const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<
         string | undefined
     >();
-
     const [displayPrice, setDisplayPrice] = useState('');
     const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
+    const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
+    const [showBypassConfirmButton, setShowBypassConfirmButton] =
+        useState(false);
+    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const isDenomBase = tradeData.isDenomBase;
-    const limitTickCopied = tradeData.limitTickCopied;
+    const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
+
+    let receiveReceiptHashes: Array<string> = [];
+    const currentPendingTransactionsArray = pendingTransactions.filter(
+        (hash: string) => !receiveReceiptHashes.includes(hash),
+    );
+
+    const tokenABalance = isSellTokenBase
+        ? baseTokenBalance
+        : quoteTokenBalance;
+    const tokenADexBalance = isSellTokenBase
+        ? baseTokenDexBalance
+        : quoteTokenDexBalance;
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+    const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenAInputQty || '0');
+    const isTokenAAllowanceSufficient =
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+
+    // TODO: @Emily refactor this to take a token data object
+    // values if either token needs to be confirmed before transacting
+    const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
+    const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
+    // value showing if no acknowledgement is necessary
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
+
+    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
+        'en-US',
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
     useEffect(() => {
         if (limitTickFromParams && limitTick === undefined) {
             dispatch(setLimitTick(limitTickFromParams));
         }
     }, [limitTickFromParams, limitTick === undefined]);
-
-    const { baseToken, quoteToken } = tradeData;
-
-    const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
     useEffect(() => {
         (async () => {
@@ -317,7 +342,60 @@ export default function Limit() {
         isSellTokenBase,
     ]);
 
-    const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
+    useEffect(() => {
+        updateOrderValidityStatus();
+    }, [
+        limitTick,
+        poolPriceNonDisplay,
+        tokenAInputQty === '' && tokenBInputQty === '',
+    ]);
+
+    useEffect(() => {
+        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
+    }, [sessionReceipts]);
+
+    useEffect(() => {
+        if (
+            !currentPendingTransactionsArray.length &&
+            !isWaitingForWallet &&
+            txErrorCode === ''
+        ) {
+            setShowBypassConfirmButton(false);
+        }
+    }, [
+        currentPendingTransactionsArray.length,
+        isWaitingForWallet,
+        txErrorCode === '',
+    ]);
+
+    useEffect(() => {
+        setNewLimitOrderTransactionHash('');
+        setShowBypassConfirmButton(false);
+    }, [baseToken.address + quoteToken.address]);
+
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageLimitCostInGasDrops = 193000;
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                averageLimitCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
+
+            setOrderGasPriceInDollars(
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                    prefix: '$',
+                }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+
+    const resetConfirmation = () => {
+        setShowConfirmation(true);
+        setTxErrorCode('');
+    };
 
     const updateLimitErrorMessage = () =>
         setLimitButtonErrorMessage(
@@ -357,69 +435,19 @@ export default function Limit() {
         }
     };
 
-    useEffect(() => {
-        updateOrderValidityStatus();
-    }, [
-        limitTick,
-        poolPriceNonDisplay,
-        tokenAInputQty === '' && tokenBInputQty === '',
-    ]);
-
-    const [showBypassConfirmButton, setShowBypassConfirmButton] =
-        useState(false);
-    const receiptData = useAppSelector((state) => state.receiptData);
-
-    const sessionReceipts = receiptData.sessionReceipts;
-
-    const pendingTransactions = receiptData.pendingTransactions;
-
-    let receiveReceiptHashes: Array<string> = [];
-
-    useEffect(() => {
-        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
-    }, [sessionReceipts]);
-
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
-
     const handleLimitButtonClickWithBypass = () => {
         setShowBypassConfirmButton(true);
         sendLimitOrder();
     };
 
-    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
-
-    useEffect(() => {
-        if (
-            !currentPendingTransactionsArray.length &&
-            !isWaitingForWallet &&
-            txErrorCode === ''
-        ) {
-            setShowBypassConfirmButton(false);
-        }
-    }, [
-        currentPendingTransactionsArray.length,
-        isWaitingForWallet,
-        txErrorCode === '',
-    ]);
-
-    useEffect(() => {
-        setNewLimitOrderTransactionHash('');
-        setShowBypassConfirmButton(false);
-    }, [baseToken.address + quoteToken.address]);
-
     const sendLimitOrder = async () => {
-        IS_LOCAL_ENV && console.debug('Send limit');
         if (!crocEnv) return;
         if (limitTick === undefined) return;
         resetConfirmation();
         setIsWaitingForWallet(true);
 
-        IS_LOCAL_ENV && console.debug({ limitTick });
-
-        const sellToken = tradeData.tokenA.address;
-        const buyToken = tradeData.tokenB.address;
+        const sellToken = tokenA.address;
+        const buyToken = tokenB.address;
         const sellQty = tokenAInputQty;
         const buyQty = tokenBInputQty;
 
@@ -433,17 +461,12 @@ export default function Limit() {
             limitTick,
         );
         if (await ko.willMintFail()) {
-            IS_LOCAL_ENV &&
-                console.debug(
-                    'Cannot send limit order: Knockout price inside spread',
-                );
             return;
         }
 
         let tx;
         try {
             tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
-            IS_LOCAL_ENV && console.debug(tx.hash);
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
             setIsWaitingForWallet(false);
@@ -451,7 +474,7 @@ export default function Limit() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Add Limit ${tradeData.tokenA.symbol}→${tradeData.tokenB.symbol}`,
+                        txType: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
                     }),
                 );
         } catch (error) {
@@ -472,7 +495,7 @@ export default function Limit() {
         } catch (e) {
             const error = e as TransactionError;
             console.error({ error });
-            // The user used "speed up" or something similar
+            // The user used 'speed up' or something similar
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 IS_LOCAL_ENV && console.debug('repriced');
@@ -507,8 +530,8 @@ export default function Limit() {
             setLimitAllowed(false);
             setLimitButtonErrorMessage(
                 `Limit ${
-                    (isSellTokenBase && !tradeData.isDenomBase) ||
-                    (!isSellTokenBase && tradeData.isDenomBase)
+                    (isSellTokenBase && !isDenomBase) ||
+                    (!isSellTokenBase && isDenomBase)
                         ? 'Above Maximum'
                         : 'Below Minimum'
                 }  Price`,
@@ -521,7 +544,7 @@ export default function Limit() {
                 ) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        `${tradeData.tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                        `${tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
                     setLimitAllowed(true);
@@ -530,7 +553,7 @@ export default function Limit() {
                 if (tokenAAmount > parseFloat(tokenABalance)) {
                     setLimitAllowed(false);
                     setLimitButtonErrorMessage(
-                        `${tradeData.tokenA.symbol} Amount Exceeds Wallet Balance`,
+                        `${tokenA.symbol} Amount Exceeds Wallet Balance`,
                     );
                 } else {
                     setLimitAllowed(true);
@@ -544,28 +567,6 @@ export default function Limit() {
         setNewLimitOrderTransactionHash('');
         resetConfirmation();
     };
-
-    const tokenABalance = isSellTokenBase
-        ? baseTokenBalance
-        : quoteTokenBalance;
-
-    const tokenADexBalance = isSellTokenBase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
-
-    const tokenASurplusMinusTokenARemainderNum =
-        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
-
-    const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
-        ? tokenASurplusMinusTokenARemainderNum < 0
-            ? tokenASurplusMinusTokenARemainderNum * -1
-            : 0
-        : parseFloat(tokenAInputQty || '0');
-
-    const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
-
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
         if (!crocEnv) return;
@@ -586,7 +587,7 @@ export default function Limit() {
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
-                // The user used "speed up" or something similar
+                // The user used 'speed up' or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
                     IS_LOCAL_ENV && console.debug('repriced');
@@ -617,40 +618,6 @@ export default function Limit() {
         }
     };
 
-    useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageLimitCostInGasDrops = 193000;
-            const gasPriceInDollarsNum =
-                gasPriceInGwei *
-                averageLimitCostInGasDrops *
-                1e-9 *
-                ethMainnetUsdPrice;
-
-            setOrderGasPriceInDollars(
-                getFormattedNumber({
-                    value: gasPriceInDollarsNum,
-                    isUSD: true,
-                    prefix: '$',
-                }),
-            );
-        }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    const approvalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Approve ${tokenA.symbol}`
-                    : `${tokenA.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenA.address, tokenA.symbol);
-            }}
-            flat={true}
-        />
-    );
-
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (tokenAorB === 'A') {
             setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked);
@@ -661,26 +628,11 @@ export default function Limit() {
         }
     };
 
-    // TODO: @Emily refactor this to take a token data object
-    // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
-    const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
-
-    // value showing if no acknowledgement is necessary
-    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
-
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
         needConfirmTokenA && tokens.ackToken(tokenA);
         needConfirmTokenB && tokens.ackToken(tokenB);
     };
-
-    const liquidityProviderFeeString = (
-        tradeData.liquidityFee * 100
-    ).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    });
 
     return (
         <TradeModuleSkeleton
@@ -799,9 +751,21 @@ export default function Limit() {
                 ) : undefined
             }
             approveButton={
-                !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0
-                    ? approvalButton
-                    : undefined
+                !isTokenAAllowanceSufficient &&
+                parseFloat(tokenAInputQty) > 0 ? (
+                    <Button
+                        title={
+                            !isApprovalPending
+                                ? `Approve ${tokenA.symbol}`
+                                : `${tokenA.symbol} Approval Pending`
+                        }
+                        disabled={isApprovalPending}
+                        action={async () => {
+                            await approve(tokenA.address, tokenA.symbol);
+                        }}
+                        flat={true}
+                    />
+                ) : undefined
             }
             tutorialSteps={limitTutorialSteps}
         />

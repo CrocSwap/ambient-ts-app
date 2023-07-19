@@ -1,10 +1,9 @@
 import { memo } from 'react';
-import { TokenInputWalletBalance } from '../../Global/TokenInput/TokenInputWalletBalance';
-import TokenInputQuantity from '../../Global/TokenInput/TokenInputQuantity';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import TokenInputQuantity from './TokenInputQuantity';
+import { TokenInputWalletBalance } from './TokenInputWalletBalance';
 
 interface propsIF {
-    fieldId?: string;
     tokenAorB: 'A' | 'B';
     token: TokenIF;
     tokenInput: string;
@@ -14,8 +13,9 @@ interface propsIF {
     handleTokenInputEvent: (val: string) => void;
     reverseTokens: () => void;
     handleToggleDexSelection: () => void;
-    parseTokenInput?: (val: string) => void;
     handleRefresh?: () => void;
+    parseTokenInput?: (val: string) => void;
+    fieldId?: string;
     isLoading?: boolean;
     showWallet?: boolean;
     tokenBalance?: string;
@@ -32,14 +32,14 @@ function TokenInput(props: propsIF) {
         tokenDexBalance,
         isTokenEth,
         isDexSelected,
-        isLoading,
         showPulseAnimation,
+        isLoading,
+        showWallet,
         handleTokenInputEvent,
         reverseTokens,
         handleToggleDexSelection,
         parseTokenInput,
         handleRefresh,
-        showWallet,
     } = props;
 
     const ETH_BUFFER = 0.025;

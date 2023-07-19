@@ -55,18 +55,10 @@
     border-radius: 4px;
 }
 
-/* .button_container .button_content:hover{
-    color: var(--text1);
-    box-shadow: 4px 4px var( --text-highlight);
-} */
-
 .extra_info_container {
     padding: 8px;
     background: var(--dark2);
     margin: 8px;
-}
-.loading_animation {
-    width: 50px;
 }
 
 .button_content div {
@@ -74,8 +66,4 @@
     flex-direction: row;
     align-items: center;
     gap: 8px;
-}
-
-.loading_animation svg {
-    transition: all var(--animation-speed) ease-in-out;
 }

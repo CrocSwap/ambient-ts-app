@@ -1,64 +1,64 @@
+import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import {
     Dispatch,
-    memo,
     SetStateAction,
     useContext,
-    useCallback,
     useEffect,
-    useMemo,
     useState,
+    useCallback,
+    useMemo,
+    memo,
 } from 'react';
-import styles from '../../Global/TokenInput/TokenInput.module.css';
-import {
-    setIsTokenAPrimary,
-    setPrimaryQuantity,
-    setShouldSwapDirectionReverse,
-} from '../../../utils/state/tradeDataSlice';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { calcImpact } from '../../../App/functions/calcImpact';
-import { ZERO_ADDRESS } from '../../../constants';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { useLinkGen, linkGenMethodsIF } from '../../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import useDebounce from '../../../App/hooks/useDebounce';
-import TokenInput from '../../Global/TokenInput/TokenInput';
+import { ZERO_ADDRESS } from '../../../constants';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
+import {
+    useAppSelector,
+    useAppDispatch,
+} from '../../../utils/hooks/reduxToolkit';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import {
+    setIsTokenAPrimary,
+    setShouldSwapDirectionReverse,
+    setPrimaryQuantity,
+} from '../../../utils/state/tradeDataSlice';
+import TokenInput from '../../Global/TokenInput/TokenInput';
+import styles from '../../Global/TokenInput/TokenInput.module.css';
+import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 
 interface propsIF {
-    slippageTolerancePercentage: number;
-    setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
     buyQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
     isSellLoading: { value: boolean; set: Dispatch<SetStateAction<boolean>> };
     isBuyLoading: { value: boolean; set: Dispatch<SetStateAction<boolean>> };
     isWithdrawFromDexChecked: boolean;
     isSaveAsDexSurplusChecked: boolean;
+    slippageTolerancePercentage: number;
     setSwapAllowed: Dispatch<SetStateAction<boolean>>;
+    setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
     setIsLiquidityInsufficient: Dispatch<SetStateAction<boolean>>;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
 }
 
 function SwapTokenInput(props: propsIF) {
     const {
-        setIsLiquidityInsufficient,
-        slippageTolerancePercentage,
         sellQtyString: { value: sellQtyString, set: setSellQtyString },
         buyQtyString: { value: buyQtyString, set: setBuyQtyString },
         isSellLoading: { value: isSellLoading, set: setIsSellLoading },
         isBuyLoading: { value: isBuyLoading, set: setIsBuyLoading },
-        setPriceImpact,
         isWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
+        slippageTolerancePercentage,
         setSwapAllowed,
+        setPriceImpact,
+        setIsLiquidityInsufficient,
         toggleDexSelection,
     } = props;
 
@@ -66,6 +66,7 @@ function SwapTokenInput(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const {
         baseToken: {
@@ -79,37 +80,22 @@ function SwapTokenInput(props: propsIF) {
     } = useContext(TradeTokenContext);
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
 
+    const dispatch = useAppDispatch();
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-
-    const dispatch = useAppDispatch();
-
     const { tokenA, tokenB, isTokenAPrimary, shouldSwapDirectionReverse } =
         useAppSelector((state) => state.tradeData);
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenAny: linkGenMethodsIF = useLinkGen();
 
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const [lastEvent, setLastEvent] = useState<string | undefined>();
+    const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
     const isSellTokenEth = tokenA.address === ZERO_ADDRESS;
     const isBuyTokenEth = tokenB.address === ZERO_ADDRESS;
-
     const sortedTokens = sortBaseQuoteTokens(tokenA.address, tokenB.address);
     const isSellTokenBase = tokenA.address === sortedTokens[0];
-
-    useEffect(() => {
-        if (isTokenAPrimary) {
-            if (sellQtyString !== '') {
-                setIsBuyLoading(true);
-            }
-        } else {
-            if (buyQtyString !== '') {
-                setIsSellLoading(true);
-            }
-        }
-    }, []);
-
-    // hook to generate navigation actions with pre-loaded path
-    const linkGenAny: linkGenMethodsIF = useLinkGen();
 
     const tokenABalance = isSellTokenBase
         ? baseTokenBalance
@@ -124,7 +110,20 @@ function SwapTokenInput(props: propsIF) {
         ? quoteTokenDexBalance
         : baseTokenDexBalance;
 
-    const [disableReverseTokens, setDisableReverseTokens] = useState(false);
+    // Let input rest 3/4 of a second before triggering an update
+    const debouncedLastEvent = useDebounce(lastEvent, 750);
+
+    useEffect(() => {
+        if (isTokenAPrimary) {
+            if (sellQtyString !== '') {
+                setIsBuyLoading(true);
+            }
+        } else {
+            if (buyQtyString !== '') {
+                setIsSellLoading(true);
+            }
+        }
+    }, []);
 
     useEffect(() => {
         // re-enable every 3 seconds
@@ -135,6 +134,25 @@ function SwapTokenInput(props: propsIF) {
         // clear interval when component unmounts
         return () => clearInterval(timerId);
     }, []);
+
+    useEffect(() => {
+        handleBlockUpdate();
+    }, [lastBlockNumber]);
+
+    useEffect(() => {
+        if (shouldSwapDirectionReverse) {
+            reverseTokens();
+            dispatch(setShouldSwapDirectionReverse(false));
+        }
+    }, [shouldSwapDirectionReverse]);
+
+    useEffect(() => {
+        if (debouncedLastEvent !== undefined) {
+            isBuyLoading
+                ? handleTokenAChangeEvent(debouncedLastEvent)
+                : handleTokenBChangeEvent(debouncedLastEvent);
+        }
+    }, [debouncedLastEvent]);
 
     const reverseTokens = useCallback((): void => {
         if (disableReverseTokens || !isPoolInitialized) {
@@ -184,17 +202,6 @@ function SwapTokenInput(props: propsIF) {
         }
     };
 
-    useEffect(() => {
-        handleBlockUpdate();
-    }, [lastBlockNumber]);
-
-    useEffect(() => {
-        if (shouldSwapDirectionReverse) {
-            reverseTokens();
-            dispatch(setShouldSwapDirectionReverse(false));
-        }
-    }, [shouldSwapDirectionReverse]);
-
     async function refreshImpact(
         input: string,
         sellToken: boolean,
@@ -224,19 +231,6 @@ function SwapTokenInput(props: propsIF) {
             return undefined;
         }
     }
-
-    const [lastEvent, setLastEvent] = useState<string | undefined>();
-
-    // Let input rest 3/4 of a second before triggering an update
-    const debouncedLastEvent = useDebounce(lastEvent, 750);
-
-    useEffect(() => {
-        if (debouncedLastEvent !== undefined) {
-            isBuyLoading
-                ? handleTokenAChangeEvent(debouncedLastEvent)
-                : handleTokenBChangeEvent(debouncedLastEvent);
-        }
-    }, [debouncedLastEvent]);
 
     const debouncedTokenAChangeEvent = (value: string) => {
         setBuyQtyString('');

@@ -1,4 +1,7 @@
 import styles from './TokenInputWalletBalance.module.css';
+import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
+import walletIcon from '../../../assets/images/icons/wallet.svg';
+import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
 import { useContext } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiRefreshCw } from 'react-icons/fi';
@@ -7,17 +10,14 @@ import IconWithTooltip from '../IconWithTooltip/IconWithTooltip';
 import ExchangeBalanceExplanation from '../Informational/ExchangeBalanceExplanation';
 import WalletBalanceExplanation from '../Informational/WalletBalanceExplanation';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
-import walletIcon from '../../../assets/images/icons/wallet.svg';
-import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
 
 interface PropsIF {
     tokenAorB: 'A' | 'B';
     balance: string;
-    availableBalance?: number;
     useExchangeBalance: boolean;
     isDexSelected: boolean;
     onToggleDex: () => void;
+    availableBalance?: number;
     onMaxButtonClick?: () => void;
     onRefresh?: () => void;
 }

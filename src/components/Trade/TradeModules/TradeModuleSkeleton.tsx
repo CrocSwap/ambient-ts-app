@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useState, useMemo } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -11,10 +11,8 @@ import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import styles from './TradeModuleSkeleton.module.css';
 
 interface PropsIF {
-    isSwapPage?: boolean;
     header: React.ReactNode;
     input: React.ReactNode;
-    inputOptions?: React.ReactNode;
     transactionDetails: React.ReactNode;
     modal: React.ReactNode | undefined;
     button: React.ReactNode;
@@ -23,6 +21,8 @@ interface PropsIF {
     warnings?: React.ReactNode | undefined;
     // eslint-disable-next-line
     tutorialSteps: any;
+    isSwapPage?: boolean;
+    inputOptions?: React.ReactNode;
 }
 
 export const TradeModuleSkeleton = (props: PropsIF) => {

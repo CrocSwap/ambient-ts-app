@@ -31,41 +31,12 @@ function TradeModuleHeader(props: propsIF) {
     } = useContext(AppStateContext);
 
     const [isModalOpen, openModal, closeModal] = useModal();
-
     const dispatch = useAppDispatch();
+
     const tradeData = useAppSelector((state) => state.tradeData);
     const isDenomBase = tradeData.isDenomBase;
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
-
-    const settingsSvg = (
-        <svg
-            width='14'
-            height='14'
-            viewBox='0 0 14 14'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-            className={styles.hoverable_icon}
-        >
-            <rect
-                y='9.625'
-                width='8.75'
-                height='1.75'
-                rx='0.875'
-                fill=''
-            ></rect>
-            <rect
-                x='5.25'
-                y='2.625'
-                width='8.75'
-                height='1.75'
-                rx='0.875'
-                fill=''
-            ></rect>
-            <circle cx='12.25' cy='10.5' r='1.75' fill=''></circle>
-            <circle cx='1.75' cy='3.5' r='1.75' fill=''></circle>
-        </svg>
-    );
 
     return (
         <div className={isSwapPage ? styles.swap_page_header : ''}>
@@ -94,14 +65,48 @@ function TradeModuleHeader(props: propsIF) {
                     <div
                         onClick={openModal}
                         style={{ cursor: 'pointer' }}
-                        className={`${styles.settings_container}
-                        ${styles.settings_icon}`}
+                        className={styles.settings_icon}
                         id='settings_button'
                         role='button'
                         tabIndex={0}
                         aria-label='Settings button'
                     >
-                        {settingsSvg}
+                        <svg
+                            width='14'
+                            height='14'
+                            viewBox='0 0 14 14'
+                            fill='none'
+                            xmlns='http://www.w3.org/2000/svg'
+                            className={styles.hoverable_icon}
+                        >
+                            <rect
+                                y='9.625'
+                                width='8.75'
+                                height='1.75'
+                                rx='0.875'
+                                fill=''
+                            ></rect>
+                            <rect
+                                x='5.25'
+                                y='2.625'
+                                width='8.75'
+                                height='1.75'
+                                rx='0.875'
+                                fill=''
+                            ></rect>
+                            <circle
+                                cx='12.25'
+                                cy='10.5'
+                                r='1.75'
+                                fill=''
+                            ></circle>
+                            <circle
+                                cx='1.75'
+                                cy='3.5'
+                                r='1.75'
+                                fill=''
+                            ></circle>
+                        </svg>
                     </div>
                 </IconWithTooltip>
                 {isModalOpen && (

@@ -1,49 +1,49 @@
-import styles from './TokenInputQuantity.module.css';
+import { useContext, useState, useEffect, ChangeEvent, memo } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useState, ChangeEvent, useContext, memo, useEffect } from 'react';
-import { useModal } from '../Modal/useModal';
-import Modal from '../Modal/Modal';
-import { SoloTokenSelect } from '../TokenSelectContainer/SoloTokenSelect';
-import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../../contexts/TokenContext';
-import TokenIcon from '../TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
-import Spinner from '../Spinner/Spinner';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import Modal from '../Modal/Modal';
+import { useModal } from '../Modal/useModal';
+import Spinner from '../Spinner/Spinner';
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import TokenIcon from '../TokenIcon/TokenIcon';
+import { SoloTokenSelect } from '../TokenSelectContainer/SoloTokenSelect';
+import styles from './TokenInputQuantity.module.css';
 
 interface propsIF {
-    fieldId?: string;
     tokenAorB: 'A' | 'B' | null;
+    token: TokenIF;
     value: string;
     handleTokenInputEvent: (val: string) => void;
     reverseTokens?: () => void;
+    parseInput?: (val: string) => void;
+    fieldId?: string;
     isLoading?: boolean;
     label?: string;
     includeWallet?: React.ReactNode;
-    parseInput?: (val: string) => void;
     showPulseAnimation?: boolean;
-    disable?: boolean;
     isAdvancedMode?: boolean;
+    disable?: boolean;
     disabledContent?: React.ReactNode;
-    token: TokenIF;
 }
 
 function TokenInputQuantity(props: propsIF) {
     const {
         fieldId,
-        value,
         tokenAorB,
-        handleTokenInputEvent,
-        reverseTokens,
+        token,
+        value,
         isLoading,
         label,
         includeWallet,
-        parseInput,
         showPulseAnimation,
         disable,
         disabledContent,
         isAdvancedMode,
-        token,
+        handleTokenInputEvent,
+        reverseTokens,
+        parseInput,
     } = props;
 
     const { setInput: setTokenSelectInput } = useContext(TokenContext);
@@ -100,10 +100,10 @@ function TokenInputQuantity(props: propsIF) {
         );
 
     return (
-        <div className={styles.swapbox} id={fieldId}>
-            {label && <span className={styles.direction}>{label}</span>}
+        <div className={styles.container} id={fieldId}>
+            {label && <span className={styles.label}>{label}</span>}
             <div
-                className={`${styles.swapbox_top} ${
+                className={`${styles.input_container} ${
                     showPulseAnimation && styles.pulse_animation
                 } ${!includeWallet && styles.bottom_padding}`}
             >

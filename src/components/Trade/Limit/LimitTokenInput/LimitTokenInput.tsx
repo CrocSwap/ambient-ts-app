@@ -1,31 +1,31 @@
-import { Dispatch, memo, SetStateAction, useContext, useEffect } from 'react';
+import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { ZERO_ADDRESS } from '../../../../constants';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../../contexts/PoolContext';
+import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import {
-    setIsTokenAPrimary,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import {
     setLimitTick,
     setPoolPriceNonDisplay,
-    setPrimaryQuantity,
+    setIsTokenAPrimary,
     setShouldLimitDirectionReverse,
+    setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
+import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
+import TokenInput from '../../../Global/TokenInput/TokenInput';
 import styles from '../../../Global/TokenInput/TokenInput.module.css';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
-import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import { ZERO_ADDRESS } from '../../../../constants';
-import { PoolContext } from '../../../../contexts/PoolContext';
-import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
-import {
-    useLinkGen,
-    linkGenMethodsIF,
-} from '../../../../utils/hooks/useLinkGen';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import TokenInput from '../../../Global/TokenInput/TokenInput';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -48,8 +48,6 @@ function LimitTokenInput(props: propsIF) {
         toggleDexSelection,
     } = props;
 
-    const dispatch = useAppDispatch();
-
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -66,13 +64,22 @@ function LimitTokenInput(props: propsIF) {
     } = useContext(TradeTokenContext);
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
+    const dispatch = useAppDispatch();
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const {
+        tokenA,
+        tokenB,
+        isTokenAPrimary,
+        primaryQuantity,
+        limitTickCopied,
+        shouldLimitDirectionReverse,
+        isDenomBase,
+    } = useAppSelector((state) => state.tradeData);
 
-    const isTokenAPrimary = tradeData.isTokenAPrimary;
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
     const tokenABalance = isSellTokenBase
@@ -81,11 +88,6 @@ function LimitTokenInput(props: propsIF) {
     const tokenADexBalance = isSellTokenBase
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
-
-    // hook to generate navigation actions with pre-loaded path
-    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-
-    const limitTickCopied = tradeData.limitTickCopied;
 
     const reverseTokens = (): void => {
         if (!location.pathname.includes('limitTick')) {
@@ -97,24 +99,24 @@ function LimitTokenInput(props: propsIF) {
         if (!limitTickCopied) {
             linkGenLimit.navigate({
                 chain: chainId,
-                tokenA: tradeData.tokenB.address,
-                tokenB: tradeData.tokenA.address,
+                tokenA: tokenB.address,
+                tokenB: tokenA.address,
             });
         }
         if (!isTokenAPrimary) {
-            setTokenAInputQty(tradeData.primaryQuantity);
+            setTokenAInputQty(primaryQuantity);
         } else {
-            setTokenBInputQty(tradeData.primaryQuantity);
+            setTokenBInputQty(primaryQuantity);
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
     };
 
     useEffect(() => {
-        if (tradeData.shouldLimitDirectionReverse) {
+        if (shouldLimitDirectionReverse) {
             reverseTokens();
             dispatch(setShouldLimitDirectionReverse(false));
         }
-    }, [tradeData.shouldLimitDirectionReverse]);
+    }, [shouldLimitDirectionReverse]);
 
     useEffect(() => {
         isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
@@ -145,7 +147,7 @@ function LimitTokenInput(props: propsIF) {
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(inputStr));
 
-            if (!tradeData.isDenomBase) {
+            if (!isDenomBase) {
                 rawTokenBQty = isSellTokenBase
                     ? (1 / limitTickDisplayPrice) * inputNum
                     : limitTickDisplayPrice * inputNum;
@@ -156,18 +158,14 @@ function LimitTokenInput(props: propsIF) {
             }
             handleLimitButtonMessage(inputNum);
         } else {
-            if (!tradeData.isDenomBase) {
+            if (!isDenomBase) {
                 rawTokenBQty = isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) *
-                      parseFloat(tradeData.primaryQuantity)
-                    : limitTickDisplayPrice *
-                      parseFloat(tradeData.primaryQuantity);
+                    ? (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity)
+                    : limitTickDisplayPrice * parseFloat(primaryQuantity);
             } else {
                 rawTokenBQty = !isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) *
-                      parseFloat(tradeData.primaryQuantity)
-                    : limitTickDisplayPrice *
-                      parseFloat(tradeData.primaryQuantity);
+                    ? (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity)
+                    : limitTickDisplayPrice * parseFloat(primaryQuantity);
             }
             handleLimitButtonMessage(parseFloat(tokenAInputQty));
         }
@@ -190,7 +188,7 @@ function LimitTokenInput(props: propsIF) {
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(inputStr));
 
-            if (!tradeData.isDenomBase) {
+            if (!isDenomBase) {
                 rawTokenAQty = isSellTokenBase
                     ? limitTickDisplayPrice * inputNum
                     : (1 / limitTickDisplayPrice) * inputNum;
@@ -202,19 +200,15 @@ function LimitTokenInput(props: propsIF) {
 
             handleLimitButtonMessage(rawTokenAQty);
         } else {
-            if (!tradeData.isDenomBase) {
+            if (!isDenomBase) {
                 rawTokenAQty = isSellTokenBase
-                    ? limitTickDisplayPrice *
-                      parseFloat(tradeData.primaryQuantity)
+                    ? limitTickDisplayPrice * parseFloat(primaryQuantity)
                     : // ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
-                      (1 / limitTickDisplayPrice) *
-                      parseFloat(tradeData.primaryQuantity);
+                      (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             } else {
                 rawTokenAQty = !isSellTokenBase
-                    ? limitTickDisplayPrice *
-                      parseFloat(tradeData.primaryQuantity)
-                    : (1 / limitTickDisplayPrice) *
-                      parseFloat(tradeData.primaryQuantity);
+                    ? limitTickDisplayPrice * parseFloat(primaryQuantity)
+                    : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             }
 
             handleLimitButtonMessage(rawTokenAQty);

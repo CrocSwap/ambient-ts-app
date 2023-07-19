@@ -1,18 +1,18 @@
-import styles from './BypassConfirmButton.module.css';
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
-    CircleLoader,
-    CircleLoaderCompleted,
     CircleLoaderFailed,
+    CircleLoaderCompleted,
+    CircleLoader,
 } from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
-import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
-import uriToHttp from '../../../../utils/functions/uriToHttp';
+import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
+import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
+import styles from './BypassConfirmButton.module.css';
 
 interface propsIF {
     newTransactionHash: string;
@@ -138,7 +138,7 @@ export default function BypassConfirmButton(props: propsIF) {
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
     return (
-        <section className={styles.container}>
+        <section>
             <div className={styles.button_container}>
                 <button
                     className={styles.button_content}
@@ -175,10 +175,3 @@ export default function BypassConfirmButton(props: propsIF) {
         </section>
     );
 }
-
-// setShowBypassConfirmButton => True => Render the new button(tx denied)
-// setShowBypassConfirmButton => False => Render Open Confirmation button
-
-// For users with skip this confirmation
-// Click swap now button => initiates swap and renders new button => setShowBypassConfirmButton(true)
-// When receipt is successful, we render the old button => setShowBypassConfirmButton(false)

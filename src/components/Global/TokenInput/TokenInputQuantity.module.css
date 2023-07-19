@@ -1,10 +1,10 @@
-.swapbox {
+.container {
     display: flex;
     flex-direction: column;
     color: var(--text1);
 }
 
-.swapbox_top {
+.input_container {
     border-radius: var(--border-radius);
     background-color: var(--dark2);
     display: flex;
@@ -104,7 +104,7 @@
     font-weight: 200;
 }
 
-.direction {
+.label {
     padding: 0.4.5px 0;
     margin: 4px 0;
     font-weight: 300;
