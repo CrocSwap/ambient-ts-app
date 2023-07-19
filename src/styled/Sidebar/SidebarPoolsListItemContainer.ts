@@ -9,7 +9,6 @@ const SidebarPoolsListItemContainer = styled(Link)`
     font-weight: 300;
     ${BodyText}
     color: var(--text2);
-    padding: 5px;
     max-height: 25px;
     overflow: hidden;
     white-space: nowrap;
