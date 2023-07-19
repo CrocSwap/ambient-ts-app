@@ -6396,7 +6396,8 @@ export default function Chart(props: propsIF) {
                     </div>
                     <Divider />
                     <div>
-                        Click any other candle to view relevant transactions
+                        Click any other price candle or volume bar to view
+                        transactions
                     </div>
                 </div>
             </CSSTransition>
