@@ -201,6 +201,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         500,
     );
 
+    useEffect(() => {
+        console.log({ domainBoundaryInSecondsDebounced });
+    }, [domainBoundaryInSecondsDebounced]);
+
     const lastCandleDateInSeconds = Math.floor(
         (candleDomains?.lastCandleDate || 0) / 1000,
     );
@@ -221,7 +225,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         return lastDate;
     }, [candleData?.candles?.length, lastCandleDateInSecondsDebounced]);
 
-    const numDurationsNeeded = useMemo(() => {
+    const numDurationsBackNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSeconds) return;
         const numDurations = Math.floor(
             (minTimeMemo - domainBoundaryInSeconds) / candleTimeLocal + 1,
@@ -303,11 +307,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        if (!numDurationsNeeded) return;
-        if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
-            fetchCandlesByNumDurations(numDurationsNeeded, true);
+        if (!numDurationsBackNeeded) return;
+        if (numDurationsBackNeeded > 0 && numDurationsBackNeeded < 3000) {
+            fetchCandlesByNumDurations(numDurationsBackNeeded, true);
         }
-    }, [numDurationsNeeded]);
+    }, [numDurationsBackNeeded]);
 
     return (
         <CandleContext.Provider value={candleContext}>

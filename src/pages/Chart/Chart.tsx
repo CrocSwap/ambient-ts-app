@@ -978,13 +978,12 @@ export default function Chart(props: propsIF) {
             (data: CandleData) => data.time !== undefined,
         );
         if (filtered) {
+            const maxBoundary: number | undefined =
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                d3.min(filtered, (d: any) => d.time) * 1000 -
+                200 * period * 1000;
             if (isZoomRight) {
                 if (newBoundary < candleDate) {
-                    const maxBoundary: number | undefined =
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        d3.min(filtered, (d: any) => d.time) * 1000 -
-                        200 * period * 1000;
-
                     const newLastCandle = newBoundary - 100 * period * 1000;
 
                     const finalData =
@@ -1008,10 +1007,9 @@ export default function Chart(props: propsIF) {
                     setCandleDomains(candleDomain);
                 }
             } else {
-                const lastCandleDate = d3.max(filtered, (d) => d.time * 1000);
                 const candleDomain = {
                     lastCandleDate: new Date().getTime(),
-                    domainBoundry: lastCandleDate,
+                    domainBoundry: maxBoundary,
                 };
 
                 setCandleDomains(candleDomain);
