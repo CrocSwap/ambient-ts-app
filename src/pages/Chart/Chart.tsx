@@ -5325,8 +5325,6 @@ export default function Chart(props: propsIF) {
                     ? d?.invMaxPriceExclMEVDecimalCorrected
                     : d?.maxPriceExclMEVDecimalCorrected,
             );
-
-            console.log({ open, close });
         }
 
         const diff = Math.abs(close - open);
