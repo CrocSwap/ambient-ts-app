@@ -590,7 +590,7 @@ function Swap(props: propsIF) {
                     disabled={
                         (!swapAllowed ||
                             sellQtyString === '' ||
-                            buyQtyString !== '') &&
+                            buyQtyString === '') &&
                         areBothAckd
                     }
                     flat

@@ -240,6 +240,7 @@ function SwapTokenInput(props: propsIF) {
             setDisableReverseTokens(true);
             setLastEvent(value);
         } else {
+            setSellQtyString('');
             dispatch(setPrimaryQuantity(''));
         }
         value || setIsBuyLoading(false);
@@ -254,6 +255,7 @@ function SwapTokenInput(props: propsIF) {
             setDisableReverseTokens(true);
             setLastEvent(value);
         } else {
+            setBuyQtyString('');
             dispatch(setPrimaryQuantity(''));
         }
         value || setIsSellLoading(false);
