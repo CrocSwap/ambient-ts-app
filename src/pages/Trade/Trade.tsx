@@ -406,7 +406,14 @@ function Trade() {
                             ) {
                                 setTradeTableState('Collapsed');
                             }
-                            setChartHeight(chartHeights.current + d.height);
+                            if(
+                                chartHeights.current + d.height < 348
+                            ) {
+                                setChartHeight(4);
+                                setTradeTableState('Expanded');
+                            }else{
+                                setChartHeight(chartHeights.current + d.height);
+                            }
                         }}
                         handleClasses={
                             isChartFullScreen
