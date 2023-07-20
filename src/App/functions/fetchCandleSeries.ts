@@ -60,6 +60,7 @@ export async function fetchCandleSeriesHybrid(
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    isDirectionOlder: boolean,
 ): Promise<CandlesByPoolAndDuration | undefined> {
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
@@ -71,6 +72,7 @@ export async function fetchCandleSeriesHybrid(
         nCandles,
         crocEnv,
         cachedFetchTokenPrice,
+        isDirectionOlder,
     );
 
     if (!candles) {
@@ -131,10 +133,11 @@ export async function fetchCandleSeriesCroc(
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
-    endTime: number,
+    boundaryTime: number,
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    isDirectionOlder: boolean,
 ): Promise<CandlesByPoolAndDuration | undefined> {
     if (!isFetchEnabled) {
         return undefined;
@@ -142,11 +145,13 @@ export async function fetchCandleSeriesCroc(
 
     const candleSeriesEndpoint = GRAPHCACHE_SMALL_URL + '/pool_candles';
 
-    if (endTime == 0) {
-        endTime = Math.floor(Date.now() / 1000);
+    if (boundaryTime == 0) {
+        boundaryTime = Math.floor(Date.now() / 1000);
     }
 
-    const startTimeRough = endTime - nCandles * period;
+    const startTimeRough = isDirectionOlder
+        ? boundaryTime - nCandles * period // if looking back from boundaryTime
+        : boundaryTime; // if looking for candles starting at boundaryTime
     const startTime = Math.ceil(startTimeRough / period) * period;
 
     const reqOptions = new URLSearchParams({

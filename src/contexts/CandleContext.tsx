@@ -177,6 +177,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 nCandles,
                 crocEnv,
                 cachedFetchTokenPrice,
+                true,
             ).then((candles) => {
                 setCandleData(candles);
                 setIsCandleDataNull(false);
@@ -229,7 +230,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         return numDurations > 2999 ? 2999 : numDurations;
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
-    const fetchCandlesByNumDurations = (numDurations: number) => {
+    const fetchCandlesByNumDurations = (
+        numDurations: number,
+        isDirectionOlder: boolean,
+    ) => {
         const controller = new AbortController();
         setAbortController(controller);
 
@@ -247,6 +251,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             numDurations,
             crocEnv,
             cachedFetchTokenPrice,
+            isDirectionOlder,
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData) {
@@ -300,7 +305,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
-            fetchCandlesByNumDurations(numDurationsNeeded);
+            fetchCandlesByNumDurations(numDurationsNeeded, true);
         }
     }, [numDurationsNeeded]);
 

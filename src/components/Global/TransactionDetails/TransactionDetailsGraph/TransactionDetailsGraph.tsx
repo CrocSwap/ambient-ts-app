@@ -190,9 +190,11 @@ export default function TransactionDetailsGraph(
 
                     const offsetInSeconds = 120;
 
-                    const startBoundary =
+                    const currentTimeWithOffset =
                         Math.floor(new Date().getTime() / 1000) -
                         offsetInSeconds;
+
+                    const shouldRetrieveCandlesEndingAtBoundaryTime = true;
 
                     try {
                         if (!crocEnv) {
@@ -204,10 +206,11 @@ export default function TransactionDetailsGraph(
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
-                            startBoundary,
+                            currentTimeWithOffset,
                             numCandlesNeeded,
                             crocEnv,
                             cachedFetchTokenPrice,
+                            shouldRetrieveCandlesEndingAtBoundaryTime,
                         );
 
                         if (graphData) {
