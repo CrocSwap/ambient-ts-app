@@ -3,8 +3,7 @@
 .main_container {
     position: relative;
     overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    height: 100dvh ;  
+
     width: 100%;
     overflow-x: hidden;
     max-width: 100dvw;
@@ -155,6 +154,7 @@ bottom: 0;
 
 .mobile_card:not(:first-of-type) {
     height: 100%;
+   
     padding: 20px;
     border-radius: 8px;
     display: flex;

@@ -11,8 +11,16 @@ import Stats from '../Stats/AmbientStats';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
 import TopPools from '../TopPools/TopPools';
 import Investors from './Investors';
+import { useEffect, useState } from 'react';
 
 export default function MobileLandingSections() {
+    const [isIPhone, setIsIPhone] = useState(false);
+    useEffect(() => {
+        const userAgent = window.navigator.userAgent;
+        const isiPhone = /iPhone|iOS/i.test(userAgent);
+        setIsIPhone(isiPhone);
+    }, []);
+
     const heroSection = (
         <section className={`${styles.mobile_card} ${styles.hero} `} id='hero'>
             <>
@@ -154,7 +162,13 @@ export default function MobileLandingSections() {
     );
 
     return (
-        <div className={styles.main_container}>
+        <div
+            className={styles.main_container}
+            style={{
+                scrollSnapType: isIPhone ? 'y mandatory' : 'none',
+                height: isIPhone ? '100dvh' : '100vh',
+            }}
+        >
             {heroSection}
 
             {statsSection}
