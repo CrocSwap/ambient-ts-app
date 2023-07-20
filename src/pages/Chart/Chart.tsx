@@ -5306,25 +5306,27 @@ export default function Chart(props: propsIF) {
                 : false;
 
         let close = denomInBase
-            ? nearest?.invMaxPriceExclMEVDecimalCorrected
-            : nearest?.maxPriceExclMEVDecimalCorrected;
-
-        let open = denomInBase
             ? nearest?.invMinPriceExclMEVDecimalCorrected
             : nearest?.minPriceExclMEVDecimalCorrected;
+
+        let open = denomInBase
+            ? nearest?.invMaxPriceExclMEVDecimalCorrected
+            : nearest?.maxPriceExclMEVDecimalCorrected;
 
         if (tempFilterData.length > 1) {
             close = d3.max(tempFilterData, (d: any) =>
                 denomInBase
-                    ? d?.invPriceCloseExclMEVDecimalCorrected
-                    : d?.priceCloseExclMEVDecimalCorrected,
+                    ? d?.invMinPriceExclMEVDecimalCorrected
+                    : d?.minPriceExclMEVDecimalCorrected,
             );
 
             open = d3.min(tempFilterData, (d: any) =>
                 denomInBase
-                    ? d?.invPriceOpenExclMEVDecimalCorrected
-                    : d?.priceOpenExclMEVDecimalCorrected,
+                    ? d?.invMaxPriceExclMEVDecimalCorrected
+                    : d?.maxPriceExclMEVDecimalCorrected,
             );
+
+            console.log({ open, close });
         }
 
         const diff = Math.abs(close - open);
