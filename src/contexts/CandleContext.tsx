@@ -160,7 +160,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 abortController.abort();
             }
 
-            const candleTime = candleScale?.lastCandleDate || 0;
+            const candleTime = Date.now() / 1000 || 0;
             const nCandles =
                 candleScale?.nCandles > 3000 ? 3000 : candleScale?.nCandles;
 
