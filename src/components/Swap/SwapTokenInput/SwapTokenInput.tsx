@@ -126,16 +126,6 @@ function SwapTokenInput(props: propsIF) {
     }, []);
 
     useEffect(() => {
-        // re-enable every 3 seconds
-        const timerId = setInterval(() => {
-            setDisableReverseTokens(false);
-        }, 3000);
-
-        // clear interval when component unmounts
-        return () => clearInterval(timerId);
-    }, []);
-
-    useEffect(() => {
         handleBlockUpdate();
     }, [lastBlockNumber]);
 
@@ -155,33 +145,35 @@ function SwapTokenInput(props: propsIF) {
     }, [debouncedLastEvent]);
 
     const reverseTokens = useCallback((): void => {
-        if (disableReverseTokens || !isPoolInitialized) {
-            return;
+        if (disableReverseTokens || !isPoolInitialized) return;
+
+        setDisableReverseTokens(true);
+
+        isTokenAPrimary
+            ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
+                ? setIsSellLoading(true)
+                : null
+            : buyQtyString !== '' && parseFloat(buyQtyString) > 0
+            ? setIsBuyLoading(true)
+            : null;
+
+        linkGenAny.navigate({
+            chain: chainId,
+            tokenA: tokenB.address,
+            tokenB: tokenA.address,
+        });
+        if (!isTokenAPrimary) {
+            setSellQtyString(buyQtyString === 'NaN' ? '' : buyQtyString);
+            handleTokenAChangeEvent(buyQtyString === 'NaN' ? '' : buyQtyString);
         } else {
-            setDisableReverseTokens(true);
-
-            isTokenAPrimary
-                ? sellQtyString !== '' && parseFloat(sellQtyString) > 0
-                    ? setIsSellLoading(true)
-                    : null
-                : buyQtyString !== '' && parseFloat(buyQtyString) > 0
-                ? setIsBuyLoading(true)
-                : null;
-
-            linkGenAny.navigate({
-                chain: chainId,
-                tokenA: tokenB.address,
-                tokenB: tokenA.address,
-            });
-            if (!isTokenAPrimary) {
-                setSellQtyString(buyQtyString === 'NaN' ? '' : buyQtyString);
-                setBuyQtyString('');
-            } else {
-                setBuyQtyString(sellQtyString === 'NaN' ? '' : sellQtyString);
-                setSellQtyString('');
-            }
-            dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+            setBuyQtyString(sellQtyString === 'NaN' ? '' : sellQtyString);
+            handleTokenBChangeEvent(
+                sellQtyString === 'NaN' ? '' : sellQtyString,
+            );
         }
+        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+
+        setDisableReverseTokens(false);
     }, [
         crocEnv,
         poolPriceDisplay,
@@ -193,13 +185,9 @@ function SwapTokenInput(props: propsIF) {
     ]);
 
     const handleBlockUpdate = () => {
-        if (!disableReverseTokens) {
-            setDisableReverseTokens(true);
+        setDisableReverseTokens(true);
 
-            isTokenAPrimary
-                ? handleTokenAChangeEvent()
-                : handleTokenBChangeEvent();
-        }
+        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     };
 
     async function refreshImpact(
@@ -265,6 +253,7 @@ function SwapTokenInput(props: propsIF) {
     const handleTokenAChangeEvent = useMemo(
         () => async (value?: string) => {
             if (!crocEnv) return;
+
             let rawTokenBQty = undefined;
             if (value !== undefined) {
                 const truncatedInputStr = parseTokenInput(value);
@@ -283,6 +272,8 @@ function SwapTokenInput(props: propsIF) {
                 : '';
 
             setBuyQtyString(truncatedTokenBQty);
+            setIsBuyLoading(false);
+            setDisableReverseTokens(false);
         },
         [
             crocEnv,
@@ -318,6 +309,8 @@ function SwapTokenInput(props: propsIF) {
                     : truncateDecimals(rawTokenAQty, 2)
                 : '';
             setSellQtyString(truncatedTokenAQty);
+            setIsSellLoading(false);
+            setDisableReverseTokens(false);
         },
         [
             crocEnv,
@@ -377,11 +370,13 @@ function SwapTokenInput(props: propsIF) {
             />
             <div
                 className={`${styles.operation_container} ${
-                    disableReverseTokens && styles.arrow_container_disabled
+                    disableReverseTokens && styles.disabled
                 }`}
             >
                 <TokensArrow
-                    disabled={disableReverseTokens}
+                    disabled={
+                        disableReverseTokens || isBuyLoading || isSellLoading
+                    }
                     onClick={reverseTokens}
                 />
             </div>

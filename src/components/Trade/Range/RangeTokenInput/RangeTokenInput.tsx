@@ -125,9 +125,9 @@ function RangeTokenInput(props: propsIF) {
     }, [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked]);
 
     const resetTokenQuantities = () => {
-        setTokenAInputQty('0');
-        setTokenBInputQty('0');
-        dispatch(setPrimaryQuantityRange('0'));
+        setTokenAInputQty('');
+        setTokenBInputQty('');
+        dispatch(setPrimaryQuantityRange(''));
     };
 
     const setTokenQtyValue = (inputValue: string, tokenAorB: 'A' | 'B') => {
