@@ -45,6 +45,8 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
+const TRADE_CHART_MIN_HEIGHT = 348;
+
 // React functional component
 function Trade() {
     const {
@@ -406,12 +408,13 @@ function Trade() {
                             ) {
                                 setTradeTableState('Collapsed');
                             }
-                            if(
-                                chartHeights.current + d.height < 348
+                            if (
+                                chartHeights.current + d.height <
+                                TRADE_CHART_MIN_HEIGHT
                             ) {
                                 setChartHeight(4);
                                 setTradeTableState('Expanded');
-                            }else{
+                            } else {
                                 setChartHeight(chartHeights.current + d.height);
                             }
                         }}
