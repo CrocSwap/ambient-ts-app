@@ -258,7 +258,9 @@ function Range() {
         (x) => x.chainId === chainId,
     );
     const isAdd = useMemo(
-        () => userPositions.some(selectedRangeMatchesOpenPosition),
+        () =>
+            userPositions.length > 0 &&
+            userPositions.some(selectedRangeMatchesOpenPosition),
         [
             diffHashSig(userPositions),
             isAmbient,
