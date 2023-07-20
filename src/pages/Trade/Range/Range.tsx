@@ -260,7 +260,19 @@ function Range() {
     const isAdd = useMemo(
         () =>
             userPositions.length > 0 &&
-            userPositions.some(selectedRangeMatchesOpenPosition),
+            userPositions.some((position: PositionIF) => {
+                if (isAmbient && position.positionType === 'ambient') {
+                    return true;
+                } else if (
+                    !isAmbient &&
+                    defaultLowTick === position.bidTick &&
+                    defaultHighTick === position.askTick
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }),
         [
             diffHashSig(userPositions),
             isAmbient,
@@ -865,20 +877,6 @@ function Range() {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
-        if (isAmbient && position.positionType === 'ambient') {
-            return true;
-        } else if (
-            !isAmbient &&
-            defaultLowTick === position.bidTick &&
-            defaultHighTick === position.askTick
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    };
 
     const updatePinnedDisplayPrices = () => {
         if (
