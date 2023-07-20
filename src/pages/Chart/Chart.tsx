@@ -5236,6 +5236,7 @@ export default function Chart(props: propsIF) {
         timeOfEndCandle,
         isCrDataIndActive,
         bandwidth,
+        diffHashSigChart(unparsedCandleData),
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -6024,6 +6025,7 @@ export default function Chart(props: propsIF) {
             xAxisActiveTooltip,
             timeOfEndCandle,
             bandwidth,
+            diffHashSigChart(unparsedCandleData),
         ],
     );
 
