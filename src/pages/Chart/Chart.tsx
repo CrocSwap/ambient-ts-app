@@ -827,7 +827,10 @@ export default function Chart(props: propsIF) {
         if (isChartZoom && chartZoomEvent !== 'wheel') {
             d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
         } else {
-            d3.select(d3CanvasMain.current).style('cursor', 'default');
+            d3.select(d3CanvasMain.current).style(
+                'cursor',
+                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
+            );
         }
     }, [isChartZoom]);
 
@@ -5236,6 +5239,7 @@ export default function Chart(props: propsIF) {
         timeOfEndCandle,
         isCrDataIndActive,
         bandwidth,
+        diffHashSigChart(unparsedCandleData),
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -5302,12 +5306,12 @@ export default function Chart(props: propsIF) {
                 : false;
 
         let close = denomInBase
-            ? nearest?.invPriceCloseExclMEVDecimalCorrected
-            : nearest?.priceCloseExclMEVDecimalCorrected;
+            ? nearest?.invMaxPriceExclMEVDecimalCorrected
+            : nearest?.maxPriceExclMEVDecimalCorrected;
 
         let open = denomInBase
-            ? nearest?.invPriceOpenExclMEVDecimalCorrected
-            : nearest?.priceOpenExclMEVDecimalCorrected;
+            ? nearest?.invMinPriceExclMEVDecimalCorrected
+            : nearest?.minPriceExclMEVDecimalCorrected;
 
         if (tempFilterData.length > 1) {
             close = d3.max(tempFilterData, (d: any) =>
@@ -6024,6 +6028,7 @@ export default function Chart(props: propsIF) {
             xAxisActiveTooltip,
             timeOfEndCandle,
             bandwidth,
+            diffHashSigChart(unparsedCandleData),
         ],
     );
 
