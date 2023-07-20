@@ -1126,10 +1126,25 @@ export default function Chart(props: propsIF) {
                             !event.sourceEvent.ctrlKey &&
                             !event.sourceEvent.metaKey
                         ) {
-                            getNewCandleData(
-                                firstTime - deltaX,
-                                lastCandleDate,
-                            );
+                            if (deltaX > 0) {
+                                getNewCandleData(
+                                    firstTime - deltaX,
+                                    lastCandleDate,
+                                );
+                            } else {
+                                const maxCandleDate = d3.max(
+                                    filteredTime,
+                                    (d) => d.time * 1000,
+                                );
+                                if (maxCandleDate) {
+                                    getNewCandleData(
+                                        maxCandleDate - deltaX,
+                                        maxCandleDate,
+                                        false,
+                                    );
+                                }
+                            }
+
                             scaleData?.xScale.domain([
                                 firstTime - deltaX,
                                 lastTime - deltaX,
