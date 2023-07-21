@@ -356,7 +356,7 @@ export default function Chart(props: propsIF) {
     const [firstCandle, setFirstCandle] = useState<number>();
 
     const unparsedCandleData = useMemo(() => {
-        const data = unparsedData.candles;
+        const data = unparsedData.candles.sort((a, b) => b.time - a.time);
         if (poolPriceWithoutDenom) {
             const fakeData = {
                 time: data[0].time + period,
@@ -827,7 +827,10 @@ export default function Chart(props: propsIF) {
         if (isChartZoom && chartZoomEvent !== 'wheel') {
             d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
         } else {
-            d3.select(d3CanvasMain.current).style('cursor', 'default');
+            d3.select(d3CanvasMain.current).style(
+                'cursor',
+                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
+            );
         }
     }, [isChartZoom]);
 
@@ -1123,10 +1126,25 @@ export default function Chart(props: propsIF) {
                             !event.sourceEvent.ctrlKey &&
                             !event.sourceEvent.metaKey
                         ) {
-                            getNewCandleData(
-                                firstTime - deltaX,
-                                lastCandleDate,
-                            );
+                            if (deltaX > 0) {
+                                getNewCandleData(
+                                    firstTime - deltaX,
+                                    lastCandleDate,
+                                );
+                            } else {
+                                const maxCandleDate = d3.max(
+                                    filteredTime,
+                                    (d) => d.time * 1000,
+                                );
+                                if (maxCandleDate) {
+                                    getNewCandleData(
+                                        maxCandleDate - deltaX,
+                                        maxCandleDate,
+                                        false,
+                                    );
+                                }
+                            }
+
                             scaleData?.xScale.domain([
                                 firstTime - deltaX,
                                 lastTime - deltaX,
@@ -5236,6 +5254,7 @@ export default function Chart(props: propsIF) {
         timeOfEndCandle,
         isCrDataIndActive,
         bandwidth,
+        diffHashSigChart(unparsedCandleData),
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -5302,24 +5321,24 @@ export default function Chart(props: propsIF) {
                 : false;
 
         let close = denomInBase
-            ? nearest?.invPriceCloseExclMEVDecimalCorrected
-            : nearest?.priceCloseExclMEVDecimalCorrected;
+            ? nearest?.invMinPriceExclMEVDecimalCorrected
+            : nearest?.minPriceExclMEVDecimalCorrected;
 
         let open = denomInBase
-            ? nearest?.invPriceOpenExclMEVDecimalCorrected
-            : nearest?.priceOpenExclMEVDecimalCorrected;
+            ? nearest?.invMaxPriceExclMEVDecimalCorrected
+            : nearest?.maxPriceExclMEVDecimalCorrected;
 
         if (tempFilterData.length > 1) {
             close = d3.max(tempFilterData, (d: any) =>
                 denomInBase
-                    ? d?.invPriceCloseExclMEVDecimalCorrected
-                    : d?.priceCloseExclMEVDecimalCorrected,
+                    ? d?.invMinPriceExclMEVDecimalCorrected
+                    : d?.minPriceExclMEVDecimalCorrected,
             );
 
             open = d3.min(tempFilterData, (d: any) =>
                 denomInBase
-                    ? d?.invPriceOpenExclMEVDecimalCorrected
-                    : d?.priceOpenExclMEVDecimalCorrected,
+                    ? d?.invMaxPriceExclMEVDecimalCorrected
+                    : d?.maxPriceExclMEVDecimalCorrected,
             );
         }
 
@@ -6024,6 +6043,7 @@ export default function Chart(props: propsIF) {
             xAxisActiveTooltip,
             timeOfEndCandle,
             bandwidth,
+            diffHashSigChart(unparsedCandleData),
         ],
     );
 
