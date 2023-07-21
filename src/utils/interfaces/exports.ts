@@ -8,3 +8,4 @@ export type { TokenIF } from './TokenIF';
 export type { TokenListIF } from './TokenListIF';
 export type { TokenPairIF } from './TokenPairIF';
 export type { TransactionIF } from './TransactionIF';
+export type { PoolStatIF } from './PoolStatIF';

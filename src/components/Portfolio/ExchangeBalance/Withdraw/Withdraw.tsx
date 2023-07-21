@@ -3,12 +3,10 @@ import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './Withdraw.module.css';
 import WithdrawButton from './WithdrawButton/WithdrawButton';
 import WithdrawCurrencySelector from './WithdrawCurrencySelector/WithdrawCurrencySelector';
-// import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-// import { setToken } from '../../../../utils/state/temp';
 import {
     Dispatch,
     SetStateAction,
@@ -34,7 +32,7 @@ import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
-import Toggle2 from '../../../Global/Toggle/Toggle2';
+import Toggle from '../../../Global/Toggle/Toggle';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
@@ -222,28 +220,6 @@ export default function Withdraw(props: propsIF) {
 
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
-
-                        //  if (newTransactionHash) {
-                        //      fetch(
-                        //          newSwapCacheEndpoint +
-                        //              new URLSearchParams({
-                        //                  tx: newTransactionHash,
-                        //                  user: account ?? '',
-                        //                  base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                        //                  quote: isSellTokenBase
-                        //                      ? buyTokenAddress
-                        //                      : sellTokenAddress,
-                        //                  poolIdx: (await env.context).chain.poolIndex.toString(),
-                        //                  isBuy: isSellTokenBase.toString(),
-                        //                  inBaseQty: inBaseQty.toString(),
-                        //                  qty: crocQty.toString(),
-                        //                  override: 'false',
-                        //                  chainId: chainId,
-                        //                  limitPrice: '0',
-                        //                  minOut: '0',
-                        //              }),
-                        //      );
-                        //  }
                     } else if (isTransactionFailedError(error)) {
                         console.error({ error });
                         receipt = error.receipt;
@@ -307,14 +283,13 @@ export default function Withdraw(props: propsIF) {
         isSendToAddressChecked && secondaryEnsName ? (
             <div className={styles.info_text_non_clickable}>
                 Destination ENS Address: {secondaryEnsName}
-                {/* <div className={styles.hex_address}>{secondaryEnsName}</div> */}
             </div>
         ) : null;
 
     const toggleContent = (
         <span className={styles.surplus_toggle}>
             <div className={styles.toggle_container}>
-                <Toggle2
+                <Toggle
                     isOn={isSendToAddressChecked}
                     handleToggle={() =>
                         setIsSendToAddressChecked(!isSendToAddressChecked)
@@ -335,8 +310,6 @@ export default function Withdraw(props: propsIF) {
             setWithdrawQtyNonDisplay(tokenDexBalance);
             if (tokenExchangeDepositsDisplay)
                 setInputValue(tokenExchangeDepositsDisplay);
-            // if (withdrawInput && tokenExchangeDepositsDisplay)
-            //     withdrawInput.value = tokenExchangeDepositsDisplay;
         }
     };
 
@@ -415,12 +388,7 @@ export default function Withdraw(props: propsIF) {
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <WithdrawButton
-                onClick={() => {
-                    withdrawFn();
-                }}
-                // onClick={() => {
-                //     !isTokenAllowanceSufficient ? approvalFn() : withdrawFn();
-                // }}
+                onClick={withdrawFn}
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />

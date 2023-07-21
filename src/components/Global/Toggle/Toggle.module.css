@@ -1,69 +1,40 @@
-.switch_checkbox {
-    visibility: hidden;
-
-    width: 0;
-    height: 0;
-}
-
-.switch_label {
-    position: relative;
-
+.switch {
+    width: 36px;
+    height: 20px;
+    background: var(--dark3);
     display: flex;
-
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
-
-    border-radius: 100px;
-    /* width: 50px;
-    height: 25px; */
-    background: transparent;
-
+    justify-content: flex-start;
     align-items: center;
-    justify-content: space-between;
+    border-radius: 18px;
+    border: 1px solid var(--accent1);
+    cursor: pointer;
 }
 
-.switch_label::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 24px;
-    padding: 1.5px;
-    background: var(--title-gradient);
-    -webkit-mask: linear-gradient(white 0 0) content-box,
-        linear-gradient(white 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+.switch:focus-visible {
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
+        0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2),
+        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
-.switch_button {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-
-    content: '';
-    transition: all var(--animation-speed) ease-in-out;
-    /* width: 20px;
-      height: 20px; */
-
-    border-radius: 45px;
-    background: white;
-    box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
+.switch[data-isOn='true'] {
+    justify-content: flex-end;
+    background-color: var(--accent1);
+}
+.switch[data-isOn='true'] .handle {
+    background: var(--text1);
 }
 
-.switch_checkbox:checked + .switch_label .switch_button {
-    left: calc(100% - 2px);
-
-    transform: translateX(-100%);
-}
-
-.switch_label:active .switch_button {
-    width: 60px;
+.handle {
+    /* width: 36px; */
+    width: 18px;
+    height: 18px;
+    background: var(--text1);
+    border-radius: 40px;
 }
 
 .disabled {
     pointer-events: none;
-    opacity: 0.5;
+    opacity: 0.4;
 }
