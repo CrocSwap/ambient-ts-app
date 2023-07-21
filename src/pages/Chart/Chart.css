@@ -274,8 +274,8 @@ label {
 
 .lastCandleTooltip-exit-active {
     opacity: 0;
-    transform: translateX(-100%);
-    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    transform: translateX(100%);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; 
 }
 
 .scroll {
