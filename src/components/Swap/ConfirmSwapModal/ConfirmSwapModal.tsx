@@ -86,10 +86,12 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const localeSellString = getFormattedNumber({
         value: parseFloat(sellQtyString),
+        abbrevThreshold: 1000000000,
     });
 
     const localeBuyString = getFormattedNumber({
         value: parseFloat(buyQtyString),
+        abbrevThreshold: 1000000000,
     });
 
     const [baselineBlockNumber, setBaselineBlockNumber] =
