@@ -159,9 +159,10 @@ ${({ xl }) => xl && mediaStyles.xl}
 
 const PoolNameWrapper = styled.p`
     margin-left: 1rem;
+    display: none;
 
-    @media (min-width: 640px) {
-        display: none;
+    @media (min-width: 400px) and (max-width: 640px) {
+        display: flex;
     }
 `;
 

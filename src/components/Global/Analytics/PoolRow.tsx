@@ -3,7 +3,7 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
 import {
     TableCell,
-    // PoolNameWrapper,
+    PoolNameWrapper,
     TokenWrapper,
     FlexCenter,
     TableRow,
@@ -42,7 +42,7 @@ export default function PoolRow(props: propsIF) {
                             size='2xl'
                         />
                     </TokenWrapper>
-                    {/* <PoolNameWrapper>{pool.name}</PoolNameWrapper> */}
+                    <PoolNameWrapper>{pool.name}</PoolNameWrapper>
                 </FlexCenter>
             </TableCell>
             <TableCell hidden sm left>
