@@ -144,6 +144,13 @@ function SwapTokenInput(props: propsIF) {
         }
     }, [debouncedLastEvent]);
 
+    useEffect(() => {
+        (async () => {
+            await refreshTokenData();
+            setDisableReverseTokens(false);
+        })();
+    }, [tokenA, tokenB]);
+
     const reverseTokens = useCallback((): void => {
         if (disableReverseTokens || !isPoolInitialized) return;
 
@@ -164,16 +171,10 @@ function SwapTokenInput(props: propsIF) {
         });
         if (!isTokenAPrimary) {
             setSellQtyString(buyQtyString === 'NaN' ? '' : buyQtyString);
-            handleTokenAChangeEvent(buyQtyString === 'NaN' ? '' : buyQtyString);
         } else {
             setBuyQtyString(sellQtyString === 'NaN' ? '' : sellQtyString);
-            handleTokenBChangeEvent(
-                sellQtyString === 'NaN' ? '' : sellQtyString,
-            );
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-
-        setDisableReverseTokens(false);
     }, [
         crocEnv,
         poolPriceDisplay,
