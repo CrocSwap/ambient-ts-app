@@ -15,6 +15,7 @@ import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { USDC } from '../../../../../utils/tokens/exports';
 import { tokenData } from '../../../../../utils/state/userDataSlice';
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
+import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -197,6 +198,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             <div className={styles.actions_container}>
                 <NavLink
                     to={'/account'}
+                    className={styles.account_button}
                     aria-label='Go to the account page '
                     tabIndex={0}
                     onClick={clickOutsideHandler}
@@ -204,7 +206,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     <CgProfile />
                     My Account
                 </NavLink>
-                <button onClick={clickLogout}>Logout</button>
+                <LogoutButton onClick={clickLogout} />
             </div>
         </div>
     );
