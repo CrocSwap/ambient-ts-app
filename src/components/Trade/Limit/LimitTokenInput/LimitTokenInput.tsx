@@ -132,7 +132,7 @@ function LimitTokenInput(props: propsIF) {
         const truncatedInputStr = getFormattedNumber({
             value: inputNum,
             isToken: true,
-            maxFracDigits: token.decimals,
+            maxFracDigits: inputNum < 100 ? 3 : token.decimals,
             nullDisplay: '',
         });
         return truncatedInputStr;
@@ -242,14 +242,13 @@ function LimitTokenInput(props: propsIF) {
                 }}
                 showWallet={isUserConnected}
             />
-            <div
-                className={`${styles.operation_container}`}
-                onClick={() => {
-                    reverseTokens();
-                }}
-            >
+            <div className={`${styles.operation_container}`}>
                 <IconWithTooltip title='Reverse tokens' placement='left'>
-                    <TokensArrow />
+                    <TokensArrow
+                        onClick={() => {
+                            reverseTokens();
+                        }}
+                    />
                 </IconWithTooltip>
             </div>
             <TokenInput

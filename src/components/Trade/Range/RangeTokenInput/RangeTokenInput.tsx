@@ -193,7 +193,7 @@ function RangeTokenInput(props: propsIF) {
         const truncatedInputStr = getFormattedNumber({
             value: inputNum,
             isToken: true,
-            maxFracDigits: token.decimals,
+            maxFracDigits: inputNum < 100 ? 3 : token.decimals,
             nullDisplay: '',
         });
         return truncatedInputStr;

@@ -89,7 +89,7 @@ function SwapTokenInput(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
 
-    const [lastEvent, setLastEvent] = useState<string | undefined>();
+    const [lastInput, setLastInput] = useState<string | undefined>();
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
     const isSellTokenEth = tokenA.address === ZERO_ADDRESS;
@@ -111,7 +111,7 @@ function SwapTokenInput(props: propsIF) {
         : baseTokenDexBalance;
 
     // Let input rest 3/4 of a second before triggering an update
-    const debouncedLastEvent = useDebounce(lastEvent, 750);
+    const debouncedLastInput = useDebounce(lastInput, 750);
 
     useEffect(() => {
         if (isTokenAPrimary) {
@@ -137,12 +137,12 @@ function SwapTokenInput(props: propsIF) {
     }, [shouldSwapDirectionReverse]);
 
     useEffect(() => {
-        if (debouncedLastEvent !== undefined) {
-            isBuyLoading
-                ? handleTokenAChangeEvent(debouncedLastEvent)
-                : handleTokenBChangeEvent(debouncedLastEvent);
+        if (debouncedLastInput !== undefined) {
+            isTokenAPrimary
+                ? handleTokenAChangeEvent(debouncedLastInput)
+                : handleTokenBChangeEvent(debouncedLastInput);
         }
-    }, [debouncedLastEvent]);
+    }, [debouncedLastInput]);
 
     useEffect(() => {
         (async () => {
@@ -187,7 +187,6 @@ function SwapTokenInput(props: propsIF) {
 
     const handleBlockUpdate = () => {
         setDisableReverseTokens(true);
-
         isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     };
 
@@ -227,7 +226,7 @@ function SwapTokenInput(props: propsIF) {
             setIsBuyLoading(true);
             setSellQtyString(value);
             setDisableReverseTokens(true);
-            setLastEvent(value);
+            setLastInput(value);
         } else {
             setSellQtyString('');
             dispatch(setPrimaryQuantity(''));
@@ -242,7 +241,7 @@ function SwapTokenInput(props: propsIF) {
             setIsSellLoading(true);
             setBuyQtyString(value);
             setDisableReverseTokens(true);
-            setLastEvent(value);
+            setLastInput(value);
         } else {
             setBuyQtyString('');
             dispatch(setPrimaryQuantity(''));
@@ -254,7 +253,6 @@ function SwapTokenInput(props: propsIF) {
     const handleTokenAChangeEvent = useMemo(
         () => async (value?: string) => {
             if (!crocEnv) return;
-
             let rawTokenBQty = undefined;
             if (value !== undefined) {
                 const truncatedInputStr = parseTokenInput(value);
@@ -269,7 +267,7 @@ function SwapTokenInput(props: propsIF) {
             const truncatedTokenBQty = rawTokenBQty
                 ? rawTokenBQty < 2
                     ? rawTokenBQty.toPrecision(3)
-                    : truncateDecimals(rawTokenBQty, 2)
+                    : truncateDecimals(rawTokenBQty, rawTokenBQty < 100 ? 3 : 2)
                 : '';
 
             setBuyQtyString(truncatedTokenBQty);
@@ -307,7 +305,7 @@ function SwapTokenInput(props: propsIF) {
             const truncatedTokenAQty = rawTokenAQty
                 ? rawTokenAQty < 2
                     ? rawTokenAQty.toPrecision(3)
-                    : truncateDecimals(rawTokenAQty, 2)
+                    : truncateDecimals(rawTokenAQty, rawTokenAQty < 100 ? 3 : 2)
                 : '';
             setSellQtyString(truncatedTokenAQty);
             setIsSellLoading(false);
@@ -345,7 +343,7 @@ function SwapTokenInput(props: propsIF) {
         const truncatedInputStr = getFormattedNumber({
             value: inputNum,
             isToken: true,
-            maxFracDigits: tokenA.decimals,
+            maxFracDigits: inputNum < 100 ? 3 : 2,
         });
 
         return truncatedInputStr;
