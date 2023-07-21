@@ -162,7 +162,13 @@ export default function TransactionDetailsGraph(
                     }
                 };
 
-                const minDate = time() * 1000 - oneHourMiliseconds * 8;
+                let minDateDiff = oneHourMiliseconds * 24 * 7;
+
+                if (transactionType === 'swap') {
+                    minDateDiff = oneHourMiliseconds * 8;
+                }
+
+                const minDate = time() * 1000 - minDateDiff;
 
                 const diff =
                     new Date().getTime() - minDate < 43200000
@@ -425,6 +431,13 @@ export default function TransactionDetailsGraph(
             xScale.domain(xExtent(graphData));
 
             if (transactionType === 'swap') {
+                if (tx !== undefined) {
+                    addExtraCandle(
+                        tx.txTime,
+                        tx.swapInvPriceDecimalCorrected,
+                        tx.swapPriceDecimalCorrected,
+                    );
+                }
                 yScale.domain(yExtent(graphData));
             } else if (transactionType === 'limitOrder') {
                 if (tx !== undefined) {
@@ -798,6 +811,19 @@ export default function TransactionDetailsGraph(
         triangleLimit,
     ]);
 
+    const addExtraCandle = (
+        time: number,
+        askTickInvPriceDecimalCorrected: number,
+        askTickPriceDecimalCorrected: number,
+    ) => {
+        graphData?.push({
+            time: time,
+            invPriceCloseExclMEVDecimalCorrected:
+                askTickInvPriceDecimalCorrected,
+            priceCloseExclMEVDecimalCorrected: askTickPriceDecimalCorrected,
+        });
+    };
+
     const drawChart = useCallback(
         (
             graphData: any,
@@ -814,9 +840,9 @@ export default function TransactionDetailsGraph(
                 const minDomain = scaleData.xScale.domain()[0].getTime();
                 const maxDomain = scaleData.xScale.domain()[1].getTime();
 
-                const buffer = oneHourMiliseconds * 5;
-
                 if (transactionType === 'limitOrder' && tx !== undefined) {
+                    const buffer = oneHourMiliseconds * 24 * 3;
+
                     if (tx.timeFirstMint * 1000 + buffer >= maxDomain) {
                         scaleData?.xScale.domain([
                             minDomain,
@@ -827,6 +853,24 @@ export default function TransactionDetailsGraph(
                     if (tx.timeFirstMint * 1000 - buffer <= minDomain) {
                         scaleData?.xScale.domain([
                             tx.timeFirstMint * 1000 - buffer,
+                            maxDomain,
+                        ]);
+                    }
+                }
+
+                if (transactionType === 'swap') {
+                    const buffer = oneHourMiliseconds * 1;
+
+                    if (tx.txTime * 1000 + buffer >= maxDomain) {
+                        scaleData?.xScale.domain([
+                            minDomain,
+                            maxDomain + buffer,
+                        ]);
+                    }
+
+                    if (tx.txTime * 1000 - buffer <= minDomain) {
+                        scaleData?.xScale.domain([
+                            tx.txTime * 1000 - buffer,
                             maxDomain,
                         ]);
                     }
@@ -882,6 +926,11 @@ export default function TransactionDetailsGraph(
                                     horizontalBandData,
                                 ]).call(horizontalBand);
                             } else if (tx.claimableLiq > 0) {
+                                addExtraCandle(
+                                    tx.timeFirstMint,
+                                    tx.askTickInvPriceDecimalCorrected,
+                                    tx.askTickPriceDecimalCorrected,
+                                );
                                 crossPointJoin(svg, [
                                     [
                                         {
@@ -969,8 +1018,6 @@ export default function TransactionDetailsGraph(
                             }
                         }
 
-                        lineJoin(svg, [graphData]).call(lineSeries);
-
                         if (transactionType === 'swap' && tx !== undefined) {
                             crossPointJoin(svg, [
                                 [
@@ -987,13 +1034,17 @@ export default function TransactionDetailsGraph(
                                 ],
                             ]).call(crossPoint);
                         }
+
+                        lineJoin(svg, [
+                            graphData.sort((a: any, b: any) => b.time - a.time),
+                        ]).call(lineSeries);
                     },
                 );
 
                 render();
             }
         },
-        [tx],
+        [tx, graphData],
     );
 
     const loadingSpinner = <Spinner size={100} bg='var(--dark1)' centered />;

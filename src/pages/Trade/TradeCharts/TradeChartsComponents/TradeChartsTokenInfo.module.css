@@ -96,8 +96,7 @@
     }
 
     .chart_image,
-    .time_frame_container,
-    .token_info_container {
+    .time_frame_container {
         display: none;
     }
 }

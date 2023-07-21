@@ -6,7 +6,6 @@ import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 // START: Import Local Files
 import styles from './LimitExtraInfo.module.css';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-// import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import {
     useAppDispatch,
     useAppSelector,
@@ -72,13 +71,6 @@ function LimitExtraInfo(props: propsIF) {
                 ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
-        // {
-        //     title: 'Limit Price',
-        //     tooltipTitle: 'limit price explanation',
-        //     data: reverseDisplay
-        //         ? `${limitRateNum} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-        //         : `${limitRateNum} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
-        // },
         {
             title: 'Fill Start',
             tooltipTitle:
@@ -177,7 +169,6 @@ function LimitExtraInfo(props: propsIF) {
             >
                 {conversionRateDisplay}
             </div>
-            {/* <DenominationSwitch /> */}
             {isQtyEntered && !showExtraDetails && (
                 <RiArrowDownSLine
                     size={22}

@@ -529,7 +529,7 @@ function CurrencySelector(props: propsIF) {
                 >
                     <TokenIcon
                         src={uriToHttp(thisToken.logoURI)}
-                        alt={thisToken.name}
+                        alt={thisToken.symbol}
                         size='2xl'
                     />
                     {tokenSymbol}
