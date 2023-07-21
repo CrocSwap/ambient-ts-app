@@ -135,7 +135,7 @@ export default function RangeLineCanvas(props: propsIF) {
 
             renderCanvasArray([d3CanvasRangeLine]);
         }
-    }, [diffHashSigScaleData(scaleData)]);
+    }, [scaleData === undefined]);
 
     useEffect(() => {
         if (

@@ -162,7 +162,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             );
             setLineDepthSeries(() => d3CanvasLiqChartDepthLine);
 
-            renderCanvasArray([d3CanvasLiq]);
+            // renderCanvasArray([d3CanvasLiq]);
         }
     }, [scaleData === undefined, liquidityScale, pool, liquidityDepthScale]);
 
@@ -448,7 +448,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         tradeData.advancedMode,
         liqSeries,
         liquidityScale,
-        diffHashSigScaleData(scaleData),
+        // diffHashSigScaleData(scaleData),
         liqMode,
         location.pathname,
         ranges,
@@ -698,30 +698,41 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         }
     };
 
-    useEffect(() => {
-        const liqDataAll = liquidityData?.depthLiqBidData.concat(
-            liquidityData?.depthLiqAskData,
-        );
-        try {
-            if (liqDataAll && liqDataAll.length === 0) return;
-            const { min, max }: nearestLiquidity = findLiqNearest(liqDataAll);
-            if (min !== undefined && max !== undefined) {
-                const visibleDomain = liqDataAll.filter(
-                    (liqData: LiquidityDataLocal) =>
-                        liqData?.liqPrices >= min && liqData?.liqPrices <= max,
-                );
-                const maxLiq = d3.max(
-                    visibleDomain,
-                    (d: LiquidityDataLocal) => d.activeLiq,
-                );
-                if (maxLiq && parseFloat(maxLiq) !== 1 && liquidityDepthScale) {
-                    liquidityDepthScale.domain([0, maxLiq]);
+    useEffect(
+        () => {
+            const liqDataAll = liquidityData?.depthLiqBidData.concat(
+                liquidityData?.depthLiqAskData,
+            );
+            try {
+                if (liqDataAll && liqDataAll.length === 0) return;
+                const { min, max }: nearestLiquidity =
+                    findLiqNearest(liqDataAll);
+                if (min !== undefined && max !== undefined) {
+                    const visibleDomain = liqDataAll.filter(
+                        (liqData: LiquidityDataLocal) =>
+                            liqData?.liqPrices >= min &&
+                            liqData?.liqPrices <= max,
+                    );
+                    const maxLiq = d3.max(
+                        visibleDomain,
+                        (d: LiquidityDataLocal) => d.activeLiq,
+                    );
+                    if (
+                        maxLiq &&
+                        parseFloat(maxLiq) !== 1 &&
+                        liquidityDepthScale
+                    ) {
+                        liquidityDepthScale.domain([0, maxLiq]);
+                    }
                 }
+            } catch (error) {
+                console.error({ error });
             }
-        } catch (error) {
-            console.error({ error });
-        }
-    }, [diffHashSigScaleData(scaleData, 'y')]);
+        },
+        [
+            // diffHashSigScaleData(scaleData, 'y')
+        ],
+    );
 
     useEffect(() => {
         if (liqDataHoverEvent) {
@@ -731,7 +742,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [
         liqDataHoverEvent,
         mainCanvasBoundingClientRect,
-        diffHashSigScaleData(scaleData, 'y'),
+        // diffHashSigScaleData(scaleData, 'y'),
     ]);
 
     useEffect(() => {
@@ -763,7 +774,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     useEffect(() => {
         renderCanvasArray([d3CanvasLiq]);
     }, [
-        diffHashSigScaleData(scaleData),
+        // diffHashSigScaleData(scaleData),
         diffHashSig(liquidityData),
         location,
         ranges,

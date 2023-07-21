@@ -16,11 +16,9 @@ interface TvlData {
     tvlData: Array<CandleData>;
     period: number | undefined;
     subChartValues: any;
-    setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
     scaleData: any;
     render: any;
-    zoomAndYdragControl: any;
     getNewCandleData: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
@@ -39,8 +37,6 @@ function TvlSubChart(props: TvlData) {
         period,
         scaleData,
         crosshairForSubChart,
-        zoomAndYdragControl,
-        setZoomAndYdragControl,
         getNewCandleData,
         subChartValues,
         yAxisWidth,
@@ -139,8 +135,6 @@ function TvlSubChart(props: TvlData) {
                         domainX[0] + deltaX,
                         domainX[1] + deltaX,
                     ]);
-
-                    setZoomAndYdragControl(event);
                 }) as any;
 
             setTvlZoom(() => {
@@ -356,7 +350,11 @@ function TvlSubChart(props: TvlData) {
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
         }
-    }, [diffHashSigScaleData(scaleData), diffHashSig(tvlyScale), tvlGradient]);
+    }, [
+        // diffHashSigScaleData(scaleData),
+        diffHashSig(tvlyScale),
+        tvlGradient,
+    ]);
 
     useEffect(() => {
         const canvas = d3
@@ -483,15 +481,9 @@ function TvlSubChart(props: TvlData) {
             tvlyScale !== undefined
         ) {
             drawChart(tvlData, tvlyScale);
-            props.render();
+            // props.render();
         }
-    }, [
-        scaleData,
-        period,
-        tvlData,
-        zoomAndYdragControl,
-        diffHashSig(tvlyScale),
-    ]);
+    }, [scaleData, period, tvlData, diffHashSig(tvlyScale)]);
 
     const drawChart = useCallback(
         (tvlData: any, tvlyScale: any) => {

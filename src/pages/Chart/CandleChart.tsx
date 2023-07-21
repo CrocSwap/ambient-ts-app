@@ -80,7 +80,7 @@ export default function CandleChart(props: candlePropsIF) {
             }
         }
 
-        renderCanvasArray([d3CanvasCandle]);
+        // renderCanvasArray([d3CanvasCandle]);
     }, [
         diffHashSig(chartItemStates),
         tradeTableState,
@@ -88,9 +88,9 @@ export default function CandleChart(props: candlePropsIF) {
         firstCandle,
     ]);
 
-    useEffect(() => {
-        renderCanvasArray([d3CanvasCandle]);
-    }, [diffHashSigScaleData(scaleData)]);
+    // useEffect(() => {
+    //     renderCanvasArray([d3CanvasCandle]);
+    // }, [diffHashSigScaleData(scaleData)]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -121,7 +121,6 @@ export default function CandleChart(props: candlePropsIF) {
                 );
 
             setCandlestick(() => canvasCandlestick);
-            renderCanvasArray([d3CanvasCandle]);
         }
     }, []);
 

@@ -33,7 +33,7 @@ export default function VolumeBarCanvas(props: propsIF) {
                 .mainValue((d: CandleData) => (d.volumeUSD ? d.volumeUSD : 0));
 
             setBarSeries(() => canvasBarChart);
-            renderCanvasArray([d3CanvasBar]);
+            // renderCanvasArray([d3CanvasBar]);
         }
     }, [scaleData]);
 

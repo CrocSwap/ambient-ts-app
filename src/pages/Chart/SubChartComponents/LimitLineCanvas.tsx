@@ -84,7 +84,7 @@ export default function LimitLineCanvas(props: propsIF) {
             });
         }
     }, [
-        diffHashSigScaleData(scaleData),
+        // diffHashSigScaleData(scaleData),
         lineSellColor,
         lineBuyColor,
         isUserConnected,
@@ -159,7 +159,7 @@ export default function LimitLineCanvas(props: propsIF) {
                 context.fillStyle = 'transparent';
             });
 
-            renderCanvasArray([d3CanvasLimitLine]);
+            // renderCanvasArray([d3CanvasLimitLine]);
         }
     }, [
         limitLine,

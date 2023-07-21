@@ -45,8 +45,6 @@ interface yAxisIF {
     crosshairData: Array<crosshair>;
     reset: boolean | undefined;
     isLineDrag: boolean | undefined;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -90,7 +88,6 @@ export default function YaxisCanvas(props: yAxisIF) {
         crosshairData,
         reset,
         isLineDrag,
-        setZoomAndYdragControl,
         setRescale,
         setMarketLineValue,
         render,
@@ -795,7 +792,7 @@ export default function YaxisCanvas(props: yAxisIF) {
                     }
                 }
 
-                setZoomAndYdragControl(event);
+                // setZoomAndYdragControl(event);
                 setRescale(() => {
                     return false;
                 });
@@ -820,7 +817,11 @@ export default function YaxisCanvas(props: yAxisIF) {
         setYaxisZoom(() => {
             return yAxisZoom;
         });
-    }, [diffHashSigScaleData(scaleData), liquidityData?.liqBidData]);
+    }, [
+        // diffHashSigScaleData(scaleData)
+        // ,
+        liquidityData?.liqBidData,
+    ]);
 
     useEffect(() => {
         if (yAxis && yAxisZoom && d3Yaxis.current) {
@@ -879,7 +880,7 @@ export default function YaxisCanvas(props: yAxisIF) {
             renderSubchartCrCanvas();
         }
     }, [
-        diffHashSigScaleData(scaleData),
+        // diffHashSigScaleData(scaleData),
         market,
         diffHashSig(crosshairData),
         limit,
