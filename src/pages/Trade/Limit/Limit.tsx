@@ -5,7 +5,7 @@ import {
     priceHalfAboveTick,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useMemo } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { useTradeData } from '../../../App/hooks/useTradeData';
@@ -127,7 +127,10 @@ export default function Limit() {
     const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
+    const isSellTokenBase = useMemo(() => {
+        dispatch(setLimitTick(undefined));
+        return pool?.baseToken.tokenAddr === tokenA.address;
+    }, [pool?.baseToken, tokenA.address]);
 
     let receiveReceiptHashes: Array<string> = [];
     const currentPendingTransactionsArray = pendingTransactions.filter(
