@@ -18,6 +18,7 @@ import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
 import { User } from '../../Model/UserModel';
+import ReplyMessage from '../ReplyMessage/ReplyMessage';
 interface MessageInputProps {
     currentUser: string;
     message?: Message;
@@ -30,6 +31,7 @@ interface MessageInputProps {
         room: string,
         ensName: string,
         walletID: string | null,
+        replyMessageContent?: string | undefined,
     ) => void;
     inputListener?: (e: string) => void;
     users: User[];
@@ -42,6 +44,10 @@ interface MessageInputProps {
     isLinkInCrocodileLabsLinksForInput(word: string): boolean;
     setPopUpText: Dispatch<SetStateAction<string>>;
     popUpText: string;
+    isReplyButtonPressed: boolean;
+    setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
+    replyMessageContent: Message | undefined;
+    setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -207,8 +213,12 @@ export default function MessageInput(props: MessageInputProps) {
                 roomId,
                 props.ensName,
                 address,
+                props.replyMessageContent !== undefined
+                    ? props.replyMessageContent?._id
+                    : undefined,
             );
         }
+        props.setIsReplyButtonPressed(false);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -249,7 +259,18 @@ export default function MessageInput(props: MessageInputProps) {
                     props.ensName === undefined ? address : props.ensName
                 }
             />
-
+            <div>
+                {props.isReplyButtonPressed ? (
+                    <ReplyMessage
+                        message={props.replyMessageContent?.message}
+                        ensName={props.ensName}
+                        setIsReplyButtonPressed={props.setIsReplyButtonPressed}
+                        isReplyButtonPressed={props.isReplyButtonPressed}
+                    />
+                ) : (
+                    ''
+                )}
+            </div>
             <div
                 className={
                     !isConnected ? styles.input_not_allowed : styles.input

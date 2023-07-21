@@ -8,4 +8,5 @@ export interface Message {
     isMentionMessage: boolean;
     mentionedName: string;
     roomInfo: string;
+    repliedMessage: string | undefined;
 }

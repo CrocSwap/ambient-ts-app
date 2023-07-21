@@ -133,6 +133,7 @@ const useChatSocket = (
         room: string,
         ensName: string,
         walletID: string | null,
+        repliedMessage?: string | undefined,
     ) {
         socketRef.current.emit('send-msg', {
             from: currentUser,
@@ -140,6 +141,7 @@ const useChatSocket = (
             roomInfo: room,
             ensName: ensName,
             walletID: walletID,
+            repliedMessage: repliedMessage,
         });
     }
 

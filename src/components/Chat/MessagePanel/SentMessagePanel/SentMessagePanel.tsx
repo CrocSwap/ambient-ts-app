@@ -7,7 +7,9 @@ import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { BiBlock } from 'react-icons/bi';
-import { wordlists } from 'ethers';
+import { BsFillReplyFill } from 'react-icons/bs';
+import ReplyMessage from '../ReplyMessage/ReplyMessage';
+import { IoReturnUpForwardSharp } from 'react-icons/io5';
 
 interface SentMessageProps {
     message: Message;
@@ -34,6 +36,10 @@ interface SentMessageProps {
     setShowPopUp: Dispatch<SetStateAction<boolean>>;
     popUpText: string;
     setPopUpText: Dispatch<SetStateAction<string>>;
+    isReplyButtonPressed: boolean;
+    setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
+    replyMessageContent: Message | undefined;
+    setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -44,9 +50,14 @@ function SentMessagePanel(props: SentMessageProps) {
     const [daySeparator, setdaySeparator] = useState('');
     const [ok, setOk] = useState(false);
     const [count, setCount] = useState(0);
-    const [lastMessageTime, setLastMessageTime] = useState<any>(null);
+    const [repliedMessageText, setRepliedMessageText] = useState<string>('');
+    const [repliedMessageEnsName, setRepliedMessageEnsName] =
+        useState<string>('');
+    const [repliedMessageDate, setRepliedMessageDate] = useState<string>('');
+    const [repliedMessageWalletID, setRepliedMessageWalletID] =
+        useState<string>('');
 
-    const { deleteMessage } = useChatApi();
+    const { deleteMessage, getRepliedMessageInfo } = useChatApi();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -131,6 +142,15 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }, [props.previousMessage, props.message]);
 
+    useEffect(() => {
+        if ('repliedMessage' in props.message) {
+            console.log(
+                getReplyMessageInfo(props.message.repliedMessage as string),
+            );
+            getReplyMessageInfo(props.message.repliedMessage as string);
+        }
+    }, [props.message]);
+
     const formatAMPM = (str: string) => {
         const date = new Date(str);
         let hours = date.getHours();
@@ -142,6 +162,11 @@ function SentMessagePanel(props: SentMessageProps) {
         const strTime = hours + ':' + _min + ' ' + ampm;
         return strTime;
     };
+
+    function setReplyMessage() {
+        props.setIsReplyButtonPressed(!props.isReplyButtonPressed);
+        props.setReplyMessageContent(props.message);
+    }
 
     const getDayAndName = (previousDay: string, currentDay: string) => {
         const today = new Date();
@@ -352,29 +377,63 @@ function SentMessagePanel(props: SentMessageProps) {
         <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
-    function messageStyle() {
-        if (ok) {
-            if (!hasSeparator) {
-                return { width: '90%', marginBottom: -15 };
-            } else {
-                return { width: '90%', marginBottom: 0 };
-            }
-        } else {
-            return { width: '90%', marginBottom: -7 };
-        }
-    }
+    const repliedJazzicon =
+        'repliedMessage' in props.message ? (
+            <Jazzicon
+                svgStyles={{ marginBottom: '8px' }}
+                diameter={10}
+                seed={jsNumberForAddress(repliedMessageWalletID.toLowerCase())}
+            />
+        ) : undefined;
 
     // function blockUser(userId: string) {
 
     // }
+    function getReplyMessageInfo(_id: string) {
+        getRepliedMessageInfo(_id).then((result: any) => {
+            setRepliedMessageText(result[0].message);
+            setRepliedMessageDate(formatAMPM(result[0].createdAt));
+            setRepliedMessageEnsName(result[0].ensName);
+            setRepliedMessageWalletID(result[0].walletID);
+            console.log(repliedMessageWalletID);
+        });
+        return repliedMessageText;
+    }
 
     return (
-        <div className={styles.msg_bubble_container} style={messageStyle()}>
+        <div className={styles.msg_bubble_container}>
             <div>
                 {daySeparator === '' ? (
                     ''
                 ) : daySeparator !== '' ? (
                     <p className={styles.separator}>{daySeparator}</p>
+                ) : (
+                    ''
+                )}
+                {'repliedMessage' in props.message && (
+                    <IoReturnUpForwardSharp
+                        style={{
+                            position: 'absolute',
+                            top: '-0.3rem',
+                            left: '0.6rem',
+                        }}
+                    />
+                )}
+
+                {'repliedMessage' in props.message ? (
+                    <div className={styles.replied_box}>
+                        <ReplyMessage
+                            message={repliedMessageText}
+                            ensName={repliedMessageEnsName}
+                            time={repliedMessageDate}
+                            setIsReplyButtonPressed={
+                                props.setIsReplyButtonPressed
+                            }
+                            isReplyButtonPressed={false}
+                            myJazzicon={repliedJazzicon}
+                            walletID={repliedMessageWalletID}
+                        />
+                    </div>
                 ) : (
                     ''
                 )}
@@ -439,6 +498,7 @@ function SentMessagePanel(props: SentMessageProps) {
                             }}
                         >
                             {showName && getName()}
+
                             <div>
                                 {' '}
                                 {props.moderator && showName ? (
@@ -469,10 +529,15 @@ function SentMessagePanel(props: SentMessageProps) {
                     ) : (
                         ''
                     )}
-                    <div>
+                    <div className={styles.reply_message}>
                         <p className={styles.message_date}>
                             {formatAMPM(props.message.createdAt)}
                         </p>
+                        <BsFillReplyFill
+                            size={10}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setReplyMessage()}
+                        />
                     </div>
 
                     {/* {snackbarContent} */}

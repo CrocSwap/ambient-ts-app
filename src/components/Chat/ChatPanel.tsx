@@ -16,6 +16,7 @@ import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { Message } from './Model/MessageModel';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -62,6 +63,11 @@ function ChatPanel(props: propsIF) {
         useState(false);
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
+
+    const [isReplyButtonPressed, setIsReplyButtonPressed] = useState(false);
+    const [replyMessageContent, setReplyMessageContent] = useState<
+        Message | undefined
+    >();
 
     const [page, setPage] = useState(0);
     const {
@@ -428,6 +434,10 @@ function ChatPanel(props: propsIF) {
                         setShowPopUp={setShowPopUp}
                         popUpText={popUpText}
                         setPopUpText={setPopUpText}
+                        isReplyButtonPressed={isReplyButtonPressed}
+                        setIsReplyButtonPressed={setIsReplyButtonPressed}
+                        replyMessageContent={replyMessageContent}
+                        setReplyMessageContent={setReplyMessageContent}
                     />
                 ))}
         </div>
@@ -562,6 +572,10 @@ function ChatPanel(props: propsIF) {
             }
             popUpText={popUpText}
             setPopUpText={setPopUpText}
+            isReplyButtonPressed={isReplyButtonPressed}
+            setIsReplyButtonPressed={setIsReplyButtonPressed}
+            replyMessageContent={replyMessageContent}
+            setReplyMessageContent={setReplyMessageContent}
         />
     );
 

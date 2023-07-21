@@ -66,6 +66,18 @@ const useChatApi = () => {
         return data;
     }
 
+    async function getRepliedMessageInfo(_id: string) {
+        const response = await fetch(
+            host + '/chat/api/messages/getMsgWithId/' + _id,
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+
+        return data;
+    }
+
     async function updateUser(
         _id: string,
         ensName: string,
@@ -137,6 +149,7 @@ const useChatApi = () => {
         updateMessageUser,
         saveUser,
         deleteMessage,
+        getRepliedMessageInfo,
     };
 };
 export default useChatApi;

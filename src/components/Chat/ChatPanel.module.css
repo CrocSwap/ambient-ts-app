@@ -71,9 +71,10 @@
 }
 
 .chat_notification {
-    display: flex;
-    position: relative;
-    justify-content: right;
+    
+    position: absolute;
+    top: 26rem;
+    left: 19.5rem;
     width: 95%;
     height: 1%;
     cursor: default;

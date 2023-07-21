@@ -62,6 +62,11 @@
     margin-top: 8px;
 }
 
+.reply_message {
+    display: flex;
+    flex-direction: row;
+}
+
 .separator {
     font-family: 'Lexend Deca';
     font-style: normal;
@@ -76,6 +81,7 @@
     /* Inside auto layout */
     order: 0;
     cursor: default;
+    
 }
 
 .message {
@@ -250,6 +256,12 @@
     margin-left: 5px;
 }
 
+.replied_box{
+    position: absolute;
+    top: -0.5rem;
+    left: 1.5rem;
+}
+
 .message_item {
     cursor: default;
     display: flex;
@@ -279,4 +291,6 @@
 
 .msg_bubble_container{
     animation: msgBubbleAnim 0.1s ease-in-out forwards;
+    width: 90%;
 }
+
