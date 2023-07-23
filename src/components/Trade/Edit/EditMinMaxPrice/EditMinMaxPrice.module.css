@@ -1,7 +1,0 @@
-.min_max_container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    transition: all var(--animation-speed) ease-in-out;
-}

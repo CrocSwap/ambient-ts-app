@@ -173,10 +173,6 @@ function TradeCandleStickChart(props: propsIF) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
-    // const liquidityPullData = useAppSelector(
-    //     (state) => state.graphData.liquidityData,
-    // );
-
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
@@ -222,44 +218,10 @@ function TradeCandleStickChart(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (unparsedLiquidityData !== undefined) {
-            const barThreshold =
-                poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
-
-            const liqBoundaryData = unparsedLiquidityData.ranges.find(
-                (liq: any) => {
-                    return denominationsInBase
-                        ? liq.upperBoundInvPriceDecimalCorrected <
-                              barThreshold &&
-                              liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
-                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
-                              liq.upperBoundPriceDecimalCorrected !== '+inf';
-                },
-            );
-
-            const liqBoundaryArg =
-                liqBoundaryData !== undefined
-                    ? denominationsInBase
-                        ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
-                        : liqBoundaryData.upperBoundPriceDecimalCorrected
-                    : barThreshold;
-            const liqBoundary =
-                typeof liqBoundaryArg === 'number'
-                    ? liqBoundaryArg
-                    : parseFloat(liqBoundaryArg);
-
-            setLiqBoundary(() => liqBoundary);
+        if (unparsedCandleData === undefined) {
+            clearLiquidityData();
         }
-    }, [
-        diffHashSigLiquidity(unparsedLiquidityData),
-        denominationsInBase,
-        poolPriceDisplay !== undefined && poolPriceDisplay > 0,
-    ]);
-
-    useEffect(() => {
-        IS_LOCAL_ENV && console.debug('setting candle added to true');
-        setIsCandleAdded(true);
-    }, [diffHashSigCandles(candleData), denominationsInBase]);
+    }, [unparsedCandleData === undefined]);
 
     const clearLiquidityData = () => {
         if (liquidityData) {
@@ -767,7 +729,7 @@ function TradeCandleStickChart(props: propsIF) {
                 const firstTime = Math.floor(fethcingCandles / 1000);
 
                 if (firstTime > minDate && fethcingCandles > domainLeft) {
-                    const nCandle = Math.floor(
+                    const nCandles = Math.floor(
                         (fethcingCandles - domainLeft) / (period * 1000),
                     );
 
@@ -775,7 +737,22 @@ function TradeCandleStickChart(props: propsIF) {
                         return {
                             isFetchForTimeframe: !prev.isFetchForTimeframe,
                             lastCandleDate: firstTime,
-                            nCandle: nCandle,
+                            nCandles: nCandles,
+                            isShowLatestCandle: false,
+                        };
+                    });
+                } else {
+                    scaleData.xScale.domain([
+                        xScaleCopyLeftDomain,
+                        xScaleCopyRightDomain,
+                    ]);
+
+                    setCandleScale((prev: candleScale) => {
+                        return {
+                            isFetchForTimeframe: !prev.isFetchForTimeframe,
+                            lastCandleDate: undefined,
+                            nCandles: 200,
+                            isShowLatestCandle: false,
                         };
                     });
                 }
@@ -807,7 +784,8 @@ function TradeCandleStickChart(props: propsIF) {
                 return {
                     isFetchForTimeframe: !prev.isFetchForTimeframe,
                     lastCandleDate: undefined,
-                    nCandle: 200,
+                    nCandles: 200,
+                    isShowLatestCandle: true,
                 };
             });
         }

@@ -15,7 +15,6 @@ import ContentContainer from '../../../components/Global/ContentContainer/Conten
 import LimitButton from '../../../components/Trade/Limit/LimitButton/LimitButton';
 import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
-import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
@@ -58,6 +57,7 @@ import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
 
 export default function Limit() {
     const {
@@ -75,7 +75,7 @@ export default function Limit() {
     const { tokens } = useContext(TokenContext);
     const { tokenAAllowance, setRecheckTokenAApproval } =
         useContext(TradeTokenContext);
-    const { dexBalLimit, bypassConfirmLimit } = useContext(
+    const { mintSlippage, dexBalLimit, bypassConfirmLimit } = useContext(
         UserPreferenceContext,
     );
 
@@ -698,7 +698,11 @@ export default function Limit() {
                 </div>
             )}{' '}
             <ContentContainer isOnTradeRoute>
-                <LimitHeader />
+                <OrderHeader
+                    slippage={mintSlippage}
+                    bypassConfirm={bypassConfirmLimit}
+                    settingsTitle='Limit Order'
+                />
                 {navigationMenu}
                 <motion.div
                     initial={{ opacity: 0 }}

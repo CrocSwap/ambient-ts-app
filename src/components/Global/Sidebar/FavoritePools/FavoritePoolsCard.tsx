@@ -1,15 +1,16 @@
 import styles from './FavoritePoolsCard.module.css';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { usePoolStats } from './hooks/usePoolStats';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    pageNames,
 } from '../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../App/functions/fetchTokenPrice';
 
@@ -37,10 +38,33 @@ export default function FavoritePoolsCard(props: propsIF) {
         crocEnv,
     );
 
+    const { pathname } = useLocation();
+
+    const navTarget = useMemo<pageNames>(() => {
+        let output: pageNames;
+        if (
+            pathname.startsWith('/trade/market') ||
+            pathname.startsWith('/account') ||
+            pathname === '/'
+        ) {
+            output = 'market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            output = 'limit';
+        } else if (pathname.startsWith('/trade/pool')) {
+            output = 'pool';
+        } else {
+            console.warn(
+                'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
+            );
+            output = 'market';
+        }
+        return output as pageNames;
+    }, [pathname]);
+
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
     // hook to generate navigation actions with pre-loaded path
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [addrTokenA, addrTokenB] =
         tokenB.address.toLowerCase() === pool.base.address.toLowerCase()

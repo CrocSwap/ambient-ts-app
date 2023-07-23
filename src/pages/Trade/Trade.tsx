@@ -31,7 +31,10 @@ import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
-import { TradeTableContext } from '../../contexts/TradeTableContext';
+import {
+    TRADE_TABLE_HEADER_HEIGHT,
+    TradeTableContext,
+} from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -52,7 +55,7 @@ function Trade() {
     const {
         isFullScreen: isChartFullScreen,
         chartSettings,
-        chartHeight,
+        chartHeights,
         setChartHeight,
     } = useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
@@ -386,25 +389,30 @@ function Trade() {
                     <Resizable
                         className={styles.chartBox}
                         enable={{ bottom: true }}
-                        size={{ width: '100%', height: chartHeight }}
+                        size={{ width: '100%', height: chartHeights.current }}
                         minHeight={4}
                         onResizeStart={() => {
                             setTradeTableState(undefined);
                         }}
                         onResizeStop={(e, direction, ref, d) => {
                             // the resizable bar is 4px in height
-                            if (chartHeight + d.height <= 4) {
+                            if (chartHeights.current + d.height <= 4) {
                                 setTradeTableState('Expanded');
                             }
                             if (
                                 tradeTableRef?.current &&
-                                tradeTableRef.current.offsetHeight === 54
+                                tradeTableRef.current.offsetHeight ===
+                                    TRADE_TABLE_HEADER_HEIGHT
                             ) {
                                 setTradeTableState('Collapsed');
                             }
-                            setChartHeight(chartHeight + d.height);
+                            setChartHeight(chartHeights.current + d.height);
                         }}
-                        handleClasses={{ bottom: styles.resizableBox }}
+                        handleClasses={
+                            isChartFullScreen
+                                ? undefined
+                                : { bottom: styles.resizableBox }
+                        }
                         bounds={'parent'}
                     >
                         <div
