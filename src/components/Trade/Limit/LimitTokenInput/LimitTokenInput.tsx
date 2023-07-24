@@ -120,7 +120,6 @@ function LimitTokenInput(props: propsIF) {
 
     useEffect(() => {
         if (!shouldLimitDirectionReverse) {
-            console.log('aaaaa');
             isTokenAPrimary
                 ? handleTokenAChangeEvent()
                 : handleTokenBChangeEvent();
@@ -172,7 +171,6 @@ function LimitTokenInput(props: propsIF) {
                     ? (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity)
                     : limitTickDisplayPrice * parseFloat(primaryQuantity);
             }
-            console.log(2);
             handleLimitButtonMessage(parseFloat(tokenAInputQty));
         }
 
