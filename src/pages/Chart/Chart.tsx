@@ -335,6 +335,8 @@ export default function Chart(props: propsIF) {
 
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [isChartZoom, setIsChartZoom] = useState(false);
+    const [chartZoomEvent, setChartZoomEvent] = useState('');
+
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
     // Data
@@ -354,7 +356,7 @@ export default function Chart(props: propsIF) {
     const [firstCandle, setFirstCandle] = useState<number>();
 
     const unparsedCandleData = useMemo(() => {
-        const data = unparsedData.candles;
+        const data = unparsedData.candles.sort((a, b) => b.time - a.time);
         if (poolPriceWithoutDenom) {
             const fakeData = {
                 time: data[0].time + period,
@@ -821,6 +823,17 @@ export default function Chart(props: propsIF) {
         }
     }, [canUserDragLimit, canUserDragRange, isOnCandleOrVolumeMouseLocation]);
 
+    useEffect(() => {
+        if (isChartZoom && chartZoomEvent !== 'wheel') {
+            d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
+        } else {
+            d3.select(d3CanvasMain.current).style(
+                'cursor',
+                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
+            );
+        }
+    }, [isChartZoom]);
+
     function changeyAxisWidth() {
         let yTickValueLength =
             formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
@@ -940,15 +953,20 @@ export default function Chart(props: propsIF) {
 
             domainMax = domainMax < minDate ? minDate : domainMax;
 
+            const isShowLatestCandle =
+                xDomain[0] < lastCandleData?.time * 1000 &&
+                lastCandleData?.time * 1000 < xDomain[1];
+
             setCandleScale((prev: candleScale) => {
                 return {
                     isFetchForTimeframe: prev.isFetchForTimeframe,
                     lastCandleDate: Math.floor(domainMax / 1000),
                     nCandles: nCandles,
+                    isShowLatestCandle: isShowLatestCandle,
                 };
             });
         }
-    }, [diffHashSig(scaleData?.xScale.domain())]);
+    }, [diffHashSig(scaleData?.xScale.domain()), lastCandleData]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getNewCandleData = (
@@ -1078,7 +1096,7 @@ export default function Chart(props: propsIF) {
                 ) => {
                     const dx =
                         Math.abs(event.sourceEvent.deltaX) != 0
-                            ? event.sourceEvent.deltaX / 3
+                            ? -event.sourceEvent.deltaX / 3
                             : event.sourceEvent.deltaY / 3;
 
                     const domainX = scaleData?.xScale.domain();
@@ -1104,18 +1122,32 @@ export default function Chart(props: propsIF) {
                     if (lastCandleTime && firstCandleTime) {
                         if (
                             (event.sourceEvent.shiftKey ||
-                                event.sourceEvent.altKey ||
-                                event.sourceEvent.deltaX !== 0) &&
+                                event.sourceEvent.altKey) &&
                             !event.sourceEvent.ctrlKey &&
                             !event.sourceEvent.metaKey
                         ) {
-                            getNewCandleData(
-                                firstTime + deltaX,
-                                lastCandleDate,
-                            );
+                            if (deltaX > 0) {
+                                getNewCandleData(
+                                    firstTime - deltaX,
+                                    lastCandleDate,
+                                );
+                            } else {
+                                const maxCandleDate = d3.max(
+                                    filteredTime,
+                                    (d) => d.time * 1000,
+                                );
+                                if (maxCandleDate) {
+                                    getNewCandleData(
+                                        maxCandleDate - deltaX,
+                                        maxCandleDate,
+                                        false,
+                                    );
+                                }
+                            }
+
                             scaleData?.xScale.domain([
-                                firstTime + deltaX,
-                                lastTime + deltaX,
+                                firstTime - deltaX,
+                                lastTime - deltaX,
                             ]);
                         } else {
                             if (
@@ -1247,16 +1279,7 @@ export default function Chart(props: propsIF) {
                             event.sourceEvent.type !== 'dblclick'
                         ) {
                             clickedForLine = false;
-
-                            if (
-                                event.sourceEvent &&
-                                event.sourceEvent.type != 'wheel'
-                            ) {
-                                d3.select(d3CanvasMain.current).style(
-                                    'cursor',
-                                    'grabbing',
-                                );
-                            }
+                            setChartZoomEvent(event.sourceEvent.type);
                         }
                     })
                     .on('zoom', (event: any) => {
@@ -1456,15 +1479,11 @@ export default function Chart(props: propsIF) {
                     })
                     .on('end', (event: any) => {
                         setIsChartZoom(false);
+                        setChartZoomEvent('');
                         if (
                             event.sourceEvent &&
                             event.sourceEvent.type != 'wheel'
                         ) {
-                            d3.select(d3CanvasMain.current).style(
-                                'cursor',
-                                'pointer',
-                            );
-
                             d3.select(d3Container.current).style(
                                 'cursor',
                                 'default',
@@ -5235,6 +5254,7 @@ export default function Chart(props: propsIF) {
         timeOfEndCandle,
         isCrDataIndActive,
         bandwidth,
+        diffHashSigChart(unparsedCandleData),
     ]);
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
@@ -5301,24 +5321,24 @@ export default function Chart(props: propsIF) {
                 : false;
 
         let close = denomInBase
-            ? nearest?.invPriceCloseExclMEVDecimalCorrected
-            : nearest?.priceCloseExclMEVDecimalCorrected;
+            ? nearest?.invMinPriceExclMEVDecimalCorrected
+            : nearest?.minPriceExclMEVDecimalCorrected;
 
         let open = denomInBase
-            ? nearest?.invPriceOpenExclMEVDecimalCorrected
-            : nearest?.priceOpenExclMEVDecimalCorrected;
+            ? nearest?.invMaxPriceExclMEVDecimalCorrected
+            : nearest?.maxPriceExclMEVDecimalCorrected;
 
         if (tempFilterData.length > 1) {
             close = d3.max(tempFilterData, (d: any) =>
                 denomInBase
-                    ? d?.invPriceCloseExclMEVDecimalCorrected
-                    : d?.priceCloseExclMEVDecimalCorrected,
+                    ? d?.invMinPriceExclMEVDecimalCorrected
+                    : d?.minPriceExclMEVDecimalCorrected,
             );
 
             open = d3.min(tempFilterData, (d: any) =>
                 denomInBase
-                    ? d?.invPriceOpenExclMEVDecimalCorrected
-                    : d?.priceOpenExclMEVDecimalCorrected,
+                    ? d?.invMaxPriceExclMEVDecimalCorrected
+                    : d?.maxPriceExclMEVDecimalCorrected,
             );
         }
 
@@ -6023,6 +6043,7 @@ export default function Chart(props: propsIF) {
             xAxisActiveTooltip,
             timeOfEndCandle,
             bandwidth,
+            diffHashSigChart(unparsedCandleData),
         ],
     );
 
@@ -6395,7 +6416,8 @@ export default function Chart(props: propsIF) {
                     </div>
                     <Divider />
                     <div>
-                        Click any other candle to view relevant transactions
+                        Click any other price candle or volume bar to view
+                        transactions
                     </div>
                 </div>
             </CSSTransition>

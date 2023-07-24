@@ -741,6 +741,7 @@ function TradeCandleStickChart(props: propsIF) {
                             isFetchForTimeframe: !prev.isFetchForTimeframe,
                             lastCandleDate: firstTime,
                             nCandles: nCandles,
+                            isShowLatestCandle: false,
                         };
                     });
                 } else {
@@ -754,6 +755,7 @@ function TradeCandleStickChart(props: propsIF) {
                             isFetchForTimeframe: !prev.isFetchForTimeframe,
                             lastCandleDate: undefined,
                             nCandles: 200,
+                            isShowLatestCandle: false,
                         };
                     });
                 }
@@ -774,6 +776,7 @@ function TradeCandleStickChart(props: propsIF) {
                     isFetchForTimeframe: !prev.isFetchForTimeframe,
                     lastCandleDate: undefined,
                     nCandles: 200,
+                    isShowLatestCandle: true,
                 };
             });
         }
