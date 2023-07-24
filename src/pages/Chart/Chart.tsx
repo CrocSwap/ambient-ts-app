@@ -3666,7 +3666,7 @@ export default function Chart(props: propsIF) {
                 ? limitTop > yValue && limitBot < yValue
                 : limitTop < yValue && limitBot > yValue;
         if (
-            nearest.time === unparsedCandleData[0].time &&
+            nearest?.time === unparsedCandleData[0].time &&
             dateControl &&
             checkYLocation
         ) {
@@ -3761,8 +3761,6 @@ export default function Chart(props: propsIF) {
                     },
                 ]);
                 setMouseLocationY(offsetY);
-
-                renderCanvasArray([d3CanvasCrosshair]);
                 if (liqMode !== 'none') {
                     setLiqDataHoverEvent(event);
                 }
@@ -3773,6 +3771,10 @@ export default function Chart(props: propsIF) {
             }
         }
     };
+
+    useEffect(() => {
+        renderCanvasArray([d3CanvasCrosshair]);
+    }, [crosshairData]);
 
     useEffect(() => {
         if (xAxisTooltip) {
@@ -3794,7 +3796,6 @@ export default function Chart(props: propsIF) {
         lastCrDate,
         reset,
         latest,
-        // diffHashSigScaleData(scaleData),
     ]);
 
     useEffect(() => {
