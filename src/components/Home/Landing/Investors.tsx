@@ -94,7 +94,7 @@ export default function Investors() {
                     <span>Dogetoshi</span>
                     <span>afkbyte</span>
                     <span>Jai Prasad</span>
-                    <span>Don Sun</span>
+                    <span>Don Ho</span>
                 </div>
             </div>
             {preSeedMobile}
