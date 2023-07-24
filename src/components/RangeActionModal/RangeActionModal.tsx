@@ -44,7 +44,7 @@ import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
-import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
+import ModalHeader from '../Global/ModalHeader/ModalHeader';
 
 interface propsIF {
     type: 'Remove' | 'Harvest';
@@ -624,7 +624,7 @@ export default function RangeActionModal(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            <SimpleModalHeader
+            <ModalHeader
                 onClose={handleModalClose}
                 title={
                     showSettings
@@ -778,7 +778,7 @@ export default function RangeActionModal(props: propsIF) {
     if (showConfirmation) return confirmationContent;
     return (
         <>
-            <SimpleModalHeader
+            <ModalHeader
                 onClose={handleModalClose}
                 title={
                     showSettings

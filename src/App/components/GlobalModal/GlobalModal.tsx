@@ -1,15 +1,21 @@
 import { useContext } from 'react';
-import SimpleModal from '../../../components/Global/SimpleModal/SimpleModal';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import Modal from '../../../components/Global/Modal/Modal';
 
 export default function GlobalModal() {
     const {
         globalModal: { isOpen, close, title, currentContent },
     } = useContext(AppStateContext);
+    console.log({ title });
     const modalOrNull = isOpen ? (
-        <SimpleModal onClose={close} title={title}>
+        <Modal
+            onClose={close}
+            title={title}
+            centeredTitle
+            noHeader={title === ''}
+        >
             {currentContent}
-        </SimpleModal>
+        </Modal>
     ) : null;
 
     return <>{modalOrNull}</>;

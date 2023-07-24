@@ -1,8 +1,8 @@
-import styles from './SimpleModalHeader.module.css';
+import styles from './ModalHeader.module.css';
 import { VscClose } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
 import { useContext } from 'react';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 interface SimpleModalHeaderPropsIF {
     title: string;
     onClose?: () => void;

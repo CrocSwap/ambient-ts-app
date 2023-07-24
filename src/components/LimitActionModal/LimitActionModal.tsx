@@ -28,7 +28,7 @@ import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHea
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { CrocPositionView } from '@crocswap-libs/sdk';
-import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
+import ModalHeader from '../Global/ModalHeader/ModalHeader';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -384,7 +384,7 @@ export default function LimitActionModal(props: propsIF) {
 
     const confirmationContent = (
         <>
-            <SimpleModalHeader
+            <ModalHeader
                 title={
                     type === 'Remove'
                         ? 'Remove Limit Order Confirmation'
@@ -408,7 +408,7 @@ export default function LimitActionModal(props: propsIF) {
         />
     ) : (
         <>
-            <SimpleModalHeader
+            <ModalHeader
                 title={
                     showConfirmation
                         ? ''
