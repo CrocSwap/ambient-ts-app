@@ -1,7 +1,6 @@
 import styles from './ReceiptDisplay.module.css';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { MdErrorOutline } from 'react-icons/md';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import trimString from '../../../../utils/functions/trimString';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { motion } from 'framer-motion';
@@ -12,6 +11,7 @@ import { getChainExplorer } from '../../../../utils/data/chains';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import Spinner from '../../Spinner/Spinner';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
@@ -27,11 +27,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
-    const pending = (
-        <div className={styles.pending}>
-            <AiOutlineLoading3Quarters />
-        </div>
-    );
+    const pending = <Spinner size={'30'} bg={'var(--dark2)'} centered/>;
     const failed = <MdErrorOutline size={30} color='#7371fc ' />;
     const success = <IoMdCheckmarkCircleOutline size={30} color='#7371fc ' />;
 
