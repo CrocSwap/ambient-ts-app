@@ -1,4 +1,3 @@
-import { CSSProperties, SyntheticEvent } from 'react';
 import styles from './OptionButton.module.css';
 
 interface PropsIF {

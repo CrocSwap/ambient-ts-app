@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './SlippageTolerance.module.css';
-import tableMenuStyles from '../Tabs/TableMenu/TableMenuComponents/TableMenus.module.css';
 import { OptionButton } from '../Button/OptionButton';
 
 interface propsIF {
