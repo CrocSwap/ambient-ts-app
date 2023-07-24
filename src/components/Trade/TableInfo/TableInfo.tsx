@@ -1,3 +1,5 @@
+import styled, { css } from 'styled-components';
+
 interface FeaturedBoxPropsIF {
     tokenLogo: string;
     tokenSymbol: string;
@@ -10,6 +12,24 @@ interface DetailedBoxPropsIF {
     label: string;
     value: string;
 }
+// can be extracted to common
+
+interface GridContainerProps {
+    numCols?: number;
+    numRows?: number;
+    gapSize?: number;
+    fullHeight?: boolean;
+}
+const GridContainer = styled.div<GridContainerProps>`
+    display: grid;
+    grid-template-columns: ${({ numCols }) =>
+        numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
+    grid-template-rows: ${({ numRows }) =>
+        numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
+    gap: ${({ gapSize }) => (gapSize ? `${gapSize}px` : '0')};
+    ${({ fullHeight }) => (fullHeight ? 'height: 100%;' : '')}
+`;
+
 export default function TableInfo() {
     const detailedData = [
         { label: 'Market Cap:', value: '$69m' },
@@ -49,79 +69,48 @@ export default function TableInfo() {
             value,
         } = props;
         return (
-            <div className='col-span-1 bg-dark3 rounded'>
-                {' '}
-                <div className='flex flex-col gap-4 p-4'>
-                    {' '}
-                    <div className='flex items-center'>
-                        {' '}
+            <BoxContainer>
+                <FeaturedBoxInnerContainer>
+                    <FlexCenter>
                         <img
                             src={tokenLogo}
                             alt='Logo'
-                            className='w-6 h-6'
-                        />{' '}
-                        <span className='ml-2 text-header2 font-extralight'>
-                            {' '}
-                            {tokenSymbol}{' '}
-                        </span>{' '}
-                        <span className='ml-2 text-body text-text2'>
-                            {' '}
-                            {tokenName}{' '}
-                        </span>{' '}
-                    </div>{' '}
-                    <div className='flex items-center'>
-                        {' '}
-                        <span className='text-text2 text-body'>
-                            {' '}
-                            {tokenAddress}{' '}
-                        </span>{' '}
-                        <span className='ml-2 text-xs text-blue-500'>Link</span>{' '}
-                    </div>{' '}
-                    <div className='mt-2 flex flex-col gap-2'>
-                        {' '}
-                        <span className='text-text2 text-body'>
-                            Balance
-                        </span>{' '}
-                        <span className='text-header2 font-extralight text-text1'>
-                            {' '}
-                            {balance}{' '}
-                        </span>{' '}
-                    </div>{' '}
-                    <div className='mt-2 flex flex-col gap-2'>
-                        {' '}
-                        <span className='text-text2 text-body'>Value</span>{' '}
-                        <span className='text-header2 font-extralight text-text1'>
-                            {' '}
-                            ${value}{' '}
-                        </span>{' '}
-                    </div>{' '}
-                </div>{' '}
-            </div>
+                            style={{ width: '1.5rem', height: '1.5rem' }}
+                        />
+                        <TokenSymbol>{tokenSymbol}</TokenSymbol>
+                        <TokenName>{tokenName}</TokenName>
+                    </FlexCenter>
+                    <FlexCenter>
+                        <InfoHeader>{tokenAddress}</InfoHeader>
+                        <LinkText>Link</LinkText>
+                    </FlexCenter>
+                    <FeaturedBoxInfoContainer>
+                        <InfoHeader>Balance</InfoHeader>
+                        <BoxInfoText>{balance}</BoxInfoText>
+                    </FeaturedBoxInfoContainer>
+                    <FeaturedBoxInfoContainer>
+                        <InfoHeader>Value</InfoHeader>
+                        <BoxInfoText>${value}</BoxInfoText>
+                    </FeaturedBoxInfoContainer>
+                </FeaturedBoxInnerContainer>
+            </BoxContainer>
         );
     }
     function DetailedBox(props: DetailedBoxPropsIF) {
         const { label, value } = props;
         return (
-            <div className='col-span-1 bg-dark3 rounded'>
-                {' '}
-                <div className='mt-2 flex flex-col gap-2 p-4'>
-                    {' '}
-                    <span className='text-text2 text-body'>{label}</span>{' '}
-                    <span className='text-header2 font-extralight text-text1'>
-                        {' '}
-                        {value}{' '}
-                    </span>{' '}
-                </div>{' '}
-            </div>
+            <BoxContainer>
+                <DetailedBoxContainer>
+                    <InfoHeader>{label}</InfoHeader>
+                    <BoxInfoText>{value}</BoxInfoText>
+                </DetailedBoxContainer>
+            </BoxContainer>
         );
     }
     return (
         <section style={{ height: '100%' }}>
-            {' '}
-            <div className='grid grid-cols-2 gap-2 h-full'>
-                {' '}
-                <div className='grid grid-cols-2 gap-2'>
-                    {' '}
+            <GridContainer numCols={2} gapSize={2} fullHeight>
+                <GridContainer numCols={2} gapSize={2}>
                     {featuredData.map((data, idx) => (
                         <FeaturedBox
                             key={idx}
@@ -132,22 +121,20 @@ export default function TableInfo() {
                             balance={data.balance}
                             value={data.value}
                         />
-                    ))}{' '}
-                </div>
-                <section className='grid grid-row-3 gap-2'>
-                    {' '}
-                    <div className='grid grid-cols-4 gap-2'>
-                        {' '}
+                    ))}
+                </GridContainer>
+
+                <GridContainer numRows={3} gapSize={2}>
+                    <GridContainer numCols={4} gapSize={2}>
                         {detailedData.slice(0, 4).map((data, idx) => (
                             <DetailedBox
                                 label={data.label}
                                 value={data.value}
                                 key={idx}
                             />
-                        ))}{' '}
-                    </div>
-                    <div className='grid grid-cols-4 gap-2'>
-                        {' '}
+                        ))}
+                    </GridContainer>
+                    <GridContainer numCols={4} gapSize={2}>
                         {detailedData
                             .slice(4, detailedData.length)
                             .map((data, idx) => (
@@ -156,17 +143,84 @@ export default function TableInfo() {
                                     value={data.value}
                                     key={idx}
                                 />
-                            ))}{' '}
-                    </div>{' '}
+                            ))}
+                    </GridContainer>
                     <div>
-                        {' '}
-                        <div className='col-span-1 bg-dark3 h-full'>
-                            {' '}
-                            This is where the tabs go{' '}
-                        </div>{' '}
-                    </div>{' '}
-                </section>{' '}
-            </div>{' '}
+                        <TabPlaceholder>
+                            This is where the tabs go
+                        </TabPlaceholder>
+                    </div>
+                </GridContainer>
+            </GridContainer>
         </section>
     );
 }
+
+const BoxContainer = styled.div`
+    grid-column: span 1;
+    background-color: var(--dark3);
+    border-radius: 0.25rem;
+`;
+
+const FeaturedBoxInnerContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+`;
+
+const InfoHeader = styled.div`
+    color: var(--text2);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+`;
+
+const FlexCenter = styled.div`
+    display: flex;
+    align-items: center;
+`;
+
+const FeaturedBoxInfoContainer = styled.div`
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+`;
+const TokenSymbol = styled.p`
+    margin-left: 0.5rem;
+    color: var(--header2-size);
+    font-weight: 100;
+`;
+
+const TokenName = styled.p`
+    margin-left: 0.5rem;
+    font-size: var(--body-size);
+    color: var(--text2);
+`;
+
+const BoxInfoText = styled.p`
+    color: var(--header2-size);
+    font-weight: 100;
+
+    color: var(--text1);
+`;
+
+const LinkText = styled.a`
+    margin-left: 0.5rem;
+    font-size: var(--body-size);
+    color: var(--accent1);
+`;
+
+const DetailedBoxContainer = styled.div`
+    display: flex;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    flex-direction: column;
+    gap: 0.5rem;
+`;
+
+const TabPlaceholder = styled.div`
+    grid-column: span 1;
+    background-color: var(--dark3);
+    height: 100%;
+`;

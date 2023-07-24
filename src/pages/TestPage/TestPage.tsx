@@ -1,7 +1,5 @@
+import TableInfo from '../../components/Trade/TableInfo/TableInfo';
+
 export default function TestPage() {
-    return (
-        <section>
-            <p>Test page</p>
-        </section>
-    );
+    return <TableInfo />;
 }
