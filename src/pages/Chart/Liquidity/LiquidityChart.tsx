@@ -164,7 +164,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
             renderCanvasArray([d3CanvasLiq]);
         }
-    }, [scaleData === undefined, liquidityScale, pool, liquidityDepthScale]);
+    }, [scaleData, liquidityScale, pool, liquidityDepthScale]);
 
     useEffect(() => {
         const thresholdCurve = liquidityData?.liqTransitionPointforCurve;
