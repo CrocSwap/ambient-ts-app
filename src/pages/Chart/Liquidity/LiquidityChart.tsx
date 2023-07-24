@@ -161,8 +161,6 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                 'depth',
             );
             setLineDepthSeries(() => d3CanvasLiqChartDepthLine);
-
-            renderCanvasArray([d3CanvasLiq]);
         }
     }, [scaleData, liquidityScale, pool, liquidityDepthScale]);
 
@@ -182,8 +180,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqMode,
         liquidityData?.liqTransitionPointforCurve,
         liquidityData?.liqTransitionPointforDepth,
-        liqSeries === undefined,
-        liqDepthSeries === undefined,
+        liqSeries,
+        liqDepthSeries,
     ]);
 
     const clipCanvas = (

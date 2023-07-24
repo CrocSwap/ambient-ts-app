@@ -3020,7 +3020,6 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([0.6, 0.6]);
-                    console.log({ isCrDataIndActive });
 
                     if (isCrDataIndActive || xAxisActiveTooltip === 'croc') {
                         crDataIndicator([lastCrDate]);
