@@ -325,7 +325,7 @@ function FeeRateSubChart(props: FreeRateData) {
                         setFeeRateHorizontalyValue(() => {
                             return feeRateyScale.invert(event.layerY);
                         });
-                        setCrossHairLocation(event, false);
+                        setCrossHairLocation(event.offsetX, false);
                         setCrosshairActive('feeRate');
                         props.setShowTooltip(true);
 
