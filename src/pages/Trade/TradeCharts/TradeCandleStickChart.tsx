@@ -19,7 +19,6 @@ import * as d3fc from 'd3fc';
 import { IS_LOCAL_ENV } from '../../../constants';
 import {
     diffHashSig,
-    diffHashSigCandles,
     diffHashSigLiquidity,
 } from '../../../utils/functions/diffHashSig';
 import { CandleContext } from '../../../contexts/CandleContext';
@@ -738,20 +737,6 @@ function TradeCandleStickChart(props: propsIF) {
                             isFetchForTimeframe: !prev.isFetchForTimeframe,
                             lastCandleDate: firstTime,
                             nCandles: nCandles,
-                            isShowLatestCandle: false,
-                        };
-                    });
-                } else {
-                    scaleData.xScale.domain([
-                        xScaleCopyLeftDomain,
-                        xScaleCopyRightDomain,
-                    ]);
-
-                    setCandleScale((prev: candleScale) => {
-                        return {
-                            isFetchForTimeframe: !prev.isFetchForTimeframe,
-                            lastCandleDate: undefined,
-                            nCandles: 200,
                             isShowLatestCandle: false,
                         };
                     });
