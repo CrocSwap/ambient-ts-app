@@ -866,8 +866,8 @@ export default function Chart(props: propsIF) {
             let previousTouch: any | undefined = undefined;
             let previousDeltaTouch: any = undefined;
 
-            const lastCandleDate = lastCandleData?.time;
-            const firstCandleDate = firstCandleData?.time;
+            const lastCandleDate = lastCandleData?.time * 1000;
+            const firstCandleDate = firstCandleData?.time * 1000;
             if (lastCandleDate && firstCandleDate) {
                 const changeCandleSize = (
                     domainX: any,
