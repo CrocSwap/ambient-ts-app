@@ -1,6 +1,8 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './SlippageTolerance.module.css';
+import tableMenuStyles from '../Tabs/TableMenu/TableMenuComponents/TableMenus.module.css';
+import { OptionButton } from '../Button/OptionButton';
 
 interface propsIF {
     persistedSlippage: number;
@@ -37,14 +39,12 @@ export default function SlippageTolerance(props: propsIF) {
                         />
                     </div>
                     {presets.map((preset: number) => (
-                        <button
-                            tabIndex={0}
+                        <OptionButton
                             key={`slippage-preset-button-${preset}`}
                             onClick={() => takeNewSlippage(preset)}
-                            aria-label={`set slippage to ${preset}% `}
-                        >
-                            {preset}%
-                        </button>
+                            ariaLabel={`set slippage to ${preset}% `}
+                            content={`${preset}%`}
+                        />
                     ))}
                 </div>
             </div>
