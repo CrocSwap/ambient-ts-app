@@ -174,9 +174,7 @@ export default function RangesMenu(props: propsIF) {
 
     const addButton = (
         <OptionButton
-            style={{ zIndex: '3' }}
-            onClick={(event) => {
-                event.stopPropagation();
+            onClick={() => {
                 linkGenPool.navigate({
                     chain: chainId,
                     tokenA: position.base,
