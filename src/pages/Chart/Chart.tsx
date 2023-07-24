@@ -220,6 +220,7 @@ export default function Chart(props: propsIF) {
 
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
 
+    const [chartHeights, setChartHeights] = useState(0);
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
@@ -4366,7 +4367,12 @@ export default function Chart(props: propsIF) {
         if (d3CanvasCandle) {
             const canvasDiv = d3.select(d3CanvasCandle.current) as any;
 
-            const resizeObserver = new ResizeObserver(() => {
+            const resizeObserver = new ResizeObserver((result: any) => {
+                const height = result[0].contentRect.height;
+                console.log(result[0]);
+
+                setChartHeights(height);
+
                 render();
             });
 
@@ -6402,6 +6408,7 @@ export default function Chart(props: propsIF) {
                 <div
                     className='lastCandleDiv'
                     style={{
+                        fontSize: chartHeights > 280 ? 'medium' : 'small',
                         top:
                             scaleData?.yScale(lastCandleDataCenter) +
                             (fullScreenChart ? 130 : 65),

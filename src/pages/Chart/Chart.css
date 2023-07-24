@@ -253,7 +253,7 @@ label {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     border-radius: var(--border-radius);
-    width: 250px;
+    width: 260px;
 }
 
 .lastCandleTooltip-enter {
