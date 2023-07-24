@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import styles from './WaitingConfirmation.module.css';
+import Spinner from '../Spinner/Spinner';
 interface WaitingConfirmationPropsIF {
     content: ReactNode;
     noAnimation?: boolean;
@@ -10,7 +11,7 @@ export default function WaitingConfirmation(props: WaitingConfirmationPropsIF) {
 
     return (
         <div className={styles.wallet_confirm}>
-            {!noAnimation && <div className={styles.loader} />}
+            {!noAnimation && <Spinner size={'150'} bg={'var(--dark1)'} />}
             {!noAnimation && <h2>Waiting For Confirmation</h2>}
             <div>{content}</div>
 
