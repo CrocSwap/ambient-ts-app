@@ -18,6 +18,7 @@ interface propsIF {
     fieldId?: string;
     isLoading?: boolean;
     showWallet?: boolean;
+    hideWalletMaxButton?: boolean;
     tokenBalance?: string;
     tokenDexBalance?: string;
 }
@@ -35,6 +36,7 @@ function TokenInput(props: propsIF) {
         showPulseAnimation,
         isLoading,
         showWallet,
+        hideWalletMaxButton,
         handleTokenInputEvent,
         reverseTokens,
         handleToggleDexSelection,
@@ -83,7 +85,9 @@ function TokenInput(props: propsIF) {
             }
             isDexSelected={isDexSelected}
             onToggleDex={handleToggleDexSelection}
-            onMaxButtonClick={handleMaxButtonClick}
+            onMaxButtonClick={
+                !hideWalletMaxButton ? handleMaxButtonClick : undefined
+            }
             onRefresh={handleRefresh}
         />
     );

@@ -394,6 +394,7 @@ function SwapTokenInput(props: propsIF) {
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('B')}
                 showWallet={isUserConnected}
+                hideWalletMaxButton
                 handleRefresh={refreshTokenData}
             />
         </section>

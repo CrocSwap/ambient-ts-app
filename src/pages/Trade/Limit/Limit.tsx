@@ -228,39 +228,37 @@ export default function Limit() {
                 );
 
                 if (isDenomBase) {
-                    priceHalfAbove.then((priceHalfAbove) => {
-                        if (isSellTokenBase)
+                    if (isSellTokenBase) {
+                        priceHalfAbove.then((priceHalfAbove) => {
                             setMiddleDisplayPrice(priceHalfAbove);
-                    });
-                    priceFullTickAbove.then((priceFullTickAbove) => {
-                        if (isSellTokenBase)
+                        });
+                        priceFullTickAbove.then((priceFullTickAbove) => {
                             setStartDisplayPrice(priceFullTickAbove);
-                    });
-                    priceHalfBelow.then((priceHalfBelow) => {
-                        if (!isSellTokenBase)
+                        });
+                    } else {
+                        priceHalfBelow.then((priceHalfBelow) => {
                             setMiddleDisplayPrice(priceHalfBelow);
-                    });
-                    priceFullTickBelow.then((priceFullTickBelow) => {
-                        if (!isSellTokenBase)
+                        });
+                        priceFullTickBelow.then((priceFullTickBelow) => {
                             setStartDisplayPrice(priceFullTickBelow);
-                    });
+                        });
+                    }
                 } else {
-                    priceHalfAbove.then((priceHalfAbove) => {
-                        if (isSellTokenBase)
+                    if (isSellTokenBase) {
+                        priceHalfAbove.then((priceHalfAbove) => {
                             setMiddleDisplayPrice(1 / priceHalfAbove);
-                    });
-                    priceFullTickAbove.then((priceFullTickAbove) => {
-                        if (isSellTokenBase)
+                        });
+                        priceFullTickAbove.then((priceFullTickAbove) => {
                             setStartDisplayPrice(1 / priceFullTickAbove);
-                    });
-                    priceHalfBelow.then((priceHalfBelow) => {
-                        if (!isSellTokenBase)
+                        });
+                    } else {
+                        priceHalfBelow.then((priceHalfBelow) => {
                             setMiddleDisplayPrice(1 / priceHalfBelow);
-                    });
-                    priceFullTickBelow.then((priceFullTickBelow) => {
-                        if (!isSellTokenBase)
+                        });
+                        priceFullTickBelow.then((priceFullTickBelow) => {
                             setStartDisplayPrice(1 / priceFullTickBelow);
-                    });
+                        });
+                    }
                 }
             } else if (limitTick) {
                 if (!pool) return;
@@ -375,6 +373,10 @@ export default function Limit() {
         setNewLimitOrderTransactionHash('');
         setShowBypassConfirmButton(false);
     }, [baseToken.address + quoteToken.address]);
+
+    useEffect(() => {
+        tokenAInputQty && handleLimitButtonMessage(parseFloat(tokenAInputQty));
+    }, [isOrderValid]);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -540,7 +542,7 @@ export default function Limit() {
                 }  Price`,
             );
         } else {
-            if (isWithdrawFromDexChecked) {
+            if (!isWithdrawFromDexChecked) {
                 if (
                     tokenAAmount >
                     parseFloat(tokenADexBalance) + parseFloat(tokenABalance)

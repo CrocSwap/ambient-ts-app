@@ -81,7 +81,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                 <DefaultTooltip
                     interactive
                     title={
-                        isDexSelected ? (
+                        !isDexSelected ? (
                             <p
                                 style={{
                                     display: 'flex',

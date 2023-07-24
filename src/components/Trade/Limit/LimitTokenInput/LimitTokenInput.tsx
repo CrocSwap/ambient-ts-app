@@ -95,18 +95,12 @@ function LimitTokenInput(props: propsIF) {
             dispatch(setPoolPriceNonDisplay(0));
         }
 
-        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         if (!limitTickCopied) {
             linkGenLimit.navigate({
                 chain: chainId,
                 tokenA: tokenB.address,
                 tokenB: tokenA.address,
             });
-        }
-        if (!isTokenAPrimary) {
-            setTokenAInputQty(primaryQuantity);
-        } else {
-            setTokenBInputQty(primaryQuantity);
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
     };
@@ -119,7 +113,18 @@ function LimitTokenInput(props: propsIF) {
     }, [shouldLimitDirectionReverse]);
 
     useEffect(() => {
-        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        isTokenAPrimary
+            ? setTokenAInputQty(primaryQuantity)
+            : setTokenBInputQty(primaryQuantity);
+    }, [tokenA.address, tokenB.address]);
+
+    useEffect(() => {
+        if (!shouldLimitDirectionReverse) {
+            console.log('aaaaa');
+            isTokenAPrimary
+                ? handleTokenAChangeEvent()
+                : handleTokenBChangeEvent();
+        }
     }, [limitTickDisplayPrice]);
 
     useEffect(() => {
@@ -167,6 +172,7 @@ function LimitTokenInput(props: propsIF) {
                     ? (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity)
                     : limitTickDisplayPrice * parseFloat(primaryQuantity);
             }
+            console.log(2);
             handleLimitButtonMessage(parseFloat(tokenAInputQty));
         }
 

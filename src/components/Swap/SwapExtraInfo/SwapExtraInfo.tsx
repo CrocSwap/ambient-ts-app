@@ -55,17 +55,6 @@ function SwapExtraInfo(props: propsIF) {
 
     const extraInfo = [
         {
-            title: 'Slippage Tolerance',
-            tooltipTitle: 'This can be changed in settings.',
-            data: `${slippageTolerance} %`,
-        },
-        {
-            title: 'Liquidity Provider Fee',
-            tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
-            data: `${liquidityProviderFeeString} %`,
-            placement: 'bottom',
-        },
-        {
             title: 'Avg. Rate',
             tooltipTitle:
                 'Expected Conversion Rate After Price Impact and Provider Fee',
@@ -91,6 +80,17 @@ function SwapExtraInfo(props: propsIF) {
             tooltipTitle:
                 'Difference Between Current (Spot) Price and Final Price',
             data: `${getPriceImpactString(priceImpactNum)} %`,
+            placement: 'bottom',
+        },
+        {
+            title: 'Slippage Tolerance',
+            tooltipTitle: 'This can be changed in settings.',
+            data: `${slippageTolerance} %`,
+        },
+        {
+            title: 'Liquidity Provider Fee',
+            tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
+            data: `${liquidityProviderFeeString} %`,
             placement: 'bottom',
         },
     ];
