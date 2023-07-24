@@ -70,6 +70,7 @@ function TokenInput(props: propsIF) {
         : balance;
 
     function handleMaxButtonClick() {
+        parseTokenInput && parseTokenInput(balanceWithBuffer);
         handleTokenInputEvent(balanceWithBuffer);
     }
 
