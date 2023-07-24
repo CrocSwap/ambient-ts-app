@@ -2,14 +2,16 @@
 
 .sidebar_footer {
     z-index: 999;
-    width: 100vw;
+    width: 100dvw;
     bottom: 0;
 
     transition: width var(--animation-speed) ease;
 
     background-color: var(--dark1);
     height: 64px;
+    padding-left: 1.5rem;
     display: none;
+   
 }
 
 .position_sticky {
@@ -17,7 +19,7 @@
 }
 
 .position_absolute {
-    margin-left: 15px;
+ 
     position: absolute;
 }
 .sidebar_footer a {
@@ -56,6 +58,7 @@
         height: 5rem;
         background: var(--dark2);
         z-index: 2;
+        
     }
     .sidebar_footer {
         display: flex;
