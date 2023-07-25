@@ -45,7 +45,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
-const TRADE_CHART_MIN_HEIGHT = 348;
+const TRADE_CHART_MIN_HEIGHT = 195;
 
 // React functional component
 function Trade() {
