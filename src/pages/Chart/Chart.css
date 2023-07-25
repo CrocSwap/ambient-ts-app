@@ -51,35 +51,35 @@ text.y_axis {
 }
 
 .domain,
-.tick>path,
+.tick > path,
 .gridline-y,
 .gridline-x {
     stroke: var(--text2);
     stroke-opacity: 0.1;
 }
 
-.annotation-line>.line {
+.annotation-line > .line {
     stroke: rgba(235, 235, 255, 0.4);
     stroke-width: 3;
     stroke-dasharray: 16 16;
     border: 2px dashed rgba(235, 235, 255, 0.4);
 }
 
-.annotation-line>.order_sell {
+.annotation-line > .order_sell {
     stroke: var(--accent2);
     stroke-width: 3;
     stroke-dasharray: 16 16;
     border: 2px dashed var(--accent2);
 }
 
-.annotation-line>.order_buy {
+.annotation-line > .order_buy {
     stroke: var(--accent1);
     stroke-width: 3;
     stroke-dasharray: 16 16;
     border: 2px dashed var(--accent1);
 }
 
-.annotation-line>.marketLine {
+.annotation-line > .marketLine {
     stroke: rgba(235, 235, 255, 0.4);
     stroke-width: 1;
     stroke-dasharray: 4 2;
@@ -87,7 +87,7 @@ text.y_axis {
     border: 2px dashed rgba(235, 235, 255, 0.4);
 }
 
-.annotation-line>.ghostline {
+.annotation-line > .ghostline {
     stroke: rgba(235, 235, 255, 0.4);
     stroke-width: 1;
     stroke-opacity: 0.5;
@@ -253,7 +253,7 @@ label {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     border-radius: var(--border-radius);
-    width: 250px;
+    width: 260px;
 }
 
 .lastCandleTooltip-enter {
@@ -274,7 +274,7 @@ label {
 
 .lastCandleTooltip-exit-active {
     opacity: 0;
-    transform: translateX(-100%);
+    transform: translateX(100%);
     transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
 }
 
@@ -320,10 +320,6 @@ label {
         height: 85%;
         padding: 0px 5% 0px 0px;
     }
-}
-
-.xAxis {
-    height: 5%;
 }
 
 @media (max-width: 800px) and (min-width: 500px) {
