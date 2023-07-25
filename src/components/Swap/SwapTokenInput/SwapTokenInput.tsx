@@ -222,31 +222,21 @@ function SwapTokenInput(props: propsIF) {
 
     const debouncedTokenAChangeEvent = (value: string) => {
         setBuyQtyString('');
-        if (value && parseFloat(value) !== 0) {
-            setIsBuyLoading(true);
-            setSellQtyString(value);
-            setDisableReverseTokens(true);
-            setLastInput(value);
-        } else {
-            setSellQtyString('');
-            dispatch(setPrimaryQuantity(''));
-        }
-        value || setIsBuyLoading(false);
+        setIsBuyLoading(true);
+        setSellQtyString(value);
+        setDisableReverseTokens(true);
+        setLastInput(value);
+
         dispatch(setIsTokenAPrimary(true));
     };
 
     const debouncedTokenBChangeEvent = (value: string) => {
         setSellQtyString('');
-        if (value && parseFloat(value) !== 0) {
-            setIsSellLoading(true);
-            setBuyQtyString(value);
-            setDisableReverseTokens(true);
-            setLastInput(value);
-        } else {
-            setBuyQtyString('');
-            dispatch(setPrimaryQuantity(''));
-        }
-        value || setIsSellLoading(false);
+        setIsSellLoading(true);
+        setBuyQtyString(value);
+        setDisableReverseTokens(true);
+        setLastInput(value);
+
         dispatch(setIsTokenAPrimary(false));
     };
 
@@ -255,11 +245,16 @@ function SwapTokenInput(props: propsIF) {
             if (!crocEnv) return;
             let rawTokenBQty = undefined;
             if (value !== undefined) {
-                const truncatedInputStr = parseTokenInput(value);
-                rawTokenBQty = await refreshImpact(truncatedInputStr, true);
+                if (parseFloat(value) !== 0) {
+                    const truncatedInputStr = parseTokenInput(value);
+                    rawTokenBQty = await refreshImpact(truncatedInputStr, true);
 
-                setSellQtyString(truncatedInputStr);
-                dispatch(setPrimaryQuantity(truncatedInputStr));
+                    setSellQtyString(truncatedInputStr);
+                    dispatch(setPrimaryQuantity(truncatedInputStr));
+                } else {
+                    setSellQtyString(value);
+                    dispatch(setPrimaryQuantity(value));
+                }
             } else {
                 rawTokenBQty = await refreshImpact(sellQtyString, true);
             }
@@ -293,11 +288,19 @@ function SwapTokenInput(props: propsIF) {
 
             let rawTokenAQty: number | undefined;
             if (value !== undefined) {
-                const truncatedInputStr = parseTokenInput(value);
-                rawTokenAQty = await refreshImpact(truncatedInputStr, false);
+                if (parseFloat(value) !== 0) {
+                    const truncatedInputStr = parseTokenInput(value);
+                    rawTokenAQty = await refreshImpact(
+                        truncatedInputStr,
+                        false,
+                    );
 
-                setBuyQtyString(truncatedInputStr);
-                dispatch(setPrimaryQuantity(truncatedInputStr));
+                    setBuyQtyString(truncatedInputStr);
+                    dispatch(setPrimaryQuantity(truncatedInputStr));
+                } else {
+                    setSellQtyString(value);
+                    dispatch(setPrimaryQuantity(value));
+                }
             } else {
                 rawTokenAQty = await refreshImpact(buyQtyString, false);
             }
@@ -365,6 +368,7 @@ function SwapTokenInput(props: propsIF) {
                 handleTokenInputEvent={debouncedTokenAChangeEvent}
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
+                parseTokenInput={parseTokenInput}
                 showWallet={isUserConnected}
             />
             <div

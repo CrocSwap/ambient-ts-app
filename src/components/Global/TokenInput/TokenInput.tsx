@@ -14,7 +14,7 @@ interface propsIF {
     reverseTokens: () => void;
     handleToggleDexSelection: () => void;
     handleRefresh?: () => void;
-    parseTokenInput?: (val: string) => void;
+    parseTokenInput?: (val: string) => void | string;
     fieldId?: string;
     isLoading?: boolean;
     showWallet?: boolean;
@@ -70,8 +70,9 @@ function TokenInput(props: propsIF) {
         : balance;
 
     function handleMaxButtonClick() {
-        parseTokenInput && parseTokenInput(balanceWithBuffer);
-        handleTokenInputEvent(balanceWithBuffer);
+        parseTokenInput &&
+            parseTokenInput(balanceWithBuffer) !== tokenInput &&
+            handleTokenInputEvent(balanceWithBuffer);
     }
 
     const walletContent = showWallet && (

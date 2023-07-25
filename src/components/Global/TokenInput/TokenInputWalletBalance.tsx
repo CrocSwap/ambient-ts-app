@@ -38,7 +38,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
 
-    const sellTokenLogoClassname = isDexSelected
+    const sellTokenLogoClassname = !isDexSelected
         ? styles.grey_logo
         : styles.enabled_logo;
 
@@ -58,7 +58,9 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                         onClick={onToggleDex}
                     >
                         <img
-                            src={isDexSelected ? walletEnabledIcon : walletIcon}
+                            src={
+                                !isDexSelected ? walletEnabledIcon : walletIcon
+                            }
                             width='20'
                         />
                     </div>
@@ -81,7 +83,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                 <DefaultTooltip
                     interactive
                     title={
-                        !isDexSelected ? (
+                        isDexSelected ? (
                             <p
                                 style={{
                                     display: 'flex',
