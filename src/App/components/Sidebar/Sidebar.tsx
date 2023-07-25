@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, useRef, useContext, memo } from 'react';
-import { BiArrowToBottom, BiSearch } from 'react-icons/bi';
+import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
