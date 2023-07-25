@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useCallback, useEffect, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { BiArrowBack } from 'react-icons/bi';
 import { RiCloseFill } from 'react-icons/ri';
@@ -10,7 +10,6 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 // interface for React functional component
 interface ModalPropsIF {
-    content?: ReactNode;
     onClose: () => void;
     handleBack?: () => void;
     showBackButton?: boolean;
@@ -37,19 +36,6 @@ export default function Modal(props: ModalPropsIF) {
         centeredTitle,
         headerRightItems,
     } = props;
-
-    const escFunction = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-            onClose();
-        }
-    }, []);
-
-    useEffect(() => {
-        document.addEventListener('keydown', escFunction, false);
-        return () => {
-            document.removeEventListener('keydown', escFunction, false);
-        };
-    }, []);
 
     // jsx for the back element
     const backElement = (
@@ -80,13 +66,8 @@ export default function Modal(props: ModalPropsIF) {
         </header>
     );
 
-    // JSX for the footer element
     const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
 
-    // variables to hold both the header or footer JSX elements vs `null`
-    // ... both elements are optional and either or both may be absent
-    // ... from any given modal, this allows the element to render `null`
-    // ... if the element is not being used in a particular instance
     const headerOrNull = noHeader ? null : headerJSX;
     const footerOrNull = !footer ? null : footerJSX;
 

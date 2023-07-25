@@ -21,8 +21,6 @@ import {
     setAdvancedMode,
     setRangeTicksCopied,
 } from '../../../../../utils/state/tradeDataSlice';
-import { useModal } from '../../../Modal/useModal';
-import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
@@ -46,6 +44,8 @@ interface propsIF {
     isPositionInRange: boolean;
     handleAccountClick: () => void;
 }
+
+type RangeModalContentType = 'Harvest' | 'Remove';
 
 // React functional component
 export default function RangesMenu(props: propsIF) {
@@ -79,19 +79,10 @@ export default function RangesMenu(props: propsIF) {
     const dispatch = useAppDispatch();
 
     // ---------------------MODAL FUNCTIONALITY----------------
-    const [
-        isRemoveRangeModalOpen,
-        openRemoveRangeModal,
-        closeRemoveRangeModal,
-    ] = useModal();
-    const [isHarvestModalOpen, openHarvestModal, closeHarvestModal] =
-        useModal();
 
     const handleModalClose = () => {
-        IS_LOCAL_ENV && console.debug('CLOSING THE MODAL!!!!');
-        closeHarvestModal();
-        closeRemoveRangeModal();
         setShowDropdownMenu(false);
+        closeGlobalModal();
     };
 
     const openDetailsModal = () => {
@@ -103,6 +94,20 @@ export default function RangesMenu(props: propsIF) {
                 {...rangeDetailsProps}
             />,
         );
+    };
+
+    const RangeModalContent = (type: RangeModalContentType) => (
+        <RangeActionModal
+            type={type}
+            handleModalClose={handleModalClose}
+            position={position}
+            {...rangeDetailsProps}
+        />
+    );
+
+    const openRangeActionModal = (type: RangeModalContentType) => {
+        setShowDropdownMenu(false);
+        openGlobalModal(RangeModalContent(type));
     };
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
@@ -152,7 +157,10 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <button className={styles.option_button} onClick={openRemoveRangeModal}>
+        <button
+            className={styles.option_button}
+            onClick={() => openRangeActionModal('Remove')}
+        >
             Remove
         </button>
     ) : null;
@@ -202,7 +210,10 @@ export default function RangesMenu(props: propsIF) {
     );
     const harvestButton =
         !isAmbient && positionMatchesLoggedInUser ? (
-            <button className={styles.option_button} onClick={openHarvestModal}>
+            <button
+                className={styles.option_button}
+                onClick={() => openRangeActionModal('Harvest')}
+            >
                 Harvest
             </button>
         ) : null;
@@ -302,30 +313,6 @@ export default function RangesMenu(props: propsIF) {
         >
             {rangesMenu}
             {dropdownRangesMenu}
-            {isHarvestModalOpen && (
-                <Modal onClose={handleModalClose} title='Harvest Fees' noHeader>
-                    <RangeActionModal
-                        type='Harvest'
-                        handleModalClose={handleModalClose}
-                        position={position}
-                        {...rangeDetailsProps}
-                    />
-                </Modal>
-            )}
-            {isRemoveRangeModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title='Remove Position'
-                    noHeader
-                >
-                    <RangeActionModal
-                        type='Remove'
-                        position={position}
-                        handleModalClose={handleModalClose}
-                        {...rangeDetailsProps}
-                    />
-                </Modal>
-            )}
         </div>
     );
 }

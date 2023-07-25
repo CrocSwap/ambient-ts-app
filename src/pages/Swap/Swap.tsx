@@ -10,8 +10,6 @@ import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyC
 import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-import Modal from '../../components/Global/Modal/Modal';
-import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
 import Button from '../../components/Global/Button/Button';
 
@@ -23,8 +21,6 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { useModal } from '../../components/Global/Modal/useModal';
-import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import {
     addPendingTx,
     addReceipt,
@@ -68,6 +64,7 @@ function Swap(props: propsIF) {
 
     const {
         wagmiModal: { open: openWagmiModal },
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
     } = useContext(AppStateContext);
     const {
         crocEnv,
@@ -87,8 +84,6 @@ function Swap(props: propsIF) {
     );
 
     const provider = useProvider();
-
-    const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
@@ -111,8 +106,6 @@ function Swap(props: propsIF) {
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
     );
-
-    const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
@@ -274,9 +267,9 @@ function Swap(props: propsIF) {
     }
 
     const handleModalClose = () => {
-        closeModal();
         setNewSwapTransactionHash('');
         resetConfirmation();
+        closeGlobalModal();
     };
 
     const loginButton = (
@@ -409,18 +402,6 @@ function Swap(props: propsIF) {
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
     };
-
-    // TODO:  @Emily refactor this Modal and later elements such that
-    // TODO:  ... tradeData is passed to directly instead of tokenPair
-    const confirmSwapModalOrNull = isModalOpen ? (
-        <Modal
-            onClose={handleModalClose}
-            title='Swap Confirmation'
-            centeredTitle
-        >
-            <ConfirmSwapModal {...confirmSwapModalProps} />
-        </Modal>
-    ) : null;
 
     // calculate price of gas for swap
     useEffect(() => {
@@ -690,7 +671,19 @@ function Swap(props: propsIF) {
                                                 areBothAckd
                                                     ? bypassConfirmSwap.isEnabled
                                                         ? handleSwapButtonClickWithBypass
-                                                        : openModal
+                                                        : () =>
+                                                              openGlobalModal(
+                                                                  <ConfirmSwapModal
+                                                                      {...confirmSwapModalProps}
+                                                                  />,
+                                                                  undefined,
+                                                                  undefined,
+                                                                  undefined,
+                                                                  undefined,
+                                                                  undefined,
+                                                                  undefined,
+                                                                  handleModalClose,
+                                                              )
                                                     : ackAsNeeded
                                             }
                                             swapAllowed={
@@ -774,14 +767,6 @@ function Swap(props: propsIF) {
                         {liquidityInsufficientWarningOrNull}
                     </div>
                 </ContentContainer>
-                {confirmSwapModalOrNull}
-                {isRelativeModalOpen && (
-                    <RelativeModal onClose={closeRelativeModal}>
-                        You are about to do something that will lose you a lot
-                        of money. If you think you are smarter than the awesome
-                        team that programmed this, press dismiss.
-                    </RelativeModal>
-                )}
             </div>
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}

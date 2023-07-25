@@ -11,8 +11,6 @@ import {
     useContext,
     memo,
 } from 'react';
-import { useModal } from '../../../components/Global/Modal/useModal';
-import Modal from '../../../components/Global/Modal/Modal';
 import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
@@ -471,20 +469,19 @@ function CurrencySelector(props: propsIF) {
         <div className={styles.swapbox_bottom}>{walletContent}</div>
     );
 
-    const modalCloseCustom = (): void => setInput('');
+    const {
+        globalModal: { open: openTokenModal, close: closeTokenModal },
+    } = useContext(AppStateContext);
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
+    const modalCloseCustom = (): void => {
+        setInput('');
+        closeTokenModal();
+    };
+
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
 
-    const handleInputClear = (): void => {
-        setInput('');
-        const soloTokenSelectInput = document.getElementById(
-            'solo-token-select-input',
-        ) as HTMLInputElement;
-        soloTokenSelectInput.value = '';
-    };
+    const handleInputClear = (): void => setInput('');
 
     const tokenSymbol =
         thisToken?.symbol?.length > 4 ? (
@@ -500,6 +497,18 @@ function CurrencySelector(props: propsIF) {
         ) : (
             <div className={styles.token_list_text}>{thisToken.symbol}</div>
         );
+
+    const tokenModalContent = (
+        <SoloTokenSelect
+            modalCloseCustom={modalCloseCustom}
+            closeModal={modalCloseCustom}
+            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+            isSingleToken={false}
+            tokenAorB={tokenAorB}
+            reverseTokens={reverseTokens}
+        />
+    );
 
     return (
         <div className={styles.swapbox}>
@@ -522,7 +531,17 @@ function CurrencySelector(props: propsIF) {
                     className={`${styles.token_select} ${
                         showSwapPulseAnimation && styles.pulse_animation
                     }`}
-                    onClick={openTokenModal}
+                    onClick={() =>
+                        openTokenModal(
+                            tokenModalContent,
+                            'Select Token',
+                            handleInputClear,
+                            false,
+                            null,
+                            false,
+                            null,
+                        )
+                    }
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
                     id='swap_token_selector'
@@ -537,29 +556,6 @@ function CurrencySelector(props: propsIF) {
                 </button>
             </div>
             {swapboxBottomOrNull}
-
-            {isTokenModalOpen && (
-                <Modal
-                    onClose={closeTokenModal}
-                    title='Select Token'
-                    centeredTitle
-                    handleBack={handleInputClear}
-                    showBackButton={false}
-                    footer={null}
-                >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        closeModal={closeTokenModal}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
-                        isSingleToken={false}
-                        tokenAorB={tokenAorB}
-                        reverseTokens={reverseTokens}
-                    />
-                </Modal>
-            )}
         </div>
     );
 }

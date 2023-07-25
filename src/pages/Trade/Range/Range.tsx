@@ -15,7 +15,6 @@ import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeTogg
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
-import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
@@ -39,7 +38,6 @@ import {
 } from '../../../utils/TransactionError';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { PositionIF } from '../../../utils/interfaces/exports';
-import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -78,6 +76,7 @@ function Range() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
+        globalModal: { open: openGlobalModal },
     } = useContext(AppStateContext);
     const {
         chainData: { chainId, gridSize, blockExplorer },
@@ -109,12 +108,6 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
-
-    const [
-        isConfirmationModalOpen,
-        openConfirmationModal,
-        closeConfirmationModal,
-    ] = useModal();
 
     const [
         tokenAQtyCoveredByWalletBalance,
@@ -1138,7 +1131,6 @@ function Range() {
     );
 
     const handleModalClose = () => {
-        closeConfirmationModal();
         setNewRangeTransactionHash('');
         resetConfirmation();
     };
@@ -1410,6 +1402,40 @@ function Range() {
         needConfirmTokenB && tokens.ackToken(tokenB);
     };
 
+    const poolConfirmationModalContent = (
+        <ConfirmRangeModal
+            tokenAQtyLocal={tokenAQtyLocal}
+            tokenBQtyLocal={tokenBQtyLocal}
+            spotPriceDisplay={getFormattedNumber({
+                value: displayPriceWithDenom,
+            })}
+            isTokenABase={isTokenABase}
+            isAmbient={isAmbient}
+            isAdd={isAdd}
+            maxPriceDisplay={maxPriceDisplay}
+            minPriceDisplay={minPriceDisplay}
+            sendTransaction={sendTransaction}
+            newRangeTransactionHash={newRangeTransactionHash}
+            resetConfirmation={resetConfirmation}
+            showConfirmation={showConfirmation}
+            setShowConfirmation={setShowConfirmation}
+            txErrorCode={txErrorCode}
+            isInRange={!isOutOfRange}
+            pinnedMinPriceDisplayTruncatedInBase={
+                pinnedMinPriceDisplayTruncatedInBase
+            }
+            pinnedMinPriceDisplayTruncatedInQuote={
+                pinnedMinPriceDisplayTruncatedInQuote
+            }
+            pinnedMaxPriceDisplayTruncatedInBase={
+                pinnedMaxPriceDisplayTruncatedInBase
+            }
+            pinnedMaxPriceDisplayTruncatedInQuote={
+                pinnedMaxPriceDisplayTruncatedInQuote
+            }
+        />
+    );
+
     return (
         <section data-testid={'range'} className={styles.scrollable_container}>
             {isTutorialActive && (
@@ -1465,7 +1491,17 @@ function Range() {
                                         areBothAckd
                                             ? bypassConfirmRange.isEnabled
                                                 ? handleRangeButtonClickWithBypass
-                                                : openConfirmationModal
+                                                : () =>
+                                                      openGlobalModal(
+                                                          poolConfirmationModalContent,
+                                                          'Pool Confirmation',
+                                                          undefined,
+                                                          undefined,
+                                                          undefined,
+                                                          undefined,
+                                                          undefined,
+                                                          handleModalClose,
+                                                      )
                                             : ackAsNeeded
                                     }
                                     rangeAllowed={
@@ -1532,45 +1568,6 @@ function Range() {
                     )}
                 </div>
             </ContentContainer>
-            {isConfirmationModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title={'Pool Confirmation'}
-                    centeredTitle
-                >
-                    <ConfirmRangeModal
-                        tokenAQtyLocal={tokenAQtyLocal}
-                        tokenBQtyLocal={tokenBQtyLocal}
-                        spotPriceDisplay={getFormattedNumber({
-                            value: displayPriceWithDenom,
-                        })}
-                        isTokenABase={isTokenABase}
-                        isAmbient={isAmbient}
-                        isAdd={isAdd}
-                        maxPriceDisplay={maxPriceDisplay}
-                        minPriceDisplay={minPriceDisplay}
-                        sendTransaction={sendTransaction}
-                        newRangeTransactionHash={newRangeTransactionHash}
-                        resetConfirmation={resetConfirmation}
-                        showConfirmation={showConfirmation}
-                        setShowConfirmation={setShowConfirmation}
-                        txErrorCode={txErrorCode}
-                        isInRange={!isOutOfRange}
-                        pinnedMinPriceDisplayTruncatedInBase={
-                            pinnedMinPriceDisplayTruncatedInBase
-                        }
-                        pinnedMinPriceDisplayTruncatedInQuote={
-                            pinnedMinPriceDisplayTruncatedInQuote
-                        }
-                        pinnedMaxPriceDisplayTruncatedInBase={
-                            pinnedMaxPriceDisplayTruncatedInBase
-                        }
-                        pinnedMaxPriceDisplayTruncatedInQuote={
-                            pinnedMaxPriceDisplayTruncatedInQuote
-                        }
-                    />
-                </Modal>
-            )}
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

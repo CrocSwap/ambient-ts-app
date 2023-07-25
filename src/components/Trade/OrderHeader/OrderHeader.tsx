@@ -2,10 +2,8 @@ import { AiOutlineShareAlt } from 'react-icons/ai';
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
 import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
 import ShareModal from '../../Global/ShareModal/ShareModal';
-import Modal from '../../../components/Global/Modal/Modal';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import styles from './OrderHeader.module.css';
-import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     useAppDispatch,
     useAppSelector,
@@ -27,10 +25,8 @@ function OrderHeader(props: propsIF) {
     const { slippage, bypassConfirm, settingsTitle, isSwapPage } = props;
 
     const {
-        globalModal: { open: openGlobalModal },
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
     } = useContext(AppStateContext);
-
-    const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -38,6 +34,7 @@ function OrderHeader(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
+    // TODO: refactor this into its own file
     const settingsSvg = (
         <svg
             width='14'
@@ -67,6 +64,15 @@ function OrderHeader(props: propsIF) {
         </svg>
     );
 
+    const transactionSettingsModalContent = (
+        <TransactionSettings
+            module={settingsTitle}
+            slippage={slippage}
+            onClose={closeGlobalModal}
+            bypassConfirm={bypassConfirm}
+        />
+    );
+
     return (
         <div className={isSwapPage ? styles.swap_page_header : ''}>
             <ContentHeader>
@@ -92,7 +98,9 @@ function OrderHeader(props: propsIF) {
                 )}
                 <IconWithTooltip title='Settings' placement='left'>
                     <div
-                        onClick={openModal}
+                        onClick={() =>
+                            openGlobalModal(transactionSettingsModalContent)
+                        }
                         style={{ cursor: 'pointer' }}
                         className={`${styles.settings_container}
                         ${styles.settings_icon}`}
@@ -104,21 +112,6 @@ function OrderHeader(props: propsIF) {
                         {settingsSvg}
                     </div>
                 </IconWithTooltip>
-                {isModalOpen && (
-                    <Modal
-                        noHeader
-                        title='modal'
-                        onClose={closeModal}
-                        centeredTitle
-                    >
-                        <TransactionSettings
-                            module={settingsTitle}
-                            slippage={slippage}
-                            onClose={closeModal}
-                            bypassConfirm={bypassConfirm}
-                        />
-                    </Modal>
-                )}
             </ContentHeader>
         </div>
     );

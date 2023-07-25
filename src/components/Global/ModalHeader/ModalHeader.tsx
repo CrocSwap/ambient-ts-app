@@ -9,7 +9,7 @@ interface SimpleModalHeaderPropsIF {
     onBackButton?: () => void;
     showBackButton?: boolean;
 }
-export default function SimpleModalHeader(props: SimpleModalHeaderPropsIF) {
+export default function ModalHeader(props: SimpleModalHeaderPropsIF) {
     const {
         globalModal: { close: onClose },
     } = useContext(AppStateContext);

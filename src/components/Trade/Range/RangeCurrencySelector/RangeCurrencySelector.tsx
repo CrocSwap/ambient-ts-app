@@ -9,8 +9,6 @@ import {
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { useModal } from '../../../../components/Global/Modal/useModal';
-import Modal from '../../../../components/Global/Modal/Modal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
@@ -81,6 +79,7 @@ function RangeCurrencySelector(props: propsIF) {
     } = props;
 
     const {
+        globalModal: { open: openTokenModal, close: closeTokenModal },
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -177,18 +176,8 @@ function RangeCurrencySelector(props: propsIF) {
 
     const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
-
-    const handleInputClear = (): void => {
-        setInput('');
-        const soloTokenSelectInput = document.getElementById(
-            'solo-token-select-input',
-        ) as HTMLInputElement;
-        soloTokenSelectInput.value = '';
-    };
 
     const balanceLocaleString =
         (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
@@ -351,6 +340,18 @@ function RangeCurrencySelector(props: propsIF) {
         <div className={styles.swapbox_bottom}>{walletContent}</div>
     );
 
+    const tokenSelectModalContent = (
+        <SoloTokenSelect
+            modalCloseCustom={modalCloseCustom}
+            closeModal={closeTokenModal}
+            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+            isSingleToken={false}
+            tokenAorB={tokenAorB}
+            reverseTokens={reverseTokens}
+        />
+    );
+
     return (
         <div className={styles.swapbox}>
             <div className={styles.swapbox_top}>
@@ -371,7 +372,9 @@ function RangeCurrencySelector(props: propsIF) {
                     className={`${styles.token_select} ${
                         showRangePulseAnimation && styles.pulse_animation
                     }`}
-                    onClick={() => openTokenModal()}
+                    onClick={() =>
+                        openTokenModal(tokenSelectModalContent, 'Select Token')
+                    }
                     id='range_token_selector'
                     tabIndex={0}
                     aria-label={`Open range ${fieldId} token modal.`}
@@ -388,28 +391,6 @@ function RangeCurrencySelector(props: propsIF) {
                 </button>
             </div>
             {swapboxBottomOrNull}
-            {isTokenModalOpen && (
-                <Modal
-                    onClose={closeTokenModal}
-                    title='Select Token'
-                    centeredTitle
-                    handleBack={handleInputClear}
-                    showBackButton={false}
-                    footer={null}
-                >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        closeModal={closeTokenModal}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
-                        isSingleToken={false}
-                        tokenAorB={tokenAorB}
-                        reverseTokens={reverseTokens}
-                    />
-                </Modal>
-            )}
         </div>
     );
 }

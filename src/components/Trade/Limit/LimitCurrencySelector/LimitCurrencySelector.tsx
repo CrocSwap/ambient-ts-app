@@ -14,8 +14,6 @@ import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantit
 
 // START: Import Local Files
 import styles from './LimitCurrencySelector.module.css';
-import Modal from '../../../../components/Global/Modal/Modal';
-import { useModal } from '../../../../components/Global/Modal/useModal';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
@@ -79,6 +77,7 @@ function LimitCurrencySelector(props: propsIF) {
     );
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
     const {
+        globalModal: { open: openTokenModal, close: closeTokenModal },
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -90,46 +89,10 @@ function LimitCurrencySelector(props: propsIF) {
 
     const isSellTokenSelector = fieldId === 'sell';
 
-    // IMPORTANT!  The Limit Order module is the one only transaction configurator
-    // ... in the app which has an input field with no token selector.  For that
-    // ... reason, `LimitCurrencySelector.tsx` file needs to be coded separately
-    // ... from its counterparts in the Swap/Market/Pool modules, even if we use
-    // ... a common element for those modules in the future.
-
     const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
-
-    const handleInputClear = (): void => {
-        setInput('');
-        const soloTokenSelectInput = document.getElementById(
-            'solo-token-select-input',
-        ) as HTMLInputElement;
-        soloTokenSelectInput.value = '';
-    };
-
-    const tokenSelect = (
-        <button
-            className={`${styles.token_select} ${
-                showOrderPulseAnimation && styles.pulse_animation
-            }`}
-            onClick={openTokenModal}
-            tabIndex={0}
-            aria-label={`Open swap ${fieldId} token modal.`}
-            id='limit_token_selector'
-        >
-            <TokenIcon
-                src={uriToHttp(thisToken.logoURI)}
-                alt={thisToken.symbol}
-                size='2xl'
-            />
-            <span className={styles.token_list_text}>{thisToken.symbol}</span>
-            <RiArrowDownSLine size={27} />
-        </button>
-    );
 
     const walletBalanceNonLocaleString =
         tokenABalance && gasPriceInGwei
@@ -332,6 +295,40 @@ function LimitCurrencySelector(props: propsIF) {
         )
     ) : null;
 
+    const tokenSelectModalContent = (
+        <SoloTokenSelect
+            modalCloseCustom={modalCloseCustom}
+            closeModal={closeTokenModal}
+            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+            isSingleToken={false}
+            tokenAorB={tokenAorB}
+            reverseTokens={reverseTokens}
+        />
+    );
+
+    const tokenSelect = (
+        <button
+            className={`${styles.token_select} ${
+                showOrderPulseAnimation && styles.pulse_animation
+            }`}
+            onClick={() =>
+                openTokenModal(tokenSelectModalContent, 'Select Token')
+            }
+            tabIndex={0}
+            aria-label={`Open limit ${fieldId} token modal.`}
+            id='limit_token_selector'
+        >
+            <TokenIcon
+                src={uriToHttp(thisToken.logoURI)}
+                alt={thisToken.symbol}
+                size='2xl'
+            />
+            <span className={styles.token_list_text}>{thisToken.symbol}</span>
+            <RiArrowDownSLine size={27} />
+        </button>
+    );
+
     return (
         <div className={styles.swapbox}>
             <div className={styles.swapbox_top}>
@@ -349,28 +346,6 @@ function LimitCurrencySelector(props: propsIF) {
                 {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}
             </div>
             {balanceDisplayOrNull}
-            {isTokenModalOpen && (
-                <Modal
-                    onClose={closeTokenModal}
-                    title='Select Token'
-                    centeredTitle
-                    handleBack={handleInputClear}
-                    showBackButton={false}
-                    footer={null}
-                >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        closeModal={closeTokenModal}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
-                        isSingleToken={false}
-                        tokenAorB={tokenAorB}
-                        reverseTokens={reverseTokens}
-                    />
-                </Modal>
-            )}
         </div>
     );
 }

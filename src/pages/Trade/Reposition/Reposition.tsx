@@ -18,11 +18,9 @@ import RepositionHeader from '../../../components/Trade/Reposition/RepositionHea
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
-import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
-import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     useAppDispatch,
     useAppSelector,
@@ -58,10 +56,15 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 
 function Reposition() {
     // current URL parameter string
     const { params } = useParams();
+
+    const {
+        globalModal: { open: openGlobalModal },
+    } = useContext(AppStateContext);
 
     const {
         cachedQuerySpotPrice,
@@ -199,13 +202,7 @@ function Reposition() {
             ? truncatedCurrentPoolDisplayPriceInBase
             : truncatedCurrentPoolDisplayPriceInQuote;
 
-    // const currentlocationHook = locationHook.pathname;
-    const [isModalOpen, openModal, closeModal] = useModal();
-
-    const handleModalClose = () => {
-        closeModal();
-        resetConfirmation();
-    };
+    const handleModalClose = () => resetConfirmation();
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
 
@@ -732,7 +729,19 @@ function Reposition() {
                             action={
                                 bypassConfirmRepo.isEnabled
                                     ? handleRepoButtonClickWithBypass
-                                    : openModal
+                                    : () =>
+                                          openGlobalModal(
+                                              <ConfirmRepositionModal
+                                                  {...confirmRepositionModalProps}
+                                              />,
+                                              'Confirm Reposition',
+                                              undefined,
+                                              undefined,
+                                              undefined,
+                                              undefined,
+                                              undefined,
+                                              handleModalClose,
+                                          )
                             }
                             disabled={isRepositionSent || isPositionInRange}
                             flat
@@ -745,15 +754,6 @@ function Reposition() {
                 </div>
                 {isRepositionSent ? etherscanButton : null}
             </div>
-            {isModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title=' Confirm Reposition'
-                    centeredTitle
-                >
-                    <ConfirmRepositionModal {...confirmRepositionModalProps} />
-                </Modal>
-            )}
         </div>
     );
 }

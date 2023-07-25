@@ -221,33 +221,6 @@ export default function RangeDetails(props: propsIF) {
         }
     }, [lastBlockNumber, crocEnv, chainId]);
 
-    // eslint-disable-next-line
-    const [controlItems, setControlItems] = useState([
-        // { slug: 'times', name: 'Show times', checked: false },
-        { slug: 'collateral', name: 'Show collateral', checked: true },
-        { slug: 'value', name: 'Show value', checked: true },
-    ]);
-
-    // const handleChange = (slug: string) => {
-    //     const copyControlItems = [...controlItems];
-    //     const modifiedControlItems = copyControlItems.map((item) => {
-    //         if (slug === item.slug) {
-    //             item.checked = !item.checked;
-    //         }
-
-    //         return item;
-    //     });
-
-    //     setControlItems(modifiedControlItems);
-    // };
-
-    // const controlDisplay = showSettings ? (
-    //     <div className={styles.control_display_container}>
-    //         {controlItems.map((item, idx) => (
-    //             <RangeDetailsControl key={idx} item={item} handleChange={handleChange} />
-    //         ))}
-    //     </div>
-    // ) : null;
     const shareComponent = (
         <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>

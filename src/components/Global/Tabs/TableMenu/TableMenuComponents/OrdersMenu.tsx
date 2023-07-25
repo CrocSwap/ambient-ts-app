@@ -1,13 +1,11 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef, useEffect, useContext } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
-import Modal from '../../../../Global/Modal/Modal';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
-import { useModal } from '../../../../Global/Modal/useModal';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import LimitActionModal from '../../../../LimitActionModal/LimitActionModal';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -65,14 +63,8 @@ export default function OrdersMenu(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const [isModalOpen, closeModal] = useModal();
-
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-
-    // ---------------------MODAL FUNCTIONALITY----------------
-    let modalContent: ReactNode;
-    let modalTitle;
 
     const dispatch = useAppDispatch();
 
@@ -123,14 +115,6 @@ export default function OrdersMenu(props: propsIF) {
                 isAccountView={isAccountView}
             />,
         );
-
-    const mainModal = (
-        <Modal onClose={closeModal} title={modalTitle}>
-            {modalContent}
-        </Modal>
-    );
-
-    const modalOrNull = isModalOpen ? mainModal : null;
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
@@ -276,7 +260,6 @@ export default function OrdersMenu(props: propsIF) {
         >
             {ordersMenu}
             {dropdownOrdersMenu}
-            {modalOrNull}
         </div>
     );
 }

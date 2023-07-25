@@ -61,13 +61,10 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
-    // add an event listener for custom functionalities on modal close
-    // this needs to be coordinated with data in Modal.tsx
-    // later we'll abstract and import functionality to get rid of magic numbers
-    useEffect(
-        () => window.addEventListener('closeModalEvent', modalCloseCustom),
-        [],
-    );
+    const closeTokenSelectModal = () => {
+        modalCloseCustom();
+        closeModal();
+    };
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -102,7 +99,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         if (tokenAorB === 'A') {
             if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
                 reverseTokens && reverseTokens();
-                closeModal();
+                closeTokenSelectModal();
                 return;
             }
             goToNewUrlParams(
@@ -116,7 +113,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         } else if (tokenAorB === 'B') {
             if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
                 reverseTokens && reverseTokens();
-                closeModal();
+                closeTokenSelectModal();
                 return;
             }
             goToNewUrlParams(
@@ -141,7 +138,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
         setInput('');
         // close the token modal
-        closeModal();
+        closeTokenSelectModal();
     };
 
     // hook to hold data for a token pulled from on-chain

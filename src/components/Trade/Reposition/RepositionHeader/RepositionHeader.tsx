@@ -7,17 +7,16 @@ import { VscClose } from 'react-icons/vsc';
 // START: Import JSX Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 import TransactionSettings from '../../../Global/TransactionSettings/TransactionSettings';
-import Modal from '../../../../components/Global/Modal/Modal';
 
 // START: Import Local Files
 import styles from './RepositionHeader.module.css';
 import trimString from '../../../../utils/functions/trimString';
-import { useModal } from '../../../../components/Global/Modal/useModal';
 import { useRepoExitPath } from './useRepoExitPath';
 import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface propsIF {
     positionHash: string;
@@ -34,13 +33,24 @@ function RepositionHeader(props: propsIF) {
         UserPreferenceContext,
     );
 
+    const {
+        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+    } = useContext(AppStateContext);
+
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     // navpath for when user clicks the exit button
     const exitPath = useRepoExitPath();
 
-    const [isModalOpen, openModal, closeModal] = useModal();
+    const transactionSettingsModalContent = (
+        <TransactionSettings
+            module='Reposition'
+            slippage={repoSlippage}
+            onClose={closeGlobalModal}
+            bypassConfirm={bypassConfirmRepo}
+        />
+    );
 
     return (
         <ContentHeader>
@@ -48,27 +58,12 @@ function RepositionHeader(props: propsIF) {
                 className={styles.settings_icon}
                 src={settingsIcon}
                 alt='settings'
-                onClick={() => openModal()}
+                onClick={() => openGlobalModal(transactionSettingsModalContent)}
             />
             <p className={styles.title}>
                 {' '}
                 Reposition: {trimString(positionHash, 5, 4, '…')}
             </p>
-            {isModalOpen && (
-                <Modal
-                    noHeader
-                    title='modal'
-                    onClose={closeModal}
-                    centeredTitle
-                >
-                    <TransactionSettings
-                        module='Reposition'
-                        slippage={repoSlippage}
-                        onClose={closeModal}
-                        bypassConfirm={bypassConfirmRepo}
-                    />
-                </Modal>
-            )}
             <VscClose
                 className={styles.close_icon}
                 onClick={() => {

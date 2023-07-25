@@ -4,15 +4,29 @@ import Modal from '../../../components/Global/Modal/Modal';
 
 export default function GlobalModal() {
     const {
-        globalModal: { isOpen, close, title, currentContent },
+        globalModal: {
+            isOpen,
+            close,
+            title,
+            currentContent,
+            handleBack,
+            showBackButton,
+            footer,
+            noBackground,
+            headerRightItems,
+        },
     } = useContext(AppStateContext);
-    console.log({ title });
     const modalOrNull = isOpen ? (
         <Modal
-            onClose={close}
-            title={title}
             centeredTitle
             noHeader={title === ''}
+            onClose={close}
+            title={title}
+            handleBack={handleBack}
+            showBackButton={showBackButton}
+            footer={footer}
+            noBackground={noBackground}
+            headerRightItems={headerRightItems}
         >
             {currentContent}
         </Modal>
