@@ -63,7 +63,6 @@ import YaxisCanvas from './SubChartComponents/Yaxis/YaxisCanvas';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
 import { CSSTransition } from 'react-transition-group';
-import { ChartContext } from '../../contexts/ChartContext';
 import Divider from '../../components/Global/Divider/Divider';
 
 declare global {
@@ -310,9 +309,6 @@ export default function Chart(props: propsIF) {
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
-
-    const { isFullScreen: fullScreenChart } = useContext(ChartContext);
-
     const [chartHeights, setChartHeights] = useState(0);
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -3646,12 +3642,13 @@ export default function Chart(props: propsIF) {
         if (
             nearest.time === unparsedCandleData[0].time &&
             dateControl &&
-            checkYLocation
+            checkYLocation &&
+            scaleData
         ) {
             const canvas = d3
                 .select(d3CanvasMain.current)
                 .select('canvas')
-                .node() as any;
+                .node() as HTMLCanvasElement;
 
             const rect = canvas.getBoundingClientRect();
 
