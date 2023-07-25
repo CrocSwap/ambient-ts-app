@@ -80,14 +80,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const [liqDepthAskSeries, setLiqDepthAskSeries] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [liqDepthBidSeries, setLiqDepthBidSeries] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [highlightedAreaCurveSeries, setHighlightedAreaCurveSeries] =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [highlightedAreaBidSeries, setHighlightedAreaBidSeries] =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [highlightedAreaAskSeries, setHighlightedAreaAskSeries] =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>();
 
     const [currentPriceData] = useState([{ value: -1 }]);
