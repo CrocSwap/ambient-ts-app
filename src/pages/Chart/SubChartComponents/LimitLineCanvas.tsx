@@ -4,15 +4,14 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
 import { createTriangle } from '../ChartUtils/triangle';
-import { diffHashSigScaleData } from '../../../utils/functions/diffHashSig';
 import { useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { tickToPrice } from '@crocswap-libs/sdk';
 import { PoolContext } from '../../../contexts/PoolContext';
+import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
 
 interface propsIF {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    scaleData: any;
+    scaleData: scaleData | undefined;
     isDenomBase: boolean;
     period: number;
     /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -52,7 +51,6 @@ export default function LimitLineCanvas(props: propsIF) {
     const { pool } = useContext(PoolContext);
 
     const [limitLine, setLimitLine] = useState<any>();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [triangleLimit, setTriangleLimit] = useState<any>();
 
     useEffect(() => {
@@ -83,12 +81,7 @@ export default function LimitLineCanvas(props: propsIF) {
                 return limitLine;
             });
         }
-    }, [
-        // diffHashSigScaleData(scaleData),
-        lineSellColor,
-        lineBuyColor,
-        isUserConnected,
-    ]);
+    }, [scaleData, lineSellColor, lineBuyColor, isUserConnected]);
 
     useEffect(() => {
         if (location.pathname.includes('/limit')) {
@@ -158,9 +151,9 @@ export default function LimitLineCanvas(props: propsIF) {
                 context.lineWidth = 1.5;
                 context.fillStyle = 'transparent';
             });
-
-            // renderCanvasArray([d3CanvasLimitLine]);
         }
+
+        renderCanvasArray([d3CanvasLimitLine]);
     }, [
         limitLine,
         triangleLimit,
@@ -172,6 +165,7 @@ export default function LimitLineCanvas(props: propsIF) {
     useEffect(() => {
         renderCanvasArray([d3CanvasLimitLine]);
     }, [limit]);
+
     useEffect(() => {
         d3.select(d3CanvasLimitLine.current)
             .select('canvas')

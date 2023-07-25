@@ -122,6 +122,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
 
     useEffect(() => {
+        setCandleData(undefined);
+    }, [pool]);
+
+    useEffect(() => {
         isChartEnabled && fetchCandles();
     }, [
         isChartEnabled,

@@ -16,10 +16,7 @@ import {
     standardDeviation,
 } from '../../Chart';
 import { createRectLabel } from './YaxisUtils';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../../utils/functions/diffHashSig';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useLocation } from 'react-router-dom';
 import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';

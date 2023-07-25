@@ -8,12 +8,13 @@ const liqBidColor = 'rgba(115, 113, 252, 0.3)';
 export function createAreaSeries(
     xScale: d3.ScaleLinear<number, number>,
     yScale: d3.ScaleLinear<number, number>,
-    liqMode: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    curve: any,
 ) {
     return d3fc
         .seriesCanvasArea()
         .orient('horizontal')
-        .curve(liqMode === 'curve' ? d3.curveBasis : d3.curveStepBefore)
+        .curve(curve)
         .decorate((context: CanvasRenderingContext2D) => {
             context.fillStyle = 'transparent';
         })

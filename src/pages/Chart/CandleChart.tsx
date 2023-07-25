@@ -61,7 +61,6 @@ export default function CandleChart(props: candlePropsIF) {
 
         if (data && data.length > 0 && scaleData) {
             if (!showLatest && firstCandle && data[0].time !== firstCandle) {
-                // setIsCandleAdded(false);
                 setFirstCandle(() => {
                     return data[0].time;
                 });
@@ -88,9 +87,9 @@ export default function CandleChart(props: candlePropsIF) {
         firstCandle,
     ]);
 
-    // useEffect(() => {
-    //     renderCanvasArray([d3CanvasCandle]);
-    // }, [diffHashSigScaleData(scaleData)]);
+    useEffect(() => {
+        renderCanvasArray([d3CanvasCandle]);
+    }, [diffHashSigScaleData(scaleData)]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -122,7 +121,7 @@ export default function CandleChart(props: candlePropsIF) {
 
             setCandlestick(() => canvasCandlestick);
         }
-    }, []);
+    }, [scaleData]);
 
     useEffect(() => {
         if (candlestick) {

@@ -9,7 +9,6 @@ import { getPinnedPriceValuesFromTicks } from '../../Trade/Range/rangeFunctions'
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { diffHashSigScaleData } from '../../../utils/functions/diffHashSig';
 import { createTriangle } from '../ChartUtils/triangle';
 import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
 
@@ -132,10 +131,8 @@ export default function RangeLineCanvas(props: propsIF) {
             setHorizontalBand(() => {
                 return horizontalBand;
             });
-
-            renderCanvasArray([d3CanvasRangeLine]);
         }
-    }, [scaleData === undefined]);
+    }, [scaleData]);
 
     useEffect(() => {
         if (

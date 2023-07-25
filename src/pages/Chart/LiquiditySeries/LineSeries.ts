@@ -7,12 +7,15 @@ const lineBuyColor = 'rgba(205, 193, 255)';
 export function createLineSeries(
     xScale: d3.ScaleLinear<number, number>,
     yScale: d3.ScaleLinear<number, number>,
-    liqMode: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    curve: any,
 ) {
+    console.log({ curve });
+
     return d3fc
         .seriesCanvasLine()
         .orient('horizontal')
-        .curve(liqMode === 'curve' ? d3.curveBasis : d3.curveStepBefore)
+        .curve(curve)
         .mainValue((d: LiquidityDataLocal) => d.activeLiq)
         .crossValue((d: LiquidityDataLocal) => d.liqPrices)
         .xScale(xScale)
