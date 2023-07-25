@@ -60,7 +60,7 @@ export const useSidebarSearch = (
         ) {
             setSearchAs('address');
             // if not an apparent token address, search name and symbol
-        } else if (cleanInput.length >= 2) {
+        } else if (cleanInput.length > 0) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
             // otherwise treat as if there is no input entered

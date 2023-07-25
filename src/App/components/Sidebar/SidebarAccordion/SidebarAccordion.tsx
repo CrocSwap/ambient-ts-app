@@ -17,7 +17,7 @@ interface propsIF {
     isDefaultOverridden: boolean;
     item: {
         name: string;
-        icon: string;
+        icon: ReactNode;
         data: ReactNode;
     };
     idx: number | string;
@@ -123,10 +123,10 @@ export default function SidebarAccordion(props: propsIF) {
                         {sidebar.isOpen && (
                             <MdPlayArrow
                                 size={12}
-                                className={sidebarIconStyle}
+                                className={`${sidebarIconStyle} ${styles.arrow}`}
                             />
                         )}
-                        <img src={item.icon} alt={item.name} width='20px' />
+                        {item.icon}
                         <span className={styles.link_text}>{item.name}</span>
                     </div>
                 </div>

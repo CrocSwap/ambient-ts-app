@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, useRef, useContext, memo } from 'react';
-import { BiSearch } from 'react-icons/bi';
+import { BiArrowToBottom, BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -12,18 +12,12 @@ import SidebarRecentTransactions from '../../../components/Global/Sidebar/Sideba
 
 // START: Import Local Files
 import styles from './Sidebar.module.css';
-
-import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
-import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
-import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
-import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
-import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
-import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
-import { MdClose } from 'react-icons/md';
+import { MdClose, MdOutlineExpand } from 'react-icons/md';
+import { LuDroplets } from 'react-icons/lu';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
+import { AiFillLock, AiFillUnlock, AiOutlineHeart } from 'react-icons/ai';
 import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import {
@@ -36,6 +30,8 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import { GiBackwardTime, GiSaveArrow } from 'react-icons/gi';
+import { TbFileTime } from 'react-icons/tb';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
@@ -67,7 +63,14 @@ function Sidebar() {
     const recentPoolsData = [
         {
             name: 'Recent Pools',
-            icon: recentPoolsImage,
+            icon: (
+                <GiBackwardTime
+                    className={`${styles.icon} ${
+                        !sidebar.isOpen && styles.closed
+                    }`}
+                    size={20}
+                />
+            ),
 
             data: (
                 <RecentPools
@@ -80,7 +83,14 @@ function Sidebar() {
     const topPoolsSection = [
         {
             name: 'Top Pools',
-            icon: topPoolsImage,
+            icon: (
+                <LuDroplets
+                    className={`${styles.icon} ${
+                        !sidebar.isOpen && styles.closed
+                    }`}
+                    size={20}
+                />
+            ),
 
             data: (
                 <TopPools
@@ -94,7 +104,14 @@ function Sidebar() {
     const rangePositions = [
         {
             name: 'Range Positions',
-            icon: rangePositionsImage,
+            icon: (
+                <MdOutlineExpand
+                    className={`${styles.icon} ${
+                        !sidebar.isOpen && styles.closed
+                    }`}
+                    size={20}
+                />
+            ),
             data: <SidebarRangePositions userPositions={mostRecentPositions} />,
         },
     ];
@@ -102,7 +119,14 @@ function Sidebar() {
     const recentLimitOrders = [
         {
             name: 'Limit Orders',
-            icon: openOrdersImage,
+            icon: (
+                <GiSaveArrow
+                    className={`${styles.icon} ${
+                        !sidebar.isOpen && styles.closed
+                    }`}
+                    size={20}
+                />
+            ),
             data: (
                 <SidebarLimitOrders limitOrderByUser={mostRecentLimitOrders} />
             ),
@@ -112,7 +136,14 @@ function Sidebar() {
     const favoritePools = [
         {
             name: 'Favorite Pools',
-            icon: favouritePoolsImage,
+            icon: (
+                <AiOutlineHeart
+                    className={`${styles.icon} ${
+                        !sidebar.isOpen && styles.closed
+                    }`}
+                    size={20}
+                />
+            ),
 
             data: (
                 <FavoritePools
@@ -126,7 +157,14 @@ function Sidebar() {
     const recentTransactions = [
         {
             name: 'Transactions',
-            icon: recentTransactionsImage,
+            icon: (
+                <TbFileTime
+                    className={`${styles.icon} ${
+                        !sidebar.isOpen && styles.closed
+                    }`}
+                    size={20}
+                />
+            ),
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTxs}
@@ -280,7 +318,7 @@ function Sidebar() {
             ) : (
                 <BiSearch
                     size={20}
-                    color='#CDC1FF'
+                    className={!sidebar.isOpen && styles.closed}
                     onClick={() => sidebar.open(false)}
                 />
             )}
