@@ -10,7 +10,6 @@ import {
     memo,
 } from 'react';
 import { calcImpact } from '../../../App/functions/calcImpact';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import useDebounce from '../../../App/hooks/useDebounce';
 import { ZERO_ADDRESS } from '../../../constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';

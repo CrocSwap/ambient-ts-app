@@ -1,5 +1,4 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
@@ -14,7 +13,6 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../../../utils/numbers';
 import {
     setLimitTick,

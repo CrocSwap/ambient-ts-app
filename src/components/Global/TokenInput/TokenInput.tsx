@@ -1,4 +1,4 @@
-import { memo, useEffect } from 'react';
+import { memo } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
