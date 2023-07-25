@@ -18,7 +18,7 @@ function SidebarFooter() {
     const sidebarPositionStyle =
         currentLocation === '/'
             ? styles.position_sticky
-            : styles.position_absolute;
+            : styles.position_sticky;
 
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market/'
