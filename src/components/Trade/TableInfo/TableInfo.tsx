@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-
+import backgroundImage from '../../../assets/images/backgrounds/tableInfoBg.png';
 interface FeaturedBoxPropsIF {
     tokenLogo: string;
     tokenSymbol: string;
@@ -75,7 +75,11 @@ export default function TableInfo() {
                         <img
                             src={tokenLogo}
                             alt='Logo'
-                            style={{ width: '1.5rem', height: '1.5rem' }}
+                            style={{
+                                width: '40px',
+                                height: '40px',
+                                borderRadius: '50px',
+                            }}
                         />
                         <TokenSymbol>{tokenSymbol}</TokenSymbol>
                         <TokenName>{tokenName}</TokenName>
@@ -108,9 +112,9 @@ export default function TableInfo() {
         );
     }
     return (
-        <section style={{ height: '100%' }}>
-            <GridContainer numCols={2} gapSize={2} fullHeight>
-                <GridContainer numCols={2} gapSize={2}>
+        <MainSection>
+            <GridContainer numCols={2} gapSize={8} fullHeight>
+                <GridContainer numCols={2} gapSize={8}>
                     {featuredData.map((data, idx) => (
                         <FeaturedBox
                             key={idx}
@@ -124,8 +128,8 @@ export default function TableInfo() {
                     ))}
                 </GridContainer>
 
-                <GridContainer numRows={3} gapSize={2}>
-                    <GridContainer numCols={4} gapSize={2}>
+                <GridContainer numRows={3} gapSize={8}>
+                    <GridContainer numCols={4} gapSize={8}>
                         {detailedData.slice(0, 4).map((data, idx) => (
                             <DetailedBox
                                 label={data.label}
@@ -134,7 +138,7 @@ export default function TableInfo() {
                             />
                         ))}
                     </GridContainer>
-                    <GridContainer numCols={4} gapSize={2}>
+                    <GridContainer numCols={4} gapSize={8}>
                         {detailedData
                             .slice(4, detailedData.length)
                             .map((data, idx) => (
@@ -152,13 +156,21 @@ export default function TableInfo() {
                     </div>
                 </GridContainer>
             </GridContainer>
-        </section>
+        </MainSection>
     );
 }
 
+const MainSection = styled.section`
+    background: url(${backgroundImage}) no-repeat center center fixed;
+
+    height: 100%;
+    padding: 8px;
+`;
+
 const BoxContainer = styled.div`
     grid-column: span 1;
-    background-color: var(--dark3);
+    background: rgba(23, 29, 39, 0.4);
+    backdrop-filter: blur(10px);
     border-radius: 0.25rem;
 `;
 
@@ -173,6 +185,7 @@ const InfoHeader = styled.div`
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
+    font-weight: 400;
 `;
 
 const FlexCenter = styled.div`
@@ -189,18 +202,19 @@ const FeaturedBoxInfoContainer = styled.div`
 const TokenSymbol = styled.p`
     margin-left: 0.5rem;
     color: var(--header2-size);
-    font-weight: 100;
+    font-weight: 400;
 `;
 
 const TokenName = styled.p`
     margin-left: 0.5rem;
     font-size: var(--body-size);
     color: var(--text2);
+    font-weight: 400;
 `;
 
 const BoxInfoText = styled.p`
     color: var(--header2-size);
-    font-weight: 100;
+    font-weight: 400;
 
     color: var(--text1);
 `;
@@ -209,6 +223,7 @@ const LinkText = styled.a`
     margin-left: 0.5rem;
     font-size: var(--body-size);
     color: var(--accent1);
+    font-weight: 400;
 `;
 
 const DetailedBoxContainer = styled.div`
@@ -223,4 +238,6 @@ const TabPlaceholder = styled.div`
     grid-column: span 1;
     background-color: var(--dark3);
     height: 100%;
+    background: rgba(23, 29, 39, 0.4);
+    backdrop-filter: blur(10px);
 `;
