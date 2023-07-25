@@ -5266,6 +5266,7 @@ export default function Chart(props: propsIF) {
         const xmin = scaleData?.xScale.domain()[0];
         const xmax = scaleData?.xScale.domain()[1];
         const ymin = scaleData?.yScale.domain()[0];
+        const ymax = scaleData?.yScale.domain()[1];
 
         unparsedCandleData.map((d: CandleData) => {
             avaregeHeight =
@@ -5412,16 +5413,27 @@ export default function Chart(props: propsIF) {
 
             const rect = canvas.getBoundingClientRect();
 
-            const rectTop = rect.top / 1.5;
+            const rectTop = rect.top / 2.5;
 
             const maxValue = Math.max(open, close);
+            const minValue = Math.min(open, close);
 
-            if (scaleData.yScale(ymin) - scaleData?.yScale(maxValue) < 60) {
-                setLastCandleDataCenter(scaleData.yScale(close) - rectTop);
+            const checkDomain = maxValue > ymax && minValue < ymin;
+
+            if (checkDomain || chartHeights < 250) {
+                setLastCandleDataCenter(scaleData.yScale((ymin + ymax) / 2));
+            } else if (
+                scaleData.yScale(ymin) - scaleData?.yScale(maxValue) < 100 ||
+                ymin > minValue
+            ) {
+                setLastCandleDataCenter(scaleData.yScale(maxValue) - rectTop);
+            } else if (
+                scaleData?.yScale(maxValue) - scaleData.yScale(ymax) <
+                5
+            ) {
+                setLastCandleDataCenter(scaleData.yScale(minValue));
             } else {
-                setLastCandleDataCenter(
-                    scaleData.yScale((open + close) / 2) - rectTop,
-                );
+                setLastCandleDataCenter(scaleData.yScale((open + close) / 2));
             }
             setIsShowLastCandleTooltip(true);
         } else {
@@ -6415,9 +6427,8 @@ export default function Chart(props: propsIF) {
                 <div
                     className='lastCandleDiv'
                     style={{
-                        fontSize: chartHeights > 280 ? 'medium' : 'small',
-                        top:
-                            lastCandleDataCenter + (fullScreenChart ? 130 : 65),
+                        fontSize: chartHeights > 280 ? 'medium' : '12px',
+                        top: lastCandleDataCenter,
                         left:
                             scaleData?.xScale(lastCandleData?.time * 1000) +
                             bandwidth * 2,
