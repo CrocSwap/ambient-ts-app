@@ -1,5 +1,6 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { formatTokenInput } from '../../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { TokenInputWalletBalance } from './TokenInputWalletBalance';
 
@@ -49,31 +50,43 @@ function TokenInput(props: propsIF) {
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
 
-    const balance =
+    const walletBalance = tokenBalance ? toDecimal(tokenBalance) : '...';
+    const walletAndExchangeBalance =
         tokenBalance && tokenDexBalance
-            ? !isDexSelected
-                ? toDecimal(tokenBalance)
-                : toDecimal(
-                      (
-                          parseFloat(tokenBalance) + parseFloat(tokenDexBalance)
-                      ).toString(),
-                  )
+            ? toDecimal(
+                  (
+                      parseFloat(tokenBalance) + parseFloat(tokenDexBalance)
+                  ).toString(),
+              )
             : '...';
-
+    const balance = !isDexSelected ? walletBalance : walletAndExchangeBalance;
     const balanceToDisplay = parseFloat(balance).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
 
-    const balanceWithBuffer = isTokenEth
-        ? (parseFloat(balance) - ETH_BUFFER).toFixed(18)
-        : balance;
+    const subtractBuffer = (balance: string) =>
+        isTokenEth ? (parseFloat(balance) - ETH_BUFFER).toFixed(18) : balance;
 
-    function handleMaxButtonClick() {
-        parseTokenInput &&
-            parseTokenInput(balanceWithBuffer) !== tokenInput &&
+    const balanceWithBuffer = subtractBuffer(balance);
+
+    const handleMaxButtonClick = () => {
+        if (formatTokenInput(balanceWithBuffer, token) !== tokenInput) {
+            parseTokenInput && parseTokenInput(balanceWithBuffer);
             handleTokenInputEvent(balanceWithBuffer);
-    }
+        }
+    };
+
+    const handleToggleDex = () => {
+        if (formatTokenInput(balanceWithBuffer) === tokenInput) {
+            const balance = subtractBuffer(
+                isDexSelected ? walletBalance : walletAndExchangeBalance,
+            );
+            parseTokenInput && parseTokenInput(balance);
+            handleTokenInputEvent(balance);
+        }
+        handleToggleDexSelection();
+    };
 
     const walletContent = showWallet && (
         <TokenInputWalletBalance
@@ -86,7 +99,7 @@ function TokenInput(props: propsIF) {
                 parseFloat(tokenDexBalance) > 0
             }
             isDexSelected={isDexSelected}
-            onToggleDex={handleToggleDexSelection}
+            onToggleDex={handleToggleDex}
             onMaxButtonClick={
                 !hideWalletMaxButton ? handleMaxButtonClick : undefined
             }

@@ -23,6 +23,7 @@ import {
 import TokenInput from '../../../Global/TokenInput/TokenInput';
 import styles from '../../../Global/TokenInput/TokenInput.module.css';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
+import { formatTokenInput } from '../../../../utils/numbers';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -187,20 +188,8 @@ function RangeTokenInput(props: propsIF) {
         if (rangeTicksCopied) dispatch(setRangeTicksCopied(false));
     };
 
-    const parseTokenInput = (value: string, token: TokenIF) => {
-        const inputStr = value.replaceAll(',', '');
-        const inputNum = parseFloat(inputStr);
-        const truncatedInputStr = getFormattedNumber({
-            value: inputNum,
-            isToken: true,
-            maxFracDigits: inputNum < 100 ? 3 : token.decimals,
-            nullDisplay: '',
-        });
-        return truncatedInputStr;
-    };
-
     const handleTokenAChangeEvent = (value: string) => {
-        const inputStr = parseTokenInput(value, tokenA);
+        const inputStr = formatTokenInput(value, tokenA);
 
         dispatch(setIsTokenAPrimaryRange(true));
         dispatch(setPrimaryQuantityRange(inputStr));
@@ -208,7 +197,7 @@ function RangeTokenInput(props: propsIF) {
     };
 
     const handleTokenBChangeEvent = (value: string) => {
-        const inputStr = parseTokenInput(value, tokenB);
+        const inputStr = formatTokenInput(value, tokenB);
 
         dispatch(setIsTokenAPrimaryRange(false));
         dispatch(setPrimaryQuantityRange(inputStr));
@@ -248,7 +237,7 @@ function RangeTokenInput(props: propsIF) {
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
                 parseTokenInput={(val: string) => {
-                    setTokenAInputQty(parseTokenInput(val, tokenA));
+                    setTokenAInputQty(formatTokenInput(val, tokenA));
                 }}
                 showWallet={isUserConnected}
             />
@@ -269,7 +258,7 @@ function RangeTokenInput(props: propsIF) {
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('B')}
                 parseTokenInput={(val: string) => {
-                    setTokenBInputQty(parseTokenInput(val, tokenB));
+                    setTokenBInputQty(formatTokenInput(val, tokenB));
                 }}
                 showWallet={isUserConnected}
             />

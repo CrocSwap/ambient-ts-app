@@ -24,6 +24,7 @@ import {
     useAppDispatch,
 } from '../../../utils/hooks/reduxToolkit';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { formatTokenInput } from '../../../utils/numbers';
 import {
     setIsTokenAPrimary,
     setShouldSwapDirectionReverse,
@@ -246,7 +247,7 @@ function SwapTokenInput(props: propsIF) {
             let rawTokenBQty = undefined;
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
-                    const truncatedInputStr = parseTokenInput(value);
+                    const truncatedInputStr = formatTokenInput(value);
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
 
                     setSellQtyString(truncatedInputStr);
@@ -289,7 +290,7 @@ function SwapTokenInput(props: propsIF) {
             let rawTokenAQty: number | undefined;
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
-                    const truncatedInputStr = parseTokenInput(value);
+                    const truncatedInputStr = formatTokenInput(value);
                     rawTokenAQty = await refreshImpact(
                         truncatedInputStr,
                         false,
@@ -339,19 +340,6 @@ function SwapTokenInput(props: propsIF) {
         }
     };
 
-    const parseTokenInput = (val: string) => {
-        const inputStr = val.replaceAll(',', '');
-        const inputNum = parseFloat(inputStr);
-
-        const truncatedInputStr = getFormattedNumber({
-            value: inputNum,
-            isToken: true,
-            maxFracDigits: inputNum < 100 ? 3 : 2,
-        });
-
-        return truncatedInputStr;
-    };
-
     return (
         <section className={`${styles.token_input_container}`}>
             <TokenInput
@@ -368,7 +356,6 @@ function SwapTokenInput(props: propsIF) {
                 handleTokenInputEvent={debouncedTokenAChangeEvent}
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
-                parseTokenInput={parseTokenInput}
                 showWallet={isUserConnected}
             />
             <div

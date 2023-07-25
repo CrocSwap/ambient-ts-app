@@ -15,6 +15,7 @@ import {
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { formatTokenInput } from '../../../../utils/numbers';
 import {
     setLimitTick,
     setPoolPriceNonDisplay,
@@ -130,22 +131,10 @@ function LimitTokenInput(props: propsIF) {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
     }, [isWithdrawFromDexChecked]);
 
-    const parseTokenInput = (value: string, token: TokenIF) => {
-        const inputStr = value.replaceAll(',', '');
-        const inputNum = parseFloat(inputStr);
-        const truncatedInputStr = getFormattedNumber({
-            value: inputNum,
-            isToken: true,
-            maxFracDigits: inputNum < 100 ? 3 : token.decimals,
-            nullDisplay: '',
-        });
-        return truncatedInputStr;
-    };
-
     const handleTokenAChangeEvent = (value?: string) => {
         let rawTokenBQty = 0;
         if (value !== undefined) {
-            const inputStr = parseTokenInput(value, tokenA);
+            const inputStr = formatTokenInput(value, tokenA);
             const inputNum = parseFloat(inputStr);
 
             dispatch(setIsTokenAPrimary(true));
@@ -186,7 +175,7 @@ function LimitTokenInput(props: propsIF) {
     const handleTokenBChangeEvent = (value?: string) => {
         let rawTokenAQty = 0;
         if (value !== undefined) {
-            const inputStr = parseTokenInput(value, tokenA);
+            const inputStr = formatTokenInput(value, tokenA);
             const inputNum = parseFloat(inputStr);
 
             dispatch(setIsTokenAPrimary(false));
@@ -242,7 +231,7 @@ function LimitTokenInput(props: propsIF) {
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
                 parseTokenInput={(val: string) => {
-                    setTokenAInputQty(parseTokenInput(val, tokenA));
+                    setTokenAInputQty(formatTokenInput(val, tokenA));
                 }}
                 showWallet={isUserConnected}
             />
@@ -267,7 +256,7 @@ function LimitTokenInput(props: propsIF) {
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('B')}
                 parseTokenInput={(val: string) => {
-                    setTokenBInputQty(parseTokenInput(val, tokenB));
+                    setTokenBInputQty(formatTokenInput(val, tokenB));
                 }}
             />
         </section>
