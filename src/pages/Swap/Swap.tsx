@@ -64,7 +64,7 @@ function Swap(props: propsIF) {
 
     const {
         wagmiModal: { open: openWagmiModal },
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
+        globalModal: { open: openGlobalModal },
     } = useContext(AppStateContext);
     const {
         crocEnv,
