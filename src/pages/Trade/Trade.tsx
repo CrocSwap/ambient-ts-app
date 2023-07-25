@@ -45,7 +45,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
-const TRADE_CHART_MIN_HEIGHT = 195;
+const TRADE_CHART_MIN_HEIGHT = 175;
 
 // React functional component
 function Trade() {
@@ -412,11 +412,10 @@ function Trade() {
                                 chartHeights.current + d.height <
                                 TRADE_CHART_MIN_HEIGHT
                             ) {
-                                if(tradeTableState == 'Expanded'){
+                                if (tradeTableState == 'Expanded') {
                                     setChartHeight(chartHeights.default);
                                     setTradeTableState(undefined);
-                                }
-                                else{
+                                } else {
                                     setChartHeight(4);
                                     setTradeTableState('Expanded');
                                 }
