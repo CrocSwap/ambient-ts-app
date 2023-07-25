@@ -16,25 +16,29 @@ export default function SimpleModalHeader(props: SimpleModalHeaderPropsIF) {
 
     return (
         <header className={styles.header_container}>
-            {props.showBackButton ? (
-                <BiArrowBack
-                    size={22}
-                    onClick={() => props.onBackButton && props.onBackButton()}
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Go back button'
-                />
-            ) : (
-                <div />
+            {props.showBackButton && (
+                <div className={styles.back_button}>
+                    <BiArrowBack
+                        size={22}
+                        onClick={() =>
+                            props.onBackButton && props.onBackButton()
+                        }
+                        role='button'
+                        tabIndex={0}
+                        aria-label='Go back button'
+                    />
+                </div>
             )}
             <h2>{props.title}</h2>
-            <VscClose
-                size={22}
-                onClick={props.onClose ? props.onClose : onClose}
-                role='button'
-                aria-label='Close modal button'
-                id='close_simple_modal_button'
-            />
+            <div className={styles.close_button}>
+                <VscClose
+                    size={22}
+                    onClick={props.onClose ? props.onClose : onClose}
+                    role='button'
+                    aria-label='Close modal button'
+                    id='close_simple_modal_button'
+                />
+            </div>
         </header>
     );
 }

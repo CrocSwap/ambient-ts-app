@@ -56,29 +56,5 @@
    
 }
 .slippage_content button {
-    background: var(--dark1);
-    cursor: pointer;
-  
-    width: 42px;
-    height: 25px;
-
- 
-    border: 1px solid var(--dark3);
-    border-radius: 50px;
-
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text1);
-
-    padding: 0.25rem 0.5rem;
-    transition: all var(--animation-speed) ease-in-out;
-
-
-}
-
-.slippage_content button:hover,
-.slippage_content button:focus-visible {
-    box-shadow: none;
-    cursor: pointer;
-    color: var(--text1);
+    margin: 0 2px;
 }
