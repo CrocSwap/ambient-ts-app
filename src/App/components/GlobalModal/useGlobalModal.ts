@@ -110,6 +110,7 @@ export const useGlobalModal = (initialMode = false) => {
             footer,
             noBackground,
             headerRightItems,
+            close,
             initialMode,
         ],
     );
