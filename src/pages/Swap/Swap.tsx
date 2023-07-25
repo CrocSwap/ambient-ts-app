@@ -269,7 +269,6 @@ function Swap(props: propsIF) {
     const handleModalClose = () => {
         setNewSwapTransactionHash('');
         resetConfirmation();
-        closeGlobalModal();
     };
 
     const loginButton = (
@@ -676,7 +675,7 @@ function Swap(props: propsIF) {
                                                                   <ConfirmSwapModal
                                                                       {...confirmSwapModalProps}
                                                                   />,
-                                                                  undefined,
+                                                                  'Swap Confirmation',
                                                                   undefined,
                                                                   undefined,
                                                                   undefined,

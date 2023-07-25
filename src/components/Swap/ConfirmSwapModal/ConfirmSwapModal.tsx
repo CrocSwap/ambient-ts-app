@@ -315,6 +315,8 @@ export default function ConfirmSwapModal(props: propsIF) {
         ? transactionSubmitted
         : confirmSendMessage;
 
+    console.log('showing confirm swap modal');
+
     return (
         <div
             className={styles.modal_container}

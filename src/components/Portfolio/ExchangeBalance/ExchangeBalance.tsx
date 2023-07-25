@@ -75,9 +75,7 @@ export default function ExchangeBalance(props: propsIF) {
         globalModal: { open: openGlobalModal, close: closeGlobalModal, isOpen },
     } = useContext(AppStateContext);
 
-    const closeModalCustom = () => {
-        setInput('');
-    };
+    const closeModalCustom = () => setInput('');
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -254,8 +252,8 @@ export default function ExchangeBalance(props: propsIF) {
 
     // Needed to disable clicks outside ExchangeBalanceModal properly if dismissing TokenSelectionModal via selecting a token
     const closeTokenSelectionModal = () => {
-        setIsTokenModalOpen && setIsTokenModalOpen(false);
         closeGlobalModal();
+        setIsTokenModalOpen && setIsTokenModalOpen(false);
     };
 
     const openTokenSelectionModal = () => {

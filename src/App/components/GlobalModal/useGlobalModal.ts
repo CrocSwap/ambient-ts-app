@@ -76,7 +76,6 @@ export const useGlobalModal = (initialMode = false) => {
     };
 
     const close = () => {
-        onClose && onClose();
         setCurrentContent('');
         setTitle('');
         setHandleBack(undefined);
@@ -85,6 +84,7 @@ export const useGlobalModal = (initialMode = false) => {
         setNoBackground(false);
         setHeaderRightItems(undefined);
         setIsOpen(false);
+        onClose && onClose();
     };
 
     // return all data and functions needed for local use

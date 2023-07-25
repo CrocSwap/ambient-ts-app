@@ -537,9 +537,9 @@ function CurrencySelector(props: propsIF) {
                             'Select Token',
                             handleInputClear,
                             false,
-                            null,
+                            undefined,
                             false,
-                            null,
+                            undefined,
                         )
                     }
                     tabIndex={0}
