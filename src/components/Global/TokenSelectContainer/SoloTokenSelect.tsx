@@ -265,6 +265,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 />
                 {input?.value && (
                     <button
+                    className={styles.clearButton}
                         onClick={clearInputField}
                         aria-label='Clear input'
                         tabIndex={0}
