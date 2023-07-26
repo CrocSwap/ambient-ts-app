@@ -877,7 +877,7 @@ export default function Chart(props: propsIF) {
                     if (gapBot < gapTop) {
                         getNewCandleData(
                             domainX[0] - baseMovement,
-                            lastCandleDate,
+                            firstCandleDate,
                         );
                         scaleData?.xScale.domain([
                             domainX[0] - baseMovement,
@@ -886,7 +886,7 @@ export default function Chart(props: propsIF) {
                     } else {
                         getNewCandleData(
                             domainX[0] - baseMovement * (maxGap / minGap),
-                            lastCandleDate,
+                            firstCandleDate,
                         );
 
                         let minX =
@@ -913,7 +913,6 @@ export default function Chart(props: propsIF) {
                 const zoomWithWhell = (
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     event: any,
-                    visibleCandles: Array<CandleData>,
                 ) => {
                     const dx =
                         Math.abs(event.sourceEvent.deltaX) != 0
@@ -926,14 +925,12 @@ export default function Chart(props: propsIF) {
                         .domain(scaleData?.xScale.range())
                         .range([0, domainX[1] - domainX[0]]);
 
-                    const lastCandleTime = lastCandleData?.time;
-
                     const lastTime = domainX[1];
 
                     const firstTime = domainX[0];
 
                     const deltaX = linearX(dx);
-                    if (lastCandleTime && firstCandleDate) {
+                    if (lastCandleDate && firstCandleDate) {
                         if (
                             (event.sourceEvent.shiftKey ||
                                 event.sourceEvent.altKey) &&
@@ -943,7 +940,7 @@ export default function Chart(props: propsIF) {
                             if (deltaX > 0) {
                                 getNewCandleData(
                                     firstTime - deltaX,
-                                    lastCandleDate,
+                                    firstCandleDate,
                                 );
                             } else {
                                 if (lastCandleDate) {
@@ -976,15 +973,9 @@ export default function Chart(props: propsIF) {
                                 ) {
                                     const newBoundary = domainX[0] - deltaX;
 
-                                    const lastXIndex = d3.maxIndex(
-                                        visibleCandles,
-                                        (d: CandleData) => d.time,
-                                    );
-
                                     if (
                                         newBoundary >
-                                            visibleCandles[lastXIndex].time *
-                                                1000 -
+                                            lastCandleDate -
                                                 period * 1000 * 2 &&
                                         deltaX < 0
                                     ) {
@@ -992,19 +983,16 @@ export default function Chart(props: propsIF) {
                                     } else {
                                         getNewCandleData(
                                             newBoundary,
-                                            lastCandleDate,
+                                            firstCandleDate,
                                         );
 
                                         if (deltaX > 0) {
-                                            if (
-                                                lastTime >
-                                                lastCandleTime * 1000
-                                            ) {
+                                            if (lastTime > lastCandleDate) {
                                                 changeCandleSize(
                                                     domainX,
                                                     deltaX,
                                                     event.sourceEvent.offsetX,
-                                                    lastCandleTime * 1000,
+                                                    lastCandleDate,
                                                 );
                                             } else {
                                                 scaleData?.xScale.domain([
@@ -1013,12 +1001,9 @@ export default function Chart(props: propsIF) {
                                                 ]);
                                             }
                                         } else {
-                                            if (
-                                                firstCandleDate * 1000 <
-                                                lastTime
-                                            ) {
+                                            if (firstCandleDate < lastTime) {
                                                 if (
-                                                    lastCandleTime * 1000 <=
+                                                    lastCandleDate <=
                                                         lastTime &&
                                                     deltaX < 0
                                                 ) {
@@ -1027,7 +1012,7 @@ export default function Chart(props: propsIF) {
                                                         deltaX,
                                                         event.sourceEvent
                                                             .offsetX,
-                                                        lastCandleTime * 1000,
+                                                        lastCandleDate,
                                                     );
                                                 } else {
                                                     scaleData?.xScale.domain([
@@ -1054,7 +1039,7 @@ export default function Chart(props: propsIF) {
                             } else {
                                 getNewCandleData(
                                     firstTime - deltaX,
-                                    lastCandleDate,
+                                    firstCandleDate,
                                 );
                                 scaleData?.xScale.domain([
                                     firstTime - deltaX,
@@ -1094,16 +1079,14 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('zoom', (event: any) => {
-                        async function newDomains(
-                            visibleCandles: Array<CandleData>,
-                        ) {
+                        async function newDomains() {
                             if (
                                 event.sourceEvent &&
                                 event.sourceEvent.type !== 'dblclick' &&
                                 scaleData?.xScale
                             ) {
                                 if (event.sourceEvent.type === 'wheel') {
-                                    zoomWithWhell(event, visibleCandles);
+                                    zoomWithWhell(event);
                                 } else if (
                                     event.sourceEvent.type === 'touchmove' &&
                                     event.sourceEvent.touches.length > 1 &&
@@ -1176,7 +1159,7 @@ export default function Chart(props: propsIF) {
                                             if (lastCandleDate) {
                                                 getNewCandleData(
                                                     domainX[0] + deltaX,
-                                                    lastCandleDate,
+                                                    firstCandleDate,
                                                 );
                                             }
                                         } else {
@@ -1269,7 +1252,7 @@ export default function Chart(props: propsIF) {
                             }
                         }
 
-                        newDomains(unparsedCandleData).then(() => {
+                        newDomains().then(() => {
                             // mobile
                             if (event.sourceEvent.type.includes('touch')) {
                                 previousTouch =
@@ -1341,7 +1324,7 @@ export default function Chart(props: propsIF) {
                     .zoom()
                     .on('zoom', async (event) => {
                         if (event.sourceEvent.type === 'wheel') {
-                            zoomWithWhell(event, unparsedCandleData);
+                            zoomWithWhell(event);
                         } else if (
                             event.sourceEvent.type === 'touchmove' &&
                             event.sourceEvent.touches.length > 1 &&
@@ -1432,6 +1415,8 @@ export default function Chart(props: propsIF) {
             }
         }
     }, [
+        firstCandleData,
+        lastCandleData,
         rescale,
         location,
         diffHashSigScaleData(scaleData),
