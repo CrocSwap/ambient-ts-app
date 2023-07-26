@@ -37,7 +37,7 @@ interface liquidityPropsIF {
     liquidityScale: d3.ScaleLinear<number, number> | undefined;
     liquidityDepthScale: d3.ScaleLinear<number, number> | undefined;
     ranges: lineValue[];
-    liqDataHoverEvent: MouseEvent<HTMLDivElement> | undefined;
+    chartMousemoveEvent: MouseEvent<HTMLDivElement> | undefined;
     liqTooltip:
         | d3.Selection<HTMLDivElement, unknown, null, undefined>
         | undefined;
@@ -108,7 +108,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liquidityScale,
         liquidityDepthScale,
         ranges,
-        liqDataHoverEvent,
+        chartMousemoveEvent,
         liqTooltip,
         mouseLeaveEvent,
         isActiveDragOrZoom,
@@ -500,14 +500,14 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
-        if (liqDataHoverEvent) {
+        if (chartMousemoveEvent) {
             d3.select(d3CanvasLiqHover.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     if (liquidityMouseMoveActive !== 'none' && scaleData) {
                         const rectCanvas = canvas.getBoundingClientRect();
                         const offsetY =
-                            liqDataHoverEvent.clientY - rectCanvas.top;
+                            chartMousemoveEvent.clientY - rectCanvas.top;
 
                         if (liquidityMouseMoveActive === 'ask') {
                             clipCanvas(
@@ -550,7 +550,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         highlightedAreaBidSeries,
         highlightedAreaAskSeries,
         liquidityMouseMoveActive,
-        liqDataHoverEvent,
+        chartMousemoveEvent,
         liqDataDepthAsk,
         liqDataAsk,
         liqDataDepthBid,
@@ -774,11 +774,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [diffHashSigScaleData(scaleData, 'y')]);
 
     useEffect(() => {
-        if (liqDataHoverEvent && liqMode !== 'none') {
-            liqDataHover(liqDataHoverEvent);
+        if (chartMousemoveEvent && liqMode !== 'none') {
+            liqDataHover(chartMousemoveEvent);
             renderCanvasArray([d3CanvasLiqHover]);
         }
-    }, [liqDataHoverEvent, mainCanvasBoundingClientRect, liqMode]);
+    }, [chartMousemoveEvent, mainCanvasBoundingClientRect, liqMode]);
 
     useEffect(() => {
         if (liquidityMouseMoveActive !== 'none') {

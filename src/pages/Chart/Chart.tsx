@@ -327,7 +327,7 @@ export default function Chart(props: propsIF) {
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
-    const [liqDataHoverEvent, setLiqDataHoverEvent] = useState<
+    const [chartMousemoveEvent, setChartMousemoveEvent] = useState<
         MouseEvent<HTMLDivElement> | undefined
     >(undefined);
     const [mouseLeaveEvent, setMouseLeaveEvent] =
@@ -527,7 +527,6 @@ export default function Chart(props: propsIF) {
         d3.SubjectPosition
     > | null>(initialDragState);
 
-    const [mouseLocationY, setMouseLocationY] = useState<number>();
     const [bandwidth, setBandwidth] = useState(5);
     const [mainCanvasBoundingClientRect, setMainCanvasBoundingClientRect] =
         useState<DOMRect | undefined>();
@@ -651,13 +650,16 @@ export default function Chart(props: propsIF) {
 
     const canUserDragRange = useMemo<boolean>(() => {
         if (
-            mouseLocationY &&
+            chartMousemoveEvent &&
+            mainCanvasBoundingClientRect &&
             (location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')) &&
             !(!tradeData.advancedMode && simpleRangeWidth === 100) &&
             scaleData
         ) {
-            const mousePlacement = scaleData?.yScale.invert(mouseLocationY);
+            const offsetY =
+                chartMousemoveEvent.clientY - mainCanvasBoundingClientRect?.top;
+            const mousePlacement = scaleData?.yScale.invert(offsetY);
             const lineBuffer =
                 (scaleData?.yScale.domain()[1] -
                     scaleData?.yScale.domain()[0]) /
@@ -679,11 +681,12 @@ export default function Chart(props: propsIF) {
         }
 
         return false;
-    }, [ranges, mouseLocationY]);
+    }, [ranges, chartMousemoveEvent, mainCanvasBoundingClientRect]);
 
     const canUserDragLimit = useMemo<boolean>(() => {
         if (
-            mouseLocationY &&
+            chartMousemoveEvent &&
+            mainCanvasBoundingClientRect &&
             location.pathname.includes('/limit') &&
             scaleData
         ) {
@@ -692,7 +695,10 @@ export default function Chart(props: propsIF) {
                     scaleData?.yScale.domain()[0]) /
                 30;
 
-            const mousePlacement = scaleData?.yScale.invert(mouseLocationY);
+            const offsetY =
+                chartMousemoveEvent.clientY - mainCanvasBoundingClientRect?.top;
+
+            const mousePlacement = scaleData?.yScale.invert(offsetY);
             const limitLineValue = limit[0].value;
 
             return (
@@ -701,7 +707,7 @@ export default function Chart(props: propsIF) {
             );
         }
         return false;
-    }, [limit, mouseLocationY]);
+    }, [limit, chartMousemoveEvent, mainCanvasBoundingClientRect]);
 
     useEffect(() => {
         if (isLineDrag) {
@@ -2133,6 +2139,7 @@ export default function Chart(props: propsIF) {
                 });
 
             let oldLimitValue: number | undefined = undefined;
+
             const dragLimit = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', () => {
@@ -2272,7 +2279,6 @@ export default function Chart(props: propsIF) {
     }, [
         poolPriceDisplay,
         location,
-        // diffHashSigScaleData(scaleData),
         tradeData.advancedMode,
         ranges,
         limit,
@@ -3302,7 +3308,7 @@ export default function Chart(props: propsIF) {
             'mouseleave',
             (event: MouseEvent<HTMLDivElement>) => {
                 mouseLeaveCanvas();
-                setLiqDataHoverEvent(undefined);
+                setChartMousemoveEvent(undefined);
                 setMouseLeaveEvent(event);
             },
         );
@@ -3412,7 +3418,7 @@ export default function Chart(props: propsIF) {
                 (event: MouseEvent<HTMLDivElement>) => {
                     setCrosshairActive('none');
                     setMouseLeaveEvent(event);
-                    setLiqDataHoverEvent(undefined);
+                    setChartMousemoveEvent(undefined);
                     if (unparsedCandleData) {
                         const lastData = unparsedCandleData.find(
                             (item: CandleData) =>
@@ -3766,10 +3772,8 @@ export default function Chart(props: propsIF) {
                         y: scaleData?.yScale.invert(offsetY),
                     },
                 ]);
-                setMouseLocationY(offsetY);
-                if (liqMode !== 'none') {
-                    setLiqDataHoverEvent(event);
-                }
+
+                setChartMousemoveEvent(event);
 
                 const { isHoverCandleOrVolumeData } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
@@ -4064,7 +4068,7 @@ export default function Chart(props: propsIF) {
                                 scaleData={scaleData}
                                 liquidityDepthScale={liquidityDepthScale}
                                 ranges={ranges}
-                                liqDataHoverEvent={liqDataHoverEvent}
+                                chartMousemoveEvent={chartMousemoveEvent}
                                 liqTooltip={liqTooltip}
                                 mouseLeaveEvent={mouseLeaveEvent}
                                 isActiveDragOrZoom={isChartZoom || isLineDrag}
