@@ -296,6 +296,10 @@ function Swap(props: propsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
+    useEffect(() => {
+        setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
+    }, [tokenADexBalance]);
+
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');

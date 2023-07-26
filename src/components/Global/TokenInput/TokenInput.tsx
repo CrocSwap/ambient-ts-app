@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
@@ -60,15 +61,14 @@ function TokenInput(props: propsIF) {
               )
             : '...';
     const balance = !isDexSelected ? walletBalance : walletAndExchangeBalance;
-    const balanceToDisplay = parseFloat(balance).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+    const balanceToDisplay = getFormattedNumber({
+        value: parseFloat(balance) ?? undefined,
     });
 
     const subtractBuffer = (balance: string) =>
         isTokenEth ? (parseFloat(balance) - ETH_BUFFER).toFixed(18) : balance;
 
-    const balanceWithBuffer = subtractBuffer(balance);
+    const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
 
     const handleMaxButtonClick = () => {
         if (formatTokenInput(balanceWithBuffer, token) !== tokenInput) {
@@ -91,7 +91,7 @@ function TokenInput(props: propsIF) {
     const walletContent = showWallet && (
         <TokenInputWalletBalance
             tokenAorB={tokenAorB}
-            balance={balanceToDisplay ?? ''}
+            balance={balanceToDisplay}
             availableBalance={parseFloat(balanceWithBuffer)}
             useExchangeBalance={
                 isDexSelected &&
