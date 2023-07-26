@@ -8,7 +8,6 @@ import { useLocation } from 'react-router-dom';
 
 // START: Import Local Files
 import { TransactionIF } from '../../../../utils/interfaces/exports';
-import styles from '../SidebarTable.module.css';
 
 // START: Import JSX Components
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
@@ -16,6 +15,13 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
+import {
+    SidebarPoolsListContainer,
+    SidebarPoolsListHeader,
+    SidebarPoolsListHeaderContainer,
+    SidebarPoolsListItemsContainer,
+    SidebarPoolsListViewMoreContainer,
+} from '../../../../styled/Sidebar';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
@@ -78,13 +84,13 @@ export default function SidebarRecentTransactions(props: propsIF) {
     };
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <div>Pool</div>
-                <div>Type</div>
-                <div>Value</div>
-            </header>
-            <div className={styles.content}>
+        <SidebarPoolsListContainer>
+            <SidebarPoolsListHeaderContainer>
+                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>Type</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>Value</SidebarPoolsListHeader>
+            </SidebarPoolsListHeaderContainer>
+            <SidebarPoolsListItemsContainer>
                 {mostRecentTransactions.map((tx: TransactionIF) => (
                     <SidebarRecentTransactionsCard
                         key={
@@ -96,14 +102,13 @@ export default function SidebarRecentTransactions(props: propsIF) {
                     />
                 ))}
                 {isUserConnected && (
-                    <div
-                        className={styles.view_more}
+                    <SidebarPoolsListViewMoreContainer
                         onClick={handleViewMoreClick}
                     >
                         View More
-                    </div>
+                    </SidebarPoolsListViewMoreContainer>
                 )}
-            </div>
-        </div>
+            </SidebarPoolsListItemsContainer>
+        </SidebarPoolsListContainer>
     );
 }
