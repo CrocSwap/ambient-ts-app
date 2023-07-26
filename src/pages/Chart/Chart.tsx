@@ -938,11 +938,6 @@ export default function Chart(props: propsIF) {
                             (event.sourceEvent.shiftKey ||
                                 event.sourceEvent.altKey) &&
                             !event.sourceEvent.ctrlKey &&
-                            !event.sourceEvent.metaKey(
-                                event.sourceEvent.shiftKey ||
-                                    event.sourceEvent.altKey,
-                            ) &&
-                            !event.sourceEvent.ctrlKey &&
                             !event.sourceEvent.metaKey
                         ) {
                             if (deltaX > 0) {
