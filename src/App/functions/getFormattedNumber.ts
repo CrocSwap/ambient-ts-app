@@ -46,6 +46,7 @@ export function getFormattedNumber({
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
+        prefix = '$';
     } else if (isToken) {
         if (isNaN(value)) {
             valueString = '';
