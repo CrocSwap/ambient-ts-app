@@ -8,7 +8,7 @@
     overflow: hidden;
 }
 
-.header {
+.header, .range_header {
     width: 100%;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -20,6 +20,11 @@
     padding: 5px 0;
 
     border-bottom: 1px solid var(--dark2);
+}
+
+.range_header {
+    grid-template-columns: 1fr 2fr 20px 1fr;
+    text-align: center;
 }
 
 .view_more {

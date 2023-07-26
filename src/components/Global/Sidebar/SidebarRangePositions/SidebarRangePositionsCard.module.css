@@ -2,7 +2,7 @@
     width: 100%;
     width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 20px 1fr;
+    grid-template-columns: 1fr 2fr 20px 1fr;
     font-weight: 300;
     font-size: var(--body-size);
     line-height: var(--body-lh);
