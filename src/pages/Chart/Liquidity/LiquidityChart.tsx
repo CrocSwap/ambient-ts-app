@@ -774,11 +774,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     }, [diffHashSigScaleData(scaleData, 'y')]);
 
     useEffect(() => {
-        if (liqDataHoverEvent) {
+        if (liqDataHoverEvent && liqMode !== 'none') {
             liqDataHover(liqDataHoverEvent);
             renderCanvasArray([d3CanvasLiqHover]);
         }
-    }, [liqDataHoverEvent, mainCanvasBoundingClientRect]);
+    }, [liqDataHoverEvent, mainCanvasBoundingClientRect, liqMode]);
 
     useEffect(() => {
         if (liquidityMouseMoveActive !== 'none') {
@@ -808,7 +808,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasLiq]);
-    }, [diffHashSig(liquidityData), location, ranges]);
+    }, [diffHashSig(liquidityData), location, ranges, liqMode]);
 
     return (
         <>

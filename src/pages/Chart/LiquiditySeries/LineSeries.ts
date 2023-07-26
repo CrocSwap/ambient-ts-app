@@ -10,8 +10,6 @@ export function createLineSeries(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     curve: any,
 ) {
-    console.log({ curve });
-
     return d3fc
         .seriesCanvasLine()
         .orient('horizontal')
