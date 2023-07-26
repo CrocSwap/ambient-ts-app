@@ -323,7 +323,6 @@ export default function Transfer(props: propsIF) {
                 getFormattedNumber({
                     value: gasPriceInDollarsNum,
                     isUSD: true,
-                    prefix: '$',
                 }),
             );
         }

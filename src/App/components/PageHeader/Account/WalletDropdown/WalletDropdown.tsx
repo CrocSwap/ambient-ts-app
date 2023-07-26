@@ -123,7 +123,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     (price && price?.usdPrice * usdBal) ?? 0;
                 const usdValueTruncated = getFormattedNumber({
                     value: usdValueNum,
-                    isUSD: true,
+                    minFracDigits: 2,
+                    maxFracDigits: 2,
                 });
                 setUsdcVal(usdValueTruncated);
             } else {

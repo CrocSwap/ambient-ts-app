@@ -336,7 +336,6 @@ export default function Withdraw(props: propsIF) {
                 getFormattedNumber({
                     value: gasPriceInDollarsNum,
                     isUSD: true,
-                    prefix: '$',
                 }),
             );
         }
