@@ -1271,8 +1271,6 @@ export default function Chart(props: propsIF) {
 
                                 clickedForLine = true;
                                 render();
-
-                                // setZoomAndYdragControl(event);
                             }
                         }
 
@@ -1424,7 +1422,7 @@ export default function Chart(props: propsIF) {
                             }
                         }
                         changeScale();
-                        // render();
+                        render();
                     })
                     .on('end', () => {
                         showLatestActive();
