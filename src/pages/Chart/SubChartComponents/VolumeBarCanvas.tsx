@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { renderCanvasArray, setCanvasResolution } from '../Chart';
+import { setCanvasResolution } from '../Chart';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
 
@@ -33,9 +33,8 @@ export default function VolumeBarCanvas(props: propsIF) {
                 .mainValue((d: CandleData) => (d.volumeUSD ? d.volumeUSD : 0));
 
             setBarSeries(() => canvasBarChart);
-            renderCanvasArray([d3CanvasBar]);
         }
-    }, [scaleData]);
+    }, [scaleData?.xScale, scaleData?.volumeScale]);
 
     useEffect(() => {
         if (barSeries) {

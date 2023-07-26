@@ -1,5 +1,3 @@
-// import sum from 'hash-sum';
-
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { scaleData } from '../../pages/Trade/TradeCharts/TradeCandleStickChart';

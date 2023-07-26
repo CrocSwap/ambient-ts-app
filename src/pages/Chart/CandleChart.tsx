@@ -61,7 +61,6 @@ export default function CandleChart(props: candlePropsIF) {
 
         if (data && data.length > 0 && scaleData) {
             if (!showLatest && firstCandle && data[0].time !== firstCandle) {
-                // setIsCandleAdded(false);
                 setFirstCandle(() => {
                     return data[0].time;
                 });
@@ -80,7 +79,7 @@ export default function CandleChart(props: candlePropsIF) {
             }
         }
 
-        renderCanvasArray([d3CanvasCandle]);
+        // renderCanvasArray([d3CanvasCandle]);
     }, [
         diffHashSig(chartItemStates),
         tradeTableState,
@@ -121,7 +120,6 @@ export default function CandleChart(props: candlePropsIF) {
                 );
 
             setCandlestick(() => canvasCandlestick);
-            renderCanvasArray([d3CanvasCandle]);
         }
     }, [scaleData]);
 

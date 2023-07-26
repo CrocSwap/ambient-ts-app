@@ -5,18 +5,18 @@ import {
     useChartSettings,
 } from '../App/hooks/useChartSettings';
 
-// 2:1 ratio of the window height subtracted by main header and token info header
-export const CHART_MAX_HEIGHT = window.innerHeight - 98;
-export const CHART_DEFAULT_HEIGHT = Math.floor((CHART_MAX_HEIGHT * 2) / 3);
+interface ChartHeights {
+    current: number;
+    max: number;
+    default: number;
+}
 
 interface ChartContextIF {
     chartSettings: chartSettingsMethodsIF;
     isFullScreen: boolean;
     setIsFullScreen: (val: boolean) => void;
-    chartHeight: number;
     setChartHeight: (val: number) => void;
-    maxChartSize: number;
-    setMaxChartSize: (val: number) => void;
+    chartHeights: ChartHeights;
     isEnabled: boolean;
     canvasRef: React.MutableRefObject<null>;
 }
@@ -24,12 +24,45 @@ interface ChartContextIF {
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
 
 export const ChartContextProvider = (props: { children: React.ReactNode }) => {
+    // 2:1 ratio of the window height subtracted by main header and token info header
+    const CHART_MAX_HEIGHT = window.innerHeight - 98;
+    const CHART_DEFAULT_HEIGHT = Math.floor((CHART_MAX_HEIGHT * 2) / 3);
+
+    const [chartHeights, setChartHeights] = useState<{
+        current: number;
+        max: number;
+        default: number;
+    }>({
+        current: CHART_DEFAULT_HEIGHT,
+        max: CHART_MAX_HEIGHT,
+        default: CHART_DEFAULT_HEIGHT,
+    });
+
+    // the max size is based on the max height, and is subtracting the minimum size of table and the padding around the drag bar
+    useEffect(() => {
+        const updateDimension = () => {
+            setChartHeights({
+                ...chartHeights,
+                max: CHART_MAX_HEIGHT,
+                default: CHART_DEFAULT_HEIGHT,
+            });
+        };
+        window.addEventListener('resize', updateDimension);
+        return () => {
+            window.removeEventListener('resize', updateDimension);
+        };
+    }, [window.innerHeight, chartHeights]);
+
     const { pathname: currentLocation } = useLocation();
     const canvasRef = useRef(null);
 
     const [fullScreenChart, setFullScreenChart] = useState(false);
-    const [chartHeight, setChartHeight] = useState(CHART_DEFAULT_HEIGHT);
-    const [maxChartSize, setMaxChartSize] = useState(CHART_MAX_HEIGHT - 62);
+    const setChartHeight = (val: number) =>
+        setChartHeights({
+            ...chartHeights,
+            current: val,
+        });
+
     const isChartEnabled =
         !!process.env.REACT_APP_CHART_IS_ENABLED &&
         process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
@@ -41,10 +74,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         chartSettings,
         isFullScreen: fullScreenChart,
         setIsFullScreen: setFullScreenChart,
-        chartHeight,
+        chartHeights,
         setChartHeight,
-        maxChartSize,
-        setMaxChartSize,
         isEnabled: isChartEnabled,
         canvasRef,
     };

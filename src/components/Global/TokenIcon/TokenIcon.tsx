@@ -1,20 +1,17 @@
-import { memo } from 'react';
+import { Suspense, memo, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
+import { IS_LOCAL_ENV } from '../../../constants';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
-interface TokenIconPropsIF {
+interface propsIF {
     src?: string;
     alt?: string;
     size?: TokenIconSize;
 }
 
-function TokenIcon({
-    src = '',
-    alt = 'Token Icon',
-    size = 'm',
-}: TokenIconPropsIF) {
+function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
     const getIconWidth = (size: TokenIconSize) => {
         switch (size) {
             case '3xl':
@@ -38,22 +35,34 @@ function TokenIcon({
         }
     };
 
+    const [fetchError, setFetchError] = useState<boolean>(false);
+
+    const handleFetchError = (): void => {
+        IS_LOCAL_ENV &&
+            console.warn(
+                `failed to fetch token icon from URI <<${src}>>, displaying fallback image, refer to file TokenIcon.tsx to troubleshoot`,
+            );
+        setFetchError(true);
+    };
+
+    const noTokenIcon: JSX.Element = (
+        <NoTokenIcon tokenInitial={alt?.charAt(0)} width={getIconWidth(size)} />
+    );
+
     return (
-        <>
-            {src !== '' ? (
+        <Suspense fallback={noTokenIcon}>
+            {src && !fetchError ? (
                 <img
                     className={styles.token_icon}
                     style={{ width: getIconWidth(size) }}
                     src={src}
                     alt={alt}
+                    onError={handleFetchError}
                 />
             ) : (
-                <NoTokenIcon
-                    tokenInitial={alt?.charAt(0)}
-                    width={getIconWidth(size)}
-                />
+                noTokenIcon
             )}
-        </>
+        </Suspense>
     );
 }
 

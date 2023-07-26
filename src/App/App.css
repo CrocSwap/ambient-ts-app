@@ -1,5 +1,6 @@
 @import url(../css/reset.css);
 @import url('../css/GlobalCssClassnames.css');
+
 * {
     box-sizing: border-box;
     padding: 0;
@@ -121,7 +122,7 @@ p:focus-visible {
     align-items: center;
     right: 0;
     bottom: 0px;
-    z-index: 2;
+    z-index: 999;
 }
 
 .primary_apr {
@@ -222,25 +223,6 @@ p:focus-visible {
     transition: all var(--animation-speed) ease;
 }
 
-/* swiper */
-
-.swiper-pagination {
-    bottom: 0 !important;
-    background: var(--dark1) !important;
-}
-.swiper-pagination-bullet {
-    width: 10px !important;
-    height: 10px !important;
-    border-radius: 50% !important;
-    background: #42464f !important;
-}
-.swiper-pagination-bullet-active {
-    background: url('../assets/images/home/active_slider_button.svg') !important;
-    width: 10px !important;
-    height: 10px !important;
-    border-radius: 50% !important;
-}
-
 .hide_sidebar {
     display: grid;
     grid-template-columns: 100%;
@@ -260,7 +242,8 @@ input::-webkit-inner-spin-button {
 
 /* Firefox */
 input[type=number] {
-  -moz-appearance: textfield;
+    appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 @media only screen and (max-width: 600px) {

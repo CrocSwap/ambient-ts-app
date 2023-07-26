@@ -816,7 +816,7 @@ export default function TransactionDetailsGraph(
         askTickInvPriceDecimalCorrected: number,
         askTickPriceDecimalCorrected: number,
     ) => {
-        graphData.push({
+        graphData?.push({
             time: time,
             invPriceCloseExclMEVDecimalCorrected:
                 askTickInvPriceDecimalCorrected,
@@ -1044,7 +1044,7 @@ export default function TransactionDetailsGraph(
                 render();
             }
         },
-        [tx],
+        [tx, graphData],
     );
 
     const loadingSpinner = <Spinner size={100} bg='var(--dark1)' centered />;

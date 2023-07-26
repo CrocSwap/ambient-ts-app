@@ -1,57 +1,48 @@
-import { ChangeEventHandler } from 'react';
+import { MouseEventHandler, useEffect, KeyboardEventHandler } from 'react';
 import styles from './Toggle.module.css';
-
 interface TogglePropsIF {
     isOn: boolean;
     onColor?: string;
     Width?: boolean | number;
     id: string;
-    handleToggle: ChangeEventHandler<HTMLElement>;
+    handleToggle:
+        | MouseEventHandler<HTMLDivElement>
+        | KeyboardEventHandler<HTMLDivElement>
+        | undefined
+        // eslint-disable-next-line
+        | any;
     buttonColor?: string;
     disabled?: boolean;
 }
+
 export default function Toggle(props: TogglePropsIF) {
-    const { isOn, handleToggle, onColor, Width, id, buttonColor, disabled } =
-        props;
+    const { isOn, handleToggle, id, disabled } = props;
+    const diabledStyle = disabled ? styles.disabled : '';
 
-    const labelStyle = Width ? `${Width}px` : '100px';
-    const labelHeight = `${parseInt(labelStyle) / 2}px`;
-    const buttonStyle = labelStyle
-        ? `${parseInt(labelStyle) / 2 - 3.3}px`
-        : '45px';
-    const buttonColorStyle = buttonColor ? buttonColor : '#ffffff';
+    const enterFunction = (event: KeyboardEvent) => {
+        if (event.key === 'Enter') {
+            handleToggle;
+        }
+    };
 
-    const onColorStyle = onColor
-        ? onColor
-        : 'linear-gradient(90deg, #AF99FF 0%, #46B7DB 49.48%, #F13D70 100%)';
+    useEffect(() => {
+        document.addEventListener('keydown', enterFunction, false);
+        return () => {
+            document.removeEventListener('keydown', enterFunction, false);
+        };
+    }, []);
 
     return (
-        <div className={disabled ? styles.disabled : styles.container}>
-            <input
-                checked={isOn}
-                onChange={handleToggle}
-                className={styles.switch_checkbox}
-                id={`${id}switch`}
-                type='checkbox'
-            />
-            <label
-                style={{
-                    background: isOn ? onColorStyle : 'transparent',
-                    width: labelStyle,
-                    height: labelHeight,
-                }}
-                className={styles.switch_label}
-                htmlFor={`${id}switch`}
-            >
-                <span
-                    className={styles.switch_button}
-                    style={{
-                        width: buttonStyle,
-                        height: buttonStyle,
-                        background: buttonColorStyle,
-                    }}
-                />
-            </label>
-        </div>
+        <button
+            className={`${styles.switch} ${diabledStyle}`}
+            data-ison={isOn}
+            aria-checked={isOn}
+            onClick={handleToggle}
+            id={`${id}switch`}
+            tabIndex={0}
+            role='checkbox'
+        >
+            <div className={styles.handle} />
+        </button>
     );
 }
