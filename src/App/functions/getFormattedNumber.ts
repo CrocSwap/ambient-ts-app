@@ -1,5 +1,4 @@
 import numbro from 'numbro';
-import { precisionOfInput } from './getPrecisionOfInput';
 
 type FormatParams = {
     value?: number;
