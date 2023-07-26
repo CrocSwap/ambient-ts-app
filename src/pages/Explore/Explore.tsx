@@ -70,7 +70,7 @@ const Section = styled.section`
     gap: 16px;
 
     @media (max-width: 1280px) {
-        margin-left: 1rem;
+        margin-left: 2rem;
     }
 `;
 

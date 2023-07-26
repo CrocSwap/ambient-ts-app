@@ -58,7 +58,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
     const totalValue = (
         <div className={styles.value_content}>
             <p>Total Value:</p>
-            <p>${usdValue}</p>
+            <p>{usdValue}</p>
         </div>
     );
 
