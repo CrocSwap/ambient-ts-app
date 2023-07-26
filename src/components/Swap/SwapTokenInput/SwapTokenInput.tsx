@@ -246,9 +246,10 @@ function SwapTokenInput(props: propsIF) {
             let rawTokenBQty = undefined;
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
-                    const truncatedInputStr = formatTokenInput(value);
+                    const truncatedInputStr = formatTokenInput(value, tokenA);
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
 
+                    console.log(truncatedInputStr);
                     setSellQtyString(truncatedInputStr);
                     dispatch(setPrimaryQuantity(truncatedInputStr));
                 } else {
@@ -289,7 +290,7 @@ function SwapTokenInput(props: propsIF) {
             let rawTokenAQty: number | undefined;
             if (value !== undefined) {
                 if (parseFloat(value) !== 0) {
-                    const truncatedInputStr = formatTokenInput(value);
+                    const truncatedInputStr = formatTokenInput(value, tokenB);
                     rawTokenAQty = await refreshImpact(
                         truncatedInputStr,
                         false,

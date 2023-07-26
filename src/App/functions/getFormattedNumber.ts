@@ -48,8 +48,6 @@ export function getFormattedNumber({
     } else if (isToken) {
         if (isNaN(value)) {
             valueString = '';
-        } else if (precisionOfInput(value.toString()) <= maxFracDigits) {
-            valueString = value.toString();
         } else {
             valueString = value.toLocaleString('en-US', {
                 minimumFractionDigits: minFracDigits,

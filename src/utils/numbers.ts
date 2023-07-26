@@ -173,14 +173,15 @@ export const formatAmountOld = (num: number | undefined, digits = 1) => {
     });
 };
 
-export const formatTokenInput = (value: string, token?: TokenIF) => {
+export const formatTokenInput = (value: string, token: TokenIF) => {
     const inputStr = value.replaceAll(',', '');
     const inputNum = parseFloat(inputStr);
 
     const truncatedInputStr = getFormattedNumber({
         value: inputNum,
         isToken: true,
-        maxFracDigits: inputNum < 100 ? 3 : token ? token.decimals : 2,
+        minFracDigits: inputNum < 100 ? 3 : 2,
+        maxFracDigits: token.decimals,
         nullDisplay: '',
     });
 

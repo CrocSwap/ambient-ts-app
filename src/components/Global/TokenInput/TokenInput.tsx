@@ -78,7 +78,7 @@ function TokenInput(props: propsIF) {
     };
 
     const handleToggleDex = () => {
-        if (formatTokenInput(balanceWithBuffer) === tokenInput) {
+        if (formatTokenInput(balanceWithBuffer, token) === tokenInput) {
             const balance = subtractBuffer(
                 isDexSelected ? walletBalance : walletAndExchangeBalance,
             );
