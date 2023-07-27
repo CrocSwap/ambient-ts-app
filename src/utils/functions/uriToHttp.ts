@@ -32,16 +32,19 @@ export default function uriToHttp(uri: string): string {
         // get the prefix of the URI
         const protocol: string = fixedURI.split(':')[0];
 
+        // base URLs for IPFS queries
         const ipfsBases: string[] = [
             'https://cloudflare-ipfs.com/ipfs/',
             'https://ipfs.io/ipfs/',
         ];
 
+        // base URLs for IPNS queries
         const ipnsBases: string[] = [
             'https://cloudflare-ipfs.com/ipns/',
             'https://ipfs.io/ipns/',
         ];
 
+        // fn to isolate hash from a IPFS or IPNS URI
         const makeHash = (rawURI: string): string => rawURI.substring(7);
 
         // execute differential actions based on the protocol URI prefix
