@@ -246,7 +246,8 @@ function RangeTokenInput(props: propsIF) {
             </div>
             <TokenInput
                 fieldId='range_B'
-                tokenAorB='B'
+                // for withdraw tooltips
+                tokenAorB='A'
                 token={tokenB}
                 tokenInput={tokenBInputQty}
                 tokenBalance={tokenBBalance}
