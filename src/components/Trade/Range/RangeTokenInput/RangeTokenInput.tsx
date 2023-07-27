@@ -242,7 +242,12 @@ function RangeTokenInput(props: propsIF) {
                 showWallet={isUserConnected}
             />
             <div className={styles.operation_container}>
-                <img src={tokenArrow} height={28} alt='plus sign' />
+                <img
+                    className={styles.inactive}
+                    src={tokenArrow}
+                    height={28}
+                    alt='plus sign'
+                />
             </div>
             <TokenInput
                 fieldId='range_B'

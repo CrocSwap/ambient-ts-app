@@ -26,3 +26,7 @@
     transition: box-shadow var(--animation-speed) ease-in-out;
     display: none;
 }
+
+.inactive {
+    cursor: default !important;
+}
