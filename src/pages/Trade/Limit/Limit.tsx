@@ -379,6 +379,10 @@ export default function Limit() {
     }, [isOrderValid]);
 
     useEffect(() => {
+        setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
+    }, [tokenADexBalance]);
+
+    useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageLimitCostInGasDrops = 193000;
             const gasPriceInDollarsNum =

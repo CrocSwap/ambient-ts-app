@@ -561,6 +561,14 @@ function Range() {
     }, [sessionReceipts]);
 
     useEffect(() => {
+        setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
+    }, [tokenADexBalance]);
+
+    useEffect(() => {
+        setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
+    }, [tokenBDexBalance]);
+
+    useEffect(() => {
         if (
             !currentPendingTransactionsArray.length &&
             !isWaitingForWallet &&
