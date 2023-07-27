@@ -152,7 +152,9 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                                 : { cursor: 'default' }
                         }
                         onClick={() => {
-                            parseFloat(balance) && onMaxButtonClick;
+                            parseFloat(balance) > 0 &&
+                                onMaxButtonClick &&
+                                onMaxButtonClick();
                         }}
                     >
                         <div>{balance}</div>

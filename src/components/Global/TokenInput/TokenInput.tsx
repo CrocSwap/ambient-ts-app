@@ -71,7 +71,10 @@ function TokenInput(props: propsIF) {
     const balanceWithBuffer = balance ? subtractBuffer(balance) : '...';
 
     const handleMaxButtonClick = () => {
-        if (formatTokenInput(balanceWithBuffer, token) !== tokenInput) {
+        if (
+            formatTokenInput(balanceWithBuffer, token) !== tokenInput &&
+            parseFloat(balanceWithBuffer) > 0
+        ) {
             parseTokenInput && parseTokenInput(balanceWithBuffer);
             handleTokenInputEvent(balanceWithBuffer);
         }
