@@ -1,10 +1,10 @@
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
-import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
-import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
+import PositionsSearchResults from './PositionsSearchResults';
+import OrdersSearchResults from './OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
-import { sidebarSearchIF } from '../useSidebarSearch/useSidebarSearch';
+import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../../functions/fetchTokenPrice';
 
