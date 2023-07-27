@@ -2283,11 +2283,7 @@ export default function Chart(props: propsIF) {
                 return _xAxis;
             });
         }
-    }, [
-        // diffHashSigScaleData(scaleData)
-        // ,
-        location,
-    ]);
+    }, [scaleData, location]);
 
     // Axis's
     useEffect(() => {
@@ -2579,8 +2575,6 @@ export default function Chart(props: propsIF) {
             }
 
             context.restore();
-
-            // renderCanvasArray([d3Xaxis]);
         }
     };
 
@@ -2618,12 +2612,7 @@ export default function Chart(props: propsIF) {
                 return marketLine;
             });
         }
-    }, [
-        // diffHashSigScaleData(scaleData),
-        liquidityDepthScale,
-        liquidityScale,
-        isUserConnected,
-    ]);
+    }, [scaleData, liquidityDepthScale, liquidityScale, isUserConnected]);
 
     useEffect(() => {
         if (
@@ -2907,78 +2896,73 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    useEffect(
-        () => {
-            if (scaleData !== undefined) {
-                const crosshairVerticalCanvas = d3fc
-                    .annotationCanvasLine()
-                    .orient('vertical')
-                    .value((d: crosshair) => d.x)
-                    .xScale(scaleData?.xScale)
-                    .yScale(scaleData?.yScale)
-                    .label('');
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const crosshairVerticalCanvas = d3fc
+                .annotationCanvasLine()
+                .orient('vertical')
+                .value((d: crosshair) => d.x)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale)
+                .label('');
 
-                crosshairVerticalCanvas.decorate(
-                    (context: CanvasRenderingContext2D) => {
-                        context.strokeStyle = 'rgba(235, 235, 255)';
-                        context.lineWidth = 0.3;
-                        context.fillStyle = 'transparent';
-                    },
-                );
+            crosshairVerticalCanvas.decorate(
+                (context: CanvasRenderingContext2D) => {
+                    context.strokeStyle = 'rgba(235, 235, 255)';
+                    context.lineWidth = 0.3;
+                    context.fillStyle = 'transparent';
+                },
+            );
 
-                setCrosshairVerticalCanvas(() => {
-                    return crosshairVerticalCanvas;
+            setCrosshairVerticalCanvas(() => {
+                return crosshairVerticalCanvas;
+            });
+
+            const crosshairHorizontal = d3fc
+                .annotationCanvasLine()
+                .value((d: crosshair) => d.y)
+                .xScale(scaleData?.xScale)
+                .yScale(scaleData?.yScale);
+
+            crosshairHorizontal.decorate(
+                (context: CanvasRenderingContext2D) => {
+                    context.strokeStyle = 'rgba(235, 235, 255)';
+                    context.lineWidth = 0.3;
+                    context.fillStyle = 'transparent';
+                },
+            );
+
+            setCrosshairHorizontal(() => {
+                return crosshairHorizontal;
+            });
+
+            const crDataIndicator = createIndicatorLine(
+                scaleData?.xScale,
+                scaleData.yScale,
+            );
+
+            setCrDataIndicator(() => {
+                return crDataIndicator;
+            });
+
+            if (
+                d3
+                    .select(d3Container.current)
+                    .select('.xAxisTooltip')
+                    .node() === null
+            ) {
+                const xAxisTooltip = d3
+                    .select(d3Container.current)
+                    .append('div')
+                    .attr('class', 'xAxisTooltip')
+                    .style('visibility', 'hidden');
+
+                setXaxisTooltip(() => {
+                    return xAxisTooltip;
                 });
-
-                const crosshairHorizontal = d3fc
-                    .annotationCanvasLine()
-                    .value((d: crosshair) => d.y)
-                    .xScale(scaleData?.xScale)
-                    .yScale(scaleData?.yScale);
-
-                crosshairHorizontal.decorate(
-                    (context: CanvasRenderingContext2D) => {
-                        context.strokeStyle = 'rgba(235, 235, 255)';
-                        context.lineWidth = 0.3;
-                        context.fillStyle = 'transparent';
-                    },
-                );
-
-                setCrosshairHorizontal(() => {
-                    return crosshairHorizontal;
-                });
-
-                const crDataIndicator = createIndicatorLine(
-                    scaleData?.xScale,
-                    scaleData.yScale,
-                );
-
-                setCrDataIndicator(() => {
-                    return crDataIndicator;
-                });
-
-                if (
-                    d3
-                        .select(d3Container.current)
-                        .select('.xAxisTooltip')
-                        .node() === null
-                ) {
-                    const xAxisTooltip = d3
-                        .select(d3Container.current)
-                        .append('div')
-                        .attr('class', 'xAxisTooltip')
-                        .style('visibility', 'hidden');
-
-                    setXaxisTooltip(() => {
-                        return xAxisTooltip;
-                    });
-                }
             }
-        },
-        [
-            // diffHashSigScaleData(scaleData)
-        ],
-    );
+        }
+    }, [scaleData]);
 
     useEffect(() => {
         if (d3CanvasMain) {

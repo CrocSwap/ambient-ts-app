@@ -272,13 +272,10 @@ export default function YaxisCanvas(props: yAxisIF) {
 
             const yScaleTicks = yScale.ticks(factor);
 
-            let switchFormatter = false;
-
-            yScaleTicks.forEach((element: number) => {
-                if (element > 99999) {
-                    switchFormatter = true;
-                }
-            });
+            const switchFormatter =
+                yScaleTicks.find((element: number) => {
+                    return element > 99999;
+                }) !== undefined;
 
             const formatTicks = switchFormatter
                 ? formatPoolPriceAxis
@@ -872,12 +869,10 @@ export default function YaxisCanvas(props: yAxisIF) {
                 }
             });
 
-            // d3CanvasCrosshair,
             renderCanvasArray([d3Yaxis]);
             renderSubchartCrCanvas();
         }
     }, [
-        // diffHashSigScaleData(scaleData),
         market,
         diffHashSig(crosshairData),
         limit,
@@ -885,7 +880,6 @@ export default function YaxisCanvas(props: yAxisIF) {
         ranges,
         isAmbientOrAdvanced,
         yAxisCanvasWidth,
-        // bandwidth,
         reset,
         sellOrderStyle,
         checkLimitOrder,
