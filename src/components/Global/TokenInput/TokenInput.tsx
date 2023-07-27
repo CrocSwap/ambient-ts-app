@@ -23,6 +23,7 @@ interface propsIF {
     hideWalletMaxButton?: boolean;
     tokenBalance?: string;
     tokenDexBalance?: string;
+    isWithdraw?: boolean;
 }
 
 function TokenInput(props: propsIF) {
@@ -35,6 +36,7 @@ function TokenInput(props: propsIF) {
         tokenDexBalance,
         isTokenEth,
         isDexSelected,
+        isWithdraw,
         showPulseAnimation,
         isLoading,
         showWallet,
@@ -93,7 +95,7 @@ function TokenInput(props: propsIF) {
 
     const walletContent = showWallet && (
         <TokenInputWalletBalance
-            tokenAorB={tokenAorB}
+            isWithdraw={isWithdraw ?? tokenAorB === 'A'}
             balance={balanceToDisplay}
             availableBalance={parseFloat(balanceWithBuffer)}
             useExchangeBalance={

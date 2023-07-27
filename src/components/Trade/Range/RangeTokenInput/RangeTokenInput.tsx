@@ -251,8 +251,7 @@ function RangeTokenInput(props: propsIF) {
             </div>
             <TokenInput
                 fieldId='range_B'
-                // for withdraw tooltips
-                tokenAorB='A'
+                tokenAorB='B'
                 token={tokenB}
                 tokenInput={tokenBInputQty}
                 tokenBalance={tokenBBalance}
@@ -267,6 +266,7 @@ function RangeTokenInput(props: propsIF) {
                     setTokenBInputQty(formatTokenInput(val, tokenB));
                 }}
                 showWallet={isUserConnected}
+                isWithdraw
             />
         </section>
     );

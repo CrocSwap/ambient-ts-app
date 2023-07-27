@@ -12,7 +12,7 @@ import WalletBalanceExplanation from '../Informational/WalletBalanceExplanation'
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 
 interface PropsIF {
-    tokenAorB: 'A' | 'B';
+    isWithdraw: boolean;
     balance: string;
     useExchangeBalance: boolean;
     isDexSelected: boolean;
@@ -24,7 +24,7 @@ interface PropsIF {
 
 export const TokenInputWalletBalance = (props: PropsIF) => {
     const {
-        tokenAorB,
+        isWithdraw,
         balance,
         availableBalance,
         useExchangeBalance,
@@ -47,7 +47,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
             <div className={`${styles.balance_with_pointer}`}>
                 <IconWithTooltip
                     title={`${
-                        tokenAorB === 'A'
+                        isWithdraw
                             ? 'Use Wallet Balance Only'
                             : 'Withdraw to Wallet'
                     }`}
@@ -67,7 +67,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                 </IconWithTooltip>
                 <IconWithTooltip
                     title={`${
-                        tokenAorB === 'A'
+                        isWithdraw
                             ? 'Use Wallet and Exchange Balance'
                             : 'Add to Exchange Balance'
                     }`}
@@ -99,7 +99,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                                     )
                                 }
                             >
-                                {tokenAorB === 'A'
+                                {isWithdraw
                                     ? (
                                           availableBalance
                                               ? availableBalance > 0
@@ -126,7 +126,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                                     )
                                 }
                             >
-                                {tokenAorB === 'B'
+                                {!isWithdraw
                                     ? 'Wallet Balance'
                                     : (
                                           availableBalance
