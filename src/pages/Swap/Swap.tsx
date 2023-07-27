@@ -55,7 +55,7 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import OrderHeader from '../../components/Trade/OrderHeader/OrderHeader';
-import { ConnectWalletButton } from '../../components/Global/ConnectWalletButton/ConnectWalletButton';
+import { ConnectWalletButton } from '../../components/Global/Button/ConnectWalletButton';
 
 interface propsIF {
     isOnTradeRoute?: boolean;

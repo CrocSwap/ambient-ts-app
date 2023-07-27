@@ -32,7 +32,7 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
-import { ConnectWalletButton } from '../../../components/Global/ConnectWalletButton/ConnectWalletButton';
+import { ConnectWalletButton } from '../../../components/Global/Button/ConnectWalletButton';
 
 const PageHeader = function () {
     const {

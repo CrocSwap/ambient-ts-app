@@ -58,7 +58,7 @@ import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
-import { ConnectWalletButton } from '../../../components/Global/ConnectWalletButton/ConnectWalletButton';
+import { ConnectWalletButton } from '../../../components/Global/Button/ConnectWalletButton';
 
 export default function Limit() {
     const {
