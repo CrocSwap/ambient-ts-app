@@ -3262,7 +3262,11 @@ export default function Chart(props: propsIF) {
                 mousemove(event);
             },
         );
-    }, [diffHashSigScaleData(scaleData), diffHashSigChart(unparsedCandleData)]);
+    }, [
+        diffHashSigScaleData(scaleData),
+        diffHashSigChart(unparsedCandleData),
+        mainCanvasBoundingClientRect,
+    ]);
 
     // mouseleave
     useEffect(() => {
