@@ -226,7 +226,7 @@ function Swap(props: propsIF) {
             if (parseFloat(sellQtyString) > hurdle) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage(
-                    `${tokenA.symbol} Exceeds ${balanceLabel} Balance`,
+                    `${tokenA.symbol} Amount Exceeds ${balanceLabel} Balance`,
                 );
             } else {
                 setSwapAllowed(true);
