@@ -42,7 +42,7 @@
 
     border-radius: var(--border-radius);
     font-style: normal;
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;
@@ -196,13 +196,13 @@ padding-top: 8px;
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     color: var(--text1);
-    font-weight: 200;
+    font-weight: 300;
 }
 .pool_not_initialialized_content h3 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text3);
-    font-weight: 200;
+    font-weight: 300;
 }
 
 .initialize_link {
@@ -267,7 +267,7 @@ background-size: 300% 100%;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
    
-    font-weight: 200;
+    font-weight: 300;
 }
 
 /* trade tabs dropdown */

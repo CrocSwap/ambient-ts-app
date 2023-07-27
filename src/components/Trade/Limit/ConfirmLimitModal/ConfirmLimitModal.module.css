@@ -17,7 +17,7 @@
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    font-weight: 200;
+    font-weight: 300;
 
     display: flex;
 
@@ -74,7 +74,7 @@
     grid-template-columns: auto 140px;
     align-items: center;
 
-    /* font-weight: 200;
+    /* font-weight: 300;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text1);
@@ -86,7 +86,7 @@
 
 .currency_row_container h2,
 .limit_row_container h2 {
-    font-weight: 200;
+    font-weight: 300;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text1);
@@ -107,7 +107,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    font-weight: 200;
+    font-weight: 300;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text1);

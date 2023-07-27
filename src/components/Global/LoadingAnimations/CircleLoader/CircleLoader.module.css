@@ -40,7 +40,7 @@
 }
 
 .circle_failed p {
-    font-weight: 200;
+    font-weight: 300;
 
     font-size: var(--body-size);
     line-height: var(--body-lh);

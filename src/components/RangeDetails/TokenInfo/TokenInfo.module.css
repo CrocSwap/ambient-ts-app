@@ -14,7 +14,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text2);
-    font-weight: 200;
+    font-weight: 300;
     letter-spacing: -0.02em;
 }
 .price_info .price_change_positive {
