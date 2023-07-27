@@ -156,7 +156,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                         <div>{balance}</div>
                     </div>
                 </DefaultTooltip>
-                {onMaxButtonClick && (
+                {onMaxButtonClick && parseFloat(balance) > 0 && (
                     <DefaultTooltip
                         interactive
                         title={
