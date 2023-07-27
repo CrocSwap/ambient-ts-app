@@ -9,7 +9,11 @@
 
 // this function takes an input URI and transforms it to a queryable URL
 // the URI must follow https, http, ipfs, or ipns standard
-export default function uriToHttp(uri: string): string {
+
+function uriToHttp(uri: string): string;
+function uriToHttp(uri: string, retry: 'retry'): string[];
+
+function uriToHttp(uri: string, retry?: string): string | string[] {
     // declare a variable to hold the value to return
     // will be an array with one or two strings
     const outputURLs: string[] = [];
@@ -27,7 +31,7 @@ export default function uriToHttp(uri: string): string {
         ];
 
         // if URI is in the excluded array, return it and terminate the function
-        if (excludedURIs.includes(fixedURI)) return fixedURI;
+        if (excludedURIs.includes(fixedURI)) return [fixedURI];
 
         // get the prefix of the URI
         const protocol: string = fixedURI.split(':')[0];
@@ -82,7 +86,8 @@ export default function uriToHttp(uri: string): string {
         }
     } catch (err) {
         console.warn(err);
-        outputURLs.push('');
     }
-    return outputURLs[0];
+    return retry ? outputURLs : outputURLs[0];
 }
+
+export default uriToHttp;
