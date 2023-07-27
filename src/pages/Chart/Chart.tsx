@@ -406,7 +406,7 @@ export default function Chart(props: propsIF) {
 
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles.sort((a, b) => b.time - a.time);
-        if (poolPriceWithoutDenom) {
+        if (poolPriceWithoutDenom && data && data.length > 0) {
             const fakeData = {
                 time: data[0].time + period,
                 invMinPriceExclMEVDecimalCorrected:
@@ -3278,7 +3278,7 @@ export default function Chart(props: propsIF) {
                 mousemove(event);
             },
         );
-    }, [diffHashSigScaleData(scaleData)]);
+    }, [diffHashSigScaleData(scaleData), diffHashSigChart(unparsedCandleData)]);
 
     // mouseleave
     useEffect(() => {

@@ -172,7 +172,11 @@ function TvlSubChart(props: TvlData) {
 
                 setBuffer(() => buffer);
 
-                const domain = [0, maxYBoundary + buffer * 2];
+                let domain = [0, maxYBoundary + buffer * 2];
+
+                if (maxYBoundary === minYBoundary && maxYBoundary === 0) {
+                    domain = [-1, 1];
+                }
 
                 yAxis
                     .tickValues([0, maxYBoundary])
