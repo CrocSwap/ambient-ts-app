@@ -147,11 +147,13 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                     <div
                         className={styles.balance_column}
                         style={
-                            onMaxButtonClick
+                            onMaxButtonClick && parseFloat(balance) > 0
                                 ? { cursor: 'pointer' }
                                 : { cursor: 'default' }
                         }
-                        onClick={onMaxButtonClick}
+                        onClick={() => {
+                            parseFloat(balance) && onMaxButtonClick;
+                        }}
                     >
                         <div>{balance}</div>
                     </div>

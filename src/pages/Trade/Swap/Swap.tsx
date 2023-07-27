@@ -218,7 +218,7 @@ function Swap(props: propsIF) {
                 ? parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
                 : parseFloat(tokenABalance);
             const balanceLabel = isWithdrawFromDexChecked
-                ? 'Exchange'
+                ? 'Combined Wallet and Exchange'
                 : 'Wallet';
 
             setSwapAllowed(parseFloat(sellQtyString) <= hurdle);
