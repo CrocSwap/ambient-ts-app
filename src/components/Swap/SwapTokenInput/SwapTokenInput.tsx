@@ -249,7 +249,6 @@ function SwapTokenInput(props: propsIF) {
                     const truncatedInputStr = formatTokenInput(value, tokenA);
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
 
-                    console.log(truncatedInputStr);
                     setSellQtyString(truncatedInputStr);
                     dispatch(setPrimaryQuantity(truncatedInputStr));
                 } else {

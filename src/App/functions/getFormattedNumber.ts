@@ -49,10 +49,8 @@ export function getFormattedNumber({
         if (isNaN(value)) {
             valueString = '';
         } else {
-            valueString = value.toLocaleString('en-US', {
-                minimumFractionDigits: minFracDigits,
-                maximumFractionDigits: maxFracDigits,
-            });
+            // handle scientific notation
+            valueString = (+value).toString();
         }
     } else if (isInput) {
         removeCommas = true;
