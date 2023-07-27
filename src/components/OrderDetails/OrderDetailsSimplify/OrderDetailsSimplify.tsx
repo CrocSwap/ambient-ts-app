@@ -296,7 +296,7 @@ export default function OrderDetailsSimplify(
         },
         {
             title: 'Value ',
-            content: '$' + usdValue,
+            content: usdValue,
             explanation: 'The appoximate US dollar value of the limit order',
         },
 

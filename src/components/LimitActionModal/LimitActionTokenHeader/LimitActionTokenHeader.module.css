@@ -2,10 +2,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 1rem;
-    margin: 0 1rem 0 1rem;
 
-    /* padding: 20px; */
     color: var(--text1);
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
@@ -18,9 +15,4 @@
     flex-direction: row;
     align-items: center;
     gap: 0.8rem;
-}
-
-.token_info img {
-    aspect-ratio: 1;
-    width: 30px;
 }
