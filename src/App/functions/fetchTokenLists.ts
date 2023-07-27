@@ -9,6 +9,7 @@ export function fetchTokenLists(): void {
     ): Promise<TokenListIF | undefined> => {
         const endpoints: string[] = uriToHttp(uri, 'retry');
         let rawData;
+        // console.log(endpoints);
         for (let i = 0; i < endpoints.length; i++) {
             const response = await fetch(endpoints[i]);
             if (response.ok) {

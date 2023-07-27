@@ -67,12 +67,14 @@ function uriToHttp(uri: string, retry?: string): string | string[] {
                 break;
             // handle ipfs URIs
             case 'ipfs':
+                console.log('hi there!!');
                 ipfsBases.forEach((base: string) =>
                     outputURLs.push(base + makeHash(uri)),
                 );
                 break;
             // handle ipns URIs
             case 'ipns':
+                console.log('good morning');
                 ipnsBases.forEach((base: string) =>
                     outputURLs.push(base + makeHash(uri)),
                 );
@@ -85,8 +87,10 @@ function uriToHttp(uri: string, retry?: string): string | string[] {
                 break;
         }
     } catch (err) {
+        console.log(err);
         console.warn(err);
     }
+    console.log({ outputURLs });
     return retry ? outputURLs : outputURLs[0];
 }
 
