@@ -177,7 +177,7 @@ export const formatTokenInput = (value: string, token: TokenIF) => {
     const inputStr = value.replaceAll(',', '');
 
     const truncatedInputStr = getFormattedNumber({
-        value: +inputStr,
+        value: inputStr ? +inputStr : undefined,
         isToken: true,
         maxFracDigits: token.decimals,
         nullDisplay: '',
