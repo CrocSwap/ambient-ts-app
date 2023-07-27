@@ -224,6 +224,7 @@ function SwapTokenInput(props: propsIF) {
         setBuyQtyString('');
         setIsBuyLoading(true);
         setSellQtyString(value);
+        dispatch(setPrimaryQuantity(value));
         setDisableReverseTokens(true);
         setLastInput(value);
 
@@ -248,12 +249,6 @@ function SwapTokenInput(props: propsIF) {
                 if (parseFloat(value) !== 0) {
                     const truncatedInputStr = formatTokenInput(value, tokenA);
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
-
-                    setSellQtyString(truncatedInputStr);
-                    dispatch(setPrimaryQuantity(truncatedInputStr));
-                } else {
-                    setSellQtyString(value);
-                    dispatch(setPrimaryQuantity(value));
                 }
             } else {
                 rawTokenBQty = await refreshImpact(sellQtyString, true);
@@ -294,12 +289,6 @@ function SwapTokenInput(props: propsIF) {
                         truncatedInputStr,
                         false,
                     );
-
-                    setBuyQtyString(truncatedInputStr);
-                    dispatch(setPrimaryQuantity(truncatedInputStr));
-                } else {
-                    setSellQtyString(value);
-                    dispatch(setPrimaryQuantity(value));
                 }
             } else {
                 rawTokenAQty = await refreshImpact(buyQtyString, false);
@@ -356,6 +345,9 @@ function SwapTokenInput(props: propsIF) {
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
                 showWallet={isUserConnected}
+                parseTokenInput={(val: string) => {
+                    setSellQtyString(formatTokenInput(val, tokenA));
+                }}
             />
             <div
                 className={`${styles.operation_container} ${
@@ -386,6 +378,9 @@ function SwapTokenInput(props: propsIF) {
                 showWallet={isUserConnected}
                 hideWalletMaxButton
                 handleRefresh={refreshTokenData}
+                parseTokenInput={(val: string) => {
+                    setBuyQtyString(formatTokenInput(val, tokenB));
+                }}
             />
         </section>
     );
