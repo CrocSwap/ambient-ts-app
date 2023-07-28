@@ -7,8 +7,8 @@ import uriToHttp from '../../utils/functions/uriToHttp';
 
 export interface tokenMethodsIF {
     defaultTokens: TokenIF[];
-    verifyToken: (addr: string) => boolean;
-    ackToken: (tkn: TokenIF) => void;
+    verify: (addr: string) => boolean;
+    acknowledge: (tkn: TokenIF) => void;
     tokenUniv: TokenIF[];
     getTokenByAddress: (addr: string) => TokenIF | undefined;
     getTokensFromList: (uri: string) => TokenIF[];
@@ -271,8 +271,8 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     return useMemo(
         () => ({
             defaultTokens: defaultTokensInUniv,
-            verifyToken: verifyToken,
-            ackToken: ackToken,
+            verify: verifyToken,
+            acknowledge: ackToken,
             tokenUniv: tokenUniv,
             getTokenByAddress: getTokenByAddress,
             getTokensFromList: getTokensFromList,
