@@ -3,7 +3,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface TransactionByType {
     txHash: string;
-    txType: string;
+    txAction: 'New' | 'Edit';
+    txType:
+        | 'Swap'
+        | 'Limit'
+        | 'Range'
+        | 'Deposit'
+        | 'Withdraw'
+        | 'Transfer'
+        | 'Init'
+        | 'Approve';
+    txTypeDetails: string;
 }
 export interface receiptData {
     sessionReceipts: Array<string>;

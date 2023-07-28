@@ -186,7 +186,9 @@ export default function InitPool() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${token.symbol}`,
+                        txAction: 'New',
+                        txType: 'Approve',
+                        txTypeDetails: `Approval of ${token.symbol}`,
                     }),
                 );
             let receipt;
@@ -246,7 +248,9 @@ export default function InitPool() {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                                txAction: 'New',
+                                txType: 'Init',
+                                txTypeDetails: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
                             }),
                         );
                     let receipt;

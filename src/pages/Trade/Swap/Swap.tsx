@@ -303,7 +303,9 @@ function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                        txAction: 'New',
+                        txType: 'Swap',
+                        txTypeDetails: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
                     }),
                 );
         } catch (error) {
@@ -363,7 +365,9 @@ function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${tokenSymbol}`,
+                        txAction: 'New',
+                        txType: 'Approve',
+                        txTypeDetails: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;

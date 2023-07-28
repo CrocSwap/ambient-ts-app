@@ -18,6 +18,8 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import Spinner from '../../../Global/Spinner/Spinner';
 import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import trimString from '../../../../utils/functions/trimString';
+import TransactionsRowPlaceholder from '../Transactions/TransactionsTable/TransactionsRowPlaceholder';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -53,6 +55,10 @@ function Ranges(props: propsIF) {
     );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+    const receiptData = useAppSelector((state) => state.receiptData);
+    const pendingTransactions = receiptData.transactionsByType.filter(
+        (tx) => tx.txAction === 'New' && tx.txType === 'Range',
+    );
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -400,7 +406,18 @@ function Ranges(props: propsIF) {
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
-            <ul ref={listRef}>{currentRowItemContent}</ul>
+            <ul ref={listRef}>
+                {pendingTransactions.length > 0 &&
+                    pendingTransactions.map((tx) => (
+                        <TransactionsRowPlaceholder
+                            key={tx.txHash}
+                            id={trimString(tx.txHash.toString(), 6, 4, '…')}
+                            showColumns={showColumns}
+                            showPair={showPair}
+                        />
+                    ))}
+                {currentRowItemContent}
+            </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK

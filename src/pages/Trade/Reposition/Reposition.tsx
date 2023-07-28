@@ -294,7 +294,9 @@ function Reposition() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
+                        txAction: 'Edit',
+                        txType: 'Range',
+                        txTypeDetails: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
                     }),
                 );
             // We want the user to exit themselves

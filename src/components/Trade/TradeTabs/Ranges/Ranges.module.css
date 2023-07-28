@@ -433,7 +433,7 @@
 
 .base_display_div {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: flex-end;
     gap: 4px;
     text-align: center;

@@ -149,7 +149,9 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
+                                txAction: 'Edit',
+                                txType: 'Limit',
+                                txTypeDetails: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
                             }),
                         );
                 } else {
@@ -163,7 +165,9 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
+                                txAction: 'Edit',
+                                txType: 'Limit',
+                                txTypeDetails: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
                             }),
                         );
                 }
@@ -232,7 +236,9 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
+                                txAction: 'Edit',
+                                txType: 'Limit',
+                                txTypeDetails: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
                             }),
                         );
                 } else {
@@ -246,7 +252,9 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
+                                txAction: 'Edit',
+                                txType: 'Limit',
+                                txTypeDetails: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
                             }),
                         );
                 }
