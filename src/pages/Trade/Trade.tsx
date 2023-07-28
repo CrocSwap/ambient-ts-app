@@ -45,6 +45,8 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
+const TRADE_CHART_MIN_HEIGHT = 175;
+
 // React functional component
 function Trade() {
     const {
@@ -391,7 +393,7 @@ function Trade() {
                         size={{ width: '100%', height: chartHeights.current }}
                         minHeight={4}
                         onResizeStart={() => {
-                            setTradeTableState(undefined);
+                            // may be useful later
                         }}
                         onResizeStop={(e, direction, ref, d) => {
                             // the resizable bar is 4px in height
@@ -405,7 +407,21 @@ function Trade() {
                             ) {
                                 setTradeTableState('Collapsed');
                             }
-                            setChartHeight(chartHeights.current + d.height);
+                            if (
+                                chartHeights.current + d.height <
+                                TRADE_CHART_MIN_HEIGHT
+                            ) {
+                                if (tradeTableState == 'Expanded') {
+                                    setChartHeight(chartHeights.default);
+                                    setTradeTableState(undefined);
+                                } else {
+                                    setChartHeight(4);
+                                    setTradeTableState('Expanded');
+                                }
+                            } else {
+                                setChartHeight(chartHeights.current + d.height);
+                                setTradeTableState(undefined);
+                            }
                         }}
                         handleClasses={
                             isChartFullScreen

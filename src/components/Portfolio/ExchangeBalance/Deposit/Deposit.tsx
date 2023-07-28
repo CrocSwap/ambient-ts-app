@@ -377,7 +377,6 @@ export default function Deposit(props: propsIF) {
                 getFormattedNumber({
                     value: gasPriceInDollarsNum,
                     isUSD: true,
-                    prefix: '$',
                 }),
             );
         }
