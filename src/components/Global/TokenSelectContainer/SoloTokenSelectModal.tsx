@@ -229,20 +229,20 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         }
     }, [contentRouter]);
 
-    const input = document.getElementById(
-        'token_select_input_field',
-    ) as HTMLInputElement;
-    const clearInputField = () => {
-        if (input) input.value = '';
+    const clearInputFieldAndCloseModal = () => {
         setInput('');
-        document.getElementById('token_select_input_field')?.focus();
+        onClose();
     };
 
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
     return (
-        <Modal title='Select Token' isOpen={isOpen} onClose={onClose}>
+        <Modal
+            title='Select Token'
+            isOpen={isOpen}
+            onClose={clearInputFieldAndCloseModal}
+        >
             <section className={styles.container}>
                 <div className={styles.input_control_container}>
                     <input
@@ -257,9 +257,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 : 'var(--text3)',
                         }}
                     />
-                    {input?.value && (
+                    {validatedInput && (
                         <button
-                            onClick={clearInputField}
+                            onClick={() => setInput('')}
                             aria-label='Clear input'
                             tabIndex={0}
                         >

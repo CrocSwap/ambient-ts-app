@@ -8,6 +8,7 @@ import { RiCloseFill } from 'react-icons/ri';
 import styles from './Modal.module.css';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import GlobalModalPortal from '../../GlobalModalPortal';
+import { GLOBAL_MODAL_COMPONENT_ID } from '../../../constants';
 
 // interface for React functional component
 interface ModalPropsIF {
@@ -85,7 +86,7 @@ export default function Modal(props: ModalPropsIF) {
     return (
         <GlobalModalPortal isOpen={isOpen}>
             <aside
-                id='Modal_Global'
+                id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
                 onMouseDown={desktopView ? onClose : undefined}
                 role='dialog'

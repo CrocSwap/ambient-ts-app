@@ -72,5 +72,6 @@ export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';
 export const ETH_ICON_URL =
     'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png';
 
-// Global Modal ID
-export const GLOBAL_MODAL_ID = 'ambient_global_modal';
+// Modal IDS
+export const GLOBAL_MODAL_PORTAL_ID = 'ambient_global_modal_portal';
+export const GLOBAL_MODAL_COMPONENT_ID = 'Modal_Global';

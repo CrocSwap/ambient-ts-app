@@ -242,9 +242,7 @@ export default function ExchangeBalance(props: propsIF) {
 
     const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
 
-    // TODO: verify if these useEffects are still needed
-
-    // Needed to disable clicks outside ExchangeBalanceModal if dismissing TokenSelectionModal via GlobalModal's close()
+    // Needed to close the token select modal but not dismiss the exchangebalance modal
     useEffect(() => {
         setIsTokenModalOpen && setIsTokenModalOpen(isTokenSelectOpen);
     }, [isTokenSelectOpen]);
