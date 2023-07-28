@@ -1,5 +1,4 @@
 .main_container {
-    width: 100%;
     display: flex;
     justify-content: space-between;
     flex-direction: row;
@@ -8,6 +7,5 @@
     color: var(--text2);
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    padding: 8px 0;
-    margin: 6px 0px 6px 0px;
+    margin: 1rem;
 }

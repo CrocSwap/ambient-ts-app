@@ -1,7 +1,7 @@
 import styles from './AdvancedModeToggle.module.css';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
-import Toggle2 from '../../../Global/Toggle/Toggle2';
+import Toggle from '../../../Global/Toggle/Toggle';
 import { memo } from 'react';
 
 interface advancedModePropsIF {
@@ -20,15 +20,12 @@ function AdvancedModeToggle(props: advancedModePropsIF) {
             id='range_advance_mode_toggle'
             aria-label='Advanced mode toggle'
         >
-            <Toggle2
+            <Toggle
                 isOn={!advancedMode}
                 handleToggle={handleToggle}
                 id='advanced_reposition'
             />
-            <h4 className={styles.advanced_toggle_title}>
-                {'Balanced'}
-                {/* {advancedMode ? 'Advanced Mode' : 'Balanced Mode'} */}
-            </h4>
+            <h4 className={styles.advanced_toggle_title}>{'Balanced'}</h4>
         </div>
     );
 }

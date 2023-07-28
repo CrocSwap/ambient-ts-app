@@ -8,6 +8,7 @@ export interface graphData {
     lastBlock: number;
     lastBlockPoll?: NodeJS.Timer;
     positionsByUser: PositionsByUser;
+    userPositionsByPool: PositionsByPool;
     positionsByPool: PositionsByPool;
     leaderboardByPool: PositionsByPool;
     changesByUser: ChangesByUser;
@@ -16,6 +17,7 @@ export interface graphData {
     liquidityData?: LiquidityDataIF;
     liquidityRequest?: PoolRequestParams;
     limitOrdersByUser: LimitOrdersByUser;
+    userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
     dataLoadingStatus: DataLoadingStatus;
 }
@@ -30,7 +32,9 @@ export interface PoolRequestParams {
 export interface DataLoadingStatus {
     isConnectedUserTxDataLoading: boolean;
     isConnectedUserOrderDataLoading: boolean;
+    isConnectedUserPoolOrderDataLoading: boolean;
     isConnectedUserRangeDataLoading: boolean;
+    isConnectedUserPoolRangeDataLoading: boolean;
     isLookupUserTxDataLoading: boolean;
     isLookupUserOrderDataLoading: boolean;
     isLookupUserRangeDataLoading: boolean;
@@ -103,11 +107,13 @@ export interface ChangesByPool {
 const initialState: graphData = {
     lastBlock: 0,
     positionsByUser: { dataReceived: false, positions: [] },
+    userPositionsByPool: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
     leaderboardByPool: { dataReceived: false, positions: [] },
     changesByUser: { dataReceived: false, changes: [] },
     changesByPool: { dataReceived: false, changes: [] },
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
+    userLimitOrdersByPool: { dataReceived: false, limitOrders: [] },
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     candlesForAllPools: { pools: [] },
     liquidityData: undefined,
@@ -115,7 +121,9 @@ const initialState: graphData = {
     dataLoadingStatus: {
         isConnectedUserTxDataLoading: true,
         isConnectedUserOrderDataLoading: true,
+        isConnectedUserPoolOrderDataLoading: true,
         isConnectedUserRangeDataLoading: true,
+        isConnectedUserPoolRangeDataLoading: true,
         isLookupUserTxDataLoading: true,
         isLookupUserOrderDataLoading: true,
         isLookupUserRangeDataLoading: true,
@@ -181,6 +189,12 @@ export const graphDataSlice = createSlice({
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
+        setUserPositionsByPool: (
+            state,
+            action: PayloadAction<PositionsByPool>,
+        ) => {
+            state.userPositionsByPool = action.payload;
+        },
         setLeaderboardByPool: (
             state,
             action: PayloadAction<PositionsByPool>,
@@ -192,6 +206,12 @@ export const graphDataSlice = createSlice({
             action: PayloadAction<LimitOrdersByUser>,
         ) => {
             state.limitOrdersByUser = action.payload;
+        },
+        setUserLimitOrdersByPool: (
+            state,
+            action: PayloadAction<LimitOrdersByPool>,
+        ) => {
+            state.userLimitOrdersByPool = action.payload;
         },
         setLimitOrdersByPool: (
             state,
@@ -530,8 +550,16 @@ export const graphDataSlice = createSlice({
                     state.dataLoadingStatus.isConnectedUserOrderDataLoading =
                         action.payload.loadingStatus;
                     break;
+                case 'connectedUserPoolOrderData':
+                    state.dataLoadingStatus.isConnectedUserPoolOrderDataLoading =
+                        action.payload.loadingStatus;
+                    break;
                 case 'connectedUserRangeData':
                     state.dataLoadingStatus.isConnectedUserRangeDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'connectedUserPoolRangeData':
+                    state.dataLoadingStatus.isConnectedUserPoolRangeDataLoading =
                         action.payload.loadingStatus;
                     break;
                 case 'lookupUserTxData':
@@ -595,6 +623,7 @@ export const {
     setLastBlockPoll,
     setPositionsByUser,
     addPositionsByUser,
+    setUserPositionsByPool,
     setPositionsByPool,
     setLeaderboardByPool,
     updateLeaderboard,
@@ -604,6 +633,7 @@ export const {
     setCandles,
     addCandles,
     setLimitOrdersByUser,
+    setUserLimitOrdersByPool,
     setLimitOrdersByPool,
     setChangesByUser,
     addChangesByUser,

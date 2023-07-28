@@ -1,7 +1,10 @@
-/* ------------------------ */
+.price_info_container {
+    padding: 0.5rem 0 0;
+}
+
 .price_info_content {
     /* background: rgb(19, 2, 2); */
-    padding: 8px 16px;
+    padding: 0.5rem 1.5rem;
 }
 .apr_display {
     display: flex;
@@ -24,15 +27,7 @@
 .apr_display p:nth-of-type(2) {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    background: var(--apr-gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-
-    /* glow/positive */
-
-    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+    color: var(--other-green);
 }
 
 .row_display {
@@ -71,16 +66,15 @@
     width: 100%;
     background: var(--dark3);
     height: 1px;
-    margin: 6px 8px;
+    margin: 0.5rem auto;
     border-radius: 9999;
-    color: red;
-    /* padding: 0 8px; */
 }
 
 .gas_pump_dropdown {
     background: transparent;
     outline: none;
     border: none;
+    margin: 0.25rem 2rem 0;
 }
 .gas_pump_dropdown button {
     background: transparent;
@@ -97,18 +91,22 @@
     line-height: var(--body-lh);
 
     cursor: pointer;
+    margin: 0.5rem auto;
+    margin-bottom: 0.5rem;
+    padding: 0 0.25rem;
 }
 .gas_pump_dropdown button:hover {
-    color: var(--text1);
-    cursor: pointer;
+    background: var(--dark2);
+    border-radius: var(--border-radius);
+
 }
 .gas_pump_dropdown button:focus-visible {
     border: 1px solid var(--text1);
 }
 .dropdown_content {
     border: 1px solid var(--dark3);
-    border-radius: 4px;
-    padding: 8px;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
 
     transition: all var(--animation-speed) ease-in-out;
 }
@@ -117,7 +115,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 4px;
+    gap: 0.25rem;
 }
 
 .extra_row {

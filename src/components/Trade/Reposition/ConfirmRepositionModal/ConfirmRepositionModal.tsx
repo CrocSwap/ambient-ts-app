@@ -12,6 +12,7 @@ import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/C
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     position: PositionIF;
@@ -79,7 +80,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
             tokenBSymbol={tokenB.symbol}
             tokenBAddress={tokenB.address}
             tokenBDecimals={tokenB.decimals}
-            tokenBImage={tokenB.logoURI}
+            tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
             reposition
         />
@@ -112,8 +113,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={baseToken.logoURI}
-                            alt={baseToken.name}
+                            src={uriToHttp(baseToken.logoURI)}
+                            alt={baseToken.symbol}
                             size='m'
                         />
                         <span>Current {baseToken.symbol} Collateral</span>
@@ -124,8 +125,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={baseToken.logoURI}
-                            alt={baseToken.name}
+                            src={uriToHttp(baseToken.logoURI)}
+                            alt={baseToken.symbol}
                             size='m'
                         />
                         <span> {baseToken.symbol} After Reposition</span>
@@ -137,8 +138,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={quoteToken.logoURI}
-                            alt={quoteToken.name}
+                            src={uriToHttp(quoteToken.logoURI)}
+                            alt={quoteToken.symbol}
                             size='m'
                         />
                         <span>Current {quoteToken.symbol} Collateral</span>
@@ -148,8 +149,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
-                            src={quoteToken.logoURI}
-                            alt={quoteToken.name}
+                            src={uriToHttp(quoteToken.logoURI)}
+                            alt={quoteToken.symbol}
                             size='m'
                         />
                         <span>{quoteToken.symbol} After Reposition</span>
@@ -171,13 +172,13 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
                         <TokenIcon
-                            src={tokenA.logoURI}
-                            alt={tokenA.name}
+                            src={uriToHttp(tokenA.logoURI)}
+                            alt={tokenA.symbol}
                             size='2xl'
                         />
                         <TokenIcon
-                            src={tokenA.logoURI}
-                            alt={tokenA.name}
+                            src={uriToHttp(tokenB.logoURI)}
+                            alt={tokenB.symbol}
                             size='2xl'
                         />
                     </div>

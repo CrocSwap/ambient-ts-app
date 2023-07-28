@@ -2,13 +2,13 @@ import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
 import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -55,10 +55,15 @@ export const useProcessRange = (
 
     const apy = position.apy ?? undefined;
     const apyString = apy
-        ? apy.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          }) + '%'
+        ? apy >= 1000
+            ? apy.toLocaleString('en-US', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+              }) + '%+'
+            : apy.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + '%'
         : undefined;
 
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
@@ -177,27 +182,9 @@ export const useProcessRange = (
 
     const usdValueNum = position.totalValueUSD;
 
-    const usdValueTruncated = !usdValueNum
-        ? '0'
-        : usdValueNum < 0.001
-        ? usdValueNum.toExponential(2)
-        : usdValueNum >= 100000
-        ? formatAmountOld(usdValueNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const usdValueLocaleString = !usdValueNum
-        ? '…'
-        : usdValueNum < 0.01
-        ? usdValueNum.toPrecision(3)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const usdValue = getFormattedNumber({
+        value: usdValueNum,
+    });
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
@@ -210,8 +197,6 @@ export const useProcessRange = (
         ? `${quoteQty || '0.00'}`
         : '…';
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
-
-    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
 
     const ensNameOrOwnerTruncated = ensName
         ? ensName.length > 15
@@ -266,7 +251,6 @@ export const useProcessRange = (
 
         // value
         usdValue,
-        usdValueLocaleString,
 
         // Token Qty data
         baseQty,

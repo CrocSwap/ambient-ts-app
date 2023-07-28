@@ -46,9 +46,7 @@
     gap: 0.5rem;
 }
 
-.token_images img {
-    width: 30px;
-}
+
 .tokens_name {
     font-family: var(--font-logo);
     font-weight: 100;
@@ -71,6 +69,7 @@
     font-weight: 300;
     font-size: 12px;
     color: var(--text1);
+    margin-left: 2px;
 }
 
 .row_title {
@@ -117,7 +116,6 @@
     font-weight: 200;
     font-size: 12px;
     line-height: 22px;
-
     letter-spacing: -0.02em;
 
     /* other/positive */
@@ -128,7 +126,6 @@
     font-weight: 200;
     font-size: 12px;
     line-height: 22px;
-
     letter-spacing: -0.02em;
 
     /* other/positive */

@@ -21,6 +21,8 @@ import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { handleWETH } from '../../../utils/data/handleWETH';
+import { ZERO_ADDRESS } from '../../../constants';
 
 interface propsIF {
     modalCloseCustom: () => void;
@@ -234,14 +236,24 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
     }, [contentRouter]);
 
-    const input = document.getElementById(
-        'token_select_input_field',
-    ) as HTMLInputElement;
     const clearInputField = () => {
+        const input = document.getElementById(
+            'token_select_input_field',
+        ) as HTMLInputElement;
         if (input) input.value = '';
         setInput('');
-        document.getElementById('token_select_input_field')?.focus();
+        input?.focus();
     };
+
+    useEffect(() => {
+        const input = document.getElementById(
+            'token_select_input_field',
+        ) as HTMLInputElement;
+        if (input) input.focus();
+    }, []);
+
+    // arbitrary limit on number of tokens to display in DOM for performance
+    const MAX_TOKEN_COUNT = 300;
 
     return (
         <section className={styles.container}>
@@ -250,16 +262,17 @@ export const SoloTokenSelect = (props: propsIF) => {
                     id='token_select_input_field'
                     spellCheck='false'
                     type='text'
-                    placeholder=' Search name or enter an Address'
+                    placeholder=' Search by token name or address'
                     onChange={(e) => setInput(e.target.value)}
                     style={{
                         color: showSoloSelectTokenButtons
-                            ? 'var(--text1)'
+                            ? 'var(--text2)'
                             : 'var(--text3)',
                     }}
                 />
-                {input?.value && (
+                {validatedInput && (
                     <button
+                        className={styles.clearButton}
                         onClick={clearInputField}
                         aria-label='Clear input'
                         tabIndex={0}
@@ -268,15 +281,34 @@ export const SoloTokenSelect = (props: propsIF) => {
                     </button>
                 )}
             </div>
+            {handleWETH.check(validatedInput) && (
+                <p className={styles.weth_text}>{handleWETH.message}</p>
+            )}
+            {handleWETH.check(validatedInput) &&
+                [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
+                    (token: TokenIF) => (
+                        <TokenSelect
+                            key={JSON.stringify(token)}
+                            token={token}
+                            chooseToken={chooseToken}
+                            fromListsText=''
+                        />
+                    ),
+                )}
             {showSoloSelectTokenButtons ? (
-                outputTokens.map((token: TokenIF) => (
-                    <TokenSelect
-                        key={JSON.stringify(token)}
-                        token={token}
-                        chooseToken={chooseToken}
-                        fromListsText=''
-                    />
-                ))
+                <div className={styles.scrollable_container}>
+                    {' '}
+                    {outputTokens
+                        .slice(0, MAX_TOKEN_COUNT)
+                        .map((token: TokenIF) => (
+                            <TokenSelect
+                                key={JSON.stringify(token)}
+                                token={token}
+                                chooseToken={chooseToken}
+                                fromListsText=''
+                            />
+                        ))}
+                </div>
             ) : (
                 <SoloTokenImport
                     customToken={customToken}

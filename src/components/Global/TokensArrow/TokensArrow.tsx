@@ -2,10 +2,11 @@ import styles from './TokensArrow.module.css';
 // import { useState } from 'react';
 interface TokensArrowPropsIF {
     onlyDisplay?: boolean;
+    onClick?: () => void;
     disabled?: boolean;
 }
 export default function TokensArrow(props: TokensArrowPropsIF) {
-    const { onlyDisplay, disabled } = props;
+    const { onlyDisplay, disabled, onClick } = props;
 
     return (
         <button
@@ -18,7 +19,7 @@ export default function TokensArrow(props: TokensArrowPropsIF) {
                 cursor: disabled ? 'wait' : onlyDisplay ? 'default' : 'pointer',
             }}
             // style={{ transform: rotate, transition: 'all 0.2s linear' }}
-            // onClick={handleRotate}
+            onClick={onClick}
         >
             <svg
                 width='24'

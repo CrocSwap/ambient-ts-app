@@ -57,6 +57,7 @@ const BASE_URL_PATHS = {
     pool: '/trade/pool',
     initpool: '/initpool',
     reposition: '/trade/reposition',
+    explore: '/explore',
     tos: '/terms',
     testpage: '/testpage',
     account: '/account',
@@ -104,6 +105,8 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'initpool';
         } else if (pathname.startsWith(BASE_URL_PATHS.reposition)) {
             pageName = 'reposition';
+        } else if (pathname.startsWith(BASE_URL_PATHS.explore)) {
+            pageName = 'explore';
         } else if (pathname.startsWith(BASE_URL_PATHS.tos)) {
             pageName = 'tos';
         } else if (pathname.startsWith(BASE_URL_PATHS.testpage)) {

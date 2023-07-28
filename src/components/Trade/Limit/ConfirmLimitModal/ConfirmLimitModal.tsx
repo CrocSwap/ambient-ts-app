@@ -11,6 +11,8 @@ import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/C
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     initiateLimitOrderMethod: () => void;
@@ -61,38 +63,20 @@ export default function ConfirmLimitModal(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPoolPriceString =
-        displayPoolPriceWithDenom === Infinity ||
-        displayPoolPriceWithDenom === 0
-            ? '…'
-            : displayPoolPriceWithDenom < 2
-            ? displayPoolPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPoolPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const displayPoolPriceString = getFormattedNumber({
+        value: displayPoolPriceWithDenom,
+    });
 
     const txApproved = newLimitOrderTransactionHash !== '';
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
     const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const localeSellString =
-        parseFloat(tokenAInputQty) > 999
-            ? parseFloat(tokenAInputQty).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenAInputQty;
-    const localeBuyString =
-        parseFloat(tokenBInputQty) > 999
-            ? parseFloat(tokenBInputQty).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenBInputQty;
+    const localeSellString = getFormattedNumber({
+        value: parseFloat(tokenAInputQty),
+    });
+    const localeBuyString = getFormattedNumber({
+        value: parseFloat(tokenBInputQty),
+    });
 
     const sellTokenData = tradeData.tokenA;
     const buyTokenData = tradeData.tokenB;
@@ -103,7 +87,7 @@ export default function ConfirmLimitModal(props: propsIF) {
 
             <div className={styles.logo_display}>
                 <TokenIcon
-                    src={buyTokenData.logoURI}
+                    src={uriToHttp(buyTokenData.logoURI)}
                     alt={buyTokenData.symbol}
                     size='3xl'
                 />
@@ -117,7 +101,7 @@ export default function ConfirmLimitModal(props: propsIF) {
 
             <div className={styles.logo_display}>
                 <TokenIcon
-                    src={sellTokenData.logoURI}
+                    src={uriToHttp(sellTokenData.logoURI)}
                     alt={sellTokenData.symbol}
                     size='3xl'
                 />
@@ -126,41 +110,15 @@ export default function ConfirmLimitModal(props: propsIF) {
         </div>
     );
 
-    const startPriceString = !startDisplayPrice
-        ? '…'
-        : startDisplayPrice < 2
-        ? startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const middlePriceString = !middleDisplayPrice
-        ? '…'
-        : middleDisplayPrice < 2
-        ? middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const endPriceString = !endDisplayPrice
-        ? '…'
-        : endDisplayPrice < 2
-        ? endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const startPriceString = getFormattedNumber({
+        value: startDisplayPrice,
+    });
+    const middlePriceString = getFormattedNumber({
+        value: middleDisplayPrice,
+    });
+    const endPriceString = getFormattedNumber({
+        value: endDisplayPrice,
+    });
 
     // this is the starting state for the bypass confirmation toggle switch
     // if this modal is being shown, we can assume bypass is disabled
@@ -241,7 +199,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
             limit
         />

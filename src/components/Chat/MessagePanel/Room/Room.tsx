@@ -143,7 +143,7 @@ export default function Room(props: propsIF) {
                 logoURI: currentPool.quoteToken.logoURI,
             },
             chainId: '33',
-            poolId: 10,
+            poolIdx: 10,
         };
 
         if (!roomArray.some(({ name }) => name === currentPoolRoom.name)) {
@@ -195,7 +195,7 @@ export default function Room(props: propsIF) {
                       logoURI: string;
                   };
                   chainId: string;
-                  poolId: number;
+                  poolIdx: number;
                   speed: number;
                   id: number;
               }[] = [];
@@ -220,7 +220,7 @@ export default function Room(props: propsIF) {
                     logoURI: pool.quote.logoURI,
                 },
                 chainId: pool.chainId,
-                poolId: pool.poolId,
+                poolIdx: pool.poolIdx,
                 speed: findSpeed(pool),
                 id: findId(pool),
             };

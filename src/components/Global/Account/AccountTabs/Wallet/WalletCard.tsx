@@ -8,6 +8,8 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     token?: TokenIF;
@@ -92,7 +94,11 @@ export default function WalletCard(props: propsIF) {
             leaveDelay={200}
         >
             <div className={styles.token_icon}>
-                <TokenIcon src={tokenImageSrc} alt={tokenImageAlt} size='2xl' />
+                <TokenIcon
+                    src={uriToHttp(tokenImageSrc)}
+                    alt={tokenImageAlt}
+                    size='2xl'
+                />
                 <p className={styles.token_key}>{tokenImageAlt}</p>
             </div>
         </DefaultTooltip>
@@ -123,10 +129,9 @@ export default function WalletCard(props: propsIF) {
         <div className={styles.wallet_row}>
             {tokenInfo}
             <p className={styles.value}>
-                $
-                {(tokenUsdPrice * walletBalanceNum).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
+                {getFormattedNumber({
+                    value: tokenUsdPrice * walletBalanceNum,
+                    isUSD: true,
                 })}
             </p>
             <p className={styles.amount}>{walletBalanceTruncated}</p>

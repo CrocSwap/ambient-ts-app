@@ -4,14 +4,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-bottom: 16px;
 }
 
 .arrow_container_disabled {
     cursor: wait;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .arrow {

@@ -1,12 +1,11 @@
 // START: Import React and Dongles
 import { useState, useRef, useContext, memo } from 'react';
-import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
-import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
-import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
-import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
+import SidebarAccordion from './SidebarAccordion';
+import TopPools from '../../../components/Global/Sidebar/TopPools';
+import FavoritePools from '../../../components/Global/Sidebar/FavoritePools';
 import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
 import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
 import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
@@ -26,36 +25,32 @@ import { MdClose } from 'react-icons/md';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
-import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
-import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
+import RecentPools from '../../../components/Global/Sidebar/RecentPools';
+import {
+    useSidebarSearch,
+    sidebarSearchIF,
+} from '../../hooks/useSidebarSearch';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { usePoolList } from '../../hooks/usePoolList';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
         useContext(CachedDataContext);
-    const {
-        chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
+    const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { sidebar } = useContext(SidebarContext);
 
-    const location = useLocation();
-
     const graphData = useAppSelector((state) => state.graphData);
 
-    const poolList = usePoolList(chainId, poolIndex);
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
+    const [exploreSearchInput, setExploreSearchInput] = useState('');
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
-        x.chainId === chainId;
+        x.chainId === chainData.chainId;
 
     const positionsByUser =
         graphData.positionsByUser.positions.filter(filterFn);
@@ -141,7 +136,6 @@ function Sidebar() {
     ];
 
     const searchData: sidebarSearchIF = useSidebarSearch(
-        poolList,
         positionsByUser,
         txsByUser,
         limitsByUser,
@@ -164,7 +158,7 @@ function Sidebar() {
     };
 
     // ------------------------------------------
-    // ---------------------------ANALYTICS SEARCH CONTAINER-----------------------
+    // ---------------------------Explore SEARCH CONTAINER-----------------------
 
     const focusInput = () => {
         const inputField = document.getElementById(
@@ -174,40 +168,6 @@ function Sidebar() {
         inputField.focus();
     };
 
-    const handleInputClearAnalytics = () => {
-        const currentInput = document.getElementById(
-            'search_input_analytics',
-        ) as HTMLInputElement;
-
-        currentInput.value = '';
-    };
-    const AnalyticsSearchContainer = (
-        <div className={styles.search_container}>
-            <div
-                className={styles.search__icon}
-                onClick={() => sidebar.toggle()}
-            >
-                <BiSearch size={18} color='#CDC1FF' />
-            </div>
-            <input
-                type='text'
-                id='search_input_analytics'
-                placeholder='Search token or pools...'
-                className={styles.search__box}
-                onChange={(e) => setAnalyticsSearchInput(e.target.value)}
-            />
-            {!searchInput && (
-                <div
-                    onClick={handleInputClearAnalytics}
-                    className={styles.close_icon}
-                >
-                    <MdClose size={18} color='#ebebeb66' />{' '}
-                </div>
-            )}
-        </div>
-        // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
-    );
-
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
         searchData.setInput(e.target.value);
@@ -216,7 +176,10 @@ function Sidebar() {
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
-                <BiSearch size={18} color='#CDC1FF' />
+                <BiSearch
+                    size={18}
+                    color={sidebar.isOpen ? 'var(--text2)' : 'var(--accent5)'}
+                />
             </div>
             <input
                 type='text'
@@ -226,7 +189,7 @@ function Sidebar() {
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
-                autoFocus
+                tabIndex={1}
             />
             {searchInput && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
@@ -262,9 +225,7 @@ function Sidebar() {
                 styles.main_search_container
             } ${!sidebar.isOpen && styles.sidebar_link_search_closed}`}
         >
-            {location.pathname.includes('analytics')
-                ? AnalyticsSearchContainer
-                : searchContainer}
+            {searchContainer}
             {sidebar.isOpen ? (
                 <div style={{ cursor: 'pointer', display: 'flex' }}>
                     <DefaultTooltip
@@ -318,9 +279,9 @@ function Sidebar() {
                 </div>
             ) : (
                 <BiSearch
-                    size={18}
+                    size={20}
                     color='#CDC1FF'
-                    onClick={() => sidebar.open(true)}
+                    onClick={() => sidebar.open(false)}
                 />
             )}
         </div>
@@ -331,8 +292,8 @@ function Sidebar() {
         ? styles.sidebar_active
         : styles.sidebar;
 
-    const topElementsDisplay = (
-        <div style={{ width: '100%' }}>
+    const regularSidebarDisplay = (
+        <div className={styles.sidebar_content_container}>
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     sidebar={sidebar}
@@ -366,11 +327,7 @@ function Sidebar() {
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
-        </div>
-    );
-
-    const bottomElementsDisplay = (
-        <div className={styles.bottom_elements}>
+            <div style={{ margin: 'auto' }} />
             {recentTransactions.map((item, idx) => (
                 <SidebarAccordion
                     sidebar={sidebar}
@@ -407,19 +364,12 @@ function Sidebar() {
         </div>
     );
 
-    const regularSidebarDisplay = (
-        <>
-            {topElementsDisplay}
-            {bottomElementsDisplay}
-        </>
-    );
-
     return (
-        <div ref={sidebarRef}>
+        <div ref={sidebarRef} className={styles.sidebar_container}>
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
                 onClick={() => {
-                    sidebar.isOpen || sidebar.open(true);
+                    sidebar.isOpen || sidebar.open(false);
                 }}
                 style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
             >

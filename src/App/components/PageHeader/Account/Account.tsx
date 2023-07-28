@@ -14,6 +14,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ExchangeBalanceModal } from '../ExchangeBalanceModal/ExchangeBalanceModal';
+import { getFormattedNumber } from '../../../functions/getFormattedNumber';
 
 interface propsIF {
     nativeBalance: string | undefined;
@@ -81,20 +82,11 @@ export default function Account(props: propsIF) {
             ? ethMainnetUsdPrice * parseFloat(nativeBalance.replaceAll(',', ''))
             : undefined;
 
-    const ethMainnetUsdValueTruncated =
-        ethMainnetUsdValue === undefined
-            ? '…'
-            : ethMainnetUsdValue === 0
-            ? '$0.00'
-            : ethMainnetUsdValue < 0.0001
-            ? '$' + ethMainnetUsdValue.toExponential(2)
-            : ethMainnetUsdValue < 2
-            ? '$' + ethMainnetUsdValue.toPrecision(3)
-            : '$' +
-              ethMainnetUsdValue.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const ethMainnetUsdValueTruncated = getFormattedNumber({
+        value: ethMainnetUsdValue,
+        minFracDigits: 2,
+        maxFracDigits: 2,
+    });
 
     const ethQuantityInWalletAndDeposits =
         nativeBalance === undefined
@@ -118,7 +110,6 @@ export default function Account(props: propsIF) {
         <section
             className={styles.wallet_display}
             ref={walletDropdownItemRef}
-            // tabIndex={0}
             aria-label={mainAriaLabel}
         >
             <button
@@ -147,7 +138,11 @@ export default function Account(props: propsIF) {
                                 : '...'
                             : ''
                     }
-                    ethValue={`${ethMainnetUsdValueTruncated}`}
+                    ethValue={
+                        ethMainnetUsdValueTruncated !== undefined
+                            ? `${ethMainnetUsdValueTruncated}`
+                            : undefined
+                    }
                     accountAddressFull={props.accountAddressFull}
                     walletDropdownTokenData={walletDropdownTokenData}
                     clickOutsideHandler={clickOutsideHandler}

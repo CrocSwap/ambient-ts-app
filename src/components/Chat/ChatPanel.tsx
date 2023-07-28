@@ -329,7 +329,7 @@ function ChatPanel(props: propsIF) {
             className={styles.chat_header}
             onClick={() => setIsChatOpen(!isChatOpen)}
         >
-            <h2 className={styles.chat_title}>Chat</h2>
+            <h2 className={styles.chat_title}>Trollbox</h2>
             <section style={{ paddingRight: '10px' }}>
                 {isFullScreen || !isChatOpen ? (
                     <></>

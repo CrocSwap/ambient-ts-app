@@ -5,6 +5,7 @@ import Button from '../../Global/Button/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TokenIcon from '../TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 interface propsIF {
     customToken: TokenIF | null | 'querying';
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
@@ -41,8 +42,8 @@ export default function SoloTokenImport(props: propsIF) {
             <div className={styles.token_display}>
                 <div>
                     <TokenIcon
-                        src={customToken.logoURI}
-                        alt={customToken.name}
+                        src={uriToHttp(customToken.logoURI)}
+                        alt={customToken.symbol}
                         size='2xl'
                     />
                     <h2>{customToken?.symbol}</h2>
@@ -75,12 +76,6 @@ export default function SoloTokenImport(props: propsIF) {
                 title='Acknowledge'
                 action={() => chooseToken(customToken, true)}
             />
-            {/* <div className={styles.import_button}>
-                
-                <button onClick={() => chooseToken(customToken, true)}>
-                    Acknowledge
-                </button>
-            </div> */}
         </div>
     );
 }

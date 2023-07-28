@@ -7,6 +7,7 @@ import './Subcharts.css';
 import { setCanvasResolution } from '../../../Chart/Chart';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { createIndicatorLine } from '../../../Chart/ChartUtils/indicatorLineSeries';
 
 interface TvlData {
     tvlData: Array<CandleData>;
@@ -24,6 +25,9 @@ interface TvlData {
     crosshairActive: string;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     setCrosshairData: React.Dispatch<React.SetStateAction<any>>;
+    lastCrDate: number | undefined;
+    isCrDataIndActive: boolean;
+    xAxisActiveTooltip: string;
 }
 
 function TvlSubChart(props: TvlData) {
@@ -41,6 +45,9 @@ function TvlSubChart(props: TvlData) {
         setCrosshairActive,
         setCrosshairData,
         crosshairActive,
+        lastCrDate,
+        isCrDataIndActive,
+        xAxisActiveTooltip,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -53,6 +60,7 @@ function TvlSubChart(props: TvlData) {
     const [areaSeries, setAreaSeries] = useState<any>();
     const [lineSeries, setLineSeries] = useState<any>();
     const [tvlGradient, setTvlGradient] = useState<any>();
+    const [crDataIndicator, setCrDataIndicator] = useState<any>();
     const [tvlZoom, setTvlZoom] = useState<any>();
     const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
         useState<any>();
@@ -334,6 +342,15 @@ function TvlSubChart(props: TvlData) {
                 context.fillStyle = 'transparent';
             });
 
+            const crDataIndicator = createIndicatorLine(
+                scaleData?.xScale,
+                scaleData.yScale,
+            );
+
+            setCrDataIndicator(() => {
+                return crDataIndicator;
+            });
+
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
         }
     }, [diffHashSig(scaleData), diffHashSig(tvlyScale), tvlGradient]);
@@ -351,15 +368,30 @@ function TvlSubChart(props: TvlData) {
                     setCanvasResolution(canvas);
                     areaSeries(tvlData);
                     lineSeries(tvlData);
+
+                    if (isCrDataIndActive || xAxisActiveTooltip === 'croc') {
+                        ctx.setLineDash([0.6, 0.6]);
+                        crDataIndicator([lastCrDate]);
+                    }
                 })
                 .on('measure', (event: any) => {
                     tvlyScale.range([event.detail.height, 0]);
                     areaSeries.context(ctx);
                     lineSeries.context(ctx);
+                    ctx.setLineDash([0.6, 0.6]);
+                    crDataIndicator.context(ctx);
                 });
         }
         renderCanvas();
-    }, [areaSeries, lineSeries, diffHashSig(tvlData)]);
+    }, [
+        areaSeries,
+        lineSeries,
+        diffHashSig(tvlData),
+        crDataIndicator,
+        lastCrDate,
+        isCrDataIndActive,
+        xAxisActiveTooltip,
+    ]);
 
     useEffect(() => {
         if (d3CanvasCrosshair !== undefined && tvlZoom !== undefined) {
@@ -428,6 +460,13 @@ function TvlSubChart(props: TvlData) {
 
             if (d3Yaxis) {
                 const container = d3.select(d3Yaxis.current).node() as any;
+                if (container) container.requestRedraw();
+            }
+
+            if (crDataIndicator) {
+                const container = d3
+                    .select(crDataIndicator.current)
+                    .node() as any;
                 if (container) container.requestRedraw();
             }
         }
@@ -518,6 +557,7 @@ function TvlSubChart(props: TvlData) {
                     subChartValues.filter(
                         (value: any) => value.name === 'tvl',
                     )[0].value,
+                    true,
                 )}
             </label>
             <d3fc-canvas

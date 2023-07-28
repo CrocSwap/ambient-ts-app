@@ -3,12 +3,10 @@ import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './Withdraw.module.css';
 import WithdrawButton from './WithdrawButton/WithdrawButton';
 import WithdrawCurrencySelector from './WithdrawCurrencySelector/WithdrawCurrencySelector';
-// import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-// import { setToken } from '../../../../utils/state/temp';
 import {
     Dispatch,
     SetStateAction,
@@ -34,9 +32,10 @@ import { checkBlacklist } from '../../../../utils/data/blacklist';
 import { FaGasPump } from 'react-icons/fa';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
-import Toggle2 from '../../../Global/Toggle/Toggle2';
+import Toggle from '../../../Global/Toggle/Toggle';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -84,18 +83,9 @@ export default function Withdraw(props: propsIF) {
         ? parseFloat(tokenExchangeDepositsDisplay)
         : undefined;
 
-    const tokenDexBalanceTruncated = tokenExchangeDepositsDisplayNum
-        ? tokenExchangeDepositsDisplayNum < 0.0001
-            ? tokenExchangeDepositsDisplayNum.toExponential(2)
-            : tokenExchangeDepositsDisplayNum < 2
-            ? tokenExchangeDepositsDisplayNum.toPrecision(3)
-            : // : tokenDexBalanceNum >= 100000
-              // ? formatAmountOld(tokenDexBalanceNum)
-              tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
+    const tokenDexBalanceTruncated = getFormattedNumber({
+        value: tokenExchangeDepositsDisplayNum,
+    });
 
     const [withdrawQtyNonDisplay, setWithdrawQtyNonDisplay] = useState<
         string | undefined
@@ -135,6 +125,11 @@ export default function Withdraw(props: propsIF) {
         [withdrawQtyNonDisplay],
     );
 
+    const withdrawQtyNonDisplayNum = useMemo(
+        () => parseFloat(withdrawQtyNonDisplay ?? ''),
+        [withdrawQtyNonDisplay],
+    );
+
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
 
     useEffect(() => {
@@ -150,10 +145,15 @@ export default function Withdraw(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Please Enter a Valid Address');
-        } else if (!withdrawQtyNonDisplay) {
+        } else if (!withdrawQtyNonDisplayNum) {
+            // if num is undefined or 0
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Withdrawal Amount');
+        } else if (withdrawQtyNonDisplayNum < 0) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage('Enter a Valid Withdrawal Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
@@ -166,6 +166,7 @@ export default function Withdraw(props: propsIF) {
             setButtonMessage('Withdraw');
         }
     }, [
+        withdrawQtyNonDisplay,
         isWithdrawPending,
         isDexBalanceSufficient,
         isWithdrawQtyValid,
@@ -219,28 +220,6 @@ export default function Withdraw(props: propsIF) {
 
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
-
-                        //  if (newTransactionHash) {
-                        //      fetch(
-                        //          newSwapCacheEndpoint +
-                        //              new URLSearchParams({
-                        //                  tx: newTransactionHash,
-                        //                  user: account ?? '',
-                        //                  base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                        //                  quote: isSellTokenBase
-                        //                      ? buyTokenAddress
-                        //                      : sellTokenAddress,
-                        //                  poolIdx: (await env.context).chain.poolIndex.toString(),
-                        //                  isBuy: isSellTokenBase.toString(),
-                        //                  inBaseQty: inBaseQty.toString(),
-                        //                  qty: crocQty.toString(),
-                        //                  override: 'false',
-                        //                  chainId: chainId,
-                        //                  limitPrice: '0',
-                        //                  minOut: '0',
-                        //              }),
-                        //      );
-                        //  }
                     } else if (isTransactionFailedError(error)) {
                         console.error({ error });
                         receipt = error.receipt;
@@ -266,14 +245,7 @@ export default function Withdraw(props: propsIF) {
         }
     };
 
-    // const withdrawInput = document.getElementById(
-    //     'exchange-balance-withdraw-exchange-balance-withdraw-quantity',
-    // ) as HTMLInputElement;
-
     const resetWithdrawQty = () => {
-        // if (withdrawInput) {
-        //     withdrawInput.value = '';
-        // }
         setWithdrawQtyNonDisplay(undefined);
         setInputValue('');
     };
@@ -311,14 +283,13 @@ export default function Withdraw(props: propsIF) {
         isSendToAddressChecked && secondaryEnsName ? (
             <div className={styles.info_text_non_clickable}>
                 Destination ENS Address: {secondaryEnsName}
-                {/* <div className={styles.hex_address}>{secondaryEnsName}</div> */}
             </div>
         ) : null;
 
     const toggleContent = (
         <span className={styles.surplus_toggle}>
             <div className={styles.toggle_container}>
-                <Toggle2
+                <Toggle
                     isOn={isSendToAddressChecked}
                     handleToggle={() =>
                         setIsSendToAddressChecked(!isSendToAddressChecked)
@@ -339,8 +310,6 @@ export default function Withdraw(props: propsIF) {
             setWithdrawQtyNonDisplay(tokenDexBalance);
             if (tokenExchangeDepositsDisplay)
                 setInputValue(tokenExchangeDepositsDisplay);
-            // if (withdrawInput && tokenExchangeDepositsDisplay)
-            //     withdrawInput.value = tokenExchangeDepositsDisplay;
         }
     };
 
@@ -366,11 +335,10 @@ export default function Withdraw(props: propsIF) {
                     : averageGasUnitsForErc20Withdrawal);
 
             setWithdrawGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
@@ -396,15 +364,16 @@ export default function Withdraw(props: propsIF) {
                     className={`${styles.available_container} ${styles.info_text_non_clickable}`}
                 >
                     <div className={styles.available_text}>Available:</div>
-                    {tokenDexBalanceTruncated || '0.0'}
-                    {tokenDexBalance !== '0' ? (
-                        <button
-                            className={`${styles.max_button} ${styles.max_button_enable}`}
-                            onClick={handleBalanceClick}
-                        >
-                            Max
-                        </button>
-                    ) : null}
+                    {tokenDexBalanceTruncated || '...'}
+                    <button
+                        className={`${styles.max_button} ${
+                            tokenDexBalance !== '0' && styles.max_button_enabled
+                        }`}
+                        onClick={handleBalanceClick}
+                        disabled={tokenDexBalance === '0'}
+                    >
+                        Max
+                    </button>
                 </div>
                 <div className={styles.gas_pump}>
                     <div className={styles.svg_container}>
@@ -418,12 +387,7 @@ export default function Withdraw(props: propsIF) {
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
             <WithdrawButton
-                onClick={() => {
-                    withdrawFn();
-                }}
-                // onClick={() => {
-                //     !isTokenAllowanceSufficient ? approvalFn() : withdrawFn();
-                // }}
+                onClick={withdrawFn}
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />

@@ -6,6 +6,7 @@ import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import TokenIcon from '../../../../Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     fieldId: string;
@@ -28,35 +29,48 @@ export default function DepositCurrencySelector(props: propsIF) {
         setInputValue,
     } = props;
 
+    const handleOnChange = (input: string) => {
+        setInputValue(input);
+        setDepositQty(
+            input === ''
+                ? ''
+                : fromDisplayQty(
+                      input.replaceAll(',', ''),
+                      selectedToken.decimals,
+                  ).toString(),
+        );
+    };
+
+    const handleOnBlur = () => {
+        const inputNum = parseFloat(inputValue);
+        if (!isNaN(inputNum)) {
+            const formattedInputStr = getFormattedNumber({
+                value: inputNum,
+                isToken: true,
+                removeCommas: true,
+                minFracDigits: selectedToken.decimals,
+                maxFracDigits: selectedToken.decimals,
+            });
+            setInputValue(formattedInputStr);
+        }
+    };
+
     const qtyInput = (
         <div className={styles.token_amount}>
             <input
                 id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.00'
-                onChange={(event) => {
-                    const isValid =
-                        event.target.value === '' ||
-                        event.target.validity.valid;
-                    isValid ? setInputValue(event.target.value) : null;
-                    if (parseFloat(event.target.value) > 0) {
-                        const nonDisplayQty = fromDisplayQty(
-                            event.target.value.replaceAll(',', ''),
-                            selectedToken.decimals,
-                        );
-                        setDepositQty(nonDisplayQty.toString());
-                    } else {
-                        setDepositQty(undefined);
-                    }
-                }}
+                onBlur={handleOnBlur}
+                onChange={(e) => handleOnChange(e.target.value)}
                 value={inputValue}
-                type='string'
+                type='number'
+                step='any'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
             />
         </div>
@@ -78,7 +92,7 @@ export default function DepositCurrencySelector(props: propsIF) {
                     <div className={styles.token_select} onClick={onClick}>
                         <TokenIcon
                             src={uriToHttp(selectedToken.logoURI)}
-                            alt={selectedToken.symbol?.charAt(0)}
+                            alt={selectedToken.symbol}
                             size='2xl'
                         />
                         <span className={styles.token_list_text}>

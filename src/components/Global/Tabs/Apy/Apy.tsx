@@ -12,10 +12,15 @@ export default function Apy(props: ApyProps) {
     const { amount, fs, lh, center, showTitle } = props;
 
     const amountString = amount
-        ? amount.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          }) + '%'
+        ? amount >= 1000
+            ? amount.toLocaleString('en-US', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+              }) + '%+'
+            : amount.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + '%'
         : undefined;
 
     // const aprColor = styles.apr_green;

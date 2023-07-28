@@ -39,7 +39,6 @@ function CurrencyQuantity(props: propsIF) {
         setIsSellLoading,
         isLoading,
     } = props;
-    // let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
@@ -48,10 +47,7 @@ function CurrencyQuantity(props: propsIF) {
     >();
 
     useEffect(() => {
-        const valueWithLeadingZero = value.startsWith('.')
-            ? '0' + value
-            : value;
-        setDisplayValue(valueWithLeadingZero);
+        setDisplayValue(value);
     }, [value]);
 
     // Let input rest 3/4 of a second before triggering an update
@@ -62,32 +58,24 @@ function CurrencyQuantity(props: propsIF) {
     }, [debouncedLastEvent]);
 
     const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
-        // if (timeoutId) clearTimeout(timeoutId);
-
         const { value } = event.target;
-        const inputValue = value.startsWith('.') ? '0' + value : value;
-
         if (fieldId === 'sell') {
             setBuyQtyString('');
-            if (inputValue) {
+            if (value && parseFloat(value) !== 0) {
                 setIsBuyLoading(true);
-                setSellQtyString(inputValue);
+                setSellQtyString(value);
             }
-            if (!value) setIsBuyLoading(false);
-
-            // timeoutId = setTimeout(() => setIsBuyLoading(false), 1000);
+            value || setIsBuyLoading(false);
         } else if (fieldId === 'buy') {
             setSellQtyString('');
-            if (inputValue) {
+            if (value && parseFloat(value) !== 0) {
                 setIsSellLoading(true);
-                setBuyQtyString(inputValue);
+                setBuyQtyString(value);
             }
-            if (!value) setIsSellLoading(false);
-
-            // timeoutId = setTimeout(() => setIsSellLoading(false), 1000);
+            value || setIsSellLoading(false);
         }
 
-        setDisplayValue(inputValue);
+        setDisplayValue(value);
         setDisableReverseTokens(true);
         setLastEvent(event);
     };
@@ -96,34 +84,16 @@ function CurrencyQuantity(props: propsIF) {
         if (inputString.includes('.')) {
             return inputString.split('.')[1].length;
         }
-        // String Does Not Contain Decimal
         return 0;
     };
 
     const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const targetValue = event.target.value.replace(',', '.');
-        //  I know this seems a bit much here so I will leave a little explanation
-        //  \d*\.?\d* matches any number with an optional decimal point in the middle
-        // \d{0,3}(,\d{3})*(\.\d+)? matches any number with commas in the thousands
-        // can be tested here => https://regex101.com/
         const isPrecisionGreaterThanDecimals =
-            precisionOfInput(targetValue) > thisToken.decimals;
-
-        const isUserInputValid = /^(\d*\.?\d*|\d{0,3}(,\d{3})*(\.\d+)?)?$/.test(
-            targetValue,
-        );
+            precisionOfInput(event.target.value) > thisToken.decimals;
+        const isUserInputValid =
+            !isPrecisionGreaterThanDecimals && !isNaN(+event.target.value);
         if (isUserInputValid && !isPrecisionGreaterThanDecimals) {
-            let valueWithDecimal = targetValue;
-            if (valueWithDecimal.includes(',')) {
-                const parts = valueWithDecimal.split(',');
-                const lastPart = parts.pop();
-                const firstPart = parts.join('');
-                valueWithDecimal = `${firstPart}.${lastPart}`;
-            }
-            handleEventLocal({
-                ...event,
-                target: { ...event.target, value: valueWithDecimal },
-            });
+            handleEventLocal(event);
         }
     };
 
@@ -136,8 +106,9 @@ function CurrencyQuantity(props: propsIF) {
     );
     return (
         <div className={`${styles.token_amount} `}>
-            <>
-                {isLoading && progressDisplay}
+            {isLoading ? (
+                progressDisplay
+            ) : (
                 <input
                     id={`${fieldId}-quantity`}
                     className={styles.currency_quantity}
@@ -149,16 +120,16 @@ function CurrencyQuantity(props: propsIF) {
                         handleOnChange(event);
                     }}
                     value={isLoading ? '' : displayValue}
-                    type='text'
+                    type='number'
+                    step='any'
                     inputMode='decimal'
                     autoComplete='off'
                     autoCorrect='off'
                     min='0'
                     minLength={1}
-                    pattern='^[0-9]*\.?[0-9]*$'
                     disabled={disable}
                 />
-            </>
+            )}
         </div>
     );
 }
