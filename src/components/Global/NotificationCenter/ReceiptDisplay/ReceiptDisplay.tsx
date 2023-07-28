@@ -27,7 +27,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
-    const pending = <Spinner size={'30'} bg={'var(--dark2)'} centered/>;
+    const pending = <Spinner size={30} bg={'var(--dark2)'} weight={2} />;
     const failed = <MdErrorOutline size={30} color='#7371fc ' />;
     const success = <IoMdCheckmarkCircleOutline size={30} color='#7371fc ' />;
 

@@ -21,7 +21,8 @@
     padding: 0 4px;
 }
 .status {
-    width: 40px;
+    display: flex;
+    margin: auto;
 }
 
 
