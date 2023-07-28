@@ -1,14 +1,12 @@
 import styles from './PoolCard.module.css';
 import { Link } from 'react-router-dom';
-
-import { topPoolIF } from '../../../App/hooks/useTopPools';
-
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import { PoolIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
-    pool: topPoolIF;
+    pool: PoolIF;
 }
 
 export default function PoolCard(props: propsIF) {

@@ -59,6 +59,9 @@
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 }
+.clearButton {
+    transform: translateY(-16%);
+}
 
 .input_control_container button:hover {
     color: var(--text1);
