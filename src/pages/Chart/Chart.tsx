@@ -3728,9 +3728,7 @@ export default function Chart(props: propsIF) {
                         ? -1 * (period * 1000 - snapDiff)
                         : snapDiff);
 
-                if (crosshairActive !== 'chart') {
-                    setCrosshairActive('chart');
-                }
+                setCrosshairActive('chart');
 
                 setCrosshairData([
                     {
