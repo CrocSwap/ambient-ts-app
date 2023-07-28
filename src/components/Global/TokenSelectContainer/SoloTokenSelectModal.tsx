@@ -12,7 +12,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import styles from './SoloTokenSelect.module.css';
+import styles from './SoloTokenSelectModal.module.css';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -23,21 +23,22 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { handleWETH } from '../../../utils/data/handleWETH';
 import { ZERO_ADDRESS } from '../../../constants';
+import Modal from '../Modal/Modal';
 
 interface propsIF {
-    modalCloseCustom: () => void;
-    closeModal: () => void;
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
     isSingleToken: boolean;
     tokenAorB: string | null;
     reverseTokens?: () => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-export const SoloTokenSelect = (props: propsIF) => {
+export const SoloTokenSelectModal = (props: propsIF) => {
     const {
-        modalCloseCustom,
-        closeModal,
+        isOpen,
+        onClose,
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
         isSingleToken,
@@ -60,11 +61,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     } = useContext(TokenContext);
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
-
-    const closeTokenSelectModal = () => {
-        modalCloseCustom();
-        closeModal();
-    };
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -99,7 +95,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         if (tokenAorB === 'A') {
             if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
                 reverseTokens && reverseTokens();
-                closeTokenSelectModal();
+                onClose();
                 return;
             }
             goToNewUrlParams(
@@ -113,7 +109,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         } else if (tokenAorB === 'B') {
             if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
                 reverseTokens && reverseTokens();
-                closeTokenSelectModal();
+                onClose();
                 return;
             }
             goToNewUrlParams(
@@ -138,7 +134,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
         setInput('');
         // close the token modal
-        closeTokenSelectModal();
+        onClose();
     };
 
     // hook to hold data for a token pulled from on-chain
@@ -246,65 +242,67 @@ export const SoloTokenSelect = (props: propsIF) => {
     const MAX_TOKEN_COUNT = 300;
 
     return (
-        <section className={styles.container}>
-            <div className={styles.input_control_container}>
-                <input
-                    id='token_select_input_field'
-                    spellCheck='false'
-                    type='text'
-                    placeholder=' Search name or enter an Address'
-                    onChange={(e) => setInput(e.target.value)}
-                    style={{
-                        color: showSoloSelectTokenButtons
-                            ? 'var(--text2)'
-                            : 'var(--text3)',
-                    }}
-                />
-                {input?.value && (
-                    <button
-                        onClick={clearInputField}
-                        aria-label='Clear input'
-                        tabIndex={0}
-                    >
-                        Clear
-                    </button>
+        <Modal title='Select Token' isOpen={isOpen} onClose={onClose}>
+            <section className={styles.container}>
+                <div className={styles.input_control_container}>
+                    <input
+                        id='token_select_input_field'
+                        spellCheck='false'
+                        type='text'
+                        placeholder=' Search name or enter an Address'
+                        onChange={(e) => setInput(e.target.value)}
+                        style={{
+                            color: showSoloSelectTokenButtons
+                                ? 'var(--text2)'
+                                : 'var(--text3)',
+                        }}
+                    />
+                    {input?.value && (
+                        <button
+                            onClick={clearInputField}
+                            aria-label='Clear input'
+                            tabIndex={0}
+                        >
+                            Clear
+                        </button>
+                    )}
+                </div>
+                {handleWETH.check(validatedInput) && (
+                    <p className={styles.weth_text}>{handleWETH.message}</p>
                 )}
-            </div>
-            {handleWETH.check(validatedInput) && (
-                <p className={styles.weth_text}>{handleWETH.message}</p>
-            )}
-            {handleWETH.check(validatedInput) &&
-                [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
-                    (token: TokenIF) => (
-                        <TokenSelect
-                            key={JSON.stringify(token)}
-                            token={token}
-                            chooseToken={chooseToken}
-                            fromListsText=''
-                        />
-                    ),
-                )}
-            {showSoloSelectTokenButtons ? (
-                <div className={styles.scrollable_container}>
-                    {' '}
-                    {outputTokens
-                        .slice(0, MAX_TOKEN_COUNT)
-                        .map((token: TokenIF) => (
+                {handleWETH.check(validatedInput) &&
+                    [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
+                        (token: TokenIF) => (
                             <TokenSelect
                                 key={JSON.stringify(token)}
                                 token={token}
                                 chooseToken={chooseToken}
                                 fromListsText=''
                             />
-                        ))}
-                </div>
-            ) : (
-                <SoloTokenImport
-                    customToken={customToken}
-                    chooseToken={chooseToken}
-                    chainId={chainId}
-                />
-            )}
-        </section>
+                        ),
+                    )}
+                {showSoloSelectTokenButtons ? (
+                    <div className={styles.scrollable_container}>
+                        {' '}
+                        {outputTokens
+                            .slice(0, MAX_TOKEN_COUNT)
+                            .map((token: TokenIF) => (
+                                <TokenSelect
+                                    key={JSON.stringify(token)}
+                                    token={token}
+                                    chooseToken={chooseToken}
+                                    fromListsText=''
+                                />
+                            ))}
+                    </div>
+                ) : (
+                    <SoloTokenImport
+                        customToken={customToken}
+                        chooseToken={chooseToken}
+                        chainId={chainId}
+                    />
+                )}
+            </section>
+        </Modal>
     );
 };

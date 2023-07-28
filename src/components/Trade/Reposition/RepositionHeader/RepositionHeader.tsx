@@ -6,7 +6,7 @@ import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
-import TransactionSettings from '../../../Global/TransactionSettings/TransactionSettings';
+import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/TransactionSettingsModal';
 
 // START: Import Local Files
 import styles from './RepositionHeader.module.css';
@@ -16,7 +16,7 @@ import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { useModal } from '../../../Global/Modal/useModal';
 
 interface propsIF {
     positionHash: string;
@@ -33,9 +33,7 @@ function RepositionHeader(props: propsIF) {
         UserPreferenceContext,
     );
 
-    const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
-    } = useContext(AppStateContext);
+    const [isOpen, openModal, closeModal] = useModal();
 
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -43,39 +41,39 @@ function RepositionHeader(props: propsIF) {
     // navpath for when user clicks the exit button
     const exitPath = useRepoExitPath();
 
-    const transactionSettingsModalContent = (
-        <TransactionSettings
-            module='Reposition'
-            slippage={repoSlippage}
-            onClose={closeGlobalModal}
-            bypassConfirm={bypassConfirmRepo}
-        />
-    );
-
     return (
-        <ContentHeader>
-            <img
-                className={styles.settings_icon}
-                src={settingsIcon}
-                alt='settings'
-                onClick={() => openGlobalModal(transactionSettingsModalContent)}
+        <>
+            <ContentHeader>
+                <img
+                    className={styles.settings_icon}
+                    src={settingsIcon}
+                    alt='settings'
+                    onClick={openModal}
+                />
+                <p className={styles.title}>
+                    {' '}
+                    Reposition: {trimString(positionHash, 5, 4, '…')}
+                </p>
+                <VscClose
+                    className={styles.close_icon}
+                    onClick={() => {
+                        dispatch(setAdvancedMode(false));
+                        setRangeWidthPercentage(10);
+                        setSimpleRangeWidth(10);
+                        navigate(exitPath, { replace: true });
+                        resetTxHash();
+                        setCurrentRangeInReposition('');
+                    }}
+                />
+            </ContentHeader>
+            <TransactionSettingsModal
+                module='Reposition'
+                slippage={repoSlippage}
+                bypassConfirm={bypassConfirmRepo}
+                onClose={closeModal}
+                isOpen={isOpen}
             />
-            <p className={styles.title}>
-                {' '}
-                Reposition: {trimString(positionHash, 5, 4, '…')}
-            </p>
-            <VscClose
-                className={styles.close_icon}
-                onClick={() => {
-                    dispatch(setAdvancedMode(false));
-                    setRangeWidthPercentage(10);
-                    setSimpleRangeWidth(10);
-                    navigate(exitPath, { replace: true });
-                    resetTxHash();
-                    setCurrentRangeInReposition('');
-                }}
-            />
-        </ContentHeader>
+        </>
     );
 }
 

@@ -71,12 +71,12 @@ import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
+import { useModal } from '../../../components/Global/Modal/useModal';
 
 function Range() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
-        globalModal: { open: openGlobalModal },
     } = useContext(AppStateContext);
     const {
         chainData: { chainId, gridSize, blockExplorer },
@@ -108,6 +108,8 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+
+    const [isOpen, openModal, closeModal] = useModal();
 
     const [
         tokenAQtyCoveredByWalletBalance,
@@ -1133,6 +1135,7 @@ function Range() {
     const handleModalClose = () => {
         setNewRangeTransactionHash('');
         resetConfirmation();
+        closeModal();
     };
 
     const handleRangeButtonClickWithBypass = () => {
@@ -1402,40 +1405,6 @@ function Range() {
         needConfirmTokenB && tokens.ackToken(tokenB);
     };
 
-    const poolConfirmationModalContent = (
-        <ConfirmRangeModal
-            tokenAQtyLocal={tokenAQtyLocal}
-            tokenBQtyLocal={tokenBQtyLocal}
-            spotPriceDisplay={getFormattedNumber({
-                value: displayPriceWithDenom,
-            })}
-            isTokenABase={isTokenABase}
-            isAmbient={isAmbient}
-            isAdd={isAdd}
-            maxPriceDisplay={maxPriceDisplay}
-            minPriceDisplay={minPriceDisplay}
-            sendTransaction={sendTransaction}
-            newRangeTransactionHash={newRangeTransactionHash}
-            resetConfirmation={resetConfirmation}
-            showConfirmation={showConfirmation}
-            setShowConfirmation={setShowConfirmation}
-            txErrorCode={txErrorCode}
-            isInRange={!isOutOfRange}
-            pinnedMinPriceDisplayTruncatedInBase={
-                pinnedMinPriceDisplayTruncatedInBase
-            }
-            pinnedMinPriceDisplayTruncatedInQuote={
-                pinnedMinPriceDisplayTruncatedInQuote
-            }
-            pinnedMaxPriceDisplayTruncatedInBase={
-                pinnedMaxPriceDisplayTruncatedInBase
-            }
-            pinnedMaxPriceDisplayTruncatedInQuote={
-                pinnedMaxPriceDisplayTruncatedInQuote
-            }
-        />
-    );
-
     return (
         <section data-testid={'range'} className={styles.scrollable_container}>
             {isTutorialActive && (
@@ -1491,17 +1460,7 @@ function Range() {
                                         areBothAckd
                                             ? bypassConfirmRange.isEnabled
                                                 ? handleRangeButtonClickWithBypass
-                                                : () =>
-                                                      openGlobalModal(
-                                                          poolConfirmationModalContent,
-                                                          'Pool Confirmation',
-                                                          undefined,
-                                                          undefined,
-                                                          undefined,
-                                                          undefined,
-                                                          undefined,
-                                                          handleModalClose,
-                                                      )
+                                                : openModal
                                             : ackAsNeeded
                                     }
                                     rangeAllowed={
@@ -1568,6 +1527,39 @@ function Range() {
                     )}
                 </div>
             </ContentContainer>
+            <ConfirmRangeModal
+                tokenAQtyLocal={tokenAQtyLocal}
+                tokenBQtyLocal={tokenBQtyLocal}
+                spotPriceDisplay={getFormattedNumber({
+                    value: displayPriceWithDenom,
+                })}
+                isTokenABase={isTokenABase}
+                isAmbient={isAmbient}
+                isAdd={isAdd}
+                maxPriceDisplay={maxPriceDisplay}
+                minPriceDisplay={minPriceDisplay}
+                sendTransaction={sendTransaction}
+                newRangeTransactionHash={newRangeTransactionHash}
+                resetConfirmation={resetConfirmation}
+                showConfirmation={showConfirmation}
+                setShowConfirmation={setShowConfirmation}
+                txErrorCode={txErrorCode}
+                isInRange={!isOutOfRange}
+                pinnedMinPriceDisplayTruncatedInBase={
+                    pinnedMinPriceDisplayTruncatedInBase
+                }
+                pinnedMinPriceDisplayTruncatedInQuote={
+                    pinnedMinPriceDisplayTruncatedInQuote
+                }
+                pinnedMaxPriceDisplayTruncatedInBase={
+                    pinnedMaxPriceDisplayTruncatedInBase
+                }
+                pinnedMaxPriceDisplayTruncatedInQuote={
+                    pinnedMaxPriceDisplayTruncatedInQuote
+                }
+                isOpen={isOpen}
+                onClose={handleModalClose}
+            />
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

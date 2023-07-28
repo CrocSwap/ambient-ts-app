@@ -1,6 +1,8 @@
 import { AiOutlineShareAlt } from 'react-icons/ai';
 import ContentHeader from '../../Global/ContentHeader/ContentHeader';
-import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
+import TransactionSettingsModal, {
+    TransactionModuleType,
+} from '../../Global/TransactionSettingsModal/TransactionSettingsModal';
 import ShareModal from '../../Global/ShareModal/ShareModal';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import styles from './OrderHeader.module.css';
@@ -9,24 +11,25 @@ import {
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-import { memo, useContext } from 'react';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+import { memo } from 'react';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { useModal } from '../../Global/Modal/useModal';
 
 interface propsIF {
     slippage: SlippageMethodsIF;
     bypassConfirm: skipConfirmIF;
-    settingsTitle: 'Swap' | 'Limit Order' | 'Pool' | 'Reposition';
+    settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
 
 function OrderHeader(props: propsIF) {
     const { slippage, bypassConfirm, settingsTitle, isSwapPage } = props;
 
-    const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
-    } = useContext(AppStateContext);
+    const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
+        useModal();
+
+    const [isShareModalOpen, openShareModal, closeShareModal] = useModal();
 
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -64,56 +67,55 @@ function OrderHeader(props: propsIF) {
         </svg>
     );
 
-    const transactionSettingsModalContent = (
-        <TransactionSettings
-            module={settingsTitle}
-            slippage={slippage}
-            onClose={closeGlobalModal}
-            bypassConfirm={bypassConfirm}
-        />
-    );
-
     return (
-        <div className={isSwapPage ? styles.swap_page_header : ''}>
-            <ContentHeader>
-                <AiOutlineShareAlt
-                    className={styles.share_button}
-                    onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-                    id='share_button'
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Share button'
-                />
-
-                {isSwapPage ? (
-                    <span className={styles.title}>Swap</span>
-                ) : (
-                    <div
-                        className={styles.token_info}
-                        onClick={() => dispatch(toggleDidUserFlipDenom())}
-                    >
-                        {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                        {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
-                    </div>
-                )}
-                <IconWithTooltip title='Settings' placement='left'>
-                    <div
-                        onClick={() =>
-                            openGlobalModal(transactionSettingsModalContent)
-                        }
-                        style={{ cursor: 'pointer' }}
-                        className={`${styles.settings_container}
-                        ${styles.settings_icon}`}
-                        id='settings_button'
+        <>
+            <div className={isSwapPage ? styles.swap_page_header : ''}>
+                <ContentHeader>
+                    <AiOutlineShareAlt
+                        className={styles.share_button}
+                        onClick={openShareModal}
+                        id='share_button'
                         role='button'
                         tabIndex={0}
-                        aria-label='Settings button'
-                    >
-                        {settingsSvg}
-                    </div>
-                </IconWithTooltip>
-            </ContentHeader>
-        </div>
+                        aria-label='Share button'
+                    />
+
+                    {isSwapPage ? (
+                        <span className={styles.title}>Swap</span>
+                    ) : (
+                        <div
+                            className={styles.token_info}
+                            onClick={() => dispatch(toggleDidUserFlipDenom())}
+                        >
+                            {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                            {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                        </div>
+                    )}
+                    <IconWithTooltip title='Settings' placement='left'>
+                        <div
+                            onClick={openSettingsModal}
+                            style={{ cursor: 'pointer' }}
+                            className={`${styles.settings_container}
+                            ${styles.settings_icon}`}
+                            id='settings_button'
+                            role='button'
+                            tabIndex={0}
+                            aria-label='Settings button'
+                        >
+                            {settingsSvg}
+                        </div>
+                    </IconWithTooltip>
+                </ContentHeader>
+            </div>
+            <TransactionSettingsModal
+                module={settingsTitle}
+                slippage={slippage}
+                bypassConfirm={bypassConfirm}
+                isOpen={isSettingsModalOpen}
+                onClose={closeSettingsModal}
+            />
+            <ShareModal isOpen={isShareModalOpen} onClose={closeShareModal} />
+        </>
     );
 }
 

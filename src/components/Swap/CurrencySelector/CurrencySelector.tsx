@@ -15,7 +15,7 @@ import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
+import { SoloTokenSelectModal } from '../../Global/TokenSelectContainer/SoloTokenSelectModal';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -23,11 +23,11 @@ import WalletBalanceExplanation from '../../Global/Informational/WalletBalanceEx
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import { useModal } from '../../Global/Modal/useModal';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -101,7 +101,6 @@ function CurrencySelector(props: propsIF) {
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
-    const { setInput } = useContext(TokenContext);
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
     const { dexBalSwap } = useContext(UserPreferenceContext);
 
@@ -463,25 +462,16 @@ function CurrencySelector(props: propsIF) {
     );
     // End of  Wallet balance function and styles-----------------------------
 
+    const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
+
     const swapboxBottomOrNull = !isUserConnected ? (
         <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom}>{walletContent}</div>
     );
 
-    const {
-        globalModal: { open: openTokenModal, close: closeTokenModal },
-    } = useContext(AppStateContext);
-
-    const modalCloseCustom = (): void => {
-        setInput('');
-        closeTokenModal();
-    };
-
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
-
-    const handleInputClear = (): void => setInput('');
 
     const tokenSymbol =
         thisToken?.symbol?.length > 4 ? (
@@ -498,65 +488,56 @@ function CurrencySelector(props: propsIF) {
             <div className={styles.token_list_text}>{thisToken.symbol}</div>
         );
 
-    const tokenModalContent = (
-        <SoloTokenSelect
-            modalCloseCustom={modalCloseCustom}
-            closeModal={modalCloseCustom}
-            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
-            isSingleToken={false}
-            tokenAorB={tokenAorB}
-            reverseTokens={reverseTokens}
-        />
-    );
-
     return (
-        <div className={styles.swapbox}>
-            <div className={styles.swapbox_top}>
-                <div className={styles.swap_input} id='swap_sell_qty'>
-                    <CurrencyQuantity
-                        value={tokenAorB === 'A' ? sellQtyString : buyQtyString}
-                        thisToken={thisToken}
-                        setSellQtyString={setSellQtyString}
-                        setBuyQtyString={setBuyQtyString}
-                        fieldId={fieldId}
-                        handleChangeEvent={handleChangeEvent}
-                        setDisableReverseTokens={setDisableReverseTokens}
-                        setIsSellLoading={setIsSellLoading}
-                        setIsBuyLoading={setIsBuyLoading}
-                        isLoading={isLoading}
-                    />
+        <>
+            <div className={styles.swapbox}>
+                <div className={styles.swapbox_top}>
+                    <div className={styles.swap_input} id='swap_sell_qty'>
+                        <CurrencyQuantity
+                            value={
+                                tokenAorB === 'A' ? sellQtyString : buyQtyString
+                            }
+                            thisToken={thisToken}
+                            setSellQtyString={setSellQtyString}
+                            setBuyQtyString={setBuyQtyString}
+                            fieldId={fieldId}
+                            handleChangeEvent={handleChangeEvent}
+                            setDisableReverseTokens={setDisableReverseTokens}
+                            setIsSellLoading={setIsSellLoading}
+                            setIsBuyLoading={setIsBuyLoading}
+                            isLoading={isLoading}
+                        />
+                    </div>
+                    <button
+                        className={`${styles.token_select} ${
+                            showSwapPulseAnimation && styles.pulse_animation
+                        }`}
+                        onClick={openTokenSelect}
+                        tabIndex={0}
+                        aria-label='Open swap sell token modal.'
+                        id='swap_token_selector'
+                    >
+                        <TokenIcon
+                            src={uriToHttp(thisToken.logoURI)}
+                            alt={thisToken.symbol}
+                            size='2xl'
+                        />
+                        {tokenSymbol}
+                        <RiArrowDownSLine size={27} />
+                    </button>
                 </div>
-                <button
-                    className={`${styles.token_select} ${
-                        showSwapPulseAnimation && styles.pulse_animation
-                    }`}
-                    onClick={() =>
-                        openTokenModal(
-                            tokenModalContent,
-                            'Select Token',
-                            handleInputClear,
-                            false,
-                            undefined,
-                            false,
-                            undefined,
-                        )
-                    }
-                    tabIndex={0}
-                    aria-label='Open swap sell token modal.'
-                    id='swap_token_selector'
-                >
-                    <TokenIcon
-                        src={uriToHttp(thisToken.logoURI)}
-                        alt={thisToken.symbol}
-                        size='2xl'
-                    />
-                    {tokenSymbol}
-                    <RiArrowDownSLine size={27} />
-                </button>
+                {swapboxBottomOrNull}
             </div>
-            {swapboxBottomOrNull}
-        </div>
+            <SoloTokenSelectModal
+                isOpen={isTokenSelectOpen}
+                onClose={closeTokenSelect}
+                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                isSingleToken={false}
+                tokenAorB={tokenAorB}
+                reverseTokens={reverseTokens}
+            />
+        </>
     );
 }
 

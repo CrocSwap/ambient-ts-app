@@ -6,7 +6,7 @@ import { CiCircleMore } from 'react-icons/ci';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
-import OrderDetails from '../../../../OrderDetails/OrderDetails';
+import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
 import LimitActionModal from '../../../../LimitActionModal/LimitActionModal';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -20,7 +20,6 @@ import {
     setLimitTickCopied,
     setShouldLimitDirectionReverse,
 } from '../../../../../utils/state/tradeDataSlice';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
     useLinkGen,
@@ -28,6 +27,7 @@ import {
 } from '../../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useModal } from '../../../Modal/useModal';
 
 // interface for React functional component props
 interface propsIF {
@@ -38,6 +38,8 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     handleAccountClick: () => void;
 }
+
+export type LimitActionType = 'Remove' | 'Claim';
 
 // React functional component
 export default function OrdersMenu(props: propsIF) {
@@ -52,9 +54,6 @@ export default function OrdersMenu(props: propsIF) {
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 
-    const {
-        globalModal: { open: openGlobalModal },
-    } = useContext(AppStateContext);
     const { chainData } = useContext(CrocEnvContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -96,25 +95,23 @@ export default function OrdersMenu(props: propsIF) {
 
     // -----------------END OF SNACKBAR----------------
 
-    const openRemoveModal = () =>
-        openGlobalModal(
-            <LimitActionModal limitOrder={limitOrder} type='Remove' />,
-        );
-    const openClaimModal = () =>
-        openGlobalModal(
-            <LimitActionModal limitOrder={limitOrder} type='Claim' />,
-        );
+    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+        useModal();
 
-    const openDetailsModal = () =>
-        openGlobalModal(
-            <OrderDetails
-                limitOrder={limitOrder}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-            />,
-        );
+    const [isActionModalOpen, openActionModal, closeActionModal] = useModal();
+    const [limitModalAction, setLimitModalAction] =
+        useState<LimitActionType>('Remove');
+
+    const openLimitDetailsModal = () => {
+        setShowDropdownMenu(false);
+        openDetailsModal();
+    };
+
+    const openLimitActionModal = (type: LimitActionType) => {
+        setShowDropdownMenu(false);
+        setLimitModalAction(type);
+        openActionModal();
+    };
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
@@ -123,20 +120,6 @@ export default function OrdersMenu(props: propsIF) {
 
     const view2WithNoSidebar =
         useMediaQuery('(min-width: 1680px)') && !isSidebarOpen;
-
-    const removeButtonOnClick = () => {
-        setShowDropdownMenu(false);
-        openRemoveModal();
-    };
-    const claimButtonOnClick = () => {
-        setShowDropdownMenu(false);
-        openClaimModal();
-    };
-
-    const detailsButtonOnClick = () => {
-        setShowDropdownMenu(false);
-        openDetailsModal();
-    };
 
     const walletButton = (
         <button
@@ -157,7 +140,7 @@ export default function OrdersMenu(props: propsIF) {
         limitOrder && isOwnerActiveAccount && !isOrderFilled ? (
             <button
                 className={styles.option_button}
-                onClick={removeButtonOnClick}
+                onClick={() => openLimitActionModal('Remove')}
             >
                 Remove
             </button>
@@ -166,7 +149,7 @@ export default function OrdersMenu(props: propsIF) {
         limitOrder && isOwnerActiveAccount && isOrderFilled ? (
             <button
                 className={styles.option_button}
-                onClick={claimButtonOnClick}
+                onClick={() => openLimitActionModal('Claim')}
             >
                 Claim
             </button>
@@ -199,7 +182,10 @@ export default function OrdersMenu(props: propsIF) {
         </button>
     ) : null;
     const detailsButton = (
-        <button className={styles.option_button} onClick={detailsButtonOnClick}>
+        <button
+            className={styles.option_button}
+            onClick={openLimitDetailsModal}
+        >
             Details
         </button>
     );
@@ -254,12 +240,26 @@ export default function OrdersMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
     return (
-        <div
-            className={styles.main_container}
-            onClick={(event) => event.stopPropagation()}
-        >
-            {ordersMenu}
-            {dropdownOrdersMenu}
+        <div onClick={(event) => event.stopPropagation()}>
+            <div className={styles.main_container}>
+                {ordersMenu}
+                {dropdownOrdersMenu}
+            </div>
+            <OrderDetailsModal
+                limitOrder={limitOrder}
+                isBaseTokenMoneynessGreaterOrEqual={
+                    isBaseTokenMoneynessGreaterOrEqual
+                }
+                isAccountView={isAccountView}
+                isOpen={isDetailsModalOpen}
+                onClose={closeDetailsModal}
+            />
+            <LimitActionModal
+                limitOrder={limitOrder}
+                type={limitModalAction}
+                isOpen={isActionModalOpen}
+                onClose={closeActionModal}
+            />
         </div>
     );
 }

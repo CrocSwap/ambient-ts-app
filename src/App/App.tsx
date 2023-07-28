@@ -27,8 +27,7 @@ import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
 import './App.css';
-import { IS_LOCAL_ENV } from '../constants';
-import GlobalModal from './components/GlobalModal/GlobalModal';
+import { GLOBAL_MODAL_ID, IS_LOCAL_ENV } from '../constants';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
@@ -277,7 +276,7 @@ export default function App() {
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
             </div>
             <SidebarFooter />
-            <GlobalModal />
+            <div id={GLOBAL_MODAL_ID} />
             <GlobalPopup />
             <SnackbarComponent />
             <WalletModalWagmi />

@@ -56,12 +56,12 @@ import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
+import { useModal } from '../../../components/Global/Modal/useModal';
 
 export default function Limit() {
     const {
         tutorial: { isActive: isTutorialActive },
         wagmiModal: { open: openWagmiModal },
-        globalModal: { open: openGlobalModal },
     } = useContext(AppStateContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
@@ -82,6 +82,8 @@ export default function Limit() {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
+
+    const [isOpen, openModal, closeModal] = useModal();
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -496,6 +498,7 @@ export default function Limit() {
     const handleModalClose = (): void => {
         setNewLimitOrderTransactionHash('');
         resetConfirmation();
+        closeModal();
     };
 
     const bypassConfirmLimitButtonProps = {
@@ -682,23 +685,6 @@ export default function Limit() {
         maximumFractionDigits: 2,
     });
 
-    const confirmLimitModalContent = (
-        <ConfirmLimitModal
-            initiateLimitOrderMethod={sendLimitOrder}
-            tokenAInputQty={tokenAInputQty}
-            tokenBInputQty={tokenBInputQty}
-            insideTickDisplayPrice={endDisplayPrice}
-            newLimitOrderTransactionHash={newLimitOrderTransactionHash}
-            txErrorCode={txErrorCode}
-            showConfirmation={showConfirmation}
-            setShowConfirmation={setShowConfirmation}
-            resetConfirmation={resetConfirmation}
-            startDisplayPrice={startDisplayPrice}
-            middleDisplayPrice={middleDisplayPrice}
-            endDisplayPrice={endDisplayPrice}
-        />
-    );
-
     return (
         <section className={styles.scrollable_container}>
             {isTutorialActive && (
@@ -752,17 +738,7 @@ export default function Limit() {
                                         areBothAckd
                                             ? bypassConfirmLimit.isEnabled
                                                 ? handleLimitButtonClickWithBypass
-                                                : () =>
-                                                      openGlobalModal(
-                                                          confirmLimitModalContent,
-                                                          'Limit Confirmation',
-                                                          undefined,
-                                                          undefined,
-                                                          undefined,
-                                                          undefined,
-                                                          undefined,
-                                                          handleModalClose,
-                                                      )
+                                                : openModal
                                             : ackAsNeeded
                                     }
                                     limitAllowed={
@@ -829,6 +805,22 @@ export default function Limit() {
                     )}
                 </div>
             </ContentContainer>
+            <ConfirmLimitModal
+                initiateLimitOrderMethod={sendLimitOrder}
+                tokenAInputQty={tokenAInputQty}
+                tokenBInputQty={tokenBInputQty}
+                insideTickDisplayPrice={endDisplayPrice}
+                newLimitOrderTransactionHash={newLimitOrderTransactionHash}
+                txErrorCode={txErrorCode}
+                showConfirmation={showConfirmation}
+                setShowConfirmation={setShowConfirmation}
+                resetConfirmation={resetConfirmation}
+                startDisplayPrice={startDisplayPrice}
+                middleDisplayPrice={middleDisplayPrice}
+                endDisplayPrice={endDisplayPrice}
+                onClose={handleModalClose}
+                isOpen={isOpen}
+            />
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

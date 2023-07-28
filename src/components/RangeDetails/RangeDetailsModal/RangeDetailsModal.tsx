@@ -1,24 +1,25 @@
-import PriceInfo from './PriceInfo/PriceInfo';
-import styles from './RangeDetails.module.css';
+import PriceInfo from '.././PriceInfo/PriceInfo';
+import styles from './RangeDetailsModal.module.css';
 import { useContext, useEffect, useRef, useState } from 'react';
-import printDomToImage from '../../utils/functions/printDomToImage';
-import { PositionIF } from '../../utils/interfaces/exports';
-import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import RangeDetailsSimplify from './RangeDetailsSimplify/RangeDetailsSimplify';
-import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
-import { useProcessRange } from '../../utils/hooks/useProcessRange';
-import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { GRAPHCACHE_SMALL_URL } from '../../constants';
-import { AppStateContext } from '../../contexts/AppStateContext';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { PositionServerIF } from '../../utils/interfaces/PositionIF';
-import { getPositionData } from '../../App/functions/getPositionData';
-import { TokenContext } from '../../contexts/TokenContext';
-import modalBackground from '../../assets/images/backgrounds/background.png';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import printDomToImage from '../../../utils/functions/printDomToImage';
+import { PositionIF } from '../../../utils/interfaces/exports';
+import RangeDetailsHeader from '.././RangeDetailsHeader/RangeDetailsHeader';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import RangeDetailsSimplify from '.././RangeDetailsSimplify/RangeDetailsSimplify';
+import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
+import { useProcessRange } from '../../../utils/hooks/useProcessRange';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { GRAPHCACHE_SMALL_URL } from '../../../constants';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
+import { getPositionData } from '../../../App/functions/getPositionData';
+import { TokenContext } from '../../../contexts/TokenContext';
+import modalBackground from '../../../assets/images/backgrounds/background.png';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import Modal from '../../Global/Modal/Modal';
 
 interface propsIF {
     position: PositionIF;
@@ -40,9 +41,11 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-export default function RangeDetails(props: propsIF) {
+export default function RangeDetailsModal(props: propsIF) {
     const [showShareComponent, setShowShareComponent] = useState(true);
 
     const {
@@ -62,6 +65,8 @@ export default function RangeDetails(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
+        isOpen,
+        onClose,
     } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
@@ -69,7 +74,6 @@ export default function RangeDetails(props: propsIF) {
     );
 
     const {
-        globalModal: { close: closeGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -260,25 +264,27 @@ export default function RangeDetails(props: propsIF) {
     );
 
     return (
-        <div className={styles.outer_container}>
-            <RangeDetailsHeader
-                onClose={closeGlobalModal}
-                copyRangeDetailsToClipboard={copyRangeDetailsToClipboard}
-                showShareComponent={showShareComponent}
-                setShowShareComponent={setShowShareComponent}
-                handleCopyPositionId={handleCopyPositionId}
-            />
-            {showShareComponent ? (
-                shareComponent
-            ) : (
-                <RangeDetailsSimplify
-                    position={position}
-                    baseFeesDisplay={baseFeesDisplay}
-                    quoteFeesDisplay={quoteFeesDisplay}
-                    isAccountView={isAccountView}
-                    updatedPositionApy={updatedPositionApy}
+        <Modal usingCustomHeader isOpen={isOpen}>
+            <div className={styles.outer_container}>
+                <RangeDetailsHeader
+                    onClose={onClose}
+                    copyRangeDetailsToClipboard={copyRangeDetailsToClipboard}
+                    showShareComponent={showShareComponent}
+                    setShowShareComponent={setShowShareComponent}
+                    handleCopyPositionId={handleCopyPositionId}
                 />
-            )}
-        </div>
+                {showShareComponent ? (
+                    shareComponent
+                ) : (
+                    <RangeDetailsSimplify
+                        position={position}
+                        baseFeesDisplay={baseFeesDisplay}
+                        quoteFeesDisplay={quoteFeesDisplay}
+                        isAccountView={isAccountView}
+                        updatedPositionApy={updatedPositionApy}
+                    />
+                )}
+            </div>
+        </Modal>
     );
 }

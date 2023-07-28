@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import useKeyPress from '../../../App/hooks/useKeyPress';
 
 export const useModal = (
     modalCloseCustom?: () => void,
@@ -19,13 +20,17 @@ export const useModal = (
         const closeEvent = new CustomEvent('closeModalEvent', {
             bubbles: true,
         });
+
         // dispatch the event on the modal being closed
         document.getElementById('Modal_Global')?.dispatchEvent(closeEvent);
+
         // remove the event listener from  the window
         // the presence of a close function implies the event listener was created
         modalCloseCustom &&
             window.removeEventListener('closeModalEvent', modalCloseCustom);
     }, [modalCloseCustom]);
+
+    useKeyPress('Escape', closeModal);
 
     // return all data and functions needed for local use
     return [isModalOpen, openModal, closeModal];

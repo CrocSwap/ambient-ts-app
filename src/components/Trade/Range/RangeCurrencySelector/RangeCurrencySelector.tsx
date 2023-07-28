@@ -13,7 +13,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
-import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
+import { SoloTokenSelectModal } from '../../../Global/TokenSelectContainer/SoloTokenSelectModal';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
@@ -22,9 +22,9 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { useModal } from '../../../Global/Modal/useModal';
 
 interface propsIF {
     fieldId: string;
@@ -79,16 +79,16 @@ function RangeCurrencySelector(props: propsIF) {
     } = props;
 
     const {
-        globalModal: { open: openTokenModal, close: closeTokenModal },
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { setInput } = useContext(TokenContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
+
+    const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
@@ -173,8 +173,6 @@ function RangeCurrencySelector(props: propsIF) {
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) ||
         (!isTokenASelector && isTokenBDisabled);
-
-    const modalCloseCustom = (): void => setInput('');
 
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
@@ -340,58 +338,57 @@ function RangeCurrencySelector(props: propsIF) {
         <div className={styles.swapbox_bottom}>{walletContent}</div>
     );
 
-    const tokenSelectModalContent = (
-        <SoloTokenSelect
-            modalCloseCustom={modalCloseCustom}
-            closeModal={closeTokenModal}
-            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
-            isSingleToken={false}
-            tokenAorB={tokenAorB}
-            reverseTokens={reverseTokens}
-        />
-    );
-
     return (
-        <div className={styles.swapbox}>
-            <div className={styles.swapbox_top}>
-                <div className={styles.swap_input} id='range_sell_qty'>
-                    <RangeCurrencyQuantity
-                        value={
-                            tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty
-                        }
-                        thisToken={thisToken}
-                        fieldId={fieldId}
-                        updateOtherQuantity={updateOtherQuantity}
-                        disable={isFieldDisabled}
-                        isAdvancedMode={isAdvancedMode}
-                        parseInput={parseInput}
-                    />
+        <>
+            <div className={styles.swapbox}>
+                <div className={styles.swapbox_top}>
+                    <div className={styles.swap_input} id='range_sell_qty'>
+                        <RangeCurrencyQuantity
+                            value={
+                                tokenAorB === 'A'
+                                    ? tokenAInputQty
+                                    : tokenBInputQty
+                            }
+                            thisToken={thisToken}
+                            fieldId={fieldId}
+                            updateOtherQuantity={updateOtherQuantity}
+                            disable={isFieldDisabled}
+                            isAdvancedMode={isAdvancedMode}
+                            parseInput={parseInput}
+                        />
+                    </div>
+                    <button
+                        className={`${styles.token_select} ${
+                            showRangePulseAnimation && styles.pulse_animation
+                        }`}
+                        onClick={openTokenSelect}
+                        id='range_token_selector'
+                        tabIndex={0}
+                        aria-label={`Open range ${fieldId} token modal.`}
+                    >
+                        <TokenIcon
+                            src={uriToHttp(thisToken.logoURI)}
+                            alt={thisToken.name + 'token logo'}
+                            size='2xl'
+                        />
+                        <span className={styles.token_list_text}>
+                            {thisToken.symbol}
+                        </span>
+                        <RiArrowDownSLine size={27} />
+                    </button>
                 </div>
-                <button
-                    className={`${styles.token_select} ${
-                        showRangePulseAnimation && styles.pulse_animation
-                    }`}
-                    onClick={() =>
-                        openTokenModal(tokenSelectModalContent, 'Select Token')
-                    }
-                    id='range_token_selector'
-                    tabIndex={0}
-                    aria-label={`Open range ${fieldId} token modal.`}
-                >
-                    <TokenIcon
-                        src={uriToHttp(thisToken.logoURI)}
-                        alt={thisToken.name + 'token logo'}
-                        size='2xl'
-                    />
-                    <span className={styles.token_list_text}>
-                        {thisToken.symbol}
-                    </span>
-                    <RiArrowDownSLine size={27} />
-                </button>
+                {swapboxBottomOrNull}
             </div>
-            {swapboxBottomOrNull}
-        </div>
+            <SoloTokenSelectModal
+                isOpen={isTokenSelectOpen}
+                onClose={closeTokenSelect}
+                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                isSingleToken={false}
+                tokenAorB={tokenAorB}
+                reverseTokens={reverseTokens}
+            />
+        </>
     );
 }
 

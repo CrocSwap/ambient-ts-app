@@ -18,7 +18,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import ambientLogo from '../../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../../assets/images/icons/wallet-enabled.svg';
-import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
+import { SoloTokenSelectModal } from '../../../Global/TokenSelectContainer/SoloTokenSelectModal';
 import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
@@ -27,9 +27,9 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { TokenContext } from '../../../../contexts/TokenContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import { useModal } from '../../../Global/Modal/useModal';
 
 // interface for component props
 interface propsIF {
@@ -77,11 +77,10 @@ function LimitCurrencySelector(props: propsIF) {
     );
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
     const {
-        globalModal: { open: openTokenModal, close: closeTokenModal },
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { setInput } = useContext(TokenContext);
+
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
     const { dexBalLimit } = useContext(UserPreferenceContext);
 
@@ -89,7 +88,7 @@ function LimitCurrencySelector(props: propsIF) {
 
     const isSellTokenSelector = fieldId === 'sell';
 
-    const modalCloseCustom = (): void => setInput('');
+    const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
 
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
@@ -295,26 +294,12 @@ function LimitCurrencySelector(props: propsIF) {
         )
     ) : null;
 
-    const tokenSelectModalContent = (
-        <SoloTokenSelect
-            modalCloseCustom={modalCloseCustom}
-            closeModal={closeTokenModal}
-            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
-            isSingleToken={false}
-            tokenAorB={tokenAorB}
-            reverseTokens={reverseTokens}
-        />
-    );
-
     const tokenSelect = (
         <button
             className={`${styles.token_select} ${
                 showOrderPulseAnimation && styles.pulse_animation
             }`}
-            onClick={() =>
-                openTokenModal(tokenSelectModalContent, 'Select Token')
-            }
+            onClick={openTokenSelect}
             tabIndex={0}
             aria-label={`Open limit ${fieldId} token modal.`}
             id='limit_token_selector'
@@ -330,23 +315,38 @@ function LimitCurrencySelector(props: propsIF) {
     );
 
     return (
-        <div className={styles.swapbox}>
-            <div className={styles.swapbox_top}>
-                <div className={styles.swap_input} id='limit_sell_qty'>
-                    <LimitCurrencyQuantity
-                        value={
-                            tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty
-                        }
-                        thisToken={thisToken}
-                        fieldId={fieldId}
-                        handleChangeEvent={handleChangeEvent}
-                        parseInput={parseInput}
-                    />
+        <>
+            <div className={styles.swapbox}>
+                <div className={styles.swapbox_top}>
+                    <div className={styles.swap_input} id='limit_sell_qty'>
+                        <LimitCurrencyQuantity
+                            value={
+                                tokenAorB === 'A'
+                                    ? tokenAInputQty
+                                    : tokenBInputQty
+                            }
+                            thisToken={thisToken}
+                            fieldId={fieldId}
+                            handleChangeEvent={handleChangeEvent}
+                            parseInput={parseInput}
+                        />
+                    </div>
+                    {fieldId === 'buy' || fieldId === 'sell'
+                        ? tokenSelect
+                        : null}
                 </div>
-                {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}
+                {balanceDisplayOrNull}
             </div>
-            {balanceDisplayOrNull}
-        </div>
+            <SoloTokenSelectModal
+                isOpen={isTokenSelectOpen}
+                onClose={closeTokenSelect}
+                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                isSingleToken={false}
+                tokenAorB={tokenAorB}
+                reverseTokens={reverseTokens}
+            />
+        </>
     );
 }
 

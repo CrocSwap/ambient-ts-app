@@ -1,11 +1,6 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState, memo } from 'react';
-import {
-    useLocation,
-    // useNavigate,
-    useParams,
-    Navigate,
-} from 'react-router-dom';
+import { useLocation, useParams, Navigate } from 'react-router-dom';
 import {
     CrocPositionView,
     CrocReposition,
@@ -13,7 +8,6 @@ import {
 } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
-// import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
@@ -28,7 +22,6 @@ import {
 import { PositionIF } from '../../../utils/interfaces/exports';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-// import { BigNumber } from 'ethers';
 import {
     addPendingTx,
     addReceipt,
@@ -56,15 +49,11 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+import { useModal } from '../../../components/Global/Modal/useModal';
 
 function Reposition() {
     // current URL parameter string
     const { params } = useParams();
-
-    const {
-        globalModal: { open: openGlobalModal },
-    } = useContext(AppStateContext);
 
     const {
         cachedQuerySpotPrice,
@@ -87,6 +76,8 @@ function Reposition() {
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
     } = useContext(RangeContext);
+
+    const [isOpen, openModal, closeModal] = useModal();
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -202,7 +193,10 @@ function Reposition() {
             ? truncatedCurrentPoolDisplayPriceInBase
             : truncatedCurrentPoolDisplayPriceInQuote;
 
-    const handleModalClose = () => resetConfirmation();
+    const handleModalClose = () => {
+        resetConfirmation();
+        closeModal();
+    };
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
 
@@ -639,6 +633,8 @@ function Reposition() {
         pinnedMaxPriceDisplayTruncatedInQuote:
             pinnedMaxPriceDisplayTruncatedInQuote,
         isTokenABase: isTokenABase,
+        isOpen: isOpen,
+        onClose: handleModalClose,
     };
 
     const bypassConfirmRepositionButtonProps = {
@@ -676,85 +672,76 @@ function Reposition() {
     );
 
     return (
-        <div className={styles.repositionContainer}>
-            <RepositionHeader
-                setRangeWidthPercentage={setRangeWidthPercentage}
-                positionHash={position.firstMintTx}
-                resetTxHash={() => setNewRepositionTransactionHash('')}
-            />
-            <div className={styles.reposition_content}>
-                <RepositionRangeWidth
-                    rangeWidthPercentage={rangeWidthPercentage}
+        <>
+            <div className={styles.repositionContainer}>
+                <RepositionHeader
                     setRangeWidthPercentage={setRangeWidthPercentage}
+                    positionHash={position.firstMintTx}
+                    resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
-                <RepositionPriceInfo
-                    position={position}
-                    currentPoolPriceDisplay={currentPoolPriceDisplay}
-                    currentPoolPriceTick={currentPoolPriceTick}
-                    rangeWidthPercentage={rangeWidthPercentage}
-                    minPriceDisplay={minPriceDisplay}
-                    maxPriceDisplay={maxPriceDisplay}
-                    currentBaseQtyDisplayTruncated={
-                        currentBaseQtyDisplayTruncated
-                    }
-                    currentQuoteQtyDisplayTruncated={
-                        currentQuoteQtyDisplayTruncated
-                    }
-                    newBaseQtyDisplay={newBaseQtyDisplay}
-                    newQuoteQtyDisplay={newQuoteQtyDisplay}
-                    rangeGasPriceinDollars={rangeGasPriceinDollars}
-                    currentMinPrice={
-                        isDenomBase
-                            ? position?.lowRangeDisplayInBase
-                            : position?.lowRangeDisplayInQuote
-                    }
-                    currentMaxPrice={
-                        isDenomBase
-                            ? position?.highRangeDisplayInBase
-                            : position?.highRangeDisplayInQuote
-                    }
-                />
-                <div className={styles.button_container}>
-                    {!showBypassConfirmButton ? (
-                        <Button
-                            title={
-                                isRepositionSent
-                                    ? 'Reposition Sent'
-                                    : isPositionInRange
-                                    ? 'Position Currently In Range'
-                                    : bypassConfirmRepo.isEnabled
-                                    ? 'Reposition'
-                                    : 'Confirm'
-                            }
-                            action={
-                                bypassConfirmRepo.isEnabled
-                                    ? handleRepoButtonClickWithBypass
-                                    : () =>
-                                          openGlobalModal(
-                                              <ConfirmRepositionModal
-                                                  {...confirmRepositionModalProps}
-                                              />,
-                                              'Confirm Reposition',
-                                              undefined,
-                                              undefined,
-                                              undefined,
-                                              undefined,
-                                              undefined,
-                                              handleModalClose,
-                                          )
-                            }
-                            disabled={isRepositionSent || isPositionInRange}
-                            flat
-                        />
-                    ) : (
-                        <BypassConfirmRepositionButton
-                            {...bypassConfirmRepositionButtonProps}
-                        />
-                    )}
+                <div className={styles.reposition_content}>
+                    <RepositionRangeWidth
+                        rangeWidthPercentage={rangeWidthPercentage}
+                        setRangeWidthPercentage={setRangeWidthPercentage}
+                    />
+                    <RepositionPriceInfo
+                        position={position}
+                        currentPoolPriceDisplay={currentPoolPriceDisplay}
+                        currentPoolPriceTick={currentPoolPriceTick}
+                        rangeWidthPercentage={rangeWidthPercentage}
+                        minPriceDisplay={minPriceDisplay}
+                        maxPriceDisplay={maxPriceDisplay}
+                        currentBaseQtyDisplayTruncated={
+                            currentBaseQtyDisplayTruncated
+                        }
+                        currentQuoteQtyDisplayTruncated={
+                            currentQuoteQtyDisplayTruncated
+                        }
+                        newBaseQtyDisplay={newBaseQtyDisplay}
+                        newQuoteQtyDisplay={newQuoteQtyDisplay}
+                        rangeGasPriceinDollars={rangeGasPriceinDollars}
+                        currentMinPrice={
+                            isDenomBase
+                                ? position?.lowRangeDisplayInBase
+                                : position?.lowRangeDisplayInQuote
+                        }
+                        currentMaxPrice={
+                            isDenomBase
+                                ? position?.highRangeDisplayInBase
+                                : position?.highRangeDisplayInQuote
+                        }
+                    />
+                    <div className={styles.button_container}>
+                        {!showBypassConfirmButton ? (
+                            <Button
+                                title={
+                                    isRepositionSent
+                                        ? 'Reposition Sent'
+                                        : isPositionInRange
+                                        ? 'Position Currently In Range'
+                                        : bypassConfirmRepo.isEnabled
+                                        ? 'Reposition'
+                                        : 'Confirm'
+                                }
+                                action={
+                                    bypassConfirmRepo.isEnabled
+                                        ? handleRepoButtonClickWithBypass
+                                        : openModal
+                                }
+                                disabled={isRepositionSent || isPositionInRange}
+                                flat
+                            />
+                        ) : (
+                            <BypassConfirmRepositionButton
+                                {...bypassConfirmRepositionButtonProps}
+                            />
+                        )}
+                    </div>
+                    {isRepositionSent ? etherscanButton : null}
                 </div>
-                {isRepositionSent ? etherscanButton : null}
             </div>
-        </div>
+            <ConfirmRepositionModal {...confirmRepositionModalProps} />
+        </>
     );
 }
 

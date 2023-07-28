@@ -8,7 +8,7 @@ import { CiCircleMore } from 'react-icons/ci';
 import styles from './TableMenus.module.css';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
+import TransactionDetailsModal from '../../../TransactionDetails/TransactionDetailsModal';
 import {
     useAppDispatch,
     useAppSelector,
@@ -27,7 +27,6 @@ import {
     setRangeTicksCopied,
 } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
@@ -36,6 +35,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useModal } from '../../../Modal/useModal';
 
 // interface for React functional component props
 interface propsIF {
@@ -49,9 +49,6 @@ interface propsIF {
 export default function TransactionsMenu(props: propsIF) {
     const { isBaseTokenMoneynessGreaterOrEqual, tx, isAccountView } = props;
     const {
-        globalModal: { open: openGlobalModal },
-    } = useContext(AppStateContext);
-    const {
         chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
@@ -59,6 +56,9 @@ export default function TransactionsMenu(props: propsIF) {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
+
+    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+        useModal();
 
     const showAbbreviatedCopyTradeButton = isAccountView
         ? isSidebarOpen
@@ -161,18 +161,6 @@ export default function TransactionsMenu(props: propsIF) {
             window.open(explorerUrl);
         }
     }
-
-    const openDetailsModal = () => {
-        openGlobalModal(
-            <TransactionDetails
-                tx={tx}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-            />,
-        );
-    };
 
     const isTxCopiable = true;
 
@@ -283,7 +271,7 @@ export default function TransactionsMenu(props: propsIF) {
     const detailsButton = (
         <button
             className={styles.option_button}
-            onClick={() => openDetailsModal()}
+            onClick={openDetailsModal}
             tabIndex={0}
             aria-label='Open details modal.'
         >
@@ -346,12 +334,23 @@ export default function TransactionsMenu(props: propsIF) {
     );
 
     return (
-        <div
-            className={styles.main_container}
-            onClick={(event) => event.stopPropagation()}
-        >
-            {desktopView && transactionsMenu}
-            {dropdownTransactionsMenu}
-        </div>
+        <>
+            <div
+                className={styles.main_container}
+                onClick={(event) => event.stopPropagation()}
+            >
+                {desktopView && transactionsMenu}
+                {dropdownTransactionsMenu}
+            </div>
+            <TransactionDetailsModal
+                tx={tx}
+                isBaseTokenMoneynessGreaterOrEqual={
+                    isBaseTokenMoneynessGreaterOrEqual
+                }
+                isAccountView={isAccountView}
+                isOpen={isDetailsModalOpen}
+                onClose={closeDetailsModal}
+            />
+        </>
     );
 }

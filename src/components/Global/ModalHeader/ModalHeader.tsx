@@ -1,8 +1,7 @@
 import styles from './ModalHeader.module.css';
 import { VscClose } from 'react-icons/vsc';
 import { BiArrowBack } from 'react-icons/bi';
-import { useContext } from 'react';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+
 interface SimpleModalHeaderPropsIF {
     title: string;
     onClose?: () => void;
@@ -11,15 +10,18 @@ interface SimpleModalHeaderPropsIF {
 }
 export default function ModalHeader(props: SimpleModalHeaderPropsIF) {
     const {
-        globalModal: { close: onClose },
-    } = useContext(AppStateContext);
+        title,
+        onClose = () => null,
+        onBackButton = () => null,
+        showBackButton = false,
+    } = props;
 
     return (
         <header className={styles.header_container}>
-            {props.showBackButton ? (
+            {showBackButton ? (
                 <BiArrowBack
                     size={22}
-                    onClick={() => props.onBackButton && props.onBackButton()}
+                    onClick={onBackButton}
                     role='button'
                     tabIndex={0}
                     aria-label='Go back button'
@@ -27,10 +29,10 @@ export default function ModalHeader(props: SimpleModalHeaderPropsIF) {
             ) : (
                 <div />
             )}
-            <h2>{props.title}</h2>
+            <h2>{title}</h2>
             <VscClose
                 size={22}
-                onClick={props.onClose ? props.onClose : onClose}
+                onClick={onClose}
                 role='button'
                 aria-label='Close modal button'
                 id='close_simple_modal_button'

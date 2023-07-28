@@ -1,36 +1,44 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 
-import styles from './OrderDetails.module.css';
-import OrderDetailsHeader from './OrderDetailsHeader/OrderDetailsHeader';
-import PriceInfo from '../OrderDetails/PriceInfo/PriceInfo';
-import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { LimitOrderIF } from '../../utils/interfaces/exports';
+import styles from './OrderDetailsModal.module.css';
+import OrderDetailsHeader from '../OrderDetailsHeader/OrderDetailsHeader';
+import PriceInfo from '../PriceInfo/PriceInfo';
+import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
+import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
-import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
-import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
-import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
-import { AppStateContext } from '../../contexts/AppStateContext';
-import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
-import { getLimitOrderData } from '../../App/functions/getLimitOrderData';
-import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { TokenContext } from '../../contexts/TokenContext';
-import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import modalBackground from '../../assets/images/backgrounds/background.png';
-import printDomToImage from '../../utils/functions/printDomToImage';
-import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import OrderDetailsSimplify from '../OrderDetailsSimplify/OrderDetailsSimplify';
+import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
+import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import modalBackground from '../../../assets/images/backgrounds/background.png';
+import printDomToImage from '../../../utils/functions/printDomToImage';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import Modal from '../../Global/Modal/Modal';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-export default function OrderDetails(props: propsIF) {
-    const { limitOrder, isBaseTokenMoneynessGreaterOrEqual, isAccountView } =
-        props;
+export default function OrderDetailsModal(props: propsIF) {
+    const {
+        limitOrder,
+        isBaseTokenMoneynessGreaterOrEqual,
+        isAccountView,
+        isOpen,
+        onClose,
+    } = props;
 
     const [showShareComponent, setShowShareComponent] = useState(true);
     const {
@@ -76,7 +84,6 @@ export default function OrderDetails(props: propsIF) {
     }
 
     const [usdValue, setUsdValue] = useState<string>('...');
-    // const [usdValue, setUsdValue] = useState<string>(limitOrder.totalValueUSD.toString());
     const [baseCollateralDisplay, setBaseCollateralDisplay] =
         useState<string>(baseDisplayFrontend);
     const [quoteCollateralDisplay, setQuoteCollateralDisplay] =
@@ -249,12 +256,13 @@ export default function OrderDetails(props: propsIF) {
         }
     };
 
-    // eslint-disable-next-line
-    const [controlItems, setControlItems] = useState([
+    // TODO: refactor into a constant?
+    const controlItems = [
         { slug: 'ticks', name: 'Show ticks', checked: true },
         { slug: 'liquidity', name: 'Show Liquidity', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
-    ]);
+    ];
+
     const shareComponent = (
         <div ref={detailsRef} className={styles.main_outer_container}>
             <div className={styles.main_content}>
@@ -303,40 +311,44 @@ export default function OrderDetails(props: propsIF) {
     );
 
     return (
-        <div className={styles.outer_container}>
-            <OrderDetailsHeader
-                copyOrderDetailsToClipboard={copyOrderDetailsToClipboard}
-                showShareComponent={showShareComponent}
-                setShowShareComponent={setShowShareComponent}
-                handleCopyPositionId={handleCopyPositionId}
-            />
-
-            {showShareComponent ? (
-                shareComponent
-            ) : (
-                <OrderDetailsSimplify
-                    limitOrder={limitOrder}
-                    usdValue={usdValue}
-                    isBid={isBid}
-                    isDenomBase={isDenomBase}
-                    baseCollateralDisplay={baseCollateralDisplay}
-                    quoteCollateralDisplay={quoteCollateralDisplay}
-                    isOrderFilled={isClaimable}
-                    approximateSellQtyTruncated={approximateSellQtyTruncated}
-                    approximateBuyQtyTruncated={approximateBuyQtyTruncated}
-                    baseDisplayFrontend={baseDisplayFrontend}
-                    quoteDisplayFrontend={quoteDisplayFrontend}
-                    quoteTokenLogo={quoteTokenLogo}
-                    baseTokenLogo={baseTokenLogo}
-                    baseTokenSymbol={baseTokenSymbol}
-                    quoteTokenSymbol={quoteTokenSymbol}
-                    baseTokenName={baseTokenName}
-                    quoteTokenName={quoteTokenName}
-                    isFillStarted={isFillStarted}
-                    truncatedDisplayPrice={truncatedDisplayPrice}
-                    isAccountView={isAccountView}
+        <Modal usingCustomHeader isOpen={isOpen}>
+            <div className={styles.outer_container}>
+                <OrderDetailsHeader
+                    copyOrderDetailsToClipboard={copyOrderDetailsToClipboard}
+                    showShareComponent={showShareComponent}
+                    setShowShareComponent={setShowShareComponent}
+                    handleCopyPositionId={handleCopyPositionId}
+                    onClose={onClose}
                 />
-            )}
-        </div>
+                {showShareComponent ? (
+                    shareComponent
+                ) : (
+                    <OrderDetailsSimplify
+                        limitOrder={limitOrder}
+                        usdValue={usdValue}
+                        isBid={isBid}
+                        isDenomBase={isDenomBase}
+                        baseCollateralDisplay={baseCollateralDisplay}
+                        quoteCollateralDisplay={quoteCollateralDisplay}
+                        isOrderFilled={isClaimable}
+                        approximateSellQtyTruncated={
+                            approximateSellQtyTruncated
+                        }
+                        approximateBuyQtyTruncated={approximateBuyQtyTruncated}
+                        baseDisplayFrontend={baseDisplayFrontend}
+                        quoteDisplayFrontend={quoteDisplayFrontend}
+                        quoteTokenLogo={quoteTokenLogo}
+                        baseTokenLogo={baseTokenLogo}
+                        baseTokenSymbol={baseTokenSymbol}
+                        quoteTokenSymbol={quoteTokenSymbol}
+                        baseTokenName={baseTokenName}
+                        quoteTokenName={quoteTokenName}
+                        isFillStarted={isFillStarted}
+                        truncatedDisplayPrice={truncatedDisplayPrice}
+                        isAccountView={isAccountView}
+                    />
+                )}
+            </div>
+        </Modal>
     );
 }

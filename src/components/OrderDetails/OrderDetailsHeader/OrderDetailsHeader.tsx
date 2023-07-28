@@ -12,6 +12,7 @@ interface OrderDetailsPropsIF {
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
     handleCopyPositionId(): void;
+    onClose: () => void;
 }
 export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
     const {
@@ -19,10 +20,8 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
         showShareComponent,
         setShowShareComponent,
         copyOrderDetailsToClipboard,
+        onClose,
     } = props;
-    const {
-        globalModal: { close: onClose },
-    } = useContext(AppStateContext);
 
     const copySlotIDIconWithTooltip = (
         <IconWithTooltip

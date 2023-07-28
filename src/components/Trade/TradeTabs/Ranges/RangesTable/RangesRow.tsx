@@ -2,12 +2,8 @@ import { useEffect, useRef, useState, useContext, memo } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import styles from '../Ranges.module.css';
-
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
-import RangeDetails from '../../../../RangeDetails/RangeDetails';
-
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
@@ -15,6 +11,8 @@ import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
+import { useModal } from '../../../../Global/Modal/useModal';
+import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
 
 interface propsIF {
     showPair: boolean;
@@ -36,7 +34,6 @@ function RangesRow(props: propsIF) {
         isLeaderboard,
     } = props;
     const {
-        globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -47,6 +44,9 @@ function RangesRow(props: propsIF) {
 
     const { currentRangeInReposition, currentRangeInAdd } =
         useContext(RangeContext);
+
+    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+        useModal();
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -115,20 +115,6 @@ function RangesRow(props: propsIF) {
         position: position,
         isAccountView: props.isAccountView,
         isPositionInRange: isPositionInRange,
-    };
-
-    const openDetailsModal = () => {
-        IS_LOCAL_ENV && console.debug({ position });
-        openGlobalModal(
-            <RangeDetails
-                position={position}
-                {...rangeDetailsProps}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-            />,
-        );
     };
 
     const positionDomId =
@@ -323,6 +309,16 @@ function RangesRow(props: propsIF) {
                     />
                 </li>
             </ul>
+            <RangeDetailsModal
+                position={position}
+                {...rangeDetailsProps}
+                isBaseTokenMoneynessGreaterOrEqual={
+                    isBaseTokenMoneynessGreaterOrEqual
+                }
+                isAccountView={isAccountView}
+                isOpen={isDetailsModalOpen}
+                onClose={closeDetailsModal}
+            />
         </>
     );
 }

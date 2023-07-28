@@ -45,9 +45,11 @@ import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
+import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
+import Modal from '../Global/Modal/Modal';
 
 interface propsIF {
-    type: 'Remove' | 'Harvest';
+    type: RangeModalActionType;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     isPositionInRange: boolean;
@@ -58,7 +60,8 @@ interface propsIF {
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
     position: PositionIF;
-    handleModalClose: () => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function RangeActionModal(props: propsIF) {
@@ -67,8 +70,9 @@ export default function RangeActionModal(props: propsIF) {
         position,
         baseTokenAddress,
         quoteTokenAddress,
-        handleModalClose,
         isAmbient,
+        isOpen,
+        onClose,
     } = props;
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
@@ -622,31 +626,6 @@ export default function RangeActionModal(props: propsIF) {
             ? ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100
             : undefined;
 
-    const confirmationContent = (
-        <div className={styles.confirmation_container}>
-            <ModalHeader
-                onClose={handleModalClose}
-                title={
-                    showSettings
-                        ? `${
-                              type === 'Remove' ? 'Remove Position' : 'Harvest'
-                          } Settings`
-                        : type === 'Remove'
-                        ? 'Remove Position'
-                        : 'Harvest Confirmation'
-                }
-                onBackButton={() => {
-                    resetConfirmation();
-                    setShowSettings(false);
-                }}
-                showBackButton={showSettings}
-            />
-            <div className={styles.confirmation_content}>
-                {currentConfirmationData}
-            </div>
-        </div>
-    );
-
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
 
@@ -775,11 +754,41 @@ export default function RangeActionModal(props: propsIF) {
         </>
     );
 
-    if (showConfirmation) return confirmationContent;
+    const confirmationModal = (
+        <Modal usingCustomHeader isOpen={isOpen}>
+            <div className={styles.confirmation_container}>
+                <ModalHeader
+                    onClose={onClose}
+                    title={
+                        showSettings
+                            ? `${
+                                  type === 'Remove'
+                                      ? 'Remove Position'
+                                      : 'Harvest'
+                              } Settings`
+                            : type === 'Remove'
+                            ? 'Remove Position'
+                            : 'Harvest Confirmation'
+                    }
+                    onBackButton={() => {
+                        resetConfirmation();
+                        setShowSettings(false);
+                    }}
+                    showBackButton={showSettings}
+                />
+                <div className={styles.confirmation_content}>
+                    {currentConfirmationData}
+                </div>
+            </div>
+        </Modal>
+    );
+
+    if (showConfirmation) return confirmationModal;
+
     return (
-        <>
+        <Modal usingCustomHeader isOpen={isOpen}>
             <ModalHeader
-                onClose={handleModalClose}
+                onClose={onClose}
                 title={
                     showSettings
                         ? `${
@@ -801,6 +810,6 @@ export default function RangeActionModal(props: propsIF) {
                     {buttonToDisplay}
                 </div>
             </div>
-        </>
+        </Modal>
     );
 }

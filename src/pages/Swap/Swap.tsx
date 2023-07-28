@@ -51,6 +51,7 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import OrderHeader from '../../components/Trade/OrderHeader/OrderHeader';
+import { useModal } from '../../components/Global/Modal/useModal';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -64,8 +65,10 @@ function Swap(props: propsIF) {
 
     const {
         wagmiModal: { open: openWagmiModal },
-        globalModal: { open: openGlobalModal },
     } = useContext(AppStateContext);
+
+    const [isModalOpen, openModal, closeModal] = useModal();
+
     const {
         crocEnv,
         chainData: { chainId, blockExplorer },
@@ -269,6 +272,7 @@ function Swap(props: propsIF) {
     const handleModalClose = () => {
         setNewSwapTransactionHash('');
         resetConfirmation();
+        closeModal();
     };
 
     const loginButton = (
@@ -386,6 +390,8 @@ function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
+        onClose: handleModalClose,
+        isOpen: isModalOpen,
     };
 
     const byPassConfirmSwapButtonProps = {
@@ -670,19 +676,7 @@ function Swap(props: propsIF) {
                                                 areBothAckd
                                                     ? bypassConfirmSwap.isEnabled
                                                         ? handleSwapButtonClickWithBypass
-                                                        : () =>
-                                                              openGlobalModal(
-                                                                  <ConfirmSwapModal
-                                                                      {...confirmSwapModalProps}
-                                                                  />,
-                                                                  'Swap Confirmation',
-                                                                  undefined,
-                                                                  undefined,
-                                                                  undefined,
-                                                                  undefined,
-                                                                  undefined,
-                                                                  handleModalClose,
-                                                              )
+                                                        : openModal
                                                     : ackAsNeeded
                                             }
                                             swapAllowed={
@@ -767,6 +761,7 @@ function Swap(props: propsIF) {
                     </div>
                 </ContentContainer>
             </div>
+            <ConfirmSwapModal {...confirmSwapModalProps} />
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

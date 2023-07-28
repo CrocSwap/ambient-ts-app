@@ -3,10 +3,6 @@ import { useState, useRef, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
-// START: Import JSX Functional Components
-import RangeDetails from '../../../../RangeDetails/RangeDetails';
-
-// START: Import Local Files
 import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -22,7 +18,6 @@ import {
     setRangeTicksCopied,
 } from '../../../../../utils/state/tradeDataSlice';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
@@ -32,6 +27,8 @@ import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import RangeActionModal from '../../../../RangeActionModal/RangeActionModal';
+import { useModal } from '../../../Modal/useModal';
+import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
 // interface for React functional component props
 interface propsIF {
     userMatchesConnectedAccount: boolean | undefined;
@@ -45,7 +42,7 @@ interface propsIF {
     handleAccountClick: () => void;
 }
 
-type RangeModalContentType = 'Harvest' | 'Remove';
+export type RangeModalActionType = 'Harvest' | 'Remove';
 
 // React functional component
 export default function RangesMenu(props: propsIF) {
@@ -60,9 +57,6 @@ export default function RangesMenu(props: propsIF) {
         isPositionInRange,
     } = props;
 
-    const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
-    } = useContext(AppStateContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -80,34 +74,33 @@ export default function RangesMenu(props: propsIF) {
 
     // ---------------------MODAL FUNCTIONALITY----------------
 
-    const handleModalClose = () => {
-        setShowDropdownMenu(false);
-        closeGlobalModal();
-    };
+    const [
+        isRangeDetailsModalOpen,
+        openRangeDetailsModal,
+        closeRangeDetailsModal,
+    ] = useModal();
+
+    const [
+        isRangeActionModalOpen,
+        openRangeActionModal,
+        closeRangeActionModal,
+    ] = useModal();
+    const [rangeModalAction, setRangeModalAction] =
+        useState<RangeModalActionType>('Harvest');
 
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
-        openGlobalModal(
-            <RangeDetails
-                position={position}
-                closeGlobalModal={closeGlobalModal}
-                {...rangeDetailsProps}
-            />,
-        );
+        openRangeDetailsModal();
     };
 
-    const RangeModalContent = (type: RangeModalContentType) => (
-        <RangeActionModal
-            type={type}
-            handleModalClose={handleModalClose}
-            position={position}
-            {...rangeDetailsProps}
-        />
-    );
-
-    const openRangeActionModal = (type: RangeModalContentType) => {
+    const openActionModal = (type: RangeModalActionType) => {
         setShowDropdownMenu(false);
-        openGlobalModal(RangeModalContent(type));
+        setRangeModalAction(type);
+        openRangeActionModal();
+    };
+    const handleActionModalClose = () => {
+        setShowDropdownMenu(false);
+        closeRangeActionModal();
     };
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
@@ -159,7 +152,7 @@ export default function RangesMenu(props: propsIF) {
     const removeButton = positionMatchesLoggedInUser ? (
         <button
             className={styles.option_button}
-            onClick={() => openRangeActionModal('Remove')}
+            onClick={() => openActionModal('Remove')}
         >
             Remove
         </button>
@@ -212,7 +205,7 @@ export default function RangesMenu(props: propsIF) {
         !isAmbient && positionMatchesLoggedInUser ? (
             <button
                 className={styles.option_button}
-                onClick={() => openRangeActionModal('Harvest')}
+                onClick={() => openActionModal('Harvest')}
             >
                 Harvest
             </button>
@@ -307,12 +300,24 @@ export default function RangesMenu(props: propsIF) {
     }, [showDropdownMenu]);
 
     return (
-        <div
-            className={styles.main_container}
-            onClick={(event) => event.stopPropagation()}
-        >
-            {rangesMenu}
-            {dropdownRangesMenu}
+        <div onClick={(event) => event.stopPropagation()}>
+            <div className={styles.main_container}>
+                {rangesMenu}
+                {dropdownRangesMenu}
+            </div>
+            <RangeDetailsModal
+                position={position}
+                isOpen={isRangeDetailsModalOpen}
+                onClose={closeRangeDetailsModal}
+                {...rangeDetailsProps}
+            />
+            <RangeActionModal
+                type={rangeModalAction}
+                isOpen={isRangeActionModalOpen}
+                onClose={handleActionModalClose}
+                position={position}
+                {...rangeDetailsProps}
+            />
         </div>
     );
 }
