@@ -1,6 +1,6 @@
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
-import { scaleData } from '../../pages/Trade/TradeCharts/TradeCandleStickChart';
+import { scaleData } from '../../pages/Chart/ChartUtils/chartUtils';
 import { LimitOrderIF } from '../interfaces/LimitOrderIF';
 import { PositionIF } from '../interfaces/PositionIF';
 import { TransactionIF } from '../interfaces/TransactionIF';
