@@ -4,12 +4,13 @@ import { useAccount, useProvider, useSigner } from 'wagmi';
 import { formSlugForPairParams } from '../App/functions/urlSlugs';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
-import { topPoolIF, useTopPools } from '../App/hooks/useTopPools';
+import { useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
 import { getDefaultPairForChain } from '../utils/data/defaultTokens';
 import { CachedDataContext } from './CachedDataContext';
 import { useMainnetProvider } from '../App/functions/useMainnetProvider';
 import { Provider } from '@ethersproject/providers';
+import { PoolIF } from '../utils/interfaces/exports';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -22,7 +23,7 @@ interface CrocEnvContextIF {
     setCrocEnv: (val: CrocEnv | undefined) => void;
     chainData: ChainSpec;
     isChainSupported: boolean;
-    topPools: topPoolIF[];
+    topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
     mainnetProvider: Provider | undefined;
@@ -42,7 +43,7 @@ export const CrocEnvContextProvider = (props: {
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     const [chainData, isChainSupported] = useAppChain(isConnected);
-    const topPools: topPoolIF[] = useTopPools(chainData.chainId);
+    const topPools: PoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
     >();
