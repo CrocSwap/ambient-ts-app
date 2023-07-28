@@ -294,3 +294,21 @@
     width: 90%;
 }
 
+.container {
+    position: relative;
+    display: inline-block; 
+  }
+
+  .options_button {
+    cursor: pointer;
+    display: none; 
+    position: absolute;
+    top: 30%; 
+    left: 100%; 
+    transform: translateX(-50%); 
+  }
+  
+  .msg_bubble_container:hover .options_button {
+    display: block; 
+  }
+

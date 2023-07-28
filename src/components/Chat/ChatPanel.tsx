@@ -148,7 +148,6 @@ function ChatPanel(props: propsIF) {
 
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
-    // const mentPanelInputRef = useRef<HTMLInputElement>(null);
 
     const messageInputListener = (value: string) => {
         if (value.indexOf('@') !== -1) {
@@ -322,32 +321,6 @@ function ChatPanel(props: propsIF) {
             setShowPreviousMessagesButton(true);
         } else {
             setShowPreviousMessagesButton(false);
-        }
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleWheel = (e: any) => {
-        if (
-            e.nativeEvent.wheelDelta > 0 &&
-            messageEnd.current?.scrollHeight !==
-                messageEnd.current?.scrollHeight
-        ) {
-            setScrollDirection('Scroll Up');
-            setIsScrollToBottomButtonPressed(false);
-        }
-        if (0 <= messageEnd.current?.scrollTop) {
-            setScrollDirection('Scroll Down');
-        }
-    };
-
-    const convertCurreny = (currencyPair: string) => {
-        if (currencyPair === 'Global') {
-            return 'global';
-        } else {
-            const [currencyA, currencyB] = currencyPair.split('/');
-            const lowercaseA = currencyA.trim().toLowerCase();
-            const lowercaseB = currencyB.trim().toLowerCase();
-            return `${lowercaseA}&${lowercaseB}`;
         }
     };
 

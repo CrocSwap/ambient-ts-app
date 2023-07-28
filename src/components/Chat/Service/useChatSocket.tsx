@@ -22,10 +22,10 @@ const useChatSocket = (
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
 
-    async function getMsgWithRest(roomInfo: string, p?: number) {
+    async function getMsgWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
-        const queryParams = 'p=' + p;
-        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getMsgWithoutWebSocket/${encodedRoomInfo}?${queryParams}`;
+        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getMsgWithoutWebSocket/${encodedRoomInfo}`;
+        console.log('url: ', url);
         const response = await fetch(url, {
             method: 'GET',
         });
@@ -45,7 +45,6 @@ const useChatSocket = (
             method: 'GET',
         });
         const data = await response.json();
-        console.log(data);
         setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
         setLastMessage(data);
         setLastMessageText(data.message);

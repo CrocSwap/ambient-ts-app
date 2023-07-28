@@ -6,10 +6,12 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { BiBlock } from 'react-icons/bi';
-import { BsFillReplyFill } from 'react-icons/bs';
-import ReplyMessage from '../ReplyMessage/ReplyMessage';
+// import { BiBlock } from 'react-icons/bi';
+
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
+import ReplyMessage from '../ReplyMessage/ReplyMessage';
+import { SlOptions } from 'react-icons/sl';
+import Options from '../Options/Options';
 
 interface SentMessageProps {
     message: Message;
@@ -44,6 +46,7 @@ interface SentMessageProps {
 
 function SentMessagePanel(props: SentMessageProps) {
     const [hasSeparator, setHasSeparator] = useState(false);
+    const [clickOptions, setClickOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);
@@ -144,9 +147,6 @@ function SentMessagePanel(props: SentMessageProps) {
 
     useEffect(() => {
         if ('repliedMessage' in props.message) {
-            console.log(
-                getReplyMessageInfo(props.message.repliedMessage as string),
-            );
             getReplyMessageInfo(props.message.repliedMessage as string);
         }
     }, [props.message]);
@@ -162,11 +162,6 @@ function SentMessagePanel(props: SentMessageProps) {
         const strTime = hours + ':' + _min + ' ' + ampm;
         return strTime;
     };
-
-    function setReplyMessage() {
-        props.setIsReplyButtonPressed(!props.isReplyButtonPressed);
-        props.setReplyMessageContent(props.message);
-    }
 
     const getDayAndName = (previousDay: string, currentDay: string) => {
         const today = new Date();
@@ -395,13 +390,24 @@ function SentMessagePanel(props: SentMessageProps) {
             setRepliedMessageDate(formatAMPM(result[0].createdAt));
             setRepliedMessageEnsName(result[0].ensName);
             setRepliedMessageWalletID(result[0].walletID);
-            console.log(repliedMessageWalletID);
         });
         return repliedMessageText;
+    }
+    function clickOptionButton() {
+        setClickOptions(!clickOptions);
     }
 
     return (
         <div className={styles.msg_bubble_container}>
+            <div className={styles.options_button}>
+                <Options
+                    setIsReplyButtonPressed={props.setIsReplyButtonPressed}
+                    message={props.message}
+                    isReplyButtonPressed={props.isReplyButtonPressed}
+                    replyMessageContent={props.replyMessageContent}
+                    setReplyMessageContent={props.setReplyMessageContent}
+                />
+            </div>
             <div>
                 {daySeparator === '' ? (
                     ''
@@ -499,14 +505,14 @@ function SentMessagePanel(props: SentMessageProps) {
                         >
                             {showName && getName()}
 
-                            <div>
+                            {/* <div>
                                 {' '}
                                 {props.moderator && showName ? (
                                     <BiBlock size={13} color='red' />
                                 ) : (
                                     ''
                                 )}
-                            </div>
+                            </div> */}
                         </div>
 
                         <PositionBox
@@ -519,6 +525,23 @@ function SentMessagePanel(props: SentMessageProps) {
                             showAvatar={showAvatar}
                         />
                         {!isPosition && mentionedMessage()}
+                        {clickOptions ? (
+                            <Options
+                                setIsReplyButtonPressed={
+                                    props.setIsReplyButtonPressed
+                                }
+                                message={props.message}
+                                isReplyButtonPressed={
+                                    props.isReplyButtonPressed
+                                }
+                                replyMessageContent={props.replyMessageContent}
+                                setReplyMessageContent={
+                                    props.setReplyMessageContent
+                                }
+                            />
+                        ) : (
+                            ''
+                        )}
                     </div>
                     {props.moderator ? (
                         <FiDelete
@@ -529,15 +552,13 @@ function SentMessagePanel(props: SentMessageProps) {
                     ) : (
                         ''
                     )}
+
                     <div className={styles.reply_message}>
                         <p className={styles.message_date}>
                             {formatAMPM(props.message.createdAt)}
                         </p>
-                        <BsFillReplyFill
-                            size={10}
-                            style={{ cursor: 'pointer' }}
-                            onClick={() => setReplyMessage()}
-                        />
+
+                        <div></div>
                     </div>
 
                     {/* {snackbarContent} */}

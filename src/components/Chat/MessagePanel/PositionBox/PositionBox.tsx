@@ -83,7 +83,7 @@ export default function PositionBox(props: propsIF) {
         updateIsPosition();
     }, [message, posFingerprint, txFingerprint]);
 
-    function financial(x: any) {
+    function financial(position: TransactionIF) {
         if (position?.entityType === 'limitOrder') {
             return position.bidTickInvPriceDecimalCorrected.toFixed(2);
         } else {

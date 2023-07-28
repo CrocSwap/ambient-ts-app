@@ -218,7 +218,6 @@ export default function MessageInput(props: MessageInputProps) {
                     : undefined,
             );
         }
-        props.setIsReplyButtonPressed(false);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
