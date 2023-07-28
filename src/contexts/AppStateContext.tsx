@@ -70,7 +70,6 @@ export const AppStateContextProvider = (props: {
     const globalPopup = useGlobalPopup();
     const skin = useSkin('purple_dark');
 
-    // TODO: refactor to assume only one modal will be open at a time
     const [
         isWagmiModalOpenWallet,
         openWagmiModalWallet,

@@ -36,14 +36,12 @@ export default function Modal(props: ModalPropsIF) {
         noBackground,
         children,
         showBackButton,
-        centeredTitle,
         headerRightItems,
+        centeredTitle = true,
         usingCustomHeader = false,
         isOpen = false,
         onClose = () => null,
     } = props;
-
-    // TODO: implement escape key press
 
     // jsx for the back element
     const backElement = (
@@ -55,7 +53,7 @@ export default function Modal(props: ModalPropsIF) {
     const headerJSX = !usingCustomHeader ? (
         <header className={styles.modal_header}>
             {showBackButton && backElement}
-            {(title !== '' || centeredTitle) && <div />}
+            {centeredTitle && <div />}
             <h2 className={styles.modal_title}>{title}</h2>
             <div className={styles.header_right}>
                 {headerRightItems && headerRightItems}

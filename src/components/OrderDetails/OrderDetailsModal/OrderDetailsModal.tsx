@@ -256,7 +256,6 @@ export default function OrderDetailsModal(props: propsIF) {
         }
     };
 
-    // TODO: refactor into a constant?
     const controlItems = [
         { slug: 'ticks', name: 'Show ticks', checked: true },
         { slug: 'liquidity', name: 'Show Liquidity', checked: true },
