@@ -36,6 +36,7 @@ import {
 } from '../../../../../utils/hooks/useLinkGen';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
+import { OptionButton } from '../../../Button/OptionButton';
 
 // interface for React functional component props
 interface propsIF {
@@ -165,25 +166,25 @@ export default function TransactionsMenu(props: propsIF) {
     const isTxCopiable = true;
 
     const walletButton = (
-        <button
-            className={styles.option_button}
-            tabIndex={0}
-            aria-label='View wallet.'
+        <OptionButton
+            ariaLabel='View wallet.'
             onClick={props.handleWalletClick}
-        >
-            Wallet
-            <FiExternalLink
-                size={15}
-                color='white'
-                style={{ marginLeft: '.5rem' }}
-            />
-        </button>
+            content={
+                <>
+                    Wallet
+                    <FiExternalLink
+                        size={15}
+                        color='white'
+                        style={{ marginLeft: '.5rem' }}
+                    />
+                </>
+            }
+        />
     );
 
     const copyButton =
         tx.entityType === 'liqchange' ? (
-            <button
-                className={styles.option_button}
+            <OptionButton
                 onClick={() => {
                     linkGenPool.navigate({
                         chain: chainId,
@@ -194,14 +195,11 @@ export default function TransactionsMenu(props: propsIF) {
                     });
                     handleCopyClick();
                 }}
-                tabIndex={0}
-                aria-label='Copy trade.'
-            >
-                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-            </button>
+                ariaLabel='Copy trade.'
+                content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+            />
         ) : tx.entityType === 'limitOrder' ? (
-            <button
-                className={styles.option_button}
+            <OptionButton
                 onClick={() => {
                     dispatch(setLimitTickCopied(true));
                     dispatch(setLimitTick(undefined));
@@ -222,14 +220,11 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
-                tabIndex={0}
-                aria-label='Copy trade.'
-            >
-                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-            </button>
+                ariaLabel='Copy trade.'
+                content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+            />
         ) : (
-            <button
-                className={styles.option_button}
+            <OptionButton
                 onClick={() => {
                     linkGenMarket.navigate(
                         tx.isBuy
@@ -246,37 +241,33 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
-                tabIndex={0}
-                aria-label='Copy trade.'
-            >
-                {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-            </button>
+                ariaLabel='Copy trade.'
+                content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+            />
         );
 
     const explorerButton = (
-        <button
-            className={styles.option_button}
+        <OptionButton
             onClick={handleOpenExplorer}
-            tabIndex={0}
-            aria-label='Open explorer.'
-        >
-            Explorer
-            <FiExternalLink
-                size={15}
-                color='white'
-                style={{ marginLeft: '.5rem' }}
-            />
-        </button>
+            ariaLabel='Open explorer.'
+            content={
+                <>
+                    Explorer
+                    <FiExternalLink
+                        size={15}
+                        color='white'
+                        style={{ marginLeft: '.5rem' }}
+                    />
+                </>
+            }
+        />
     );
     const detailsButton = (
-        <button
-            className={styles.option_button}
+        <OptionButton
             onClick={openDetailsModal}
-            tabIndex={0}
-            aria-label='Open details modal.'
-        >
-            Details
-        </button>
+            ariaLabel='Open details modal.'
+            content='Details'
+        />
     );
 
     // eslint-disable-next-line

@@ -234,6 +234,13 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         onClose();
     };
 
+    useEffect(() => {
+        const input = document.getElementById(
+            'token_select_input_field',
+        ) as HTMLInputElement;
+        if (input) input.focus();
+    }, []);
+
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
@@ -259,6 +266,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     />
                     {validatedInput && (
                         <button
+                            className={styles.clearButton}
                             onClick={() => setInput('')}
                             aria-label='Clear input'
                             tabIndex={0}

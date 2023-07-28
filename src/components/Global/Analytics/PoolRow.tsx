@@ -51,7 +51,7 @@ export default function PoolRow(props: propsIF) {
             <TableCell hidden sm>
                 <p>{pool.displayPrice ?? '...'}</p>
             </TableCell>
-            <TableCell hidden sm>
+            <TableCell>
                 <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
             </TableCell>
             <TableCell>
@@ -74,7 +74,7 @@ export default function PoolRow(props: propsIF) {
                         : pool.priceChangeStr}
                 </p>
             </TableCell>
-            <TableCell>
+            <TableCell hidden sm>
                 <FlexEnd>
                     <TradeButton>Trade</TradeButton>
                 </FlexEnd>

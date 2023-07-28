@@ -28,6 +28,7 @@ import {
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
+import { OptionButton } from '../../../Button/OptionButton';
 
 // interface for React functional component props
 interface propsIF {
@@ -122,42 +123,37 @@ export default function OrdersMenu(props: propsIF) {
         useMediaQuery('(min-width: 1680px)') && !isSidebarOpen;
 
     const walletButton = (
-        <button
-            className={styles.option_button}
-            tabIndex={0}
-            aria-label='View wallet.'
+        <OptionButton
+            ariaLabel='View wallet.'
             onClick={handleAccountClick}
-        >
-            Wallet
-            <FiExternalLink
-                size={15}
-                color='white'
-                style={{ marginLeft: '.5rem' }}
-            />
-        </button>
+            content={
+                <>
+                    Wallet
+                    <FiExternalLink
+                        size={15}
+                        color='white'
+                        style={{ marginLeft: '.5rem' }}
+                    />
+                </>
+            }
+        />
     );
     const removeButton =
         limitOrder && isOwnerActiveAccount && !isOrderFilled ? (
-            <button
-                className={styles.option_button}
+            <OptionButton
                 onClick={() => openLimitActionModal('Remove')}
-            >
-                Remove
-            </button>
+                content='Remove'
+            />
         ) : null;
     const claimButton =
         limitOrder && isOwnerActiveAccount && isOrderFilled ? (
-            <button
-                className={styles.option_button}
+            <OptionButton
                 onClick={() => openLimitActionModal('Claim')}
-            >
-                Claim
-            </button>
+                content='Claim'
+            />
         ) : null;
     const copyButton = limitOrder ? (
-        <button
-            style={{ opacity: '1' }}
-            className={styles.option_button}
+        <OptionButton
             onClick={() => {
                 dispatch(setLimitTickCopied(true));
                 linkGenLimit.navigate(
@@ -177,17 +173,11 @@ export default function OrdersMenu(props: propsIF) {
                 );
                 handleCopyOrder();
             }}
-        >
-            Copy Trade
-        </button>
+            content='Copy Trade'
+        />
     ) : null;
     const detailsButton = (
-        <button
-            className={styles.option_button}
-            onClick={openLimitDetailsModal}
-        >
-            Details
-        </button>
+        <OptionButton onClick={openLimitDetailsModal} content='Details' />
     );
 
     const ordersMenu = (

@@ -52,7 +52,6 @@ export default function ShareModal({ isOpen, onClose }: propsIF) {
         `ambient.finance${currentPathname}`,
     );
 
-    const linkToShareTruncated = linkToShare.slice(0, 50) + '...';
     const socialLinksData = [
         {
             name: 'Twitter',
@@ -111,7 +110,7 @@ export default function ShareModal({ isOpen, onClose }: propsIF) {
                 <p className={styles.url_link}>
                     <input
                         type='text'
-                        placeholder={`${linkToShareTruncated}`}
+                        placeholder={`${linkToShare}`}
                         disabled={true}
                         onChange={(e) => setLinkToShare(e?.target.value)}
                     />
