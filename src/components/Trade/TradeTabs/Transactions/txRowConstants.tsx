@@ -153,7 +153,7 @@ export const txRowConstants = (props: Props) => {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             data-label='value'
-            className={sideTypeStyle}
+            className={`${sideTypeStyle} ${styles.usd_val_Col}`}
             style={{ textAlign: 'right' }}
             tabIndex={0}
         >
@@ -291,7 +291,7 @@ export const txRowConstants = (props: Props) => {
 
     const tokenPair = (
         <li
-            className='base_color'
+            className={`base_color ${styles.token_pair_Col}`}
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             onClick={(event) => event.stopPropagation()}
@@ -325,6 +325,7 @@ export const txRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <li
+                className={styles.timestamp_Col}
                 style={{ textTransform: 'lowercase' }}
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
@@ -338,7 +339,7 @@ export const txRowConstants = (props: Props) => {
     const baseQtyDisplayWithTooltip = (
         <li
             data-label={tx.baseSymbol}
-            className='base_color'
+            className={`base_color ${styles.token_A_Col}`}
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             tabIndex={0}
@@ -360,7 +361,7 @@ export const txRowConstants = (props: Props) => {
     const quoteQtyDisplayWithTooltip = (
         <li
             data-label={tx.quoteSymbol}
-            className='base_color'
+            className={`base_color ${styles.token_B_Col}`}
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             tabIndex={0}
@@ -381,7 +382,7 @@ export const txRowConstants = (props: Props) => {
     );
 
     const txIdColumnComponent = (
-        <li>
+        <li className={styles.wallet_iD_Col}>
             {IDWithTooltip}
             {walletWithTooltip}
         </li>
@@ -392,7 +393,7 @@ export const txRowConstants = (props: Props) => {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             data-label='side'
-            className={sideTypeStyle}
+            className={`${sideTypeStyle} ${styles.side_Col}`}
             style={{ textAlign: 'center' }}
             tabIndex={0}
         >
@@ -407,7 +408,7 @@ export const txRowConstants = (props: Props) => {
     const baseQuoteQtyDisplayColumn = (
         <li
             data-label={tx.baseSymbol + tx.quoteSymbol}
-            className='color_white'
+            className={`color_white ${styles.token_both_Col}`}
             style={{ textAlign: 'right' }}
             onClick={() => {
                 openDetailsModal();
@@ -469,7 +470,7 @@ export const txRowConstants = (props: Props) => {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             data-label='type'
-            className={sideTypeStyle}
+            className={`${sideTypeStyle} ${styles.type_Col}`}
             style={{ textAlign: 'center' }}
             tabIndex={0}
         >
@@ -482,7 +483,7 @@ export const txRowConstants = (props: Props) => {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             data-label='side-type'
-            className={sideTypeStyle}
+            className={`${sideTypeStyle} ${styles.side_type_Col}`}
             style={{ textAlign: 'center' }}
         >
             <p>{type}</p>
@@ -553,7 +554,7 @@ export const txRowConstants = (props: Props) => {
                 openDetailsModal();
             }}
             data-label='price'
-            className={`${styles.align_right}  ${sideTypeStyle}`}
+            className={`${styles.align_right}  ${sideTypeStyle} ${styles.price_Col}`}
             tabIndex={0}
         >
             {(

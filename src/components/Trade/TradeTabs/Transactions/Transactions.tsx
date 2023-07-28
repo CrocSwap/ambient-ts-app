@@ -253,7 +253,7 @@ function Transactions(props: propsIF) {
     const headerColumns = [
         {
             name: 'Timestamp',
-            className: '',
+            className: 'timestamp_Col',
             show: showTimestamp,
 
             slug: 'time',
@@ -261,26 +261,28 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Pair',
-            className: '',
+            className: 'token_pair_Col',
             show: isAccountView && showPair,
             slug: 'pool',
             sortable: true,
         },
         {
             name: 'ID',
-
+            className: 'iD_Col',
             show: !showColumns,
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Wallet',
+            className: 'wallet_Col',
             show: !showColumns && !isAccountView,
             slug: 'wallet',
             sortable: true,
         },
         {
             name: walID,
+            className: 'wallet_iD_Col',
             show: showColumns,
             slug: 'walletid',
             sortable: !isAccountView,
@@ -288,6 +290,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Price',
+            className: 'price_Col',
             show: !ipadView,
             slug: 'price',
             sortable: false,
@@ -295,6 +298,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Side',
+            className: 'side_Col',
             show: !showColumns,
             slug: 'side',
             sortable: false,
@@ -302,6 +306,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Type',
+            className: 'type_Col',
             show: !showColumns,
             slug: 'type',
             sortable: false,
@@ -309,6 +314,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: sideType,
+            className: 'side_type_Col',
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
@@ -316,6 +322,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Value (USD)',
+            className: 'usd_val_Col',
             show: true,
             slug: 'value',
             sortable: true,
@@ -323,7 +330,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
-
+            className: 'token_A_Col',
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
@@ -331,6 +338,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
+            className: 'token_B_Col',
             show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
@@ -338,6 +346,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Tokensㅤㅤ',
+            className: 'token_both_Col',
             show: !isAccountView && showColumns,
             slug: 'tokens',
             sortable: false,
@@ -345,6 +354,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: <>Tokensㅤㅤ</>,
+            className: '',
             show: isAccountView && showColumns,
             slug: 'tokens',
             sortable: false,
@@ -352,6 +362,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: '',
+            className: '',
             show: true,
             slug: 'menu',
             sortable: false,

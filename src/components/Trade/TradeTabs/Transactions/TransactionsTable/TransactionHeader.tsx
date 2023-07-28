@@ -7,6 +7,7 @@ import { TxSortType } from '../../useSortedTxs';
 interface TransactionHeaderPropsIF {
     header: {
         name: string | JSX.Element;
+        className: string;
         show: boolean;
         slug: string;
         sortable: boolean;
@@ -21,7 +22,7 @@ interface TransactionHeaderPropsIF {
 }
 function TransactionHeader(props: TransactionHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
-    const { name, show, slug, sortable, alignRight, alignCenter } = header;
+    const { name, className, show, slug, sortable, alignRight, alignCenter } = header;
 
     function handleClick(slug: TxSortType) {
         if (sortable) {
@@ -69,10 +70,11 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
                     className={`${activeSortStyle} ${
                         alignRight && styles.align_right
-                    } ${alignCenter && styles.align_center}`}
+                    } ${alignCenter && styles.align_center} ${className && styles[className]}`}
                     onClick={() => handleClick(slug as TxSortType)}
                 >
-                    {name} {arrow}
+                    {name} {arrow} 
+                    {/* <div>{`${styles[className]}`}</div> */}
                 </li>
             )}
         </>

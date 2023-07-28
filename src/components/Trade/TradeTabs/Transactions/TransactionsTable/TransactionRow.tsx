@@ -267,8 +267,8 @@ function TransactionRow(props: propsIF) {
         >
             {showTimestamp && TxTimeWithTooltip}
             {isAccountView && showPair && tokenPair}
-            {!showColumns && <li>{IDWithTooltip}</li>}
-            {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
+            {!showColumns && <li className={styles.iD_Col}>{IDWithTooltip}</li>}
+            {!showColumns && !isAccountView && <li className={styles.wallet_Col}>{walletWithTooltip}</li>}
             {showColumns && txIdColumnComponent}
             {!ipadView &&
                 (tx.entityType === 'liqchange'
