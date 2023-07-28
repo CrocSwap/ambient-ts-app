@@ -545,7 +545,7 @@ export default function Limit() {
                 }  Price`,
             );
         } else {
-            if (!isWithdrawFromDexChecked) {
+            if (isWithdrawFromDexChecked) {
                 if (
                     tokenAAmount >
                     parseFloat(tokenADexBalance) + parseFloat(tokenABalance)

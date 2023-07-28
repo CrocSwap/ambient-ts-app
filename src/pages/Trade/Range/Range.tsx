@@ -92,8 +92,14 @@ function Range() {
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
-        baseToken: { dexBalance: baseTokenDexBalance },
-        quoteToken: { dexBalance: quoteTokenDexBalance },
+        baseToken: {
+            balance: baseTokenBalance,
+            dexBalance: baseTokenDexBalance,
+        },
+        quoteToken: {
+            balance: quoteTokenBalance,
+            dexBalance: quoteTokenDexBalance,
+        },
     } = useContext(TradeTokenContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
@@ -124,7 +130,8 @@ function Range() {
         graphData,
     } = useAppSelector((state) => state);
 
-    const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
+    const [tokenAAllowed, setTokenAAllowed] = useState<boolean>(false);
+    const [tokenBAllowed, setTokenBAllowed] = useState<boolean>(false);
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
     const [rangeWidthPercentage, setRangeWidthPercentage] =
@@ -281,6 +288,8 @@ function Range() {
         ],
     );
 
+    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
     const tokenADexBalance = isTokenABase
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
@@ -1059,44 +1068,73 @@ function Range() {
         }
     };
 
-    const handleRangeButtonMessage = (
-        token: TokenIF,
-        tokenAmount: string,
-        isWithdrawFromDexChecked: boolean,
-        availableBalance: string,
-        availableDexBalance: string,
-    ) => {
+    const handleRangeButtonMessageTokenA = (tokenAAmount: string) => {
         if (poolPriceNonDisplay === 0) {
-            setRangeAllowed(false);
+            setTokenAAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
         } else if (
-            isNaN(parseFloat(tokenAmount)) ||
-            parseFloat(tokenAmount) <= 0
+            isNaN(parseFloat(tokenAAmount)) ||
+            parseFloat(tokenAAmount) <= 0
         ) {
-            setRangeAllowed(false);
+            setTokenAAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
         } else {
-            if (isWithdrawFromDexChecked) {
+            if (isWithdrawTokenAFromDexChecked) {
                 if (
-                    parseFloat(tokenAmount) >
-                    parseFloat(availableDexBalance) +
-                        parseFloat(availableBalance)
+                    parseFloat(tokenAAmount) >
+                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
                 ) {
-                    setRangeAllowed(false);
+                    setTokenAAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${token.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                        `${tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
                     );
                 } else {
-                    setRangeAllowed(true);
+                    setTokenAAllowed(true);
                 }
             } else {
-                if (parseFloat(tokenAmount) > parseFloat(availableBalance)) {
-                    setRangeAllowed(false);
+                if (parseFloat(tokenAAmount) > parseFloat(tokenABalance)) {
+                    setTokenAAllowed(false);
                     setRangeButtonErrorMessage(
-                        `${token.symbol} Amount Exceeds Wallet Balance`,
+                        `${tokenA.symbol} Amount Exceeds Wallet Balance`,
                     );
                 } else {
-                    setRangeAllowed(true);
+                    setTokenAAllowed(true);
+                }
+            }
+        }
+    };
+
+    const handleRangeButtonMessageTokenB = (tokenBAmount: string) => {
+        if (poolPriceNonDisplay === 0) {
+            setTokenBAllowed(false);
+            setRangeButtonErrorMessage('Invalid Token Pair');
+        } else if (
+            isNaN(parseFloat(tokenBAmount)) ||
+            parseFloat(tokenBAmount) <= 0
+        ) {
+            setTokenBAllowed(false);
+            setRangeButtonErrorMessage('Enter an Amount');
+        } else {
+            if (isWithdrawTokenBFromDexChecked) {
+                if (
+                    parseFloat(tokenBAmount) >
+                    parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
+                ) {
+                    setTokenBAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${tokenB.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                    );
+                } else {
+                    setTokenBAllowed(true);
+                }
+            } else {
+                if (parseFloat(tokenBAmount) > parseFloat(tokenBBalance)) {
+                    setTokenBAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${tokenB.symbol} Amount Exceeds Wallet Balance`,
+                    );
+                } else {
+                    setTokenBAllowed(true);
                 }
             }
         }
@@ -1285,7 +1323,12 @@ function Range() {
                         isRangeSpanBelowCurrentPrice={
                             currentPoolPriceTick > defaultHighTick
                         }
-                        handleRangeButtonMessage={handleRangeButtonMessage}
+                        handleTokenAButtonMessage={
+                            handleRangeButtonMessageTokenA
+                        }
+                        handleTokenBButtonMessage={
+                            handleRangeButtonMessageTokenB
+                        }
                     />
                 </>
             }
@@ -1345,7 +1388,7 @@ function Range() {
                 <Button
                     title={
                         areBothAckd
-                            ? rangeAllowed
+                            ? tokenAAllowed && tokenBAllowed
                                 ? bypassConfirmRange.isEnabled
                                     ? isAdd
                                         ? `Add ${
@@ -1367,7 +1410,7 @@ function Range() {
                     }
                     disabled={
                         (!isPoolInitialized ||
-                            !rangeAllowed ||
+                            !(tokenAAllowed && tokenBAllowed) ||
                             isInvalidRange) &&
                         areBothAckd
                     }

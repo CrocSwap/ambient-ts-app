@@ -34,13 +34,8 @@ interface propsIF {
     isRangeSpanBelowCurrentPrice: boolean;
     isWithdrawTokenAFromDexChecked: boolean;
     isWithdrawTokenBFromDexChecked: boolean;
-    handleRangeButtonMessage: (
-        token: TokenIF,
-        tokenAmount: string,
-        isWithdrawFromDexChecked: boolean,
-        availableBalance: string,
-        availableDexBalance: string,
-    ) => void;
+    handleTokenAButtonMessage: (tokenAmount: string) => void;
+    handleTokenBButtonMessage: (tokenAmount: string) => void;
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
 }
 
@@ -54,7 +49,8 @@ function RangeTokenInput(props: propsIF) {
         isRangeSpanBelowCurrentPrice,
         isWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
-        handleRangeButtonMessage,
+        handleTokenAButtonMessage,
+        handleTokenBButtonMessage,
         toggleDexSelection,
     } = props;
 
@@ -109,20 +105,8 @@ function RangeTokenInput(props: propsIF) {
     }, [depositSkew, tokenA.address]);
 
     useEffect(() => {
-        handleRangeButtonMessage(
-            tokenA,
-            tokenAInputQty,
-            isWithdrawTokenAFromDexChecked,
-            tokenABalance,
-            tokenADexBalance,
-        );
-        handleRangeButtonMessage(
-            tokenB,
-            tokenBInputQty,
-            isWithdrawTokenBFromDexChecked,
-            tokenBBalance,
-            tokenBDexBalance,
-        );
+        handleTokenAButtonMessage(tokenAInputQty);
+        handleTokenBButtonMessage(tokenBInputQty);
     }, [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked]);
 
     const resetTokenQuantities = () => {
@@ -156,23 +140,12 @@ function RangeTokenInput(props: propsIF) {
 
         if (tokenAorB === 'A') {
             setTokenAInputQty(truncatedTokenQty);
-            handleRangeButtonMessage(
-                tokenA,
-                truncatedTokenQty,
-                isWithdrawTokenAFromDexChecked,
-                tokenABalance,
-                tokenADexBalance,
-            );
         } else {
             setTokenBInputQty(truncatedTokenQty);
-            handleRangeButtonMessage(
-                tokenB,
-                truncatedTokenQty,
-                isWithdrawTokenBFromDexChecked,
-                tokenBBalance,
-                tokenBDexBalance,
-            );
         }
+
+        handleTokenAButtonMessage(tokenAInputQty);
+        handleTokenBButtonMessage(tokenBInputQty);
     };
 
     const reverseTokens = (): void => {
