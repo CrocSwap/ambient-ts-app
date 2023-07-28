@@ -2,9 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { setCanvasResolution } from '../Chart';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
-import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
+import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 
 interface propsIF {
     scaleData: scaleData | undefined;

@@ -333,3 +333,16 @@ label {
         height: 85%;
     }
 }
+
+/*  SUBCHART  */
+
+#fee_rate_chart,
+#tvl_chart {
+    display: grid;
+    grid-template-rows: 0px auto 1fr auto;
+    grid-template-columns: auto 1fr auto minmax(1em, max-content);
+    height: 15%;
+    min-height: 3rem;
+}
+
+/* SUBCHART END */

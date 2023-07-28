@@ -2,10 +2,10 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import './Subcharts.css';
-import { setCanvasResolution } from '../../../Chart/Chart';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
-import { createIndicatorLine } from '../../../Chart/ChartUtils/indicatorLineSeries';
+import '../Chart.css';
+import { setCanvasResolution } from '../ChartUtils/chartUtils';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 
 interface FreeRateData {
     feeData: Array<CandleData>;
@@ -26,7 +26,7 @@ interface FreeRateData {
     xAxisActiveTooltip: string;
 }
 
-function FeeRateSubChart(props: FreeRateData) {
+function FeeRateChart(props: FreeRateData) {
     const {
         feeData,
         period,
@@ -398,4 +398,4 @@ function FeeRateSubChart(props: FreeRateData) {
     );
 }
 
-export default memo(FeeRateSubChart);
+export default memo(FeeRateChart);

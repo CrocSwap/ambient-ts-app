@@ -3,8 +3,6 @@ import * as d3fc from 'd3fc';
 import moment from 'moment';
 
 import {
-    DetailedHTMLProps,
-    HTMLAttributes,
     useCallback,
     useContext,
     useEffect,
@@ -12,7 +10,6 @@ import {
     useState,
     useMemo,
     MouseEvent,
-    MutableRefObject,
 } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -24,8 +21,7 @@ import {
     setShouldLimitDirectionReverse,
     candleScale,
 } from '../../utils/state/tradeDataSlice';
-import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
-import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
+
 import { PoolContext } from '../../contexts/PoolContext';
 import './Chart.css';
 import { pinTickLower, pinTickUpper, tickToPrice } from '@crocswap-libs/sdk';
@@ -50,66 +46,32 @@ import { SidebarContext } from '../../contexts/SidebarContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
-import CandleChart from './CandleChart';
+import CandleChart from './Candle/CandleChart';
 import LiquidityChart from './Liquidity/LiquidityChart';
-import {
-    liquidityChartData,
-    scaleData,
-} from '../Trade/TradeCharts/TradeCandleStickChart';
-import VolumeBarCanvas from './SubChartComponents/VolumeBarCanvas';
-import RangeLineCanvas from './SubChartComponents/RangeLineCanvas';
-import LimitLineCanvas from './SubChartComponents/LimitLineCanvas';
-import YaxisCanvas from './SubChartComponents/Yaxis/YaxisCanvas';
+import VolumeBarCanvas from './Volume/VolumeBarCanvas';
 import { LiquidityDataLocal } from '../Trade/TradeCharts/TradeCharts';
 import { createIndicatorLine } from './ChartUtils/indicatorLineSeries';
 import { CSSTransition } from 'react-transition-group';
 import Divider from '../../components/Global/Divider/Divider';
+import YAxisCanvas from './Axes/yAxis/YaxisCanvas';
+import TvlChart from './Tvl/TvlChart';
+import LimitLineChart from './LimitLine/LimitLineChart';
+import FeeRateChart from './FeeRate/FeeRateChart';
+import RangeLinesChart from './RangeLine/RangeLinesChart';
+import {
+    SubChartValue,
+    chartItemStates,
+    crosshair,
+    fillLiqAdvanced,
+    lineValue,
+    liquidityChartData,
+    renderCanvasArray,
+    renderSubchartCrCanvas,
+    scaleData,
+    setCanvasResolution,
+    zoomUtils,
+} from './ChartUtils/chartUtils';
 
-declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace JSX {
-        interface IntrinsicElements {
-            'd3fc-group': DetailedHTMLProps<
-                HTMLAttributes<HTMLDivElement>,
-                HTMLDivElement
-            >;
-            'd3fc-svg': DetailedHTMLProps<
-                HTMLAttributes<HTMLDivElement>,
-                HTMLDivElement
-            >;
-            'd3fc-canvas': DetailedHTMLProps<
-                HTMLAttributes<HTMLCanvasElement | HTMLDivElement>,
-                HTMLCanvasElement | HTMLDivElement
-            >;
-        }
-    }
-}
-
-export type crosshair = {
-    x: number | Date;
-    y: number | string;
-};
-export type chartItemStates = {
-    showTvl: boolean;
-    showVolume: boolean;
-    showFeeRate: boolean;
-    liqMode: string;
-};
-
-export type lineValue = {
-    name: string;
-    value: number;
-};
-
-interface SubChartValue {
-    name: string;
-    value: number | undefined;
-}
-
-type zoomUtils = {
-    zoom: d3.ZoomBehavior<Element, unknown>;
-    xAxisZoom: d3.ZoomBehavior<Element, unknown>;
-};
 interface propsIF {
     isTokenABase: boolean;
     liquidityData: liquidityChartData | undefined;
@@ -146,122 +108,6 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
     candleTimeInSeconds: number;
-}
-
-export function setCanvasResolution(canvas: HTMLCanvasElement) {
-    const ratio = window.devicePixelRatio < 1 ? 1 : window.devicePixelRatio;
-    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-    if (canvas !== null) {
-        const width = canvas.width;
-        const height = canvas.height;
-        canvas.width = width * ratio;
-        canvas.height = height * ratio;
-
-        canvas.style.width = width + 'px';
-        canvas.style.height = height + 'px';
-        context.scale(ratio, ratio);
-    }
-}
-
-export function renderCanvasArray(
-    canvasArray: MutableRefObject<HTMLDivElement | HTMLCanvasElement | null>[],
-) {
-    canvasArray.forEach((canvas) => {
-        if (canvas && canvas.current) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const container = d3.select(canvas.current).node() as any;
-            if (container) container.requestRedraw();
-        }
-    });
-}
-
-export const renderSubchartCrCanvas = () => {
-    const feeRateCrCanvas = d3
-        .select('#fee_rate_chart')
-        .select('#d3CanvasCrosshair');
-
-    if (feeRateCrCanvas) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const nd = feeRateCrCanvas.node() as any;
-        if (nd) nd.requestRedraw();
-    }
-
-    const tvlCrCanvas = d3.select('#tvl_chart').select('#d3CanvasCrosshair');
-
-    if (tvlCrCanvas) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const nd = tvlCrCanvas.node() as any;
-        if (nd) nd.requestRedraw();
-    }
-
-    const tvlYaxisCanvas = d3.select('#tvl_chart').select('#y-axis-canvas_tvl');
-
-    if (tvlYaxisCanvas) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const nd = tvlYaxisCanvas.node() as any;
-        if (nd) nd.requestRedraw();
-    }
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function standardDeviation(arr: any, usePopulation = false) {
-    const mean =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
-    return Math.sqrt(
-        arr
-            .reduce(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (acc: any, val: any) => acc.concat((val - mean) ** 2),
-                [],
-            )
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .reduce((acc: any, val: any) => acc + val, 0) /
-            (arr.length - (usePopulation ? 0 : 1)),
-    );
-}
-
-export function fillLiqAdvanced(
-    standardDeviation: number,
-    scaleData: scaleData,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    liquidityData: any,
-) {
-    const border = scaleData?.yScale.domain()[1];
-
-    const filledTickNumber = Math.min(border / standardDeviation, 150);
-
-    standardDeviation =
-        filledTickNumber === 150
-            ? (border - liquidityData?.liqBidData[0]?.liqPrices) / 150
-            : standardDeviation;
-
-    if (scaleData !== undefined) {
-        if (
-            border + standardDeviation >=
-            liquidityData?.liqBidData[0]?.liqPrices
-        ) {
-            for (let index = 0; index < filledTickNumber; index++) {
-                liquidityData?.liqBidData.unshift({
-                    activeLiq: 30,
-                    liqPrices:
-                        liquidityData?.liqBidData[0]?.liqPrices +
-                        standardDeviation,
-                    deltaAverageUSD: 0,
-                    cumAverageUSD: 0,
-                });
-
-                liquidityData?.depthLiqBidData.unshift({
-                    activeLiq: liquidityData?.depthLiqBidData[1]?.activeLiq,
-                    liqPrices:
-                        liquidityData?.depthLiqBidData[0]?.liqPrices +
-                        standardDeviation,
-                    deltaAverageUSD: 0,
-                    cumAverageUSD: 0,
-                });
-            }
-        }
-    }
 }
 
 export default function Chart(props: propsIF) {
@@ -4055,21 +3901,21 @@ export default function Chart(props: propsIF) {
                             className='market-line-canvas'
                         ></d3fc-canvas>
 
-                        <RangeLineCanvas {...rangeCanvasProps} />
+                        <RangeLinesChart {...rangeCanvasProps} />
 
-                        <LimitLineCanvas {...limitCanvasProps} />
+                        <LimitLineChart {...limitCanvasProps} />
 
                         <d3fc-canvas
                             ref={d3CanvasMain}
                             className='main-canvas'
                         ></d3fc-canvas>
 
-                        <YaxisCanvas {...yAxisCanvasProps} />
+                        <YAxisCanvas {...yAxisCanvasProps} />
                     </div>
                     {showFeeRate && (
                         <>
                             <hr />
-                            <FeeRateSubChart
+                            <FeeRateChart
                                 feeData={unparsedCandleData.sort(
                                     (a, b) => b.time - a.time,
                                 )}
@@ -4101,7 +3947,7 @@ export default function Chart(props: propsIF) {
                     {showTvl && (
                         <>
                             <hr />
-                            <TvlSubChart
+                            <TvlChart
                                 tvlData={unparsedCandleData.sort(
                                     (a, b) => b.time - a.time,
                                 )}

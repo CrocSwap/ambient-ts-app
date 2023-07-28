@@ -2,15 +2,18 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { formatDollarAmountAxis } from '../../../../utils/numbers';
-import './Subcharts.css';
-import { renderCanvasArray, setCanvasResolution } from '../../../Chart/Chart';
+import { formatDollarAmountAxis } from '../../../utils/numbers';
+import '../Chart.css';
+import {
+    renderCanvasArray,
+    setCanvasResolution,
+} from '../ChartUtils/chartUtils';
 import {
     diffHashSig,
     diffHashSigScaleData,
-} from '../../../../utils/functions/diffHashSig';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
-import { createIndicatorLine } from '../../../Chart/ChartUtils/indicatorLineSeries';
+} from '../../../utils/functions/diffHashSig';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 
 interface TvlData {
     tvlData: Array<CandleData>;
@@ -31,7 +34,7 @@ interface TvlData {
     xAxisActiveTooltip: string;
 }
 
-function TvlSubChart(props: TvlData) {
+function TvlChart(props: TvlData) {
     const {
         tvlData,
         period,
@@ -539,4 +542,4 @@ function TvlSubChart(props: TvlData) {
     );
 }
 
-export default memo(TvlSubChart);
+export default memo(TvlChart);

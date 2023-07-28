@@ -1,29 +1,26 @@
 import { useEffect, useRef, useState, MouseEvent } from 'react';
+import * as d3 from 'd3';
+import * as d3fc from 'd3fc';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useLocation } from 'react-router-dom';
 import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
-
-import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
+import { createRectLabel } from './YaxisUtils';
+import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
+import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import {
     crosshair,
     fillLiqAdvanced,
     lineValue,
+    liquidityChartData,
     renderCanvasArray,
     renderSubchartCrCanvas,
+    scaleData,
     setCanvasResolution,
     standardDeviation,
-} from '../../Chart';
-import { createRectLabel } from './YaxisUtils';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useLocation } from 'react-router-dom';
-import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
-import {
-    liquidityChartData,
-    scaleData,
-} from '../../../Trade/TradeCharts/TradeCandleStickChart';
+} from '../../ChartUtils/chartUtils';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
@@ -67,7 +64,7 @@ type yLabel = {
     height: number;
 };
 
-export default function YaxisCanvas(props: yAxisIF) {
+export default function YAxisCanvas(props: yAxisIF) {
     const {
         scaleData,
         ranges,
@@ -786,7 +783,6 @@ export default function YaxisCanvas(props: yAxisIF) {
                     }
                 }
 
-                // setZoomAndYdragControl(event);
                 setRescale(() => {
                     return false;
                 });

@@ -2,13 +2,17 @@ import { useContext, useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
+import {
+    lineValue,
+    renderCanvasArray,
+    scaleData,
+    setCanvasResolution,
+} from '../ChartUtils/chartUtils';
 import { createTriangle } from '../ChartUtils/triangle';
 import { useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { tickToPrice } from '@crocswap-libs/sdk';
 import { PoolContext } from '../../../contexts/PoolContext';
-import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -26,7 +30,7 @@ interface propsIF {
     setCheckLimitOrder: React.Dispatch<boolean>;
 }
 
-export default function LimitLineCanvas(props: propsIF) {
+export default function LimitLineChart(props: propsIF) {
     const {
         scaleData,
         isDenomBase,

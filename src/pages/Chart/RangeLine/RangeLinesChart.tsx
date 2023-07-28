@@ -2,7 +2,6 @@ import { useContext, useEffect, useRef, useState } from 'react';
 
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
 import { useLocation } from 'react-router-dom';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { getPinnedPriceValuesFromTicks } from '../../Trade/Range/rangeFunctions';
@@ -10,7 +9,12 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { createTriangle } from '../ChartUtils/triangle';
-import { scaleData } from '../../Trade/TradeCharts/TradeCandleStickChart';
+import {
+    lineValue,
+    renderCanvasArray,
+    scaleData,
+    setCanvasResolution,
+} from '../ChartUtils/chartUtils';
 
 interface propsIF {
     scaleData: scaleData | undefined;
@@ -35,7 +39,7 @@ interface propsIF {
     lineBuyColor: string;
 }
 
-export default function RangeLineCanvas(props: propsIF) {
+export default function RangeLinesChart(props: propsIF) {
     const {
         scaleData,
         tokenA,

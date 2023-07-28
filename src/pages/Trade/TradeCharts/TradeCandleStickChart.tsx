@@ -1,12 +1,4 @@
-import {
-    DetailedHTMLProps,
-    HTMLAttributes,
-    memo,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
@@ -30,25 +22,13 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import {
+    chartItemStates,
+    liquidityChartData,
+    scaleData,
+} from '../../Chart/ChartUtils/chartUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
-declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace JSX {
-        interface IntrinsicElements {
-            'd3fc-group': DetailedHTMLProps<
-                HTMLAttributes<HTMLDivElement>,
-                HTMLDivElement
-            >;
-            'd3fc-svg': DetailedHTMLProps<
-                HTMLAttributes<HTMLDivElement>,
-                HTMLDivElement
-            >;
-        }
-    }
-}
-
 interface propsIF {
     changeState: (
         isOpen: boolean | undefined,
@@ -73,32 +53,6 @@ interface propsIF {
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-type chartItemStates = {
-    showTvl: boolean;
-    showVolume: boolean;
-    showFeeRate: boolean;
-    liqMode: string;
-};
-
-export type liquidityChartData = {
-    liqAskData: LiquidityDataLocal[];
-    liqBidData: LiquidityDataLocal[];
-    depthLiqBidData: LiquidityDataLocal[];
-    depthLiqAskData: LiquidityDataLocal[];
-    topBoundary: number;
-    lowBoundary: number;
-    liqTransitionPointforCurve: number;
-    liqTransitionPointforDepth: number;
-};
-
-export type scaleData = {
-    xScale: d3.ScaleLinear<number, number>;
-    xScaleTime: d3.ScaleTime<number, number>;
-    yScale: d3.ScaleLinear<number, number>;
-    volumeScale: d3.ScaleLinear<number, number>;
-    xExtent: [number, number];
-};
 
 function TradeCandleStickChart(props: propsIF) {
     const { selectedDate, setSelectedDate } = props;

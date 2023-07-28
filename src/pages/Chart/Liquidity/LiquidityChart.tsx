@@ -7,7 +7,6 @@ import {
     useState,
 } from 'react';
 import * as d3 from 'd3';
-import { lineValue, renderCanvasArray, setCanvasResolution } from '../Chart';
 import {
     diffHashSig,
     diffHashSigScaleData,
@@ -18,17 +17,20 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { formatAmountWithoutDigit } from '../../../utils/numbers';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
 import {
+    lineValue,
     liquidityChartData,
+    renderCanvasArray,
     scaleData,
-} from '../../Trade/TradeCharts/TradeCandleStickChart';
+    setCanvasResolution,
+} from '../ChartUtils/chartUtils';
 import {
     createAreaSeries,
     decorateForLiquidityArea,
-} from '../LiquiditySeries/AreaSeries';
+} from './LiquiditySeries/AreaSeries';
 import {
     createLineSeries,
     decorateForLiquidityLine,
-} from '../LiquiditySeries/LineSeries';
+} from './LiquiditySeries/LineSeries';
 
 interface liquidityPropsIF {
     liqMode: string;
