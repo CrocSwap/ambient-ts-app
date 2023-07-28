@@ -14,7 +14,6 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import {
     setPrimaryQuantityRange,
     setIsTokenAPrimaryRange,

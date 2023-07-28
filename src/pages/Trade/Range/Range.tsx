@@ -35,7 +35,6 @@ import {
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import {
     addPendingTx,
     addTransactionByType,
