@@ -19,6 +19,8 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
+import TransactionsRowPlaceholder from '../Transactions/TransactionsTable/TransactionsRowPlaceholder';
+import trimString from '../../../../utils/functions/trimString';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -56,6 +58,10 @@ function Orders(props: propsIF) {
     );
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const receiptData = useAppSelector((state) => state.receiptData);
+    const pendingTransactions = receiptData.transactionsByType.filter(
+        (tx) => tx.txAction === 'New' && tx.txType === 'Range',
+    );
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -418,7 +424,18 @@ function Orders(props: propsIF) {
         <NoTableData type='orders' isAccountView={isAccountView} />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
-            <ul ref={listRef}>{currentRowItemContent}</ul>
+            <ul ref={listRef}>
+                {pendingTransactions.length > 0 &&
+                    pendingTransactions.map((tx) => (
+                        <TransactionsRowPlaceholder
+                            key={tx.txHash}
+                            id={trimString(tx.txHash.toString(), 6, 4, '…')}
+                            showColumns={showColumns}
+                            showPair={showPair}
+                        />
+                    ))}
+                {currentRowItemContent}
+            </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK

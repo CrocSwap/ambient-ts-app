@@ -189,7 +189,9 @@ export default function Transfer(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: `Transfer ${selectedToken.symbol}`,
+                            txAction: 'New',
+                            txType: 'Transfer',
+                            txTypeDetails: `Transfer ${selectedToken.symbol}`,
                         }),
                     );
                 let receipt;

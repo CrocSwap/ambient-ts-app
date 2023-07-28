@@ -457,7 +457,9 @@ export default function Limit() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
+                        txAction: 'New',
+                        txType: 'Limit',
+                        txTypeDetails: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
                     }),
                 );
         } catch (error) {
@@ -564,7 +566,9 @@ export default function Limit() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${tokenSymbol}`,
+                        txAction: 'New',
+                        txType: 'Approve',
+                        txTypeDetails: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;

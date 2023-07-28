@@ -223,7 +223,9 @@ export default function Deposit(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: `Deposit ${selectedToken.symbol}`,
+                            txAction: 'New',
+                            txType: 'Deposit',
+                            txTypeDetails: `Deposit ${selectedToken.symbol}`,
                         }),
                     );
 
@@ -286,7 +288,9 @@ export default function Deposit(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${selectedToken.symbol}`,
+                        txAction: 'New',
+                        txType: 'Approve',
+                        txTypeDetails: `Approval of ${selectedToken.symbol}`,
                     }),
                 );
             let receipt;

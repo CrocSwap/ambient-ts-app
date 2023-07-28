@@ -1030,7 +1030,9 @@ function Range() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: isAdd
+                        txAction: !isAdd ? 'Edit' : 'New',
+                        txType: 'Range',
+                        txTypeDetails: isAdd
                             ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
                     }),
@@ -1171,7 +1173,9 @@ function Range() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${tokenSymbol}`,
+                        txAction: 'New',
+                        txType: 'Approve',
+                        txTypeDetails: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
