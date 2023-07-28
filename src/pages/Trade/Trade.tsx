@@ -375,7 +375,7 @@ function Trade() {
         </section>
     );
     if (showActiveMobileComponent) return mobileTrade;
-
+    console.log(chartHeights.current);
     return (
         <section className={`${styles.main_layout}`}>
             {poolNotInitializedContent}

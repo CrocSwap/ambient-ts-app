@@ -1,7 +1,6 @@
 .tab_window {
     width: 100%;
     height: 100%;
-    background: var(--dark1);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -68,6 +67,7 @@
 .menu_content li.selected,
 .tab_ul_left li.selected {
     color: var(--accent1);
+
 }
 
 .tab_ul_left li {

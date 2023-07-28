@@ -78,7 +78,8 @@ function TradeTabs2(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings, chartHeights, setChartHeight } =
+        useContext(ChartContext);
 
     const candleTime = chartSettings.candleTime.global;
 
@@ -326,6 +327,17 @@ function TradeTabs2(props: propsIF) {
         setHasUserSelectedViewAll,
     };
 
+    const FULL_INFO_HEIGHT = chartHeights.default - 200;
+    console.log({ FULL_INFO_HEIGHT });
+    function handleChartHeightOnInfo() {
+        if (chartHeights.current <= FULL_INFO_HEIGHT) return;
+        if (chartHeights.current <= chartHeights.default) {
+            setChartHeight(chartHeights.current - 200);
+        }
+    }
+
+    console.log('default', chartHeights.default);
+    console.log('current', chartHeights.current);
     // data for headings of each of the three tabs
     const tradeTabData = isCandleSelected
         ? [
@@ -348,6 +360,7 @@ function TradeTabs2(props: propsIF) {
                   content: <Orders {...ordersProps} />,
                   icon: openOrdersImage,
                   showRightSideOption: true,
+                  onClick: () => console.log('yes'),
               },
               {
                   label: 'Ranges',
@@ -366,6 +379,7 @@ function TradeTabs2(props: propsIF) {
                   content: <TableInfo />,
                   icon: leaderboard,
                   showRightSideOption: false,
+                  onClick: handleChartHeightOnInfo,
               },
           ];
 
@@ -438,6 +452,8 @@ function TradeTabs2(props: propsIF) {
     );
 
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
+
+    console.log('this is it', selectedInsideTab);
 
     return (
         <div ref={tabComponentRef} className={styles.trade_tab_container}>

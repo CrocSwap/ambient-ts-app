@@ -20,7 +20,7 @@ const GridContainer = styled.div<GridContainerProps>`
 `;
 
 const MainSection = styled.section`
-    background: url(${backgroundImage}) no-repeat center center fixed;
+    background: url(${backgroundImage});
 
     height: 100%;
     padding: 8px;
@@ -28,9 +28,10 @@ const MainSection = styled.section`
 
 const BoxContainer = styled.div`
     grid-column: span 1;
-    background: rgba(23, 29, 39, 0.2);
+    background: rgba(23, 29, 39, 0.4);
     backdrop-filter: blur(10px);
     border-radius: 0.25rem;
+    height: 100%;
 `;
 
 const FeaturedBoxInnerContainer = styled.div`
@@ -91,14 +92,36 @@ const DetailedBoxContainer = styled.div`
     margin-top: 0.5rem;
     flex-direction: column;
     gap: 0.5rem;
+    height: 30%;
 `;
 
 const TabPlaceholder = styled.div`
     grid-column: span 1;
-    background-color: var(--dark3);
     height: 100%;
     background: rgba(23, 29, 39, 0.4);
     backdrop-filter: blur(10px);
+    padding: 8px;
+`;
+const StyledTabContainer = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    justify-content: center;
+    align-items: center;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    font-weight: 400;
+
+    p:first-child {
+        color: var(--text2);
+    }
+
+    p:nth-child(2) {
+        color: var(--text1);
+    }
 `;
 
 export {
@@ -115,4 +138,5 @@ export {
     LinkText,
     TabPlaceholder,
     DetailedBoxContainer,
+    StyledTabContainer,
 };

@@ -23,6 +23,7 @@ type tabData = {
     content: ReactNode;
     icon?: string;
     showRightSideOption?: boolean;
+    onClick?: () => void;
 };
 
 interface TabPropsIF {
@@ -32,6 +33,7 @@ interface TabPropsIF {
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
     shouldSyncWithTradeModules?: boolean;
+    transparent?: boolean;
     // this props is for components that do not need outside control such as exchange balance
 }
 
@@ -43,6 +45,7 @@ export default function TabComponent(props: TabPropsIF) {
         setShowPositionsOnlyToggle,
         isModalView = false,
         shouldSyncWithTradeModules = true,
+        transparent = false,
     } = props;
     const {
         outsideControl,
@@ -138,6 +141,7 @@ export default function TabComponent(props: TabPropsIF) {
             </div>
         );
     }
+
     const rightOptionWithProps =
         // eslint-disable-next-line
         cloneElement(rightTabOptions as ReactElement<any>, {
@@ -160,7 +164,10 @@ export default function TabComponent(props: TabPropsIF) {
                                 ? styles.selected
                                 : styles.non_selected
                         }
-                        onClick={() => handleSelectedTab(item)}
+                        onClick={() => {
+                            handleSelectedTab(item);
+                            item.onClick?.();
+                        }}
                         aria-describedby={
                             item.label === selectedTab.label
                                 ? 'current-tab'
@@ -218,7 +225,10 @@ export default function TabComponent(props: TabPropsIF) {
                                 ? styles.selected
                                 : styles.non_selected
                         }
-                        onClick={() => handleSelectedTab(item)}
+                        onClick={() => {
+                            handleSelectedTab(item);
+                            item.onClick?.();
+                        }}
                         role='tablist'
                         aria-describedby={
                             item.label === selectedTab.label
@@ -264,9 +274,12 @@ export default function TabComponent(props: TabPropsIF) {
         ? styles.justify_content_center
         : styles.justify_content_flex_start;
 
+    const backgroundStyle = transparent ? 'transparent' : 'var(--dark1)';
+
     return (
         <div
             className={styles.tab_window}
+            style={{ background: backgroundStyle }}
             role='tablist'
             aria-orientation='horizontal'
             aria-label=''

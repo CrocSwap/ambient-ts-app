@@ -13,6 +13,7 @@ import {
     TabPlaceholder,
     DetailedBoxContainer,
 } from './TableInfo.styles';
+import TableInfoTabs from './TableInfoTabs';
 interface FeaturedBoxPropsIF {
     tokenLogo: string;
     tokenSymbol: string;
@@ -124,8 +125,8 @@ export default function TableInfo() {
                     ))}
                 </GridContainer>
 
-                <GridContainer numRows={3} gapSize={8}>
-                    <GridContainer numCols={4} gapSize={8}>
+                <GridContainer numRows={3} gapSize={8} fullHeight>
+                    <GridContainer numCols={4} gapSize={8} fullHeight>
                         {detailedData.slice(0, 4).map((data, idx) => (
                             <DetailedBox
                                 label={data.label}
@@ -145,11 +146,10 @@ export default function TableInfo() {
                                 />
                             ))}
                     </GridContainer>
-                    <div>
-                        <TabPlaceholder>
-                            This is where the tabs go
-                        </TabPlaceholder>
-                    </div>
+
+                    <TabPlaceholder>
+                        <TableInfoTabs />
+                    </TabPlaceholder>
                 </GridContainer>
             </GridContainer>
         </MainSection>
