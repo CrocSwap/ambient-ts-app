@@ -1,12 +1,12 @@
 import styles from './OrderDetailsHeader.module.css';
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import logo from '../../../assets/images/logos/ambient_logo.png';
 import logoText from '../../../assets/images/logos/logo_text.png';
 
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+
 interface OrderDetailsPropsIF {
     copyOrderDetailsToClipboard: () => Promise<void>;
     showShareComponent: boolean;
