@@ -31,7 +31,7 @@
 .tabs_container {
     width: 100%;
     height: 100%;
-    border-radius: 4px 4px 0 0;
+    border-radius: var(--border-radius);
     background: var(--dark1);
     display: flex;
     flex-direction: row;
@@ -82,6 +82,7 @@ ul.tab_navs {
     font-weight: 200;
     text-align: center;
     padding: 8px;
+    border-radius: var(--border-radius);
 
     /* prevents the exchange balance sidebar from expanding downward on open */
     max-height: 80px;
