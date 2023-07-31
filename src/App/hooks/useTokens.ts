@@ -141,7 +141,9 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         const fetchAndFormatList = async (
             uri: string,
         ): Promise<TokenListIF | undefined> => {
+            // convert URI to an array of queryable endpoints
             const endpoints: string[] = uriToHttp(uri, 'retry');
+            // logic to query endpoints until a query is successful
             let rawData;
             for (let i = 0; i < endpoints.length; i++) {
                 const response = await fetch(endpoints[i]);
@@ -150,7 +152,9 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                     break;
                 }
             }
+            // cease funcationality if no endpoint returned a valid response
             if (!rawData) return;
+            // format the raw data returned with values used in the Ambient app
             const output: TokenListIF = {
                 ...rawData,
                 uri,
@@ -160,14 +164,19 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
                     return { ...tkn, fromList: uri };
                 }),
             };
+            // return formatted token list
             return output;
         };
+        // array of promises for fetched token lists
         const tokenListPromises: Promise<TokenListIF | undefined>[] =
             Object.values(tokenListURIs).map((uri: string) =>
                 fetchAndFormatList(uri),
             );
+        // resolve all promises for token lists
         Promise.all(tokenListPromises)
+            // remove `undefined` values (URIs that did not produce a valid response)
             .then((lists) => lists.filter((l) => l !== undefined))
+            // record token lists in local storage + persist in local storage
             .then((lists) => {
                 localStorage.setItem(
                     localStorageKeys.tokenLists,
