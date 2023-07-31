@@ -376,7 +376,7 @@ export default function Limit() {
 
     useEffect(() => {
         tokenAInputQty && handleLimitButtonMessage(parseFloat(tokenAInputQty));
-    }, [isOrderValid]);
+    }, [isOrderValid, tokenAInputQty, isPoolInitialized, poolPriceNonDisplay]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
