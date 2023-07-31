@@ -46,6 +46,7 @@ export function getFormattedNumber({
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
         });
+        prefix = '$';
     } else if (isToken) {
         if (isNaN(value)) {
             valueString = '';
@@ -72,6 +73,11 @@ export function getFormattedNumber({
                 maximumFractionDigits: maxFracDigits,
             });
         }
+    } else if (value < 0) {
+        valueString = value.toLocaleString('en-US', {
+            minimumFractionDigits: minFracDigits,
+            maximumFractionDigits: maxFracDigits,
+        });
     } else if (value <= 0.0001) {
         // use subscript format for small numbers
         valueString = formatSubscript(value);

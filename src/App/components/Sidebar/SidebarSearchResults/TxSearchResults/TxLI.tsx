@@ -1,7 +1,7 @@
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { getTxType } from './functions/exports';
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
+import { EntityType, getTxType } from '../../../../functions/getTxType';
 
 interface propsIF {
     tx: TransactionIF;
@@ -12,7 +12,7 @@ export default function TxLI(props: propsIF) {
     const { tx, handleClick } = props;
 
     // type of transaction in human-readable format
-    const txType = getTxType(tx.entityType);
+    const txType = getTxType(tx.entityType as EntityType);
 
     // value of transaction in human-readable format
     const txValue = getFormattedNumber({ value: tx.totalValueUSD });

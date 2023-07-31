@@ -220,6 +220,7 @@ export default function Chart(props: propsIF) {
 
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
 
+    const [chartHeights, setChartHeights] = useState(0);
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
@@ -407,18 +408,7 @@ export default function Chart(props: propsIF) {
     const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
     });
-
-    const lastCandleDataCenter = useMemo(() => {
-        const close = denomInBase
-            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
-            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
-
-        const open = denomInBase
-            ? lastCandleData?.invPriceOpenExclMEVDecimalCorrected
-            : lastCandleData?.priceOpenExclMEVDecimalCorrected;
-
-        return (open + close) / 2;
-    }, [lastCandleData, isDenomBase]);
+    const [lastCandleDataCenter, setLastCandleDataCenter] = useState(0);
     const [subChartValues, setsubChartValues] = useState([
         {
             name: 'feeRate',
@@ -4366,7 +4356,11 @@ export default function Chart(props: propsIF) {
         if (d3CanvasCandle) {
             const canvasDiv = d3.select(d3CanvasCandle.current) as any;
 
-            const resizeObserver = new ResizeObserver(() => {
+            const resizeObserver = new ResizeObserver((result: any) => {
+                const height = result[0].contentRect.height;
+
+                setChartHeights(height);
+
                 render();
             });
 
@@ -5271,6 +5265,8 @@ export default function Chart(props: propsIF) {
 
         const xmin = scaleData?.xScale.domain()[0];
         const xmax = scaleData?.xScale.domain()[1];
+        const ymin = scaleData?.yScale.domain()[0];
+        const ymax = scaleData?.yScale.domain()[1];
 
         unparsedCandleData.map((d: CandleData) => {
             avaregeHeight =
@@ -5410,6 +5406,35 @@ export default function Chart(props: propsIF) {
             dateControl &&
             checkYLocation
         ) {
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as any;
+
+            const rect = canvas.getBoundingClientRect();
+
+            const rectTop = rect.top / 2.5;
+
+            const maxValue = Math.max(open, close);
+            const minValue = Math.min(open, close);
+
+            const checkDomain = maxValue > ymax && minValue < ymin;
+
+            if (checkDomain || chartHeights < 250) {
+                setLastCandleDataCenter(scaleData.yScale((ymin + ymax) / 2));
+            } else if (
+                scaleData.yScale(ymin) - scaleData?.yScale(maxValue) < 100 ||
+                ymin > minValue
+            ) {
+                setLastCandleDataCenter(scaleData.yScale(maxValue) - rectTop);
+            } else if (
+                scaleData?.yScale(maxValue) - scaleData.yScale(ymax) <
+                5
+            ) {
+                setLastCandleDataCenter(scaleData.yScale(minValue));
+            } else {
+                setLastCandleDataCenter(scaleData.yScale((open + close) / 2));
+            }
             setIsShowLastCandleTooltip(true);
         } else {
             setIsShowLastCandleTooltip(false);
@@ -6402,9 +6427,8 @@ export default function Chart(props: propsIF) {
                 <div
                     className='lastCandleDiv'
                     style={{
-                        top:
-                            scaleData?.yScale(lastCandleDataCenter) +
-                            (fullScreenChart ? 130 : 65),
+                        fontSize: chartHeights > 280 ? 'medium' : '12px',
+                        top: lastCandleDataCenter,
                         left:
                             scaleData?.xScale(lastCandleData?.time * 1000) +
                             bandwidth * 2,
