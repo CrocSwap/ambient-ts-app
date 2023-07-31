@@ -31,7 +31,6 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import { GiBackwardTime, GiSaveArrow } from 'react-icons/gi';
-import { TbFileTime } from 'react-icons/tb';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
