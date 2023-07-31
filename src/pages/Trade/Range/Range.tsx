@@ -114,6 +114,7 @@ function Range() {
         tradeData: {
             isDenomBase,
             isTokenAPrimaryRange,
+            primaryQuantityRange,
             isLinesSwitched,
             tokenA,
             tokenB,
@@ -131,8 +132,12 @@ function Range() {
 
     const [tokenAAllowed, setTokenAAllowed] = useState<boolean>(false);
     const [tokenBAllowed, setTokenBAllowed] = useState<boolean>(false);
-    const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
-    const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
+    const [tokenAInputQty, setTokenAInputQty] = useState<string>(
+        isTokenAPrimaryRange ? primaryQuantityRange : '',
+    );
+    const [tokenBInputQty, setTokenBInputQty] = useState<string>(
+        !isTokenAPrimaryRange ? primaryQuantityRange : '',
+    );
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(simpleRangeWidth);
     const [isAmbient, setIsAmbient] = useState(false);
