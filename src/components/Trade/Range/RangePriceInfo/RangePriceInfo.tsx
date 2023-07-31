@@ -44,7 +44,6 @@ interface propsIF {
 // central react functional component
 function RangePriceInfo(props: propsIF) {
     const {
-        spotPriceDisplay,
         poolPriceCharacter,
         aprPercentage,
         pinnedDisplayPrices,
@@ -109,9 +108,6 @@ function RangePriceInfo(props: propsIF) {
     const [userFlippedMaxMinDisplay, setUserFlippedMaxMinDisplay] =
         useState<boolean>(false);
 
-    const [poolPriceUsdEquivalent, setPoolPriceUsdEquivalent] =
-        useState<string>('');
-
     const [minPriceUsdEquivalent, setMinPriceUsdEquivalent] =
         useState<string>('');
     // eslint-disable-next-line
@@ -149,10 +145,6 @@ function RangePriceInfo(props: propsIF) {
     const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplay;
     const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplay;
 
-    const currentPrice = userFlippedMaxMinDisplay
-        ? poolPriceUsdEquivalent
-        : poolPriceCharacter + spotPriceDisplay;
-
     const isStableTokenA = useMemo(
         () => isStableToken(tokenAAddress, chainId),
         [tokenAAddress, chainId],
@@ -164,36 +156,6 @@ function RangePriceInfo(props: propsIF) {
     );
 
     const isEitherTokenStable = isStableTokenA || isStableTokenB;
-
-    const updatePoolPriceUsdEquivalent = () => {
-        const spotPriceNum = parseFloat(spotPriceDisplay.replaceAll(',', ''));
-        if (!tokenBMainnetPrice || !tokenAMainnetPrice) return;
-
-        let poolPriceNum;
-
-        if (isDenomTokenA) {
-            poolPriceNum = spotPriceNum * tokenBMainnetPrice;
-        } else {
-            poolPriceNum = spotPriceNum * tokenAMainnetPrice;
-        }
-
-        const displayUsdPriceString = getFormattedNumber({
-            value: poolPriceNum,
-            zeroDisplay: '…',
-            prefix: '~$',
-        });
-        setPoolPriceUsdEquivalent(displayUsdPriceString);
-    };
-
-    useEffect(() => {
-        updatePoolPriceUsdEquivalent();
-    }, [
-        spotPriceDisplay,
-        isDenomTokenA,
-        tokenAMainnetPrice,
-        tokenBMainnetPrice,
-        tokenAAddress + tokenBAddress,
-    ]);
 
     const updateMainnetPricesAsync = async () => {
         const tokenAMainnetEquivalent =
