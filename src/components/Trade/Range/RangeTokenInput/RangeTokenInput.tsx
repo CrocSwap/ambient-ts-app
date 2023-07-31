@@ -114,7 +114,7 @@ function RangeTokenInput(props: propsIF) {
         dispatch(setPrimaryQuantityRange(''));
     };
 
-    const setTokenQtyValue = (inputValue: string, tokenAorB: 'A' | 'B') => {
+    const setTokenQtyValue = (inputValue: string, primaryToken: 'A' | 'B') => {
         if (poolPriceNonDisplay === undefined) return;
 
         const qtyToken = calculateSecondaryDepositQty(
@@ -122,7 +122,7 @@ function RangeTokenInput(props: propsIF) {
             tokenA.decimals,
             tokenB.decimals,
             inputValue,
-            tokenAorB !== 'A',
+            primaryToken === 'A',
             isTokenABase,
             isAmbient,
             depositSkew,
@@ -137,14 +137,18 @@ function RangeTokenInput(props: propsIF) {
               })
             : '';
 
-        if (tokenAorB === 'A') {
-            setTokenAInputQty(truncatedTokenQty);
-        } else {
+        if (primaryToken === 'A') {
             setTokenBInputQty(truncatedTokenQty);
+        } else {
+            setTokenAInputQty(truncatedTokenQty);
         }
 
-        handleTokenAButtonMessage(tokenAInputQty);
-        handleTokenBButtonMessage(tokenBInputQty);
+        handleTokenAButtonMessage(
+            primaryToken === 'A' ? inputValue : truncatedTokenQty,
+        );
+        handleTokenBButtonMessage(
+            primaryToken === 'A' ? truncatedTokenQty : inputValue,
+        );
     };
 
     const reverseTokens = (): void => {
@@ -165,7 +169,7 @@ function RangeTokenInput(props: propsIF) {
 
         dispatch(setIsTokenAPrimaryRange(true));
         dispatch(setPrimaryQuantityRange(inputStr));
-        setTokenQtyValue(value, 'B');
+        setTokenQtyValue(value, 'A');
     };
 
     const handleTokenBChangeEvent = (value: string) => {
@@ -173,22 +177,22 @@ function RangeTokenInput(props: propsIF) {
 
         dispatch(setIsTokenAPrimaryRange(false));
         dispatch(setPrimaryQuantityRange(inputStr));
-        setTokenQtyValue(value, 'A');
+        setTokenQtyValue(value, 'B');
     };
 
     const updateTokenQty = () => {
         if (!isOutOfRange) {
             isTokenAPrimaryRange
-                ? setTokenQtyValue(tokenAInputQty, 'B')
-                : setTokenQtyValue(tokenBInputQty, 'A');
+                ? setTokenQtyValue(tokenAInputQty, 'A')
+                : setTokenQtyValue(tokenBInputQty, 'B');
         } else {
             if (
                 (isRangeSpanBelowCurrentPrice && isTokenABase) ||
                 (!isRangeSpanBelowCurrentPrice && !isTokenABase)
             ) {
-                !!tokenAInputQty && setTokenQtyValue(tokenAInputQty, 'B');
+                !!tokenAInputQty && setTokenQtyValue(tokenAInputQty, 'A');
             } else {
-                !!tokenBInputQty && setTokenQtyValue(tokenBInputQty, 'A');
+                !!tokenBInputQty && setTokenQtyValue(tokenBInputQty, 'B');
             }
         }
     };
