@@ -81,7 +81,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
-            tokens.ackToken(tkn);
+            tokens.acknowledge(tkn);
         }
         // dispatch token data object to RTK
         if (isSingleToken) {
@@ -209,7 +209,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             case 'address':
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list
-                if (tokens.verifyToken(validatedInput)) {
+                if (tokens.verify(validatedInput)) {
                     output = 'token buttons';
                     // pathway if the address cannot be validated to any token in local storage
                 } else {
