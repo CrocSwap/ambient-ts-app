@@ -178,7 +178,12 @@ export default function Limit() {
 
     useEffect(() => {
         (async () => {
-            if (limitTick === undefined && crocEnv && !limitTickCopied) {
+            if (
+                limitTick === undefined &&
+                !!poolPriceNonDisplay &&
+                crocEnv &&
+                !limitTickCopied
+            ) {
                 if (!pool) return;
 
                 const spotPrice = await cachedQuerySpotPrice(
@@ -343,6 +348,7 @@ export default function Limit() {
         isDenomBase,
         priceInputFieldBlurred,
         isSellTokenBase,
+        !!poolPriceNonDisplay,
     ]);
 
     useEffect(() => {
