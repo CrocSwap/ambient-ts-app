@@ -56,8 +56,8 @@ function getAckTokensFromLS(): TokenIF[] {
 // Load pre-existing values from local storage, once at beggining of session
 // After this point, we will write updates to local storage, for future sessions
 // but the source os truth will be React state
-const INIT_LIST = getTokenListsFromLS();
-const INIT_ACK = getAckTokensFromLS();
+const INIT_LIST: TokenListIF[] = getTokenListsFromLS();
+const INIT_ACK: TokenIF[] = getAckTokensFromLS();
 
 export const useTokens = (chainId: string): tokenMethodsIF => {
     // Token universe
@@ -71,7 +71,8 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
     const tokenMap = useMemo<Map<string, TokenIF>>(() => {
         const retMap = new Map<string, TokenIF>();
         tokenLists
-            .reverse() // Reverse add, so higher priority lists overwrite lower priority
+            // Reverse add, so higher priority lists overwrite lower priority
+            .reverse()
             .flatMap((tl) => tl.tokens)
             .concat(ackTokens)
             .filter((t) => chainNumToString(t.chainId) === chainId)
@@ -108,6 +109,8 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         }
     }, [tokenMap.size]);
 
+    // fn to make a deep copy of a token data object
+    // without this we overrwrite token data in local storage in post-processing
     function deepCopyToken(tkn: TokenIF, source: string): TokenIF {
         return {
             address: tkn.address,
@@ -138,6 +141,7 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         const fetchAndFormatList = async (
             uri: string,
         ): Promise<TokenListIF | undefined> => {
+            console.log('fetching list: ' + uri);
             const endpoints: string[] = uriToHttp(uri, 'retry');
             let rawData;
             for (let i = 0; i < endpoints.length; i++) {
