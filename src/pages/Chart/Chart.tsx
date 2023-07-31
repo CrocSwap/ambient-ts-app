@@ -298,6 +298,7 @@ export default function Chart(props: propsIF) {
                 isFakeData: true,
             };
 
+            // added candle for pool price market price match
             if (!data[0].isFakeData) {
                 data.unshift(fakeData);
             } else {
@@ -411,6 +412,7 @@ export default function Chart(props: propsIF) {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
 
+    // calculates time croc icon will be found
     const lastCrDate = useMemo(() => {
         const nowDate = new Date();
 
@@ -432,16 +434,13 @@ export default function Chart(props: propsIF) {
         }
     }, [diffHashSigChart(unparsedCandleData)]);
 
-    useEffect(() => {
-        setRescale(true);
-    }, [denomInBase]);
-
     const render = useCallback(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nd = d3.select('#d3fc_group').node() as any;
         if (nd) nd.requestRedraw();
     }, []);
 
+    // controls the distance of the mouse to the range lines, if close, activates the dragRange event
     const canUserDragRange = useMemo<boolean>(() => {
         if (
             chartMousemoveEvent &&
@@ -477,6 +476,7 @@ export default function Chart(props: propsIF) {
         return false;
     }, [ranges, chartMousemoveEvent, mainCanvasBoundingClientRect]);
 
+    // controls the distance of the mouse to the limit line, if close, activates the dragLimit event
     const canUserDragLimit = useMemo<boolean>(() => {
         if (
             chartMousemoveEvent &&
@@ -539,9 +539,11 @@ export default function Chart(props: propsIF) {
     }, [isChartZoom]);
 
     useEffect(() => {
+        // auto zoom active
         setRescale(true);
-    }, [location.pathname, period]);
+    }, [location.pathname, period, denomInBase]);
 
+    // finds candle closest to the mouse
     const snapForCandle = (point: number, filtered: Array<CandleData>) => {
         if (scaleData) {
             if (point == undefined) return [];
@@ -554,6 +556,7 @@ export default function Chart(props: propsIF) {
         return filtered[0];
     };
 
+    // calculates first fetch candle domain for time and pool change
     useEffect(() => {
         if (scaleData) {
             const xDomain = scaleData?.xScale.domain();
@@ -1078,22 +1081,19 @@ export default function Chart(props: propsIF) {
                             );
                         }
                         if (clickedForLine) {
+                            // fires click event when zoom takes too short
                             if (
                                 zoomTimeout &&
                                 event.sourceEvent.type !== 'wheel' &&
                                 event.sourceEvent.timeStamp - zoomTimeout < 1
                             ) {
-                                const {
-                                    isHoverCandleOrVolumeData,
-                                    _selectedDate,
-                                    nearest,
-                                } = candleOrVolumeDataHoverStatus(
-                                    event.sourceEvent.offsetX,
-                                    event.sourceEvent.offsetY,
-                                );
+                                const { isHoverCandleOrVolumeData, nearest } =
+                                    candleOrVolumeDataHoverStatus(
+                                        event.sourceEvent.offsetX,
+                                        event.sourceEvent.offsetY,
+                                    );
                                 selectedDateEvent(
                                     isHoverCandleOrVolumeData,
-                                    _selectedDate,
                                     nearest,
                                 );
                             }
@@ -1258,6 +1258,7 @@ export default function Chart(props: propsIF) {
         }
     };
 
+    // when the auto button is clicked, the chart is auto scale
     useEffect(() => {
         if (scaleData !== undefined && liquidityData !== undefined) {
             if (rescale) {
@@ -1270,8 +1271,10 @@ export default function Chart(props: propsIF) {
                     const liqAllBidPrices = liquidityData?.liqBidData.map(
                         (liqData: LiquidityDataLocal) => liqData.liqPrices,
                     );
+                    // enlarges data to the end of the domain
                     const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
+                    // liq for advance mod is drawn forever
                     fillLiqAdvanced(liqBidDeviation, scaleData, liquidityData);
                 }
             }
@@ -1305,6 +1308,7 @@ export default function Chart(props: propsIF) {
             dispatch(setLimitTick(undefined));
     }, []);
 
+    // calculate range value for denom
     useEffect(() => {
         if (!tradeData.advancedMode && simpleRangeWidth === 100) {
             const lowTick = currentPoolPriceTick - simpleRangeWidth * 100;
@@ -1361,11 +1365,6 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    // Targets
-    useEffect(() => {
-        setMarketLineValue();
-    }, [location, denomInBase]);
-
     useEffect(() => {
         if (
             (location.pathname.includes('pool') ||
@@ -1405,9 +1404,10 @@ export default function Chart(props: propsIF) {
         tradeData.advancedMode,
         ranges,
         liquidityData?.liqBidData,
-        // diffHashSigScaleData(scaleData),
+        diffHashSigScaleData(scaleData),
     ]);
 
+    // performs reverse token function when limit line position (sell /buy) changes
     function reverseTokenForChart(
         limitPreviousData: number,
         newLimitValue: number,
@@ -1439,6 +1439,7 @@ export default function Chart(props: propsIF) {
         return { noGoZoneMin: noGoZoneMin, noGoZoneMax: noGoZoneMax };
     };
 
+    // finds border ticks of nogozone
     const setLimitTickNearNoGoZone = (low: number, high: number) => {
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(parseFloat(low.toString()))
@@ -1486,6 +1487,7 @@ export default function Chart(props: propsIF) {
         });
     };
 
+    // If the limit is set to no gozone, it will jump to the nearest tick
     function setLimitForNoGoZone(newLimitValue: number) {
         const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
@@ -1501,7 +1503,7 @@ export default function Chart(props: propsIF) {
         return newLimitValue;
     }
 
-    // Drag Type
+    // create drag events
     useEffect(() => {
         if (scaleData) {
             let newLimitValue: number;
@@ -1516,6 +1518,8 @@ export default function Chart(props: propsIF) {
             let draggingLine: string | undefined = undefined;
 
             let cancelDrag = false;
+
+            // clicking esc while dragging the line sets the line to the last value
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const cancelDragEvent = (event: any) => {
                 if (event.key === 'Escape') {
@@ -2071,6 +2075,7 @@ export default function Chart(props: propsIF) {
         }
     }, [reset]);
 
+    // create x axis
     useEffect(() => {
         if (scaleData) {
             const _xAxis = d3fc.axisBottom().scale(scaleData?.xScale);
@@ -2081,7 +2086,7 @@ export default function Chart(props: propsIF) {
         }
     }, [scaleData, location]);
 
-    // Axis's
+    // draw x axis
     useEffect(() => {
         if (scaleData) {
             const canvas = d3
@@ -2118,6 +2123,7 @@ export default function Chart(props: propsIF) {
         liquidityData?.liqTransitionPointforDepth,
     ]);
 
+    // Binds canvases to zoom and drag events
     useEffect(() => {
         if (
             xAxis &&
@@ -2374,7 +2380,7 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    // Horizontal Lines
+    // create market line and liquidity tooltip
     useEffect(() => {
         if (scaleData !== undefined) {
             const marketLine = d3fc
@@ -2410,6 +2416,7 @@ export default function Chart(props: propsIF) {
         }
     }, [scaleData, liquidityDepthScale, liquidityScale, isUserConnected]);
 
+    // when click reset chart should be auto scale
     useEffect(() => {
         if (
             scaleData !== undefined &&
@@ -2436,12 +2443,7 @@ export default function Chart(props: propsIF) {
             setReset(false);
             setShowLatest(false);
         }
-    }, [
-        // diffHashSigScaleData(scaleData),
-        reset,
-        minTickForLimit,
-        maxTickForLimit,
-    ]);
+    }, [reset, minTickForLimit, maxTickForLimit]);
 
     useEffect(() => {
         if (
@@ -3085,14 +3087,10 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const onClickCanvas = (event: PointerEvent) => {
-                const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
+                const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(event.offsetX, event.offsetY);
 
-                selectedDateEvent(
-                    isHoverCandleOrVolumeData,
-                    _selectedDate,
-                    nearest,
-                );
+                selectedDateEvent(isHoverCandleOrVolumeData, nearest);
 
                 setCrosshairActive('none');
 
@@ -3409,7 +3407,8 @@ export default function Chart(props: propsIF) {
                 ? limitTop > yValue && limitBot < yValue
                 : limitTop < yValue && limitBot > yValue;
         if (
-            nearest.time === unparsedCandleData[0].time &&
+            nearest &&
+            nearest?.time === unparsedCandleData[0].time &&
             dateControl &&
             checkYLocation &&
             scaleData
@@ -3448,23 +3447,26 @@ export default function Chart(props: propsIF) {
             setIsShowLastCandleTooltip(false);
         }
 
+        /**
+         * isHoverCandleOrVolumeData : mouse over candle or volume data
+         * nearest : data information closest to the mouse
+         */
         return {
             isHoverCandleOrVolumeData:
                 nearest &&
                 dateControl &&
                 nearest.time !== unparsedCandleData[0].time &&
                 (checkYLocation || isSelectedVolume),
-            _selectedDate: nearest?.time * 1000,
             nearest: nearest,
         };
     };
 
     const selectedDateEvent = (
         isHoverCandleOrVolumeData: boolean,
-        _selectedDate: number,
         nearest: CandleData | undefined,
     ) => {
-        if (isHoverCandleOrVolumeData) {
+        if (isHoverCandleOrVolumeData && nearest) {
+            const _selectedDate = nearest?.time * 1000;
             if (selectedDate === undefined || selectedDate !== _selectedDate) {
                 props.setCurrentData(nearest);
 
