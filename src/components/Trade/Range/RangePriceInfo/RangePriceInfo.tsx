@@ -349,58 +349,12 @@ function RangePriceInfo(props: propsIF) {
             </div>
         );
 
-    // JSX frag for current pool price
-    const currentPoolPrice =
-        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <DefaultTooltip
-                interactive
-                title={`${poolPriceUsdEquivalent} USD per ${
-                    isDenomBase ? baseToken.symbol : quoteToken.symbol
-                } `}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
-            >
-                <div className={styles.price_display}>
-                    <h4 className={styles.price_title}>Current Price</h4>
-                    <span
-                        className={styles.current_price}
-                        onClick={() => {
-                            dispatch(toggleDidUserFlipDenom());
-                            setUserFlippedMaxMinDisplay(false);
-                        }}
-                    >
-                        {currentPrice === 'Infinity' || !currentPrice
-                            ? '…'
-                            : `${currentPrice}`}
-                    </span>
-                </div>
-            </DefaultTooltip>
-        ) : (
-            <div className={styles.price_display}>
-                <h4 className={styles.price_title}>Current Price</h4>
-                <span
-                    className={styles.current_price}
-                    onClick={() => {
-                        dispatch(toggleDidUserFlipDenom());
-                        setUserFlippedMaxMinDisplay(false);
-                    }}
-                >
-                    {currentPrice === 'Infinity' || !currentPrice
-                        ? '…'
-                        : `${currentPrice}`}
-                </span>
-            </div>
-        );
-
     return (
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
                 {aprDisplay}
                 {minimumPrice}
                 {maximumPrice}
-                {currentPoolPrice}
             </div>
         </div>
     );
