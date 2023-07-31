@@ -24,7 +24,6 @@ export const fetchNativeTokenBalance = async (
     _lastBlockNumber: number,
     crocEnv: CrocEnv | undefined,
 ) => {
-    console.log('running fn fetchNativeTokenBalance');
     if (!crocEnv) return;
 
     const getDexBalanceNonDisplay = async (
@@ -115,7 +114,6 @@ export const fetchErc20TokenBalances = async (
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
 ): Promise<TokenIF[] | undefined> => {
-    console.log('running fetchErc20TokenBalances');
     if (!crocEnv) return;
 
     // Doesn't have to be comprehensive, just to satisfy typescript
