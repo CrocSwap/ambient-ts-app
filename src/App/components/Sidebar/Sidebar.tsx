@@ -14,7 +14,7 @@ import SidebarRecentTransactions from '../../../components/Global/Sidebar/Sideba
 import styles from './Sidebar.module.css';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose, MdOutlineExpand } from 'react-icons/md';
-import { LuDroplets } from 'react-icons/lu';
+import { LuDroplets, LuFileClock } from 'react-icons/lu';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { AiFillLock, AiFillUnlock, AiOutlineHeart } from 'react-icons/ai';
@@ -158,7 +158,7 @@ function Sidebar() {
         {
             name: 'Transactions',
             icon: (
-                <TbFileTime
+                <LuFileClock
                     className={`${styles.icon} ${
                         !sidebar.isOpen && styles.closed
                     }`}
