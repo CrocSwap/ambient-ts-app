@@ -354,7 +354,7 @@ export default function Limit() {
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
-        !!limitTick,
+        limitTick,
         poolPriceNonDisplay,
         tokenAInputQty === '' && tokenBInputQty === '',
     ]);
