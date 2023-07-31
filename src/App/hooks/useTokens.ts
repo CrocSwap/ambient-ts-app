@@ -141,7 +141,6 @@ export const useTokens = (chainId: string): tokenMethodsIF => {
         const fetchAndFormatList = async (
             uri: string,
         ): Promise<TokenListIF | undefined> => {
-            console.log('fetching list: ' + uri);
             const endpoints: string[] = uriToHttp(uri, 'retry');
             let rawData;
             for (let i = 0; i < endpoints.length; i++) {
