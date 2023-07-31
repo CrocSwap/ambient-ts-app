@@ -5,7 +5,7 @@ import {
     priceHalfAboveTick,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, useMemo } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { useTradeData } from '../../../App/hooks/useTradeData';
