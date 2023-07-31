@@ -189,12 +189,6 @@ function TradeCandleStickChart(props: propsIF) {
         }
     };
 
-    useEffect(() => {
-        if (unparsedCandleData === undefined) {
-            clearLiquidityData();
-        }
-    }, [unparsedCandleData === undefined]);
-
     // Parse liquidtiy data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
         if (
