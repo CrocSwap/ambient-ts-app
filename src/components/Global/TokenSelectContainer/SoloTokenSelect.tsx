@@ -236,14 +236,21 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
     }, [contentRouter]);
 
-    const input = document.getElementById(
-        'token_select_input_field',
-    ) as HTMLInputElement;
     const clearInputField = () => {
+        const input = document.getElementById(
+            'token_select_input_field',
+        ) as HTMLInputElement;
         if (input) input.value = '';
         setInput('');
-        document.getElementById('token_select_input_field')?.focus();
+        input?.focus();
     };
+
+    useEffect(() => {
+        const input = document.getElementById(
+            'token_select_input_field',
+        ) as HTMLInputElement;
+        if (input) input.focus();
+    }, []);
 
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
@@ -255,7 +262,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     id='token_select_input_field'
                     spellCheck='false'
                     type='text'
-                    placeholder=' Search name or enter an Address'
+                    placeholder=' Search by token name or address'
                     onChange={(e) => setInput(e.target.value)}
                     style={{
                         color: showSoloSelectTokenButtons
@@ -263,8 +270,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                             : 'var(--text3)',
                     }}
                 />
-                {input?.value && (
+                {validatedInput && (
                     <button
+                    className={styles.clearButton}
                         onClick={clearInputField}
                         aria-label='Clear input'
                         tabIndex={0}
