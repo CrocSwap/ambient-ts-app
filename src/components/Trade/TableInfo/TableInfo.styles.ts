@@ -3,22 +3,6 @@ import backgroundImage from '../../../assets/images/backgrounds/tableInfoBg.png'
 
 // can be extracted to common
 
-interface GridContainerProps {
-    numCols?: number;
-    numRows?: number;
-    gapSize?: number;
-    fullHeight?: boolean;
-}
-const GridContainer = styled.div<GridContainerProps>`
-    display: grid;
-    grid-template-columns: ${({ numCols }) =>
-        numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
-    grid-template-rows: ${({ numRows }) =>
-        numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
-    gap: ${({ gapSize }) => (gapSize ? `${gapSize}px` : '0')};
-    ${({ fullHeight }) => (fullHeight ? 'height: 100%;' : '')}
-`;
-
 const MainSection = styled.section`
     background: url(${backgroundImage});
 
@@ -125,7 +109,6 @@ const StyledTabContainer = styled.div`
 `;
 
 export {
-    GridContainer,
     MainSection,
     BoxContainer,
     FeaturedBoxInfoContainer,

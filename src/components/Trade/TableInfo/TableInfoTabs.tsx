@@ -1,5 +1,6 @@
+import { GridContainer } from '../../../styled/Common';
 import TabComponent from '../../Global/TabComponent/TabComponent';
-import { GridContainer, StyledTabContainer } from './TableInfo.styles';
+import { StyledTabContainer } from './TableInfo.styles';
 interface TabContainerProps {
     label: string;
     data: string;

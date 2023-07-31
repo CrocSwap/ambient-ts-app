@@ -1,5 +1,5 @@
+import { GridContainer } from '../../../styled/Common';
 import {
-    GridContainer,
     MainSection,
     BoxContainer,
     FeaturedBoxInfoContainer,
