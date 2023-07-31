@@ -375,7 +375,7 @@ export default function Limit() {
     }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
-        tokenAInputQty && handleLimitButtonMessage(parseFloat(tokenAInputQty));
+        handleLimitButtonMessage(parseFloat(tokenAInputQty));
     }, [isOrderValid, tokenAInputQty, isPoolInitialized, poolPriceNonDisplay]);
 
     useEffect(() => {
