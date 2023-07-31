@@ -75,8 +75,8 @@ export default function SidebarRangePositions(props: propsIF) {
             <header className={styles.range_header}>
                 <div>Pool</div>
                 <div>Range</div>
-                <div />
                 <div>Value</div>
+                <div />
             </header>
             <div className={styles.content}>
                 {userPositions &&

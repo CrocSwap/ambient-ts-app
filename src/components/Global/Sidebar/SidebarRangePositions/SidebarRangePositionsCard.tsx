@@ -36,6 +36,7 @@ export default function SidebarRangePositionsCard(props: propsIF) {
         <div className={styles.container} onClick={() => handleClick(position)}>
             <div>{pair}</div>
             <div>{rangeDisplay}</div>
+            <div className={styles.status_display}>{value}</div>
             <div>
                 <div className={styles.range_status_container}>
                     <div className={rangeStatusStyle}>
@@ -43,7 +44,6 @@ export default function SidebarRangePositionsCard(props: propsIF) {
                     </div>
                 </div>
             </div>
-            <div className={styles.status_display}>{value}</div>
         </div>
     );
 }

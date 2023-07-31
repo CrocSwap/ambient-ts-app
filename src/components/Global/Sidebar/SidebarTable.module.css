@@ -23,7 +23,7 @@
 }
 
 .range_header {
-    grid-template-columns: 1fr 2fr 20px 1fr;
+    grid-template-columns: 1fr 2fr 1fr 20px;
     text-align: center;
 }
 
