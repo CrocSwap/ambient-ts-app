@@ -78,7 +78,7 @@ export default function SidebarRangePositions(props: propsIF) {
 
     return (
         <SidebarPoolsListContainer>
-            <SidebarPoolsListHeaderContainer>
+            <SidebarPoolsListHeaderContainer range>
                 <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Range</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Value</SidebarPoolsListHeader>
