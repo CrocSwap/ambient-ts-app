@@ -555,18 +555,8 @@ function Range() {
     ]);
 
     useEffect(() => {
-        if (
-            isPoolInitialized === undefined ||
-            poolPriceNonDisplay === undefined
-        ) {
-            setRangeButtonErrorMessage('…');
-        } else if (!isPoolInitialized) {
-            setRangeButtonErrorMessage('Pool Not Initialized');
-        } else if (isInvalidRange) {
-            setRangeButtonErrorMessage('Please Enter a Valid Range');
-        } else if (!isQtyEntered) {
-            setRangeButtonErrorMessage('Enter an Amount');
-        }
+        handleRangeButtonMessageTokenA(tokenAInputQty);
+        handleRangeButtonMessageTokenB(tokenBInputQty);
     }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
 
     useEffect(() => {
