@@ -38,12 +38,7 @@ const FlexContainer = styled.div<FlexContainerProps>`
     ${({ justifyContent }) =>
         justifyContent && `justify-content: ${justifyContent}`};
 `;
-// ------------------------FONTS------------------------------
-// Example usage:
-// const CustomDiv = styled.div<{ fontSize: string }>`
-//     /* Other styles for your div go here */
-//   ${FontSize}
-// `;
+
 const FontSize = css<{ fontSize?: 'header1' | 'header2' | 'header' | 'body' }>`
     ${({ fontSize }) =>
         fontSize &&
@@ -52,5 +47,4 @@ const FontSize = css<{ fontSize?: 'header1' | 'header2' | 'header' | 'body' }>`
     line-height: var(--${fontSize}-lh);
   `}
 `;
-
 export { FlexContainer, GridContainer, FontSize };

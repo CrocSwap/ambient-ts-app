@@ -1,5 +1,5 @@
 import { styled } from 'styled-components';
-import { FlexContainer, FontSize } from '../../css/common.styles';
+import { FlexContainer, FontSize } from '../../styled/Common';
 
 export default function TestPage() {
     const CustomDiv = styled.div<{ fontSize?: string }>`
