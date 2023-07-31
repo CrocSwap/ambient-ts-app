@@ -69,6 +69,7 @@ import {
     renderSubchartCrCanvas,
     scaleData,
     setCanvasResolution,
+    standardDeviation,
     zoomUtils,
 } from './ChartUtils/chartUtils';
 
@@ -251,7 +252,12 @@ export default function Chart(props: propsIF) {
     ]);
 
     const unparsedCandleData = useMemo(() => {
-        const data = unparsedData.candles.sort((a, b) => b.time - a.time);
+        const data = unparsedData.candles
+            .sort((a, b) => b.time - a.time)
+            .map((item) => ({
+                ...item,
+                isFakeData: false,
+            }));
         if (poolPriceWithoutDenom && data && data.length > 0) {
             const fakeData = {
                 time: data[0].time + period,
@@ -289,21 +295,27 @@ export default function Chart(props: propsIF) {
                 invPriceCloseDecimalCorrected:
                     data[0].invPriceOpenExclMEVDecimalCorrected,
                 isCrocData: false,
+                isFakeData: true,
             };
 
-            if (data[0].isCrocData) {
+            if (!data[0].isFakeData) {
                 data.unshift(fakeData);
+            } else {
+                data[0] = fakeData;
             }
         }
 
         return data;
-    }, [diffHashSigChart(unparsedData.candles)]);
+    }, [diffHashSigChart(unparsedData.candles), poolPriceWithoutDenom]);
 
-    const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
+    const lastCandleData = unparsedCandleData?.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
     });
 
-    const firstCandleData = unparsedCandleData.reduce(function (prev, current) {
+    const firstCandleData = unparsedCandleData?.reduce(function (
+        prev,
+        current,
+    ) {
         return prev.time < current.time ? prev : current;
     });
     const [lastCandleDataCenter, setLastCandleDataCenter] = useState(0);
@@ -420,70 +432,6 @@ export default function Chart(props: propsIF) {
         }
     }, [diffHashSigChart(unparsedCandleData)]);
 
-    useEffect(() => {
-        if (poolPriceWithoutDenom && unparsedCandleData) {
-            const data = unparsedData.candles;
-            const fakeData = {
-                time: data[0].time + period,
-                invMinPriceExclMEVDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                maxPriceExclMEVDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                minPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                invPriceOpenExclMEVDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                priceOpenExclMEVDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invPriceCloseExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                priceCloseExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                period: period,
-                tvlData: {
-                    time: data[0].time,
-                    tvl: data[0].tvlData.tvl,
-                },
-                volumeUSD: 0,
-                averageLiquidityFee: 0,
-                minPriceDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                maxPriceDecimalCorrected: 0,
-                priceOpenDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                priceCloseDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invMinPriceDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                invMaxPriceDecimalCorrected: 0,
-                invPriceOpenDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                invPriceCloseDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                isCrocData: false,
-            };
-
-            if (data[0].isCrocData) {
-                data.unshift(fakeData);
-            }
-        }
-    }, [unparsedCandleData === undefined]);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const standardDeviation = (arr: any, usePopulation = false) => {
-        const mean =
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
-        return Math.sqrt(
-            arr
-                .reduce(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (acc: any, val: any) => acc.concat((val - mean) ** 2),
-                    [],
-                )
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .reduce((acc: any, val: any) => acc + val, 0) /
-                (arr.length - (usePopulation ? 0 : 1)),
-        );
-    };
     useEffect(() => {
         setRescale(true);
     }, [denomInBase]);
@@ -1074,23 +1022,25 @@ export default function Chart(props: propsIF) {
                                         setYaxisDomain(domain[0], domain[1]);
                                     }
 
-                                    // if (
-                                    //     tradeData.advancedMode &&
-                                    //     liquidityData
-                                    // ) {
-                                    //     const liqAllBidPrices =
-                                    //         liquidityData?.liqBidData.map(
-                                    //             (liqPrices: any) =>
-                                    //                 liqPrices.liqPrices,
-                                    //         );
-                                    //     const liqBidDeviation =
-                                    //         standardDeviation(liqAllBidPrices);
+                                    if (
+                                        tradeData.advancedMode &&
+                                        liquidityData
+                                    ) {
+                                        const liqAllBidPrices =
+                                            liquidityData?.liqBidData.map(
+                                                (
+                                                    liqPrices: LiquidityDataLocal,
+                                                ) => liqPrices.liqPrices,
+                                            );
+                                        const liqBidDeviation =
+                                            standardDeviation(liqAllBidPrices);
 
-                                    //     fillLiqAdvanced(
-                                    //         liqBidDeviation,
-                                    //         scaleData,
-                                    //     );
-                                    // }
+                                        fillLiqAdvanced(
+                                            liqBidDeviation,
+                                            scaleData,
+                                            liquidityData,
+                                        );
+                                    }
                                 }
 
                                 clickedForLine = true;
@@ -1330,24 +1280,24 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         setMarketLineValue();
-    }, [
-        unparsedCandleData[0]?.invPriceCloseExclMEVDecimalCorrected,
-        unparsedCandleData[0]?.priceCloseExclMEVDecimalCorrected,
-    ]);
+    }, [poolPriceWithoutDenom]);
 
     const setMarketLineValue = () => {
-        const lastCandlePrice = denomInBase
-            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
-            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
+        if (poolPriceWithoutDenom !== undefined) {
+            const lastCandlePrice = denomInBase
+                ? 1 / poolPriceWithoutDenom
+                : poolPriceWithoutDenom;
 
-        setMarket(() => {
-            return [
-                {
-                    name: 'Current Market Price',
-                    value: lastCandlePrice !== undefined ? lastCandlePrice : 0,
-                },
-            ];
-        });
+            setMarket(() => {
+                return [
+                    {
+                        name: 'Current Market Price',
+                        value:
+                            lastCandlePrice !== undefined ? lastCandlePrice : 0,
+                    },
+                ];
+            });
+        }
     };
     // set default limit tick
     useEffect(() => {
@@ -2890,8 +2840,7 @@ export default function Chart(props: propsIF) {
                     crDataIndicator.context(ctx);
                 });
         }
-
-        // renderCanvasArray([d3CanvasCrIndicator]);
+        renderCanvasArray([d3CanvasCrIndicator]);
     }, [crDataIndicator, isCrDataIndActive, xAxisActiveTooltip]);
 
     useEffect(() => {
@@ -2915,6 +2864,7 @@ export default function Chart(props: propsIF) {
                     marketLine.context(ctx);
                 });
         }
+        renderCanvasArray([d3CanvasMarketLine]);
     }, [market, marketLine]);
 
     function noGoZone(poolPrice: number) {

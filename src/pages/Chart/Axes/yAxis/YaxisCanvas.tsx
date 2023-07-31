@@ -9,7 +9,10 @@ import {
 } from '../../../../utils/numbers';
 import { createRectLabel } from './YaxisUtils';
 import { LiquidityDataLocal } from '../../../Trade/TradeCharts/TradeCharts';
-import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../../utils/functions/diffHashSig';
 import {
     crosshair,
     fillLiqAdvanced,
@@ -807,11 +810,7 @@ export default function YAxisCanvas(props: yAxisIF) {
         setYaxisZoom(() => {
             return yAxisZoom;
         });
-    }, [
-        // diffHashSigScaleData(scaleData)
-        // ,
-        liquidityData?.liqBidData,
-    ]);
+    }, [diffHashSigScaleData(scaleData), liquidityData?.liqBidData]);
 
     useEffect(() => {
         if (yAxis && yAxisZoom && d3Yaxis.current) {
