@@ -127,10 +127,7 @@ export default function Limit() {
     const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const isSellTokenBase = useMemo(() => {
-        dispatch(setLimitTick(undefined));
-        return pool?.baseToken.tokenAddr === tokenA.address;
-    }, [pool?.baseToken, tokenA.address]);
+    const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
     let receiveReceiptHashes: Array<string> = [];
     const currentPendingTransactionsArray = pendingTransactions.filter(
@@ -167,6 +164,11 @@ export default function Limit() {
             maximumFractionDigits: 2,
         },
     );
+
+    // trigger re-pinning to a default tick
+    useEffect(() => {
+        dispatch(setLimitTick(undefined));
+    }, [tokenA.address]);
 
     useEffect(() => {
         if (limitTickFromParams && limitTick === undefined) {
@@ -346,7 +348,7 @@ export default function Limit() {
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
-        limitTick,
+        !!limitTick,
         poolPriceNonDisplay,
         tokenAInputQty === '' && tokenBInputQty === '',
     ]);
