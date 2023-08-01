@@ -6,6 +6,7 @@ import '../Chart.css';
 import { setCanvasResolution } from '../ChartUtils/chartUtils';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
+import { getNewCandleDataLeft } from '../ChartUtils/zoom';
 
 interface FreeRateData {
     feeData: Array<CandleData>;
@@ -14,7 +15,6 @@ interface FreeRateData {
     crosshairForSubChart: any;
     xScale: any;
     render: any;
-    getNewCandleData: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
@@ -32,7 +32,6 @@ function FeeRateChart(props: FreeRateData) {
         period,
         xScale,
         crosshairForSubChart,
-        getNewCandleData,
         subChartValues,
         yAxisWidth,
         setCrossHairLocation,
@@ -107,7 +106,7 @@ function FeeRateChart(props: FreeRateData) {
     }, [feeRateyScale]);
 
     useEffect(() => {
-        if (feeData !== undefined) {
+        if (feeData !== undefined && period) {
             let date: any | undefined = undefined;
 
             const zoom = d3
@@ -126,15 +125,17 @@ function FeeRateChart(props: FreeRateData) {
                         .range([0, domainX[1] - domainX[0]]);
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
-                    getNewCandleData(domainX[0] + deltaX, date);
+                    getNewCandleDataLeft(domainX[0] + deltaX, date, period);
                     xScale.domain([domainX[0] + deltaX, domainX[1] + deltaX]);
+
+                    props.render();
                 }) as any;
 
             setFeeRateZoom(() => {
                 return zoom;
             });
         }
-    }, [feeData]);
+    }, [feeData, period]);
 
     useEffect(() => {
         if (feeRateyScale !== undefined && xScale !== undefined) {
@@ -303,8 +304,6 @@ function FeeRateChart(props: FreeRateData) {
             lineSeries !== undefined
         ) {
             drawChart(feeData, feeRateyScale);
-
-            // props.render();
         }
     }, [period, feeData, feeRateyScale, lineSeries]);
 

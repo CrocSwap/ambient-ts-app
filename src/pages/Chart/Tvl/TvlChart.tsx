@@ -14,6 +14,7 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
+import { getNewCandleDataLeft } from '../ChartUtils/zoom';
 
 interface TvlData {
     tvlData: Array<CandleData>;
@@ -22,7 +23,6 @@ interface TvlData {
     crosshairForSubChart: any;
     scaleData: any;
     render: any;
-    getNewCandleData: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
@@ -40,7 +40,6 @@ function TvlChart(props: TvlData) {
         period,
         scaleData,
         crosshairForSubChart,
-        getNewCandleData,
         subChartValues,
         yAxisWidth,
         setCrossHairLocation,
@@ -119,7 +118,7 @@ function TvlChart(props: TvlData) {
     }, [diffHashSig(tvlData)]);
 
     useEffect(() => {
-        if (tvlData !== undefined) {
+        if (tvlData !== undefined && period) {
             let date: any | undefined = undefined;
 
             const zoom = d3
@@ -138,12 +137,14 @@ function TvlChart(props: TvlData) {
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
 
-                    getNewCandleData(domainX[0] + deltaX, date);
+                    getNewCandleDataLeft(domainX[0] + deltaX, date, period);
 
                     scaleData?.xScale.domain([
                         domainX[0] + deltaX,
                         domainX[1] + deltaX,
                     ]);
+
+                    props.render();
                 }) as any;
 
             setTvlZoom(() => {
