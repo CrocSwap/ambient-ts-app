@@ -89,7 +89,11 @@ function SwapExtraInfo(props: propsIF) {
         },
         {
             title: 'Liquidity Provider Fee',
-            tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
+            tooltipTitle: `This is a dynamically updated rate to reward ${
+                isDenomBase ? baseTokenSymbol : quoteTokenSymbol
+            } / ${
+                isDenomBase ? quoteTokenSymbol : baseTokenSymbol
+            } liquidity providers.`,
             data: `${liquidityProviderFeeString} %`,
             placement: 'bottom',
         },

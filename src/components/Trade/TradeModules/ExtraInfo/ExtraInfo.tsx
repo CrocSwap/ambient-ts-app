@@ -86,7 +86,9 @@ export const ExtraInfo = (props: PropsIF) => {
                             >
                                 <div className={styles.align_center}>
                                     <div>{item.title}</div>
-                                    <TooltipComponent title={item.title} />
+                                    <TooltipComponent
+                                        title={item.tooltipTitle}
+                                    />
                                 </div>
                                 <div className={styles.data}>{item.data}</div>
                             </div>

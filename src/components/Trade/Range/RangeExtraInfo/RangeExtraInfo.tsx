@@ -20,9 +20,11 @@ function RangeExtraInfo(props: propsIF) {
         showExtraInfoDropdown,
     } = props;
 
-    const { isDenomBase, tokenA, tokenB } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
+        useAppSelector((state) => state.tradeData);
+
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
 
     const reverseDisplay =
         (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
@@ -30,12 +32,16 @@ function RangeExtraInfo(props: propsIF) {
     const extraInfo = [
         {
             title: 'Slippage Tolerance',
-            tooltipTitle: 'slippage tolerance explanation',
+            tooltipTitle: 'This can be changed in settings.',
             data: `±${slippageTolerance}%`,
         },
         {
             title: 'Current Provider Fee',
-            tooltipTitle: 'liquidity provider fee explanation',
+            tooltipTitle: `This is a dynamically updated rate to reward ${
+                isDenomBase ? baseTokenSymbol : quoteTokenSymbol
+            } / ${
+                isDenomBase ? quoteTokenSymbol : baseTokenSymbol
+            } liquidity providers.`,
             data: `${liquidityProviderFeeString}%`,
         },
     ];

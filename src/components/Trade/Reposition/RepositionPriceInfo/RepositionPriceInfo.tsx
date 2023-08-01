@@ -182,7 +182,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         },
         {
             title: 'Liquidity Provider Fee',
-            tooltipTitle: `This is a dynamically updated rate to reward ${baseSymbol} / ${quoteSymbol} liquidity providers.`,
+            tooltipTitle: `This is a dynamically updated rate to reward ${
+                isDenomBase ? baseSymbol : quoteSymbol
+            } / ${isDenomBase ? quoteSymbol : baseSymbol} liquidity providers.`,
             // eslint-disable-next-line no-irregular-whitespace
             data: `${liquidityFee * 100} %`,
             placement: 'bottom',
