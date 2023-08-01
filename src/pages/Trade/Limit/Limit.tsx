@@ -428,15 +428,6 @@ export default function Limit() {
             if (!crocEnv) return;
             if (!limitTick) return;
 
-            console.log({
-                tokenAInputQty,
-                tokenBInputQty,
-                isTokenAPrimary,
-                tokenA,
-                tokenB,
-                limitTick,
-            });
-
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
 
             const testOrder = isTokenAPrimary
@@ -449,12 +440,10 @@ export default function Limit() {
             );
 
             if (await ko.willMintFail()) {
-                console.log('will fail');
                 updateLimitErrorMessage();
                 setIsOrderValid(false);
                 return;
             } else {
-                console.log('will not fail');
                 setIsOrderValid(true);
             }
         } catch (error) {

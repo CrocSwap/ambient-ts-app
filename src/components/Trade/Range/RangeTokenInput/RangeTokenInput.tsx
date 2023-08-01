@@ -146,9 +146,11 @@ function RangeTokenInput(props: propsIF) {
             : '';
 
         if (primaryToken === 'A') {
+            setTokenAInputQty(inputValue);
             setTokenBInputQty(truncatedTokenQty);
         } else {
             setTokenAInputQty(truncatedTokenQty);
+            setTokenBInputQty(inputValue);
         }
 
         handleTokenAButtonMessage(
@@ -222,8 +224,8 @@ function RangeTokenInput(props: propsIF) {
                 handleTokenInputEvent={handleTokenAChangeEvent}
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
-                parseTokenInput={(val: string) => {
-                    setTokenAInputQty(formatTokenInput(val, tokenA));
+                parseTokenInput={(val: string, isMax?: boolean) => {
+                    setTokenAInputQty(formatTokenInput(val, tokenA, isMax));
                 }}
                 showWallet={isUserConnected}
                 disabledContent={
@@ -251,8 +253,8 @@ function RangeTokenInput(props: propsIF) {
                 handleTokenInputEvent={handleTokenBChangeEvent}
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('B')}
-                parseTokenInput={(val: string) => {
-                    setTokenBInputQty(formatTokenInput(val, tokenB));
+                parseTokenInput={(val: string, isMax?: boolean) => {
+                    setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
                 showWallet={isUserConnected}
                 disabledContent={

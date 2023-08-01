@@ -135,6 +135,8 @@ function LimitTokenInput(props: propsIF) {
             const inputStr = formatTokenInput(value, tokenA);
             const inputNum = parseFloat(inputStr);
 
+            // set token input quantity to be unparsed input
+            setTokenAInputQty(value);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(inputStr));
 
@@ -176,6 +178,8 @@ function LimitTokenInput(props: propsIF) {
             const inputStr = formatTokenInput(value, tokenA);
             const inputNum = parseFloat(inputStr);
 
+            // set token input quantity to be unparsed input
+            setTokenBInputQty(value);
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(inputStr));
 
@@ -228,8 +232,8 @@ function LimitTokenInput(props: propsIF) {
                 handleTokenInputEvent={handleTokenAChangeEvent}
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
-                parseTokenInput={(val: string) => {
-                    setTokenAInputQty(formatTokenInput(val, tokenA));
+                parseTokenInput={(val: string, isMax?: boolean) => {
+                    setTokenAInputQty(formatTokenInput(val, tokenA, isMax));
                 }}
                 showWallet={isUserConnected}
             />
@@ -253,8 +257,8 @@ function LimitTokenInput(props: propsIF) {
                 handleTokenInputEvent={handleTokenBChangeEvent}
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('B')}
-                parseTokenInput={(val: string) => {
-                    setTokenBInputQty(formatTokenInput(val, tokenB));
+                parseTokenInput={(val: string, isMax?: boolean) => {
+                    setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
             />
         </section>

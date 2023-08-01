@@ -345,8 +345,8 @@ function SwapTokenInput(props: propsIF) {
                 reverseTokens={reverseTokens}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
                 showWallet={isUserConnected}
-                parseTokenInput={(val: string) => {
-                    setSellQtyString(formatTokenInput(val, tokenA));
+                parseTokenInput={(val: string, isMax?: boolean) => {
+                    setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
             />
             <div
@@ -378,8 +378,8 @@ function SwapTokenInput(props: propsIF) {
                 showWallet={isUserConnected}
                 hideWalletMaxButton
                 handleRefresh={refreshTokenData}
-                parseTokenInput={(val: string) => {
-                    setBuyQtyString(formatTokenInput(val, tokenB));
+                parseTokenInput={(val: string, isMax?: boolean) => {
+                    setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
             />
         </section>

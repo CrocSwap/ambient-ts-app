@@ -16,7 +16,7 @@ interface propsIF {
     reverseTokens: () => void;
     handleToggleDexSelection: () => void;
     handleRefresh?: () => void;
-    parseTokenInput?: (val: string) => void | string;
+    parseTokenInput?: (val: string, isMax?: boolean) => void | string;
     fieldId?: string;
     isLoading?: boolean;
     showWallet?: boolean;
@@ -76,11 +76,13 @@ function TokenInput(props: propsIF) {
 
     const handleMaxButtonClick = () => {
         if (
-            formatTokenInput(balanceWithBuffer, token) !== tokenInput &&
+            formatTokenInput(balanceWithBuffer, token, true) !== tokenInput &&
             parseFloat(balanceWithBuffer) > 0
         ) {
-            parseTokenInput && parseTokenInput(balanceWithBuffer);
-            handleTokenInputEvent(balanceWithBuffer);
+            parseTokenInput && parseTokenInput(balanceWithBuffer, true);
+            handleTokenInputEvent(
+                formatTokenInput(balanceWithBuffer, token, true),
+            );
         }
     };
 

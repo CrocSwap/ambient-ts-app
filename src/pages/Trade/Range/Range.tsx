@@ -333,7 +333,6 @@ function Range() {
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
     );
-
     const depositSkew = useMemo(
         () =>
             concDepositSkew(
