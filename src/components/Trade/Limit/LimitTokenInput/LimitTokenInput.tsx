@@ -20,6 +20,7 @@ import {
     setIsTokenAPrimary,
     setShouldLimitDirectionReverse,
     setPrimaryQuantity,
+    setIsTokenAPrimaryRange,
 } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import TokenInput from '../../../Global/TokenInput/TokenInput';
@@ -73,6 +74,7 @@ function LimitTokenInput(props: propsIF) {
         tokenA,
         tokenB,
         isTokenAPrimary,
+        isTokenAPrimaryRange,
         primaryQuantity,
         limitTickCopied,
         shouldLimitDirectionReverse,
@@ -102,6 +104,7 @@ function LimitTokenInput(props: propsIF) {
             });
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 
     useEffect(() => {

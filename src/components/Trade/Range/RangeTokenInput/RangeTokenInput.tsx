@@ -18,6 +18,7 @@ import {
     setPrimaryQuantityRange,
     setIsTokenAPrimaryRange,
     setRangeTicksCopied,
+    setIsTokenAPrimary,
 } from '../../../../utils/state/tradeDataSlice';
 import TokenInput from '../../../Global/TokenInput/TokenInput';
 import styles from '../../../Global/TokenInput/TokenInput.module.css';
@@ -87,6 +88,7 @@ function RangeTokenInput(props: propsIF) {
     const {
         tokenA,
         tokenB,
+        isTokenAPrimary,
         isTokenAPrimaryRange,
         poolPriceNonDisplay,
         rangeTicksCopied,
@@ -164,6 +166,7 @@ function RangeTokenInput(props: propsIF) {
     const reverseTokens = (): void => {
         resetTokenQuantities();
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
+        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         if (!rangeTicksCopied) {
             linkGenPool.navigate({
                 chain: chainId,

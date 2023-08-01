@@ -28,6 +28,7 @@ import {
     setIsTokenAPrimary,
     setShouldSwapDirectionReverse,
     setPrimaryQuantity,
+    setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
 import TokenInput from '../../Global/TokenInput/TokenInput';
 import styles from '../../Global/TokenInput/TokenInput.module.css';
@@ -84,8 +85,13 @@ function SwapTokenInput(props: propsIF) {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-    const { tokenA, tokenB, isTokenAPrimary, shouldSwapDirectionReverse } =
-        useAppSelector((state) => state.tradeData);
+    const {
+        tokenA,
+        tokenB,
+        isTokenAPrimary,
+        isTokenAPrimaryRange,
+        shouldSwapDirectionReverse,
+    } = useAppSelector((state) => state.tradeData);
     // hook to generate navigation actions with pre-loaded path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
 
@@ -175,6 +181,7 @@ function SwapTokenInput(props: propsIF) {
             setBuyQtyString(sellQtyString === 'NaN' ? '' : sellQtyString);
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     }, [
         crocEnv,
         poolPriceDisplay,
