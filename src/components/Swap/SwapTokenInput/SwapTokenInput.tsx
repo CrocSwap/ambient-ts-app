@@ -235,6 +235,7 @@ function SwapTokenInput(props: propsIF) {
         setSellQtyString('');
         setIsSellLoading(true);
         setBuyQtyString(value);
+        dispatch(setPrimaryQuantity(value));
         setDisableReverseTokens(true);
         setLastInput(value);
 
