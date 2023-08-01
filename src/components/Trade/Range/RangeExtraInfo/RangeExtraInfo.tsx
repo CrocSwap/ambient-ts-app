@@ -29,13 +29,6 @@ function RangeExtraInfo(props: propsIF) {
 
     const extraInfo = [
         {
-            title: 'Spot Price',
-            tooltipTitle: 'spot price explanation',
-            data: reverseDisplay
-                ? `${poolPriceDisplay} ${tokenA.symbol} per ${tokenB.symbol}`
-                : `${poolPriceDisplay} ${tokenB.symbol} per ${tokenA.symbol}`,
-        },
-        {
             title: 'Slippage Tolerance',
             tooltipTitle: 'slippage tolerance explanation',
             data: `±${slippageTolerance}%`,

@@ -51,13 +51,6 @@ function LimitExtraInfo(props: propsIF) {
 
     const extraInfo = [
         {
-            title: 'Spot Price',
-            tooltipTitle: 'Current Price of the Selected Token Pool',
-            data: isDenomBase
-                ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
-        {
             title: 'Fill Start',
             tooltipTitle:
                 'Price at which the limit order will begin to be filled',
