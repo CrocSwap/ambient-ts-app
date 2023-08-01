@@ -30,7 +30,6 @@ interface propsIF {
     isAmbient: boolean;
     depositSkew: number;
     isOutOfRange: boolean;
-    isRangeSpanBelowCurrentPrice: boolean;
     isWithdrawFromDexChecked: { tokenA: boolean; tokenB: boolean };
     isInputDisabled: { tokenA: boolean; tokenB: boolean };
     handleButtonMessage: {
@@ -47,7 +46,6 @@ function RangeTokenInput(props: propsIF) {
         isAmbient,
         depositSkew,
         isOutOfRange,
-        isRangeSpanBelowCurrentPrice,
         isWithdrawFromDexChecked: {
             tokenA: isWithdrawTokenAFromDexChecked,
             tokenB: isWithdrawTokenBFromDexChecked,
@@ -195,15 +193,6 @@ function RangeTokenInput(props: propsIF) {
             isTokenAPrimaryRange
                 ? setTokenQtyValue(tokenAInputQty, 'A')
                 : setTokenQtyValue(tokenBInputQty, 'B');
-        } else {
-            if (
-                (isRangeSpanBelowCurrentPrice && isTokenABase) ||
-                (!isRangeSpanBelowCurrentPrice && !isTokenABase)
-            ) {
-                !!tokenAInputQty && setTokenQtyValue(tokenAInputQty, 'A');
-            } else {
-                !!tokenBInputQty && setTokenQtyValue(tokenBInputQty, 'B');
-            }
         }
     };
 

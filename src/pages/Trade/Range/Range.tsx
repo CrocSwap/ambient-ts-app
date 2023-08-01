@@ -45,6 +45,7 @@ import {
     setAdvancedLowTick,
     setAdvancedHighTick,
     setIsLinesSwitched,
+    setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
 import {
     TransactionError,
@@ -609,6 +610,11 @@ function Range() {
     }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
 
     useEffect(() => {
+        if (isTokenAInputDisabled) dispatch(setIsTokenAPrimaryRange(false));
+        if (isTokenBInputDisabled) dispatch(setIsTokenAPrimaryRange(true));
+    }, [isTokenAInputDisabled, isTokenBInputDisabled]);
+
+    useEffect(() => {
         receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
     }, [sessionReceipts]);
 
@@ -1005,7 +1011,7 @@ function Range() {
             tx = await (isAmbient
                 ? isTokenAPrimaryRange
                     ? pool.mintAmbientQuote(
-                          tokenAInputQty,
+                          isTokenAInputDisabled ? 0 : tokenAInputQty,
                           [minPrice, maxPrice],
                           {
                               surplus: [
@@ -1015,7 +1021,7 @@ function Range() {
                           },
                       )
                     : pool.mintAmbientBase(
-                          tokenBInputQty,
+                          isTokenBInputDisabled ? 0 : tokenBInputQty,
                           [minPrice, maxPrice],
                           {
                               surplus: [
@@ -1026,7 +1032,7 @@ function Range() {
                       )
                 : isTokenAPrimaryRange
                 ? pool.mintRangeQuote(
-                      tokenAInputQty,
+                      isTokenAInputDisabled ? 0 : tokenAInputQty,
                       [defaultLowTick, defaultHighTick],
                       [minPrice, maxPrice],
                       {
@@ -1037,7 +1043,7 @@ function Range() {
                       },
                   )
                 : pool.mintRangeBase(
-                      tokenBInputQty,
+                      isTokenBInputDisabled ? 0 : tokenBInputQty,
                       [defaultLowTick, defaultHighTick],
                       [minPrice, maxPrice],
                       {
@@ -1116,8 +1122,9 @@ function Range() {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
         } else if (
-            isNaN(parseFloat(tokenAAmount)) ||
-            parseFloat(tokenAAmount) <= 0
+            (isNaN(parseFloat(tokenAAmount)) ||
+                parseFloat(tokenAAmount) <= 0) &&
+            !isTokenAInputDisabled
         ) {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
@@ -1152,8 +1159,9 @@ function Range() {
             setTokenBAllowed(false);
             setRangeButtonErrorMessage('Invalid Token Pair');
         } else if (
-            isNaN(parseFloat(tokenBAmount)) ||
-            parseFloat(tokenBAmount) <= 0
+            (isNaN(parseFloat(tokenBAmount)) ||
+                parseFloat(tokenBAmount) <= 0) &&
+            !isTokenBInputDisabled
         ) {
             setTokenBAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
@@ -1361,9 +1369,6 @@ function Range() {
                             set: setTokenBInputQty,
                         }}
                         toggleDexSelection={toggleDexSelection}
-                        isRangeSpanBelowCurrentPrice={
-                            currentPoolPriceTick > defaultHighTick
-                        }
                         handleButtonMessage={{
                             tokenA: handleRangeButtonMessageTokenA,
                             tokenB: handleRangeButtonMessageTokenB,
@@ -1394,8 +1399,16 @@ function Range() {
                         centeredTitle
                     >
                         <ConfirmRangeModal
-                            tokenAQtyLocal={parseFloat(tokenAInputQty)}
-                            tokenBQtyLocal={parseFloat(tokenBInputQty)}
+                            tokenAQtyLocal={
+                                isTokenAInputDisabled
+                                    ? 0
+                                    : parseFloat(tokenAInputQty)
+                            }
+                            tokenBQtyLocal={
+                                isTokenBInputDisabled
+                                    ? 0
+                                    : parseFloat(tokenBInputQty)
+                            }
                             spotPriceDisplay={getFormattedNumber({
                                 value: displayPriceWithDenom,
                             })}

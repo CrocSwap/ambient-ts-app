@@ -43,7 +43,6 @@ function TokenInputQuantity(props: propsIF) {
         reverseTokens,
         parseInput,
     } = props;
-    console.log(disabledContent);
     const { setInput: setTokenSelectInput } = useContext(TokenContext);
 
     const modalCloseCustom = (): void => setTokenSelectInput('');
