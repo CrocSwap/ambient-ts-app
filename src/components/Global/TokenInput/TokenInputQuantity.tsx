@@ -23,7 +23,6 @@ interface propsIF {
     label?: string;
     includeWallet?: React.ReactNode;
     showPulseAnimation?: boolean;
-    isAdvancedMode?: boolean;
     disable?: boolean;
     disabledContent?: React.ReactNode;
 }
@@ -40,12 +39,11 @@ function TokenInputQuantity(props: propsIF) {
         showPulseAnimation,
         disable,
         disabledContent,
-        isAdvancedMode,
         handleTokenInputEvent,
         reverseTokens,
         parseInput,
     } = props;
-
+    console.log(disabledContent);
     const { setInput: setTokenSelectInput } = useContext(TokenContext);
 
     const modalCloseCustom = (): void => setTokenSelectInput('');
@@ -119,7 +117,7 @@ function TokenInputQuantity(props: propsIF) {
                             </div>
                         ) : (
                             <>
-                                {isAdvancedMode && disable && disabledContent}
+                                {disabledContent && disabledContent}
 
                                 <input
                                     id={fieldId ? `${fieldId}_qty` : undefined}

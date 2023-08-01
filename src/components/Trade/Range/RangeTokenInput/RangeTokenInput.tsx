@@ -31,10 +31,12 @@ interface propsIF {
     depositSkew: number;
     isOutOfRange: boolean;
     isRangeSpanBelowCurrentPrice: boolean;
-    isWithdrawTokenAFromDexChecked: boolean;
-    isWithdrawTokenBFromDexChecked: boolean;
-    handleTokenAButtonMessage: (tokenAmount: string) => void;
-    handleTokenBButtonMessage: (tokenAmount: string) => void;
+    isWithdrawFromDexChecked: { tokenA: boolean; tokenB: boolean };
+    isInputDisabled: { tokenA: boolean; tokenB: boolean };
+    handleButtonMessage: {
+        tokenA: (tokenAmount: string) => void;
+        tokenB: (tokenAmount: string) => void;
+    };
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
 }
 
@@ -46,10 +48,18 @@ function RangeTokenInput(props: propsIF) {
         depositSkew,
         isOutOfRange,
         isRangeSpanBelowCurrentPrice,
-        isWithdrawTokenAFromDexChecked,
-        isWithdrawTokenBFromDexChecked,
-        handleTokenAButtonMessage,
-        handleTokenBButtonMessage,
+        isWithdrawFromDexChecked: {
+            tokenA: isWithdrawTokenAFromDexChecked,
+            tokenB: isWithdrawTokenBFromDexChecked,
+        },
+        isInputDisabled: {
+            tokenA: isTokenAInputDisabled,
+            tokenB: isTokenBInputDisabled,
+        },
+        handleButtonMessage: {
+            tokenA: handleTokenAButtonMessage,
+            tokenB: handleTokenBButtonMessage,
+        },
         toggleDexSelection,
     } = props;
 
@@ -197,6 +207,17 @@ function RangeTokenInput(props: propsIF) {
         }
     };
 
+    const disabledContent = (
+        <div className={styles.overlay_container}>
+            <div className={styles.disabled_text}>
+                The market is outside your specified range.
+                <div className={styles.warning_text}>
+                    Single-asset deposit only.
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <section className={styles.token_input_container}>
             <TokenInput
@@ -216,6 +237,9 @@ function RangeTokenInput(props: propsIF) {
                     setTokenAInputQty(formatTokenInput(val, tokenA));
                 }}
                 showWallet={isUserConnected}
+                disabledContent={
+                    isTokenAInputDisabled ? disabledContent : undefined
+                }
             />
             <div className={styles.operation_container}>
                 <img
@@ -242,6 +266,9 @@ function RangeTokenInput(props: propsIF) {
                     setTokenBInputQty(formatTokenInput(val, tokenB));
                 }}
                 showWallet={isUserConnected}
+                disabledContent={
+                    isTokenBInputDisabled ? disabledContent : undefined
+                }
                 isWithdraw
             />
         </section>

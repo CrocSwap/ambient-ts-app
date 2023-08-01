@@ -24,6 +24,7 @@ interface propsIF {
     tokenBalance?: string;
     tokenDexBalance?: string;
     isWithdraw?: boolean;
+    disabledContent?: React.ReactNode;
 }
 
 function TokenInput(props: propsIF) {
@@ -41,6 +42,7 @@ function TokenInput(props: propsIF) {
         isLoading,
         showWallet,
         hideWalletMaxButton,
+        disabledContent,
         handleTokenInputEvent,
         reverseTokens,
         handleToggleDexSelection,
@@ -124,6 +126,7 @@ function TokenInput(props: propsIF) {
             includeWallet={walletContent}
             showPulseAnimation={showPulseAnimation}
             parseInput={parseTokenInput}
+            disabledContent={disabledContent}
         />
     );
 }
