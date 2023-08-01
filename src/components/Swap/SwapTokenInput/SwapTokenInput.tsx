@@ -29,6 +29,7 @@ import {
     setShouldSwapDirectionReverse,
     setPrimaryQuantity,
     setIsTokenAPrimaryRange,
+    setLimitTick,
 } from '../../../utils/state/tradeDataSlice';
 import TokenInput from '../../Global/TokenInput/TokenInput';
 import styles from '../../Global/TokenInput/TokenInput.module.css';
@@ -159,6 +160,8 @@ function SwapTokenInput(props: propsIF) {
 
     const reverseTokens = useCallback((): void => {
         if (disableReverseTokens || !isPoolInitialized) return;
+
+        dispatch(setLimitTick(undefined));
 
         setDisableReverseTokens(true);
 
