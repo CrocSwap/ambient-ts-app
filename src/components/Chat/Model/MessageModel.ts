@@ -9,6 +9,6 @@ export interface Message {
     mentionedName: string;
     mentionedWalletID: string;
     roomInfo: string;
-    likes?: number;
-    dislikes?: number;
+    likes?: [];
+    dislikes?: [];
 }

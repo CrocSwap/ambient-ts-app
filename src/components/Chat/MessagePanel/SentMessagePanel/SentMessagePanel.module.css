@@ -360,10 +360,15 @@
 
 }
 
-.like_btn_base:not(.active):hover{
+.like_btn_base:not(.active):not(.disabled):hover{
     box-shadow: 0px 0px 12px var(--accent1);
     background: var(--accent1);
     color: white;
+}
+
+.like_btn_base.disabled{
+    opacity: .5;
+    cursor: default;
 }
 
 .active.like_btn_base{

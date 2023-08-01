@@ -124,8 +124,6 @@ function ChatPanel(props: propsIF) {
         }
     }
 
-    console.log(users);
-
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
     // const mentPanelInputRef = useRef<HTMLInputElement>(null);

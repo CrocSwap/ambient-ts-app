@@ -50,10 +50,11 @@ function SentMessagePanel(props: SentMessageProps) {
     const [ok, setOk] = useState(false);
     const [flipped, setFlipped] = useState(false);
     const [flipRead, setFlipRead] = useState(false);
-    const [messageVoted, setMessageVoted] = useState(0);
 
-    const likeCount = props.message.likes ? props.message.likes : 0;
-    const dislikeCount = props.message.dislikes ? props.message.dislikes : 0;
+    const likeCount = props.message.likes ? props.message.likes.length : 0;
+    const dislikeCount = props.message.dislikes
+        ? props.message.dislikes.length
+        : 0;
 
     const { deleteMessage } = useChatApi();
 
@@ -61,29 +62,28 @@ function SentMessagePanel(props: SentMessageProps) {
     const location = useLocation();
 
     const handleInitialLikeDislike = () => {
-        if (
-            localStorage.getItem('lkds') != undefined &&
-            localStorage.getItem('lkds') != null
-        ) {
-            {
-                const currObj = localStorage.getItem('lkds');
-                if (currObj != undefined && currObj != null) {
-                    const obj = JSON.parse(currObj);
-                    if (currObj && obj[props.message._id] !== undefined) {
-                        setMessageVoted(obj[props.message._id]);
-                        console.log(
-                            'setMessageVoted dd d',
-                            obj[props.message._id],
-                        );
-                    }
-                }
-            }
+        let retVal = 0;
+        const liked = props.message.likes?.filter(
+            (e) => e === props.currentUser,
+        );
+        const disliked = props.message.dislikes?.filter(
+            (e) => e === props.currentUser,
+        );
+
+        console.log('..........................');
+        console.log(liked);
+        console.log(disliked);
+        console.log('..........................');
+
+        if (liked && disliked) {
+            retVal = liked?.length > 0 ? 1 : disliked?.length > 0 ? -1 : 0;
         }
+
+        return retVal;
     };
 
-    useEffect(() => {
-        handleInitialLikeDislike();
-    }, []);
+    const messageVoted = handleInitialLikeDislike();
+
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
         const currentMessageDate = new Date(props.message?.createdAt);
@@ -365,22 +365,12 @@ function SentMessagePanel(props: SentMessageProps) {
         }
         localStorage.setItem('lkds', JSON.stringify(newObj));
 
-        const payloadObj = { likes: 0, dislikes: 0 };
-        if (messageVoted == val) {
-            setMessageVoted(0);
-            if (val == 1) {
-                payloadObj.likes = -1;
-            } else {
-                payloadObj.dislikes = -1;
-            }
-        } else {
-            if (val == 1) {
-                payloadObj.likes = 1;
-            } else {
-                payloadObj.dislikes = 1;
-            }
-            setMessageVoted(val);
-        }
+        const payloadObj = {
+            userId: props.currentUser,
+            actionType: val,
+        };
+
+        console.log(payloadObj);
 
         props.updateLikeDislike(props.message._id, payloadObj);
     }
@@ -591,9 +581,16 @@ function SentMessagePanel(props: SentMessageProps) {
                         <div
                             className={`${
                                 messageVoted == 1 ? styles.active : ''
-                            } ${styles.like_btn_base}`}
+                            } ${styles.like_btn_base} 
+                            ${!props.isUserVerified ? styles.disabled : ''}
+                            `}
                             onClick={() => {
-                                handleLikeAndDislikeLS(props.message._id, 1);
+                                if (props.isUserVerified) {
+                                    handleLikeAndDislikeLS(
+                                        props.message._id,
+                                        1,
+                                    );
+                                }
                             }}
                         >
                             {' '}
@@ -602,9 +599,16 @@ function SentMessagePanel(props: SentMessageProps) {
                         <div
                             className={`${
                                 messageVoted == -1 ? styles.active : ''
-                            } ${styles.like_btn_base} ${styles.dislike_btn}`}
+                            } ${styles.like_btn_base} ${styles.dislike_btn}
+                            ${!props.isUserVerified ? styles.disabled : ''}
+                            `}
                             onClick={() => {
-                                handleLikeAndDislikeLS(props.message._id, -1);
+                                if (props.isUserVerified) {
+                                    handleLikeAndDislikeLS(
+                                        props.message._id,
+                                        -1,
+                                    );
+                                }
                             }}
                         >
                             {' '}

@@ -49,15 +49,30 @@ const useChatSocket = (
             ...pl,
         };
 
+        console.log(payload);
+
         const response = await fetch(
-            CHAT_BACKEND_URL + '/chat/api/messages/updateLikeDislikeCount',
+            CHAT_BACKEND_URL + '/chat/api/messages/updateLikeDislike',
             {
-                method: 'PUT',
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             },
         );
         const data = await response.json();
+        console.log(data);
+        if (data && data.data && data.data.message) {
+            const msg = data.data.message;
+            const newMessageList = messages.map((e) => {
+                if (e._id == msg._id) {
+                    return msg;
+                } else {
+                    return e;
+                }
+            });
+            console.log(newMessageList);
+            setMessages([...newMessageList]);
+        }
 
         return data;
     }
