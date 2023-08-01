@@ -22,6 +22,9 @@ const useChatSocket = (
     const [messageUser, setMessageUser] = useState<string>();
     const [notis, setNotis] = useState<Map<string, number>>();
     const [isVerified, setIsVerified] = useState<boolean>(false);
+    const [userMap, setUserMap] = useState<Map<string, User>>(
+        new Map<string, User>(),
+    );
 
     const messagesRef = useRef<Message[]>([]);
     messagesRef.current = messages;
@@ -40,11 +43,10 @@ const useChatSocket = (
         return data;
     }
 
-    async function updateLikeDislike(messageId: string, like: boolean) {
+    async function updateLikeDislike(messageId: string, pl: any) {
         const payload = {
             _id: messageId,
-            likes: like ? 1 : 0,
-            dislikes: like ? 0 : 1,
+            ...pl,
         };
 
         const response = await fetch(
@@ -89,6 +91,7 @@ const useChatSocket = (
     }
 
     async function isUserVerified() {
+        console.log('is user verified func' + address);
         if (address) {
             const encodedAddress = encodeURIComponent(address);
             const response = await fetch(
@@ -100,11 +103,15 @@ const useChatSocket = (
                 },
             );
             const data = await response.json();
-            return data.verified;
+            return data;
         }
     }
 
-    async function verifyUser(verifyToken: string, verifySalt: number) {
+    async function verifyUser(
+        verifyToken: string,
+        verifySalt: number,
+        verifyDate: Date,
+    ) {
         const response = await fetch(
             CHAT_BACKEND_URL + '/chat/api/auth/verifyUser',
             {
@@ -114,6 +121,7 @@ const useChatSocket = (
                     walletID: address,
                     verifyToken: verifyToken,
                     verifySalt: verifySalt,
+                    verifyDate: verifyDate,
                 }),
             },
         );
@@ -123,10 +131,55 @@ const useChatSocket = (
         return data;
     }
 
+    async function updateVerifyDate(verifyDate: Date) {
+        const response = await fetch(
+            CHAT_BACKEND_URL + '/chat/api/auth/updateVerifyDate',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    walletID: address,
+                    verifyDate: verifyDate,
+                }),
+            },
+        );
+        const data = await response.json();
+        setIsVerified(data.isVerified);
+
+        const userListData = await getUserListWithRest();
+        const usmp = new Map<string, User>();
+        userListData.forEach((user: User) => {
+            usmp.set(user._id, user);
+        });
+        setUserMap(usmp);
+        setUsers(userListData);
+
+        return data;
+    }
+
+    async function updateUserCache() {
+        const userListData = await getUserListWithRest();
+        const usmp = new Map<string, User>();
+        userListData.forEach((user: User) => {
+            usmp.set(user._id, user);
+        });
+        setUserMap(usmp);
+        setUsers(userListData);
+    }
+
     useEffect(() => {
+        console.log('im checking verified user.........');
+
         async function checkVerified() {
-            const verified = await isUserVerified();
-            setIsVerified(verified);
+            const data = await isUserVerified();
+            if (!data) return;
+            console.log(
+                localStorage.getItem('vrfTkn' + address) == data.vrfTkn,
+            );
+            setIsVerified(
+                localStorage.getItem('vrfTkn' + address) == data.vrfTkn &&
+                    data.vrfTkn != null,
+            );
         }
 
         checkVerified();
@@ -155,6 +208,11 @@ const useChatSocket = (
             }
 
             const userListData = await getUserListWithRest();
+            const usmp = new Map<string, User>();
+            userListData.forEach((user: User) => {
+                usmp.set(user._id, user);
+            });
+            setUserMap(usmp);
             setUsers(userListData);
         }
 
@@ -247,6 +305,9 @@ const useChatSocket = (
         socketRef,
         isVerified,
         verifyUser,
+        userMap,
+        updateVerifyDate,
+        updateUserCache,
     };
 };
 

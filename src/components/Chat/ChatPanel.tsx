@@ -81,6 +81,9 @@ function ChatPanel(props: propsIF) {
         socketRef,
         isVerified,
         verifyUser,
+        userMap,
+        updateVerifyDate,
+        updateUserCache,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -120,6 +123,8 @@ function ChatPanel(props: propsIF) {
             setIsChatOpen(!isChatOpen);
         }
     }
+
+    console.log(users);
 
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
@@ -365,7 +370,7 @@ function ChatPanel(props: propsIF) {
     };
 
     const ments = messages.filter((item) => {
-        return item.mentionedWalletID == address;
+        return item.mentionedWalletID == address && address !== undefined;
     });
 
     const handleMentionSkipper = (way: number) => {
@@ -406,9 +411,32 @@ function ChatPanel(props: propsIF) {
         }
     };
 
-    const verifyWallet = (e: any) => {
-        e.stopPropagation();
-        const message = 'Your verification message';
+    const verifyWallet = (
+        verificationType: number,
+        verificationDate: Date,
+        e?: any,
+    ) => {
+        if (e) e.stopPropagation();
+
+        let message = '';
+        let verifyDate = new Date();
+
+        if (verificationType === 0) {
+            message =
+                'Your wallet will be verified for chat. Please sign it for verification.';
+        } else if (isVerified) {
+            message =
+                'Your verification date will be updated to ' +
+                verificationDate +
+                '. Do you confirm?';
+            verifyDate = verificationDate;
+        } else {
+            message =
+                'Your wallet will be verified since ' +
+                verificationDate +
+                '. Do you confirm?';
+            verifyDate = verificationDate;
+        }
 
         window.ethereum
             .request({
@@ -417,7 +445,11 @@ function ChatPanel(props: propsIF) {
             })
             .then((signedMessage: any) => {
                 // setIsVerified(true);
-                verifyUser(signedMessage, new Date().getMonth());
+                verifyUser(signedMessage, new Date().getMonth(), verifyDate);
+                localStorage.setItem('vrfTkn' + address, signedMessage);
+                setTimeout(() => {
+                    updateUserCache();
+                }, 300);
 
                 // The signed message is available here, which you can send to your server for verification
             })
@@ -433,31 +465,34 @@ function ChatPanel(props: propsIF) {
         >
             <h2 className={styles.chat_title}>Chat</h2>
 
-            <div
-                className={`${styles.verify_button} ${
-                    isVerified ? styles.verified : ''
-                } `}
-                onClick={verifyWallet}
-            >
-                {isVerified ? (
-                    <>
-                        <AiOutlineCheck
-                            className={styles.verify_button_icon}
-                            color='var(--other-green)'
-                            size={10}
-                        />
-                        <span> Verified</span>
-                    </>
-                ) : (
-                    <>
-                        <AiOutlineClose
-                            className={styles.verify_button_icon}
-                            size={10}
-                        />
-                        <span> Not Verified</span>
-                    </>
-                )}
-            </div>
+            {isChatOpen && (
+                <div
+                    className={`${styles.verify_button} ${
+                        isVerified ? styles.verified : ''
+                    } `}
+                    onClick={(e) => verifyWallet(0, new Date(), e)}
+                >
+                    {isVerified ? (
+                        <>
+                            <AiOutlineCheck
+                                className={styles.verify_button_icon}
+                                color='var(--other-green)'
+                                size={10}
+                            />
+                            {/* <span> Verified</span> */}
+                        </>
+                    ) : (
+                        <>
+                            <AiOutlineClose
+                                className={styles.verify_button_icon}
+                                size={10}
+                            />
+                            <span> Not Verified</span>
+                        </>
+                    )}
+                </div>
+            )}
+
             <section style={{ paddingRight: '10px' }}>
                 {isFullScreen || !isChatOpen ? (
                     <></>
@@ -545,6 +580,9 @@ function ChatPanel(props: propsIF) {
                             }
                             updateLikeDislike={updateLikeDislike}
                             socketRef={socketRef}
+                            userMap={userMap}
+                            verifyWallet={verifyWallet}
+                            isUserVerified={isVerified}
                         />
                     );
                 })}

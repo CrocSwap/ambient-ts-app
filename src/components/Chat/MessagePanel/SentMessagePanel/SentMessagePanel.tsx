@@ -6,6 +6,9 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { User } from '../../Model/UserModel';
+import { AiOutlineCheck, AiOutlineCheckCircle } from 'react-icons/ai';
+import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 interface SentMessageProps {
     message: Message;
@@ -27,8 +30,15 @@ interface SentMessageProps {
     deleteMsgFromList: (id: string) => void;
     isLinkInCrocodileLabsLinks(word: string): boolean;
     mentionIndex?: number;
-    updateLikeDislike: (messageId: string, like: boolean) => void;
+    updateLikeDislike: (messageId: string, like: any) => void;
     socketRef: any;
+    userMap?: Map<string, User>;
+    verifyWallet: (
+        verificationType: number,
+        verificationDate: Date,
+        e?: any,
+    ) => void;
+    isUserVerified: boolean;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -40,6 +50,7 @@ function SentMessagePanel(props: SentMessageProps) {
     const [ok, setOk] = useState(false);
     const [flipped, setFlipped] = useState(false);
     const [flipRead, setFlipRead] = useState(false);
+    const [messageVoted, setMessageVoted] = useState(0);
 
     const likeCount = props.message.likes ? props.message.likes : 0;
     const dislikeCount = props.message.dislikes ? props.message.dislikes : 0;
@@ -49,13 +60,30 @@ function SentMessagePanel(props: SentMessageProps) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    useEffect(() => {
-        props.socketRef.current.on('message-like-dislike', (data: any) => {
-            console.log('......... MESSAGE LIKE DISLIKE ............');
-            console.log(data);
-        });
-    }, []);
+    const handleInitialLikeDislike = () => {
+        if (
+            localStorage.getItem('lkds') != undefined &&
+            localStorage.getItem('lkds') != null
+        ) {
+            {
+                const currObj = localStorage.getItem('lkds');
+                if (currObj != undefined && currObj != null) {
+                    const obj = JSON.parse(currObj);
+                    if (currObj && obj[props.message._id] !== undefined) {
+                        setMessageVoted(obj[props.message._id]);
+                        console.log(
+                            'setMessageVoted dd d',
+                            obj[props.message._id],
+                        );
+                    }
+                }
+            }
+        }
+    };
 
+    useEffect(() => {
+        handleInitialLikeDislike();
+    }, []);
     useEffect(() => {
         const previousMessageDate = new Date(props.previousMessage?.createdAt);
         const currentMessageDate = new Date(props.message?.createdAt);
@@ -280,7 +308,6 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function deleteMessages(id: string) {
-        console.log('deleteMessage', id);
         // eslint-disable-next-line
         // props.setIsMessageDeleted(false);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -311,6 +338,51 @@ function SentMessagePanel(props: SentMessageProps) {
         } else {
             return { width: '90%', marginBottom: -7 };
         }
+    }
+
+    function verificationDateCheck() {
+        let ret = false;
+        const sender = props.message.sender;
+        const user = props.userMap?.get(sender);
+
+        if (user?.verifyDate !== undefined && user.verifyDate != undefined) {
+            if (
+                new Date(user.verifyDate) <= new Date(props.message.createdAt)
+            ) {
+                ret = true;
+            }
+        }
+        return ret;
+    }
+
+    function handleLikeAndDislikeLS(messageId: string, val: number) {
+        const currObj = localStorage.getItem('lkds');
+        let newObj = {};
+        if (currObj != null && currObj != undefined) {
+            newObj = { ...JSON.parse(currObj), [messageId]: val };
+        } else {
+            newObj = { [messageId]: val };
+        }
+        localStorage.setItem('lkds', JSON.stringify(newObj));
+
+        const payloadObj = { likes: 0, dislikes: 0 };
+        if (messageVoted == val) {
+            setMessageVoted(0);
+            if (val == 1) {
+                payloadObj.likes = -1;
+            } else {
+                payloadObj.dislikes = -1;
+            }
+        } else {
+            if (val == 1) {
+                payloadObj.likes = 1;
+            } else {
+                payloadObj.dislikes = 1;
+            }
+            setMessageVoted(val);
+        }
+
+        props.updateLikeDislike(props.message._id, payloadObj);
     }
 
     return (
@@ -409,7 +481,52 @@ function SentMessagePanel(props: SentMessageProps) {
                                     }}
                                 >
                                     {showName && getName()}
+                                    {showAvatar && verificationDateCheck() && (
+                                        <div className={styles.verified_icon}>
+                                            <AiOutlineCheck
+                                                color='var(--other-green)'
+                                                size={10}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
+                                {showAvatar &&
+                                    !verificationDateCheck() &&
+                                    props.isCurrentUser && (
+                                        <>
+                                            <DefaultTooltip
+                                                interactive
+                                                title={
+                                                    props.isUserVerified
+                                                        ? 'Update verification date'
+                                                        : 'Verify wallet since this message'
+                                                }
+                                                placement={'left'}
+                                                arrow
+                                                enterDelay={400}
+                                                leaveDelay={200}
+                                            >
+                                                <div
+                                                    className={
+                                                        styles.update_verify_date_icon
+                                                    }
+                                                    onClick={() => {
+                                                        props.verifyWallet(
+                                                            1,
+                                                            new Date(
+                                                                props.message.createdAt,
+                                                            ),
+                                                        );
+                                                    }}
+                                                >
+                                                    <AiOutlineCheck
+                                                        color='var(--other-red)'
+                                                        size={10}
+                                                    />
+                                                </div>
+                                            </DefaultTooltip>
+                                        </>
+                                    )}
                                 <PositionBox
                                     message={props.message.message}
                                     isInput={false}
@@ -472,26 +589,22 @@ function SentMessagePanel(props: SentMessageProps) {
 
                     <div className={styles.msg_bubble_back_content}>
                         <div
-                            className={styles.like_btn_base}
+                            className={`${
+                                messageVoted == 1 ? styles.active : ''
+                            } ${styles.like_btn_base}`}
                             onClick={() => {
-                                props.updateLikeDislike(
-                                    props.message._id,
-                                    true,
-                                );
+                                handleLikeAndDislikeLS(props.message._id, 1);
                             }}
                         >
                             {' '}
                             👍{' '}
                         </div>
                         <div
-                            className={
-                                styles.like_btn_base + ' ' + styles.dislike_btn
-                            }
+                            className={`${
+                                messageVoted == -1 ? styles.active : ''
+                            } ${styles.like_btn_base} ${styles.dislike_btn}`}
                             onClick={() => {
-                                props.updateLikeDislike(
-                                    props.message._id,
-                                    false,
-                                );
+                                handleLikeAndDislikeLS(props.message._id, -1);
                             }}
                         >
                             {' '}
