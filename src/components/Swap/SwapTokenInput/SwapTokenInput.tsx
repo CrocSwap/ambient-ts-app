@@ -89,6 +89,7 @@ function SwapTokenInput(props: propsIF) {
     const {
         tokenA,
         tokenB,
+        primaryQuantity,
         isTokenAPrimary,
         isTokenAPrimaryRange,
         shouldSwapDirectionReverse,
@@ -179,9 +180,9 @@ function SwapTokenInput(props: propsIF) {
             tokenB: tokenA.address,
         });
         if (!isTokenAPrimary) {
-            setSellQtyString(buyQtyString === 'NaN' ? '' : buyQtyString);
+            setSellQtyString(primaryQuantity);
         } else {
-            setBuyQtyString(sellQtyString === 'NaN' ? '' : sellQtyString);
+            setBuyQtyString(primaryQuantity);
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
@@ -231,7 +232,6 @@ function SwapTokenInput(props: propsIF) {
     }
 
     const debouncedTokenAChangeEvent = (value: string) => {
-        setBuyQtyString('');
         setIsBuyLoading(true);
         setSellQtyString(value);
         dispatch(setPrimaryQuantity(value));
@@ -242,7 +242,6 @@ function SwapTokenInput(props: propsIF) {
     };
 
     const debouncedTokenBChangeEvent = (value: string) => {
-        setSellQtyString('');
         setIsSellLoading(true);
         setBuyQtyString(value);
         dispatch(setPrimaryQuantity(value));
@@ -262,7 +261,7 @@ function SwapTokenInput(props: propsIF) {
                     rawTokenBQty = await refreshImpact(truncatedInputStr, true);
                 }
             } else {
-                rawTokenBQty = await refreshImpact(sellQtyString, true);
+                rawTokenBQty = await refreshImpact(primaryQuantity, true);
             }
 
             const truncatedTokenBQty = rawTokenBQty
@@ -302,7 +301,7 @@ function SwapTokenInput(props: propsIF) {
                     );
                 }
             } else {
-                rawTokenAQty = await refreshImpact(buyQtyString, false);
+                rawTokenAQty = await refreshImpact(primaryQuantity, false);
             }
 
             const truncatedTokenAQty = rawTokenAQty
