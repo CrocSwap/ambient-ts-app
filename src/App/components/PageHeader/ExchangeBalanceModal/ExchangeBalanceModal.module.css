@@ -15,3 +15,13 @@
     z-index: 999;
     text-align: start;
 }
+
+@media only screen and (max-width: 600px) {
+    .dropdown {
+        width: auto;
+        height: auto;
+        background: transparent;
+        border-radius: 4px;
+
+}
+}
