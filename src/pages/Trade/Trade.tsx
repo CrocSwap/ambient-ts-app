@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { useParams, Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useParams, Outlet, NavLink } from 'react-router-dom';
 import { Resizable } from 're-resizable';
 import { BsCaretDownFill } from 'react-icons/bs';
 
