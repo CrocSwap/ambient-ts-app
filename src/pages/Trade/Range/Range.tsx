@@ -73,6 +73,7 @@ import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
+import { ConnectWalletButton } from '../../../components/Global/ConnectWalletButton/ConnectWalletButton';
 
 function Range() {
     const {
@@ -1278,12 +1279,6 @@ function Range() {
     const isTokenBAllowanceSufficient =
         parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
 
-    const loginButton = (
-        <button onClick={openWagmiModal} className={styles.authenticate_button}>
-            Connect Wallet
-        </button>
-    );
-
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
@@ -1527,7 +1522,7 @@ function Range() {
                             </>
                         )
                     ) : (
-                        loginButton
+                        <ConnectWalletButton onClick={openWagmiModal} />
                     )}
                 </div>
             </ContentContainer>

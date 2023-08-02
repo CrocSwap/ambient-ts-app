@@ -33,6 +33,7 @@ import {
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import PageHeaderMobile from './PageHeaderMobile';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
+import { ConnectWalletButton } from '../../../components/Global/ConnectWalletButton/ConnectWalletButton';
 
 const PageHeader = function () {
     const {
@@ -142,15 +143,6 @@ const PageHeader = function () {
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
-    const connectWagmiButton = (
-        <button
-            className={styles.authenticate_button}
-            style={!desktopScreen ? { width: '140px' } : undefined}
-            onClick={() => openWagmiModal()}
-        >
-            {desktopScreen ? 'Connect Wallet' : 'Connect'}
-        </button>
-    );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
@@ -432,7 +424,13 @@ const PageHeader = function () {
                                 ) : null}
                             </div>
                             <NetworkSelector switchNetwork={switchNetwork} />
-                            {!isConnected && connectWagmiButton}
+                            {!isConnected && (
+                                <ConnectWalletButton
+                                    onClick={openWagmiModal}
+                                    isMobile={!desktopScreen}
+                                    thin
+                                />
+                            )}
                             <Account {...accountProps} />
                             <NotificationCenter />
                         </div>

@@ -55,6 +55,7 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import OrderHeader from '../../components/Trade/OrderHeader/OrderHeader';
+import { ConnectWalletButton } from '../../components/Global/ConnectWalletButton/ConnectWalletButton';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -278,16 +279,6 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
         resetConfirmation();
     };
-
-    const loginButton = (
-        <button
-            onClick={openWagmiModal}
-            className={styles.authenticate_button}
-            style={isOnTradeRoute ? { marginBottom: '40px' } : undefined}
-        >
-            Connect Wallet
-        </button>
-    );
 
     const approvalButton = (
         <Button
@@ -767,7 +758,7 @@ function Swap(props: propsIF) {
                                 </>
                             )
                         ) : (
-                            loginButton
+                            <ConnectWalletButton onClick={openWagmiModal} />
                         )}
                         {priceImpactWarningOrNull}
                         {liquidityInsufficientWarningOrNull}

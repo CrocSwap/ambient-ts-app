@@ -58,6 +58,7 @@ import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
+import { ConnectWalletButton } from '../../../components/Global/ConnectWalletButton/ConnectWalletButton';
 
 export default function Limit() {
     const {
@@ -521,12 +522,6 @@ export default function Limit() {
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
-    const loginButton = (
-        <button onClick={openWagmiModal} className={styles.authenticate_button}>
-            Connect Wallet
-        </button>
-    );
-
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
@@ -800,7 +795,7 @@ export default function Limit() {
                             </>
                         )
                     ) : (
-                        loginButton
+                        <ConnectWalletButton onClick={openWagmiModal} />
                     )}
                 </div>
             </ContentContainer>
