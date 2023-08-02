@@ -59,14 +59,14 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
     color: var(--text1);
-    font-weight: 200;
+    font-weight: 300;
 }
 
 .pool_not_initialialized_content h3 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text3);
-    font-weight: 200;
+    font-weight: 300;
 }
 
 .initialize_link {
@@ -121,5 +121,5 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 
-    font-weight: 200;
+    font-weight: 300;
 }
