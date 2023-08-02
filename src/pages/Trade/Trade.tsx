@@ -1,12 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import {
-    useParams,
-    Outlet,
-    NavLink,
-    Link,
-    useNavigate,
-} from 'react-router-dom';
+import { useParams, Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { Resizable } from 're-resizable';
 import { BsCaretDownFill } from 'react-icons/bs';
 
@@ -81,7 +75,6 @@ function Trade() {
         },
     ];
 
-    const navigate = useNavigate();
     const provider = useProvider();
     const { params } = useParams();
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
