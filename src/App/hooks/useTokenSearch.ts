@@ -3,7 +3,7 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../constants';
-import { USDC } from '../../utils/tokens/exports';
+import { USDC, WETH } from '../../utils/tokens/exports';
 
 export const useTokenSearch = (
     chainId: string,
@@ -92,8 +92,14 @@ export const useTokenSearch = (
                         .map((tkn: TokenIF) => tkn.address.toLowerCase())
                         .includes(uniTkn.address.toLowerCase());
                 });
-            // combine the Ambient and Uniswap token lists
-            return ambientTokens.concat(uniswapTokens);
+            // combine the Ambient and Uniswap token lists, WETH removed
+            return ambientTokens
+                .concat(uniswapTokens)
+                .filter(
+                    (tkn: TokenIF) =>
+                        tkn.address.toLowerCase() !==
+                        WETH[chainId.toLowerCase() as keyof typeof WETH],
+                );
         }
 
         // declare an output variable
