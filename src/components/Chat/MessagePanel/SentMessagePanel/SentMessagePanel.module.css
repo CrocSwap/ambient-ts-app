@@ -366,10 +366,6 @@
     color: white;
 }
 
-.like_btn_base.disabled{
-    opacity: .5;
-    cursor: default;
-}
 
 .active.like_btn_base{
     background: rgba(75, 216, 134, 0.46);
@@ -379,6 +375,13 @@
     
     border-color: rgba(224, 77, 77, 0.274);
 }
+
+.like_btn_base.disabled{
+    opacity: .5;
+    cursor: default;
+    background: transparent !important;
+}
+
 
 .active.like_btn_base.dislike_btn{
         
