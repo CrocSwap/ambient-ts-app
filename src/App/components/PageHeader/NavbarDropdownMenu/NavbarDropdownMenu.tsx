@@ -19,12 +19,13 @@ import {
     TWITTER_LINK,
 } from '../../../../constants';
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
+import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 
 interface NavbarDropdownItemPropsIF {
     onClick: () => void;
     children: ReactNode;
     rightIcon?: ReactNode;
-    isLogoutButton?: boolean;
+    connectButton?: boolean;
 }
 
 interface NavbarDropdownMenuPropsIF {
@@ -59,12 +60,10 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     function NavbarDropdownItem(props: NavbarDropdownItemPropsIF) {
         const topLevelItemStyle = styles.topLevelContainer;
 
-        const logoutStyles = `${styles.navbar_logout}`;
+        const connectStyle = `${styles.connect_button}`;
         const menuItemStyles = `${styles.menu_item} ${topLevelItemStyle}`;
 
-        const buttonStyle = props.isLogoutButton
-            ? logoutStyles
-            : menuItemStyles;
+        const buttonStyle = props.connectButton ? connectStyle : menuItemStyles;
 
         return (
             <button
@@ -174,20 +173,17 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                     </NavbarDropdownItem>
                     {isUserLoggedIn ? (
                         <div className={`${styles.navbar_logout_container}`}>
-                            <NavbarDropdownItem
-                                isLogoutButton
+                            <LogoutButton
                                 onClick={() => {
                                     clickLogout();
-                                    closeMenu ? closeMenu() : null;
+                                    closeMenu && closeMenu();
                                 }}
-                            >
-                                Logout
-                            </NavbarDropdownItem>
+                            />
                         </div>
                     ) : (
                         <div className={`${styles.navbar_logout_container}`}>
                             <NavbarDropdownItem
-                                isLogoutButton
+                                connectButton
                                 onClick={openWagmiModal}
                             >
                                 Connect Wallet

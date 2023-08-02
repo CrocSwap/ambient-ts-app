@@ -2,20 +2,18 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import './Subcharts.css';
-import { setCanvasResolution } from '../../../Chart/Chart';
-import { CandleData } from '../../../../App/functions/fetchCandleSeries';
-import { createIndicatorLine } from '../../../Chart/ChartUtils/indicatorLineSeries';
+import '../Chart.css';
+import { setCanvasResolution } from '../ChartUtils/chartUtils';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 
 interface FreeRateData {
     feeData: Array<CandleData>;
     period: number | undefined;
     subChartValues: any;
-    setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
     xScale: any;
     render: any;
-    zoomAndYdragControl: any;
     getNewCandleData: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
@@ -28,14 +26,12 @@ interface FreeRateData {
     xAxisActiveTooltip: string;
 }
 
-function FeeRateSubChart(props: FreeRateData) {
+function FeeRateChart(props: FreeRateData) {
     const {
         feeData,
         period,
         xScale,
         crosshairForSubChart,
-        zoomAndYdragControl,
-        setZoomAndYdragControl,
         getNewCandleData,
         subChartValues,
         yAxisWidth,
@@ -48,7 +44,7 @@ function FeeRateSubChart(props: FreeRateData) {
         xAxisActiveTooltip,
     } = props;
 
-    const d3Yaxis = useRef<HTMLInputElement | null>(null);
+    const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
 
     const d3CanvasArea = useRef(null);
     const d3CanvasCrosshair = useRef(null);
@@ -132,8 +128,6 @@ function FeeRateSubChart(props: FreeRateData) {
                     const deltaX = linearX(-event.sourceEvent.movementX);
                     getNewCandleData(domainX[0] + deltaX, date);
                     xScale.domain([domainX[0] + deltaX, domainX[1] + deltaX]);
-
-                    setZoomAndYdragControl(event);
                 }) as any;
 
             setFeeRateZoom(() => {
@@ -310,9 +304,9 @@ function FeeRateSubChart(props: FreeRateData) {
         ) {
             drawChart(feeData, feeRateyScale);
 
-            props.render();
+            // props.render();
         }
-    }, [period, feeData, zoomAndYdragControl, feeRateyScale, lineSeries]);
+    }, [period, feeData, feeRateyScale, lineSeries]);
 
     useEffect(() => {
         if (d3CanvasCrosshair !== undefined && feeRateZoom !== undefined) {
@@ -331,7 +325,7 @@ function FeeRateSubChart(props: FreeRateData) {
                         setFeeRateHorizontalyValue(() => {
                             return feeRateyScale.invert(event.layerY);
                         });
-                        setCrossHairLocation(event, false);
+                        setCrossHairLocation(event.offsetX, false);
                         setCrosshairActive('feeRate');
                         props.setShowTooltip(true);
 
@@ -404,4 +398,4 @@ function FeeRateSubChart(props: FreeRateData) {
     );
 }
 
-export default memo(FeeRateSubChart);
+export default memo(FeeRateChart);

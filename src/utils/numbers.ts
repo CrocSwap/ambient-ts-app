@@ -65,10 +65,10 @@ export const formatPoolPriceAxis = (
         return '<0.001';
     }
 
-    return num > 99999
+    return num > 99999 || num < 1
         ? numbro(num).format({
               average: true,
-              mantissa: 2,
+              mantissa: num < 1 ? 5 : 2,
               // mantissa: num > 1000 ? 2 : num < 100 ? 5 : digits,
               abbreviations: {
                   million: 'M',

@@ -5,6 +5,7 @@ import NavItem from '../NavItem/NavItem';
 import styles from './ExchangeBalanceModal.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 export const ExchangeBalanceModal = () => {
     const {
@@ -19,6 +20,7 @@ export const ExchangeBalanceModal = () => {
             setFullLayoutActive(false);
         }
     }, [escapePressed]);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <NavItem
@@ -26,6 +28,7 @@ export const ExchangeBalanceModal = () => {
             open={fullLayoutActive}
             setOpen={setFullLayoutActive}
             allowClicksOutside={isModalOpen}
+            square={showMobileVersion}
         >
             <div className={styles.dropdown}>
                 <ExchangeBalance
