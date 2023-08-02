@@ -78,8 +78,7 @@ function TradeTabs2(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { chartSettings, chartHeights, setChartHeight } =
-        useContext(ChartContext);
+    const { chartSettings } = useContext(ChartContext);
 
     const candleTime = chartSettings.candleTime.global;
 
@@ -326,15 +325,6 @@ function TradeTabs2(props: propsIF) {
         setIsCandleDataArrived,
         setHasUserSelectedViewAll,
     };
-
-    const FULL_INFO_HEIGHT = chartHeights.default - 200;
-
-    function handleChartHeightOnInfo() {
-        if (chartHeights.current <= FULL_INFO_HEIGHT) return;
-        if (chartHeights.current <= chartHeights.default) {
-            setChartHeight(chartHeights.current - 200);
-        }
-    }
 
     // data for headings of each of the three tabs
     const tradeTabData = isCandleSelected

@@ -35,7 +35,7 @@ export default function TableInfo() {
         { label: 'Total Fees:', value: '$6.93k' },
         { label: 'TVL:', value: '$2.27m' },
         { label: 'Tick Liquidity:', value: '$500k' },
-        { label: 'Out  Liq:', value: '20%' },
+        { label: 'Out of Range Liq:', value: '20%' },
         { label: 'Pool Created:', value: '15/07/2022' },
     ];
     const featuredData = [
