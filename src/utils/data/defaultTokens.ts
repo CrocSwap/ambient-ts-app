@@ -172,7 +172,7 @@ export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
 }
 
 const DEFAULT_PAIRS_BY_CHAIN = {
-    '0x1': { A: mainnetUSDC, B: mainnetETH },
-    '0x5': { A: goerliUSDC, B: goerliETH },
-    '0x66eed': { A: arbGoerliUSDC, B: arbGoerliETH },
+    '0x1': { A: mainnetETH, B: mainnetUSDC },
+    '0x5': { A: goerliETH, B: goerliUSDC },
+    '0x66eed': { A: arbGoerliETH, B: arbGoerliUSDC },
 };

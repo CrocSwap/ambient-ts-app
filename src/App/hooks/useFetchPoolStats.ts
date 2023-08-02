@@ -237,8 +237,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     const poolLink = linkGenMarket.getFullURL({
         chain: chainId,
-        tokenA: quoteAddr,
-        tokenB: baseAddr,
+        tokenA: baseAddr,
+        tokenB: quoteAddr,
     });
 
     useEffect(() => {
