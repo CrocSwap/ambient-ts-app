@@ -40,9 +40,6 @@ import {
     useCallback,
     memo,
 } from 'react';
-import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
-import uriToHttp from '../../utils/functions/uriToHttp';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -245,47 +242,6 @@ function Trade() {
         tradeData.baseToken.name,
         tradeData.quoteToken.name,
     ]);
-
-    const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
-
-    const poolNotInitializedContent = showPoolNotInitializedContent ? (
-        <div className={styles.pool_not_initialialized_container}>
-            <div className={styles.pool_init_bg}>
-                <div className={styles.pool_not_initialialized_content}>
-                    <div className={styles.pool_not_init_inner}>
-                        <h2>This pool has not been initialized.</h2>
-                        <h3>Do you want to initialize it?</h3>
-                        <Link
-                            to={linkGenInitPool.getFullURL({
-                                chain: chainId,
-                                tokenA: tradeData.baseToken.address,
-                                tokenB: tradeData.quoteToken.address,
-                            })}
-                            className={styles.initialize_link}
-                        >
-                            Initialize Pool
-                            <TokenIcon
-                                src={uriToHttp(tradeData.baseToken.symbol)}
-                                alt={tradeData.baseToken.symbol}
-                                size='m'
-                            />
-                            <TokenIcon
-                                src={uriToHttp(tradeData.quoteToken.symbol)}
-                                alt={tradeData.quoteToken.symbol}
-                                size='m'
-                            />
-                        </Link>
-                        <button
-                            className={styles.no_thanks}
-                            onClick={() => navigate(-1)}
-                        >
-                            No, take me back.
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    ) : null;
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
