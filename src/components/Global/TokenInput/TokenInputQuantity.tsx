@@ -96,6 +96,8 @@ function TokenInputQuantity(props: propsIF) {
             <div className={styles.token_list_text}>{token.symbol}</div>
         );
 
+    const poolNotInit = true;
+
     return (
         <div className={styles.container} id={fieldId}>
             {label && <span className={styles.label}>{label}</span>}
@@ -134,10 +136,13 @@ function TokenInputQuantity(props: propsIF) {
                                     autoCorrect='off'
                                     min='0'
                                     minLength={1}
-                                    disabled={disable}
+                                    disabled={disable || poolNotInit}
                                 />
                             </>
                         )}
+                        <p className={styles.init_overlay}>
+                            pool not initialized
+                        </p>
                     </div>
                 </div>
                 <button
