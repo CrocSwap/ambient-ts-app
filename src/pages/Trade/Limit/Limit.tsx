@@ -7,12 +7,10 @@ import {
 } from '@crocswap-libs/sdk';
 
 // START: Import React Functional Components
-import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
 import Button from '../../../components/Global/Button/Button';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 
 // START: Import Local Files
-import styles from './Limit.module.css';
 import {
     useAppDispatch,
     useAppSelector,
@@ -30,7 +28,6 @@ import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -41,9 +38,6 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useContext, useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { FiExternalLink } from 'react-icons/fi';
-import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
@@ -83,14 +77,8 @@ export default function Limit() {
         UserPreferenceContext,
     );
 
-    const { navigationMenu, limitTickFromParams } = useTradeData();
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
-
+    const { limitTickFromParams } = useTradeData();
     const [isOpen, openModal, closeModal] = useModal();
-
-    const tradeData = useAppSelector((state) => state.tradeData);
 
     const dispatch = useAppDispatch();
     const {

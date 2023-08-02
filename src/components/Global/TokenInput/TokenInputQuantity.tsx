@@ -1,9 +1,7 @@
-import { useContext, useState, useEffect, ChangeEvent, memo } from 'react';
+import { useState, useEffect, ChangeEvent, memo } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { TokenContext } from '../../../contexts/TokenContext';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import Modal from '../Modal/Modal';
 import { useModal } from '../Modal/useModal';
 import Spinner from '../Spinner/Spinner';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
@@ -43,7 +41,6 @@ function TokenInputQuantity(props: propsIF) {
         reverseTokens,
         parseInput,
     } = props;
-    const { setInput: setTokenSelectInput } = useContext(TokenContext);
 
     const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =

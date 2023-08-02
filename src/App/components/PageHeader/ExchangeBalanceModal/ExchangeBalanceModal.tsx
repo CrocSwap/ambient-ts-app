@@ -1,10 +1,9 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import coins from '../../../../assets/images/coins.svg';
 import NavItem from '../NavItem/NavItem';
 import styles from './ExchangeBalanceModal.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 
