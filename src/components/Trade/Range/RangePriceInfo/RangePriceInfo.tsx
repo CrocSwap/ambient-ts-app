@@ -74,7 +74,7 @@ function RangePriceInfo(props: propsIF) {
     // JSX frag for estimated APR of position
 
     const aprDisplay = (
-        <div className={styles.price_display}>
+        <div className={`${styles.price_display} ${styles.no_point}`}>
             <h4 className={styles.price_title}>Est. APR</h4>
             <span
                 className={styles.apr_price}
@@ -315,7 +315,7 @@ function RangePriceInfo(props: propsIF) {
                 </div>
             </DefaultTooltip>
         ) : (
-            <div className={styles.price_display} style={{ cursor: 'default' }}>
+            <div className={`${styles.price_display} ${styles.no_point}`}>
                 <h4 className={styles.price_title}>Min Price</h4>
                 <span className={styles.min_price}>{minPrice}</span>
             </div>
@@ -343,7 +343,7 @@ function RangePriceInfo(props: propsIF) {
                 </div>
             </DefaultTooltip>
         ) : (
-            <div className={styles.price_display} style={{ cursor: 'default' }}>
+            <div className={`${styles.price_display} ${styles.no_point}`}>
                 <h4 className={styles.price_title}>Max Price</h4>
                 <span className={styles.max_price}>{maxPrice}</span>
             </div>
@@ -362,7 +362,7 @@ function RangePriceInfo(props: propsIF) {
                 enterDelay={100}
                 leaveDelay={200}
             >
-                <div className={styles.price_display}>
+                <div className={`${styles.price_display} ${styles.no_point}`}>
                     <h4 className={styles.price_title}>Current Price</h4>
                     <span
                         className={styles.current_price}
@@ -378,7 +378,7 @@ function RangePriceInfo(props: propsIF) {
                 </div>
             </DefaultTooltip>
         ) : (
-            <div className={styles.price_display}>
+            <div className={`${styles.price_display} ${styles.no_point}`}>
                 <h4 className={styles.price_title}>Current Price</h4>
                 <span
                     className={styles.current_price}
