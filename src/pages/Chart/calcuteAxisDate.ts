@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+export interface xAxisTick {
+    date: Date;
+    style: boolean;
+}
 export const correctStyleForData = (
     startDateTime: number,
     endDateTime: number,
-    dataTime: any,
+    dataTime: Date[],
 ) => {
     const startDate = new Date(startDateTime);
     const endDate = new Date(endDateTime);

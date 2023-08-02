@@ -17,7 +17,6 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setIsTokenAPrimary,
     setLimitTick,
     setLimitTickCopied,
     setShouldSwapDirectionReverse,
@@ -115,11 +114,6 @@ export default function TransactionsMenu(props: propsIF) {
                 }
             }, 1000);
         } else if (tx.entityType === 'swap') {
-            dispatch(
-                setIsTokenAPrimary(
-                    (tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty),
-                ),
-            );
             const shouldReverse =
                 tradeData.tokenA.address.toLowerCase() ===
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());

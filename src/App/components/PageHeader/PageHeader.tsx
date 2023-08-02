@@ -382,16 +382,22 @@ const PageHeader = function () {
                 location.pathname === '/' && styles.fixed
             }`}
         >
-            <Link to='/' className={styles.logo_container} aria-label='Home'>
-                <img src={logo} alt='ambient' className={styles.logo} />
-                {desktopScreen && (
-                    <img
-                        src={logoText}
-                        alt='ambient'
-                        className={styles.logo_text}
-                    />
-                )}
-            </Link>
+            <div className={styles.logo_container}>
+                <Link
+                    to='/'
+                    className={styles.logo_container}
+                    aria-label='Home'
+                >
+                    <img src={logo} alt='ambient' className={styles.logo} />
+                    {desktopScreen && (
+                        <img
+                            src={logoText}
+                            alt='ambient'
+                            className={styles.logo_text}
+                        />
+                    )}
+                </Link>
+            </div>
             {routeDisplay}
             <div className={styles.right_side}>
                 {show ? (
@@ -413,7 +419,7 @@ const PageHeader = function () {
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
                                     <div className={styles.branch}>
-                                        {BRANCH_NAME}{' '}
+                                        {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
                                     </div>
                                 ) : null}

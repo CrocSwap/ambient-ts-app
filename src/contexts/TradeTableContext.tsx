@@ -36,8 +36,7 @@ export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { isCandleSelected } = useContext(CandleContext);
-    const { setChartHeight, chartHeights } =
-        useContext(ChartContext);
+    const { setChartHeight, chartHeights } = useContext(ChartContext);
 
     const { pathname: currentLocation } = useLocation();
 

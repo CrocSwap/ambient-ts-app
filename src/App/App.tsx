@@ -14,6 +14,7 @@ import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
 import Portfolio from '../pages/Portfolio/Portfolio';
+import TradeSwap from '../pages/Trade/Swap/Swap';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -42,6 +43,7 @@ import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 /** ***** React Function *******/
 export default function App() {
@@ -142,6 +144,7 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <>
@@ -177,7 +180,7 @@ export default function App() {
                             />
                             <Route
                                 path='market/:params'
-                                element={<Swap isOnTradeRoute={true} />}
+                                element={<TradeSwap isOnTradeRoute={true} />}
                             />
                             <Route
                                 path='limit'
@@ -275,7 +278,7 @@ export default function App() {
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
             </div>
-            <SidebarFooter />
+            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <div id={GLOBAL_MODAL_PORTAL_ID} />
             <GlobalPopup />
             <SnackbarComponent />
