@@ -3,10 +3,10 @@ import styles from './RangePriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
 import {
-    useAppDispatch,
+    // useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+// import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
@@ -45,7 +45,7 @@ interface propsIF {
 function RangePriceInfo(props: propsIF) {
     const {
         poolPriceCharacter,
-        aprPercentage,
+        // aprPercentage,
         pinnedDisplayPrices,
         isTokenABase,
         isAmbient,
@@ -62,41 +62,41 @@ function RangePriceInfo(props: propsIF) {
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
         useAppSelector((state) => state.tradeData);
 
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
 
-    const aprPercentageString = aprPercentage
-        ? `${aprPercentage.toLocaleString('en-US', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })}%`
-        : '…';
+    // const aprPercentageString = aprPercentage
+    //     ? `${aprPercentage.toLocaleString('en-US', {
+    //           minimumFractionDigits: 2,
+    //           maximumFractionDigits: 2,
+    //       })}%`
+    //     : '…';
     // JSX frag for estimated APR of position
 
-    const aprDisplay = (
-        <div className={styles.price_display}>
-            <h4 className={styles.price_title}>Est. APR</h4>
-            <span
-                className={styles.apr_price}
-                onClick={() => {
-                    dispatch(toggleDidUserFlipDenom());
-                    setUserFlippedMaxMinDisplay(false);
-                }}
-            >
-                {aprPercentageString}
-                {/* <AiOutlineQuestionCircle
-                size={14}
-                onClick={() =>
-                    openGlobalPopup(
-                        <AprExplanation />,
+    // const aprDisplay = (
+    //     <div className={styles.price_display}>
+    //         <h4 className={styles.price_title}>Est. APR</h4>
+    //         <span
+    //             className={styles.apr_price}
+    //             onClick={() => {
+    //                 dispatch(toggleDidUserFlipDenom());
+    //                 setUserFlippedMaxMinDisplay(false);
+    //             }}
+    //         >
+    //             {aprPercentageString}
+    //             {/* <AiOutlineQuestionCircle
+    //             size={14}
+    //             onClick={() =>
+    //                 openGlobalPopup(
+    //                     <AprExplanation />,
 
-                        'Estimated APR',
-                        'right',
-                    )
-                }
-            /> */}
-            </span>
-        </div>
-    );
+    //                     'Estimated APR',
+    //                     'right',
+    //                 )
+    //             }
+    //         /> */}
+    //         </span>
+    //     </div>
+    // );
 
     const [tokenAMainnetPrice, setTokenAMainnetPrice] = useState<
         number | undefined
@@ -314,7 +314,7 @@ function RangePriceInfo(props: propsIF) {
     return (
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
-                {aprDisplay}
+                {/* {aprDisplay} */}
                 {minimumPrice}
                 {maximumPrice}
             </div>

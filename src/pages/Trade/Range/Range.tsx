@@ -4,10 +4,10 @@ import { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import Button from '../../../components/Global/Button/Button';
-import DividerDark from '../../../components/Global/DividerDark/DividerDark';
+// import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
+// import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
@@ -1327,16 +1327,16 @@ function Range() {
                     />
                 </div>
             </motion.div>
-            <DividerDark addMarginTop />
+            {/* <DividerDark addMarginTop /> */}
 
-            <AdvancedPriceInfo
+            {/* <AdvancedPriceInfo
                 poolPriceDisplay={getFormattedNumber({
                     value: displayPriceWithDenom,
                 })}
                 isTokenABase={isTokenABase}
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
-            />
+            /> */}
         </>
     );
 
