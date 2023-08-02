@@ -14,7 +14,6 @@ import {
 } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
-import RangeActionHeader from './RangeActionHeader/RangeActionHeader';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import {
     addPendingTx,
@@ -43,7 +42,9 @@ import { getPositionData } from '../../App/functions/getPositionData';
 import { TokenContext } from '../../contexts/TokenContext';
 import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
+import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
 
 interface propsIF {
     type: 'Remove' | 'Harvest';
@@ -127,11 +128,10 @@ export default function RangeActionModal(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setRemovalGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -623,7 +623,7 @@ export default function RangeActionModal(props: propsIF) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            <RangeActionHeader
+            <SimpleModalHeader
                 onClose={handleModalClose}
                 title={
                     showSettings
@@ -777,7 +777,7 @@ export default function RangeActionModal(props: propsIF) {
     if (showConfirmation) return confirmationContent;
     return (
         <>
-            <RangeActionHeader
+            <SimpleModalHeader
                 onClose={handleModalClose}
                 title={
                     showSettings

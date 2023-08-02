@@ -46,9 +46,7 @@
     gap: 0.5rem;
 }
 
-.token_images img {
-    width: 30px;
-}
+
 .tokens_name {
     font-family: var(--font-logo);
     font-weight: 100;
@@ -156,4 +154,32 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+
+@media only screen and (max-width: 600px)  {
+    .main_container {
+        background-color: transparent;
+       
+        background: var(--dark2);  
+
+
+    }
+    /* .pool_card{
+        padding: 0 1rem;
+    } */
+.pool_card, .main_container{
+    width: 100%
+}
+
+.pool_card:hover,
+.pool_card:focus-visible {
+    box-shadow: none;
+}
+
+.column:first-of-type{
+   
+    align-items: flex-start;
+}
+
 }

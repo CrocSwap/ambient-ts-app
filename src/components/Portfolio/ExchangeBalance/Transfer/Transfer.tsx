@@ -33,6 +33,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -42,7 +43,6 @@ interface propsIF {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
-    openTokenModal: () => void;
 }
 
 export default function Transfer(props: propsIF) {
@@ -54,7 +54,6 @@ export default function Transfer(props: propsIF) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
-        openTokenModal,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
@@ -75,21 +74,9 @@ export default function Transfer(props: propsIF) {
         ? parseFloat(tokenExchangeDepositsDisplay)
         : undefined;
 
-    const tokenDexBalanceTruncated =
-        tokenExchangeDepositsDisplayNum !== undefined
-            ? tokenExchangeDepositsDisplayNum === 0
-                ? '0.00'
-                : tokenExchangeDepositsDisplayNum < 0.0001
-                ? tokenExchangeDepositsDisplayNum.toExponential(2)
-                : tokenExchangeDepositsDisplayNum < 2
-                ? tokenExchangeDepositsDisplayNum.toPrecision(3)
-                : // : tokenDexBalanceNum >= 100000
-                  // ? formatAmountOld(tokenDexBalanceNum)
-                  tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : undefined;
+    const tokenDexBalanceTruncated = getFormattedNumber({
+        value: tokenExchangeDepositsDisplayNum,
+    });
 
     const [transferQtyNonDisplay, setTransferQtyNonDisplay] = useState<
         string | undefined
@@ -128,7 +115,11 @@ export default function Transfer(props: propsIF) {
         [transferQtyNonDisplay],
     );
 
-    // const [isApprovalPending, setIsApprovalPending] = useState(false);
+    const transferQtyNonDisplayNum = useMemo(
+        () => parseFloat(transferQtyNonDisplay ?? ''),
+        [transferQtyNonDisplay],
+    );
+
     const [isTransferPending, setIsTransferPending] = useState(false);
 
     useEffect(() => {
@@ -146,11 +137,17 @@ export default function Transfer(props: propsIF) {
             setIsAddressFieldDisabled(false);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Please Enter a Valid Address');
-        } else if (!transferQtyNonDisplay) {
+        } else if (!transferQtyNonDisplayNum) {
+            // if num is undefined or 0
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(false);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Transfer Amount');
+        } else if (transferQtyNonDisplayNum < 0) {
+            setIsButtonDisabled(true);
+            setIsAddressFieldDisabled(false);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage('Enter a Valid Transfer Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setIsAddressFieldDisabled(false);
@@ -165,6 +162,7 @@ export default function Transfer(props: propsIF) {
             setButtonMessage('Transfer');
         }
     }, [
+        transferQtyNonDisplay,
         isTransferPending,
         isDexBalanceSufficient,
         isTransferQtyValid,
@@ -276,14 +274,7 @@ export default function Transfer(props: propsIF) {
         </div>
     ) : null;
 
-    // const transferInput = document.getElementById(
-    //     'exchange-balance-transfer-exchange-balance-transfer-quantity',
-    // ) as HTMLInputElement;
-
     const resetTransferQty = () => {
-        // if (transferInput) {
-        //     transferInput.value = '';
-        // }
         setTransferQtyNonDisplay(undefined);
         setInputValue('');
     };
@@ -329,11 +320,10 @@ export default function Transfer(props: propsIF) {
                     : averageGasUnitsForErc20Transfer);
 
             setTransferGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
@@ -350,8 +340,6 @@ export default function Transfer(props: propsIF) {
                 disable={isAddressFieldDisabled}
             />
             <TransferCurrencySelector
-                fieldId='exchange-balance-transfer'
-                onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setTransferQty={setTransferQtyNonDisplay}
                 inputValue={inputValue}

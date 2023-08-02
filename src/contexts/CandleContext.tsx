@@ -13,7 +13,6 @@ import {
 } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
 import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
@@ -21,6 +20,7 @@ import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { PoolContext } from './PoolContext';
 
 interface CandleContextIF {
     candleData: CandlesByPoolAndDuration | undefined;
@@ -38,6 +38,7 @@ interface CandleContextIF {
     candleScale: candleScale;
     setCandleScale: Dispatch<SetStateAction<candleScale>>;
     candleTimeLocal: number;
+    timeOfEndCandle: number | undefined;
 }
 
 export const CandleContext = createContext<CandleContextIF>(
@@ -51,6 +52,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const { chartSettings, isEnabled: isChartEnabled } =
         useContext(ChartContext);
     const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { pool: pool } = useContext(PoolContext);
     const {
         baseToken: {
             address: baseTokenAddress,
@@ -65,7 +67,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const [abortController, setAbortController] =
         useState<AbortController | null>(null);
-    const { isUserIdle } = useAppSelector((state) => state.userData);
 
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDuration | undefined
@@ -74,19 +75,22 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [isCandleSelected, setIsCandleSelected] = useState<
         boolean | undefined
     >();
+
+    const [timeOfEndCandle, setTimeOfEndCandle] = useState<
+        number | undefined
+    >();
+
     const [isFetchingCandle, setIsFetchingCandle] = useState(false);
     const [candleDomains, setCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
     });
-    const domainBoundaryInSeconds = Math.floor(
-        (candleDomains?.domainBoundry || 0) / 1000,
-    );
 
     const [candleScale, setCandleScale] = useState<candleScale>({
         lastCandleDate: undefined,
-        nCandle: 200,
+        nCandles: 200,
         isFetchForTimeframe: false,
+        isShowLatestCandle: true,
     });
 
     // local logic to determine current chart period
@@ -109,6 +113,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         candleScale,
         setCandleScale,
         candleTimeLocal,
+        timeOfEndCandle,
     };
 
     const {
@@ -117,16 +122,35 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
 
     useEffect(() => {
-        isChartEnabled && !isUserIdle && fetchCandles();
+        setCandleData(undefined);
+    }, [pool]);
+
+    useEffect(() => {
+        isChartEnabled && fetchCandles();
     }, [
         isChartEnabled,
         mainnetBaseTokenAddress,
         mainnetQuoteTokenAddress,
-        isUserIdle,
         candleScale?.isFetchForTimeframe,
     ]);
 
-    const fetchCandles = () => {
+    useEffect(() => {
+        if (isChartEnabled && candleScale.isShowLatestCandle) {
+            const interval = setInterval(() => {
+                fetchCandles(true);
+            }, 60000);
+            return () => clearInterval(interval);
+        }
+    }, [
+        isChartEnabled,
+        mainnetBaseTokenAddress,
+        mainnetQuoteTokenAddress,
+        candleScale?.isFetchForTimeframe,
+        candleScale.nCandles,
+        candleScale.isShowLatestCandle,
+    ]);
+
+    const fetchCandles = (bypassSpinner = false) => {
         if (
             isServerEnabled &&
             baseTokenAddress &&
@@ -139,12 +163,14 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             if (abortController) {
                 abortController.abort();
             }
-
-            const candleTime = candleScale?.lastCandleDate || 0;
+            const candleTime = candleScale.isShowLatestCandle
+                ? Date.now() / 1000
+                : candleScale.lastCandleDate || 0;
             const nCandles =
-                candleScale?.nCandle > 1000 ? 1000 : candleScale?.nCandle;
+                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
 
-            setIsFetchingCandle(true);
+            !bypassSpinner && setIsFetchingCandle(true);
+            setTimeOfEndCandle(undefined);
             fetchCandleSeriesHybrid(
                 true,
                 chainData,
@@ -168,6 +194,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             setIsCandleDataNull(true);
         }
     };
+
+    const domainBoundaryInSeconds = Math.floor(
+        (candleDomains?.domainBoundry || 0) / 1000,
+    );
+
     const domainBoundaryInSecondsDebounced = useDebounce(
         domainBoundaryInSeconds,
         500,
@@ -195,9 +226,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     const numDurationsNeeded = useMemo(() => {
         if (!minTimeMemo || !domainBoundaryInSeconds) return;
-        return Math.floor(
+        const numDurations = Math.floor(
             (minTimeMemo - domainBoundaryInSeconds) / candleTimeLocal + 1,
         );
+
+        return numDurations > 2999 ? 2999 : numDurations;
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
     const fetchCandlesByNumDurations = (numDurations: number) => {
@@ -222,6 +255,15 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             .then((incrCandles) => {
                 if (incrCandles && candleData) {
                     const newCandles: CandleData[] = [];
+                    if (incrCandles.candles.length === 0) {
+                        candleData.candles.sort(
+                            (a: CandleData, b: CandleData) => b.time - a.time,
+                        );
+                        setTimeOfEndCandle(
+                            candleData.candles[candleData.candles.length - 1]
+                                .time * 1000,
+                        );
+                    }
 
                     for (
                         let index = 0;
@@ -261,7 +303,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (!numDurationsNeeded) return;
-        if (numDurationsNeeded > 0 && numDurationsNeeded < 1000) {
+        if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
     }, [numDurationsNeeded]);

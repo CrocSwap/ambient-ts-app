@@ -22,12 +22,13 @@ import TransactionException from '../Global/TransactionException/TransactionExce
 import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import LimitActionButton from './LimitActionButton/LimitActionButton';
-import LimitActionHeader from './LimitActionHeader/LimitActionHeader';
 import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { CrocPositionView } from '@crocswap-libs/sdk';
+import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -119,11 +120,10 @@ export default function LimitActionModal(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setNetworkFee(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -383,15 +383,12 @@ export default function LimitActionModal(props: propsIF) {
 
     const confirmationContent = (
         <>
-            <LimitActionHeader
+            <SimpleModalHeader
                 title={
                     type === 'Remove'
                         ? 'Remove Limit Order Confirmation'
                         : 'Claim Limit Order Confirmation'
                 }
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
-                onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
             <div className={styles.confirmation_container}>
                 <div className={styles.confirmation_content}>
@@ -410,7 +407,7 @@ export default function LimitActionModal(props: propsIF) {
         />
     ) : (
         <>
-            <LimitActionHeader
+            <SimpleModalHeader
                 title={
                     showConfirmation
                         ? ''
@@ -418,9 +415,6 @@ export default function LimitActionModal(props: propsIF) {
                         ? 'Remove Limit Order'
                         : 'Claim Limit Order '
                 }
-                showSettings={showSettings}
-                setShowSettings={setShowSettings}
-                onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
             <div style={{ padding: '1rem ' }}>
                 <LimitActionTokenHeader

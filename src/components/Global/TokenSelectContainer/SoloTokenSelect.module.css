@@ -1,7 +1,7 @@
 .container {
-    /* max-width: 350px; */
-    /* width: 380px; */
     min-height: 250px;
+    max-height: 70vh;
+    overflow-y: scroll;
     display: flex;
     flex-direction: column;
     padding: 1rem;
@@ -24,11 +24,10 @@
     padding: 0 4px;
     margin-bottom: 8px;
     border-radius: 4px;
-    /* text-align: center; */
 }
 
 .scrollable_container {
-    max-height: 300px;
+    max-height: 70vh;
     overflow-y: scroll;
 }
 
@@ -48,6 +47,7 @@
     align-items: center;
     gap: 4px;
 }
+
 .input_control_container button {
     background: transparent;
     padding: 6px 0;
@@ -59,6 +59,10 @@
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 }
+.clearButton {
+    transform: translateY(-16%);
+}
+
 .input_control_container button:hover {
     color: var(--text1);
 }
@@ -69,15 +73,16 @@
     align-items: center;
 }
 
-.weth_text{
-  font-size: var(--body-size);
-  line-height: var(--body-lh);
-  text-align: center;
-  color: var(--text1);
-  padding: 1rem;  
+.weth_text {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    color: var(--text1);
+    padding: 1rem;  
 }
+
 @media only screen and (min-width: 768px) {
-.container{
- width: 448px;   
-}
+    .container {
+        width: 448px;   
+    }
 }

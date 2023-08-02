@@ -29,6 +29,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
@@ -133,7 +134,7 @@ export default function InitPool() {
                     ? defaultPriceNum.toExponential(2)
                     : defaultPriceNum < 2
                     ? defaultPriceNum.toPrecision(3)
-                    : defaultPriceNum.toLocaleString(undefined, {
+                    : defaultPriceNum.toLocaleString('en-US', {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
@@ -164,11 +165,10 @@ export default function InitPool() {
                 gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -348,7 +348,7 @@ export default function InitPool() {
                         ? invertedPriceNum.toExponential(2)
                         : invertedPriceNum < 2
                         ? invertedPriceNum.toPrecision(3)
-                        : invertedPriceNum.toLocaleString(undefined, {
+                        : invertedPriceNum.toLocaleString('en-US', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                           });
@@ -376,7 +376,7 @@ export default function InitPool() {
                         ? initialPriceInBaseDenom.toExponential(2)
                         : initialPriceInBaseDenom < 2
                         ? initialPriceInBaseDenom.toPrecision(3)
-                        : initialPriceInBaseDenom.toLocaleString(undefined, {
+                        : initialPriceInBaseDenom.toLocaleString('en-US', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                           });

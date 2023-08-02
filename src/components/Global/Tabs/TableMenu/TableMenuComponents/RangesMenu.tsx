@@ -34,6 +34,7 @@ import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import RangeActionModal from '../../../../RangeActionModal/RangeActionModal';
+import { OptionButton } from '../../../Button/OptionButton';
 // interface for React functional component props
 interface propsIF {
     userMatchesConnectedAccount: boolean | undefined;
@@ -106,6 +107,9 @@ export default function RangesMenu(props: propsIF) {
     };
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const rtkTokenA = tradeData.tokenA.address;
+    const rtkTokenB = tradeData.tokenB.address;
 
     const positionMatchesLoggedInUser =
         userMatchesConnectedAccount && isUserLoggedIn;
@@ -135,8 +139,14 @@ export default function RangesMenu(props: propsIF) {
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
-                tokenA: position.base,
-                tokenB: position.quote,
+                tokenA:
+                    rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        ? position.quote
+                        : position.base,
+                tokenB:
+                    rtkTokenB.toLowerCase() === position.base.toLowerCase()
+                        ? position.base
+                        : position.quote,
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
@@ -152,59 +162,60 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <button className={styles.option_button} onClick={openRemoveRangeModal}>
-            Remove
-        </button>
+        <OptionButton onClick={openRemoveRangeModal} content='Remove' />
     ) : null;
 
     const copyButton = position ? (
-        <Link
-            style={{ opacity: '1' }}
-            className={styles.option_button}
-            to={linkGenPool.getFullURL({
-                chain: chainId,
-                tokenA: position.base,
-                tokenB: position.quote,
-                lowTick: position.bidTick.toString(),
-                highTick: position.askTick.toString(),
-            })}
-            onClick={handleCopyClick}
-        >
-            Copy Trade
-        </Link>
+        <OptionButton
+            onClick={() => {
+                linkGenPool.navigate({
+                    chain: chainId,
+                    tokenA:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.quote
+                            : position.base,
+                    tokenB:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.base
+                            : position.quote,
+                    lowTick: position.bidTick.toString(),
+                    highTick: position.askTick.toString(),
+                });
+                handleCopyClick();
+            }}
+            content='Copy Trade'
+        />
     ) : null;
 
     const addButton = (
-        <Link
-            style={{ opacity: '1', zIndex: '3' }}
-            className={styles.option_button}
-            to={linkGenPool.getFullURL({
-                chain: chainId,
-                tokenA: position.base,
-                tokenB: position.quote,
-                lowTick: position.bidTick.toString(),
-                highTick: position.askTick.toString(),
-            })}
-            onClick={(event) => {
-                event.stopPropagation();
+        <OptionButton
+            onClick={() => {
+                linkGenPool.navigate({
+                    chain: chainId,
+                    tokenA:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.quote
+                            : position.base,
+                    tokenB:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.base
+                            : position.quote,
+                    lowTick: position.bidTick.toString(),
+                    highTick: position.askTick.toString(),
+                });
                 handleCopyClick();
                 setCurrentRangeInAdd(position.positionId);
             }}
-        >
-            Add
-        </Link>
+            content='Add'
+        />
     );
 
     const detailsButton = (
-        <button className={styles.option_button} onClick={openDetailsModal}>
-            Details
-        </button>
+        <OptionButton onClick={openDetailsModal} content='Details' />
     );
     const harvestButton =
         !isAmbient && positionMatchesLoggedInUser ? (
-            <button className={styles.option_button} onClick={openHarvestModal}>
-                Harvest
-            </button>
+            <OptionButton onClick={openHarvestModal} content='Harvest' />
         ) : null;
 
     // ----------------------
@@ -236,19 +247,20 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const walletButton = (
-        <button
-            className={styles.option_button}
-            tabIndex={0}
-            aria-label='View wallet.'
+        <OptionButton
+            ariaLabel='View wallet.'
             onClick={props.handleAccountClick}
-        >
-            Wallet
-            <FiExternalLink
-                size={15}
-                color='white'
-                style={{ marginLeft: '.5rem' }}
-            />
-        </button>
+            content={
+                <>
+                    Wallet
+                    <FiExternalLink
+                        size={15}
+                        color='white'
+                        style={{ marginLeft: '.5rem' }}
+                    />
+                </>
+            }
+        />
     );
 
     null;

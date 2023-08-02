@@ -10,6 +10,7 @@ import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import Apy from '../../Tabs/Apy/Apy';
 
 type ItemIF = {
     slug: string;
@@ -20,10 +21,11 @@ type ItemIF = {
 interface propsIF {
     tx: TransactionIF;
     controlItems: ItemIF[];
+    positionApy: number | undefined;
 }
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
-    const { tx, controlItems } = props;
+    const { tx, controlItems, positionApy } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -35,8 +37,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
-        baseQuantityDisplayShort,
-        quoteQuantityDisplayShort,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
@@ -44,7 +46,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-        txUsdValueLocaleString,
         baseTokenCharacter,
         quoteTokenCharacter,
     } = useProcessTransaction(tx, userAddress);
@@ -88,7 +89,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 <span>Total Value: </span>
                 <DefaultTooltip
                     interactive
-                    title={txUsdValueLocaleString}
+                    title={usdValue}
                     placement={'right-end'}
                     arrow
                     enterDelay={750}
@@ -152,7 +153,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 </p>
 
                 <div>
-                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
+                    {quoteQuantityDisplay.replace(/[()]/g, '')}
                     {buySellQuoteToken}
                 </div>
             </Row>
@@ -165,7 +166,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         : 'Sell: '}
                 </p>
                 <div>
-                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
+                    {baseQuantityDisplay.replace(/[()]/g, '')}
                     {buySellBaseToken}
                 </div>
             </Row>
@@ -182,7 +183,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 </p>
 
                 <div>
-                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
+                    {baseQuantityDisplay.replace(/[()]/g, '')}
                     {buySellBaseToken}
                 </div>
             </Row>
@@ -194,7 +195,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         : 'Sell: '}
                 </p>
                 <div>
-                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
+                    {quoteQuantityDisplay.replace(/[()]/g, '')}
                     {buySellQuoteToken}
                 </div>
             </Row>
@@ -284,6 +285,15 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 {controlItems[2] && totalValueContent}
                 {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}
+                {tx.entityType === 'liqchange' ? (
+                    <Apy
+                        amount={positionApy || undefined}
+                        fs='48px'
+                        lh='60px'
+                        center
+                        showTitle
+                    />
+                ) : undefined}
             </div>
         </div>
     );

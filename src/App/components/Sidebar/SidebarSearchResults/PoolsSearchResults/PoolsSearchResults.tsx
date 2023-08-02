@@ -1,7 +1,7 @@
 import styles from '../SidebarSearchResults.module.css';
-import { TempPoolIF } from '../../../../../utils/interfaces/exports';
+import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
-import PoolLI from './PoolLI';
+import PoolSearchResult from './PoolSearchResult';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
@@ -10,9 +10,10 @@ import {
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
+import checkPoolForWETH from '../../../../functions/checkPoolForWETH';
 
 interface propsIF {
-    searchedPools: TempPoolIF[];
+    searchedPools: PoolIF[];
     cachedPoolStatsFetch: PoolStatsFn;
     cachedFetchTokenPrice: TokenPriceFn;
 }
@@ -21,7 +22,6 @@ export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, cachedPoolStatsFetch, cachedFetchTokenPrice } =
         props;
     const { tokenA } = useAppSelector((state) => state.tradeData);
-
     const {
         crocEnv,
         chainData: { chainId },
@@ -30,19 +30,18 @@ export default function PoolsSearchResults(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
+    // fn to handle user clicks on `<PoolLI />` instances
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
-        const tokenAString: string =
+        // reorganize base and quote tokens as tokenA and tokenB
+        const [addrTokenA, addrTokenB] =
             baseAddr.toLowerCase() === tokenA.address.toLowerCase()
-                ? baseAddr
-                : quoteAddr;
-        const tokenBString: string =
-            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
-                ? quoteAddr
-                : baseAddr;
+                ? [baseAddr, quoteAddr]
+                : [quoteAddr, baseAddr];
+        // navigate user to the new appropriate URL path
         linkGenMarket.navigate({
             chain: chainId,
-            tokenA: tokenAString,
-            tokenB: tokenBString,
+            tokenA: addrTokenA,
+            tokenB: addrTokenB,
         });
     };
 
@@ -57,19 +56,27 @@ export default function PoolsSearchResults(props: propsIF) {
                         <div>TVL</div>
                     </header>
                     <ol className={styles.main_result_container}>
-                        {searchedPools.slice(0, 4).map((pool: TempPoolIF) => (
-                            <PoolLI
-                                key={`sidebar_searched_pool_${JSON.stringify(
-                                    pool,
-                                )}`}
-                                chainId={chainId}
-                                handleClick={handleClick}
-                                pool={pool}
-                                cachedPoolStatsFetch={cachedPoolStatsFetch}
-                                cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                crocEnv={crocEnv}
-                            />
-                        ))}
+                        {searchedPools
+                            .filter(
+                                (pool: PoolIF) =>
+                                    !checkPoolForWETH(pool, chainId),
+                            )
+                            // max five elements before content overflows container
+                            .slice(0, 5)
+                            .map((pool: PoolIF) => (
+                                <PoolSearchResult
+                                    key={`sidebar_searched_pool_${JSON.stringify(
+                                        pool,
+                                    )}`}
+                                    handleClick={handleClick}
+                                    pool={pool}
+                                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                                    cachedFetchTokenPrice={
+                                        cachedFetchTokenPrice
+                                    }
+                                    crocEnv={crocEnv}
+                                />
+                            ))}
                     </ol>
                 </>
             ) : (

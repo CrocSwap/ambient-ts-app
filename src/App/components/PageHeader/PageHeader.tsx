@@ -1,6 +1,5 @@
 import { useEffect, useState, memo, useContext, useCallback } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
@@ -32,12 +31,17 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { getFormattedNumber } from '../../functions/getFormattedNumber';
 
 const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { setCrocEnv } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        setCrocEnv,
+        chainData: { chainId, poolIndex: poolId },
+    } = useContext(CrocEnvContext);
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -53,8 +57,6 @@ const PageHeader = function () {
     } = useContext(TradeTokenContext);
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
-
-    const { t } = useTranslation();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -167,10 +169,21 @@ const PageHeader = function () {
     const quoteAddressInRtk = tradeData.quoteToken.address;
 
     useEffect(() => {
-        if (baseAddressInRtk && quoteAddressInRtk) {
-            recentPools.addPool(tradeData.baseToken, tradeData.quoteToken);
+        if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
+            const promise = crocEnv
+                .pool(tradeData.baseToken.address, tradeData.quoteToken.address)
+                .isInit();
+            Promise.resolve(promise).then((poolExists: boolean) => {
+                poolExists &&
+                    recentPools.add(
+                        tradeData.baseToken,
+                        tradeData.quoteToken,
+                        chainId,
+                        poolId,
+                    );
+            });
         }
-    }, [baseAddressInRtk, quoteAddressInRtk]);
+    }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -178,22 +191,9 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    const truncatedPoolPrice =
-        !poolPriceDisplayWithDenom ||
-        poolPriceDisplayWithDenom === Infinity ||
-        poolPriceDisplayWithDenom === 0
-            ? ''
-            : poolPriceDisplayWithDenom < 0.0001
-            ? poolPriceDisplayWithDenom.toExponential(2)
-            : poolPriceDisplayWithDenom < 2
-            ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
+    });
 
     useEffect(() => {
         const path = location.pathname;
@@ -213,11 +213,12 @@ const PageHeader = function () {
             document.title = 'My Account ~ Ambient';
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
+            const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
             const ensNameOrAddressTruncated = isAddressEns
-                ? pathNoPrefix.length > 15
-                    ? trimString(pathNoPrefix, 10, 3, '…')
-                    : pathNoPrefix
-                : trimString(pathNoPrefix, 6, 0, '…');
+                ? pathNoPrefixDecoded.length > 15
+                    ? trimString(pathNoPrefixDecoded, 10, 3, '…')
+                    : pathNoPrefixDecoded
+                : trimString(pathNoPrefixDecoded, 6, 0, '…');
             document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
         } else if (
             location.pathname.includes('swap') ||
@@ -230,6 +231,8 @@ const PageHeader = function () {
             document.title = 'Chat ~ Ambient';
         } else if (location.pathname.includes('initpool')) {
             document.title = 'Pool Initialization ~ Ambient';
+        } else if (location.pathname.includes('explore')) {
+            document.title = 'Explore ~ Ambient';
         } else if (location.pathname.includes('404')) {
             document.title = '404 ~ Ambient';
         } else {
@@ -248,32 +251,32 @@ const PageHeader = function () {
 
     const linkData = [
         {
-            title: t('common:homeTitle'),
+            title: 'Home',
             destination: '/',
-            shouldDisplay: desktopScreen,
+            shouldDisplay: false,
         },
         {
-            title: t('common:swapTitle'),
+            title: 'Swap',
             destination: '/swap/' + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:tradeTitle'),
+            title: 'Trade',
             destination: tradeDestination + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:analyticsTitle'),
-            destination: '/analytics',
-            shouldDisplay: false,
-        },
-        {
-            title: t('common:poolTitle'),
+            title: 'Pool',
             destination: '/trade/pool/' + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:accountTitle'),
+            title: 'Explore',
+            destination: '/explore',
+            shouldDisplay: true,
+        },
+        {
+            title: 'Account',
             destination: '/account',
             shouldDisplay: isConnected,
         },
@@ -372,8 +375,6 @@ const PageHeader = function () {
         };
     }, []);
 
-    // TODO (#1436): logo padding is problematic in mobile views
-
     return (
         <header
             data-testid={'page-header'}
@@ -381,16 +382,22 @@ const PageHeader = function () {
                 location.pathname === '/' && styles.fixed
             }`}
         >
-            <Link to='/' className={styles.logo_container} aria-label='Home'>
-                <img src={logo} alt='ambient' className={styles.logo} />
-                {desktopScreen && (
-                    <img
-                        src={logoText}
-                        alt='ambient'
-                        className={styles.logo_text}
-                    />
-                )}
-            </Link>
+            <div className={styles.logo_container}>
+                <Link
+                    to='/'
+                    className={styles.logo_container}
+                    aria-label='Home'
+                >
+                    <img src={logo} alt='ambient' className={styles.logo} />
+                    {desktopScreen && (
+                        <img
+                            src={logoText}
+                            alt='ambient'
+                            className={styles.logo_text}
+                        />
+                    )}
+                </Link>
+            </div>
             {routeDisplay}
             <div className={styles.right_side}>
                 {show ? (
@@ -412,7 +419,7 @@ const PageHeader = function () {
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
                                     <div className={styles.branch}>
-                                        {BRANCH_NAME}{' '}
+                                        {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
                                     </div>
                                 ) : null}

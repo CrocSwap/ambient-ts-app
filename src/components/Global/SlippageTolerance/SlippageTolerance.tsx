@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './SlippageTolerance.module.css';
+import { OptionButton } from '../Button/OptionButton';
 
 interface propsIF {
     persistedSlippage: number;
@@ -28,6 +29,7 @@ export default function SlippageTolerance(props: propsIF) {
                             id='slippage_tolerance_input_field'
                             onChange={(e) => takeNewSlippage(e.target.value)}
                             type='number'
+                            step='any'
                             value={slip}
                             autoComplete={'off'}
                             placeholder={'e.g. 0.3'}
@@ -36,14 +38,12 @@ export default function SlippageTolerance(props: propsIF) {
                         />
                     </div>
                     {presets.map((preset: number) => (
-                        <button
-                            tabIndex={0}
+                        <OptionButton
                             key={`slippage-preset-button-${preset}`}
                             onClick={() => takeNewSlippage(preset)}
-                            aria-label={`set slippage to ${preset}% `}
-                        >
-                            {preset}%
-                        </button>
+                            ariaLabel={`set slippage to ${preset}% `}
+                            content={`${preset}%`}
+                        />
                     ))}
                 </div>
             </div>

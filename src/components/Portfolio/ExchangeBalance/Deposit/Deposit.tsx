@@ -32,6 +32,7 @@ import { FaGasPump } from 'react-icons/fa';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -39,7 +40,6 @@ interface propsIF {
     tokenWalletBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
-    openTokenModal: () => void;
     selectedTokenDecimals: number;
 }
 
@@ -50,7 +50,6 @@ export default function Deposit(props: propsIF) {
         tokenWalletBalance,
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        openTokenModal,
         selectedTokenDecimals,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
@@ -92,19 +91,9 @@ export default function Deposit(props: propsIF) {
         ? parseFloat(tokenWalletBalanceDisplay)
         : undefined;
 
-    const tokenWalletBalanceTruncated =
-        tokenWalletBalanceDisplayNum !== undefined
-            ? tokenWalletBalanceDisplayNum === 0
-                ? '0.00'
-                : tokenWalletBalanceDisplayNum < 0.0001
-                ? 0.0
-                : tokenWalletBalanceDisplayNum < 2
-                ? tokenWalletBalanceDisplayNum.toPrecision(3)
-                : tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : undefined;
+    const tokenWalletBalanceTruncated = getFormattedNumber({
+        value: tokenWalletBalanceDisplayNum,
+    });
 
     const [depositQtyNonDisplay, setDepositQtyNonDisplay] = useState<
         string | undefined
@@ -114,12 +103,22 @@ export default function Deposit(props: propsIF) {
     const [isCurrencyFieldDisabled, setIsCurrencyFieldDisabled] =
         useState<boolean>(true);
 
+    const depositQtyNonDisplayNum = useMemo(
+        () => parseFloat(depositQtyNonDisplay ?? ''),
+        [depositQtyNonDisplay],
+    );
+
+    const isDepositQtyValid = useMemo(
+        () => depositQtyNonDisplayNum > 0,
+        [depositQtyNonDisplay],
+    );
+
     const isTokenAllowanceSufficient = useMemo(
         () =>
-            tokenAllowance && !!depositQtyNonDisplay
+            tokenAllowance && isDepositQtyValid && !!depositQtyNonDisplay
                 ? BigNumber.from(tokenAllowance).gte(depositQtyNonDisplay)
                 : false,
-        [tokenAllowance, depositQtyNonDisplay],
+        [tokenAllowance, isDepositQtyValid],
     );
 
     const isWalletBalanceSufficientToCoverGas = useMemo(() => {
@@ -133,7 +132,7 @@ export default function Deposit(props: propsIF) {
 
     const isWalletBalanceSufficientToCoverDeposit = useMemo(
         () =>
-            tokenWalletBalanceAdjustedNonDisplayString && !!depositQtyNonDisplay
+            tokenWalletBalanceAdjustedNonDisplayString && isDepositQtyValid
                 ? BigNumber.from(
                       tokenWalletBalanceAdjustedNonDisplayString,
                   ).gte(BigNumber.from(depositQtyNonDisplay))
@@ -143,12 +142,7 @@ export default function Deposit(props: propsIF) {
                   ).gte(BigNumber.from(0))
                 ? true
                 : false,
-        [tokenWalletBalanceAdjustedNonDisplayString, depositQtyNonDisplay],
-    );
-
-    const isDepositQtyValid = useMemo(
-        () => depositQtyNonDisplay !== undefined,
-        [depositQtyNonDisplay],
+        [tokenWalletBalanceAdjustedNonDisplayString, isDepositQtyValid],
     );
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
@@ -159,10 +153,15 @@ export default function Deposit(props: propsIF) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
-        } else if (!depositQtyNonDisplay) {
+        } else if (!depositQtyNonDisplayNum) {
+            // if num is undefined or 0
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(false);
             setButtonMessage('Enter a Deposit Amount');
+        } else if (depositQtyNonDisplayNum < 0) {
+            setIsButtonDisabled(true);
+            setIsCurrencyFieldDisabled(false);
+            setButtonMessage('Enter a Valid Deposit Amount');
         } else if (isApprovalPending) {
             setIsButtonDisabled(true);
             setIsCurrencyFieldDisabled(true);
@@ -189,6 +188,7 @@ export default function Deposit(props: propsIF) {
             setButtonMessage('Deposit');
         }
     }, [
+        depositQtyNonDisplay,
         isApprovalPending,
         isDepositPending,
         isTokenAllowanceSufficient,
@@ -203,7 +203,7 @@ export default function Deposit(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     const deposit = async (depositQtyNonDisplay: string) => {
-        if (crocEnv && depositQtyNonDisplay && userAddress) {
+        if (crocEnv && isDepositQtyValid && userAddress) {
             try {
                 const depositQtyDisplay = toDisplayQty(
                     depositQtyNonDisplay,
@@ -372,11 +372,10 @@ export default function Deposit(props: propsIF) {
                     : averageGasUnitsForErc20Deposit);
 
             setDepositGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
@@ -387,8 +386,6 @@ export default function Deposit(props: propsIF) {
                 Deposit collateral for future trading at lower gas costs:
             </div>
             <DepositCurrencySelector
-                fieldId='exchange-balance-deposit'
-                onClick={() => openTokenModal()}
                 disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQtyNonDisplay}

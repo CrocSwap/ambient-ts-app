@@ -14,6 +14,7 @@ import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
 import Portfolio from '../pages/Portfolio/Portfolio';
+import TradeSwap from '../pages/Trade/Swap/Swap';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -23,7 +24,7 @@ import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
 import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
-import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
 import './App.css';
@@ -42,6 +43,8 @@ import { SidebarContext } from '../contexts/SidebarContext';
 import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
+import Explore from '../pages/Explore/Explore';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 /** ***** React Function *******/
 export default function App() {
@@ -142,6 +145,7 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <>
@@ -177,7 +181,7 @@ export default function App() {
                             />
                             <Route
                                 path='market/:params'
-                                element={<Swap isOnTradeRoute={true} />}
+                                element={<TradeSwap isOnTradeRoute={true} />}
                             />
                             <Route
                                 path='limit'
@@ -248,6 +252,7 @@ export default function App() {
                                 <Navigate replace to={defaultUrlParams.swap} />
                             }
                         />
+                        <Route path='explore' element={<Explore />} />
                         <Route path='swap/:params' element={<Swap />} />
                         <Route path='terms' element={<TermsOfService />} />
                         <Route path='privacy' element={<PrivacyPolicy />} />
@@ -274,7 +279,7 @@ export default function App() {
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
             </div>
-            <SidebarFooter />
+            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <GlobalModal />
             <GlobalPopup />
             <SnackbarComponent />

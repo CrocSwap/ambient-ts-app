@@ -14,6 +14,8 @@ import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { USDC } from '../../../../../utils/tokens/exports';
 import { tokenData } from '../../../../../utils/state/userDataSlice';
+import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
+import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -120,17 +122,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
                     (price && price?.usdPrice * usdBal) ?? 0;
-                const usdValueTruncated =
-                    usdValueNum === 0
-                        ? '0.00'
-                        : usdValueNum < 0.0001
-                        ? usdValueNum.toExponential(2)
-                        : usdValueNum < 2
-                        ? usdValueNum.toPrecision(3)
-                        : usdValueNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
+                const usdValueTruncated = getFormattedNumber({
+                    value: usdValueNum,
+                    minFracDigits: 2,
+                    maxFracDigits: 2,
+                });
                 setUsdcVal(usdValueTruncated);
             } else {
                 setUsdcVal(undefined);
@@ -203,6 +199,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             <div className={styles.actions_container}>
                 <NavLink
                     to={'/account'}
+                    className={styles.account_button}
                     aria-label='Go to the account page '
                     tabIndex={0}
                     onClick={clickOutsideHandler}
@@ -210,7 +207,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     <CgProfile />
                     My Account
                 </NavLink>
-                <button onClick={clickLogout}>Logout</button>
+                <LogoutButton onClick={clickLogout} />
             </div>
         </div>
     );

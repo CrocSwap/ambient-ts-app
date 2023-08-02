@@ -1,28 +1,54 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useEffect, useState } from 'react';
-import { TempPoolIF, TokenIF } from '../../utils/interfaces/exports';
-import { FetchContractDetailsFn } from '../functions/fetchContractDetails';
+import { useContext, useEffect, useState } from 'react';
+import {
+    PoolIF,
+    GCServerPoolIF,
+    TokenIF,
+} from '../../utils/interfaces/exports';
 import { fetchPoolList } from '../functions/fetchPoolList';
+import { TokenContext } from '../../contexts/TokenContext';
 
-export const usePoolList = (
-    cachedTokenDetails: FetchContractDetailsFn,
-    tokenUniv: TokenIF[],
-    crocEnv?: CrocEnv,
-): TempPoolIF[] => {
-    const [poolList, setPoolList] = useState<TempPoolIF[]>([]);
+export const usePoolList = (crocEnv?: CrocEnv): PoolIF[] => {
+    const {
+        tokens: { verify, getTokenByAddress, tokenUniv },
+    } = useContext(TokenContext);
+
+    const [poolList, setPoolList] = useState<PoolIF[]>([]);
 
     useEffect(() => {
         if (!crocEnv) {
             return undefined;
         }
 
-        const pools = fetchPoolList(crocEnv, tokenUniv, cachedTokenDetails);
-        Promise.resolve<TempPoolIF[]>(pools)
-            .then((res) => setPoolList(res))
-            .catch((err) => {
-                console.error(err);
-            });
-    }, [crocEnv, tokenUniv, cachedTokenDetails]);
+        const pools: Promise<GCServerPoolIF[]> = fetchPoolList(crocEnv);
+        Promise.resolve<GCServerPoolIF[]>(pools)
+            .then((res: GCServerPoolIF[]) => {
+                return res
+                    .filter(
+                        (result: GCServerPoolIF) =>
+                            verify(result.base) && verify(result.quote),
+                    )
+                    .map((result: GCServerPoolIF) => {
+                        const baseToken: TokenIF | undefined =
+                            getTokenByAddress(result.base);
+                        const quoteToken: TokenIF | undefined =
+                            getTokenByAddress(result.quote);
+                        if (baseToken && quoteToken) {
+                            return {
+                                base: baseToken,
+                                quote: quoteToken,
+                                chainId: result.chainId,
+                                poolIdx: result.poolIdx,
+                            };
+                        } else {
+                            return null;
+                        }
+                    })
+                    .filter((pool: PoolIF | null) => pool !== null) as PoolIF[];
+            })
+            .then((pools) => setPoolList(pools))
+            .catch((err) => console.error(err));
+    }, [crocEnv, tokenUniv]);
 
     return poolList;
 };

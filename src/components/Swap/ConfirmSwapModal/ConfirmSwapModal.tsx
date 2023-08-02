@@ -24,8 +24,8 @@ import { AiOutlineWarning } from 'react-icons/ai';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { getDisplayableEffectivePriceString } from '../../../App/functions/swap/getDisplayableEffectivePriceString';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
@@ -84,20 +84,15 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
 
-    const localeSellString =
-        parseFloat(sellQtyString) > 999
-            ? parseFloat(sellQtyString).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : sellQtyString;
-    const localeBuyString =
-        parseFloat(buyQtyString) > 999
-            ? parseFloat(buyQtyString).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : buyQtyString;
+    const localeSellString = getFormattedNumber({
+        value: parseFloat(sellQtyString),
+        abbrevThreshold: 1000000000,
+    });
+
+    const localeBuyString = getFormattedNumber({
+        value: parseFloat(buyQtyString),
+        abbrevThreshold: 1000000000,
+    });
 
     const [baselineBlockNumber, setBaselineBlockNumber] =
         useState<number>(lastBlockNumber);
@@ -157,7 +152,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     }, [currentBuyTokenPrice, baselineBuyTokenPrice]);
 
     const buyTokenPriceChangeString = buyTokenPriceChangePercentage
-        ? buyTokenPriceChangePercentage.toLocaleString(undefined, {
+        ? buyTokenPriceChangePercentage.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
@@ -258,12 +253,12 @@ export default function ConfirmSwapModal(props: propsIF) {
                         style={{ cursor: 'pointer' }}
                     >
                         {isDenomBaseLocal
-                            ? `${getDisplayableEffectivePriceString(
-                                  effectivePriceWithDenom,
-                              )} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                            : `${getDisplayableEffectivePriceString(
-                                  effectivePriceWithDenom,
-                              )} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                            ? `${getFormattedNumber({
+                                  value: effectivePriceWithDenom,
+                              })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${getFormattedNumber({
+                                  value: effectivePriceWithDenom,
+                              })} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
                     </p>
                 </div>
                 <div className={styles.row}>

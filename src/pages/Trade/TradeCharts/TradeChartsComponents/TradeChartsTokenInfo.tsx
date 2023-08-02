@@ -13,6 +13,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     simplifyVersion?: boolean;
@@ -61,20 +62,10 @@ function TradeChartsTokenInfo(props: propsIF) {
             : poolPriceDisplay
         : 0;
 
-    const truncatedPoolPrice =
-        poolPriceDisplay === Infinity || poolPriceDisplay === 0
-            ? '…'
-            : poolPriceDisplayWithDenom < 0.0001
-            ? poolPriceDisplayWithDenom.toExponential(2)
-            : poolPriceDisplayWithDenom < 2
-            ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
+        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+    });
 
     const smallScrenView = useMediaQuery('(max-width: 968px)');
 

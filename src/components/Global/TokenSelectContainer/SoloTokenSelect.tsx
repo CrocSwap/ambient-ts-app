@@ -30,7 +30,7 @@ interface propsIF {
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
     isSingleToken: boolean;
-    tokenAorB: string | null;
+    tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
 }
 
@@ -81,7 +81,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom) {
-            tokens.ackToken(tkn);
+            tokens.acknowledge(tkn);
         }
         // dispatch token data object to RTK
         if (isSingleToken) {
@@ -209,7 +209,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             case 'address':
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list
-                if (tokens.verifyToken(validatedInput)) {
+                if (tokens.verify(validatedInput)) {
                     output = 'token buttons';
                     // pathway if the address cannot be validated to any token in local storage
                 } else {
@@ -236,14 +236,24 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
     }, [contentRouter]);
 
-    const input = document.getElementById(
-        'token_select_input_field',
-    ) as HTMLInputElement;
     const clearInputField = () => {
+        const input = document.getElementById(
+            'token_select_input_field',
+        ) as HTMLInputElement;
         if (input) input.value = '';
         setInput('');
-        document.getElementById('token_select_input_field')?.focus();
+        input?.focus();
     };
+
+    useEffect(() => {
+        const input = document.getElementById(
+            'token_select_input_field',
+        ) as HTMLInputElement;
+        if (input) input.focus();
+    }, []);
+
+    // arbitrary limit on number of tokens to display in DOM for performance
+    const MAX_TOKEN_COUNT = 300;
 
     return (
         <section className={styles.container}>
@@ -252,7 +262,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     id='token_select_input_field'
                     spellCheck='false'
                     type='text'
-                    placeholder=' Search name or enter an Address'
+                    placeholder=' Search by token name or address'
                     onChange={(e) => setInput(e.target.value)}
                     style={{
                         color: showSoloSelectTokenButtons
@@ -260,8 +270,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                             : 'var(--text3)',
                     }}
                 />
-                {input?.value && (
+                {validatedInput && (
                     <button
+                        className={styles.clearButton}
                         onClick={clearInputField}
                         aria-label='Clear input'
                         tabIndex={0}
@@ -284,16 +295,20 @@ export const SoloTokenSelect = (props: propsIF) => {
                         />
                     ),
                 )}
-
             {showSoloSelectTokenButtons ? (
-                outputTokens.map((token: TokenIF) => (
-                    <TokenSelect
-                        key={JSON.stringify(token)}
-                        token={token}
-                        chooseToken={chooseToken}
-                        fromListsText=''
-                    />
-                ))
+                <div className={styles.scrollable_container}>
+                    {' '}
+                    {outputTokens
+                        .slice(0, MAX_TOKEN_COUNT)
+                        .map((token: TokenIF) => (
+                            <TokenSelect
+                                key={JSON.stringify(token)}
+                                token={token}
+                                chooseToken={chooseToken}
+                                fromListsText=''
+                            />
+                        ))}
+                </div>
             ) : (
                 <SoloTokenImport
                     customToken={customToken}
