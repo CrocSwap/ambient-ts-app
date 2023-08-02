@@ -132,7 +132,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         mainnetBaseTokenAddress,
         mainnetQuoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleTimeLocal,
     ]);
 
     useEffect(() => {
@@ -147,7 +146,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         mainnetBaseTokenAddress,
         mainnetQuoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleTimeLocal,
         candleScale.nCandles,
         candleScale.isShowLatestCandle,
     ]);
@@ -169,7 +167,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 ? Date.now() / 1000
                 : candleScale.lastCandleDate || 0;
             const nCandles =
-                candleScale?.nCandles > 3000 ? 3000 : candleScale?.nCandles;
+                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);

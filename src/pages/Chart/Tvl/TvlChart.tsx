@@ -144,6 +144,8 @@ function TvlChart(props: TvlData) {
                         domainX[0] + deltaX,
                         domainX[1] + deltaX,
                     ]);
+
+                    props.render();
                 }) as any;
 
             setTvlZoom(() => {

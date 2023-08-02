@@ -3065,6 +3065,7 @@ export default function Chart(props: propsIF) {
         diffHashSigChart(unparsedCandleData),
         mainCanvasBoundingClientRect,
         selectedDate,
+        bandwidth,
     ]);
 
     // mouseleave

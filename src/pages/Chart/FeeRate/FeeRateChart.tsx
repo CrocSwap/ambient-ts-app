@@ -128,6 +128,8 @@ function FeeRateChart(props: FreeRateData) {
                     const deltaX = linearX(-event.sourceEvent.movementX);
                     getNewCandleData(domainX[0] + deltaX, date);
                     xScale.domain([domainX[0] + deltaX, domainX[1] + deltaX]);
+
+                    props.render();
                 }) as any;
 
             setFeeRateZoom(() => {
