@@ -6,7 +6,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { ConnectWalletButton } from '../../Global/ConnectWalletButton/ConnectWalletButton';
+import { ConnectWalletButton } from '../../Global/Button/ConnectWalletButton';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import styles from './TradeModuleSkeleton.module.css';
