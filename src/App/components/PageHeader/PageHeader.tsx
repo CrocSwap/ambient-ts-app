@@ -31,6 +31,7 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import PageHeaderMobile from './PageHeaderMobile';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
 
 const PageHeader = function () {
@@ -374,6 +375,12 @@ const PageHeader = function () {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
+    // TODO (#1436): logo padding is problematic in mobile views
+
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+
+    if (showMobileVersion) return <PageHeaderMobile {...accountProps} />;
 
     return (
         <header

@@ -43,6 +43,7 @@ import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 /** ***** React Function *******/
 export default function App() {
@@ -143,6 +144,7 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <>
@@ -276,7 +278,7 @@ export default function App() {
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
             </div>
-            <SidebarFooter />
+            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <GlobalModal />
             <GlobalPopup />
             <SnackbarComponent />
