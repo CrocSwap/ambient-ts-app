@@ -140,11 +140,11 @@ export default function RangesMenu(props: propsIF) {
             to={linkGenRepo.getFullURL({
                 chain: chainId,
                 tokenA:
-                    rtkTokenA === position.quote
+                    rtkTokenA.toLowerCase() === position.quote.toLowerCase()
                         ? position.quote
                         : position.base,
                 tokenB:
-                    rtkTokenB === position.base
+                    rtkTokenB.toLowerCase() === position.base.toLowerCase()
                         ? position.base
                         : position.quote,
                 lowTick: position.bidTick.toString(),
