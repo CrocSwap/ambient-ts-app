@@ -31,8 +31,8 @@
     display: flex;
     justify-content: center;
     
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 
     color: var(--other-green);
 }

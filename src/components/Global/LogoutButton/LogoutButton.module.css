@@ -12,6 +12,7 @@
     padding: 6px 8px;
     gap: 4px;
     border-radius: var(--border-radius);
+    border: solid 1px transparent;
 }
 
 .logout_button:hover, .logout_button:focus-visible {
