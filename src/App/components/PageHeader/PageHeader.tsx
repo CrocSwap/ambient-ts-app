@@ -31,9 +31,7 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import PageHeaderMobile from './PageHeaderMobile';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
-import { ConnectWalletButton } from '../../../components/Global/ConnectWalletButton/ConnectWalletButton';
 
 const PageHeader = function () {
     const {
@@ -143,6 +141,15 @@ const PageHeader = function () {
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
+    const connectWagmiButton = (
+        <button
+            className={styles.authenticate_button}
+            style={!desktopScreen ? { width: '140px' } : undefined}
+            onClick={() => openWagmiModal()}
+        >
+            {desktopScreen ? 'Connect Wallet' : 'Connect'}
+        </button>
+    );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
@@ -368,12 +375,6 @@ const PageHeader = function () {
         };
     }, []);
 
-    // TODO (#1436): logo padding is problematic in mobile views
-
-    const showMobileVersion = useMediaQuery('(max-width: 600px)');
-
-    if (showMobileVersion) return <PageHeaderMobile {...accountProps} />;
-
     return (
         <header
             data-testid={'page-header'}
@@ -381,7 +382,7 @@ const PageHeader = function () {
                 location.pathname === '/' && styles.fixed
             }`}
         >
-            <div>
+            <div className={styles.logo_container}>
                 <Link
                     to='/'
                     className={styles.logo_container}
@@ -418,19 +419,13 @@ const PageHeader = function () {
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
                                     <div className={styles.branch}>
-                                        {BRANCH_NAME}{' '}
+                                        {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
                                     </div>
                                 ) : null}
                             </div>
                             <NetworkSelector switchNetwork={switchNetwork} />
-                            {!isConnected && (
-                                <ConnectWalletButton
-                                    onClick={openWagmiModal}
-                                    isMobile={!desktopScreen}
-                                    thin
-                                />
-                            )}
+                            {!isConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />
                         </div>
