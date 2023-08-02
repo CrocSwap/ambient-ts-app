@@ -6,6 +6,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { ConnectWalletButton } from '../../Global/ConnectWalletButton/ConnectWalletButton';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import styles from './TradeModuleSkeleton.module.css';
@@ -174,12 +175,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             </>
                         )
                     ) : (
-                        <button
-                            onClick={openWagmiModal}
-                            className={styles.authenticate_button}
-                        >
-                            Connect Wallet
-                        </button>
+                        <ConnectWalletButton onClick={openWagmiModal} />
                     )}
                     {warnings && warnings}
                 </div>
