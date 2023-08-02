@@ -8,7 +8,7 @@ import { useModal } from '../Modal/useModal';
 import Spinner from '../Spinner/Spinner';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { SoloTokenSelect } from '../TokenSelectContainer/SoloTokenSelect';
+import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
 import styles from './TokenInputQuantity.module.css';
 
 interface propsIF {
@@ -45,10 +45,7 @@ function TokenInputQuantity(props: propsIF) {
     } = props;
     const { setInput: setTokenSelectInput } = useContext(TokenContext);
 
-    const modalCloseCustom = (): void => setTokenSelectInput('');
-
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
+    const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
 
@@ -143,7 +140,7 @@ function TokenInputQuantity(props: propsIF) {
                 <button
                     id={fieldId ? `${fieldId}_token_selector` : undefined}
                     className={styles.token_select}
-                    onClick={openTokenModal}
+                    onClick={openTokenSelect}
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
                 >
@@ -159,28 +156,15 @@ function TokenInputQuantity(props: propsIF) {
 
             {includeWallet && includeWallet}
 
-            {isTokenModalOpen && (
-                <Modal
-                    onClose={closeTokenModal}
-                    title='Select Token'
-                    centeredTitle
-                    handleBack={() => setTokenSelectInput('')}
-                    showBackButton={false}
-                    footer={null}
-                >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        closeModal={closeTokenModal}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
-                        isSingleToken={!tokenAorB}
-                        tokenAorB={tokenAorB}
-                        reverseTokens={reverseTokens}
-                    />
-                </Modal>
-            )}
+            <SoloTokenSelectModal
+                isOpen={isTokenSelectOpen}
+                onClose={closeTokenSelect}
+                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                isSingleToken={false}
+                tokenAorB={tokenAorB}
+                reverseTokens={reverseTokens}
+            />
         </div>
     );
 }
