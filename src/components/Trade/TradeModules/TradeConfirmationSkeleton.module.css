@@ -3,22 +3,11 @@
     padding: 1rem;
     background: var(--dark1);
     border-radius: var(--border-radius);
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
-
-/* Transaction details */
-
-.confSwap_detail_note {
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text2);
-    font-weight: 300;
-
-    /* padding: 1.5rem 0; */
-
-    text-align: center;
-}
-
-/* arrow */
 
 .arrow_container {
     width: 100%;
@@ -28,18 +17,6 @@
     justify-content: center;
     align-items: center;
     background: transparent;
-}
-
-.main_container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.main_container section {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
 }
 
 .currency_row_container {
@@ -54,8 +31,7 @@
     height: 40px;
 }
 
-.currency_row_container h2,
-.limit_row_container h2 {
+.currency_row_container h2 {
     font-weight: 200;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
@@ -71,21 +47,6 @@
     margin-left: 1rem;
 }
 
-.limit_row_container {
-    width: 100%;
-    background: var(--dark2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 200;
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
-    color: var(--text1);
-    letter-spacing: -0.02em;
-    border-radius: var(--border-radius);
-    padding: 0 2rem;
-    height: 35px;
-}
 .extra_info_container {
     display: flex;
     flex-direction: column;
@@ -94,14 +55,14 @@
     border: 1px solid var(--border);
     border-radius: 4px;
 }
-.extra_info_container .row {
+.extra_info_container > div {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
 
-.extra_info_container .row p {
+.extra_info_container > div p {
     font-weight: 300;
     color: var(--text2);
     font-size: var(--body-size);
@@ -152,4 +113,11 @@
     border-radius: var(--border-radius);
 
     padding: 6px 8px;
+}
+
+.extra_note {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--accent2);
+    text-align: center;
 }

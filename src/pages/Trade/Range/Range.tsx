@@ -1398,15 +1398,11 @@ function Range() {
                         centeredTitle
                     >
                         <ConfirmRangeModal
-                            tokenAQtyLocal={
-                                isTokenAInputDisabled
-                                    ? 0
-                                    : parseFloat(tokenAInputQty)
+                            tokenAQty={
+                                isTokenAInputDisabled ? '' : tokenAInputQty
                             }
-                            tokenBQtyLocal={
-                                isTokenBInputDisabled
-                                    ? 0
-                                    : parseFloat(tokenBInputQty)
+                            tokenBQty={
+                                isTokenBInputDisabled ? '' : tokenBInputQty
                             }
                             spotPriceDisplay={getFormattedNumber({
                                 value: displayPriceWithDenom,
