@@ -376,7 +376,7 @@ function TradeTabs2(props: propsIF) {
                   content: <TableInfo />,
                   icon: leaderboard,
                   showRightSideOption: false,
-                  onClick: handleChartHeightOnInfo,
+                  //   onClick: handleChartHeightOnInfo,
               },
           ];
 

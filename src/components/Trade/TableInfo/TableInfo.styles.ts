@@ -4,7 +4,7 @@ import backgroundImage from '../../../assets/images/backgrounds/tableInfoBg.png'
 // can be extracted to common
 
 const MainSection = styled.section`
-    background: url(${backgroundImage});
+    background: url(${backgroundImage}) no-repeat;
 
     height: 100%;
     padding: 8px;
@@ -38,7 +38,6 @@ const FlexCenter = styled.div`
 `;
 
 const FeaturedBoxInfoContainer = styled.div`
-    margin-top: 0.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
@@ -72,11 +71,10 @@ const LinkText = styled.a`
 
 const DetailedBoxContainer = styled.div`
     display: flex;
-    padding: 1rem;
-    margin-top: 0.5rem;
+    padding: 8px;
+
     flex-direction: column;
     gap: 0.5rem;
-    height: 30%;
 `;
 
 const TabPlaceholder = styled.div`
@@ -84,7 +82,6 @@ const TabPlaceholder = styled.div`
     height: 100%;
     background: rgba(23, 29, 39, 0.4);
     backdrop-filter: blur(10px);
-    padding: 8px;
 `;
 const StyledTabContainer = styled.div`
     width: 100%;
