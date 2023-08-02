@@ -66,12 +66,13 @@ export const TradeTableContextProvider = (props: {
         tradeTableState,
         setTradeTableState,
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
+        // an extra 54px is the header that should always be visable
         toggleTradeTable: () => {
             if (!tradeTableState) {
                 if (chartHeights.current > chartHeights.default) {
                     setChartHeight(chartHeights.default);
                 } else {
-                    setChartHeight(4);
+                    setChartHeight(4 + 54);
                     setTradeTableState('Expanded');
                 }
             } else {
