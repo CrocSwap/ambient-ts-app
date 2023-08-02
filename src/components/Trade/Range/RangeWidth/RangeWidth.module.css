@@ -1,11 +1,9 @@
 .range_width_container {
     width: 100%;
-
     border: 1px solid var(--border-color);
     border-radius: 16px;
     background-color: var(--content-bg);
     transition: all var(--animation-speed) ease-in-out;
-
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -17,7 +15,6 @@
     align-items: center;
     padding: 0 16px;
     height: 40px;
-
     justify-content: center;
 }
 
@@ -33,17 +30,17 @@
     line-height: var(--body-lh);
     margin-top: 10px;
 }
+
 .percentage_container {
     display: flex;
-
     width: 100%;
     padding: 0;
-
     -webkit-box-pack: justify;
     justify-content: space-between;
     -webkit-box-align: center;
     align-items: center;
 }
+
 .percentage_amount {
     display: flex;
     justify-content: center;
@@ -52,11 +49,10 @@
     line-height: var(--header1-lh);
     font-weight: 100;
 }
+
 .percentage_options {
     display: flex;
-
     width: 100%;
-
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
@@ -72,6 +68,7 @@
 .add_minus_icons svg:nth-of-type(2) {
     margin-top: -5px;
 }
+
 .matching_percentage_button,
 .percentage_option_buttons {
     font-size: var(--body-size);
@@ -89,6 +86,7 @@
     color: var(--accent1);
     border: 1px solid var(--accent1);
 }
+
 .percentage_option_buttons:focus-visible,
 .percentage_input:focus-visible {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
@@ -107,7 +105,6 @@
     background: transparent;
     outline: none;
     border: none;
-
     display: flex;
     justify-content: center;
 }
@@ -121,10 +118,6 @@
         box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.3);
         border-radius: var(--border-radius);
     }
-    /* 50% {
-    box-shadow: 0 0 0 6px rgba(131, 119, 220, 0.5);
-    border-radius: var(--border-radius);
-  } */
     100% {
         box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
         border-radius: var(--border-radius);
