@@ -419,7 +419,7 @@ const PageHeader = function () {
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
                                     <div className={styles.branch}>
-                                        {BRANCH_NAME}{' '}
+                                        {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
                                     </div>
                                 ) : null}
