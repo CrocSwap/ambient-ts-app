@@ -382,16 +382,22 @@ const PageHeader = function () {
                 location.pathname === '/' && styles.fixed
             }`}
         >
-            <Link to='/' className={styles.logo_container} aria-label='Home'>
-                <img src={logo} alt='ambient' className={styles.logo} />
-                {desktopScreen && (
-                    <img
-                        src={logoText}
-                        alt='ambient'
-                        className={styles.logo_text}
-                    />
-                )}
-            </Link>
+            <div>
+                <Link
+                    to='/'
+                    className={styles.logo_container}
+                    aria-label='Home'
+                >
+                    <img src={logo} alt='ambient' className={styles.logo} />
+                    {desktopScreen && (
+                        <img
+                            src={logoText}
+                            alt='ambient'
+                            className={styles.logo_text}
+                        />
+                    )}
+                </Link>
+            </div>
             {routeDisplay}
             <div className={styles.right_side}>
                 {show ? (
