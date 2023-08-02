@@ -6,11 +6,10 @@ import styles from './ExchangeBalanceModal.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { useModal } from '../../../../components/Global/Modal/useModal';
 
 export const ExchangeBalanceModal = () => {
-    const {
-        globalModal: { isOpen: isModalOpen },
-    } = useContext(AppStateContext);
+    const [isModalOpen] = useModal();
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
 
     const escapePressed = useKeyPress('Escape');
