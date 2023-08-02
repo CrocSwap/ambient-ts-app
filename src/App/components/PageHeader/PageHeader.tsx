@@ -38,7 +38,11 @@ const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { crocEnv, setCrocEnv } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        setCrocEnv,
+        chainData: { chainId, poolIndex: poolId },
+    } = useContext(CrocEnvContext);
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -172,7 +176,12 @@ const PageHeader = function () {
                 .isInit();
             Promise.resolve(promise).then((poolExists: boolean) => {
                 poolExists &&
-                    recentPools.add(tradeData.baseToken, tradeData.quoteToken);
+                    recentPools.add(
+                        tradeData.baseToken,
+                        tradeData.quoteToken,
+                        chainId,
+                        poolId,
+                    );
             });
         }
     }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);

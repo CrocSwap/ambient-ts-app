@@ -76,7 +76,6 @@ export default function OrderDetails(props: propsIF) {
     }
 
     const [usdValue, setUsdValue] = useState<string>('...');
-    // const [usdValue, setUsdValue] = useState<string>(limitOrder.totalValueUSD.toString());
     const [baseCollateralDisplay, setBaseCollateralDisplay] =
         useState<string>(baseDisplayFrontend);
     const [quoteCollateralDisplay, setQuoteCollateralDisplay] =
