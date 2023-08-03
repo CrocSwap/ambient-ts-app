@@ -298,6 +298,21 @@ export default function YAxisCanvas(props: yAxisIF) {
 
                     const factor = Math.pow(10, 3 - precision.length);
 
+                    const tempTextScientific = (
+                        factor * Number(precision)
+                    ).toString();
+                    const textScientificArray = tempTextScientific.split('.');
+                    let textScientific = tempTextScientific;
+                    if (
+                        textScientificArray.length > 1 &&
+                        textScientificArray[1].length > 1
+                    ) {
+                        textScientific =
+                            textScientificArray[0] +
+                            '.' +
+                            textScientificArray[1][0];
+                    }
+
                     const textHeight =
                         context.measureText('0.0').actualBoundingBoxAscent +
                         context.measureText('0.0').actualBoundingBoxDescent;
@@ -315,13 +330,11 @@ export default function YAxisCanvas(props: yAxisIF) {
                         X,
                         yScale(d) + textHeight / 3,
                     );
+
                     context.fillText(
-                        (factor * Number(precision)).toString(),
+                        textScientific,
                         X +
-                            context.measureText(
-                                (factor * Number(precision)).toString(),
-                            ).width /
-                                2 +
+                            context.measureText(textScientific).width / 2 +
                             context.measureText(subString.toString()).width / 2,
                         yScale(d),
                     );
