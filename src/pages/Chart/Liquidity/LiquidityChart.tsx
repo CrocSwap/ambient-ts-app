@@ -135,7 +135,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                   (d: LiquidityDataLocal) =>
                       d.liqPrices <= liquidityData?.topBoundary,
               );
-    }, [tradeData.advancedMode, liquidityData?.depthLiqBidData]);
+    }, [
+        tradeData.advancedMode,
+        liquidityData?.depthLiqBidData,
+        liquidityData?.topBoundary,
+    ]);
 
     const [liquidityMouseMoveActive, setLiquidityMouseMoveActive] =
         useState<string>('none');
@@ -218,6 +222,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqSeries,
         liqDepthAskSeries,
         liqDepthBidSeries,
+        lineLiqSeries,
+        lineLiqDepthAskSeries,
+        lineLiqDepthBidSeries,
     ]);
 
     const clipCanvas = (
@@ -490,6 +497,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqMode,
         location.pathname,
         ranges,
+        lineLiqDepthAskSeries,
+        lineLiqDepthBidSeries,
+        lineLiqSeries,
     ]);
 
     useEffect(() => {
@@ -557,6 +567,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         liqDataAsk,
         liqDataDepthBid,
         liqDataBid,
+        liqMode,
+        liquidityData?.liqTransitionPointforCurve,
+        liquidityData?.liqTransitionPointforDepth,
     ]);
 
     useEffect(() => {
@@ -614,7 +627,16 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     ' </p>',
             );
         }
-    }, [liqTooltipSelectedLiqBar, liqMode, liquidityMouseMoveActive]);
+    }, [
+        liqTooltipSelectedLiqBar,
+        liqMode,
+        liquidityMouseMoveActive,
+        liqTooltip,
+        poolPriceDisplay,
+        currentPoolPriceTick,
+        liquidityData?.liqAskData,
+        liquidityData?.liqBidData,
+    ]);
 
     const bidAreaFunc = (event: MouseEvent) => {
         if (scaleData) {
@@ -773,7 +795,11 @@ export default function LiquidityChart(props: liquidityPropsIF) {
         } catch (error) {
             console.error({ error });
         }
-    }, [diffHashSigScaleData(scaleData, 'y')]);
+    }, [
+        diffHashSigScaleData(scaleData, 'y'),
+        liquidityData?.depthLiqAskData,
+        liquidityData?.depthLiqBidData,
+    ]);
 
     useEffect(() => {
         if (chartMousemoveEvent && liqMode !== 'none') {
@@ -810,7 +836,7 @@ export default function LiquidityChart(props: liquidityPropsIF) {
 
     useEffect(() => {
         renderCanvasArray([d3CanvasLiq]);
-    }, [diffHashSig(liquidityData), location, ranges, liqMode]);
+    }, [diffHashSig(liquidityData), ranges, liqMode, location.pathname]);
 
     return (
         <>

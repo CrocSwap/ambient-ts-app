@@ -474,7 +474,14 @@ export default function Chart(props: propsIF) {
         }
 
         return false;
-    }, [ranges, chartMousemoveEvent, mainCanvasBoundingClientRect]);
+    }, [
+        ranges,
+        chartMousemoveEvent,
+        mainCanvasBoundingClientRect,
+        location.pathname,
+        tradeData.advancedMode,
+        simpleRangeWidth,
+    ]);
 
     // controls the distance of the mouse to the limit line, if close, activates the dragLimit event
     const canUserDragLimit = useMemo<boolean>(() => {
@@ -501,7 +508,12 @@ export default function Chart(props: propsIF) {
             );
         }
         return false;
-    }, [limit, chartMousemoveEvent, mainCanvasBoundingClientRect]);
+    }, [
+        limit,
+        chartMousemoveEvent,
+        mainCanvasBoundingClientRect,
+        location.pathname,
+    ]);
 
     useEffect(() => {
         if (isLineDrag) {
@@ -514,7 +526,12 @@ export default function Chart(props: propsIF) {
                 isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
             );
         }
-    }, [canUserDragLimit, canUserDragRange, isOnCandleOrVolumeMouseLocation]);
+    }, [
+        canUserDragLimit,
+        canUserDragRange,
+        isLineDrag,
+        isOnCandleOrVolumeMouseLocation,
+    ]);
 
     useEffect(() => {
         if (isChartZoom && chartZoomEvent !== 'wheel') {
@@ -525,7 +542,7 @@ export default function Chart(props: propsIF) {
                 isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
             );
         }
-    }, [isChartZoom]);
+    }, [chartZoomEvent, isChartZoom, isOnCandleOrVolumeMouseLocation]);
 
     useEffect(() => {
         if (isChartZoom && chartZoomEvent !== 'wheel') {
@@ -536,7 +553,7 @@ export default function Chart(props: propsIF) {
                 isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
             );
         }
-    }, [isChartZoom]);
+    }, [chartZoomEvent, isChartZoom, isOnCandleOrVolumeMouseLocation]);
 
     useEffect(() => {
         // auto zoom active
@@ -588,7 +605,7 @@ export default function Chart(props: propsIF) {
                 };
             });
         }
-    }, [diffHashSigScaleData(scaleData, 'x'), lastCandleData]);
+    }, [diffHashSigScaleData(scaleData, 'x'), lastCandleData, period]);
 
     const getNewCandleData = (
         newBoundary: number | undefined,
@@ -1217,7 +1234,7 @@ export default function Chart(props: propsIF) {
         location,
         diffHashSigScaleData(scaleData),
         showLatest,
-        liquidityData?.liqBidData,
+        liquidityData,
         simpleRangeWidth,
         ranges,
         limit,
@@ -1226,6 +1243,9 @@ export default function Chart(props: propsIF) {
         maxTickForLimit,
         canUserDragRange,
         canUserDragLimit,
+        unparsedCandleData,
+        period,
+        tradeData.advancedMode,
     ]);
 
     useEffect(() => {
@@ -1283,7 +1303,7 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         setMarketLineValue();
-    }, [poolPriceWithoutDenom]);
+    }, [poolPriceWithoutDenom, denomInBase]);
 
     const setMarketLineValue = () => {
         if (poolPriceWithoutDenom !== undefined) {
@@ -1376,12 +1396,13 @@ export default function Chart(props: propsIF) {
             }
         }
     }, [
-        location,
+        location.pathname,
         denomInBase,
         minPrice,
         maxPrice,
         rescaleRangeBoundariesWithSlider,
         tradeData.advancedMode,
+        chartTriggeredBy,
     ]);
 
     useEffect(() => {
@@ -2066,6 +2087,16 @@ export default function Chart(props: propsIF) {
         maxTickForLimit,
         simpleRangeWidth,
         liquidityData?.topBoundary,
+        liquidityData?.lowBoundary,
+        scaleData,
+        isDenomBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        currentPoolPriceTick,
+        denomInBase,
+        isTokenABase,
+        chainData.gridSize,
+        rescale,
     ]);
 
     useEffect(() => {
@@ -2113,7 +2144,6 @@ export default function Chart(props: propsIF) {
         limit,
         isLineDrag,
         ranges,
-        simpleRangeWidth !== 100 || tradeData.advancedMode,
         bandwidth,
         reset,
         sellOrderStyle,
@@ -3244,7 +3274,6 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         unparsedCandleData?.length,
         tradeData.advancedMode,
-        !tradeData.advancedMode && simpleRangeWidth === 100,
         lastCrDate,
         showVolume,
         xAxisActiveTooltip,
@@ -3564,14 +3593,7 @@ export default function Chart(props: propsIF) {
                 relocateTooltip(xAxisTooltip, lastCrDate);
             }
         }
-    }, [
-        xAxisActiveTooltip,
-        xAxisTooltip,
-        isCrDataIndActive,
-        lastCrDate,
-        reset,
-        latest,
-    ]);
+    }, [xAxisActiveTooltip, xAxisTooltip, isCrDataIndActive, lastCrDate]);
 
     useEffect(() => {
         if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
@@ -3586,7 +3608,7 @@ export default function Chart(props: propsIF) {
                 relocateTooltip(xAxisTooltip, timeOfEndCandle);
             }
         }
-    }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle, reset, latest]);
+    }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const relocateTooltip = (tooltip: any, data: number) => {
@@ -3617,7 +3639,10 @@ export default function Chart(props: propsIF) {
                 scaleData?.volumeScale.domain(domain);
             }
         }
-    }, [diffHashSigScaleData(scaleData, 'x')]);
+    }, [
+        diffHashSigScaleData(scaleData, 'x'),
+        diffHashSigChart(unparsedCandleData),
+    ]);
 
     // Candle transactions
     useEffect(() => {
@@ -3632,7 +3657,7 @@ export default function Chart(props: propsIF) {
         } else {
             props.changeState(false, undefined);
         }
-    }, [selectedDate]);
+    }, [selectedDate, unparsedCandleData]);
 
     const onBlurRange = (
         range: lineValue[],
