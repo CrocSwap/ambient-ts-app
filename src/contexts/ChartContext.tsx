@@ -19,6 +19,7 @@ interface ChartContextIF {
     chartHeights: ChartHeights;
     isEnabled: boolean;
     canvasRef: React.MutableRefObject<null>;
+    chartCanvasRef: React.MutableRefObject<null>;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -55,6 +56,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
 
     const { pathname: currentLocation } = useLocation();
     const canvasRef = useRef(null);
+    const chartCanvasRef = useRef(null);
 
     const [fullScreenChart, setFullScreenChart] = useState(false);
     const setChartHeight = (val: number) =>
@@ -78,6 +80,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setChartHeight,
         isEnabled: isChartEnabled,
         canvasRef,
+        chartCanvasRef,
     };
 
     useEffect(() => {

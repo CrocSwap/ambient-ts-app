@@ -49,6 +49,7 @@ function Trade() {
         chartSettings,
         chartHeights,
         setChartHeight,
+        canvasRef,
     } = useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
@@ -326,6 +327,7 @@ function Trade() {
             <div
                 className={`${styles.middle_col}
                 ${tradeTableState === 'Expanded' ? styles.flex_column : ''}`}
+                ref={canvasRef}
             >
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
