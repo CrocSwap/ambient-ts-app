@@ -294,11 +294,8 @@ export default function ExchangeBalance(props: propsIF) {
                     width='20px'
                 />
             </IconWithTooltip>
-            {/* { fullLayoutActive && <p>Exchange Balance</p>} */}
         </section>
     );
-
-    // const titleOpacity = fullLayoutActive ? '0' : '1';
 
     const columnView = useMediaQuery('(max-width: 1200px)');
 
@@ -318,9 +315,6 @@ export default function ExchangeBalance(props: propsIF) {
                 className={`${styles.container} ${restrictWidthStyle}`}
             >
                 <motion.div className={styles.main_container}>
-                    {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
-                    Exchange Balance
-                </div> */}
                     <div className={styles.tabs_container}>
                         {(!fullLayoutActive || columnView || isModalView) && (
                             <TabComponent
