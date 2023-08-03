@@ -478,6 +478,7 @@ function Swap(props: propsIF) {
         setShowExtraInfo: setShowExtraInfo,
         onClose: handleModalClose,
         isOpen: isModalOpen,
+        isTokenAPrimary: isTokenAPrimary,
     };
 
     const liquidityInsufficientWarning = isLiquidityInsufficient ? (
