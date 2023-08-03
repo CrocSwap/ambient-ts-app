@@ -53,14 +53,14 @@ if (!doReload) {
             new InjectedConnector({
                 chains,
                 options: {
-                    name: 'Brave',
+                    name: 'Rabby',
                     shimDisconnect: true,
                 },
             }),
             new InjectedConnector({
                 chains,
                 options: {
-                    name: 'Rabby',
+                    name: 'Brave',
                     shimDisconnect: true,
                 },
             }),
