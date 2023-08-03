@@ -82,7 +82,7 @@ export default function LimitRate(props: propsIF) {
 
     const handleOnBlur = async (input: string) => {
         let newDisplayPrice = removeLeadingZeros(input.replaceAll(',', ''));
-        if (input.startsWith('.')) newDisplayPrice = `0.${input}`;
+        if (input.startsWith('.')) newDisplayPrice = `0${input}`;
 
         if (newDisplayPrice !== previousDisplayPrice) {
             await handleLimitChange(newDisplayPrice);
@@ -91,11 +91,7 @@ export default function LimitRate(props: propsIF) {
     };
 
     return (
-        <div
-            className={`${styles.swapbox} ${
-                showOrderPulseAnimation && styles.pulse_animation
-            }`}
-        >
+        <div className={styles.swapbox}>
             <span
                 className={styles.direction}
                 style={{
@@ -107,7 +103,12 @@ export default function LimitRate(props: propsIF) {
             >
                 <p>Price</p>
             </span>
-            <div className={styles.swap_input} id='limit_rate'>
+            <div
+                className={`${styles.swap_input}  ${
+                    showOrderPulseAnimation && styles.pulse_animation
+                }`}
+                id='limit_rate'
+            >
                 <div className={styles.token_amount}>
                     <input
                         id={`${fieldId}-quantity`}

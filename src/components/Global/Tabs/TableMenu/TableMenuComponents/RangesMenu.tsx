@@ -107,6 +107,9 @@ export default function RangesMenu(props: propsIF) {
     };
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const rtkTokenA = tradeData.tokenA.address;
+    const rtkTokenB = tradeData.tokenB.address;
 
     const positionMatchesLoggedInUser =
         userMatchesConnectedAccount && isUserLoggedIn;
@@ -136,8 +139,14 @@ export default function RangesMenu(props: propsIF) {
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
-                tokenA: position.base,
-                tokenB: position.quote,
+                tokenA:
+                    rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        ? position.quote
+                        : position.base,
+                tokenB:
+                    rtkTokenB.toLowerCase() === position.base.toLowerCase()
+                        ? position.base
+                        : position.quote,
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
@@ -161,8 +170,14 @@ export default function RangesMenu(props: propsIF) {
             onClick={() => {
                 linkGenPool.navigate({
                     chain: chainId,
-                    tokenA: position.base,
-                    tokenB: position.quote,
+                    tokenA:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.quote
+                            : position.base,
+                    tokenB:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.base
+                            : position.quote,
                     lowTick: position.bidTick.toString(),
                     highTick: position.askTick.toString(),
                 });
@@ -177,8 +192,14 @@ export default function RangesMenu(props: propsIF) {
             onClick={() => {
                 linkGenPool.navigate({
                     chain: chainId,
-                    tokenA: position.base,
-                    tokenB: position.quote,
+                    tokenA:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.quote
+                            : position.base,
+                    tokenB:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.base
+                            : position.quote,
                     lowTick: position.bidTick.toString(),
                     highTick: position.askTick.toString(),
                 });

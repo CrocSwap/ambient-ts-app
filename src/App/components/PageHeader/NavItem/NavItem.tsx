@@ -17,10 +17,18 @@ interface NavItemPropsIF {
     open: boolean;
     setOpen: Dispatch<SetStateAction<boolean>>;
     allowClicksOutside?: boolean;
+    square?: boolean;
 }
 
 function NavItem(props: NavItemPropsIF) {
-    const { children, icon, open, setOpen, allowClicksOutside = false } = props;
+    const {
+        children,
+        icon,
+        open,
+        setOpen,
+        allowClicksOutside = false,
+        square,
+    } = props;
     const navItemRef = useRef<HTMLButtonElement>(null);
 
     const clickOutsideHandler = () => {
@@ -44,7 +52,11 @@ function NavItem(props: NavItemPropsIF) {
             tabIndex={0}
             aria-label='Nav item'
         >
-            <div className={styles.icon_button} onClick={() => setOpen(!open)}>
+            <div
+                className={styles.icon_button}
+                onClick={() => setOpen(!open)}
+                style={{ borderRadius: square ? '4px' : '50%' }}
+            >
                 {icon}
             </div>
             {open && childrenWithProps}
