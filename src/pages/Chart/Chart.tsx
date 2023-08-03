@@ -2065,6 +2065,7 @@ export default function Chart(props: propsIF) {
         minTickForLimit,
         maxTickForLimit,
         simpleRangeWidth,
+        liquidityData?.topBoundary,
     ]);
 
     useEffect(() => {
@@ -3236,7 +3237,6 @@ export default function Chart(props: propsIF) {
         liqMode,
         location.pathname,
         isChartZoom,
-        // diffHashSigScaleData(scaleData),
         limit,
         ranges,
         liquidityScale,
@@ -3252,6 +3252,7 @@ export default function Chart(props: propsIF) {
         isCrDataIndActive,
         bandwidth,
         diffHashSigChart(unparsedCandleData),
+        liquidityData,
     ]);
 
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
