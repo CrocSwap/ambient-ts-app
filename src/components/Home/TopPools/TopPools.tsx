@@ -3,9 +3,22 @@ import styles from './TopPools.module.css';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
-export default function TopPools() {
+interface TopPoolsPropsIF {
+    noTitle?: boolean;
+    gap?: string;
+}
+// eslint-disable-next-line
+export default function TopPools(props: TopPoolsPropsIF) {
     const { topPools } = useContext(CrocEnvContext);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+    const show3TopPools = useMediaQuery('(min-height: 700px)');
+    const poolData = showMobileVersion
+        ? show3TopPools
+            ? topPools.slice(0, 3)
+            : topPools.slice(0, 2)
+        : topPools;
 
     return (
         <div className={styles.container}>
@@ -13,7 +26,7 @@ export default function TopPools() {
                 Top Pools
             </div>
             <div className={styles.content}>
-                {topPools.map((pool, idx) => (
+                {poolData.map((pool, idx) => (
                     <PoolCard key={idx} pool={pool} />
                 ))}
             </div>

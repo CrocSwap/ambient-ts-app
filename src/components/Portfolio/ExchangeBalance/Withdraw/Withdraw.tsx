@@ -45,7 +45,6 @@ interface propsIF {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
-    openTokenModal: () => void;
 }
 
 export default function Withdraw(props: propsIF) {
@@ -57,7 +56,6 @@ export default function Withdraw(props: propsIF) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
-        openTokenModal,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -351,8 +349,6 @@ export default function Withdraw(props: propsIF) {
             {toggleContent}
             {transferAddressOrNull}
             <WithdrawCurrencySelector
-                fieldId='exchange-balance-withdraw'
-                onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setWithdrawQty={setWithdrawQtyNonDisplay}
                 inputValue={inputValue}
