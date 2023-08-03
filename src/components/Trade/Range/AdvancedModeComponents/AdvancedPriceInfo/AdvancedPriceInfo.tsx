@@ -1,6 +1,5 @@
 import styles from './AdvancedPriceInfo.module.css';
 import { memo } from 'react';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     poolPriceDisplay: string;
@@ -11,29 +10,7 @@ interface propsIF {
 
 function AdvancedPriceInfo(props: propsIF) {
     // JSX frag to display the pool price for the current pair
-    const { poolPriceDisplay, isTokenABase, isOutOfRange, aprPercentage } =
-        props;
-    const { isDenomBase, tokenA, tokenB } = useAppSelector(
-        (state) => state.tradeData,
-    );
-
-    const reverseDisplay =
-        (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
-
-    const currentPriceValue = reverseDisplay
-        ? `${poolPriceDisplay} ${tokenA.symbol} per ${tokenB.symbol}`
-        : `${poolPriceDisplay} ${tokenB.symbol} per ${tokenA.symbol}`;
-
-    const currentPrice = (
-        <div
-            className={styles.price_info_row}
-            tabIndex={0}
-            aria-label={`Current price is ${currentPriceValue}. `}
-        >
-            <p className={styles.row_label}>Current Price </p>
-            <p className={styles.current_price}>{currentPriceValue}</p>
-        </div>
-    );
+    const { isOutOfRange, aprPercentage } = props;
 
     const aprPercentageString = aprPercentage
         ? `${aprPercentage.toLocaleString('en-US', {
@@ -59,12 +36,7 @@ function AdvancedPriceInfo(props: propsIF) {
         </div>
     );
 
-    return (
-        <div className={styles.price_info_container}>
-            {currentPrice}
-            {estimatedAPR}
-        </div>
-    );
+    return <div className={styles.price_info_container}>{estimatedAPR}</div>;
 }
 
 export default memo(AdvancedPriceInfo);

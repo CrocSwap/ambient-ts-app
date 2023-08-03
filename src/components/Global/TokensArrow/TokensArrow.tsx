@@ -7,18 +7,14 @@ interface TokensArrowPropsIF {
 }
 export default function TokensArrow(props: TokensArrowPropsIF) {
     const { onlyDisplay, disabled, onClick } = props;
-
     return (
         <button
             tabIndex={onlyDisplay ? -1 : 0}
-            className={`${styles.container} ${
-                onlyDisplay && styles.display_container
-            }`}
+            className={`${styles.container} 
+                ${onlyDisplay && styles.display_container} 
+                ${disabled && styles.disabled}
+            `}
             aria-label='Reverse tokens'
-            style={{
-                cursor: disabled ? 'wait' : onlyDisplay ? 'default' : 'pointer',
-            }}
-            // style={{ transform: rotate, transition: 'all 0.2s linear' }}
             onClick={onClick}
         >
             <svg
@@ -48,8 +44,6 @@ export default function TokensArrow(props: TokensArrowPropsIF) {
                     </linearGradient>
                 </defs>
             </svg>
-
-            {/* {rotateSvgs} */}
         </button>
     );
 }

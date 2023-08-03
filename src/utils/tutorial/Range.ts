@@ -4,7 +4,7 @@ export const rangeTutorialSteps = [
         intro: 'Welcome to the tutorial mode for submitting a range order on Ambient.',
     },
     {
-        element: '#range_share_button',
+        element: '#share_button',
         title: 'Share button',
         intro: 'This is the share button ',
         position: 'right',
@@ -12,7 +12,7 @@ export const rangeTutorialSteps = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#range_settings_button',
+        element: '#settings_button',
         title: 'Range Settings',
         intro: 'Use this menu to adjust your slippage tolerance, as well as control your confirmation methods. ',
         position: 'right',
@@ -20,7 +20,7 @@ export const rangeTutorialSteps = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#range_sell_qty',
+        element: '#range_A_qty',
         title: 'Sell Quantity',
         intro: 'Enter your sell amount here ',
         position: 'right',
@@ -28,7 +28,7 @@ export const rangeTutorialSteps = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#range_token_selector',
+        element: '#range_A_token_selector',
         title: 'Sell Token',
         intro: 'Select your sell token',
         position: 'right',
@@ -36,7 +36,7 @@ export const rangeTutorialSteps = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#range_currency_converter',
+        element: '#range_B',
         title: 'Buy',
         intro: 'Repeat the same step for your buy token and quantity',
         position: 'right',
@@ -75,7 +75,7 @@ export const rangeTutorialStepsAdvanced = [
         intro: 'Welcome to the tutorial mode for submitting a range order on Ambient.',
     },
     {
-        element: '#range_share_button',
+        element: '#share_button',
         title: 'Share button',
         intro: 'This is the share button ',
         position: 'right',
@@ -83,7 +83,7 @@ export const rangeTutorialStepsAdvanced = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#range_settings_button',
+        element: '#settings_button',
         title: 'Range Settings',
         intro: 'Use this menu to adjust your slippage tolerance, as well as control your confirmation methods. ',
         position: 'right',
@@ -91,7 +91,7 @@ export const rangeTutorialStepsAdvanced = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#range_sell_qty',
+        element: '#range_A_qty',
         title: 'Sell Quantity',
         intro: 'Enter your sell amount here ',
         position: 'right',
@@ -99,7 +99,7 @@ export const rangeTutorialStepsAdvanced = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#range_token_selector',
+        element: '#range_A_token_selector',
         title: 'Sell Token',
         intro: 'Select your sell token',
         position: 'right',
@@ -107,7 +107,7 @@ export const rangeTutorialStepsAdvanced = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#range_currency_converter',
+        element: '#range_B',
         title: 'Buy',
         intro: 'Repeat the same step for your buy token and quantity',
         position: 'right',
