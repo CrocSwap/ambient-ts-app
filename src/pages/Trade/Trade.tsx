@@ -45,8 +45,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
-// extra 54 is for the header size
-const TRADE_CHART_MIN_HEIGHT = 175 + 54;
+const TRADE_CHART_MIN_HEIGHT = 175;
 
 // React functional component
 function Trade() {
@@ -60,7 +59,6 @@ function Trade() {
         chartSettings,
         chartHeights,
         setChartHeight,
-        canvasRef,
     } = useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
@@ -387,7 +385,7 @@ function Trade() {
                 className={`${styles.middle_col}
                 ${tradeTableState === 'Expanded' ? styles.flex_column : ''}`}
             >
-                
+                <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                 <div className={styles.resizableParent}>
                     <Resizable
@@ -418,7 +416,7 @@ function Trade() {
                                     setChartHeight(chartHeights.default);
                                     setTradeTableState(undefined);
                                 } else {
-                                    setChartHeight(4 + 54);
+                                    setChartHeight(4);
                                     setTradeTableState('Expanded');
                                 }
                             } else {
@@ -433,20 +431,17 @@ function Trade() {
                         }
                         bounds={'parent'}
                     >
-                        <div className={styles.chartWithHeader} ref={canvasRef}>
-                            <TradeChartsHeader tradePage />
-                            <div
-                                className={`${
-                                    activeMobileComponent !== 'chart'
-                                        ? styles.hide
-                                        : ''
-                                } ${fullScreenStyle}`}
-                            >
-                                <div className={styles.main__chart_container}>
-                                    {!isCandleDataNull && (
-                                        <TradeCharts {...tradeChartsProps} />
-                                    )}
-                                </div>
+                        <div
+                            className={`${
+                                activeMobileComponent !== 'chart'
+                                    ? styles.hide
+                                    : ''
+                            } ${fullScreenStyle}`}
+                        >
+                            <div className={styles.main__chart_container}>
+                                {!isCandleDataNull && (
+                                    <TradeCharts {...tradeChartsProps} />
+                                )}
                             </div>
                         </div>
                     </Resizable>
