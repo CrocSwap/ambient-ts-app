@@ -1,16 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+    memo,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    useContext,
+} from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import '../Chart.css';
 import { setCanvasResolution } from '../ChartUtils/chartUtils';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
-import { getNewCandleDataLeft } from '../ChartUtils/zoom';
+import { Zoom } from '../ChartUtils/zoom';
+import { CandleContext } from '../../../contexts/CandleContext';
 
 interface FreeRateData {
     feeData: Array<CandleData>;
-    period: number | undefined;
+    period: number;
     subChartValues: any;
     crosshairForSubChart: any;
     xScale: any;
@@ -58,6 +66,9 @@ function FeeRateChart(props: FreeRateData) {
         useState<any>();
     const [feeRateHorizontalyValue, setFeeRateHorizontalyValue] =
         useState<any>();
+
+    const { setCandleDomains } = useContext(CandleContext);
+    const zoomBase = new Zoom(setCandleDomains, period);
 
     useEffect(() => {
         const domain = [-0.002, 0.0125];
@@ -125,7 +136,7 @@ function FeeRateChart(props: FreeRateData) {
                         .range([0, domainX[1] - domainX[0]]);
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
-                    getNewCandleDataLeft(domainX[0] + deltaX, date, period);
+                    zoomBase.getNewCandleDataLeft(domainX[0] + deltaX, date);
                     xScale.domain([domainX[0] + deltaX, domainX[1] + deltaX]);
 
                     props.render();

@@ -71,15 +71,7 @@ import {
     setCanvasResolution,
     zoomUtils,
 } from './ChartUtils/chartUtils';
-import {
-    changeCandleSize,
-    getNewCandleDataLeft,
-    getNewCandleDataRight,
-    handlePanning,
-    handlePanningMultiTouch,
-    handlePanningOneTouch,
-    zoomWithWheel,
-} from './ChartUtils/zoom';
+import { Zoom } from './ChartUtils/zoom';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -259,6 +251,7 @@ export default function Chart(props: propsIF) {
         { x: 0, y: 0 },
     ]);
 
+    const zoomBase = new Zoom(setCandleDomains, period);
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles.sort((a, b) => b.time - a.time);
         if (poolPriceWithoutDenom && data && data.length > 0) {
@@ -698,17 +691,12 @@ export default function Chart(props: propsIF) {
                                 scaleData?.xScale
                             ) {
                                 if (event.sourceEvent.type === 'wheel') {
-                                    const domain = zoomWithWheel(
+                                    zoomBase.zoomWithWheel(
                                         event,
                                         scaleData,
-                                        period,
                                         firstCandleDate,
                                         lastCandleDate,
                                     );
-
-                                    if (domain) {
-                                        setCandleDomains(domain);
-                                    }
                                 } else if (
                                     event.sourceEvent.type === 'touchmove' &&
                                     event.sourceEvent.touches.length > 1 &&
@@ -744,7 +732,7 @@ export default function Chart(props: propsIF) {
                                     }
                                     const deltaX = linearX(movement);
 
-                                    changeCandleSize(
+                                    zoomBase.changeCandleSize(
                                         domainX,
                                         deltaX,
                                         scaleData?.xScale(touch1.clientX),
@@ -780,31 +768,17 @@ export default function Chart(props: propsIF) {
                                     if (deltaX) {
                                         if (deltaX < 0) {
                                             if (lastCandleDate) {
-                                                const candleDomain =
-                                                    getNewCandleDataLeft(
-                                                        domainX[0] + deltaX,
-                                                        firstCandleDate,
-                                                        period,
-                                                    );
-
-                                                if (candleDomain) {
-                                                    setCandleDomains(
-                                                        candleDomain,
-                                                    );
-                                                }
+                                                zoomBase.getNewCandleDataLeft(
+                                                    domainX[0] + deltaX,
+                                                    firstCandleDate,
+                                                );
                                             }
                                         } else {
                                             if (lastCandleDate) {
-                                                const candleDomain =
-                                                    getNewCandleDataRight(
-                                                        lastCandleDate,
-                                                    );
-
-                                                if (candleDomain) {
-                                                    setCandleDomains(
-                                                        candleDomain,
-                                                    );
-                                                }
+                                                zoomBase.getNewCandleDataRight(
+                                                    scaleData,
+                                                    lastCandleDate,
+                                                );
                                             }
                                         }
                                         scaleData?.xScale.domain([
@@ -826,7 +800,7 @@ export default function Chart(props: propsIF) {
                                     if (
                                         event.sourceEvent.type !== 'touchmove'
                                     ) {
-                                        domain = handlePanning(
+                                        domain = zoomBase.handlePanning(
                                             event,
                                             scaleData,
                                         );
@@ -836,13 +810,14 @@ export default function Chart(props: propsIF) {
                                             event.sourceEvent.touches.length >=
                                             2;
                                         if (isMultiTouch) {
-                                            handlePanningMultiTouch();
+                                            // zoomBase.handlePanningMultiTouch();
                                         } else {
-                                            domain = handlePanningOneTouch(
-                                                event,
-                                                scaleData,
-                                                previousTouch,
-                                            );
+                                            domain =
+                                                zoomBase.handlePanningOneTouch(
+                                                    event,
+                                                    scaleData,
+                                                    previousTouch,
+                                                );
                                         }
                                     }
 
@@ -966,17 +941,12 @@ export default function Chart(props: propsIF) {
                     .zoom()
                     .on('zoom', async (event) => {
                         if (event.sourceEvent.type === 'wheel') {
-                            const domain = zoomWithWheel(
+                            zoomBase.zoomWithWheel(
                                 event,
                                 scaleData,
-                                period,
                                 firstCandleDate,
                                 lastCandleDate,
                             );
-
-                            if (domain) {
-                                setCandleDomains(domain);
-                            }
                         } else if (
                             event.sourceEvent.type === 'touchmove' &&
                             event.sourceEvent.touches.length > 1 &&
@@ -1011,11 +981,10 @@ export default function Chart(props: propsIF) {
                             }
                             const deltaX = linearX(movement);
 
-                            changeCandleSize(
+                            zoomBase.changeCandleSize(
                                 domainX,
                                 deltaX,
                                 scaleData?.xScale(touch1.clientX),
-                                period,
                             );
                         } else {
                             const domainX = scaleData?.xScale.domain();
@@ -1030,15 +999,10 @@ export default function Chart(props: propsIF) {
                             );
 
                             if (deltaX !== undefined) {
-                                const candleDomain = getNewCandleDataLeft(
+                                zoomBase.getNewCandleDataLeft(
                                     domainX[0] + deltaX,
                                     firstCandleDate,
-                                    period,
                                 );
-
-                                if (candleDomain) {
-                                    setCandleDomains(candleDomain);
-                                }
 
                                 if (
                                     (deltaX > 0 ||

@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+    memo,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    useContext,
+} from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
@@ -8,17 +15,18 @@ import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
+import { Zoom } from '../ChartUtils/zoom';
 import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../utils/functions/diffHashSig';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
-import { getNewCandleDataLeft } from '../ChartUtils/zoom';
+import { CandleContext } from '../../../contexts/CandleContext';
 
 interface TvlData {
     tvlData: Array<CandleData>;
-    period: number | undefined;
+    period: number;
     subChartValues: any;
     crosshairForSubChart: any;
     scaleData: any;
@@ -70,6 +78,8 @@ function TvlChart(props: TvlData) {
     const [tvlHorizontalyValue, setTvlHorizontalyValue] = useState<any>();
     const [buffer, setBuffer] = useState<any>();
     const [resizeHeight, setResizeHeight] = useState<number>();
+    const { setCandleDomains } = useContext(CandleContext);
+    const zoomBase = new Zoom(setCandleDomains, period);
 
     useEffect(() => {
         if (tvlyScale === undefined) {
@@ -137,7 +147,7 @@ function TvlChart(props: TvlData) {
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
 
-                    getNewCandleDataLeft(domainX[0] + deltaX, date, period);
+                    zoomBase.getNewCandleDataLeft(domainX[0] + deltaX, date);
 
                     scaleData?.xScale.domain([
                         domainX[0] + deltaX,
