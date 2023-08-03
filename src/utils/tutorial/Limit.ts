@@ -4,7 +4,7 @@ export const limitTutorialSteps = [
         intro: 'Welcome to the tutorial mode for submitting a limit order on Ambient.',
     },
     {
-        element: '#limit_share_button',
+        element: '#share_button',
         title: 'Share button',
         intro: 'This is the share button ',
         position: 'right',
@@ -12,7 +12,7 @@ export const limitTutorialSteps = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#limit_settings_button',
+        element: '#settings_button',
         title: 'Limit Settings',
         intro: 'Use this menu to adjust your slippage tolerance, as well as control your confirmation methods. ',
         position: 'right',
@@ -28,7 +28,7 @@ export const limitTutorialSteps = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#limit_token_selector',
+        element: '#limit_sell_token_selector',
         title: 'Sell Token',
         intro: 'Select your sell token',
         position: 'right',
@@ -36,7 +36,7 @@ export const limitTutorialSteps = [
         highlightClass: 'myHighlightClass',
     },
     {
-        element: '#limit_currency_converter',
+        element: '#limit_buy',
         title: 'Buy',
         intro: 'Repeat the same step for your buy token and quantity',
         position: 'right',
