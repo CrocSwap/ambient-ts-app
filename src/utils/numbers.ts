@@ -1,4 +1,6 @@
 import numbro from 'numbro';
+import { getFormattedNumber } from '../App/functions/getFormattedNumber';
+import { TokenIF } from './interfaces/TokenIF';
 
 // using a currency library here in case we want to add more in future
 export const formatDollarAmount = (
@@ -169,4 +171,21 @@ export const formatAmountOld = (num: number | undefined, digits = 1) => {
             billion: 'B',
         },
     });
+};
+
+export const formatTokenInput = (
+    value: string,
+    token: TokenIF,
+    shouldTruncate = false,
+) => {
+    const inputStr = value.replaceAll(',', '');
+    if (!inputStr) return '';
+    if (!shouldTruncate)
+        return getFormattedNumber({
+            value: inputStr ? +inputStr : undefined,
+            isToken: true,
+            nullDisplay: '',
+        });
+
+    return (+inputStr).toFixed(token.decimals);
 };

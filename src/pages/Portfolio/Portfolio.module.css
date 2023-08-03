@@ -132,7 +132,8 @@
     }
     .full_layout_container {
         display: grid;
-        grid-template-columns: auto 50px;
+        grid-template-columns: auto 36px;
+        column-gap: 16px;
 
         flex: 1;
     }

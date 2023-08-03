@@ -9,7 +9,11 @@
 
 // this function takes an input URI and transforms it to a queryable URL
 // the URI must follow https, http, ipfs, or ipns standard
-export default function uriToHttp(uri: string): string {
+
+function uriToHttp(uri: string): string;
+function uriToHttp(uri: string, retry: 'retry'): string[];
+
+function uriToHttp(uri: string, retry?: string): string | string[] {
     // declare a variable to hold the value to return
     // will be an array with one or two strings
     const outputURLs: string[] = [];
@@ -27,16 +31,25 @@ export default function uriToHttp(uri: string): string {
         ];
 
         // if URI is in the excluded array, return it and terminate the function
-        if (excludedURIs.includes(fixedURI)) return fixedURI;
+        if (excludedURIs.includes(fixedURI)) return [fixedURI];
 
         // get the prefix of the URI
         const protocol: string = fixedURI.split(':')[0];
 
-        // create hashes both for ipfs and ipns URIs
-        const ipfsHash: string | undefined =
-            uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2];
-        const ipnsHash: string | undefined =
-            uri.match(/^ipns:(\/\/)?(.*)$/i)?.[2];
+        // base URLs for IPFS queries
+        const ipfsBases: string[] = [
+            'https://cloudflare-ipfs.com/ipfs/',
+            'https://ipfs.io/ipfs/',
+        ];
+
+        // base URLs for IPNS queries
+        const ipnsBases: string[] = [
+            'https://cloudflare-ipfs.com/ipns/',
+            'https://ipfs.io/ipns/',
+        ];
+
+        // fn to isolate hash from a IPFS or IPNS URI
+        const makeHash = (rawURI: string): string => rawURI.substring(7);
 
         // execute differential actions based on the protocol URI prefix
         switch (protocol) {
@@ -54,21 +67,15 @@ export default function uriToHttp(uri: string): string {
                 break;
             // handle ipfs URIs
             case 'ipfs':
-                // create a cloudflare URL for the ipfs hash
-                outputURLs.push(
-                    `https://cloudflare-ipfs.com/ipfs/${ipfsHash}/`,
+                ipfsBases.forEach((base: string) =>
+                    outputURLs.push(base + makeHash(uri)),
                 );
-                // create an ipfs.io URL for the ipfs hash
-                outputURLs.push(`https://ipfs.io/ipfs/${ipfsHash}/`);
                 break;
             // handle ipns URIs
             case 'ipns':
-                // create a cloudflare URL for the ipns hash
-                outputURLs.push(
-                    `https://cloudflare-ipfs.com/ipns/${ipnsHash}/`,
+                ipnsBases.forEach((base: string) =>
+                    outputURLs.push(base + makeHash(uri)),
                 );
-                // create an ipfs.io URL for the ipfs hash
-                outputURLs.push(`https://ipfs.io/ipns/${ipnsHash}/`);
                 break;
             default:
                 console.debug(
@@ -79,7 +86,8 @@ export default function uriToHttp(uri: string): string {
         }
     } catch (err) {
         console.warn(err);
-        outputURLs.push('');
     }
-    return outputURLs[0];
+    return retry ? outputURLs : outputURLs[0];
 }
+
+export default uriToHttp;

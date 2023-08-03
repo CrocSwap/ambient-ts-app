@@ -41,6 +41,10 @@ export default function Modal(props: ModalPropsIF) {
     const escFunction = useCallback((event: KeyboardEvent) => {
         if (event.key === 'Escape') {
             onClose();
+            event.stopPropagation();
+            // prevent the auto focusing on element
+            document?.activeElement &&
+                (document.activeElement as HTMLElement).blur();
         }
     }, []);
 
@@ -96,7 +100,14 @@ export default function Modal(props: ModalPropsIF) {
         <aside
             id='Modal_Global'
             className={styles.outside_modal}
-            onMouseDown={desktopView ? onClose : undefined}
+            onMouseDown={
+                desktopView
+                    ? (e) => {
+                          onClose();
+                          e.stopPropagation();
+                      }
+                    : undefined
+            }
             role='dialog'
             aria-modal='true'
         >
