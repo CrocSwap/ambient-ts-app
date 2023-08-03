@@ -50,7 +50,9 @@ function Trade() {
         chartHeights,
         setChartHeight,
     } = useContext(ChartContext);
-    const { isPoolInitialized } = useContext(PoolContext);
+    // const { isPoolInitialized } = useContext(PoolContext);
+    const isPoolInitialized = false;
+
     const { tokens } = useContext(TokenContext);
     const {
         tradeTableState,
@@ -265,7 +267,7 @@ function Trade() {
                 padding: '0 8px',
             }}
         >
-            {!isPoolInitialized && (
+            {isPoolInitialized && (
                 <PoolNotInitalized
                     chainId={chainId}
                     tokenA={
@@ -308,21 +310,62 @@ function Trade() {
             )}
         </section>
     );
+
     if (showActiveMobileComponent) return mobileTrade;
+
+    const poolNotInitContent = (
+        <Resizable
+            className={styles.chartBox}
+            enable={{ bottom: true }}
+            size={{ width: '100%', height: chartHeights.current }}
+            minHeight={4}
+            onResizeStart={() => {
+                // may be useful later
+            }}
+            onResizeStop={(e, direction, ref, d) => {
+                // the resizable bar is 4px in height
+                if (chartHeights.current + d.height <= 4) {
+                    setTradeTableState('Expanded');
+                }
+                if (
+                    tradeTableRef?.current &&
+                    tradeTableRef.current.offsetHeight ===
+                        TRADE_TABLE_HEADER_HEIGHT
+                ) {
+                    setTradeTableState('Collapsed');
+                }
+                if (chartHeights.current + d.height < TRADE_CHART_MIN_HEIGHT) {
+                    if (tradeTableState == 'Expanded') {
+                        setChartHeight(chartHeights.default);
+                        setTradeTableState(undefined);
+                    } else {
+                        setChartHeight(4);
+                        setTradeTableState('Expanded');
+                    }
+                } else {
+                    setChartHeight(chartHeights.current + d.height);
+                    setTradeTableState(undefined);
+                }
+            }}
+            handleClasses={
+                isChartFullScreen ? undefined : { bottom: styles.resizableBox }
+            }
+            bounds={'parent'}
+        >
+            <PoolNotInitalized
+                chainId={chainId}
+                tokenA={
+                    isDenomBase ? tradeData.baseToken : tradeData.quoteToken
+                }
+                tokenB={
+                    isDenomBase ? tradeData.quoteToken : tradeData.baseToken
+                }
+            />
+        </Resizable>
+    );
 
     return (
         <section className={`${styles.main_layout}`}>
-            {isPoolInitialized === false && (
-                <PoolNotInitalized
-                    chainId={chainId}
-                    tokenA={
-                        isDenomBase ? tradeData.baseToken : tradeData.quoteToken
-                    }
-                    tokenB={
-                        isDenomBase ? tradeData.quoteToken : tradeData.baseToken
-                    }
-                />
-            )}
             <div
                 className={`${styles.middle_col}
                 ${tradeTableState === 'Expanded' ? styles.flex_column : ''}`}
@@ -330,63 +373,71 @@ function Trade() {
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                 <div className={styles.resizableParent}>
-                    <Resizable
-                        className={styles.chartBox}
-                        enable={{ bottom: true }}
-                        size={{ width: '100%', height: chartHeights.current }}
-                        minHeight={4}
-                        onResizeStart={() => {
-                            // may be useful later
-                        }}
-                        onResizeStop={(e, direction, ref, d) => {
-                            // the resizable bar is 4px in height
-                            if (chartHeights.current + d.height <= 4) {
-                                setTradeTableState('Expanded');
-                            }
-                            if (
-                                tradeTableRef?.current &&
-                                tradeTableRef.current.offsetHeight ===
-                                    TRADE_TABLE_HEADER_HEIGHT
-                            ) {
-                                setTradeTableState('Collapsed');
-                            }
-                            if (
-                                chartHeights.current + d.height <
-                                TRADE_CHART_MIN_HEIGHT
-                            ) {
-                                if (tradeTableState == 'Expanded') {
-                                    setChartHeight(chartHeights.default);
-                                    setTradeTableState(undefined);
-                                } else {
-                                    setChartHeight(4);
+                    {!isPoolInitialized && poolNotInitContent}
+                    {isPoolInitialized && (
+                        <Resizable
+                            className={styles.chartBox}
+                            enable={{ bottom: true }}
+                            size={{
+                                width: '100%',
+                                height: chartHeights.current,
+                            }}
+                            minHeight={4}
+                            onResizeStart={() => {
+                                // may be useful later
+                            }}
+                            onResizeStop={(e, direction, ref, d) => {
+                                // the resizable bar is 4px in height
+                                if (chartHeights.current + d.height <= 4) {
                                     setTradeTableState('Expanded');
                                 }
-                            } else {
-                                setChartHeight(chartHeights.current + d.height);
-                                setTradeTableState(undefined);
+                                if (
+                                    tradeTableRef?.current &&
+                                    tradeTableRef.current.offsetHeight ===
+                                        TRADE_TABLE_HEADER_HEIGHT
+                                ) {
+                                    setTradeTableState('Collapsed');
+                                }
+                                if (
+                                    chartHeights.current + d.height <
+                                    TRADE_CHART_MIN_HEIGHT
+                                ) {
+                                    if (tradeTableState == 'Expanded') {
+                                        setChartHeight(chartHeights.default);
+                                        setTradeTableState(undefined);
+                                    } else {
+                                        setChartHeight(4);
+                                        setTradeTableState('Expanded');
+                                    }
+                                } else {
+                                    setChartHeight(
+                                        chartHeights.current + d.height,
+                                    );
+                                    setTradeTableState(undefined);
+                                }
+                            }}
+                            handleClasses={
+                                isChartFullScreen
+                                    ? undefined
+                                    : { bottom: styles.resizableBox }
                             }
-                        }}
-                        handleClasses={
-                            isChartFullScreen
-                                ? undefined
-                                : { bottom: styles.resizableBox }
-                        }
-                        bounds={'parent'}
-                    >
-                        <div
-                            className={`${
-                                activeMobileComponent !== 'chart'
-                                    ? styles.hide
-                                    : ''
-                            } ${fullScreenStyle}`}
+                            bounds={'parent'}
                         >
-                            <div className={styles.main__chart_container}>
-                                {!isCandleDataNull && (
-                                    <TradeCharts {...tradeChartsProps} />
-                                )}
+                            <div
+                                className={`${
+                                    activeMobileComponent !== 'chart'
+                                        ? styles.hide
+                                        : ''
+                                } ${fullScreenStyle}`}
+                            >
+                                <div className={styles.main__chart_container}>
+                                    {!isCandleDataNull && (
+                                        <TradeCharts {...tradeChartsProps} />
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    </Resizable>
+                        </Resizable>
+                    )}
                     <div className={styles.tableBox} ref={tradeTableRef}>
                         <TradeTabs2 {...tradeTabsProps} />
                     </div>
