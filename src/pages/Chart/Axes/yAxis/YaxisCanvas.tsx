@@ -24,6 +24,7 @@ import {
     setCanvasResolution,
     standardDeviation,
 } from '../../ChartUtils/chartUtils';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
@@ -292,17 +293,13 @@ export default function YAxisCanvas(props: yAxisIF) {
                         Math.abs(Number(splitNumber[1])) -
                         (splitNumber.includes('.') ? 2 : 1);
 
-                    const precision = splitNumber[0]
-                        .toString()
-                        .replace('.', '');
+                    const scientificValue = getFormattedNumber({
+                        value: d,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    });
 
-                    const factor = Math.pow(10, 3 - precision.length);
-
-                    const tempTextScientific = (
-                        factor * Number(precision)
-                    ).toString();
-                    const textScientificArray = tempTextScientific.split('.');
-                    const textScientific = textScientificArray[0];
+                    const textScientificArray = scientificValue.split('0.0');
+                    const textScientific = textScientificArray[1].slice(1, 4);
 
                     const textHeight =
                         context.measureText('0.0').actualBoundingBoxAscent +
@@ -344,30 +341,20 @@ export default function YAxisCanvas(props: yAxisIF) {
                     .toString()
                     .includes('e');
 
-                let marketTick: number | string = formatTicks(
-                    market[0].value,
-                    undefined,
-                );
-
                 let marketSubString = undefined;
 
+                let marketTick = getFormattedNumber({
+                    value: market[0].value,
+                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                }).replace(',', '');
                 if (isScientificMarketTick) {
                     const splitNumber = market[0].value.toString().split('e');
                     marketSubString =
                         Math.abs(Number(splitNumber[1])) -
                         (splitNumber.includes('.') ? 2 : 1);
 
-                    const precision = splitNumber[0]
-                        .toString()
-                        .replace('.', '');
-
-                    if (precision.length > 3) {
-                        marketTick = precision.slice(0, 3);
-                    } else {
-                        const factor = Math.pow(10, 3 - precision.length);
-
-                        marketTick = (factor * Number(precision)).toString();
-                    }
+                    const textScientificArray = marketTick.split('0.0');
+                    marketTick = textScientificArray[1].slice(1, 4);
                 }
 
                 createRectLabel(
@@ -403,8 +390,10 @@ export default function YAxisCanvas(props: yAxisIF) {
                 if (simpleRangeWidth !== 100 || tradeData.advancedMode) {
                     const isScientificlowTick = low.toString().includes('e');
 
-                    let lowTick: number | string = formatTicks(low, undefined);
-
+                    let lowTick = getFormattedNumber({
+                        value: low,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    }).replace(',', '');
                     let lowSubString = undefined;
 
                     if (isScientificlowTick) {
@@ -413,17 +402,14 @@ export default function YAxisCanvas(props: yAxisIF) {
                             Math.abs(Number(splitNumber[1])) -
                             (splitNumber.includes('.') ? 2 : 1);
 
-                        const precision = splitNumber[0]
-                            .toString()
-                            .replace('.', '');
+                        const scientificValue = getFormattedNumber({
+                            value: low,
+                            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                        });
 
-                        if (precision.length > 3) {
-                            lowTick = precision.slice(0, 3);
-                        } else {
-                            const factor = Math.pow(10, 3 - precision.length);
-
-                            lowTick = (factor * Number(precision)).toString();
-                        }
+                        const textScientificArray =
+                            scientificValue.split('0.0');
+                        lowTick = textScientificArray[1].slice(1, 4);
                     }
 
                     createRectLabel(
@@ -443,10 +429,10 @@ export default function YAxisCanvas(props: yAxisIF) {
 
                     const isScientificHighTick = high.toString().includes('e');
 
-                    let highTick: number | string = formatTicks(
-                        high,
-                        undefined,
-                    );
+                    let highTick = getFormattedNumber({
+                        value: high,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    }).replace(',', '');
 
                     let highSubString = undefined;
 
@@ -457,17 +443,14 @@ export default function YAxisCanvas(props: yAxisIF) {
                             Math.abs(Number(splitNumber[1])) -
                             (splitNumber.includes('.') ? 2 : 1);
 
-                        const precision = splitNumber[0]
-                            .toString()
-                            .replace('.', '');
+                        const scientificValue = getFormattedNumber({
+                            value: high,
+                            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                        });
 
-                        if (precision.length > 3) {
-                            highTick = precision.slice(0, 3);
-                        } else {
-                            const factor = Math.pow(10, 3 - precision.length);
-
-                            highTick = (factor * Number(precision)).toString();
-                        }
+                        const textScientificArray =
+                            scientificValue.split('0.0');
+                        highTick = textScientificArray[1].slice(1, 4);
                     }
 
                     createRectLabel(
@@ -495,10 +478,10 @@ export default function YAxisCanvas(props: yAxisIF) {
                     .toString()
                     .includes('e');
 
-                let limitTick: number | string = formatTicks(
-                    limit[0].value,
-                    undefined,
-                );
+                let limitTick = getFormattedNumber({
+                    value: limit[0].value,
+                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                }).replace(',', '');
 
                 let limitSubString = undefined;
 
@@ -509,17 +492,13 @@ export default function YAxisCanvas(props: yAxisIF) {
                         Math.abs(Number(splitNumber[1])) -
                         (splitNumber.includes('.') ? 2 : 1);
 
-                    const precision = splitNumber[0]
-                        .toString()
-                        .replace('.', '');
+                    const scientificValue = getFormattedNumber({
+                        value: limit[0].value,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    });
 
-                    if (precision.length > 3) {
-                        limitTick = precision.slice(0, 3);
-                    } else {
-                        const factor = Math.pow(10, 3 - precision.length);
-
-                        limitTick = (factor * Number(precision)).toString();
-                    }
+                    const textScientificArray = scientificValue.split('0.0');
+                    limitTick = textScientificArray[1].slice(1, 4);
                 }
 
                 if (checkLimitOrder) {
@@ -563,13 +542,13 @@ export default function YAxisCanvas(props: yAxisIF) {
                     .toString()
                     .includes('e');
 
-                let crTick: number | string = formatTicks(
-                    Number(crosshairData[0].y),
-                    undefined,
-                );
-
                 let crSubString = undefined;
+                const crosshairY = Number(crosshairData[0].y.toString());
 
+                let crTick = getFormattedNumber({
+                    value: crosshairY,
+                    abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                }).replace(',', '');
                 if (isScientificCrTick) {
                     const splitNumber = crosshairData[0].y
                         .toString()
@@ -579,20 +558,10 @@ export default function YAxisCanvas(props: yAxisIF) {
                         Math.abs(Number(splitNumber[1])) -
                         (splitNumber.includes('.') ? 2 : 1);
 
-                    const precision = splitNumber[0]
-                        .toString()
-                        .replace('.', '');
-
-                    if (precision.length > 3) {
-                        crTick = precision.slice(0, 3);
-                    } else {
-                        const factor = Math.pow(10, 3 - precision.length);
-
-                        crTick = (factor * Number(precision)).toString();
-                    }
+                    const textScientificArray = crTick.split('0.0');
+                    crTick = textScientificArray[1].slice(1, 4);
                 }
 
-                const crosshairY = parseFloat(crosshairData[0].y.toString());
                 createRectLabel(
                     context,
                     yScale(crosshairY),
