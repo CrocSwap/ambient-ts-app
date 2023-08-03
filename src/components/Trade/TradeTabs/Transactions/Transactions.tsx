@@ -165,13 +165,15 @@ function Transactions(props: propsIF) {
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
     const showTimestamp = useMediaQuery('(min-width: 1000px)');
 
-    const showColumns = isAccountView
-        ? isSidebarOpen
-            ? useMediaQuery('(max-width: 1850px)')
-            : useMediaQuery('(max-width: 1500px)')
-        : isSidebarOpen
-        ? useMediaQuery('(max-width: 1850px)')
-        : useMediaQuery('(max-width: 1600px)');
+    // const showColumns = isAccountView
+    //     ? isSidebarOpen
+    //         ? useMediaQuery('(max-width: 1850px)')
+    //         : useMediaQuery('(max-width: 1500px)')
+    //     : isSidebarOpen
+    //     ? useMediaQuery('(max-width: 1850px)')
+    //     : useMediaQuery('(max-width: 1600px)');
+
+    const showColumns = false;
 
     const getCandleData = () =>
         crocEnv &&

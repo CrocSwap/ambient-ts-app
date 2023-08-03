@@ -130,10 +130,10 @@
 .main_list_container .row_container,
 .main_list_container .header {
     width: 100%;
-    /* table row was living space at end so I changed it to table and added a fixed table layout*/
-    display: table-row;
-    table-layout: fixed;
-    display: table;
+    display: grid;
+    /* measured against smallest screen size for full view (1000px) */
+    grid-template-columns: 2fr 2.5fr 2.5fr 1.5fr 1fr 1fr 2fr 2fr 2fr 3fr;
+    align-items: center;
 }
 
 .main_list_container .row_container > li,
