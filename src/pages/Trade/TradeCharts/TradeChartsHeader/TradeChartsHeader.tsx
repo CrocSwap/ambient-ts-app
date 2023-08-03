@@ -27,7 +27,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const { tradeTableState } = useContext(TradeTableContext);
 
     const copyChartToClipboard = async () => {
-        if (canvasRef.current) {
+        if (canvasRef.current && chartCanvasRef.current) {
             const blob = isChartFullScreen
                 ? await printDomToImage(chartCanvasRef.current, '#171d27')
                 : await printDomToImage(
