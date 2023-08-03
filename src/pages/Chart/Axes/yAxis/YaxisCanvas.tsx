@@ -302,16 +302,7 @@ export default function YAxisCanvas(props: yAxisIF) {
                         factor * Number(precision)
                     ).toString();
                     const textScientificArray = tempTextScientific.split('.');
-                    let textScientific = tempTextScientific;
-                    if (
-                        textScientificArray.length > 1 &&
-                        textScientificArray[1].length > 1
-                    ) {
-                        textScientific =
-                            textScientificArray[0] +
-                            '.' +
-                            textScientificArray[1][0];
-                    }
+                    const textScientific = textScientificArray[0];
 
                     const textHeight =
                         context.measureText('0.0').actualBoundingBoxAscent +
