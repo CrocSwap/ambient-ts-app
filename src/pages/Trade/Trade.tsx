@@ -22,7 +22,6 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../constants';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import {
     TRADE_TABLE_HEADER_HEIGHT,

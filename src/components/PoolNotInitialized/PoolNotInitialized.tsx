@@ -1,5 +1,4 @@
-import { VscClose } from 'react-icons/vsc';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
@@ -15,7 +14,6 @@ interface PropsIF {
 export const PoolNotInitalized = (props: PropsIF) => {
     const { chainId, tokenA, tokenB } = props;
 
-    const navigate = useNavigate();
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
     return (
