@@ -374,10 +374,8 @@ export default function XAxisCanvas(props: xAxisIF) {
 
                 const isCroc =
                     lastCrDate &&
-                    event.clientX > scaleData?.xScale(lastCrDate) - 15 &&
-                    event.clientX < scaleData?.xScale(lastCrDate) + 15;
-
-                console.log(isCroc, lastCrDate);
+                    event.offsetX > scaleData?.xScale(lastCrDate) - 15 &&
+                    event.offsetX < scaleData?.xScale(lastCrDate) + 15;
 
                 if (isEgg || isCroc) {
                     d3.select(d3Xaxis.current).style('cursor', 'default');

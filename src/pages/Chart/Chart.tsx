@@ -3009,7 +3009,7 @@ export default function Chart(props: propsIF) {
             );
 
             if (lastCrDate) {
-                // relocateTooltip(xAxisTooltip, lastCrDate);
+                relocateTooltip(xAxisTooltip, lastCrDate);
             }
         }
     }, [
@@ -3021,35 +3021,35 @@ export default function Chart(props: propsIF) {
         latest,
     ]);
 
-    // useEffect(() => {
-    //     if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
-    //         xAxisTooltip.html('<p> 🥚 Beginning of Historical Data </p>');
+    useEffect(() => {
+        if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
+            xAxisTooltip.html('<p> 🥚 Beginning of Historical Data </p>');
 
-    //         xAxisTooltip.style(
-    //             'visibility',
-    //             xAxisActiveTooltip === 'egg' ? 'visible' : 'hidden',
-    //         );
+            xAxisTooltip.style(
+                'visibility',
+                xAxisActiveTooltip === 'egg' ? 'visible' : 'hidden',
+            );
 
-    //         if (timeOfEndCandle) {
-    //             relocateTooltip(xAxisTooltip, timeOfEndCandle);
-    //         }
-    //     }
-    // }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle, reset, latest]);
+            if (timeOfEndCandle) {
+                relocateTooltip(xAxisTooltip, timeOfEndCandle);
+            }
+        }
+    }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle, reset, latest]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // const relocateTooltip = (tooltip: any, data: number) => {
-    //     if (tooltip && scaleData) {
-    //         const width = tooltip.style('width').split('p')[0] / 2;
-    //         const xAxisCanvas = d3
-    //             .select(d3Xaxis.current)
-    //             .node() as HTMLDivElement;
+    const relocateTooltip = (tooltip: any, data: number) => {
+        if (tooltip && scaleData) {
+            const width = tooltip.style('width').split('p')[0] / 2;
+            const d3ContainerCanvas = d3
+                .select(d3Container.current)
+                .node() as HTMLDivElement;
 
-    //         const rectXaxis = xAxisCanvas.getBoundingClientRect();
-    //         tooltip
-    //             .style('bottom', rectXaxis.height + 15 + 'px')
-    //             .style('left', scaleData.xScale(data) - width + 'px');
-    //     }
-    // };
+            const rectContainer = d3ContainerCanvas.getBoundingClientRect();
+            tooltip
+                .style('top', rectContainer.height + 'px')
+                .style('left', scaleData.xScale(data) - width + 'px');
+        }
+    };
     useEffect(() => {
         if (scaleData && scaleData?.xScale) {
             const xmin = scaleData?.xScale.domain()[0];
