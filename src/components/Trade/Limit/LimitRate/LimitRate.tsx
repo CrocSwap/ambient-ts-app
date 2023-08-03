@@ -82,7 +82,7 @@ export default function LimitRate(props: propsIF) {
 
     const handleOnBlur = async (input: string) => {
         let newDisplayPrice = removeLeadingZeros(input.replaceAll(',', ''));
-        if (input.startsWith('.')) newDisplayPrice = `0.${input}`;
+        if (input.startsWith('.')) newDisplayPrice = `0${input}`;
 
         if (newDisplayPrice !== previousDisplayPrice) {
             await handleLimitChange(newDisplayPrice);
