@@ -29,11 +29,11 @@ const RangeSlider: React.FC<CustomInputProps> = ({
 }) => {
     const [isGrabbing, setIsGrabbing] = useState(false);
 
-    const handleClick: MouseEventHandler<HTMLInputElement> = (e) => {
+    const handleClick: MouseEventHandler<HTMLInputElement> = () => {
         setIsGrabbing(true);
     };
 
-    const handleMouseUp: MouseEventHandler<HTMLInputElement> = (e) => {
+    const handleMouseUp: MouseEventHandler<HTMLInputElement> = () => {
         setIsGrabbing(false);
     };
 
@@ -48,7 +48,11 @@ const RangeSlider: React.FC<CustomInputProps> = ({
             step={step}
             defaultValue={defaultValue}
             type='range'
-            className={`${styles.range_slider} ${className} ${isGrabbing ? styles.range_slider_grabbing : styles.range_slider_grab}`}
+            className={`${styles.range_slider} ${className} ${
+                isGrabbing
+                    ? styles.range_slider_grabbing
+                    : styles.range_slider_grab
+            }`}
             onChange={onChange}
             onMouseDown={handleClick}
             onMouseUp={handleMouseUp}
