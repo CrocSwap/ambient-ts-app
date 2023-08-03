@@ -48,8 +48,6 @@
     background: var(--accent1);
 }
 .dropdown_menu {
-    width: 100%;
-
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
