@@ -18,7 +18,7 @@
     width: 20px;
     height: 36px;
     margin-top: -14px;
-    cursor: grabbing;
+    cursor: grab;
     border: 1px solid var(--accent5);
     box-sizing: border-box;
     box-shadow: var(--dark-box-shadow);
@@ -26,12 +26,29 @@
     -webkit-appearance: none;
 }
 
+.range_slider_grab::-webkit-slider-thumb {
+    cursor: grab;
+}
+
+/* All the same stuff for Firefox */
+.range_slider_grab::-moz-range-thumb {
+    cursor: grab;
+}
+
+.range_slider_grabbing::-webkit-slider-thumb {
+    cursor: grabbing;
+}
+
+/* All the same stuff for Firefox */
+.range_slider_grabbing::-moz-range-thumb {
+    cursor: grabbing;
+}
+
 /* All the same stuff for Firefox */
 .range_slider::-moz-range-thumb {
     background: var(--dark2);
     width: 18px;
     height: 36px;
-    cursor: grab;
     border: 1px solid var(--accent5);
     border-radius: 10px;
     box-shadow: var(--dark-box-shadow);
