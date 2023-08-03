@@ -1,7 +1,5 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import moment from 'moment';
-
 import {
     useCallback,
     useContext,
@@ -31,12 +29,10 @@ import {
     getPinnedTickFromDisplayPrice,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { correctStyleForData, xAxisTick } from './calcuteAxisDate';
 import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
 import {
-    diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
 } from '../../utils/functions/diffHashSig';
@@ -69,9 +65,9 @@ import {
     renderSubchartCrCanvas,
     scaleData,
     setCanvasResolution,
-    zoomUtils,
 } from './ChartUtils/chartUtils';
 import { Zoom } from './ChartUtils/zoom';
+import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -197,8 +193,6 @@ export default function Chart(props: propsIF) {
     const d3CanvasCrosshair = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMarketLine = useRef<HTMLCanvasElement | null>(null);
     const d3CanvasMain = useRef<HTMLDivElement | null>(null);
-
-    const d3Xaxis = useRef<HTMLInputElement | null>(null);
     const d3CanvasCrIndicator = useRef<HTMLInputElement | null>(null);
 
     const dispatch = useAppDispatch();
@@ -342,21 +336,16 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
 
-    // Axis
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [xAxis, setXaxis] = useState<any>();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [marketLine, setMarketLine] = useState<any>();
 
     // NoGoZone
     const [noGoZoneBoudnaries, setNoGoZoneBoudnaries] = useState([[0, 0]]);
 
-    // Utils
-    const utcDiff = moment().utcOffset();
-    const utcDiffHours = Math.floor(utcDiff / 60);
     const defaultCandleBandwith = 5;
 
-    const [zoomUtils, setZoomUtils] = useState<zoomUtils>();
+    const [mainZoom, setMainZoom] =
+        useState<d3.ZoomBehavior<Element, unknown>>();
 
     // Drag
     const initialDragState: d3.DragBehavior<
@@ -640,9 +629,6 @@ export default function Chart(props: propsIF) {
             });
         }
     }, [diffHashSigScaleData(scaleData, 'x'), lastCandleData]);
-
-    const maxNumCandlesForZoom = 2000;
-
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined && unparsedCandleData !== undefined) {
@@ -937,107 +923,7 @@ export default function Chart(props: propsIF) {
                         }
                     });
 
-                const xAxisZoom = d3
-                    .zoom()
-                    .on('zoom', async (event) => {
-                        if (event.sourceEvent.type === 'wheel') {
-                            zoomBase.zoomWithWheel(
-                                event,
-                                scaleData,
-                                firstCandleDate,
-                                lastCandleDate,
-                            );
-                        } else if (
-                            event.sourceEvent.type === 'touchmove' &&
-                            event.sourceEvent.touches.length > 1 &&
-                            previousDeltaTouch
-                        ) {
-                            const domainX = scaleData?.xScale.domain();
-                            const linearX = d3
-                                .scaleTime()
-                                .domain(scaleData?.xScale.range())
-                                .range([0, domainX[1] - domainX[0]]);
-
-                            // mobile
-                            const touch1 = event.sourceEvent.touches[0];
-                            const touch2 = event.sourceEvent.touches[1];
-
-                            const deltaTouch = Math.hypot(
-                                touch1.pageX - touch2.pageX,
-                                touch1.pageY - touch2.pageY,
-                            );
-
-                            let movement = Math.abs(
-                                touch1.pageX - touch2.pageX,
-                            );
-
-                            if (previousDeltaTouch > deltaTouch) {
-                                // zoom out
-                                movement = movement / 10;
-                            }
-                            if (previousDeltaTouch < deltaTouch) {
-                                // zoom in
-                                movement = -movement / 10;
-                            }
-                            const deltaX = linearX(movement);
-
-                            zoomBase.changeCandleSize(
-                                domainX,
-                                deltaX,
-                                scaleData?.xScale(touch1.clientX),
-                            );
-                        } else {
-                            const domainX = scaleData?.xScale.domain();
-
-                            const linearX = d3
-                                .scaleTime()
-                                .domain(scaleData?.xScale.range())
-                                .range([0, domainX[1] - domainX[0]]);
-
-                            const deltaX = linearX(
-                                -event.sourceEvent.movementX,
-                            );
-
-                            if (deltaX !== undefined) {
-                                zoomBase.getNewCandleDataLeft(
-                                    domainX[0] + deltaX,
-                                    firstCandleDate,
-                                );
-
-                                if (
-                                    (deltaX > 0 ||
-                                        Math.abs(domainX[1] - domainX[0]) <=
-                                            period *
-                                                1000 *
-                                                maxNumCandlesForZoom) &&
-                                    (deltaX < 0 ||
-                                        !(
-                                            unparsedCandleData.length <= 2 &&
-                                            unparsedCandleData[0].time *
-                                                1000 !==
-                                                lastCandleDate
-                                        ))
-                                ) {
-                                    scaleData?.xScale.domain([
-                                        domainX[0] + deltaX,
-                                        domainX[1],
-                                    ]);
-                                }
-                            }
-                        }
-                        changeScale();
-                        render();
-                    })
-                    .on('end', () => {
-                        showLatestActive();
-                    });
-
-                setZoomUtils(() => {
-                    return {
-                        zoom: zoom,
-                        xAxisZoom: xAxisZoom,
-                    };
-                });
+                setMainZoom(() => zoom);
             }
         }
     }, [
@@ -1907,67 +1793,8 @@ export default function Chart(props: propsIF) {
     }, [reset]);
 
     useEffect(() => {
-        if (scaleData) {
-            const _xAxis = d3fc.axisBottom().scale(scaleData?.xScale);
-
-            setXaxis(() => {
-                return _xAxis;
-            });
-        }
-    }, [scaleData, location]);
-
-    // Axis's
-    useEffect(() => {
-        if (scaleData) {
-            const canvas = d3
-                .select(d3Xaxis.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
-            const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-            d3.select(d3Xaxis.current).on('draw', function () {
-                if (xAxis && scaleData) {
-                    setCanvasResolution(canvas);
-                    drawXaxis(context, scaleData?.xScale, 3);
-                }
-            });
-
-            renderCanvasArray([d3Xaxis]);
-        }
-    }, [
-        timeOfEndCandle,
-        diffHashSigScaleData(scaleData, 'x'),
-        market,
-        diffHashSig(crosshairData),
-        limit,
-        isLineDrag,
-        ranges,
-        simpleRangeWidth !== 100 || tradeData.advancedMode,
-        bandwidth,
-        reset,
-        sellOrderStyle,
-        checkLimitOrder,
-        location,
-        crosshairActive,
-        liquidityData?.liqTransitionPointforCurve,
-        liquidityData?.liqTransitionPointforDepth,
-    ]);
-
-    useEffect(() => {
-        if (
-            xAxis &&
-            zoomUtils &&
-            zoomUtils?.zoom &&
-            zoomUtils?.xAxisZoom &&
-            d3CanvasMain.current
-        ) {
-            d3.select<Element, unknown>(d3CanvasMain.current).call(
-                zoomUtils?.zoom,
-            );
-            if (d3Xaxis.current)
-                d3.select<Element, unknown>(d3Xaxis.current).call(
-                    zoomUtils?.xAxisZoom,
-                );
+        if (mainZoom && d3CanvasMain.current) {
+            d3.select<Element, unknown>(d3CanvasMain.current).call(mainZoom);
             if (location.pathname.includes('market')) {
                 d3.select(d3CanvasMain.current).on('.drag', null);
             }
@@ -1992,222 +1819,12 @@ export default function Chart(props: propsIF) {
         }
     }, [
         location.pathname,
-        zoomUtils,
+        mainZoom,
         dragLimit,
         dragRange,
         // d3.select('#range-line-canvas')?.node(),
         // d3.select('#limit-line-canvas')?.node(),
     ]);
-
-    const drawXaxis = (
-        context: CanvasRenderingContext2D,
-        xScale: d3.ScaleLinear<number, number>,
-        Y: number,
-    ) => {
-        if (scaleData) {
-            const _width = 65; // magic number of pixels to blur surrounding price
-            const tickSize = 6;
-
-            const timeOfEndCandleLocation = timeOfEndCandle
-                ? xScale(timeOfEndCandle)
-                : undefined;
-            const firstCrDateLocation = lastCrDate
-                ? xScale(lastCrDate)
-                : undefined;
-            scaleData.xScaleTime.domain(xScale.domain());
-
-            const data = correctStyleForData(
-                scaleData?.xScale.domain()[0],
-                scaleData?.xScale.domain()[1],
-                scaleData?.xScaleTime.ticks(),
-            );
-
-            const filteredData = data.reduce(
-                (acc: xAxisTick[], d: xAxisTick) => {
-                    const sameTime = acc.find((d1: xAxisTick) => {
-                        return d1.date.getTime() === d.date.getTime();
-                    });
-                    if (!sameTime) {
-                        acc.push(d);
-                    }
-                    return acc;
-                },
-                [],
-            );
-
-            filteredData.forEach((d: xAxisTick) => {
-                if (d.date instanceof Date) {
-                    let formatValue = undefined;
-                    context.textAlign = 'center';
-                    context.textBaseline = 'top';
-                    context.fillStyle = 'rgba(189,189,189,0.8)';
-                    context.font = '50 11.425px Lexend Deca';
-                    context.filter = ' blur(0px)';
-
-                    if (
-                        moment(d.date).format('HH:mm') === '00:00' ||
-                        period === 86400
-                    ) {
-                        formatValue = moment(d.date).format('DD');
-                    } else {
-                        formatValue = moment(d.date).format('HH:mm');
-                    }
-
-                    if (
-                        moment(d.date)
-                            .format('DD')
-                            .match(/^(01)$/) &&
-                        moment(d.date).format('HH:mm') === '00:00'
-                    ) {
-                        formatValue =
-                            moment(d.date).format('MMM') === 'Jan'
-                                ? moment(d.date).format('YYYY')
-                                : moment(d.date).format('MMM');
-                    }
-
-                    if (
-                        crosshairActive !== 'none' &&
-                        xScale(d.date) > xScale(crosshairData[0].x) - _width &&
-                        xScale(d.date) < xScale(crosshairData[0].x) + _width &&
-                        d.date !== crosshairData[0].x
-                    ) {
-                        context.filter = ' blur(7px)';
-                    }
-
-                    if (d.style) {
-                        context.font = '900 12px Lexend Deca';
-                    }
-
-                    context.beginPath();
-
-                    if (
-                        d.date.getTime() !== lastCrDate &&
-                        !(
-                            (firstCrDateLocation &&
-                                xScale(d.date) >
-                                    firstCrDateLocation - _width / 2 &&
-                                xScale(d.date) <
-                                    firstCrDateLocation + _width / 2) ||
-                            (timeOfEndCandleLocation &&
-                                xScale(d.date) >
-                                    timeOfEndCandleLocation - _width / 2 &&
-                                xScale(d.date) <
-                                    timeOfEndCandleLocation + _width / 2)
-                        )
-                    ) {
-                        if (formatValue) {
-                            const indexValue = filteredData.findIndex(
-                                (d1: xAxisTick) => d1.date === d.date,
-                            );
-                            if (!d.style) {
-                                const maxIndex =
-                                    indexValue === filteredData.length - 1
-                                        ? indexValue
-                                        : indexValue + 1;
-                                const minIndex =
-                                    indexValue === 0
-                                        ? indexValue
-                                        : indexValue - 1;
-                                const lastData = filteredData[maxIndex];
-                                const beforeData = filteredData[minIndex];
-
-                                if (
-                                    beforeData.style ||
-                                    (lastData.style && xScale(d.date.getTime()))
-                                ) {
-                                    if (
-                                        Math.abs(
-                                            xScale(beforeData.date.getTime()) -
-                                                xScale(d.date.getTime()),
-                                        ) > _width &&
-                                        Math.abs(
-                                            xScale(lastData.date.getTime()) -
-                                                xScale(d.date.getTime()),
-                                        ) > _width
-                                    ) {
-                                        context.fillText(
-                                            formatValue,
-                                            xScale(d.date.getTime()),
-                                            Y + tickSize,
-                                        );
-                                    }
-                                } else {
-                                    context.fillText(
-                                        formatValue,
-                                        xScale(d.date.getTime()),
-                                        Y + tickSize,
-                                    );
-                                }
-                            } else {
-                                context.fillText(
-                                    formatValue,
-                                    xScale(d.date.getTime()),
-                                    Y + tickSize,
-                                );
-                            }
-                        }
-                    }
-                    context.restore();
-                }
-            });
-
-            let dateCrosshair;
-            context.filter = ' blur(0px)';
-
-            context.font = '800 13px Lexend Deca';
-            if (period === 86400) {
-                dateCrosshair = moment(crosshairData[0].x)
-                    .subtract(utcDiffHours, 'hours')
-                    .format('MMM DD YYYY');
-            } else {
-                dateCrosshair = moment(crosshairData[0].x).format(
-                    'MMM DD HH:mm',
-                );
-            }
-
-            context.beginPath();
-
-            if (dateCrosshair && crosshairActive !== 'none') {
-                context.fillText(
-                    dateCrosshair,
-                    xScale(crosshairData[0].x),
-                    Y + tickSize,
-                );
-            }
-
-            if (
-                firstCrDateLocation &&
-                xScale(crosshairData[0].x) >
-                    firstCrDateLocation - (_width - 15) &&
-                xScale(crosshairData[0].x) <
-                    firstCrDateLocation + (_width - 15) &&
-                crosshairActive !== 'none'
-            ) {
-                context.filter = ' blur(7px)';
-            }
-
-            if (firstCrDateLocation) {
-                context.fillText('🐊', firstCrDateLocation, Y + tickSize);
-            }
-
-            if (timeOfEndCandle && timeOfEndCandleLocation) {
-                context.filter = ' blur(0px)';
-
-                if (
-                    xScale(crosshairData[0].x) >
-                        timeOfEndCandleLocation - (_width - 15) &&
-                    xScale(crosshairData[0].x) <
-                        timeOfEndCandleLocation + (_width - 15) &&
-                    crosshairActive !== 'none'
-                ) {
-                    context.filter = ' blur(7px)';
-                }
-                context.fillText('🥚', timeOfEndCandleLocation, Y + tickSize);
-            }
-
-            context.restore();
-        }
-    };
 
     // Horizontal Lines
     useEffect(() => {
@@ -2911,9 +2528,9 @@ export default function Chart(props: propsIF) {
             },
         );
 
-        d3.select(d3Xaxis.current).on('mouseleave', () => {
-            mouseLeaveCanvas();
-        });
+        // d3.select(d3Xaxis.current).on('mouseleave', () => {
+        //     mouseLeaveCanvas();
+        // });
     }, []);
 
     // Call drawChart()
@@ -2969,45 +2586,45 @@ export default function Chart(props: propsIF) {
                 },
             );
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            d3.select(d3Xaxis.current).on('mousemove', (event: any) => {
-                d3.select(event.currentTarget).style('cursor', 'col-resize');
+            // d3.select(d3Xaxis.current).on('mousemove', (event: any) => {
+            //     d3.select(event.currentTarget).style('cursor', 'col-resize');
 
-                const isEgg =
-                    timeOfEndCandle &&
-                    event.layerX > scaleData?.xScale(timeOfEndCandle) - 15 &&
-                    event.layerX < scaleData?.xScale(timeOfEndCandle) + 15;
+            //     const isEgg =
+            //         timeOfEndCandle &&
+            //         event.layerX > scaleData?.xScale(timeOfEndCandle) - 15 &&
+            //         event.layerX < scaleData?.xScale(timeOfEndCandle) + 15;
 
-                const isCroc =
-                    lastCrDate &&
-                    event.layerX > scaleData?.xScale(lastCrDate) - 15 &&
-                    event.layerX < scaleData?.xScale(lastCrDate) + 15;
+            //     const isCroc =
+            //         lastCrDate &&
+            //         event.layerX > scaleData?.xScale(lastCrDate) - 15 &&
+            //         event.layerX < scaleData?.xScale(lastCrDate) + 15;
 
-                if (isEgg || isCroc) {
-                    d3.select(event.currentTarget).style('cursor', 'default');
+            //     if (isEgg || isCroc) {
+            //         d3.select(event.currentTarget).style('cursor', 'default');
 
-                    setXaxisActiveTooltip(isCroc ? 'croc' : 'egg');
-                } else {
-                    setXaxisActiveTooltip('');
-                }
+            //         setXaxisActiveTooltip(isCroc ? 'croc' : 'egg');
+            //     } else {
+            //         setXaxisActiveTooltip('');
+            //     }
 
-                setCrosshairActive('none');
-            });
+            //     setCrosshairActive('none');
+            // });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            d3.select(d3Xaxis.current).on('click', (event: any) => {
-                const isCroc =
-                    lastCrDate &&
-                    event.layerX > scaleData?.xScale(lastCrDate) - 15 &&
-                    event.layerX < scaleData?.xScale(lastCrDate) + 15;
+            // d3.select(d3Xaxis.current).on('click', (event: any) => {
+            //     const isCroc =
+            //         lastCrDate &&
+            //         event.layerX > scaleData?.xScale(lastCrDate) - 15 &&
+            //         event.layerX < scaleData?.xScale(lastCrDate) + 15;
 
-                if (isCroc) {
-                    if (!isCrDataIndActive) {
-                        setIsCrDataIndActive(true);
-                    } else {
-                        setIsCrDataIndActive(false);
-                    }
-                }
-            });
+            //     if (isCroc) {
+            //         if (!isCrDataIndActive) {
+            //             setIsCrDataIndActive(true);
+            //         } else {
+            //             setIsCrDataIndActive(false);
+            //         }
+            //     }
+            // });
 
             render();
 
@@ -3392,7 +3009,7 @@ export default function Chart(props: propsIF) {
             );
 
             if (lastCrDate) {
-                relocateTooltip(xAxisTooltip, lastCrDate);
+                // relocateTooltip(xAxisTooltip, lastCrDate);
             }
         }
     }, [
@@ -3404,35 +3021,35 @@ export default function Chart(props: propsIF) {
         latest,
     ]);
 
-    useEffect(() => {
-        if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
-            xAxisTooltip.html('<p> 🥚 Beginning of Historical Data </p>');
+    // useEffect(() => {
+    //     if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
+    //         xAxisTooltip.html('<p> 🥚 Beginning of Historical Data </p>');
 
-            xAxisTooltip.style(
-                'visibility',
-                xAxisActiveTooltip === 'egg' ? 'visible' : 'hidden',
-            );
+    //         xAxisTooltip.style(
+    //             'visibility',
+    //             xAxisActiveTooltip === 'egg' ? 'visible' : 'hidden',
+    //         );
 
-            if (timeOfEndCandle) {
-                relocateTooltip(xAxisTooltip, timeOfEndCandle);
-            }
-        }
-    }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle, reset, latest]);
+    //         if (timeOfEndCandle) {
+    //             relocateTooltip(xAxisTooltip, timeOfEndCandle);
+    //         }
+    //     }
+    // }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle, reset, latest]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const relocateTooltip = (tooltip: any, data: number) => {
-        if (tooltip && scaleData) {
-            const width = tooltip.style('width').split('p')[0] / 2;
-            const xAxisCanvas = d3
-                .select(d3Xaxis.current)
-                .node() as HTMLDivElement;
+    // const relocateTooltip = (tooltip: any, data: number) => {
+    //     if (tooltip && scaleData) {
+    //         const width = tooltip.style('width').split('p')[0] / 2;
+    //         const xAxisCanvas = d3
+    //             .select(d3Xaxis.current)
+    //             .node() as HTMLDivElement;
 
-            const rectXaxis = xAxisCanvas.getBoundingClientRect();
-            tooltip
-                .style('bottom', rectXaxis.height + 15 + 'px')
-                .style('left', scaleData.xScale(data) - width + 'px');
-        }
-    };
+    //         const rectXaxis = xAxisCanvas.getBoundingClientRect();
+    //         tooltip
+    //             .style('bottom', rectXaxis.height + 15 + 'px')
+    //             .style('left', scaleData.xScale(data) - width + 'px');
+    //     }
+    // };
     useEffect(() => {
         if (scaleData && scaleData?.xScale) {
             const xmin = scaleData?.xScale.domain()[0];
@@ -3758,16 +3375,28 @@ export default function Chart(props: propsIF) {
 
                     <div className='xAxis'>
                         <hr />
-                        <d3fc-canvas
-                            ref={d3Xaxis}
-                            className='x-axis'
-                            style={{
-                                height: '2em',
-                                width: '100%',
-                                gridColumn: 3,
-                                gridRow: 4,
-                            }}
-                        ></d3fc-canvas>
+
+                        <XAxisCanvas
+                            changeScale={changeScale}
+                            crosshairActive={crosshairActive}
+                            crosshairData={crosshairData}
+                            firstCandleData={firstCandleData}
+                            isCrDataIndActive={isCrDataIndActive}
+                            isLineDrag={isLineDrag}
+                            lastCandleData={lastCandleData}
+                            lastCrDate={lastCrDate}
+                            mouseLeaveCanvas={mouseLeaveCanvas}
+                            period={period}
+                            render={render}
+                            scaleData={scaleData}
+                            reset={reset}
+                            setCrosshairActive={setCrosshairActive}
+                            setIsCrDataIndActive={setIsCrDataIndActive}
+                            setXaxisActiveTooltip={setXaxisActiveTooltip}
+                            showLatestActive={showLatestActive}
+                            unparsedCandleData={unparsedCandleData}
+                            xAxisActiveTooltip={xAxisActiveTooltip}
+                        />
                     </div>
                 </div>
             </d3fc-group>

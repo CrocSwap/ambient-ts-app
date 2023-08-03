@@ -17,6 +17,7 @@ import { CandleContext } from '../../../../contexts/CandleContext';
 import { correctStyleForData, xAxisTick } from '../../calcuteAxisDate';
 import moment from 'moment';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { Zoom } from '../../ChartUtils/zoom';
 
 interface xAxisIF {
     scaleData: scaleData | undefined;
@@ -34,6 +35,14 @@ interface xAxisIF {
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
     setIsCrDataIndActive: React.Dispatch<React.SetStateAction<boolean>>;
     unparsedCandleData: CandleData[];
+    firstCandleData: CandleData;
+    lastCandleData: CandleData;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    changeScale: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    showLatestActive: any;
 }
 
 export default function XAxisCanvas(props: xAxisIF) {
@@ -52,12 +61,21 @@ export default function XAxisCanvas(props: xAxisIF) {
         xAxisActiveTooltip,
         setXaxisActiveTooltip,
         unparsedCandleData,
+        firstCandleData,
+        lastCandleData,
+        changeScale,
+        render,
+        showLatestActive,
     } = props;
 
     const d3Xaxis = useRef<HTMLInputElement | null>(null);
     const { timeOfEndCandle } = useContext(CandleContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [xAxis, setXaxis] = useState<any>();
+    const [xAxisZoom, setXaxisZoom] =
+        useState<d3.ZoomBehavior<Element, unknown>>();
+    const { setCandleDomains } = useContext(CandleContext);
+    const zoomBase = new Zoom(setCandleDomains, period);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -341,6 +359,7 @@ export default function XAxisCanvas(props: xAxisIF) {
         reset,
         location,
         crosshairActive,
+        xAxis,
     ]);
 
     useEffect(() => {
@@ -350,13 +369,15 @@ export default function XAxisCanvas(props: xAxisIF) {
             if (scaleData) {
                 const isEgg =
                     timeOfEndCandle &&
-                    event.clientX > scaleData?.xScale(timeOfEndCandle) - 15 &&
-                    event.clientX < scaleData?.xScale(timeOfEndCandle) + 15;
+                    event.offsetX > scaleData?.xScale(timeOfEndCandle) - 15 &&
+                    event.offsetX < scaleData?.xScale(timeOfEndCandle) + 15;
 
                 const isCroc =
                     lastCrDate &&
                     event.clientX > scaleData?.xScale(lastCrDate) - 15 &&
                     event.clientX < scaleData?.xScale(lastCrDate) + 15;
+
+                console.log(isCroc, lastCrDate);
 
                 if (isEgg || isCroc) {
                     d3.select(d3Xaxis.current).style('cursor', 'default');
@@ -369,7 +390,7 @@ export default function XAxisCanvas(props: xAxisIF) {
                 setCrosshairActive('none');
             }
         });
-    }, [location.pathname, tradeData.advancedMode]);
+    }, [lastCrDate, timeOfEndCandle]);
 
     // mouseleave
     useEffect(() => {
@@ -377,6 +398,119 @@ export default function XAxisCanvas(props: xAxisIF) {
             mouseLeaveCanvas();
         });
     }, []);
+
+    useEffect(() => {
+        const lastCandleDate = lastCandleData?.time * 1000;
+        const firstCandleDate = firstCandleData?.time * 1000;
+        const xAxisZoom = d3
+            .zoom()
+            .on('zoom', async (event) => {
+                if (scaleData) {
+                    if (event.sourceEvent.type === 'wheel') {
+                        zoomBase.zoomWithWheel(
+                            event,
+                            scaleData,
+                            firstCandleDate,
+                            lastCandleDate,
+                        );
+                    }
+
+                    // else if (
+                    //     event.sourceEvent.type === 'touchmove' &&
+                    //     event.sourceEvent.touches.length > 1 &&
+                    //     previousDeltaTouch
+                    // ) {
+                    //     const domainX = scaleData?.xScale.domain();
+                    //     const linearX = d3
+                    //         .scaleTime()
+                    //         .domain(scaleData?.xScale.range())
+                    //         .range([0, domainX[1] - domainX[0]]);
+
+                    //     // mobile
+                    //     const touch1 = event.sourceEvent.touches[0];
+                    //     const touch2 = event.sourceEvent.touches[1];
+
+                    //     const deltaTouch = Math.hypot(
+                    //         touch1.pageX - touch2.pageX,
+                    //         touch1.pageY - touch2.pageY,
+                    //     );
+
+                    //     let movement = Math.abs(
+                    //         touch1.pageX - touch2.pageX,
+                    //     );
+
+                    //     if (previousDeltaTouch > deltaTouch) {
+                    //         // zoom out
+                    //         movement = movement / 10;
+                    //     }
+                    //     if (previousDeltaTouch < deltaTouch) {
+                    //         // zoom in
+                    //         movement = -movement / 10;
+                    //     }
+                    //     const deltaX = linearX(movement);
+
+                    //     zoomBase.changeCandleSize(
+                    //         domainX,
+                    //         deltaX,
+                    //         scaleData?.xScale(touch1.clientX),
+                    //     );
+                    // }
+                    else {
+                        const domainX = scaleData?.xScale.domain();
+
+                        const linearX = d3
+                            .scaleTime()
+                            .domain(scaleData?.xScale.range())
+                            .range([0, domainX[1] - domainX[0]]);
+
+                        const deltaX = linearX(-event.sourceEvent.movementX);
+
+                        if (deltaX !== undefined) {
+                            zoomBase.getNewCandleDataLeft(
+                                domainX[0] + deltaX,
+                                firstCandleDate,
+                            );
+
+                            if (
+                                (deltaX > 0 ||
+                                    Math.abs(domainX[1] - domainX[0]) <=
+                                        period * 1000 * 2000) &&
+                                (deltaX < 0 ||
+                                    !(
+                                        unparsedCandleData.length <= 2 &&
+                                        unparsedCandleData[0].time * 1000 !==
+                                            lastCandleDate
+                                    ))
+                            ) {
+                                scaleData?.xScale.domain([
+                                    domainX[0] + deltaX,
+                                    domainX[1],
+                                ]);
+                            }
+                        }
+                    }
+                    changeScale();
+                    render();
+                }
+            })
+            .on('end', () => {
+                showLatestActive();
+            });
+
+        setXaxisZoom(() => {
+            return xAxisZoom;
+        });
+    }, [scaleData, firstCandleData, lastCandleData]);
+
+    useEffect(() => {
+        if (xAxis && xAxisZoom && d3Xaxis.current) {
+            d3.select<Element, unknown>(d3Xaxis.current)
+                .call(xAxisZoom)
+                .on('dblclick.zoom', null);
+
+            renderCanvasArray([d3Xaxis]);
+        }
+    }, [xAxisZoom]);
 
     return (
         <d3fc-canvas
