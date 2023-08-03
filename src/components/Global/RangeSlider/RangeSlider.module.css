@@ -4,7 +4,7 @@
     border-radius: 10px;
     outline: none;
     box-shadow: var(--dark-box-shadow);
-    background: var(--accent1); /* Otherwise white in Chrome */
+    background: var(--dark1); /* Otherwise white in Chrome */
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
 }
 
@@ -18,7 +18,7 @@
     width: 20px;
     height: 36px;
     margin-top: -14px;
-    cursor: grab;
+    cursor: grabbing;
     border: 1px solid var(--accent5);
     box-sizing: border-box;
     box-shadow: var(--dark-box-shadow);
