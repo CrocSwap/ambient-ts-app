@@ -93,19 +93,17 @@
     height: 60px;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+  gap: 8px;
     align-items: center;
-    padding: 14px;
+
+
+   
 }
 
-.logo {
-    height: 100%;
-    margin-left: 18px;
-}
 
-.logo_text {
-    height: 80%;
-    margin-left: 10px;
+
+.logo_text{
+    width: 30%;
 }
 
 .logo_container:focus-visible img {
@@ -123,13 +121,12 @@
 .account {
     display: flex;
     align-items: center;
-    padding: 0 1rem;
     gap: 8px;
   
 }
 .authenticate_button {
     cursor: pointer;
-    background: var(--title-gradient);
+    background: var(--accent1);
     border: none;
     outline: none;
     color: var(--dark2);
@@ -203,6 +200,7 @@
 @media only screen and (min-width: 400px) {
     .primary_header {
         justify-content: space-between;
+        padding: 0 1rem;
 
        
     }

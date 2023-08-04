@@ -6,7 +6,7 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/ambient_logo.png';
-import logoText from '../../../assets/images/logos/logo_text.png';
+import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import {
     useAppDispatch,
@@ -382,22 +382,19 @@ const PageHeader = function () {
                 location.pathname === '/' && styles.fixed
             }`}
         >
-            <div className={styles.logo_container}>
-                <Link
-                    to='/'
-                    className={styles.logo_container}
-                    aria-label='Home'
-                >
-                    <img src={logo} alt='ambient' className={styles.logo} />
-                    {desktopScreen && (
-                        <img
-                            src={logoText}
-                            alt='ambient'
-                            className={styles.logo_text}
-                        />
-                    )}
-                </Link>
-            </div>
+            <Link to='/' className={styles.logo_container} aria-label='Home'>
+                {desktopScreen ? (
+                    <img src={mainLogo} alt='' />
+                ) : (
+                    <img
+                        src={logo}
+                        alt='ambient'
+                        className={styles.logo}
+                        style={{ maxWidth: '70%', maxHeight: '70%' }}
+                    />
+                )}
+            </Link>
+
             {routeDisplay}
             <div className={styles.right_side}>
                 {show ? (

@@ -235,10 +235,14 @@ function Trade() {
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
+    const [isChartLoading, setIsChartLoading] = useState<boolean>(true);
+
     const tradeChartsProps = {
         changeState: changeState,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
+        isChartLoading,
+        setIsChartLoading,
     };
 
     const tradeTabsProps = {
@@ -373,7 +377,9 @@ function Trade() {
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                 <div className={styles.resizableParent}>
-                    {!isPoolInitialized && poolNotInitContent}
+                    {!isPoolInitialized &&
+                        !isChartLoading &&
+                        poolNotInitContent}
                     {isPoolInitialized && (
                         <Resizable
                             className={styles.chartBox}

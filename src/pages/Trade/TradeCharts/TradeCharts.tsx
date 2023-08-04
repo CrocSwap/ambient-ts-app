@@ -33,6 +33,8 @@ interface propsIF {
     ) => void;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
+    setIsChartLoading: Dispatch<React.SetStateAction<boolean>>;
+    isChartLoading: boolean;
 }
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -240,6 +242,8 @@ function TradeCharts(props: propsIF) {
                     showLatest={showLatest}
                     setShowLatest={setShowLatest}
                     setShowTooltip={setShowTooltip}
+                    isLoading={props.isChartLoading}
+                    setIsLoading={props.setIsChartLoading}
                 />
             </div>
             <TutorialOverlay
