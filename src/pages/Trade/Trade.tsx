@@ -33,6 +33,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { PoolNotInitalized } from '../../components/PoolNotInitialized/PoolNotInitialized';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
+import { PoolContext } from '../../contexts/PoolContext';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -49,8 +50,8 @@ function Trade() {
         chartHeights,
         setChartHeight,
     } = useContext(ChartContext);
-    // const { isPoolInitialized } = useContext(PoolContext);
-    const isPoolInitialized = false;
+
+    const { isPoolInitialized } = useContext(PoolContext);
 
     const { tokens } = useContext(TokenContext);
     const {
