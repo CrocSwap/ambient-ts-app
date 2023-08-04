@@ -86,7 +86,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const handleEmojiPickerHideShow = () => {
-        if (!isUserLoggedIn) {
+        if (!isUserLoggedIn || props.room === 'Admins') {
             setShowEmojiPicker(false);
         } else {
             setShowEmojiPicker(!showEmojiPicker);
@@ -98,10 +98,12 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     function messageInputText() {
-        if (isConnected && address) {
+        if (isConnected && address && props.room !== 'Admins') {
             return 'Type to chat. Enter to submit.';
         } else {
-            return 'Please log in to chat.';
+            if (props.room === 'Admins') {
+                return 'You can read all messages';
+            } else return 'Please log in to chat.';
         }
     }
 
@@ -110,6 +112,9 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     const handleSendMessageButton = () => {
+        if (message === '') {
+            return;
+        }
         if (
             (props.isLink(message) || props.filterMessage(message)) &&
             !props.isLinkInCrocodileLabsLinksForInput(message)
@@ -218,6 +223,8 @@ export default function MessageInput(props: MessageInputProps) {
                     : undefined,
             );
         }
+        props.setIsReplyButtonPressed(false);
+        props.setReplyMessageContent(undefined);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -246,7 +253,9 @@ export default function MessageInput(props: MessageInputProps) {
     return (
         <div
             className={
-                !isConnected ? styles.input_box_not_allowed : styles.input_box
+                !isConnected || props.room === 'Admins'
+                    ? styles.input_box_not_allowed
+                    : styles.input_box
             }
         >
             <PositionBox
@@ -272,16 +281,18 @@ export default function MessageInput(props: MessageInputProps) {
             </div>
             <div
                 className={
-                    !isConnected ? styles.input_not_allowed : styles.input
+                    !isConnected || props.room === 'Admins'
+                        ? styles.input_not_allowed
+                        : styles.input
                 }
             >
                 <input
                     type='text'
                     id='box'
                     placeholder={messageInputText()}
-                    disabled={!isConnected}
+                    disabled={!isConnected || props.room === 'Admins'}
                     className={
-                        !isConnected
+                        !isConnected || props.room === 'Admins'
                             ? styles.input_text_not_allowed
                             : styles.input_text
                     }
@@ -296,7 +307,7 @@ export default function MessageInput(props: MessageInputProps) {
 
                 <BsEmojiSmile
                     className={
-                        isUserLoggedIn
+                        isUserLoggedIn || props.room !== 'Admins'
                             ? styles.svgButton
                             : styles.not_LoggedIn_svgButton
                     }
@@ -305,7 +316,7 @@ export default function MessageInput(props: MessageInputProps) {
                 {}
                 <div
                     className={
-                        isUserLoggedIn
+                        isUserLoggedIn || props.room !== 'Admins'
                             ? styles.send_message_button
                             : styles.not_LoggedIn_send_message_button
                     }
@@ -325,7 +336,7 @@ export default function MessageInput(props: MessageInputProps) {
                             strokeLinecap='round'
                             strokeLinejoin='round'
                             className={
-                                isUserLoggedIn
+                                isUserLoggedIn || props.room !== 'Admins'
                                     ? styles.svgButton
                                     : styles.not_LoggedIn_svgButton
                             }

@@ -16,6 +16,26 @@
     top: 0rem;
     right: 1rem;
 }
+
+.dropdown_item_column {
+    background: var(--dark3);
+    border-radius: 4px;
+    padding-left: 4px;
+    padding-top: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    grid-gap: 4px;
+    gap: 4px;
+    transition: all 0.2s;
+    color: rgba(235, 235, 255, 0.4);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    position: absolute;
+    top: 0rem;
+    right: 1rem;
+    flex-direction: column;
+}
 .id_tooltip_style {
     margin-left: -100px;
     background: var(--dark3);

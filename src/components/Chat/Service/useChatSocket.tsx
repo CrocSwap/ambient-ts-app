@@ -25,7 +25,20 @@ const useChatSocket = (
     async function getMsgWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const url = `${CHAT_BACKEND_URL}/chat/api/messages/getMsgWithoutWebSocket/${encodedRoomInfo}`;
-        console.log('url: ', url);
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        setMessages(data.reverse());
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
+        return data.reverse();
+    }
+
+    async function getAllMessages(p?: number) {
+        const queryParams = 'p=' + p;
+        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getall/?${queryParams}`;
         const response = await fetch(url, {
             method: 'GET',
         });
@@ -78,8 +91,10 @@ const useChatSocket = (
         }
 
         async function getRest() {
-            const data = await getMsgWithRest(room);
-
+            const data =
+                room === 'Admins'
+                    ? await getAllMessages()
+                    : await getMsgWithRest(room);
             setMessages(data.reverse());
             if (data.length > 0) {
                 setLastMessage(data[data.length - 1]);
@@ -154,6 +169,7 @@ const useChatSocket = (
         deleteMsgFromList,
         users,
         getMsgWithRest2,
+        getAllMessages,
     };
 };
 

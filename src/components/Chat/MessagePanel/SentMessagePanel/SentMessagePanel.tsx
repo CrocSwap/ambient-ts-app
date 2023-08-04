@@ -1,7 +1,14 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { Dispatch, SetStateAction, memo, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    memo,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
@@ -10,8 +17,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
-import { SlOptions } from 'react-icons/sl';
 import Options from '../Options/Options';
+import Menu from '../Options/Menu/Menu';
 
 interface SentMessageProps {
     message: Message;
@@ -45,6 +52,7 @@ interface SentMessageProps {
 }
 
 function SentMessagePanel(props: SentMessageProps) {
+    const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
     const [hasSeparator, setHasSeparator] = useState(false);
     const [clickOptions, setClickOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
@@ -120,6 +128,24 @@ function SentMessagePanel(props: SentMessageProps) {
             }
         }
     }, [props.message, props.nextMessage, props.previousMessage]);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
+                setIsMoreButtonPressed(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [setIsMoreButtonPressed]);
 
     useEffect(() => {
         if (
@@ -307,12 +333,24 @@ function SentMessagePanel(props: SentMessageProps) {
                                 {' ' + detectLinksFromMessage(word)}
                             </span>
                         ))}
+                        <div className={styles.roomInfo}>
+                            {' '}
+                            {props.room === 'Admins'
+                                ? props.message.roomInfo
+                                : ''}
+                        </div>
                     </div>
                 );
             } else {
                 return (
                     <div className={styles.message}>
                         {detectLinksFromMessage(props.message.message)}
+                        <div className={styles.roomInfo}>
+                            {' '}
+                            {props.room === 'Admins'
+                                ? props.message.roomInfo
+                                : ''}{' '}
+                        </div>
                     </div>
                 );
             }
@@ -338,12 +376,23 @@ function SentMessagePanel(props: SentMessageProps) {
                                 {' ' + detectLinksFromMessage(word)}
                             </span>
                         ))}
+                        <div className={styles.roomInfo}>
+                            {' '}
+                            {props.room === 'Admins'
+                                ? props.message.roomInfo
+                                : ''}
+                        </div>
                     </div>
                 );
             } else {
                 return (
                     <div className={styles.message_without_avatar}>
                         {detectLinksFromMessage(props.message.message)}
+                        <div className={styles.roomInfo}>
+                            {props.room === 'Admins'
+                                ? props.message.roomInfo
+                                : ''}
+                        </div>
                     </div>
                 );
             }
@@ -406,6 +455,8 @@ function SentMessagePanel(props: SentMessageProps) {
                     isReplyButtonPressed={props.isReplyButtonPressed}
                     replyMessageContent={props.replyMessageContent}
                     setReplyMessageContent={props.setReplyMessageContent}
+                    isMoreButtonPressed={isMoreButtonPressed}
+                    setIsMoreButtonPressed={setIsMoreButtonPressed}
                 />
             </div>
             <div>
@@ -416,15 +467,25 @@ function SentMessagePanel(props: SentMessageProps) {
                 ) : (
                     ''
                 )}
-                {'repliedMessage' in props.message && (
-                    <IoReturnUpForwardSharp
-                        style={{
-                            position: 'absolute',
-                            top: '-0.3rem',
-                            left: '0.6rem',
-                        }}
-                    />
-                )}
+                {'repliedMessage' in props.message &&
+                    (showAvatar ? (
+                        <IoReturnUpForwardSharp
+                            style={{
+                                position: 'absolute',
+                                top: '-0.3rem',
+                                left: '0.6rem',
+                            }}
+                        />
+                    ) : (
+                        <IoReturnUpForwardSharp
+                            style={{
+                                position: 'absolute',
+                                top: '-0.3rem',
+                                left: '0.6rem',
+                                transform: 'scaleY(-1)',
+                            }}
+                        />
+                    ))}
 
                 {'repliedMessage' in props.message ? (
                     <div className={styles.replied_box}>
@@ -504,15 +565,6 @@ function SentMessagePanel(props: SentMessageProps) {
                             }}
                         >
                             {showName && getName()}
-
-                            {/* <div>
-                                {' '}
-                                {props.moderator && showName ? (
-                                    <BiBlock size={13} color='red' />
-                                ) : (
-                                    ''
-                                )}
-                            </div> */}
                         </div>
 
                         <PositionBox
@@ -525,7 +577,8 @@ function SentMessagePanel(props: SentMessageProps) {
                             showAvatar={showAvatar}
                         />
                         {!isPosition && mentionedMessage()}
-                        {clickOptions ? (
+
+                        {isMoreButtonPressed ? (
                             <Options
                                 setIsReplyButtonPressed={
                                     props.setIsReplyButtonPressed
@@ -538,12 +591,14 @@ function SentMessagePanel(props: SentMessageProps) {
                                 setReplyMessageContent={
                                     props.setReplyMessageContent
                                 }
+                                isMoreButtonPressed={isMoreButtonPressed}
+                                setIsMoreButtonPressed={setIsMoreButtonPressed}
                             />
                         ) : (
-                            ''
+                            <></>
                         )}
                     </div>
-                    {props.moderator ? (
+                    {/* {props.moderator ? (
                         <FiDelete
                             color='red'
                             onClick={() => deleteMessages(props.message._id)}
@@ -551,7 +606,7 @@ function SentMessagePanel(props: SentMessageProps) {
                         />
                     ) : (
                         ''
-                    )}
+                    )} */}
 
                     <div className={styles.reply_message}>
                         <p className={styles.message_date}>
@@ -563,9 +618,8 @@ function SentMessagePanel(props: SentMessageProps) {
 
                     {/* {snackbarContent} */}
                 </div>
-                <div>
-                    {hasSeparator ? <hr style={{ cursor: 'default' }} /> : ''}
-                </div>
+
+                {hasSeparator ? <hr style={{ cursor: 'default' }} /> : ''}
             </div>
         </div>
     );

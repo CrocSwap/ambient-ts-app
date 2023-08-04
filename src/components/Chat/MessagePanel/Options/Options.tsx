@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import styles from './Options.module.css';
 import { BsFillReplyFill, BsEmojiSmileUpsideDown } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
@@ -7,14 +7,19 @@ import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../../../Global/StyledTooltip/StyledTooltip';
+import Menu from './Menu/Menu';
 interface propsIF {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;
     replyMessageContent: Message | undefined;
     setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
     message: Message | undefined;
+    isMoreButtonPressed: boolean;
+    setIsMoreButtonPressed: Dispatch<boolean>;
 }
 export default function Options(props: propsIF) {
+    const { isMoreButtonPressed, setIsMoreButtonPressed } = props;
+
     function setReplyMessage() {
         props.setIsReplyButtonPressed(!props.isReplyButtonPressed);
         props.setReplyMessageContent(props.message);
@@ -28,7 +33,32 @@ export default function Options(props: propsIF) {
         />
     );
 
-    const options = <SlOptions className={styles.options_button} />;
+    // Create a ref to the outermost element of the dropdown
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
+                setIsMoreButtonPressed(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [setIsMoreButtonPressed]);
+    // Add an event listener to handle clicks outside the dropdown
+
+    const options = (
+        <SlOptions
+            className={styles.options_button}
+            onClick={() => setIsMoreButtonPressed(!isMoreButtonPressed)}
+        />
+    );
 
     const addReaction = <BsEmojiSmileUpsideDown />;
 
@@ -88,7 +118,7 @@ export default function Options(props: propsIF) {
                     className={styles.id_tooltip_style}
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <span> {'Options'}</span>
+                    <span> {'More'}</span>
                 </div>
             }
             placement={'top'}
@@ -105,10 +135,12 @@ export default function Options(props: propsIF) {
         </TextOnlyTooltip>
     );
     return (
-        <div className={styles.dropdown_item}>
-            {ReplyWithTooltip}
-            {addReactionWithTooltip}
-            {optionsWithTooltip}
+        <div>
+            <div className={styles.dropdown_item}>
+                {ReplyWithTooltip}
+                {addReactionWithTooltip}
+                {optionsWithTooltip}
+            </div>
         </div>
     );
 }
