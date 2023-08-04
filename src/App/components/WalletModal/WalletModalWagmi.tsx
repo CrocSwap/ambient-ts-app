@@ -9,6 +9,7 @@ import Button from '../../../components/Global/Button/Button';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 import braveLogo from '../../../assets/images/logos/brave_lion.svg';
+import rabbyLogo from '../../../assets/images/logos/rabby_logo.svg';
 
 import { CircleLoaderFailed } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
@@ -124,6 +125,8 @@ export default function WalletModalWagmi() {
                             ? metamaskLogo
                             : connector.name === 'Brave'
                             ? braveLogo
+                            : connector.name.toLowerCase() === 'rabby'
+                            ? rabbyLogo
                             : undefined
                     }
                 ></WalletButton>
