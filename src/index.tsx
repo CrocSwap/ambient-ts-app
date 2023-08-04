@@ -5,7 +5,7 @@ import { store } from './utils/state/store';
 import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
-import './i18n/config.ts';
+import './i18n/config';
 
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
 
@@ -15,7 +15,7 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { getWagmiChains } from './utils/data/chains';
 import Moralis from 'moralis/.';
-import { MORALIS_KEY } from './constants';
+import { GLOBAL_MODAL_PORTAL_ID, MORALIS_KEY } from './constants';
 import { GlobalContexts } from './contexts/GlobalContexts';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
@@ -84,6 +84,7 @@ if (!doReload) {
                     <BrowserRouter>
                         <GlobalContexts>
                             <App />
+                            <div id={GLOBAL_MODAL_PORTAL_ID} />
                         </GlobalContexts>
                     </BrowserRouter>
                 </Provider>

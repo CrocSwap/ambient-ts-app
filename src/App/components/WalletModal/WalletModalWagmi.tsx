@@ -48,6 +48,7 @@ export default function WalletModalWagmi() {
         : 'wallets';
 
     const [page, setPage] = useState(defaultState);
+
     // reset the page everytime the modal is closed
     useEffect(() => {
         if (!isModalOpen) {
@@ -126,7 +127,7 @@ export default function WalletModalWagmi() {
                             ? braveLogo
                             : undefined
                     }
-                ></WalletButton>
+                />
             ))}
         </div>
     );
@@ -135,12 +136,6 @@ export default function WalletModalWagmi() {
         () => (
             <div className={styles.main_container}>
                 {connectorsDisplay}
-                {/* {walletsDisplay} */}
-                {/* <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
-                        <HiOutlineMail size={20} color='#EBEBFF' />
-                        Connect with Email
-                    </button> */}
-
                 {learnAboutWalletsContent}
             </div>
         ),
@@ -263,24 +258,20 @@ export default function WalletModalWagmi() {
 
     const [recordAgreed, hasAgreedTerms, termUrls] = useTermsAgreed();
 
-    return isModalOpen ? (
-        <div className={styles.wallet_modal} style={{ width: '500px' }}>
-            <Modal
-                onClose={closeModal}
-                handleBack={clickBackArrow}
-                showBackButton={showBackArrow}
-                title={!hasAgreedTerms ? 'Welcome' : activeTitle}
-                centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
-            >
-                {!hasAgreedTerms ? (
-                    <GateWallet
-                        recordAgreed={recordAgreed}
-                        termUrls={termUrls}
-                    />
-                ) : (
-                    activeContent
-                )}
-            </Modal>
-        </div>
-    ) : null;
+    return (
+        <Modal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            handleBack={clickBackArrow}
+            showBackButton={showBackArrow}
+            title={!hasAgreedTerms ? 'Welcome' : activeTitle}
+            centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
+        >
+            {!hasAgreedTerms ? (
+                <GateWallet recordAgreed={recordAgreed} termUrls={termUrls} />
+            ) : (
+                activeContent
+            )}
+        </Modal>
+    );
 }
