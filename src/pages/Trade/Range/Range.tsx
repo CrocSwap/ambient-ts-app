@@ -990,6 +990,8 @@ function Range() {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
+        setShowBypassConfirmButton(false);
+        setNewRangeTransactionHash('');
     };
 
     const sendTransaction = async () => {
@@ -1099,7 +1101,6 @@ function Range() {
 
     const handleModalClose = () => {
         closeConfirmationModal();
-        setNewRangeTransactionHash('');
         resetConfirmation();
     };
 
@@ -1474,9 +1475,7 @@ function Range() {
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
                         resetConfirmation={resetConfirmation}
-                        setShowBypassConfirmButton={setShowBypassConfirmButton}
                         sendTransaction={sendTransaction}
-                        setNewTransactionHash={setNewRangeTransactionHash}
                         transactionPendingDisplayString={`Minting a Position with ${
                             tokenAInputQty ?? '0'
                         } ${tokenA.symbol} and ${tokenBInputQty ?? '0'} ${

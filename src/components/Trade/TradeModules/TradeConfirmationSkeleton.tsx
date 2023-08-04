@@ -2,10 +2,6 @@
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
 
 // START: Import JSX Components
-import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
-import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
-import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../../Global/TransactionException/TransactionException';
 import Button from '../../Global/Button/Button';
 
 // START: Import Other Local Files
@@ -17,6 +13,7 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import BypassConfirmButton from './BypassConfirmButton/BypassConfirmButton';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Pool' | 'Reposition';
@@ -26,7 +23,7 @@ interface propsIF {
     txErrorCode: string;
     showConfirmation: boolean;
     statusText: string;
-    initiate: () => void;
+    initiate: () => Promise<void>;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
     poolTokenDisplay?: React.ReactNode;
@@ -62,10 +59,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
 
     const [skipFutureConfirmation, setSkipFutureConfirmation] =
         useState<boolean>(false);
-
-    const transactionApproved = transactionHash !== '';
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     const formattedTokenAQuantity = getFormattedNumber({
         value: tokenAQuantity ? parseFloat(tokenAQuantity) : undefined,
@@ -107,37 +100,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         </>
     );
 
-    // REGULAR CONFIRMATION MESSAGE STARTS HERE
-    const confirmSendMessage = <WaitingConfirmation content={statusText} />;
-
-    const transactionDenied = (
-        <TransactionDenied resetConfirmation={resetConfirmation} />
-    );
-    const transactionException = (
-        <TransactionException resetConfirmation={resetConfirmation} />
-    );
-
-    const transactionSubmitted = (
-        <TransactionSubmitted
-            hash={transactionHash}
-            tokenBSymbol={tokenB.symbol}
-            tokenBAddress={tokenB.address}
-            tokenBDecimals={tokenB.decimals}
-            tokenBImage={uriToHttp(tokenB.logoURI)}
-            chainId={tokenB.chainId}
-        />
-    );
-
-    // END OF REGULAR CONFIRMATION MESSAGE
-
-    const confirmationDisplay = isTransactionException
-        ? transactionException
-        : isTransactionDenied
-        ? transactionDenied
-        : transactionApproved
-        ? transactionSubmitted
-        : confirmSendMessage;
-
     return (
         <div
             className={styles.modal_container}
@@ -153,13 +115,13 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             )}
             {extraNotes && extraNotes}
             <footer>
-                {showConfirmation ? (
-                    !acknowledgeUpdate ? (
-                        <>
-                            <ConfirmationModalControl
-                                tempBypassConfirm={skipFutureConfirmation}
-                                setTempBypassConfirm={setSkipFutureConfirmation}
-                            />
+                {!acknowledgeUpdate ? (
+                    <>
+                        <ConfirmationModalControl
+                            tempBypassConfirm={skipFutureConfirmation}
+                            setTempBypassConfirm={setSkipFutureConfirmation}
+                        />
+                        {showConfirmation ? (
                             <Button
                                 title={statusText}
                                 action={() => {
@@ -178,12 +140,18 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                 flat
                                 disabled={!!acknowledgeUpdate}
                             />
-                        </>
-                    ) : (
-                        acknowledgeUpdate
-                    )
+                        ) : (
+                            <BypassConfirmButton
+                                newTransactionHash={transactionHash}
+                                txErrorCode={txErrorCode}
+                                resetConfirmation={resetConfirmation}
+                                sendTransaction={initiate}
+                                transactionPendingDisplayString={statusText}
+                            />
+                        )}
+                    </>
                 ) : (
-                    confirmationDisplay
+                    acknowledgeUpdate
                 )}
             </footer>
         </div>

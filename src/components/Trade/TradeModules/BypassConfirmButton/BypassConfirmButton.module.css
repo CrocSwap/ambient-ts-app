@@ -1,5 +1,4 @@
 .button_container {
-    padding: 8px 12px 0px;
     margin-top: 1rem;
 }
 
@@ -32,10 +31,10 @@
     width: 100%;
     outline: none;
 
-    padding: 12px 4px;
+    padding: 12px 8px;
     font-size: 12px;
 
-    /* line-height: 24px; */
+    line-height: 24px;
 
     display: flex;
     flex-direction: row;
@@ -56,9 +55,9 @@
 }
 
 .extra_info_container {
-    padding: 8px;
+    padding: 12px;
     background: var(--dark2);
-    margin: 8px;
+    margin-top: 8px;
 }
 
 .button_content div {

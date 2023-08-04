@@ -11,7 +11,7 @@ import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkele
 interface propsIF {
     position: PositionIF;
     newRepositionTransactionHash: string;
-    onSend: () => void;
+    onSend: () => Promise<void>;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;

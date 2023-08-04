@@ -543,9 +543,7 @@ export default function RangeActionModal(props: propsIF) {
         }
     };
 
-    const transactionDenied = (
-        <TransactionDenied resetConfirmation={resetConfirmation} />
-    );
+    const transactionDenied = <TransactionDenied />;
 
     const transactionSuccess = (
         <TxSubmittedSimplify
@@ -573,9 +571,7 @@ export default function RangeActionModal(props: propsIF) {
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const transactionException = (
-        <TransactionException resetConfirmation={resetConfirmation} />
-    );
+    const transactionException = <TransactionException />;
 
     function handleConfirmationChange(): void {
         setCurrentConfirmationData(transactionPending);

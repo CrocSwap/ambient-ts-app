@@ -18,7 +18,7 @@ import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmatio
 import styles from '../../Trade/TradeModules/TradeConfirmationSkeleton.module.css';
 
 interface propsIF {
-    initiateSwapMethod: () => void;
+    initiateSwapMethod: () => Promise<void>;
     isDenomBase: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;

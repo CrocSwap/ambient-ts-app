@@ -45,7 +45,6 @@ import {
 import useDebounce from '../../../App/hooks/useDebounce';
 import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
-import BypassConfirmRepositionButton from '../../../components/Trade/Reposition/BypassConfirmRepositionButton/BypassConfirmRepositionButton';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
@@ -58,6 +57,7 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
 
 function Reposition() {
     // current URL parameter string
@@ -154,6 +154,8 @@ function Reposition() {
 
     const {
         tradeData: {
+            tokenA,
+            tokenB,
             isTokenABase,
             poolPriceNonDisplay: currentPoolPriceNonDisplay,
             isDenomBase,
@@ -614,7 +616,6 @@ function Reposition() {
         isWaitingForWallet,
         txErrorCode === '',
     ]);
-    const [showExtraInfo, setShowExtraInfo] = useState(false);
 
     const confirmRepositionModalProps = {
         isPositionInRange: isPositionInRange,
@@ -641,19 +642,6 @@ function Reposition() {
         pinnedMaxPriceDisplayTruncatedInQuote:
             pinnedMaxPriceDisplayTruncatedInQuote,
         isTokenABase: isTokenABase,
-    };
-
-    const bypassConfirmRepositionButtonProps = {
-        newRepositionTransactionHash,
-        txErrorCode,
-        onSend: sendRepositionTransaction,
-        resetConfirmation,
-        showExtraInfo,
-        setShowExtraInfo,
-
-        showBypassConfirm: showBypassConfirmButton,
-        setShowBypassConfirm: setShowBypassConfirmButton,
-        setNewRepositionTransactionHash,
     };
 
     const handleRepoButtonClickWithBypass = () => {
@@ -737,8 +725,12 @@ function Reposition() {
                             flat
                         />
                     ) : (
-                        <BypassConfirmRepositionButton
-                            {...bypassConfirmRepositionButtonProps}
+                        <BypassConfirmButton
+                            newTransactionHash={newRepositionTransactionHash}
+                            txErrorCode={txErrorCode}
+                            sendTransaction={sendRepositionTransaction}
+                            resetConfirmation={resetConfirmation}
+                            transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
                         />
                     )}
                 </div>

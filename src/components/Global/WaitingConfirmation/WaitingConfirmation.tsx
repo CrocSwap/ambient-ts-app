@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import Spinner from '../Spinner/Spinner';
 import styles from './WaitingConfirmation.module.css';
 interface WaitingConfirmationPropsIF {
     content: ReactNode;
@@ -10,13 +11,9 @@ export default function WaitingConfirmation(props: WaitingConfirmationPropsIF) {
 
     return (
         <div className={styles.wallet_confirm}>
-            {!noAnimation && <div className={styles.loader} />}
+            {!noAnimation && <Spinner size={30} bg='var(--dark1)' />}
             {!noAnimation && <h2>Waiting For Confirmation</h2>}
             <div>{content}</div>
-
-            {/* <span className={styles.waiting_detail}>
-                <p>Please confirm this transaction in your wallet</p>
-            </span> */}
         </div>
     );
 }

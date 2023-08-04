@@ -6,7 +6,7 @@ import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 
 interface propsIF {
-    initiateLimitOrderMethod: () => void;
+    initiateLimitOrderMethod: () => Promise<void>;
     tokenAInputQty: string;
     tokenBInputQty: string;
     insideTickDisplayPrice: number;

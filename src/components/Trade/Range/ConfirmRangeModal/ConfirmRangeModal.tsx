@@ -14,7 +14,7 @@ import uriToHttp from '../../../../utils/functions/uriToHttp';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 
 interface propsIF {
-    sendTransaction: () => void;
+    sendTransaction: () => Promise<void>;
     newRangeTransactionHash: string;
     spotPriceDisplay: string;
     maxPriceDisplay: string;

@@ -312,9 +312,7 @@ export default function LimitActionModal(props: propsIF) {
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const transactionException = (
-        <TransactionException resetConfirmation={resetConfirmation} />
-    );
+    const transactionException = <TransactionException />;
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(transactionPending);
@@ -322,9 +320,7 @@ export default function LimitActionModal(props: propsIF) {
         if (transactionApproved) {
             setCurrentConfirmationData(transactionSuccess);
         } else if (isTransactionDenied) {
-            setCurrentConfirmationData(
-                <TransactionDenied resetConfirmation={resetConfirmation} />,
-            );
+            setCurrentConfirmationData(<TransactionDenied />);
         } else if (isTransactionException) {
             setCurrentConfirmationData(transactionException);
         }

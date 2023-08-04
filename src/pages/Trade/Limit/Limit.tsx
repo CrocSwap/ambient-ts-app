@@ -411,6 +411,8 @@ export default function Limit() {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
+        setShowBypassConfirmButton(false);
+        setNewLimitOrderTransactionHash('');
     };
 
     const updateLimitErrorMessage = () =>
@@ -580,7 +582,6 @@ export default function Limit() {
 
     const handleModalClose = (): void => {
         closeModal();
-        setNewLimitOrderTransactionHash('');
         resetConfirmation();
     };
 
@@ -759,9 +760,7 @@ export default function Limit() {
                         newTransactionHash={newLimitOrderTransactionHash}
                         txErrorCode={txErrorCode}
                         resetConfirmation={resetConfirmation}
-                        setShowBypassConfirmButton={setShowBypassConfirmButton}
                         sendTransaction={sendLimitOrder}
-                        setNewTransactionHash={setNewLimitOrderTransactionHash}
                         transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}
                     />
                 ) : undefined

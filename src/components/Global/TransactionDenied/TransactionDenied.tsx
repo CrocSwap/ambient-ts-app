@@ -1,15 +1,12 @@
 import styles from './TransactionDenied.module.css';
 import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
-import Button from '../Button/Button';
 
 interface TransactionSubmittedProps {
-    resetConfirmation: () => void;
     noAnimation?: boolean;
-    initiateTx?: () => void;
 }
 
 export default function TransactionDenied(props: TransactionSubmittedProps) {
-    const { resetConfirmation, noAnimation, initiateTx } = props;
+    const { noAnimation } = props;
 
     return (
         <div
@@ -26,15 +23,6 @@ export default function TransactionDenied(props: TransactionSubmittedProps) {
                 <h2>Transaction Denied in Wallet</h2>
             </div>
             <p>Please check your wallet for notifications or try again.</p>
-            <Button
-                title='Try Again'
-                action={() => {
-                    if (initiateTx) initiateTx();
-
-                    resetConfirmation();
-                }}
-                flat
-            />
         </div>
     );
 }

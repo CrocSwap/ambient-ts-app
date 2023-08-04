@@ -302,6 +302,8 @@ function Swap(props: propsIF) {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
+        setShowBypassConfirm(false);
+        setNewSwapTransactionHash('');
     };
 
     async function initiateSwap() {
@@ -381,7 +383,6 @@ function Swap(props: propsIF) {
 
     const handleModalClose = () => {
         closeModal();
-        setNewSwapTransactionHash('');
         resetConfirmation();
     };
 
@@ -606,9 +607,7 @@ function Swap(props: propsIF) {
                         newTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
                         resetConfirmation={resetConfirmation}
-                        setShowBypassConfirmButton={setShowBypassConfirm}
                         sendTransaction={initiateSwap}
-                        setNewTransactionHash={setNewSwapTransactionHash}
                         transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}
                     />
                 ) : undefined

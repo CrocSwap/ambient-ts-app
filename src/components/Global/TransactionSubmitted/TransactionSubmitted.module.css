@@ -6,8 +6,8 @@
     /* padding: 20px; */
 }
 .transaction_submitted h2 {
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
 .noAnimation_submitted h2 {
     color: var(--text1);
@@ -72,10 +72,4 @@
     padding: 3px 4px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-}
-
-.view_etherscan:hover,
-.view_etherscan:focus-visible {
-    color: var(--text1);
-    box-shadow: 4px 4px var(--accent5);
 }
