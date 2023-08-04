@@ -334,4 +334,39 @@ export class Zoom {
 
         return domain;
     }
+
+    public handlePanningMultiTouch(
+        scaleData: scaleData,
+        event: any,
+        previousDeltaTouch: number,
+    ) {
+        const touch1 = event.sourceEvent.touches[0];
+        const touch2 = event.sourceEvent.touches[1];
+
+        const domainX = scaleData?.xScale.domain();
+
+        const linearX = d3
+            .scaleTime()
+            .domain(scaleData?.xScale.range())
+            .range([0, domainX[1] - domainX[0]]);
+
+        const deltaTouch = Math.hypot(
+            touch1.pageX - touch2.pageX,
+            touch1.pageY - touch2.pageY,
+        );
+
+        let movement = Math.abs(touch1.pageX - touch2.pageX);
+
+        if (previousDeltaTouch > deltaTouch) {
+            // zoom out
+            movement = movement / 10;
+        }
+        if (previousDeltaTouch < deltaTouch) {
+            // zoom in
+            movement = -movement / 10;
+        }
+        const deltaX = linearX(movement);
+
+        this.changeCandleSize(domainX, deltaX, touch1.clientX);
+    }
 }

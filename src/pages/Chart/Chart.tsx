@@ -795,8 +795,15 @@ export default function Chart(props: propsIF) {
                                         const isMultiTouch =
                                             event.sourceEvent.touches.length >=
                                             2;
-                                        if (isMultiTouch) {
-                                            // zoomBase.handlePanningMultiTouch();
+                                        if (
+                                            isMultiTouch &&
+                                            previousDeltaTouch
+                                        ) {
+                                            zoomBase.handlePanningMultiTouch(
+                                                scaleData,
+                                                event,
+                                                previousDeltaTouch,
+                                            );
                                         } else {
                                             domain =
                                                 zoomBase.handlePanningOneTouch(
