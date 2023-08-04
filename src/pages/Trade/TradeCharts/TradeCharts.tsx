@@ -69,7 +69,7 @@ function TradeCharts(props: propsIF) {
         chartSettings,
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
-        canvasRef,
+        chartCanvasRef,
     } = useContext(ChartContext);
 
     const { pathname } = useLocation();
@@ -195,7 +195,7 @@ function TradeCharts(props: propsIF) {
                 padding: isChartFullScreen ? '1rem' : '0',
                 background: isChartFullScreen ? 'var(--dark2)' : '',
             }}
-            ref={canvasRef}
+            ref={chartCanvasRef}
         >
             <div className={`${styles.graph_style}`}>
                 {isTutorialActive && (

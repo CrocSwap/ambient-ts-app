@@ -477,6 +477,7 @@ function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
+        isTokenAPrimary: isTokenAPrimary,
     };
 
     const liquidityInsufficientWarning = isLiquidityInsufficient ? (

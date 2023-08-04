@@ -44,6 +44,7 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
+    isTokenAPrimary: boolean;
 }
 
 export default function ConfirmSwapModal(props: propsIF) {
@@ -63,6 +64,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
+        isTokenAPrimary,
     } = props;
 
     const { pool } = useContext(PoolContext);
@@ -238,12 +240,22 @@ export default function ConfirmSwapModal(props: propsIF) {
                 {buyCurrencyRow}
             </section>
             <div className={styles.extra_info_container}>
-                <div className={styles.row}>
-                    <p>Expected Output</p>
-                    <p>
-                        {localeBuyString} {buyTokenData.symbol}
-                    </p>
-                </div>
+                {isTokenAPrimary ? (
+                    <div className={styles.row}>
+                        <p>Expected Output</p>
+                        <p>
+                            {localeBuyString} {buyTokenData.symbol}
+                        </p>
+                    </div>
+                ) : (
+                    <div className={styles.row}>
+                        <p>Expected Input</p>
+                        <p>
+                            {localeSellString} {sellTokenData.symbol}
+                        </p>
+                    </div>
+                )}
+
                 <div className={styles.row}>
                     <p>Effective Conversion Rate</p>
                     <p
