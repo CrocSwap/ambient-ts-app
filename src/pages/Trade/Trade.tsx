@@ -377,9 +377,7 @@ function Trade() {
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                 <div className={styles.resizableParent}>
-                    {!isPoolInitialized &&
-                        !isChartLoading &&
-                        poolNotInitContent}
+                    {!isPoolInitialized && poolNotInitContent}
                     {isPoolInitialized && (
                         <Resizable
                             className={styles.chartBox}
