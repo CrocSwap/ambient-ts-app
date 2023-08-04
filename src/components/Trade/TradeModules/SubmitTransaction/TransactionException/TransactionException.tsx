@@ -1,7 +1,7 @@
 import styles from './TransactionException.module.css';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { ZERO_ADDRESS } from '../../../constants';
-import DividerDark from '../DividerDark/DividerDark';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { ZERO_ADDRESS } from '../../../../../constants';
+import DividerDark from '../../../../Global/DividerDark/DividerDark';
 
 export default function TransactionException() {
     const rangeModuleActive = location.pathname.includes('/trade/pool');

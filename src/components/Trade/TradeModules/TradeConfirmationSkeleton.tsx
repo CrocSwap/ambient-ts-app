@@ -13,10 +13,10 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import BypassConfirmButton from './BypassConfirmButton/BypassConfirmButton';
+import SubmitTransaction from './SubmitTransaction/SubmitTransaction';
 
 interface propsIF {
-    type: 'Swap' | 'Limit' | 'Pool' | 'Reposition';
+    type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
     tokenA: { token: TokenIF; quantity?: string };
     tokenB: { token: TokenIF; quantity?: string };
     transactionHash: string;
@@ -141,7 +141,8 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                 disabled={!!acknowledgeUpdate}
                             />
                         ) : (
-                            <BypassConfirmButton
+                            <SubmitTransaction
+                                type={type}
                                 newTransactionHash={transactionHash}
                                 txErrorCode={txErrorCode}
                                 resetConfirmation={resetConfirmation}

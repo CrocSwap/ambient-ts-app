@@ -1,14 +1,14 @@
 import styles from './TransactionFailed.module.css';
-import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
-import Button from '../Button/Button';
+import Button from '../../../../Global/Button/Button';
+import { CircleLoaderFailed } from '../../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
 
-interface TransactionSubmittedProps {
+interface PropsIF {
     resetConfirmation: () => void;
     noAnimation?: boolean;
     initiateTx?: () => void;
 }
 
-export default function TransactionFailed(props: TransactionSubmittedProps) {
+export default function TransactionFailed(props: PropsIF) {
     const { resetConfirmation, noAnimation, initiateTx } = props;
 
     return (

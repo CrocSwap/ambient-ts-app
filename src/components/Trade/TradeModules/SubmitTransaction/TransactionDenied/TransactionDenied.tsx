@@ -1,11 +1,11 @@
 import styles from './TransactionDenied.module.css';
-import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
+import { CircleLoaderFailed } from '../../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
 
-interface TransactionSubmittedProps {
+interface PropsIF {
     noAnimation?: boolean;
 }
 
-export default function TransactionDenied(props: TransactionSubmittedProps) {
+export default function TransactionDenied(props: PropsIF) {
     const { noAnimation } = props;
 
     return (

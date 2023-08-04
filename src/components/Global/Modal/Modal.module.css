@@ -39,6 +39,7 @@
     /* max-height: 80vh; */
     color: var(--text1);
     top: 1rem;
+    margin: auto;
 
     /* min-height: 80vh; */
 }
@@ -85,7 +86,6 @@
 
 @media only screen and (min-width: 500px) {
     .modal_body {
-        top: 10rem;
         min-width: 400px;
     }
 }

@@ -1,6 +1,5 @@
 import { BigNumber } from 'ethers';
 import { useState, useEffect, useContext } from 'react';
-import styles from './LimitActionModal.module.css';
 import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
@@ -17,10 +16,6 @@ import {
     isTransactionReplacedError,
     isTransactionFailedError,
 } from '../../utils/TransactionError';
-import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../Global/TransactionException/TransactionException';
-import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
-import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import LimitActionButton from './LimitActionButton/LimitActionButton';
 import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
@@ -29,6 +24,7 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { CrocPositionView } from '@crocswap-libs/sdk';
 import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
+import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -288,44 +284,6 @@ export default function LimitActionModal(props: propsIF) {
         }
     };
 
-    // ----------------------------CONFIRMATION JSX------------------------------
-
-    const transactionSuccess = (
-        <TxSubmittedSimplify
-            hash={newTxHash}
-            content={
-                type === 'Remove'
-                    ? 'Removal Transaction Successfully Submitted'
-                    : 'Claim Transaction Successfully Submitted'
-            }
-        />
-    );
-
-    const transactionPending = (
-        <WaitingConfirmation content='Please check your wallet for notifications' />
-    );
-
-    const [currentConfirmationData, setCurrentConfirmationData] =
-        useState(transactionPending);
-
-    const transactionApproved = newTxHash !== '';
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
-
-    const transactionException = <TransactionException />;
-
-    function handleConfirmationChange() {
-        setCurrentConfirmationData(transactionPending);
-
-        if (transactionApproved) {
-            setCurrentConfirmationData(transactionSuccess);
-        } else if (isTransactionDenied) {
-            setCurrentConfirmationData(<TransactionDenied />);
-        } else if (isTransactionException) {
-            setCurrentConfirmationData(transactionException);
-        }
-    }
-
     const limitInfoProps =
         type === 'Remove'
             ? {
@@ -367,35 +325,7 @@ export default function LimitActionModal(props: propsIF) {
                   networkFee,
               };
 
-    useEffect(() => {
-        handleConfirmationChange();
-    }, [
-        transactionApproved,
-        newTxHash,
-        txErrorCode,
-        showConfirmation,
-        isTransactionDenied,
-    ]);
-
-    const confirmationContent = (
-        <>
-            <SimpleModalHeader
-                title={
-                    type === 'Remove'
-                        ? 'Remove Limit Order Confirmation'
-                        : 'Claim Limit Order Confirmation'
-                }
-            />
-            <div className={styles.confirmation_container}>
-                <div className={styles.confirmation_content}>
-                    {currentConfirmationData}
-                </div>
-            </div>
-        </>
-    );
-    // ----------------------------END OF CONFIRMATION JSX------------------------------
-
-    const showSettingsOrMainContent = showSettings ? (
+    return showSettings ? (
         <LimitActionSettings
             showSettings={showSettings}
             setShowSettings={setShowSettings}
@@ -405,9 +335,7 @@ export default function LimitActionModal(props: propsIF) {
         <>
             <SimpleModalHeader
                 title={
-                    showConfirmation
-                        ? ''
-                        : type === 'Remove'
+                    type === 'Remove'
                         ? 'Remove Limit Order'
                         : 'Claim Limit Order '
                 }
@@ -423,22 +351,33 @@ export default function LimitActionModal(props: propsIF) {
                 />
                 <div style={{ padding: '0 8px' }}>
                     <LimitActionInfo {...limitInfoProps} />
-                    <LimitActionButton
-                        onClick={type === 'Remove' ? removeFn : claimFn}
-                        disabled={currentLiquidity === undefined}
-                        title={
-                            type === 'Remove'
-                                ? 'Remove Limit Order'
-                                : 'Claim Limit Order'
-                        }
-                    />
+                    {showConfirmation ? (
+                        <SubmitTransaction
+                            type='Limit'
+                            newTransactionHash={newTxHash}
+                            txErrorCode={txErrorCode}
+                            resetConfirmation={resetConfirmation}
+                            sendTransaction={
+                                type === 'Remove' ? removeFn : claimFn
+                            }
+                            transactionPendingDisplayString={
+                                'Submitting transaction...'
+                            }
+                            disableSubmitAgain
+                        />
+                    ) : (
+                        <LimitActionButton
+                            onClick={type === 'Remove' ? removeFn : claimFn}
+                            disabled={currentLiquidity === undefined}
+                            title={
+                                type === 'Remove'
+                                    ? 'Remove Limit Order'
+                                    : 'Claim Limit Order'
+                            }
+                        />
+                    )}
                 </div>
             </div>
         </>
     );
-
-    // --------------------------------------------------------------------------------------
-
-    if (showConfirmation) return confirmationContent;
-    return <>{showSettingsOrMainContent}</>;
 }

@@ -12,7 +12,7 @@ import TooltipComponent from '../../../components/Global/TooltipComponent/Toolti
 import ConfirmSwapModal from '../../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
 import SwapExtraInfo from '../../../components/Swap/SwapExtraInfo/SwapExtraInfo';
 import SwapTokenInput from '../../../components/Swap/SwapTokenInput/SwapTokenInput';
-import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
+import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import { IS_LOCAL_ENV } from '../../../constants';
@@ -308,6 +308,7 @@ function Swap(props: propsIF) {
 
     async function initiateSwap() {
         resetConfirmation();
+        setShowConfirmation(false);
         setIsWaitingForWallet(true);
         if (!crocEnv) return;
 
@@ -603,7 +604,8 @@ function Swap(props: propsIF) {
             }
             bypassConfirm={
                 showBypassConfirm ? (
-                    <BypassConfirmButton
+                    <SubmitTransaction
+                        type='Swap'
                         newTransactionHash={newSwapTransactionHash}
                         txErrorCode={txErrorCode}
                         resetConfirmation={resetConfirmation}

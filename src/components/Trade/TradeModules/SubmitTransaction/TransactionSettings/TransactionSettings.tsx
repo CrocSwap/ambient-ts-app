@@ -1,20 +1,15 @@
-// START: Import React and Dongles
 import { useContext, useState } from 'react';
-
-// START: Import JSX Components
-import Button from '../Button/Button';
-import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
-import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
-
-// START: Import Local Files
 import styles from './TransactionSettings.module.css';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { SlippageMethodsIF } from '../../../../../App/hooks/useSlippage';
 import { VscClose } from 'react-icons/vsc';
-import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
-import { isStablePair } from '../../../utils/data/stablePairs';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { skipConfirmIF } from '../../../../../App/hooks/useSkipConfirm';
+import { isStablePair } from '../../../../../utils/data/stablePairs';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { FiAlertTriangle } from 'react-icons/fi';
+import SlippageTolerance from '../../../../Global/SlippageTolerance/SlippageTolerance';
+import ConfirmationModalControl from '../../../../Global/ConfirmationModalControl/ConfirmationModalControl';
+import Button from '../../../../Global/Button/Button';
 
 // interface for component props
 interface propsIF {

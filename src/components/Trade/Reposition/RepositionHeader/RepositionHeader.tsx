@@ -6,7 +6,6 @@ import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
-import TransactionSettings from '../../../Global/TransactionSettings/TransactionSettings';
 import Modal from '../../../../components/Global/Modal/Modal';
 
 // START: Import Local Files
@@ -18,6 +17,7 @@ import { setAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import TransactionSettings from '../../TradeModules/SubmitTransaction/TransactionSettings/TransactionSettings';
 
 interface propsIF {
     positionHash: string;

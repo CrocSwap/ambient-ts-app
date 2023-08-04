@@ -141,7 +141,7 @@ function ConfirmRangeModal(props: propsIF) {
 
     return (
         <TradeConfirmationSkeleton
-            type='Pool'
+            type='Range'
             tokenA={{ token: tokenA, quantity: tokenAQty }}
             tokenB={{ token: tokenB, quantity: tokenBQty }}
             transactionHash={newRangeTransactionHash}

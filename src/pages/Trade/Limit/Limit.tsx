@@ -16,7 +16,7 @@ import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import LimitRate from '../../../components/Trade/Limit/LimitRate/LimitRate';
 import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/LimitTokenInput';
-import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
+import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import { IS_LOCAL_ENV } from '../../../constants';
@@ -122,8 +122,7 @@ export default function Limit() {
     const [displayPrice, setDisplayPrice] = useState('');
     const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
-    const [showBypassConfirmButton, setShowBypassConfirmButton] =
-        useState(false);
+    const [bypassConfirmation, setBypassConfirmation] = useState(false);
     const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -369,7 +368,7 @@ export default function Limit() {
             !isWaitingForWallet &&
             txErrorCode === ''
         ) {
-            setShowBypassConfirmButton(false);
+            setBypassConfirmation(false);
         }
     }, [
         currentPendingTransactionsArray.length,
@@ -379,7 +378,7 @@ export default function Limit() {
 
     useEffect(() => {
         setNewLimitOrderTransactionHash('');
-        setShowBypassConfirmButton(false);
+        setBypassConfirmation(false);
     }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
@@ -411,7 +410,7 @@ export default function Limit() {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setShowBypassConfirmButton(false);
+        setBypassConfirmation(false);
         setNewLimitOrderTransactionHash('');
     };
 
@@ -454,7 +453,7 @@ export default function Limit() {
     };
 
     const handleLimitButtonClickWithBypass = () => {
-        setShowBypassConfirmButton(true);
+        setBypassConfirmation(true);
         sendLimitOrder();
     };
 
@@ -462,6 +461,7 @@ export default function Limit() {
         if (!crocEnv) return;
         if (limitTick === undefined) return;
         resetConfirmation();
+        setShowConfirmation(false);
         setIsWaitingForWallet(true);
 
         const sellToken = tokenA.address;
@@ -755,8 +755,9 @@ export default function Limit() {
                 />
             }
             bypassConfirm={
-                showBypassConfirmButton ? (
-                    <BypassConfirmButton
+                bypassConfirmation ? (
+                    <SubmitTransaction
+                        type='Limit'
                         newTransactionHash={newLimitOrderTransactionHash}
                         txErrorCode={txErrorCode}
                         resetConfirmation={resetConfirmation}

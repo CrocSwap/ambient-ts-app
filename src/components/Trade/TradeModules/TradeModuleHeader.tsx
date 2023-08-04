@@ -13,7 +13,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import Modal from '../../Global/Modal/Modal';
 import { useModal } from '../../Global/Modal/useModal';
 import ShareModal from '../../Global/ShareModal/ShareModal';
-import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
+import TransactionSettings from './SubmitTransaction/TransactionSettings/TransactionSettings';
 import styles from './TradeModuleHeader.module.css';
 
 interface propsIF {

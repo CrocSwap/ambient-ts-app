@@ -7,29 +7,33 @@ import {
     CircleLoaderCompleted,
 } from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import Spinner from '../../../Global/Spinner/Spinner';
-import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../../../Global/TransactionException/TransactionException';
-import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
-import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
+import TransactionDenied from './TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
-import styles from './BypassConfirmButton.module.css';
+import styles from './SubmitTransaction.module.css';
+import TransactionException from './TransactionException/TransactionException';
+import TransactionFailed from './TransactionFailed/TransactionFailed';
+import TransactionSubmitted from './TransactionSubmitted/TransactionSubmitted';
 
 interface propsIF {
+    type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
     newTransactionHash: string;
     txErrorCode: string;
     resetConfirmation: () => void;
     sendTransaction: () => Promise<void>;
     transactionPendingDisplayString: string;
+    disableSubmitAgain?: boolean;
 }
-export default function BypassConfirmButton(props: propsIF) {
+export default function SubmitTransaction(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
 
     const {
+        type,
         newTransactionHash,
         txErrorCode,
         resetConfirmation,
         sendTransaction,
         transactionPendingDisplayString,
+        disableSubmitAgain,
     } = props;
 
     const transactionApproved = newTransactionHash !== '';
@@ -73,6 +77,7 @@ export default function BypassConfirmButton(props: propsIF) {
 
     const transactionSubmitted = (
         <TransactionSubmitted
+            type={type}
             hash={newTransactionHash}
             tokenBSymbol={tokenA.symbol}
             tokenBAddress={tokenA.address}
@@ -150,18 +155,26 @@ export default function BypassConfirmButton(props: propsIF) {
                         {confirmationDisplay}
                     </section>
                 )}
-                {(isTransactionDenied ||
-                    transactionApproved ||
-                    isTransactionException) && (
+                {transactionApproved && !disableSubmitAgain && (
                     <span className={styles.close_icon_container}>
                         <button
                             onClick={() => {
                                 resetConfirmation();
                             }}
                         >
-                            {!isTransactionDenied && !isTransactionException
-                                ? 'Submit another transaction'
-                                : 'Retry'}
+                            Submit another transaction
+                        </button>
+                    </span>
+                )}
+                {(isTransactionDenied || isTransactionException) && (
+                    <span className={styles.close_icon_container}>
+                        <button
+                            onClick={() => {
+                                resetConfirmation();
+                                sendTransaction();
+                            }}
+                        >
+                            Retry
                         </button>
                     </span>
                 )}

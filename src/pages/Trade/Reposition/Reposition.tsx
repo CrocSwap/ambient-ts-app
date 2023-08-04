@@ -57,7 +57,7 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
+import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 
 function Reposition() {
     // current URL parameter string
@@ -584,8 +584,7 @@ function Reposition() {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    const [showBypassConfirmButton, setShowBypassConfirmButton] =
-        useState(false);
+    const [bypassConfirmation, setBypassConfirmation] = useState(false);
 
     const sessionReceipts = receiptData.sessionReceipts;
 
@@ -609,7 +608,7 @@ function Reposition() {
             !isWaitingForWallet &&
             txErrorCode === ''
         ) {
-            setShowBypassConfirmButton(false);
+            setBypassConfirmation(false);
         }
     }, [
         currentPendingTransactionsArray.length,
@@ -646,7 +645,7 @@ function Reposition() {
 
     const handleRepoButtonClickWithBypass = () => {
         IS_LOCAL_ENV && console.debug('setting to true');
-        setShowBypassConfirmButton(true);
+        setBypassConfirmation(true);
         sendRepositionTransaction();
     };
 
@@ -705,7 +704,7 @@ function Reposition() {
                     }
                 />
                 <div className={styles.button_container}>
-                    {!showBypassConfirmButton ? (
+                    {!bypassConfirmation ? (
                         <Button
                             title={
                                 isRepositionSent
@@ -725,7 +724,8 @@ function Reposition() {
                             flat
                         />
                     ) : (
-                        <BypassConfirmButton
+                        <SubmitTransaction
+                            type='Reposition'
                             newTransactionHash={newRepositionTransactionHash}
                             txErrorCode={txErrorCode}
                             sendTransaction={sendRepositionTransaction}

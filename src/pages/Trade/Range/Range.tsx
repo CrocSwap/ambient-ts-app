@@ -15,7 +15,7 @@ import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/Range
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
+import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import { IS_LOCAL_ENV } from '../../../constants';
@@ -191,8 +191,7 @@ function Range() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const [showConfirmation, setShowConfirmation] = useState(true);
-    const [showBypassConfirmButton, setShowBypassConfirmButton] =
-        useState(false);
+    const [bypassConfirmation, setBypassConfirmation] = useState(false);
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -486,7 +485,7 @@ function Range() {
 
     useEffect(() => {
         setNewRangeTransactionHash('');
-        setShowBypassConfirmButton(false);
+        setBypassConfirmation(false);
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 
@@ -631,7 +630,7 @@ function Range() {
             !isWaitingForWallet &&
             txErrorCode === ''
         ) {
-            setShowBypassConfirmButton(false);
+            setBypassConfirmation(false);
         }
     }, [
         currentPendingTransactionsArray.length,
@@ -990,7 +989,7 @@ function Range() {
     const resetConfirmation = () => {
         setShowConfirmation(true);
         setTxErrorCode('');
-        setShowBypassConfirmButton(false);
+        setBypassConfirmation(false);
         setNewRangeTransactionHash('');
     };
 
@@ -998,6 +997,7 @@ function Range() {
         if (!crocEnv) return;
 
         resetConfirmation();
+        setShowConfirmation(false);
         setIsWaitingForWallet(true);
 
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
@@ -1105,7 +1105,7 @@ function Range() {
     };
 
     const handleRangeButtonClickWithBypass = () => {
-        setShowBypassConfirmButton(true);
+        setBypassConfirmation(true);
         sendTransaction();
     };
 
@@ -1470,8 +1470,9 @@ function Range() {
                 />
             }
             bypassConfirm={
-                showBypassConfirmButton ? (
-                    <BypassConfirmButton
+                bypassConfirmation ? (
+                    <SubmitTransaction
+                        type='Range'
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
                         resetConfirmation={resetConfirmation}

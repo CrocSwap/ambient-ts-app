@@ -23,17 +23,13 @@ import {
     removePendingTx,
     removePositionPendingUpdate,
 } from '../../utils/state/receiptDataSlice';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
-import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../Global/TransactionException/TransactionException';
 import { isStablePair } from '../../utils/data/stablePairs';
-import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
@@ -45,6 +41,7 @@ import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
 import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
+import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 
 interface propsIF {
     type: 'Remove' | 'Harvest';
@@ -107,10 +104,6 @@ export default function RangeActionModal(props: propsIF) {
         GRAPHCACHE_SMALL_URL + '/position_stats?';
 
     const dispatch = useAppDispatch();
-
-    const positionsPendingUpdate = useAppSelector(
-        (state) => state.receiptData,
-    ).positionsPendingUpdate;
 
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined
@@ -339,9 +332,6 @@ export default function RangeActionModal(props: propsIF) {
                   poolIndex,
               );
 
-    const isPositionPendingUpdate =
-        positionsPendingUpdate.indexOf(posHash as string) > -1;
-
     const isPairStable: boolean = isStablePair(
         baseTokenAddress,
         quoteTokenAddress,
@@ -543,58 +533,6 @@ export default function RangeActionModal(props: propsIF) {
         }
     };
 
-    const transactionDenied = <TransactionDenied />;
-
-    const transactionSuccess = (
-        <TxSubmittedSimplify
-            hash={newTransactionHash}
-            content={`${
-                type === 'Remove' ? 'Removal' : 'Harvest'
-            } Transaction Successfully Submitted!`}
-        />
-    );
-
-    const transactionPending = (
-        <WaitingConfirmation
-            content={`Submitting ${
-                type === 'Remove' ? 'removal' : 'harvest'
-            } transaction for ${position.baseSymbol} and ${
-                position.quoteSymbol
-            }.`}
-        />
-    );
-
-    const [currentConfirmationData, setCurrentConfirmationData] =
-        useState(transactionPending);
-
-    const transactionApproved = newTransactionHash !== '';
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
-
-    const transactionException = <TransactionException />;
-
-    function handleConfirmationChange(): void {
-        setCurrentConfirmationData(transactionPending);
-
-        if (transactionApproved) {
-            setCurrentConfirmationData(transactionSuccess);
-        } else if (isTransactionDenied) {
-            setCurrentConfirmationData(transactionDenied);
-        } else if (isTransactionException) {
-            setCurrentConfirmationData(transactionException);
-        }
-    }
-
-    useEffect(() => {
-        handleConfirmationChange();
-    }, [
-        transactionApproved,
-        newTransactionHash,
-        txErrorCode,
-        showConfirmation,
-        isTransactionDenied,
-    ]);
-
     const baseRemovalNum =
         (((posLiqBaseDecimalCorrected || 0) +
             (feeLiqBaseDecimalCorrected || 0)) *
@@ -616,31 +554,6 @@ export default function RangeActionModal(props: propsIF) {
         feeLiqBaseDecimalCorrected !== undefined
             ? ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100
             : undefined;
-
-    const confirmationContent = (
-        <div className={styles.confirmation_container}>
-            <SimpleModalHeader
-                onClose={handleModalClose}
-                title={
-                    showSettings
-                        ? `${
-                              type === 'Remove' ? 'Remove Position' : 'Harvest'
-                          } Settings`
-                        : type === 'Remove'
-                        ? 'Remove Position'
-                        : 'Harvest Confirmation'
-                }
-                onBackButton={() => {
-                    resetConfirmation();
-                    setShowSettings(false);
-                }}
-                showBackButton={showSettings}
-            />
-            <div className={styles.confirmation_content}>
-                {currentConfirmationData}
-            </div>
-        </div>
-    );
 
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
@@ -665,11 +578,17 @@ export default function RangeActionModal(props: propsIF) {
                     flat
                     disabled={!(currentSlippage > 0)}
                 />
-            ) : isPositionPendingUpdate ? (
-                <RangeActionButton
-                    onClick={type === 'Remove' ? removeFn : harvestFn}
-                    disabled={true}
-                    title='Position Update Pending…'
+            ) : showConfirmation ? (
+                <SubmitTransaction
+                    type='Range'
+                    newTransactionHash={newTransactionHash}
+                    txErrorCode={txErrorCode}
+                    resetConfirmation={resetConfirmation}
+                    sendTransaction={type === 'Remove' ? removeFn : harvestFn}
+                    transactionPendingDisplayString={
+                        'Submitting transaction...'
+                    }
+                    disableSubmitAgain
                 />
             ) : (
                 <RangeActionButton
@@ -770,7 +689,6 @@ export default function RangeActionModal(props: propsIF) {
         </>
     );
 
-    if (showConfirmation) return confirmationContent;
     return (
         <>
             <SimpleModalHeader

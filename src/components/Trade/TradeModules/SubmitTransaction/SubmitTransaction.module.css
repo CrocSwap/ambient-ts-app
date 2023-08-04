@@ -1,11 +1,5 @@
-.button_container {
-    margin-top: 1rem;
-}
-
 .close_icon_container {
-    margin: 8px 0;
-
-    /* padding: 8px 12px 0px; */
+    margin-top: 8px;
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
@@ -18,7 +12,7 @@
     line-height: var(--body-lh);
     color: var(--accent5);
     cursor: pointer;
-    border: 1px solid var(--accent1);
+    border: 1px solid var(--dark3);
     transition: all var(--animation-speed) ease-in-out;
     border-radius: 50px;
     padding: 3px 8px;
@@ -26,6 +20,7 @@
 
 .close_icon_container button:hover {
     color: var(--accent1);
+    border: 1px solid var(--accent1);
 }
 .button_container .button_content {
     width: 100%;
