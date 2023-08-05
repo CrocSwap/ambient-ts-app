@@ -76,7 +76,7 @@ function TopPools(props: propsIF) {
         },
         {
             label: 'TVL',
-            hidden: true,
+            hidden: false,
             align: 'right',
             responsive: 'sm',
             sortable: true,
@@ -89,7 +89,13 @@ function TopPools(props: propsIF) {
             responsive: 'lg',
             sortable: true,
         },
-        { label: '', hidden: false, align: 'right', sortable: false },
+        {
+            label: '',
+            hidden: true,
+            responsive: 'sm',
+            align: 'right',
+            sortable: false,
+        },
     ];
 
     return (
