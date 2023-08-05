@@ -1,6 +1,6 @@
 import { useId, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
-import Toggle2 from '../Toggle/Toggle2';
+import Toggle from '../Toggle/Toggle';
 import styles from './ConfirmationModalControl.module.css';
 
 interface propsIF {
@@ -21,7 +21,7 @@ export default function ConfirmationModalControl(props: propsIF) {
         ? 'Swaps'
         : pathname.includes('market')
         ? 'Swaps'
-        : pathname.includes('range')
+        : pathname.includes('pool')
         ? 'Pool Orders'
         : pathname.includes('reposition')
         ? 'Repositions'
@@ -42,7 +42,7 @@ export default function ConfirmationModalControl(props: propsIF) {
             ) : (
                 <p tabIndex={0}>Skip this confirmation step in the future.</p>
             )}
-            <Toggle2
+            <Toggle
                 key={compKey}
                 isOn={tempBypassConfirm}
                 disabled={false}

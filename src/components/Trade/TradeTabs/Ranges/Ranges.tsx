@@ -21,6 +21,8 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
 import Spinner from '../../../Global/Spinner/Spinner';
+import { useLocation } from 'react-router-dom';
+import { RangeContext } from '../../../../contexts/RangeContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -39,16 +41,17 @@ function Ranges(props: propsIF) {
 
     const {
         showAllData: showAllDataSelection,
-        expandTradeTable: expandTradeTableSelection,
-        setExpandTradeTable,
+        tradeTableState,
+        toggleTradeTable,
     } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-
+    const { setCurrentRangeInReposition } = useContext(RangeContext);
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
-    const expandTradeTable = !isAccountView && expandTradeTableSelection;
+    const isTradeTableExpanded =
+        !isAccountView && tradeTableState === 'Expanded';
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -61,12 +64,17 @@ function Ranges(props: propsIF) {
 
     const [rangeData, setRangeData] = useState<PositionIF[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const path = useLocation().pathname;
+
+    if (!path.includes('reposition')) {
+        setCurrentRangeInReposition('');
+    }
 
     useEffect(() => {
         if (isAccountView) setRangeData(activeAccountPositionData || []);
         else if (!showAllData)
             setRangeData(
-                graphData?.positionsByUser?.positions.filter(
+                graphData?.userPositionsByPool?.positions.filter(
                     (position) =>
                         position.base.toLowerCase() ===
                             baseTokenAddress.toLowerCase() &&
@@ -80,9 +88,10 @@ function Ranges(props: propsIF) {
         }
     }, [
         showAllData,
+        isAccountView,
         activeAccountPositionData,
-        graphData?.positionsByUser,
         graphData?.positionsByPool,
+        graphData?.userPositionsByPool,
     ]);
 
     useEffect(() => {
@@ -96,13 +105,16 @@ function Ranges(props: propsIF) {
             );
         else if (!showAllData)
             setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+                graphData?.dataLoadingStatus
+                    .isConnectedUserPoolRangeDataLoading,
             );
         else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
     }, [
         showAllData,
+        isAccountView,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
+        graphData?.dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
         graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
         graphData?.dataLoadingStatus.isPoolRangeDataLoading,
     ]);
@@ -131,14 +143,17 @@ function Ranges(props: propsIF) {
         (isAccountView && useMediaQuery('(min-height: 1100px)')) ||
         (!isAccountView && useMediaQuery('(min-height: 1000px)'));
 
-    const [rowsPerPage, setRowsPerPage] = useState(
-        isScreenShort ? 5 : isScreenTall ? 20 : 10,
-    );
+    const _DATA = usePagination(sortedPositions, isScreenShort, isScreenTall);
 
-    const count = Math.ceil(sortedPositions.length / rowsPerPage);
-    const _DATA = usePagination(sortedPositions, rowsPerPage);
-
-    const { showingFrom, showingTo, totalItems, setCurrentPage } = _DATA;
+    const {
+        showingFrom,
+        showingTo,
+        totalItems,
+        setCurrentPage,
+        rowsPerPage,
+        changeRowsPerPage,
+        count,
+    } = _DATA;
     const handleChange = (e: React.ChangeEvent<unknown>, p: number) => {
         setPage(p);
         _DATA.jump(p);
@@ -149,9 +164,9 @@ function Ranges(props: propsIF) {
             | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
             | React.ChangeEvent<HTMLSelectElement>,
     ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
+        changeRowsPerPage(parseInt(event.target.value, 10));
     };
-    const tradePageCheck = expandTradeTable && rangeData.length > 10;
+    const tradePageCheck = isTradeTableExpanded && rangeData.length > 10;
 
     const listRef = useRef<HTMLUListElement>(null);
     const sPagination = useMediaQuery('(max-width: 800px)');
@@ -162,7 +177,7 @@ function Ranges(props: propsIF) {
             <div className={styles.footer}>
                 <div className={styles.footer_content}>
                     <RowsPerPageDropdown
-                        value={rowsPerPage}
+                        rowsPerPage={rowsPerPage}
                         onChange={handleChangeRowsPerPage}
                         itemCount={sortedPositions.length}
                         setCurrentPage={setCurrentPage}
@@ -370,28 +385,17 @@ function Ranges(props: propsIF) {
 
     useEffect(() => {
         if (mobileView) {
-            setExpandTradeTable(true);
+            toggleTradeTable();
         }
     }, [mobileView]);
 
     useEffect(() => {
-        if (_DATA.currentData.length && !expandTradeTable) {
+        if (_DATA.currentData.length && !isTradeTableExpanded) {
             setCurrentPage(1);
             const mockEvent = {} as React.ChangeEvent<unknown>;
             handleChange(mockEvent, 1);
         }
-    }, [expandTradeTable]);
-
-    const mobileViewHeight = mobileView ? '70vh' : '260px';
-
-    const expandStyle = expandTradeTable
-        ? mobileView
-            ? 'calc(100vh - 15rem) '
-            : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
-    const portfolioPageStyle = props.isAccountView
-        ? 'calc(100vh - 19.5rem)'
-        : expandStyle;
+    }, [isTradeTableExpanded]);
 
     const shouldDisplayNoTableData = !isLoading && !rangeData.length;
 
@@ -401,14 +405,14 @@ function Ranges(props: propsIF) {
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
-                !expandTradeTable &&
+                !isTradeTableExpanded &&
                     !props.isAccountView &&
                     sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
                         <div className={styles.view_more_container}>
                             <button
                                 className={styles.view_more_button}
                                 onClick={() => {
-                                    setExpandTradeTable(true);
+                                    toggleTradeTable();
                                 }}
                             >
                                 View More
@@ -426,9 +430,8 @@ function Ranges(props: propsIF) {
     return (
         <section
             className={`${styles.main_list_container} ${
-                expandTradeTable && styles.main_list_expanded
+                isTradeTableExpanded && styles.main_list_expanded
             }`}
-            style={{ height: portfolioPageStyle }}
         >
             <div>{headerColumnsDisplay}</div>
 

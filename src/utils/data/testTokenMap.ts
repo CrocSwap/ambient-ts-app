@@ -1,5 +1,9 @@
 export const testTokenMap = new Map([
     [
+        '0x0000000000000000000000000000000000000000_0x1', // 'ETH' on Mainnet
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_0x1', // 'WETH' on Mainnet
+    ],
+    [
         '0x0000000000000000000000000000000000000000_0x5', // 'ETH' on Goerli
         '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2_0x1', // 'WETH' on Mainnet
     ],
@@ -9,6 +13,14 @@ export const testTokenMap = new Map([
     ],
     [
         '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c_0x5', // 'USDC' on Goerli
+        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48_0x1', // 'USDC' on Mainnet
+    ],
+    [
+        '0x0595328847af962f951a4f8f8ee9a3bf261e4f6b_0x5', // 'OHM' on Goerli
+        '0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5_0x1', // 'OHM' on Mainnet
+    ],
+    [
+        '0x4e3d1e75c459f8c3306033f78b257ab51c2dab6c_0x5', // 'WTT1021' on Goerli
         '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48_0x1', // 'USDC' on Mainnet
     ],
     [
@@ -44,9 +56,14 @@ export function getMainnetEquivalent(
             token: lookup.split('_')[0],
             chainId: lookup.split('_')[1],
         };
-    } else {
+    } else if (chainId === '0x1') {
         return {
             token: token,
+            chainId: chainId,
+        };
+    } else {
+        return {
+            token: '',
             chainId: chainId,
         };
     }

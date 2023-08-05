@@ -1,9 +1,9 @@
 // START: Import Local Files
-import { capitalConcFactor, tickToPrice } from '@crocswap-libs/sdk';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+// import { capitalConcFactor, tickToPrice } from '@crocswap-libs/sdk';
+// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
-import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
+// import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import {
     useAppDispatch,
@@ -15,11 +15,11 @@ import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import styles from './RepositionPriceInfo.module.css';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import AprExplanation from '../../../Global/Informational/AprExplanation';
+// import { AiOutlineQuestionCircle } from 'react-icons/ai';
+// import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
+// import { AppStateContext } from '../../../../contexts/AppStateContext';
+// import { PoolContext } from '../../../../contexts/PoolContext';
 
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
@@ -59,9 +59,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const {
         position,
         currentPoolPriceDisplay,
-        currentPoolPriceTick,
+        // currentPoolPriceTick,
         rangeWidthPercentage,
-        isConfirmModal,
+        // isConfirmModal,
         minPriceDisplay,
         maxPriceDisplay,
         currentBaseQtyDisplayTruncated,
@@ -73,10 +73,10 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         currentMaxPrice,
     } = props;
 
-    const {
-        globalPopup: { open: openGlobalPopup },
-    } = useContext(AppStateContext);
-    const { ambientApy } = useContext(PoolContext);
+    // const {
+    //     globalPopup: { open: openGlobalPopup },
+    // } = useContext(AppStateContext);
+    // const { ambientApy } = useContext(PoolContext);
     const { repoSlippage } = useContext(UserPreferenceContext);
 
     const baseSymbol = position?.baseSymbol;
@@ -87,20 +87,20 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const isDenomBase = tradeData?.isDenomBase;
     const liquidityFee = tradeData?.liquidityFee;
 
-    const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-    const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+    // const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+    // const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
-    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-        isDenomBase,
-        position?.baseDecimals || 18,
-        position?.quoteDecimals || 18,
-        lowTick,
-        highTick,
-        lookupChain(position.chainId).gridSize,
-    );
+    // const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+    //     isDenomBase,
+    //     position?.baseDecimals || 18,
+    //     position?.quoteDecimals || 18,
+    //     lowTick,
+    //     highTick,
+    //     lookupChain(position.chainId).gridSize,
+    // );
 
-    const pinnedLowTick = pinnedDisplayPrices.pinnedLowTick;
-    const pinnedHighTick = pinnedDisplayPrices.pinnedHighTick;
+    // const pinnedLowTick = pinnedDisplayPrices.pinnedLowTick;
+    // const pinnedHighTick = pinnedDisplayPrices.pinnedHighTick;
     // eslint-disable-next-line
     const dispatch = useAppDispatch();
 
@@ -115,23 +115,23 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         ? quoteTokenCharacter
         : baseTokenCharacter;
 
-    let aprPercentage = ambientApy;
+    // let aprPercentage = ambientApy;
 
-    if (ambientApy) {
-        const concFactor = capitalConcFactor(
-            tickToPrice(currentPoolPriceTick),
-            tickToPrice(pinnedLowTick),
-            tickToPrice(pinnedHighTick),
-        );
-        aprPercentage = ambientApy * concFactor;
-    }
+    // if (ambientApy) {
+    //     const concFactor = capitalConcFactor(
+    //         tickToPrice(currentPoolPriceTick),
+    //         tickToPrice(pinnedLowTick),
+    //         tickToPrice(pinnedHighTick),
+    //     );
+    //     aprPercentage = ambientApy * concFactor;
+    // }
 
-    const aprPercentageString = aprPercentage
-        ? ` ${aprPercentage.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })}%`
-        : '…';
+    // const aprPercentageString = aprPercentage
+    //     ? ` ${aprPercentage.toLocaleString('en-US', {
+    //           minimumFractionDigits: 2,
+    //           maximumFractionDigits: 2,
+    //       })}%`
+    //     : '…';
 
     // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
 
@@ -153,25 +153,25 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         );
     }
 
-    const apr = (
-        <div className={styles.apr_display}>
-            <p>
-                Est. APR{' '}
-                <AiOutlineQuestionCircle
-                    size={14}
-                    onClick={() =>
-                        openGlobalPopup(
-                            <AprExplanation />,
+    // const apr = (
+    //     <div className={styles.apr_display}>
+    //         <p>
+    //             Est. APR{' '}
+    //             <AiOutlineQuestionCircle
+    //                 size={14}
+    //                 onClick={() =>
+    //                     openGlobalPopup(
+    //                         <AprExplanation />,
 
-                            'Estimated APR',
-                            'right',
-                        )
-                    }
-                />
-            </p>
-            <p>{aprPercentageString}</p>
-        </div>
-    );
+    //                         'Estimated APR',
+    //                         'right',
+    //                     )
+    //                 }
+    //             />
+    //         </p>
+    //         <p>{aprPercentageString}</p>
+    //     </div>
+    // );
 
     const feesAndSlippageData = [
         {
@@ -182,7 +182,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         },
         {
             title: 'Liquidity Provider Fee',
-            tooltipTitle: `This is a dynamically updated rate to reward ${baseSymbol} / ${quoteSymbol} liquidity providers.`,
+            tooltipTitle: `This is a dynamically updated rate to reward ${
+                isDenomBase ? baseSymbol : quoteSymbol
+            } / ${isDenomBase ? quoteSymbol : baseSymbol} liquidity providers.`,
             // eslint-disable-next-line no-irregular-whitespace
             data: `${liquidityFee * 100} %`,
             placement: 'bottom',
@@ -245,7 +247,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     return (
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
-                {!isConfirmModal ? apr : null}
+                {/* {!isConfirmModal ? apr : null} */}
                 <aside className={styles.divider} />
 
                 <RowDisplay item1='' item2='Current' item3='Est. New' />

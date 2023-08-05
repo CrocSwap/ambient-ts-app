@@ -1,14 +1,12 @@
 import { useEffect, useState, memo, useContext, useCallback } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/ambient_logo.png';
-import logoText from '../../../assets/images/logos/logo_text.png';
+import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import {
     useAppDispatch,
@@ -33,12 +31,17 @@ import {
     resetUserAddresses,
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { getFormattedNumber } from '../../functions/getFormattedNumber';
 
 const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { isChainSupported, setCrocEnv } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        setCrocEnv,
+        chainData: { chainId, poolIndex: poolId },
+    } = useContext(CrocEnvContext);
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -54,8 +57,6 @@ const PageHeader = function () {
     } = useContext(TradeTokenContext);
     const { address, isConnected } = useAccount();
     const { data: ensName } = useEnsName({ address });
-
-    const { t } = useTranslation();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -168,10 +169,21 @@ const PageHeader = function () {
     const quoteAddressInRtk = tradeData.quoteToken.address;
 
     useEffect(() => {
-        if (baseAddressInRtk && quoteAddressInRtk) {
-            recentPools.addPool(tradeData.baseToken, tradeData.quoteToken);
+        if (baseAddressInRtk && quoteAddressInRtk && crocEnv) {
+            const promise = crocEnv
+                .pool(tradeData.baseToken.address, tradeData.quoteToken.address)
+                .isInit();
+            Promise.resolve(promise).then((poolExists: boolean) => {
+                poolExists &&
+                    recentPools.add(
+                        tradeData.baseToken,
+                        tradeData.quoteToken,
+                        chainId,
+                        poolId,
+                    );
+            });
         }
-    }, [baseAddressInRtk, quoteAddressInRtk]);
+    }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -179,22 +191,9 @@ const PageHeader = function () {
             : poolPriceDisplay
         : undefined;
 
-    const truncatedPoolPrice =
-        !poolPriceDisplayWithDenom ||
-        poolPriceDisplayWithDenom === Infinity ||
-        poolPriceDisplayWithDenom === 0
-            ? ''
-            : poolPriceDisplayWithDenom < 0.0001
-            ? poolPriceDisplayWithDenom.toExponential(2)
-            : poolPriceDisplayWithDenom < 2
-            ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : poolPriceDisplayWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const truncatedPoolPrice = getFormattedNumber({
+        value: poolPriceDisplayWithDenom,
+    });
 
     useEffect(() => {
         const path = location.pathname;
@@ -211,28 +210,34 @@ const PageHeader = function () {
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
 
         if (pathNoLeadingSlash === 'account') {
-            document.title = 'My Account ~ ambient.finance';
+            document.title = 'My Account ~ Ambient';
         } else if (isPathValidAddress) {
             const pathNoPrefix = pathNoLeadingSlash.replace(/account\//, '');
+            const pathNoPrefixDecoded = decodeURIComponent(pathNoPrefix);
             const ensNameOrAddressTruncated = isAddressEns
-                ? pathNoPrefix.length > 15
-                    ? trimString(pathNoPrefix, 10, 3, '…')
-                    : pathNoPrefix
-                : trimString(pathNoPrefix, 6, 0, '…');
-            document.title = `${ensNameOrAddressTruncated} ~ ambient.finance`;
+                ? pathNoPrefixDecoded.length > 15
+                    ? trimString(pathNoPrefixDecoded, 10, 3, '…')
+                    : pathNoPrefixDecoded
+                : trimString(pathNoPrefixDecoded, 6, 0, '…');
+            document.title = `${ensNameOrAddressTruncated} ~ Ambient`;
         } else if (
             location.pathname.includes('swap') ||
             location.pathname.includes('trade')
         ) {
             document.title = isDenomBase
-                ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ ambient.finance`
-                : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
+                ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ Ambient`
+                : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ Ambient`;
         } else if (location.pathname.includes('chat')) {
-            document.title = 'Chat ~ ambient.finance';
+            document.title = 'Chat ~ Ambient';
+        } else if (location.pathname.includes('initpool')) {
+            document.title = 'Pool Initialization ~ Ambient';
+        } else if (location.pathname.includes('explore')) {
+            document.title = 'Explore ~ Ambient';
         } else if (location.pathname.includes('404')) {
-            document.title = '404 ~ ambient.finance';
+            document.title = '404 ~ Ambient';
         } else {
-            document.title = 'Home ~ ambient.finance';
+            document.title =
+                'Ambient | A New Zero-to-One Decentralized Trading Protocol';
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
@@ -246,32 +251,32 @@ const PageHeader = function () {
 
     const linkData = [
         {
-            title: t('common:homeTitle'),
+            title: 'Home',
             destination: '/',
-            shouldDisplay: desktopScreen,
+            shouldDisplay: false,
         },
         {
-            title: t('common:swapTitle'),
+            title: 'Swap',
             destination: '/swap/' + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:tradeTitle'),
+            title: 'Trade',
             destination: tradeDestination + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:analyticsTitle'),
-            destination: '/analytics',
-            shouldDisplay: false,
-        },
-        {
-            title: t('common:poolTitle'),
-            destination: '/trade/range/' + paramsSlug,
+            title: 'Pool',
+            destination: '/trade/pool/' + paramsSlug,
             shouldDisplay: true,
         },
         {
-            title: t('common:accountTitle'),
+            title: 'Explore',
+            destination: '/explore',
+            shouldDisplay: true,
+        },
+        {
+            title: 'Account',
             destination: '/account',
             shouldDisplay: isConnected,
         },
@@ -282,8 +287,8 @@ const PageHeader = function () {
 
     function isActive(linkDestination: string, locationPathname: string) {
         if (linkDestination.includes('/trade')) {
-            if (linkDestination.includes('/range')) {
-                return locationPathname.includes('/trade/range')
+            if (linkDestination.includes('/pool')) {
+                return locationPathname.includes('/trade/pool')
                     ? styles.active
                     : styles.inactive;
             } else {
@@ -305,8 +310,8 @@ const PageHeader = function () {
     function isUnderlined(linkDestination: string, locationPathname: string) {
         return (
             (linkDestination.includes('/trade') &&
-                (linkDestination.includes('/trade/range')
-                    ? locationPathname.includes('/trade/range')
+                (linkDestination.includes('/trade/pool')
+                    ? locationPathname.includes('/trade/pool')
                     : locationPathname.includes(tradeDestination))) ||
             (locationPathname.includes('/swap') &&
                 linkDestination.includes('/swap')) ||
@@ -370,8 +375,6 @@ const PageHeader = function () {
         };
     }, []);
 
-    // TODO (#1436): logo padding is problematic in mobile views
-
     return (
         <header
             data-testid={'page-header'}
@@ -380,12 +383,14 @@ const PageHeader = function () {
             }`}
         >
             <Link to='/' className={styles.logo_container} aria-label='Home'>
-                <img src={logo} alt='ambient' className={styles.logo} />
-                {desktopScreen && (
+                {desktopScreen ? (
+                    <img src={mainLogo} alt='' />
+                ) : (
                     <img
-                        src={logoText}
+                        src={logo}
                         alt='ambient'
-                        className={styles.logo_text}
+                        className={styles.logo}
+                        style={{ maxWidth: '70%', maxHeight: '70%' }}
                     />
                 )}
             </Link>
@@ -410,7 +415,7 @@ const PageHeader = function () {
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
                                     <div className={styles.branch}>
-                                        {BRANCH_NAME}{' '}
+                                        {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
                                     </div>
                                 ) : null}
@@ -422,7 +427,6 @@ const PageHeader = function () {
                         </div>
                     </div>
                 )}
-                {isChainSupported || <SwitchNetwork />}
             </div>
         </header>
     );

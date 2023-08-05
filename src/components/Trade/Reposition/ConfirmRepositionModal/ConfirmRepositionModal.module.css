@@ -5,8 +5,8 @@
 
 .modal_footer {
     width: 100%;
-    padding: 0 20px;
-    margin-top: 10px;
+    padding: 0 1rem;
+    margin-top: 0.5rem;
 }
 
 .modal_content {
@@ -102,13 +102,6 @@
     row-gap: 12px;
 }
 
-.detail_line img {
-    width: 20px;
-    height: 20px;
-
-    border-radius: 50%;
-    background: white;
-}
 .detail_line div {
     display: flex;
 
@@ -137,8 +130,3 @@
     height: 1px;
     width: 100%;
 }
-/* .detail_line img {
-    margin: 0 10px;
-} */
-
-/* modal */

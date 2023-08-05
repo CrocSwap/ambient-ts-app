@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
 import { IS_LOCAL_ENV } from '../../constants';
 import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
@@ -7,6 +8,7 @@ export interface graphData {
     lastBlock: number;
     lastBlockPoll?: NodeJS.Timer;
     positionsByUser: PositionsByUser;
+    userPositionsByPool: PositionsByPool;
     positionsByPool: PositionsByPool;
     leaderboardByPool: PositionsByPool;
     changesByUser: ChangesByUser;
@@ -14,9 +16,8 @@ export interface graphData {
     candlesForAllPools: CandlesForAllPools;
     liquidityData?: LiquidityDataIF;
     liquidityRequest?: PoolRequestParams;
-    poolVolumeSeries: PoolVolumeSeries;
-    poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
+    userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
     dataLoadingStatus: DataLoadingStatus;
 }
@@ -31,7 +32,9 @@ export interface PoolRequestParams {
 export interface DataLoadingStatus {
     isConnectedUserTxDataLoading: boolean;
     isConnectedUserOrderDataLoading: boolean;
+    isConnectedUserPoolOrderDataLoading: boolean;
     isConnectedUserRangeDataLoading: boolean;
+    isConnectedUserPoolRangeDataLoading: boolean;
     isLookupUserTxDataLoading: boolean;
     isLookupUserOrderDataLoading: boolean;
     isLookupUserRangeDataLoading: boolean;
@@ -50,72 +53,6 @@ export interface LimitOrdersByPool {
     limitOrders: LimitOrderIF[];
 }
 
-export interface PoolVolumeSeries {
-    dataReceived: boolean;
-    pools: Array<VolumeSeriesByPool>;
-}
-
-export interface PoolTvlSeries {
-    dataReceived: boolean;
-    pools: Array<TvlSeriesByPool>;
-}
-
-export interface TvlSeriesByPool {
-    dataReceived: boolean;
-    pool: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-    };
-    tvlData: TvlSeriesByPoolTimeAndResolution;
-}
-
-export interface VolumeSeriesByPool {
-    dataReceived: boolean;
-    pool: {
-        base: string;
-        quote: string;
-        poolIdx: number;
-        chainId: string;
-    };
-    volumeData: VolumeSeriesByPoolTimeAndResolution;
-}
-
-export interface TvlSeriesByPoolTimeAndResolution {
-    network: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    timeStart: number;
-    timeEnd: number;
-    resolution: number;
-    seriesData: Array<TvlByTimeData>;
-}
-
-export interface VolumeSeriesByPoolTimeAndResolution {
-    network: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    timeStart: number;
-    timeEnd: number;
-    resolution: number;
-    seriesData: Array<VolumeByTimeData>;
-}
-
-export interface TvlByTimeData {
-    time: number;
-    tvl: number;
-    method: string;
-}
-
-export interface VolumeByTimeData {
-    time: number;
-    volumeDay: number;
-    method: string;
-}
-
 export interface CandlesForAllPools {
     pools: Array<Pool>;
 }
@@ -125,7 +62,6 @@ export interface Pool {
         baseAddress: string;
         quoteAddress: string;
         poolIdx: number;
-        network: string;
     };
     candlesByPoolAndDuration: Array<CandlesByPoolAndDuration>;
 }
@@ -135,61 +71,10 @@ export interface CandlesByPoolAndDuration {
         baseAddress: string;
         quoteAddress: string;
         poolIdx: number;
-        network: string;
+        chainId: string;
     };
     duration: number;
     candles: Array<CandleData>;
-}
-
-export interface TvlData {
-    interpBadness: number;
-    interpDistHigher: number;
-    interpDistLower: number;
-    method: string;
-    time: number;
-    tvl: number;
-}
-
-export interface CandleData {
-    tvlData: TvlData;
-    volumeUSD: number;
-    averageLiquidityFee: number;
-    time: number;
-    poolHash: string;
-    firstBlock: number;
-    lastBlock: number;
-    minPriceDecimalCorrected: number;
-    maxPriceDecimalCorrected: number;
-    priceOpenDecimalCorrected: number;
-    priceCloseDecimalCorrected: number;
-    priceCloseExclMEVDecimalCorrected: number;
-    invPriceCloseExclMEVDecimalCorrected: number;
-    invMinPriceDecimalCorrected: number;
-    invMaxPriceDecimalCorrected: number;
-    invPriceOpenDecimalCorrected: number;
-    invPriceCloseDecimalCorrected: number;
-    minPriceExclMEVDecimalCorrected: number;
-    invMinPriceExclMEVDecimalCorrected: number;
-    maxPriceExclMEVDecimalCorrected: number;
-    invMaxPriceExclMEVDecimalCorrected: number;
-    priceOpenExclMEVDecimalCorrected: number;
-    invPriceOpenExclMEVDecimalCorrected: number;
-    numSwaps: number;
-    netBaseFlow: string;
-    netQuoteFlow: string;
-    totalBaseFlow: string;
-    totalQuoteFlow: string;
-    firstSwap: string;
-    lastSwap: string;
-    numSwapsFromCroc: number;
-    numSwapsFromUniV3: number;
-    network: string;
-    chainId: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    period: number;
-    allSwaps: Array<string>;
 }
 
 export interface PositionsByUser {
@@ -222,21 +107,23 @@ export interface ChangesByPool {
 const initialState: graphData = {
     lastBlock: 0,
     positionsByUser: { dataReceived: false, positions: [] },
+    userPositionsByPool: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
     leaderboardByPool: { dataReceived: false, positions: [] },
     changesByUser: { dataReceived: false, changes: [] },
     changesByPool: { dataReceived: false, changes: [] },
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
+    userLimitOrdersByPool: { dataReceived: false, limitOrders: [] },
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     candlesForAllPools: { pools: [] },
     liquidityData: undefined,
     liquidityRequest: undefined,
-    poolVolumeSeries: { dataReceived: false, pools: [] },
-    poolTvlSeries: { dataReceived: false, pools: [] },
     dataLoadingStatus: {
         isConnectedUserTxDataLoading: true,
         isConnectedUserOrderDataLoading: true,
+        isConnectedUserPoolOrderDataLoading: true,
         isConnectedUserRangeDataLoading: true,
+        isConnectedUserPoolRangeDataLoading: true,
         isLookupUserTxDataLoading: true,
         isLookupUserOrderDataLoading: true,
         isLookupUserRangeDataLoading: true,
@@ -302,6 +189,12 @@ export const graphDataSlice = createSlice({
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
         },
+        setUserPositionsByPool: (
+            state,
+            action: PayloadAction<PositionsByPool>,
+        ) => {
+            state.userPositionsByPool = action.payload;
+        },
         setLeaderboardByPool: (
             state,
             action: PayloadAction<PositionsByPool>,
@@ -313,6 +206,12 @@ export const graphDataSlice = createSlice({
             action: PayloadAction<LimitOrdersByUser>,
         ) => {
             state.limitOrdersByUser = action.payload;
+        },
+        setUserLimitOrdersByPool: (
+            state,
+            action: PayloadAction<LimitOrdersByPool>,
+        ) => {
+            state.userLimitOrdersByPool = action.payload;
         },
         setLimitOrdersByPool: (
             state,
@@ -367,15 +266,6 @@ export const graphDataSlice = createSlice({
                         action.payload[index];
                 }
             }
-        },
-        setPoolVolumeSeries: (
-            state,
-            action: PayloadAction<PoolVolumeSeries>,
-        ) => {
-            state.poolVolumeSeries = action.payload;
-        },
-        setPoolTvlSeries: (state, action: PayloadAction<PoolTvlSeries>) => {
-            state.poolTvlSeries = action.payload;
         },
         setChangesByUser: (state, action: PayloadAction<ChangesByUser>) => {
             state.changesByUser = action.payload;
@@ -660,8 +550,16 @@ export const graphDataSlice = createSlice({
                     state.dataLoadingStatus.isConnectedUserOrderDataLoading =
                         action.payload.loadingStatus;
                     break;
+                case 'connectedUserPoolOrderData':
+                    state.dataLoadingStatus.isConnectedUserPoolOrderDataLoading =
+                        action.payload.loadingStatus;
+                    break;
                 case 'connectedUserRangeData':
                     state.dataLoadingStatus.isConnectedUserRangeDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'connectedUserPoolRangeData':
+                    state.dataLoadingStatus.isConnectedUserPoolRangeDataLoading =
                         action.payload.loadingStatus;
                     break;
                 case 'lookupUserTxData':
@@ -725,17 +623,17 @@ export const {
     setLastBlockPoll,
     setPositionsByUser,
     addPositionsByUser,
+    setUserPositionsByPool,
     setPositionsByPool,
     setLeaderboardByPool,
     updateLeaderboard,
     addPositionsByPool,
-    setPoolVolumeSeries,
-    setPoolTvlSeries,
     setLiquidity,
     setLiquidityPending,
     setCandles,
     addCandles,
     setLimitOrdersByUser,
+    setUserLimitOrdersByPool,
     setLimitOrdersByPool,
     setChangesByUser,
     addChangesByUser,

@@ -52,7 +52,7 @@
 
 .title {
     font-style: normal;
-    font-weight: 300;
+    font-weight: 400;
     font-size: 24px;
     line-height: 30px;
     text-align: center;
@@ -67,3 +67,44 @@
     color: var(--text1);
     font-family: var(--mono);
 }
+
+@media only screen and (max-width: 600px)  {
+
+    .container{
+        width: 100%;
+    }
+    
+    .main_title{
+        display: none;
+    }
+        .stat_card_container{
+            width: 100%;
+            height: 70px;
+            padding: 8px;
+        }
+        .stat_card_container{
+            justify-content: center;
+           
+            background: var(--dark2);  
+            
+            
+    
+        }
+        .stat_card_container:hover{
+            box-shadow: none;
+        }
+    
+        .content {
+          
+        
+            list-style-type: none;
+        
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        
+        }

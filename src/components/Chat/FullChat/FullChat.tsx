@@ -21,6 +21,7 @@ import { useMediaQuery } from '@material-ui/core';
 import { defaultTokens } from '../../../utils/data/defaultTokens';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface FullChatPropsIF {
     messageList: JSX.Element;
@@ -274,7 +275,7 @@ export default function FullChat(props: FullChatPropsIF) {
                       logoURI: string;
                   };
                   chainId: string;
-                  poolId: number;
+                  poolIdx: number;
                   speed: number;
                   id: number;
               }[] = [];
@@ -298,7 +299,7 @@ export default function FullChat(props: FullChatPropsIF) {
                     logoURI: pool.quote.logoURI,
                 },
                 chainId: pool.chainId,
-                poolId: pool.poolId,
+                poolIdx: pool.poolIdx,
                 speed: findSpeed(pool),
                 id: findId(pool),
             };
@@ -355,7 +356,7 @@ export default function FullChat(props: FullChatPropsIF) {
             pool.base.address,
             pool.quote.address,
             pool.chainId,
-            pool.poolId,
+            pool.poolIdx,
         );
 
         return (
@@ -399,8 +400,11 @@ export default function FullChat(props: FullChatPropsIF) {
                 )}
 
                 <div className={styles.token_logos}>
-                    <img src={pool?.base.logoURI} alt='base token' />
-                    <img src={pool?.quote.logoURI} alt='quote token' />
+                    <img src={uriToHttp(pool?.base.logoURI)} alt='base token' />
+                    <img
+                        src={uriToHttp(pool?.quote.logoURI)}
+                        alt='quote token'
+                    />
                 </div>
                 <span>{pool?.name}</span>
                 {poolIsCurrentPool && (
@@ -562,7 +566,7 @@ export default function FullChat(props: FullChatPropsIF) {
             readableRoom.base.address,
             readableRoom.quote.address,
             readableRoom.chainId,
-            readableRoom.poolId,
+            readableRoom.poolIdx,
         );
     function handleFavButton() {
         if (readableRoom) {
@@ -571,13 +575,13 @@ export default function FullChat(props: FullChatPropsIF) {
                       readableRoom.quote,
                       readableRoom.base,
                       readableRoom.chainId,
-                      readableRoom.poolId,
+                      readableRoom.poolIdx,
                   )
                 : favePools.add(
                       readableRoom.quote,
                       readableRoom.base,
                       readableRoom.chainId,
-                      readableRoom.poolId,
+                      readableRoom.poolIdx,
                   );
         }
     }

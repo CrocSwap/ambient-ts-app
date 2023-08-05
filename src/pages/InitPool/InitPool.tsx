@@ -5,12 +5,10 @@ import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
-import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     addPendingTx,
@@ -31,12 +29,19 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { exponentialNumRegEx } from '../../utils/regex/exports';
+import uriToHttp from '../../utils/functions/uriToHttp';
+import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 
 // react functional component
 export default function InitPool() {
     const {
         wagmiModal: { open: openWagmiModalWallet },
     } = useContext(AppStateContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
         ethMainnetUsdPrice,
@@ -61,6 +66,20 @@ export default function InitPool() {
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
 
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
+    const [isInitPending, setIsInitPending] = useState(false);
+
+    const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState<
+        number | undefined
+    >();
+    const [estimatedInitialPriceInBase, setEstimatedInitialPriceInBase] =
+        useState<string>('0');
+    const [estimatedInitialPriceDisplay, setEstimatedInitialPriceDisplay] =
+        useState<string>('0');
+    const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
+
+    const [isDenomBase, setIsDenomBase] = useState(true);
+
     const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
         (state) => state.tradeData,
     );
@@ -84,7 +103,47 @@ export default function InitPool() {
         }
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
-    }, [crocEnv, sessionReceipts.length]);
+    }, [crocEnv, sessionReceipts.length, baseToken, quoteToken]);
+
+    useEffect(() => {
+        (async () => {
+            const mainnetBase = getMainnetEquivalent(
+                baseToken.address,
+                chainId,
+            );
+            const mainnetQuote = getMainnetEquivalent(
+                quoteToken.address,
+                chainId,
+            );
+            const basePricePromise = cachedFetchTokenPrice(
+                mainnetBase.token,
+                mainnetBase.chainId,
+            );
+            const quotePricePromise = cachedFetchTokenPrice(
+                mainnetQuote.token,
+                mainnetQuote.chainId,
+            );
+
+            const basePrice = (await basePricePromise)?.usdPrice || 2000;
+            const quotePrice = (await quotePricePromise)?.usdPrice || 1;
+
+            const defaultPriceNum = basePrice / quotePrice;
+
+            const defaultPriceTruncated =
+                defaultPriceNum < 0.0001
+                    ? defaultPriceNum.toExponential(2)
+                    : defaultPriceNum < 2
+                    ? defaultPriceNum.toPrecision(3)
+                    : defaultPriceNum.toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setInitialPriceInBaseDenom(defaultPriceNum);
+            setInitialPriceForDOM(defaultPriceTruncated);
+            setEstimatedInitialPriceInBase(defaultPriceTruncated);
+            setEstimatedInitialPriceDisplay(defaultPriceTruncated);
+        })();
+    }, [baseToken, quoteToken]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
         useState(false);
@@ -106,50 +165,13 @@ export default function InitPool() {
                 gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
-    const [isInitPending, setIsInitPending] = useState(false);
-
-    const [initialPrice, setInitialPrice] = useState<number | undefined>();
-    const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
-
-    const defaultInitialPrice = 2000;
-
-    const [placeHolderPrice, setPlaceholderPrice] =
-        useState<number>(defaultInitialPrice);
-
-    const [valueDisplayString, setValueDisplayString] = useState<string>('');
-
-    const [isDenomBase, setIsDenomBase] = useState(true);
-
-    const invertInitialPrice = () => {
-        if (initialPrice) setInitialPrice(1 / initialPrice);
-        setPlaceholderPrice(1 / placeHolderPrice);
-    };
-
-    useEffect(() => {
-        if (initialPrice !== undefined) {
-            setValueDisplayString(initialPrice.toString() || '');
-        }
-    }, [initialPrice]);
-
-    useEffect(() => {
-        if (initialPrice) {
-            if (isDenomBase) {
-                setInitialPriceInBaseDenom(initialPrice);
-            } else {
-                setInitialPriceInBaseDenom(1 / initialPrice);
-            }
-        }
-    }, [isDenomBase, initialPrice]);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
@@ -173,7 +195,7 @@ export default function InitPool() {
             } catch (e) {
                 const error = e as TransactionError;
                 console.error({ error });
-                // The user used "speed up" or something similar
+                // The user used 'speed up' or something similar
                 // in their client, but we now have the updated info
                 if (isTransactionReplacedError(error)) {
                     IS_LOCAL_ENV && console.debug('repriced');
@@ -207,12 +229,9 @@ export default function InitPool() {
 
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const sendInit = () => {
-        IS_LOCAL_ENV &&
-            console.debug(`Initializing ${baseToken.symbol}-${quoteToken.symbol} pool at
-        an initial price of ${initialPriceInBaseDenom}`);
         if (initialPriceInBaseDenom) {
             (async () => {
                 let tx;
@@ -236,7 +255,7 @@ export default function InitPool() {
                     } catch (e) {
                         const error = e as TransactionError;
                         console.error({ error });
-                        // The user used "speed up" or something similar
+                        // The user used 'speed up' or something similar
                         // in their client, but we now have the updated info
                         if (isTransactionReplacedError(error)) {
                             IS_LOCAL_ENV && console.debug('repriced');
@@ -256,7 +275,7 @@ export default function InitPool() {
                     if (receipt) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
-                        linkGenRange.navigate({
+                        linkGenPool.navigate({
                             chain: chainId,
                             tokenA: baseToken.address,
                             tokenB: quoteToken.address,
@@ -276,6 +295,210 @@ export default function InitPool() {
             })();
         }
     };
+
+    const placeholderText = `e.g. ${estimatedInitialPriceDisplay} (${
+        isDenomBase ? baseToken.symbol : quoteToken.symbol
+    }/${isDenomBase ? quoteToken.symbol : baseToken.symbol})`;
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const isValid =
+            event.target.value === '' ||
+            event.target.value === '.' ||
+            event.target.validity.valid;
+        const targetValue = event.target.value.replaceAll(',', '');
+        const input = targetValue.startsWith('.')
+            ? '0' + targetValue
+            : targetValue;
+        const targetValueNum = parseFloat(input);
+
+        isValid && setInitialPriceForDOM(input);
+
+        if (
+            isValid &&
+            ((!isNaN(targetValueNum) && targetValueNum !== 0) ||
+                event.target.value === '')
+        ) {
+            if (event.target.value === '') {
+                setInitialPriceInBaseDenom(undefined);
+            } else {
+                if (isDenomBase) {
+                    setInitialPriceInBaseDenom(targetValueNum);
+                } else {
+                    setInitialPriceInBaseDenom(1 / targetValueNum);
+                }
+            }
+        }
+    };
+
+    useEffect(() => {
+        handleDisplayUpdate();
+    }, [isDenomBase]);
+
+    const handleDisplayUpdate = () => {
+        if (estimatedInitialPriceInBase) {
+            if (isDenomBase) {
+                setEstimatedInitialPriceDisplay(estimatedInitialPriceInBase);
+            } else {
+                const invertedPriceNum =
+                    1 /
+                    parseFloat(estimatedInitialPriceInBase.replaceAll(',', ''));
+
+                const invertedPriceTruncated =
+                    invertedPriceNum < 0.0001
+                        ? invertedPriceNum.toExponential(2)
+                        : invertedPriceNum < 2
+                        ? invertedPriceNum.toPrecision(3)
+                        : invertedPriceNum.toLocaleString('en-US', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                setEstimatedInitialPriceDisplay(invertedPriceTruncated);
+            }
+        }
+        if (initialPriceInBaseDenom) {
+            if (!isDenomBase) {
+                const newInitialPriceForDOMTruncated =
+                    1 / initialPriceInBaseDenom < 0.0001
+                        ? (1 / initialPriceInBaseDenom).toExponential(2)
+                        : 1 / initialPriceInBaseDenom < 2
+                        ? (1 / initialPriceInBaseDenom).toPrecision(3)
+                        : (1 / initialPriceInBaseDenom).toLocaleString(
+                              undefined,
+                              {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              },
+                          );
+                setInitialPriceForDOM(newInitialPriceForDOMTruncated);
+            } else {
+                const newInitialPriceForDOMTruncated =
+                    initialPriceInBaseDenom < 0.0001
+                        ? initialPriceInBaseDenom.toExponential(2)
+                        : initialPriceInBaseDenom < 2
+                        ? initialPriceInBaseDenom.toPrecision(3)
+                        : initialPriceInBaseDenom.toLocaleString('en-US', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                setInitialPriceForDOM(newInitialPriceForDOMTruncated);
+            }
+        }
+    };
+
+    const ButtonToRender = () => {
+        let buttonContent;
+
+        switch (true) {
+            case poolExists:
+                // Display button for an already initialized pool
+                buttonContent = (
+                    <Button
+                        title='Pool Already Initialized'
+                        disabled={true}
+                        action={() => {
+                            IS_LOCAL_ENV && console.debug('clicked');
+                        }}
+                        flat={true}
+                    />
+                );
+                break;
+
+            case isConnected || !connectButtonDelayElapsed:
+                // Display different buttons based on various conditions
+                if (!isTokenAAllowanceSufficient) {
+                    // Display token A approval button
+                    buttonContent = tokenAApprovalButton;
+                } else if (!isTokenBAllowanceSufficient) {
+                    // Display token B approval button
+                    buttonContent = tokenBApprovalButton;
+                } else if (
+                    initialPriceInBaseDenom === undefined ||
+                    initialPriceInBaseDenom <= 0
+                ) {
+                    // Display button to enter an initial price
+                    buttonContent = (
+                        <Button
+                            title='Enter an Initial Price'
+                            disabled={true}
+                            action={() => {
+                                IS_LOCAL_ENV && console.debug('clicked');
+                            }}
+                            flat={true}
+                        />
+                    );
+                } else if (isInitPending === true) {
+                    // Display button for pending initialization
+                    buttonContent = (
+                        <Button
+                            title='Initialization Pending'
+                            disabled={true}
+                            action={() => {
+                                IS_LOCAL_ENV && console.debug('clicked');
+                            }}
+                            flat={true}
+                        />
+                    );
+                } else {
+                    // Display confirm button for final step
+                    buttonContent = (
+                        <Button title='Confirm' action={sendInit} flat={true} />
+                    );
+                }
+                break;
+
+            default:
+                // Display button to connect wallet if no conditions match
+                buttonContent = (
+                    <Button
+                        title='Connect Wallet'
+                        action={openWagmiModalWallet}
+                        flat={true}
+                    />
+                );
+                break;
+        }
+
+        return buttonContent;
+    };
+
+    const tokenADisplay = (
+        <div className={styles.pool_display}>
+            <div>
+                <TokenIcon
+                    src={uriToHttp(tokenA.logoURI)}
+                    alt={tokenA.symbol}
+                    size='2xl'
+                />
+                {tokenA && <h3>{tokenA.symbol}</h3>}
+            </div>
+            {tokenA && <p>{tokenA.name}</p>}
+        </div>
+    );
+
+    const tokenBDisplay = (
+        <div className={styles.pool_display}>
+            <div>
+                <TokenIcon
+                    src={uriToHttp(tokenB.logoURI)}
+                    alt={tokenB.symbol}
+                    size='2xl'
+                />
+                {tokenB && <h3>{tokenB.symbol}</h3>}
+            </div>
+            {tokenB && <p>{tokenB.name}</p>}
+        </div>
+    );
+
+    const navigateToMarket = (
+        <Navigate
+            to={linkGenMarket.getFullURL({
+                chain: chainId,
+                tokenA: baseToken.address,
+                tokenB: quoteToken.address,
+            })}
+            replace={true}
+        />
+    );
 
     const tokenAApprovalButton = (
         <Button
@@ -309,202 +532,58 @@ export default function InitPool() {
 
     return (
         <section className={styles.main}>
-            {poolExists && (
-                <Navigate
-                    to={linkGenMarket.getFullURL({
-                        chain: chainId,
-                        tokenA: baseToken.address,
-                        tokenB: quoteToken.address,
-                    })}
-                    replace={true}
-                />
-            )}
+            {poolExists && navigateToMarket}
             <div className={styles.init_pool_container}>
-                <div className={styles.back_button}>
-                    <VscClose size={30} onClick={() => navigate(-1)} />
-                </div>
                 <div className={styles.top_content}>
-                    <ContentContainer>
-                        <header>
-                            <h1>INITIALIZE POOL</h1>
-                        </header>
-                        <div className={styles.pool_display_container}>
-                            <div className={styles.pool_display}>
-                                <div>
-                                    {/* <img src={tokenA.logoURI} alt='token a' /> */}
-                                    {tokenA &&
-                                        (tokenA.logoURI ? (
-                                            <img
-                                                src={tokenA.logoURI}
-                                                alt={tokenA.symbol}
-                                            />
-                                        ) : (
-                                            <NoTokenIcon
-                                                tokenInitial={tokenA.symbol.charAt(
-                                                    0,
-                                                )}
-                                                width='30px'
-                                            />
-                                        ))}
-                                    {tokenA && <h3>{tokenA.symbol}</h3>}
-                                </div>
-                                {tokenA && <p>{tokenA.name}</p>}
-                            </div>
-                            <div className={styles.pool_display}>
-                                <div>
-                                    {tokenB &&
-                                        (tokenB.logoURI ? (
-                                            <img
-                                                src={tokenB.logoURI}
-                                                alt={tokenB.symbol}
-                                            />
-                                        ) : (
-                                            <NoTokenIcon
-                                                tokenInitial={tokenB.symbol.charAt(
-                                                    0,
-                                                )}
-                                                width='30px'
-                                            />
-                                        ))}
-                                    {tokenB && <h3>{tokenB.symbol}</h3>}
-                                </div>
-                                {tokenB && <p>{tokenB.name}</p>}
-                            </div>
-                            <div className={styles.padding_center}>
-                                <div className={styles.pool_price_container}>
-                                    <span>Initial Price</span>
-                                    <section style={{ width: '100%%' }}>
-                                        <input
-                                            id={'initial-pool-price-quantity'}
-                                            className={styles.currency_quantity}
-                                            placeholder={`e.g. ${placeHolderPrice} (${
-                                                isDenomBase
-                                                    ? baseToken.symbol
-                                                    : quoteToken.symbol
-                                            }/${
-                                                isDenomBase
-                                                    ? quoteToken.symbol
-                                                    : baseToken.symbol
-                                            })`}
-                                            type='string'
-                                            onChange={(event) => {
-                                                const isValid =
-                                                    event.target.value === '' ||
-                                                    event.target.validity.valid;
-                                                const targetValue =
-                                                    event.target.value.replaceAll(
-                                                        ',',
-                                                        '',
-                                                    );
-                                                const input =
-                                                    targetValue.startsWith('.')
-                                                        ? '0' + targetValue
-                                                        : targetValue;
-                                                const targetValueNum =
-                                                    parseFloat(input);
-                                                isValid &&
-                                                    setValueDisplayString(
-                                                        input,
-                                                    );
-                                                if (
-                                                    isValid &&
-                                                    ((!isNaN(targetValueNum) &&
-                                                        targetValueNum !== 0) ||
-                                                        event.target.value ===
-                                                            '')
-                                                ) {
-                                                    if (
-                                                        event.target.value ===
-                                                        ''
-                                                    ) {
-                                                        setInitialPrice(
-                                                            undefined,
-                                                        );
-                                                    } else {
-                                                        setInitialPrice(
-                                                            targetValueNum,
-                                                        );
-                                                    }
-                                                }
-                                            }}
-                                            value={valueDisplayString}
-                                            inputMode='decimal'
-                                            autoComplete='off'
-                                            autoCorrect='off'
-                                            min='0'
-                                            minLength={1}
-                                            pattern='^[0-9,]*[.]?[0-9]*$'
-                                        />
-                                    </section>
-                                </div>
-                                <InitPoolExtraInfo
-                                    initialPrice={initialPrice}
-                                    isDenomBase={isDenomBase}
-                                    initGasPriceinDollars={
-                                        initGasPriceinDollars
-                                    }
-                                    baseToken={baseToken}
-                                    quoteToken={quoteToken}
-                                    setIsDenomBase={setIsDenomBase}
-                                    invertInitialPrice={invertInitialPrice}
-                                />
-                            </div>
-
-                            <footer>
-                                {poolExists ? (
-                                    <Button
-                                        title='Pool Already Initialized'
-                                        disabled={true}
-                                        action={() => {
-                                            IS_LOCAL_ENV &&
-                                                console.debug('clicked');
-                                        }}
-                                        flat={true}
+                    <header>
+                        <p />
+                        <h1>Initialize Pool</h1>
+                        <VscClose
+                            size={25}
+                            onClick={() => navigate(-1)}
+                            style={{ cursor: 'pointer' }}
+                        />
+                    </header>
+                    <div className={styles.pool_display_container}>
+                        {tokenADisplay}
+                        {tokenBDisplay}
+                        <div className={styles.padding_center}>
+                            <div className={styles.pool_price_container}>
+                                <span>Initial Price</span>
+                                <section style={{ width: '100%' }}>
+                                    <input
+                                        id='initial-pool-price-quantity'
+                                        className={styles.currency_quantity}
+                                        placeholder={placeholderText}
+                                        type='string'
+                                        onChange={handleInputChange}
+                                        onBlur={handleDisplayUpdate}
+                                        value={initialPriceForDOM}
+                                        inputMode='decimal'
+                                        autoComplete='off'
+                                        autoCorrect='off'
+                                        min='0'
+                                        minLength={1}
+                                        pattern={exponentialNumRegEx.source}
                                     />
-                                ) : isConnected ||
-                                  !connectButtonDelayElapsed ? (
-                                    !isTokenAAllowanceSufficient ? (
-                                        tokenAApprovalButton
-                                    ) : !isTokenBAllowanceSufficient ? (
-                                        tokenBApprovalButton
-                                    ) : initialPrice === undefined ||
-                                      initialPrice <= 0 ? (
-                                        <Button
-                                            title='Enter an Initial Price'
-                                            disabled={true}
-                                            action={() => {
-                                                IS_LOCAL_ENV &&
-                                                    console.debug('clicked');
-                                            }}
-                                            flat={true}
-                                        />
-                                    ) : isInitPending === true ? (
-                                        <Button
-                                            title='Initialization Pending'
-                                            disabled={true}
-                                            action={() => {
-                                                IS_LOCAL_ENV &&
-                                                    console.debug('clicked');
-                                            }}
-                                            flat={true}
-                                        />
-                                    ) : (
-                                        <Button
-                                            title='Confirm'
-                                            action={sendInit}
-                                            flat={true}
-                                        />
-                                    )
-                                ) : (
-                                    <Button
-                                        title='Connect Wallet'
-                                        action={openWagmiModalWallet}
-                                        flat={true}
-                                    />
+                                </section>
+                            </div>
+                            <InitPoolExtraInfo
+                                initialPrice={parseFloat(
+                                    initialPriceForDOM.replaceAll(',', ''),
                                 )}
-                            </footer>
+                                isDenomBase={isDenomBase}
+                                initGasPriceinDollars={initGasPriceinDollars}
+                                baseToken={baseToken}
+                                quoteToken={quoteToken}
+                                setIsDenomBase={setIsDenomBase}
+                            />
                         </div>
-                    </ContentContainer>
+
+                        <footer>
+                            <ButtonToRender />
+                        </footer>
+                    </div>
                 </div>
             </div>
         </section>

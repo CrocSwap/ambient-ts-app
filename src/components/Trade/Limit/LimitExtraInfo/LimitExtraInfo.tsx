@@ -1,43 +1,29 @@
-// START: Import React and Dongles
-import { memo, useContext, useState } from 'react';
-import { FaGasPump } from 'react-icons/fa';
-import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
-
-// START: Import Local Files
-import styles from './LimitExtraInfo.module.css';
-import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-// import truncateDecimals from '../../../../utils/data/truncateDecimals';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+import { memo, useContext } from 'react';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../../contexts/PoolContext';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { ExtraInfo } from '../../TradeModules/ExtraInfo/ExtraInfo';
 
-// interface for component props
 interface propsIF {
     orderGasPriceInDollars: string | undefined;
     isTokenABase: boolean;
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
-    isQtyEntered: boolean;
+    showExtraInfoDropdown: boolean;
     liquidityProviderFeeString: string;
 }
 
-// central react functional component
 function LimitExtraInfo(props: propsIF) {
     const {
         orderGasPriceInDollars,
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
-        isQtyEntered,
+        showExtraInfoDropdown,
         liquidityProviderFeeString,
     } = props;
     const { poolPriceDisplay } = useContext(PoolContext);
-
-    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -50,78 +36,20 @@ function LimitExtraInfo(props: propsIF) {
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 0.0001
-            ? displayPriceWithDenom.toExponential(2)
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const displayPriceString = getFormattedNumber({
+        value: displayPriceWithDenom,
+    });
+    const startPriceString = getFormattedNumber({
+        value: startDisplayPrice,
+    });
+    const middlePriceString = getFormattedNumber({
+        value: middleDisplayPrice,
+    });
+    const endPriceString = getFormattedNumber({
+        value: endDisplayPrice,
+    });
 
-    const startPriceString = !startDisplayPrice
-        ? '…'
-        : startDisplayPrice < 0.0001
-        ? startDisplayPrice.toExponential(2)
-        : startDisplayPrice < 2
-        ? startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : startDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const middlePriceString = !middleDisplayPrice
-        ? '…'
-        : middleDisplayPrice < 0.0001
-        ? middleDisplayPrice.toExponential(2)
-        : middleDisplayPrice < 2
-        ? middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : middleDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const endPriceString = !endDisplayPrice
-        ? '…'
-        : endDisplayPrice < 0.0001
-        ? endDisplayPrice.toExponential(2)
-        : endDisplayPrice < 2
-        ? endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 6,
-          })
-        : endDisplayPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
-
-    const extraInfoData = [
-        {
-            title: 'Spot Price',
-            tooltipTitle: 'Current Price of the Selected Token Pool',
-            data: isDenomBase
-                ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
-        // {
-        //     title: 'Limit Price',
-        //     tooltipTitle: 'limit price explanation',
-        //     data: reverseDisplay
-        //         ? `${limitRateNum} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
-        //         : `${limitRateNum} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
-        // },
+    const extraInfo = [
         {
             title: 'Fill Start',
             tooltipTitle:
@@ -160,77 +88,17 @@ function LimitExtraInfo(props: propsIF) {
         },
     ];
 
-    const limitExtraInfoDetails = (
-        <div className={styles.extra_details}>
-            {extraInfoData.map((item, idx) => (
-                <div
-                    className={styles.extra_row}
-                    key={idx}
-                    tabIndex={0}
-                    aria-label={`${item.title} is ${item.data}`}
-                >
-                    <div className={styles.align_center}>
-                        <div>{item.title}</div>
-                        <TooltipComponent title={item.tooltipTitle} />
-                    </div>
-                    <div className={styles.data}>{item.data}</div>
-                </div>
-            ))}
-        </div>
-    );
-
-    const extraDetailsOrNull = showExtraDetails ? limitExtraInfoDetails : null;
-
-    const dropDownOrNull = isQtyEntered ? (
-        <div style={{ cursor: 'pointer' }}>
-            {!showExtraDetails && <RiArrowDownSLine size={22} />}
-            {showExtraDetails && <RiArrowUpSLine size={22} />}
-        </div>
-    ) : null;
-
-    const dispatch = useAppDispatch();
-
-    const conversionRateDisplay = isDenomBase
+    const conversionRate = isDenomBase
         ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
         : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`;
 
-    const gasCostAriaLabel = `Gas cost is ${orderGasPriceInDollars}. Conversion rate is ${conversionRateDisplay} `;
-
-    const extraInfoSectionOrNull = (
-        <button
-            className={`${styles.extra_info_content} ${
-                isQtyEntered && styles.extra_info_content_active
-            }`}
-            onClick={
-                isQtyEntered
-                    ? () => setShowExtraDetails(!showExtraDetails)
-                    : () => setShowExtraDetails(false)
-            }
-            tabIndex={0}
-            aria-label={gasCostAriaLabel}
-        >
-            <div className={styles.gas_pump}>
-                <FaGasPump size={15} />{' '}
-                {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
-            </div>
-            <div
-                className={styles.token_amount}
-                onClick={(e) => {
-                    dispatch(toggleDidUserFlipDenom());
-                    e.stopPropagation();
-                }}
-            >
-                {conversionRateDisplay}
-            </div>
-            {/* <DenominationSwitch /> */}
-            {dropDownOrNull}
-        </button>
-    );
     return (
-        <>
-            {extraInfoSectionOrNull}
-            {extraDetailsOrNull}
-        </>
+        <ExtraInfo
+            extraInfo={extraInfo}
+            conversionRate={conversionRate}
+            gasPrice={orderGasPriceInDollars}
+            showDropdown={showExtraInfoDropdown}
+        />
     );
 }
 

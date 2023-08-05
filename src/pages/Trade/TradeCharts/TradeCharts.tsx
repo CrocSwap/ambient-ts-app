@@ -3,27 +3,14 @@ import {
     Dispatch,
     useState,
     useEffect,
-    useRef,
     useContext,
     memo,
     useMemo,
 } from 'react';
-import {
-    AiOutlineCamera,
-    AiOutlineFullscreen,
-    AiOutlineDownload,
-} from 'react-icons/ai';
-
-// START: Import JSX Components
-import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
-import printDomToImage from '../../../utils/functions/printDomToImage';
-
-import { CandleData } from '../../../utils/state/graphDataSlice';
 import TradeCandleStickChart from './TradeCandleStickChart';
-import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
@@ -33,10 +20,10 @@ import TutorialOverlay from '../../../components/Global/TutorialOverlay/Tutorial
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
-import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
 
 // interface for React functional component props
 interface propsIF {
@@ -82,8 +69,8 @@ function TradeCharts(props: propsIF) {
         chartSettings,
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
+        chartCanvasRef,
     } = useContext(ChartContext);
-    const { expandTradeTable } = useContext(TradeTableContext);
 
     const { pathname } = useLocation();
 
@@ -102,20 +89,15 @@ function TradeCharts(props: propsIF) {
 
     // ---------------------END OF TRADE DATA CALCULATIONS------------------------
 
-    // GRAPH SETTINGS CONTENT------------------------------------------------------
-    const canvasRef = useRef(null);
-    const downloadAsImage = () => {
-        if (canvasRef.current) {
-            printDomToImage(canvasRef.current, '#171d27');
-        }
-    };
-
     // CHART SETTINGS------------------------------------------------------------
     const subchartState: {
         isVolumeSubchartEnabled: boolean;
         isTvlSubchartEnabled: boolean;
         isFeeRateSubchartEnabled: boolean;
-    } | null = getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS);
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS) ?? '{}',
+    );
+
     const [showTvl, setShowTvl] = useState(
         subchartState?.isTvlSubchartEnabled ?? false,
     );
@@ -131,11 +113,11 @@ function TradeCharts(props: propsIF) {
             showFeeRate,
             showTvl,
             showVolume,
-            liqMode: chartSettings.rangeOverlay.overlay,
+            liqMode: chartSettings.poolOverlay.overlay,
         };
     }, [
         isMarketOrLimitModule,
-        chartSettings.rangeOverlay,
+        chartSettings.poolOverlay,
         showTvl,
         showVolume,
         showFeeRate,
@@ -154,67 +136,6 @@ function TradeCharts(props: propsIF) {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
     });
-
-    const saveImageContent = (
-        <div
-            className={styles.save_image_content}
-            onClick={downloadAsImage}
-            role='button'
-            tabIndex={0}
-            aria-label='Download chart image button'
-        >
-            Save Chart Image
-            <AiOutlineDownload />
-        </div>
-    );
-
-    const graphSettingsContent = (
-        <div className={styles.graph_settings_container}>
-            <DefaultTooltip
-                interactive
-                title={
-                    <div
-                        className={styles.save_image_content}
-                        onClick={() => setIsChartFullScreen(!isChartFullScreen)}
-                    >
-                        Toggle Full Screen Chart
-                    </div>
-                }
-                enterDelay={500}
-            >
-                <button
-                    onClick={() => setIsChartFullScreen(!isChartFullScreen)}
-                    className={styles.fullscreen_button}
-                >
-                    <AiOutlineFullscreen
-                        size={20}
-                        id='trade_chart_full_screen_button'
-                        role='button'
-                        tabIndex={0}
-                        aria-label='Full screen chart button'
-                    />
-                </button>
-            </DefaultTooltip>
-            <DefaultTooltip
-                interactive
-                title={saveImageContent}
-                enterDelay={500}
-            >
-                <button
-                    onClick={downloadAsImage}
-                    className={styles.fullscreen_button}
-                >
-                    <AiOutlineCamera
-                        size={20}
-                        id='trade_chart_save_image'
-                        role='button'
-                        tabIndex={0}
-                        aria-label='Save chart image button'
-                    />
-                </button>
-            </DefaultTooltip>
-        </div>
-    );
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
@@ -251,7 +172,7 @@ function TradeCharts(props: propsIF) {
                 }}
                 id='trade_charts_curve_depth'
             >
-                <CurveDepth overlayMethods={chartSettings.rangeOverlay} />
+                <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
         </div>
     );
@@ -263,37 +184,7 @@ function TradeCharts(props: propsIF) {
     const [currentVolumeData, setCurrentVolumeData] = useState<
         number | undefined
     >();
-
-    const tvlDisplay = <p className={styles.tvl_display}></p>;
-
-    const tokenInfo = (
-        <div className={styles.token_info_container}>
-            <TradeChartsTokenInfo />
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '8px',
-                }}
-            >
-                <div>{tvlDisplay}</div>
-            </div>
-            <div>{graphSettingsContent}</div>
-        </div>
-    );
-    // END OF TOKEN INFO----------------------------------------------------------------
-
-    const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
-
-    const [graphIsLoading, setGraphIsLoading] = useState(true);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setGraphIsLoading(false);
-        }, 1500);
-        return () => clearTimeout(timer);
-    }, []);
+    // END OF CURRENT DATA INFO----------------------------------------------------------------
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -304,9 +195,9 @@ function TradeCharts(props: propsIF) {
                 padding: isChartFullScreen ? '1rem' : '0',
                 background: isChartFullScreen ? 'var(--dark2)' : '',
             }}
-            ref={canvasRef}
+            ref={chartCanvasRef}
         >
-            <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
+            <div className={`${styles.graph_style}`}>
                 {isTutorialActive && (
                     <div className={styles.tutorial_button_container}>
                         <button
@@ -317,8 +208,7 @@ function TradeCharts(props: propsIF) {
                         </button>
                     </div>
                 )}
-
-                {tokenInfo}
+                {isChartFullScreen && <TradeChartsHeader />}
                 {timeFrameContent}
 
                 <CurrentDataInfo
@@ -333,29 +223,25 @@ function TradeCharts(props: propsIF) {
                     reset={reset}
                 />
             </div>
-            {graphIsLoading ? (
-                <Spinner size={100} bg='var(--dark2)' centered />
-            ) : (
-                <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
-                    <TradeCandleStickChart
-                        changeState={props.changeState}
-                        chartItemStates={chartItemStates}
-                        setCurrentData={setCurrentData}
-                        setCurrentVolumeData={setCurrentVolumeData}
-                        selectedDate={selectedDate}
-                        setSelectedDate={setSelectedDate}
-                        rescale={rescale}
-                        setRescale={setRescale}
-                        latest={latest}
-                        setLatest={setLatest}
-                        reset={reset}
-                        setReset={setReset}
-                        showLatest={showLatest}
-                        setShowLatest={setShowLatest}
-                        setShowTooltip={setShowTooltip}
-                    />
-                </div>
-            )}
+            <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
+                <TradeCandleStickChart
+                    changeState={props.changeState}
+                    chartItemStates={chartItemStates}
+                    setCurrentData={setCurrentData}
+                    setCurrentVolumeData={setCurrentVolumeData}
+                    selectedDate={selectedDate}
+                    setSelectedDate={setSelectedDate}
+                    rescale={rescale}
+                    setRescale={setRescale}
+                    latest={latest}
+                    setLatest={setLatest}
+                    reset={reset}
+                    setReset={setReset}
+                    showLatest={showLatest}
+                    setShowLatest={setShowLatest}
+                    setShowTooltip={setShowTooltip}
+                />
+            </div>
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

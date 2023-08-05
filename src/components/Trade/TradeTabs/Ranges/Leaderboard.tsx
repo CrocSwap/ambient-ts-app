@@ -18,7 +18,7 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 // react functional component
 function Leaderboard() {
-    const { expandTradeTable, showAllData } = useContext(TradeTableContext);
+    const { tradeTableState, showAllData } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
@@ -59,13 +59,12 @@ function Leaderboard() {
         setCurrentPage(pageNumber);
     };
 
-    const usePaginateDataOrNull = expandTradeTable
-        ? currentRangess
-        : sortedPositions;
+    const usePaginateDataOrNull =
+        tradeTableState === 'Expanded' ? currentRangess : sortedPositions;
 
     const footerDisplay = (
         <div className={styles.footer}>
-            {expandTradeTable && sortedPositions.length > 30 && (
+            {tradeTableState === 'Expanded' && sortedPositions.length > 30 && (
                 <Pagination
                     itemsPerPage={rangesPerPage}
                     totalItems={sortedPositions.length}
@@ -255,23 +254,13 @@ function Leaderboard() {
             showPair={showPair}
         />
     ));
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    const mobileViewHeight = mobileView ? '70vh' : '260px';
-
-    const expandStyle = expandTradeTable
-        ? mobileView
-            ? 'calc(100vh - 15rem) '
-            : 'calc(100vh - 9rem)'
-        : mobileViewHeight;
 
     return (
         <section
-            className={` ${styles.leaderboard}`}
-            style={{ height: expandStyle }}
+            className={`${styles.leaderboard} ${styles.main_list_container}`}
         >
             <div>{headerColumnsDisplay}</div>
-            <div>{rowItemContent}</div>
+            <div className={styles.table_content}>{rowItemContent}</div>
             <div>{footerDisplay}</div>
         </section>
     );

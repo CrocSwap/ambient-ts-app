@@ -16,13 +16,20 @@ interface limitParamsIF {
     tokenB: string;
     limitTick?: number;
 }
-interface rangeParamsIF {
+interface poolParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
     highTick?: string;
     lowTick?: string;
 }
+
+interface initParamsIF {
+    chain: string;
+    tokenA: string;
+    tokenB: string;
+}
+
 interface repoParamsIF {
     chain: string;
     tokenA: string;
@@ -36,7 +43,8 @@ type anyParamsIF =
     | swapParamsIF
     | marketParamsIF
     | limitParamsIF
-    | rangeParamsIF
+    | poolParamsIF
+    | initParamsIF
     | repoParamsIF;
 
 // index of all base URL pathways in the Ambient app
@@ -46,9 +54,11 @@ const BASE_URL_PATHS = {
     swap: '/swap',
     market: '/trade/market',
     limit: '/trade/limit',
-    range: '/trade/range',
+    pool: '/trade/pool',
+    initpool: '/initpool',
     reposition: '/trade/reposition',
-    tos: '/tos',
+    explore: '/explore',
+    tos: '/terms',
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',
@@ -59,7 +69,7 @@ export type pageNames = keyof typeof BASE_URL_PATHS;
 
 export interface linkGenMethodsIF {
     baseURL: string;
-    getFullURL: (paramsObj?: anyParamsIF) => string;
+    getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF) => void;
     redirect: (paramsObj?: anyParamsIF) => void;
 }
@@ -89,10 +99,14 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
             pageName = 'market';
         } else if (pathname.startsWith(BASE_URL_PATHS.limit)) {
             pageName = 'limit';
-        } else if (pathname.startsWith(BASE_URL_PATHS.range)) {
-            pageName = 'range';
+        } else if (pathname.startsWith(BASE_URL_PATHS.pool)) {
+            pageName = 'pool';
+        } else if (pathname.startsWith(BASE_URL_PATHS.initpool)) {
+            pageName = 'initpool';
         } else if (pathname.startsWith(BASE_URL_PATHS.reposition)) {
             pageName = 'reposition';
+        } else if (pathname.startsWith(BASE_URL_PATHS.explore)) {
+            pageName = 'explore';
         } else if (pathname.startsWith(BASE_URL_PATHS.tos)) {
             pageName = 'tos';
         } else if (pathname.startsWith(BASE_URL_PATHS.testpage)) {
@@ -111,24 +125,28 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     // fn to build a URL for a given page including parameters
-    function getFullURL(paramsObj?: anyParamsIF): string {
+    function getFullURL(paramsObj?: anyParamsIF | string): string {
         let paramsSlug = '';
         if (paramsObj) {
-            paramsSlug =
-                '/' +
-                Object.entries(paramsObj)
-                    .map((tup: string[]) => tup.join('='))
-                    .join('&');
+            if (typeof paramsObj === 'string') {
+                paramsSlug = '/' + paramsObj;
+            } else {
+                paramsSlug =
+                    '/' +
+                    Object.entries(paramsObj)
+                        .map((tup: string[]) => tup.join('='))
+                        .join('&');
+            }
         }
         return baseURL + paramsSlug;
     }
 
     // fn to build a full URL including params AND navigate the user
-    function navigateUser(paramsObj?: anyParamsIF): void {
+    function navigateUser(paramsObj?: anyParamsIF | string): void {
         navigate(getFullURL(paramsObj));
     }
 
-    function redirectUser(paramsObj?: anyParamsIF): void {
+    function redirectUser(paramsObj?: anyParamsIF | string): void {
         navigate(getFullURL(paramsObj), { replace: true });
     }
 

@@ -1,12 +1,7 @@
 .container {
     display: flex;
     transition: all var(--animation-speed) ease-in-out;
-    /* background: var(--dark2); */
     border-radius: 50%;
-    /* width: 40px;
-    height: 40px;
-    padding: 2px;
-    border-radius: 50%; */
 
     justify-content: center;
     align-items: center;
@@ -17,20 +12,14 @@
     outline: none;
     border: none;
     background: transparent;
+
+    cursor: pointer;
 }
 
 .container:hover {
-    /* background: var(--dark2); */
     width: 30px;
     height: 30px;
     border-radius: 50%;
-
-    /* cursor: pointer; */
-    /* -webkit-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -o-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    transform: rotate(90deg); */
 }
 
 .container:hover .token_arrow,
@@ -41,33 +30,16 @@
     -ms-transform: rotate(180deg);
     transform: rotate(180deg);
 }
+
+.display_container {
+    cursor: default;
+}
+
 .display_container:hover .token_arrow,
 .display_container:focus-visible .token_arrow {
     transform: none;
+    cursor: unset !important;
 }
-
-/* .clicked{
-    -webkit-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -o-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    transform: rotate(90deg);
-}
-
-
-.container svg:first-of-type{
-    -webkit-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -o-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    transform: rotate(90deg);
-}
-
-.container svg:nth-of-type(2){
-
-    margin-top: 10px;
-}
- */
 
 .token_arrow {
     background-color: transparent;
@@ -76,21 +48,9 @@
     -moz-transition: 0.7s;
     -ms-transition: 0.7s;
     -o-transition: 0.7s;
-    /* cursor: pointer; */
 }
 
-/* .token_arrow:hover{
+.disabled, .disabled * {
+    cursor: wait !important;
+}
 
-
-    margin-bottom: 6px;
-    cursor: pointer;
-
-} */
-
-/* .token_arrow:hover {
-    -webkit-transform: rotate(90deg);
-    -moz-transform: rotate(90deg);
-    -o-transform: rotate(90deg);
-    -ms-transform: rotate(90deg);
-    transform: rotate(90deg);
-} */

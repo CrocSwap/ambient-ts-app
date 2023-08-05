@@ -15,6 +15,10 @@
     cursor: pointer;
     position: relative;
     transition: all var(--animation-speed) ease-in-out;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 .pool_card:hover,
 .pool_card:focus-visible {
@@ -24,30 +28,25 @@
 .row {
     display: flex;
     justify-content: space-between;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     align-items: center;
 }
 .column {
-    position: absolute;
-    bottom: 15px;
+    flex: 1;
+
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
+    align-self: flex-end;
 }
 
-.row div {
+.token_images {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 0.5rem;
 }
 
-.row img {
-    width: 30px;
-}
-.token_images {
-    margin-top: 3px;
-}
+
 .tokens_name {
     font-family: var(--font-logo);
     font-weight: 100;
@@ -70,10 +69,10 @@
     font-weight: 300;
     font-size: 12px;
     color: var(--text1);
+    margin-left: 2px;
 }
 
 .row_title {
-    width: 50%;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
@@ -117,7 +116,6 @@
     font-weight: 200;
     font-size: 12px;
     line-height: 22px;
-
     letter-spacing: -0.02em;
 
     /* other/positive */
@@ -128,7 +126,6 @@
     font-weight: 200;
     font-size: 12px;
     line-height: 22px;
-
     letter-spacing: -0.02em;
 
     /* other/positive */
@@ -159,11 +156,30 @@
     align-items: center;
 }
 
-.vol,
-.apr {
-    display: flex;
-    width: 50%;
-    justify-content: flex-end;
-    text-align: end;
-    align-items: flex-end;
+
+@media only screen and (max-width: 600px)  {
+    .main_container {
+        background-color: transparent;
+       
+        background: var(--dark2);  
+
+
+    }
+    /* .pool_card{
+        padding: 0 1rem;
+    } */
+.pool_card, .main_container{
+    width: 100%
+}
+
+.pool_card:hover,
+.pool_card:focus-visible {
+    box-shadow: none;
+}
+
+.column:first-of-type{
+   
+    align-items: flex-start;
+}
+
 }

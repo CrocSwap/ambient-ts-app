@@ -1,33 +1,38 @@
 import PoolCard from '../../Global/PoolCard/PoolCard';
 import styles from './TopPools.module.css';
-import { motion } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { Link } from 'react-router-dom';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
-export default function TopPools() {
+interface TopPoolsPropsIF {
+    noTitle?: boolean;
+    gap?: string;
+}
+// eslint-disable-next-line
+export default function TopPools(props: TopPoolsPropsIF) {
     const { topPools } = useContext(CrocEnvContext);
-
-    const { t } = useTranslation();
-
-    // TODO:   @Junior  please remove the NavLink wrapper or refactor PoolCard.tsx
-    // TODO:   ... so it returns a NavLink element
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+    const show3TopPools = useMediaQuery('(min-height: 700px)');
+    const poolData = showMobileVersion
+        ? show3TopPools
+            ? topPools.slice(0, 3)
+            : topPools.slice(0, 2)
+        : topPools;
 
     return (
-        <motion.div
-            className={styles.container}
-            initial={{ width: 0 }}
-            animate={{ width: '100%' }}
-            exit={{ x: window.innerWidth, transition: { duration: 2 } }}
-        >
+        <div className={styles.container}>
             <div className={styles.title} tabIndex={0} aria-label='Top Pools'>
-                {t('topPools')}
+                Top Pools
             </div>
             <div className={styles.content}>
-                {topPools.map((pool, idx) => (
+                {poolData.map((pool, idx) => (
                     <PoolCard key={idx} pool={pool} />
                 ))}
             </div>
-        </motion.div>
+            <div className={`${styles.content} ${styles.view_more}`}>
+                <Link to='/explore'>View More</Link>
+            </div>
+        </div>
     );
 }

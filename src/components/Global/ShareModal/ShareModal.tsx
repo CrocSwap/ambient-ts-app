@@ -5,8 +5,8 @@ import { FaDiscord, FaTelegram, FaFacebook } from 'react-icons/fa';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { useLocation } from 'react-router-dom';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
-import FocusTrap from 'focus-trap-react';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { DISCORD_LINK } from '../../../constants';
 
 interface SocialLinkPropsIF {
     // eslint-disable-next-line
@@ -43,30 +43,35 @@ export default function ShareModal() {
     } = useContext(AppStateContext);
 
     const [linkToShare, setLinkToShare] = useState(
-        `ambient-finance.netlify.app${currentPathname}`,
+        `ambient.finance${currentPathname}`,
     );
 
-    const linkToShareTruncated = linkToShare.slice(0, 50) + '...';
     const socialLinksData = [
-        {
-            name: 'Telegram',
-            icon: <FaTelegram size={50} />,
-            link: `https://telegram.me/share/url?url=ambient-finance.netlify.app${currentPathname}`,
-        },
         {
             name: 'Twitter',
             icon: <AiFillTwitterCircle size={50} />,
-            link: `https://twitter.com/intent/tweet?text=ambient-finance.netlify.app${currentPathname}`,
-        },
-        {
-            name: 'Facebook',
-            icon: <FaFacebook size={50} />,
-            link: `https://www.facebook.com/sharer/sharer.php?u=ambient-finance.netlify.app${currentPathname}`,
+            link: `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+                linkToShare,
+            )}`,
         },
         {
             name: 'Discord',
             icon: <FaDiscord size={50} />,
-            link: `ambient-finance.netlify.app${currentPathname}`,
+            link: `${DISCORD_LINK}`,
+        },
+        {
+            name: 'Telegram',
+            icon: <FaTelegram size={50} />,
+            link: `https://telegram.me/share/url?url=${encodeURIComponent(
+                linkToShare,
+            )}`,
+        },
+        {
+            name: 'Facebook',
+            icon: <FaFacebook size={50} />,
+            link: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                linkToShare,
+            )}`,
         },
     ];
 
@@ -91,29 +96,27 @@ export default function ShareModal() {
     );
 
     return (
-        <FocusTrap>
-            <div className={styles.option_control_container}>
-                {shareIconsContent}
+        <div className={styles.option_control_container}>
+            {shareIconsContent}
 
-                <p className={styles.control_title}>URL:</p>
-                <p className={styles.url_link}>
-                    <input
-                        type='text'
-                        placeholder={`${linkToShareTruncated}`}
-                        disabled={true}
-                        onChange={(e) => setLinkToShare(e?.target.value)}
-                    />
+            <p className={styles.control_title}>URL:</p>
+            <p className={styles.url_link}>
+                <input
+                    type='text'
+                    placeholder={`${linkToShare}`}
+                    disabled={true}
+                    onChange={(e) => setLinkToShare(e?.target.value)}
+                />
 
-                    <button
-                        onClick={handleCopyAddress}
-                        className={styles.copy_button}
-                        tabIndex={0}
-                        aria-label='Copy to clipboard'
-                    >
-                        <FiCopy color='#cdc1ff' size={25} />
-                    </button>
-                </p>
-            </div>
-        </FocusTrap>
+                <button
+                    onClick={handleCopyAddress}
+                    className={styles.copy_button}
+                    tabIndex={0}
+                    aria-label='Copy to clipboard'
+                >
+                    <FiCopy size={25} />
+                </button>
+            </p>
+        </div>
     );
 }

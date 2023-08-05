@@ -2,13 +2,13 @@ import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/exports';
 import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -47,15 +47,23 @@ export const useProcessRange = (
     const baseTokenSymbol = position.baseSymbol;
     const quoteTokenSymbol = position.quoteSymbol;
 
+    const baseTokenName = position.baseName;
+    const quoteTokenName = position.quoteName;
+
     const quoteTokenLogo = position.quoteTokenLogoURI;
     const baseTokenLogo = position.baseTokenLogoURI;
 
     const apy = position.apy ?? undefined;
     const apyString = apy
-        ? apy.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          }) + '%'
+        ? apy >= 1000
+            ? apy.toLocaleString('en-US', {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+              }) + '%+'
+            : apy.toLocaleString('en-US', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + '%'
         : undefined;
 
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
@@ -117,13 +125,13 @@ export const useProcessRange = (
     const baseTokenAddressTruncated = trimString(
         tokenAAddressLowerCase,
         6,
-        0,
+        4,
         '…',
     );
     const quoteTokenAddressTruncated = trimString(
         tokenBAddressLowerCase,
         6,
-        0,
+        4,
         '…',
     );
 
@@ -167,49 +175,28 @@ export const useProcessRange = (
     //     ? quoteTokenCharacter + position.highRangeDisplayInBase
     //     : baseTokenCharacter + position.highRangeDisplayInQuote;
 
-    const ambientOrMin =
-        position.positionType === 'ambient' ? '0.00' : minRange;
+    const ambientOrMin = position.positionType === 'ambient' ? '0' : minRange;
     const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
 
     const width = (position.askTick - position.bidTick) / 100;
 
     const usdValueNum = position.totalValueUSD;
 
-    const usdValueTruncated = !usdValueNum
-        ? '0'
-        : usdValueNum < 0.001
-        ? usdValueNum.toExponential(2) + ' '
-        : usdValueNum >= 100000
-        ? formatAmountOld(usdValueNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          }) + ' ';
-
-    const usdValueLocaleString = !usdValueNum
-        ? '…'
-        : usdValueNum < 0.01
-        ? usdValueNum.toPrecision(3)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const usdValue = getFormattedNumber({
+        value: usdValueNum,
+    });
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
     const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseTokenCharacter}${baseQty || '0.00'}`
+        ? `${baseQty || '0.00'}`
         : '…';
     const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
     const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
+        ? `${quoteQty || '0.00'}`
         : '…';
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
-
-    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
 
     const ensNameOrOwnerTruncated = ensName
         ? ensName.length > 15
@@ -264,7 +251,6 @@ export const useProcessRange = (
 
         // value
         usdValue,
-        usdValueLocaleString,
 
         // Token Qty data
         baseQty,
@@ -279,6 +265,8 @@ export const useProcessRange = (
         quoteDisplayFrontend,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseTokenName,
+        quoteTokenName,
         baseDisplay,
         quoteDisplay,
         tokenAAddressLowerCase,

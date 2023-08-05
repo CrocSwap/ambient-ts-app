@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
@@ -17,7 +17,6 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setIsTokenAPrimary,
     setLimitTick,
     setLimitTickCopied,
     setShouldSwapDirectionReverse,
@@ -36,6 +35,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { OptionButton } from '../../../Button/OptionButton';
 
 // interface for React functional component props
 interface propsIF {
@@ -60,6 +60,14 @@ export default function TransactionsMenu(props: propsIF) {
     } = useContext(SidebarContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
 
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1500px)')
+        : useMediaQuery('(max-width: 1250px)');
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const menuItemRef = useRef<HTMLDivElement>(null);
@@ -69,7 +77,7 @@ export default function TransactionsMenu(props: propsIF) {
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-    const linkGenRange: linkGenMethodsIF = useLinkGen('range');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleCopyClick = () => {
         if (tx.entityType === 'swap') {
@@ -106,11 +114,6 @@ export default function TransactionsMenu(props: propsIF) {
                 }
             }, 1000);
         } else if (tx.entityType === 'swap') {
-            dispatch(
-                setIsTokenAPrimary(
-                    (tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty),
-                ),
-            );
             const shouldReverse =
                 tradeData.tokenA.address.toLowerCase() ===
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
@@ -169,27 +172,27 @@ export default function TransactionsMenu(props: propsIF) {
     const isTxCopiable = true;
 
     const walletButton = (
-        <button
-            className={styles.option_button}
-            tabIndex={0}
-            aria-label='View wallet.'
+        <OptionButton
+            ariaLabel='View wallet.'
             onClick={props.handleWalletClick}
-        >
-            Wallet
-            <FiExternalLink
-                size={15}
-                color='white'
-                style={{ marginLeft: '.5rem' }}
-            />
-        </button>
+            content={
+                <>
+                    Wallet
+                    <FiExternalLink
+                        size={15}
+                        color='white'
+                        style={{ marginLeft: '.5rem' }}
+                    />
+                </>
+            }
+        />
     );
 
     const copyButton =
         tx.entityType === 'liqchange' ? (
-            <button
-                className={styles.option_button}
+            <OptionButton
                 onClick={() => {
-                    linkGenRange.navigate({
+                    linkGenPool.navigate({
                         chain: chainId,
                         tokenA: tx.isBid ? tx.base : tx.quote,
                         tokenB: tx.isBid ? tx.quote : tx.base,
@@ -198,14 +201,11 @@ export default function TransactionsMenu(props: propsIF) {
                     });
                     handleCopyClick();
                 }}
-                tabIndex={0}
-                aria-label='Copy trade.'
-            >
-                Copy Trade
-            </button>
+                ariaLabel='Copy trade.'
+                content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+            />
         ) : tx.entityType === 'limitOrder' ? (
-            <button
-                className={styles.option_button}
+            <OptionButton
                 onClick={() => {
                     dispatch(setLimitTickCopied(true));
                     dispatch(setLimitTick(undefined));
@@ -226,14 +226,11 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
-                tabIndex={0}
-                aria-label='Copy trade.'
-            >
-                Copy Trade
-            </button>
+                ariaLabel='Copy trade.'
+                content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+            />
         ) : (
-            <button
-                className={styles.option_button}
+            <OptionButton
                 onClick={() => {
                     linkGenMarket.navigate(
                         tx.isBuy
@@ -250,37 +247,33 @@ export default function TransactionsMenu(props: propsIF) {
                     );
                     handleCopyClick();
                 }}
-                tabIndex={0}
-                aria-label='Copy trade.'
-            >
-                Copy Trade
-            </button>
+                ariaLabel='Copy trade.'
+                content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+            />
         );
 
     const explorerButton = (
-        <button
-            className={styles.option_button}
+        <OptionButton
             onClick={handleOpenExplorer}
-            tabIndex={0}
-            aria-label='Open explorer.'
-        >
-            Explorer
-            <FiExternalLink
-                size={15}
-                color='white'
-                style={{ marginLeft: '.5rem' }}
-            />
-        </button>
+            ariaLabel='Open explorer.'
+            content={
+                <>
+                    Explorer
+                    <FiExternalLink
+                        size={15}
+                        color='white'
+                        style={{ marginLeft: '.5rem' }}
+                    />
+                </>
+            }
+        />
     );
     const detailsButton = (
-        <button
-            className={styles.option_button}
+        <OptionButton
             onClick={() => openDetailsModal()}
-            tabIndex={0}
-            aria-label='Open details modal.'
-        >
-            Details
-        </button>
+            ariaLabel='Open details modal.'
+            content='Details'
+        />
     );
 
     // eslint-disable-next-line

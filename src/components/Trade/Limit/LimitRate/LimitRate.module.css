@@ -32,30 +32,12 @@
 /* swapbox */
 .swapbox {
     display: flex;
-    overflow: auto;
     flex-direction: column;
-    overflow-y: hidden;
     color: white;
-
-    /* border-radius: var(--border-radius); */
-    /* background: rgba( 18, 23, 31, 0.5 ); */
-    /* box-shadow: 0 1px 32px 0 rgba(13, 17, 70, 0.37); */
-    /* backdrop-filter: blur( 8.5px ); */
-    /* -webkit-backdrop-filter: blur( 8.5px ); */
-    /* border: 1px solid rgba( 255, 255, 255, 0.18 ); */
 }
 
-/* .modalSwapbox {
-    background-color: var(--dark2); 
-
-    
-
-    
-  } */
-
 .direction {
-    padding: 0.4.5px 0;
-    margin: 4px 0;
+    margin-bottom: 8px;
 }
 .direction,
 .swapbox_bottom {
@@ -112,6 +94,7 @@
     background: var(--dark2);
     border-radius: var(--border-radius);
     gap: 4px;
+    height: 40px;
 }
 
 .button_controls button {
@@ -127,6 +110,9 @@
     height: 20px;
 }
 
+.button_controls button:hover > svg{
+    color: var(--accent1)
+}
 .button_controls button:focus-visible {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
         0px 0px 21px rgba(205, 193, 255, 0.2),

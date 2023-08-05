@@ -1,6 +1,6 @@
 {
     "name": "Ambient Token List",
-    "logoURI": "https://ambient-finance.netlify.app/rings_192.png",
+    "logoURI": "https://ambient.finance/rings_192.png",
     "timestamp": "2022-03-17T15:02:53.363Z",
     "version": {
         "major": 1,
@@ -24,7 +24,7 @@
             "symbol": "USDC",
             "decimals": 6,
             "chainId": 1,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
         {
             "name": "Wrapped BTC",
@@ -33,6 +33,22 @@
             "decimals": 8,
             "chainId": 1,
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
+        },
+        {
+            "name": "Pepe",
+            "address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+            "symbol": "PEPE",
+            "decimals": 18,
+            "chainId": 1,
+            "logoURI": "https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1682922725"
+        },
+        {
+            "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+            "chainId": 1,
+            "decimals": 18,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
+            "name": "Dai Stablecoin",
+            "symbol": "DAI"
         },
         {
             "name": "Native Ether",
@@ -48,9 +64,8 @@
             "symbol": "USDC",
             "decimals": 6,
             "chainId": 5,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         },
-
         {
             "name": "Wrapped BTC",
             "address": "0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05",
@@ -73,7 +88,7 @@
             "symbol": "USDC",
             "decimals": 6,
             "chainId": 421613,
-            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+            "logoURI": "https://assets.coingecko.com/coins/images/6319/thumb/USD_Coin_icon.png"
         }
     ]
 }

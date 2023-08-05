@@ -7,7 +7,6 @@ import {
     Navigate,
     useNavigate,
 } from 'react-router-dom';
-import { useAccount } from 'wagmi';
 import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarComponent';
 
 /** ***** Import JSX Files *******/
@@ -15,6 +14,7 @@ import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
 import Portfolio from '../pages/Portfolio/Portfolio';
+import TradeSwap from '../pages/Trade/Swap/Swap';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -24,16 +24,11 @@ import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
 import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
-import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
+import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFooter';
 
 /** * **** Import Local Files *******/
 import './App.css';
-import {
-    GRAPHCACHE_WSS_URL,
-    IS_LOCAL_ENV,
-    SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT,
-    SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
-} from '../constants';
+import { IS_LOCAL_ENV } from '../constants';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
@@ -42,17 +37,14 @@ import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import useKeyPress from './hooks/useKeyPress';
 import Accessibility from '../pages/Accessibility/Accessibility';
-import useWebSocketSubs from './hooks/useWebSocketSubs';
 import { AppStateContext } from '../contexts/AppStateContext';
 import { CrocEnvContext } from '../contexts/CrocEnvContext';
-import { ChainDataContext } from '../contexts/ChainDataContext';
-import { TokenContext } from '../contexts/TokenContext';
 import { SidebarContext } from '../contexts/SidebarContext';
-import { CandleContext } from '../contexts/CandleContext';
-import { TradeTokenContext } from '../contexts/TradeTokenContext';
 import { ChartContext } from '../contexts/ChartContext';
-
-const wssGraphCacheServerDomain = GRAPHCACHE_WSS_URL;
+import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
+import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
+import Explore from '../pages/Explore/Explore';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 /** ***** React Function *******/
 export default function App() {
@@ -61,8 +53,6 @@ export default function App() {
     const currentLocation = location.pathname;
 
     const {
-        server: { isEnabled: isServerEnabled },
-        subscriptions: { isEnabled: areSubscriptionsEnabled },
         chat: {
             isOpen: isChatOpen,
             setIsOpen: setChatOpen,
@@ -70,50 +60,11 @@ export default function App() {
         },
         theme: { selected: selectedTheme },
     } = useContext(AppStateContext);
-    const { candleData, setCandleData, candleTimeLocal } =
-        useContext(CandleContext);
-    const { crocEnv, chainData, isChainSupported, defaultUrlParams } =
-        useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { isChainSupported, defaultUrlParams } = useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
-    const { tokens } = useContext(TokenContext);
-    const {
-        baseToken: {
-            address: baseTokenAddress,
-            mainnetAddress: mainnetBaseTokenAddress,
-        },
-        quoteToken: {
-            address: quoteTokenAddress,
-            mainnetAddress: mainnetQuoteTokenAddress,
-        },
-    } = useContext(TradeTokenContext);
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
     } = useContext(SidebarContext);
-
-    const { address: userAddress } = useAccount();
-
-    useWebSocketSubs({
-        crocEnv,
-        wssGraphCacheServerDomain,
-        baseTokenAddress,
-        quoteTokenAddress,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
-        isServerEnabled,
-        shouldNonCandleSubscriptionsReconnect:
-            SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
-        areSubscriptionsEnabled,
-        tokenUniv: tokens.tokenUniv,
-        chainData,
-        lastBlockNumber,
-        candleData,
-        setCandleData,
-        candleTimeLocal,
-        userAddress,
-        shouldCandleSubscriptionsReconnect:
-            SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT,
-    });
 
     // Take away margin from left if we are on homepage or swap
     const swapBodyStyle = currentLocation.startsWith('/swap')
@@ -124,9 +75,14 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
+        currentLocation !== '/terms' &&
+        currentLocation !== '/privacy' &&
         !currentLocation.includes('/chat') &&
-        !fullScreenChart &&
-        isChainSupported && <Sidebar />;
+        !currentLocation.includes('/initpool') &&
+        !fullScreenChart && (
+            // isChainSupported &&
+            <Sidebar />
+        );
 
     const sidebarDislayStyle = isSidebarOpen
         ? 'sidebar_content_layout'
@@ -136,6 +92,8 @@ export default function App() {
         currentLocation == '/' ||
         currentLocation == '/swap' ||
         currentLocation == '/404' ||
+        currentLocation == '/terms' ||
+        currentLocation == '/privacy' ||
         currentLocation.includes('/chat') ||
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
@@ -151,7 +109,7 @@ export default function App() {
         S: '/swap',
         T: '/trade',
         M: 'trade/market',
-        R: 'trade/range',
+        R: 'trade/pool',
         L: 'trade/limit',
         P: '/account',
         C: '/chat',
@@ -187,10 +145,12 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <>
             <div className={containerStyle} data-theme={selectedTheme}>
+                {!isChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
                 <section
@@ -221,7 +181,7 @@ export default function App() {
                             />
                             <Route
                                 path='market/:params'
-                                element={<Swap isOnTradeRoute={true} />}
+                                element={<TradeSwap isOnTradeRoute={true} />}
                             />
                             <Route
                                 path='limit'
@@ -234,20 +194,20 @@ export default function App() {
                             />
                             <Route path='limit/:params' element={<Limit />} />
                             <Route
-                                path='range'
+                                path='pool'
                                 element={
                                     <Navigate
-                                        to={defaultUrlParams.range}
+                                        to={defaultUrlParams.pool}
                                         replace
                                     />
                                 }
                             />
-                            <Route path='range/:params' element={<Range />} />
+                            <Route path='pool/:params' element={<Range />} />
                             <Route
                                 path='reposition'
                                 element={
                                     <Navigate
-                                        to={defaultUrlParams.range}
+                                        to={defaultUrlParams.pool}
                                         replace
                                     />
                                 }
@@ -292,8 +252,10 @@ export default function App() {
                                 <Navigate replace to={defaultUrlParams.swap} />
                             }
                         />
+                        <Route path='explore' element={<Explore />} />
                         <Route path='swap/:params' element={<Swap />} />
-                        <Route path='tos' element={<TermsOfService />} />
+                        <Route path='terms' element={<TermsOfService />} />
+                        <Route path='privacy' element={<PrivacyPolicy />} />
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
@@ -311,10 +273,13 @@ export default function App() {
             </div>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
+                    currentLocation !== '/404' &&
+                    currentLocation !== '/terms' &&
+                    currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
             </div>
-            <SidebarFooter />
+            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <GlobalModal />
             <GlobalPopup />
             <SnackbarComponent />

@@ -1,13 +1,11 @@
 // START: Import React and Dongles
-import { useState, useEffect, useRef, useContext, memo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useState, useRef, useContext, memo } from 'react';
 import { BiSearch } from 'react-icons/bi';
-import { BsChevronBarDown } from 'react-icons/bs';
 
 // START: Import JSX Elements
-import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
-import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
-import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
+import SidebarAccordion from './SidebarAccordion';
+import TopPools from '../../../components/Global/Sidebar/TopPools';
+import FavoritePools from '../../../components/Global/Sidebar/FavoritePools';
 import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
 import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders';
 import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
@@ -25,46 +23,34 @@ import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
-import { useSidebarSearch, sidebarSearchIF } from './useSidebarSearch';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
+import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
+import RecentPools from '../../../components/Global/Sidebar/RecentPools';
+import {
+    useSidebarSearch,
+    sidebarSearchIF,
+} from '../../hooks/useSidebarSearch';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { usePoolList } from '../../hooks/usePoolList';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 function Sidebar() {
-    const { cachedPoolStatsFetch } = useContext(CachedDataContext);
-    const {
-        chainData: { chainId, poolIndex },
-    } = useContext(CrocEnvContext);
+    const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
+        useContext(CachedDataContext);
+    const { chainData: chainData } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { sidebar } = useContext(SidebarContext);
 
-    const location = useLocation();
-
     const graphData = useAppSelector((state) => state.graphData);
 
-    const poolList = usePoolList(chainId, poolIndex);
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
-
-    const overflowSidebarMQ = useMediaQuery('(min-width: 4000px)');
-
-    useEffect(() => {
-        overflowSidebarMQ
-            ? sidebar.close()
-            : sidebar.isOpen
-            ? sidebar.open()
-            : null;
-    }, [overflowSidebarMQ, sidebar.isOpen]);
+    const [exploreSearchInput, setExploreSearchInput] = useState('');
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
-        x.chainId === chainId;
+        x.chainId === chainData.chainId;
 
     const positionsByUser =
         graphData.positionsByUser.positions.filter(filterFn);
@@ -83,7 +69,12 @@ function Sidebar() {
             name: 'Recent Pools',
             icon: recentPoolsImage,
 
-            data: <RecentPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
+            data: (
+                <RecentPools
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                />
+            ),
         },
     ];
     const topPoolsSection = [
@@ -91,7 +82,12 @@ function Sidebar() {
             name: 'Top Pools',
             icon: topPoolsImage,
 
-            data: <TopPools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
+            data: (
+                <TopPools
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                />
+            ),
         },
     ];
 
@@ -118,7 +114,12 @@ function Sidebar() {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
 
-            data: <FavoritePools cachedPoolStatsFetch={cachedPoolStatsFetch} />,
+            data: (
+                <FavoritePools
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    cachedFetchTokenPrice={cachedFetchTokenPrice}
+                />
+            ),
         },
     ];
 
@@ -135,7 +136,6 @@ function Sidebar() {
     ];
 
     const searchData: sidebarSearchIF = useSidebarSearch(
-        poolList,
         positionsByUser,
         txsByUser,
         limitsByUser,
@@ -158,7 +158,7 @@ function Sidebar() {
     };
 
     // ------------------------------------------
-    // ---------------------------ANALYTICS SEARCH CONTAINER-----------------------
+    // ---------------------------Explore SEARCH CONTAINER-----------------------
 
     const focusInput = () => {
         const inputField = document.getElementById(
@@ -168,40 +168,6 @@ function Sidebar() {
         inputField.focus();
     };
 
-    const handleInputClearAnalytics = () => {
-        const currentInput = document.getElementById(
-            'search_input_analytics',
-        ) as HTMLInputElement;
-
-        currentInput.value = '';
-    };
-    const AnalyticsSearchContainer = (
-        <div className={styles.search_container}>
-            <div
-                className={styles.search__icon}
-                onClick={() => sidebar.toggle()}
-            >
-                <BiSearch size={18} color='#CDC1FF' />
-            </div>
-            <input
-                type='text'
-                id='search_input_analytics'
-                placeholder='Search token or pools...'
-                className={styles.search__box}
-                onChange={(e) => setAnalyticsSearchInput(e.target.value)}
-            />
-            {!searchInput && (
-                <div
-                    onClick={handleInputClearAnalytics}
-                    className={styles.close_icon}
-                >
-                    <MdClose size={18} color='#ebebeb66' />{' '}
-                </div>
-            )}
-        </div>
-        // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
-    );
-
     const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchMode(true);
         searchData.setInput(e.target.value);
@@ -210,7 +176,10 @@ function Sidebar() {
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
-                <BiSearch size={18} color='#CDC1FF' />
+                <BiSearch
+                    size={18}
+                    color={sidebar.isOpen ? 'var(--text2)' : 'var(--accent5)'}
+                />
             </div>
             <input
                 type='text'
@@ -220,7 +189,7 @@ function Sidebar() {
                 className={styles.search__box}
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
-                autoFocus
+                tabIndex={1}
             />
             {searchInput && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
@@ -233,33 +202,22 @@ function Sidebar() {
     const [openAllDefault, setOpenAllDefault] = useState(false);
     const [isDefaultOverridden, setIsDefaultOverridden] = useState(false);
 
-    const openAllButton = (
-        <button
-            onClick={() => {
-                setIsDefaultOverridden(true);
-                if (!sidebar.isOpen) {
-                    sidebar.open();
-                }
-                setOpenAllDefault(true);
-            }}
-            className={styles.open_all_button}
-        >
-            <BsChevronBarDown size={18} color='var(--text2)' />{' '}
-            {openAllDefault ? 'Collapse All' : 'Expand All'}
-        </button>
-    );
+    const getInitialSidebarLockedStatus = () =>
+        sidebar.getStoredStatus() === 'open';
+    const [isLocked, setIsLocked] = useState(getInitialSidebarLockedStatus());
 
-    const collapseButton = (
-        <button
-            onClick={() => {
-                setIsDefaultOverridden(true);
-                setOpenAllDefault(false);
-            }}
-            className={styles.open_all_button}
-        >
-            <BsChevronBarDown size={18} color='var(--text2)' /> {'Collapse All'}
-        </button>
-    );
+    const toggleLockSidebar = () => {
+        sidebar.open(!isLocked);
+        isLocked && sidebar.resetStoredStatus();
+        setIsLocked(!isLocked);
+    };
+
+    const toggleExpandCollapseAll = () => {
+        setIsDefaultOverridden(true);
+        setOpenAllDefault(!openAllDefault);
+    };
+
+    const controlIconStyle = { margin: 'auto' };
 
     const searchContainerDisplay = (
         <div
@@ -267,31 +225,63 @@ function Sidebar() {
                 styles.main_search_container
             } ${!sidebar.isOpen && styles.sidebar_link_search_closed}`}
         >
-            {location.pathname.includes('analytics')
-                ? AnalyticsSearchContainer
-                : searchContainer}
+            {searchContainer}
             {sidebar.isOpen ? (
-                <DefaultTooltip
-                    interactive
-                    title={!openAllDefault ? openAllButton : collapseButton}
-                    placement={'right'}
-                    arrow
-                    enterDelay={100}
-                    leaveDelay={200}
-                >
-                    <div style={{ cursor: 'pointer', display: 'flex' }}>
-                        <img
+                <div style={{ cursor: 'pointer', display: 'flex' }}>
+                    <DefaultTooltip
+                        title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
+                    >
+                        {isLocked ? (
+                            <AiFillLock
+                                style={controlIconStyle}
+                                onClick={toggleLockSidebar}
+                            />
+                        ) : (
+                            <AiFillUnlock
+                                style={controlIconStyle}
+                                onClick={toggleLockSidebar}
+                            />
+                        )}
+                    </DefaultTooltip>
+                    <DefaultTooltip
+                        title={openAllDefault ? 'Collapse All' : 'Expand All'}
+                    >
+                        {openAllDefault ? (
+                            <BsChevronContract
+                                style={controlIconStyle}
+                                onClick={toggleExpandCollapseAll}
+                            />
+                        ) : (
+                            <BsChevronExpand
+                                style={controlIconStyle}
+                                onClick={toggleExpandCollapseAll}
+                            />
+                        )}
+                    </DefaultTooltip>
+                    <DefaultTooltip
+                        title={
+                            isLocked
+                                ? 'Sidebar locked'
+                                : sidebar.isOpen
+                                ? 'Close Sidebar'
+                                : 'Open Sidebar'
+                        }
+                    >
+                        <input
+                            type='image'
                             src={closeSidebarImage}
                             alt='close sidebar'
                             onClick={() => sidebar.close(true)}
+                            disabled={isLocked}
+                            style={{ opacity: isLocked ? 0.5 : 1 }}
                         />
-                    </div>
-                </DefaultTooltip>
+                    </DefaultTooltip>
+                </div>
             ) : (
                 <BiSearch
-                    size={18}
+                    size={20}
                     color='#CDC1FF'
-                    onClick={() => sidebar.open(true)}
+                    onClick={() => sidebar.open(false)}
                 />
             )}
         </div>
@@ -302,8 +292,8 @@ function Sidebar() {
         ? styles.sidebar_active
         : styles.sidebar;
 
-    const topElementsDisplay = (
-        <div style={{ width: '100%' }}>
+    const regularSidebarDisplay = (
+        <div className={styles.sidebar_content_container}>
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     sidebar={sidebar}
@@ -337,11 +327,7 @@ function Sidebar() {
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
-        </div>
-    );
-
-    const bottomElementsDisplay = (
-        <div className={styles.bottom_elements}>
+            <div style={{ margin: 'auto' }} />
             {recentTransactions.map((item, idx) => (
                 <SidebarAccordion
                     sidebar={sidebar}
@@ -378,19 +364,12 @@ function Sidebar() {
         </div>
     );
 
-    const regularSidebarDisplay = (
-        <>
-            {topElementsDisplay}
-            {bottomElementsDisplay}
-        </>
-    );
-
     return (
-        <div ref={sidebarRef}>
+        <div ref={sidebarRef} className={styles.sidebar_container}>
             <nav
                 className={`${styles.sidebar} ${sidebarStyle}`}
                 onClick={() => {
-                    sidebar.isOpen || sidebar.open(true);
+                    sidebar.isOpen || sidebar.open(false);
                 }}
                 style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
             >
@@ -400,6 +379,7 @@ function Sidebar() {
                         <SidebarSearchResults
                             searchData={searchData}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
+                            cachedFetchTokenPrice={cachedFetchTokenPrice}
                         />
                     ) : (
                         regularSidebarDisplay

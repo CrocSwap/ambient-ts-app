@@ -1,19 +1,21 @@
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
-import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
-import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
+import PositionsSearchResults from './PositionsSearchResults';
+import OrdersSearchResults from './OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
-import { sidebarSearchIF } from '../useSidebarSearch';
+import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { TokenPriceFn } from '../../../functions/fetchTokenPrice';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
+    cachedFetchTokenPrice: TokenPriceFn;
     searchData: sidebarSearchIF;
 }
 
 export default function SidebarSearchResults(props: propsIF) {
-    const { searchData, cachedPoolStatsFetch } = props;
+    const { searchData, cachedPoolStatsFetch, cachedFetchTokenPrice } = props;
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
@@ -24,6 +26,7 @@ export default function SidebarSearchResults(props: propsIF) {
             <PoolsSearchResults
                 searchedPools={searchData.pools}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
+                cachedFetchTokenPrice={cachedFetchTokenPrice}
             />
             {isUserConnected && (
                 <>

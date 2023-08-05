@@ -95,7 +95,7 @@
     height: 100%;
     width: 100%;
     z-index: 0;
-    background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, var(--body-bg) 100%), url('../../../assets/images/waveform.svg') no-repeat center center;
+    background: linear-gradient(180deg, rgba(23, 29, 39, 0) 0%, var(--dark1) 100%), url('../../../assets/images/waveform.svg') no-repeat center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -198,6 +198,7 @@
 @media only screen and (min-width: 1200px) {
     .rectangle_container {
         display: flex;
+        flex-shrink: 0;
     }
 
     .nft_container {

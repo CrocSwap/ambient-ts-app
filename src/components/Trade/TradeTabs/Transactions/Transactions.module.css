@@ -39,15 +39,17 @@
 
 .header {
     position: sticky;
-    top: 0; /* Don't forget this, required for the stickiness */
+    top: 0; 
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-    
 }
 
 .table_content {
-    flex-grow: 1; /* Allow the content to grow and occupy remaining space */
-    overflow: auto; /* Enable scrolling for the content */
+    min-height: 100px;
+    flex-grow: 1;
+    overflow: auto; 
+    
 }
+
 
 .footer {
     background: var(--dark1);
@@ -59,7 +61,6 @@
     flex-direction: column;
     /* position: sticky;
     bottom: 0; */
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
     margin: 0 auto;
 }
 
@@ -190,9 +191,6 @@
 }
 
 .token_images_account img {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
     margin: 0 2px;
 }
 
@@ -216,6 +214,9 @@
     color: var(--text1);
 }
 
+.base_color {
+    color: var(--text1);
+}
 .mono_font {
     font-family: var(--roboto);
 }
@@ -280,7 +281,7 @@
     padding: 10px;
     display: flex;
     justify-content: center;
-    align-items: center;
+
 }
 
 .view_more_button {
@@ -299,6 +300,10 @@
     color: var(--text2);
 }
 
+.show_more_grid{
+    display: grid;
+    grid-template-rows: auto 70px;
+}
 .view_more_button:hover {
     color: var(--text1);
 }
@@ -312,7 +317,7 @@
     cursor: pointer;
     font-family: var(--roboto);
     white-space: nowrap;
-    width: 460px;
+    width: 421px;
 }
 
 .showing_text {

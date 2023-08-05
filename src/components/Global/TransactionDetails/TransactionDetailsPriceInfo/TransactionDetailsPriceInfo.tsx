@@ -1,18 +1,16 @@
 import styles from './TransactionDetailsPriceInfo.module.css';
 import Row from '../../../Global/Row/Row';
-// import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-// import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineLine } from 'react-icons/ai';
-import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 
-// import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
-import { IS_LOCAL_ENV } from '../../../../constants';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import TokenIcon from '../../TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
+import Apy from '../../Tabs/Apy/Apy';
 
 type ItemIF = {
     slug: string;
@@ -23,15 +21,15 @@ type ItemIF = {
 interface propsIF {
     tx: TransactionIF;
     controlItems: ItemIF[];
+    positionApy: number | undefined;
 }
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
-    const { tx, controlItems } = props;
+    const { tx, controlItems, positionApy } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
 
-    // const dispatch = useAppDispatch();
     const {
         usdValue,
         baseTokenSymbol,
@@ -39,8 +37,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
-        baseQuantityDisplayShort,
-        quoteQuantityDisplayShort,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
@@ -48,7 +46,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-        txUsdValueLocaleString,
         baseTokenCharacter,
         quoteTokenCharacter,
     } = useProcessTransaction(tx, userAddress);
@@ -60,31 +57,18 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
     const tokenPairDetails = (
-        <div
-            className={styles.token_pair_details}
-            onClick={() => {
-                // dispatch(toggleDidUserFlipDenom());
-            }}
-        >
+        <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
-                {/* <img src={baseTokenLogo} alt={baseTokenSymbol} /> */}
-                {/* <img src={isDenomBase ? baseTokenLogo : quoteTokenLogo} alt={baseTokenSymbol} /> */}
-                {baseTokenLogo ? (
-                    <img src={baseTokenLogo} alt={baseTokenSymbol} />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={baseTokenSymbol?.charAt(0)}
-                        width='30px'
-                    />
-                )}
-                {quoteTokenLogo ? (
-                    <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
-                ) : (
-                    <NoTokenIcon
-                        tokenInitial={quoteTokenSymbol?.charAt(0)}
-                        width='30px'
-                    />
-                )}
+                <TokenIcon
+                    src={uriToHttp(baseTokenLogo)}
+                    alt={baseTokenSymbol}
+                    size='2xl'
+                />
+                <TokenIcon
+                    src={uriToHttp(quoteTokenLogo)}
+                    alt={quoteTokenSymbol}
+                    size='2xl'
+                />
             </div>
             <p>
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
@@ -105,7 +89,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 <span>Total Value: </span>
                 <DefaultTooltip
                     interactive
-                    title={txUsdValueLocaleString}
+                    title={usdValue}
                     placement={'right-end'}
                     arrow
                     enterDelay={750}
@@ -116,8 +100,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             </Row>
         </motion.div>
     );
-
-    IS_LOCAL_ENV && console.debug({ tx });
 
     const isAmbient = tx.positionType === 'ambient';
 
@@ -140,10 +122,25 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             className={styles.info_container}
         >
             <Row>
-                <span>Type: </span>
+                <span>Order Type: </span>
                 <div className={styles.info_text}>{typeDisplay}</div>
             </Row>
         </motion.div>
+    );
+
+    const buySellBaseToken = (
+        <TokenIcon
+            src={uriToHttp(baseTokenLogo)}
+            alt={baseTokenSymbol}
+            size='xs'
+        />
+    );
+    const buySellQuoteToken = (
+        <TokenIcon
+            src={uriToHttp(quoteTokenLogo)}
+            alt={quoteTokenSymbol}
+            size='xs'
+        />
     );
 
     const isBuyTransactionDetails = (
@@ -156,23 +153,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 </p>
 
                 <div>
-                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
-
-                    {quoteTokenLogo ? (
-                        <img
-                            width='15px'
-                            src={quoteTokenLogo}
-                            alt={quoteTokenSymbol}
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol?.charAt(0)}
-                            width='15px'
-                        />
-                    )}
+                    {quoteQuantityDisplay.replace(/[()]/g, '')}
+                    {buySellQuoteToken}
                 </div>
             </Row>
             <span className={styles.divider}></span>
+
             <Row>
                 <p>
                     {tx.entityType === 'liqchange'
@@ -180,32 +166,15 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         : 'Sell: '}
                 </p>
                 <div>
-                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
-
-                    {baseTokenLogo ? (
-                        <img
-                            width='15px'
-                            src={baseTokenLogo}
-                            alt={baseTokenSymbol}
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={baseTokenSymbol?.charAt(0)}
-                            width='15px'
-                        />
-                    )}
+                    {baseQuantityDisplay.replace(/[()]/g, '')}
+                    {buySellBaseToken}
                 </div>
             </Row>
         </div>
     );
 
     const isSellTransactionDetails = (
-        <div
-            className={styles.tx_details}
-            // onClick={() => {
-            // dispatch(toggleDidUserFlipDenom());
-            // }}
-        >
+        <div className={styles.tx_details}>
             <Row>
                 <p>
                     {tx.entityType === 'liqchange'
@@ -214,20 +183,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 </p>
 
                 <div>
-                    {baseQuantityDisplayShort.replace(/[()]/g, '')}
-
-                    {baseTokenLogo ? (
-                        <img
-                            width='15px'
-                            src={baseTokenLogo}
-                            alt={baseTokenSymbol}
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={baseTokenSymbol?.charAt(0)}
-                            width='15px'
-                        />
-                    )}
+                    {baseQuantityDisplay.replace(/[()]/g, '')}
+                    {buySellBaseToken}
                 </div>
             </Row>
             <span className={styles.divider}></span>
@@ -238,20 +195,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                         : 'Sell: '}
                 </p>
                 <div>
-                    {quoteQuantityDisplayShort.replace(/[()]/g, '')}
-
-                    {quoteTokenLogo ? (
-                        <img
-                            width='15px'
-                            src={quoteTokenLogo}
-                            alt={quoteTokenSymbol}
-                        />
-                    ) : (
-                        <NoTokenIcon
-                            tokenInitial={quoteTokenSymbol?.charAt(0)}
-                            width='15px'
-                        />
-                    )}
+                    {quoteQuantityDisplay.replace(/[()]/g, '')}
+                    {buySellQuoteToken}
                 </div>
             </Row>
         </div>
@@ -340,6 +285,15 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 {controlItems[2] && totalValueContent}
                 {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}
+                {tx.entityType === 'liqchange' ? (
+                    <Apy
+                        amount={positionApy || undefined}
+                        fs='48px'
+                        lh='60px'
+                        center
+                        showTitle
+                    />
+                ) : undefined}
             </div>
         </div>
     );

@@ -6,12 +6,13 @@ import TransactionSubmitted from '../../../Global/TransactionSubmitted/Transacti
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     position: PositionIF;
@@ -79,7 +80,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
             tokenBSymbol={tokenB.symbol}
             tokenBAddress={tokenB.address}
             tokenBDecimals={tokenB.decimals}
-            tokenBImage={tokenB.logoURI}
+            tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
             reposition
         />
@@ -111,14 +112,11 @@ export default function ConfirmRepositionModal(props: propsIF) {
             <div className={styles.fee_tier_container}>
                 <div className={styles.detail_line}>
                     <div>
-                        {baseToken.logoURI ? (
-                            <img src={baseToken.logoURI} alt={baseToken.name} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={baseToken.symbol?.charAt(0)}
-                                width='20px'
-                            />
-                        )}
+                        <TokenIcon
+                            src={uriToHttp(baseToken.logoURI)}
+                            alt={baseToken.symbol}
+                            size='m'
+                        />
                         <span>Current {baseToken.symbol} Collateral</span>
                     </div>
                     <span>{currentBaseQtyDisplayTruncated}</span>
@@ -126,14 +124,11 @@ export default function ConfirmRepositionModal(props: propsIF) {
 
                 <div className={styles.detail_line}>
                     <div>
-                        {tokenA.logoURI ? (
-                            <img src={baseToken.logoURI} alt={baseToken.name} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={baseToken.symbol?.charAt(0)}
-                                width='20px'
-                            />
-                        )}
+                        <TokenIcon
+                            src={uriToHttp(baseToken.logoURI)}
+                            alt={baseToken.symbol}
+                            size='m'
+                        />
                         <span> {baseToken.symbol} After Reposition</span>
                     </div>
                     <span>{newBaseQtyDisplay}</span>
@@ -142,34 +137,22 @@ export default function ConfirmRepositionModal(props: propsIF) {
 
                 <div className={styles.detail_line}>
                     <div>
-                        {quoteToken.logoURI ? (
-                            <img
-                                src={quoteToken.logoURI}
-                                alt={quoteToken.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={quoteToken.symbol?.charAt(0)}
-                                width='20px'
-                            />
-                        )}
+                        <TokenIcon
+                            src={uriToHttp(quoteToken.logoURI)}
+                            alt={quoteToken.symbol}
+                            size='m'
+                        />
                         <span>Current {quoteToken.symbol} Collateral</span>
                     </div>
                     <span>{currentQuoteQtyDisplayTruncated}</span>
                 </div>
                 <div className={styles.detail_line}>
                     <div>
-                        {quoteToken.logoURI ? (
-                            <img
-                                src={quoteToken.logoURI}
-                                alt={quoteToken.name}
-                            />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={quoteToken.symbol?.charAt(0)}
-                                width='20px'
-                            />
-                        )}
+                        <TokenIcon
+                            src={uriToHttp(quoteToken.logoURI)}
+                            alt={quoteToken.symbol}
+                            size='m'
+                        />
                         <span>{quoteToken.symbol} After Reposition</span>
                     </div>
                     <span>{newQuoteQtyDisplay}</span>
@@ -188,22 +171,16 @@ export default function ConfirmRepositionModal(props: propsIF) {
             <section className={styles.position_display}>
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
-                        {tokenA.logoURI ? (
-                            <img src={tokenA.logoURI} alt={tokenA.name} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={tokenA.symbol?.charAt(0)}
-                                width='30px'
-                            />
-                        )}
-                        {tokenB.logoURI ? (
-                            <img src={tokenB.logoURI} alt={tokenB.name} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={tokenB.symbol?.charAt(0)}
-                                width='30px'
-                            />
-                        )}
+                        <TokenIcon
+                            src={uriToHttp(tokenA.logoURI)}
+                            alt={tokenA.symbol}
+                            size='2xl'
+                        />
+                        <TokenIcon
+                            src={uriToHttp(tokenB.logoURI)}
+                            alt={tokenB.symbol}
+                            size='2xl'
+                        />
                     </div>
                     <span className={styles.token_symbol}>
                         {tokenA.symbol}/{tokenB.symbol}

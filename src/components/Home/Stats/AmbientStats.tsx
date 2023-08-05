@@ -1,12 +1,14 @@
 import { useContext, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { getChainStats } from '../../../App/functions/getPoolStats';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { getChainStatsFresh } from '../../../utils/functions/getChainStats';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { formatAmountOld } from '../../../utils/numbers';
 import styles from './Stats.module.css';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { Fade } from 'react-reveal';
 
 interface StatCardProps {
     title: string;
@@ -36,12 +38,13 @@ export default function Stats() {
     } = useContext(AppStateContext);
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
+
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
     const { isUserIdle } = useAppSelector((state) => state.userData);
-
-    const { t } = useTranslation();
 
     const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
     const [totalVolumeString, setTotalVolumeString] = useState<
@@ -52,17 +55,35 @@ export default function Stats() {
     >();
 
     useEffect(() => {
-        if (isServerEnabled && !isUserIdle)
-            getChainStatsFresh(chainId).then((dexStats) => {
-                if (dexStats.tvl)
-                    setTotalTvlString('$' + formatAmountOld(dexStats.tvl));
-                if (dexStats.volume)
-                    setTotalVolumeString(
-                        '$' + formatAmountOld(dexStats.volume),
+        if (isServerEnabled && !isUserIdle && crocEnv) {
+            getChainStats(chainId, crocEnv, cachedFetchTokenPrice).then(
+                (dexStats) => {
+                    if (!dexStats) {
+                        return;
+                    }
+
+                    setTotalTvlString(
+                        getFormattedNumber({
+                            value: dexStats.tvlTotalUsd,
+                            prefix: '$',
+                            isTvl: true,
+                        }),
                     );
-                if (dexStats.fees)
-                    setTotalFeesString('$' + formatAmountOld(dexStats.fees));
-            });
+                    setTotalVolumeString(
+                        getFormattedNumber({
+                            value: dexStats.volumeTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                    setTotalFeesString(
+                        getFormattedNumber({
+                            value: dexStats.feesTotalUsd,
+                            prefix: '$',
+                        }),
+                    );
+                },
+            );
+        }
     }, [isServerEnabled, isUserIdle, lastBlockNumber]);
 
     const statCardData = [
@@ -79,20 +100,49 @@ export default function Stats() {
             value: totalFeesString ? totalFeesString : '…',
         },
     ];
-    return (
-        <div className={styles.container}>
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+
+    const mobileWrapper = (
+        <Fade up>
             <div
                 className={styles.title}
-                aria-label={t('homeStatsTitle')}
+                aria-label='Ambient Finance Stats'
                 tabIndex={0}
             >
-                {t('homeStatsTitle')}
+                Ambient Finance Stats
             </div>
             <ul className={styles.content}>
                 {statCardData.map((card, idx) => (
                     <StatCard key={idx} title={card.title} value={card.value} />
                 ))}
             </ul>
+        </Fade>
+    );
+
+    return (
+        <div className={styles.container}>
+            {showMobileVersion ? (
+                mobileWrapper
+            ) : (
+                <>
+                    <div
+                        className={styles.title}
+                        aria-label='Ambient Finance Stats'
+                        tabIndex={0}
+                    >
+                        Ambient Finance Stats
+                    </div>
+                    <ul className={styles.content}>
+                        {statCardData.map((card, idx) => (
+                            <StatCard
+                                key={idx}
+                                title={card.title}
+                                value={card.value}
+                            />
+                        ))}
+                    </ul>
+                </>
+            )}
         </div>
     );
 }

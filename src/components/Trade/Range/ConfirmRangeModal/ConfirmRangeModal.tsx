@@ -8,7 +8,6 @@ import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConf
 import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
-import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import SelectedRange from './SelectedRange/SelectedRange';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 
@@ -17,6 +16,9 @@ import styles from './ConfirmRangeModal.module.css';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     sendTransaction: () => void;
@@ -72,21 +74,12 @@ function ConfirmRangeModal(props: propsIF) {
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
     const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const localeTokenAString =
-        tokenAQtyLocal > 999
-            ? tokenAQtyLocal.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenAQtyLocal.toString();
-
-    const localeTokenBString =
-        tokenBQtyLocal > 999
-            ? tokenBQtyLocal.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenBQtyLocal.toString();
+    const localeTokenAString = getFormattedNumber({
+        value: tokenAQtyLocal,
+    });
+    const localeTokenBString = getFormattedNumber({
+        value: tokenBQtyLocal,
+    });
 
     const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
@@ -101,7 +94,7 @@ function ConfirmRangeModal(props: propsIF) {
             tokenBSymbol={tokenB.symbol}
             tokenBAddress={tokenB.address}
             tokenBDecimals={tokenB.decimals}
-            tokenBImage={tokenB.logoURI}
+            tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
             range
         />
@@ -120,22 +113,16 @@ function ConfirmRangeModal(props: propsIF) {
             <section className={styles.position_display}>
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
-                        {tokenA.logoURI ? (
-                            <img src={tokenA.logoURI} alt={tokenA.name} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={tokenA.symbol?.charAt(0)}
-                                width='30px'
-                            />
-                        )}
-                        {tokenB.logoURI ? (
-                            <img src={tokenB.logoURI} alt={tokenB.name} />
-                        ) : (
-                            <NoTokenIcon
-                                tokenInitial={tokenB.symbol?.charAt(0)}
-                                width='30px'
-                            />
-                        )}
+                        <TokenIcon
+                            src={uriToHttp(tokenA.logoURI)}
+                            alt={tokenA.symbol}
+                            size='2xl'
+                        />
+                        <TokenIcon
+                            src={uriToHttp(tokenB.logoURI)}
+                            alt={tokenB.symbol}
+                            size='2xl'
+                        />
                     </div>
                     <span className={styles.token_symbol}>
                         {tokenA.symbol}/{tokenB.symbol}
@@ -151,14 +138,11 @@ function ConfirmRangeModal(props: propsIF) {
                 <div className={styles.fee_tier_container}>
                     <div className={styles.detail_line}>
                         <div>
-                            {tokenA.logoURI ? (
-                                <img src={tokenA.logoURI} alt={tokenA.name} />
-                            ) : (
-                                <NoTokenIcon
-                                    tokenInitial={tokenA.symbol?.charAt(0)}
-                                    width='20px'
-                                />
-                            )}
+                            <TokenIcon
+                                src={uriToHttp(tokenA.logoURI)}
+                                alt={tokenA.symbol}
+                                size='m'
+                            />
                             <span>{tokenA.symbol}</span>
                         </div>
                         <span>
@@ -169,14 +153,11 @@ function ConfirmRangeModal(props: propsIF) {
                     </div>
                     <div className={styles.detail_line}>
                         <div>
-                            {tokenB.logoURI ? (
-                                <img src={tokenB.logoURI} alt={tokenB.name} />
-                            ) : (
-                                <NoTokenIcon
-                                    tokenInitial={tokenB.symbol?.charAt(0)}
-                                    width='20px'
-                                />
-                            )}
+                            <TokenIcon
+                                src={uriToHttp(tokenB.logoURI)}
+                                alt={tokenB.symbol}
+                                size='m'
+                            />
                             <span>{tokenB.symbol}</span>
                         </div>
                         <span>

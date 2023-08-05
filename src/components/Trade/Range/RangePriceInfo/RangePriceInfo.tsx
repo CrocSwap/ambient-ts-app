@@ -3,20 +3,20 @@ import styles from './RangePriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
 import {
-    useAppDispatch,
+    // useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
+// import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { testTokenMap } from '../../../../utils/data/testTokenMap';
-import { formatAmountOld } from '../../../../utils/numbers';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { isStableToken } from '../../../../utils/data/stablePairs';
-import AprExplanation from '../../../Global/Informational/AprExplanation';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
+
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
+import { ZERO_ADDRESS } from '../../../../constants';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 // interface for component props
 interface propsIF {
@@ -44,14 +44,14 @@ interface propsIF {
 // central react functional component
 function RangePriceInfo(props: propsIF) {
     const {
-        spotPriceDisplay,
         poolPriceCharacter,
-        aprPercentage,
+        // aprPercentage,
         pinnedDisplayPrices,
         isTokenABase,
         isAmbient,
     } = props;
     const {
+        // eslint-disable-next-line
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -62,32 +62,41 @@ function RangePriceInfo(props: propsIF) {
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
         useAppSelector((state) => state.tradeData);
 
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
 
-    const aprPercentageString = aprPercentage
-        ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })}%`
-        : '…';
+    // const aprPercentageString = aprPercentage
+    //     ? `${aprPercentage.toLocaleString('en-US', {
+    //           minimumFractionDigits: 2,
+    //           maximumFractionDigits: 2,
+    //       })}%`
+    //     : '…';
     // JSX frag for estimated APR of position
 
-    const apr = (
-        <span className={styles.apr}>
-            {aprPercentageString}{' '}
-            <AiOutlineQuestionCircle
-                size={14}
-                onClick={() =>
-                    openGlobalPopup(
-                        <AprExplanation />,
+    // const aprDisplay = (
+    //     <div className={styles.price_display}>
+    //         <h4 className={styles.price_title}>Est. APR</h4>
+    //         <span
+    //             className={styles.apr_price}
+    //             onClick={() => {
+    //                 dispatch(toggleDidUserFlipDenom());
+    //                 setUserFlippedMaxMinDisplay(false);
+    //             }}
+    //         >
+    //             {aprPercentageString}
+    //             {/* <AiOutlineQuestionCircle
+    //             size={14}
+    //             onClick={() =>
+    //                 openGlobalPopup(
+    //                     <AprExplanation />,
 
-                        'Estimated APR',
-                        'right',
-                    )
-                }
-            />
-        </span>
-    );
+    //                     'Estimated APR',
+    //                     'right',
+    //                 )
+    //             }
+    //         /> */}
+    //         </span>
+    //     </div>
+    // );
 
     const [tokenAMainnetPrice, setTokenAMainnetPrice] = useState<
         number | undefined
@@ -99,12 +108,9 @@ function RangePriceInfo(props: propsIF) {
     const [userFlippedMaxMinDisplay, setUserFlippedMaxMinDisplay] =
         useState<boolean>(false);
 
-    const [poolPriceUsdEquivalent, setPoolPriceUsdEquivalent] =
-        useState<string>('');
-
     const [minPriceUsdEquivalent, setMinPriceUsdEquivalent] =
         useState<string>('');
-
+    // eslint-disable-next-line
     const [maxPriceUsdEquivalent, setMaxPriceUsdEquivalent] =
         useState<string>('');
 
@@ -118,7 +124,8 @@ function RangePriceInfo(props: propsIF) {
         : isAmbient
         ? '0'
         : pinnedDisplayPrices
-        ? pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
+        ? poolPriceCharacter +
+          pinnedDisplayPrices.pinnedMinPriceDisplayTruncatedWithCommas
         : '...';
 
     const maxPrice = userFlippedMaxMinDisplay
@@ -128,7 +135,8 @@ function RangePriceInfo(props: propsIF) {
         : isAmbient
         ? '∞'
         : pinnedDisplayPrices
-        ? pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
+        ? poolPriceCharacter +
+          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncatedWithCommas
         : '...';
 
     const isDenomTokenA =
@@ -136,10 +144,6 @@ function RangePriceInfo(props: propsIF) {
 
     const pinnedMinPrice = pinnedDisplayPrices?.pinnedMinPriceDisplay;
     const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplay;
-
-    const currentPrice = userFlippedMaxMinDisplay
-        ? poolPriceUsdEquivalent
-        : poolPriceCharacter + spotPriceDisplay;
 
     const isStableTokenA = useMemo(
         () => isStableToken(tokenAAddress, chainId),
@@ -153,65 +157,26 @@ function RangePriceInfo(props: propsIF) {
 
     const isEitherTokenStable = isStableTokenA || isStableTokenB;
 
-    const updatePoolPriceUsdEquivalent = () => {
-        const spotPriceNum = parseFloat(spotPriceDisplay.replaceAll(',', ''));
-
-        if (!tokenBMainnetPrice || !tokenAMainnetPrice) return;
-
-        let poolPriceNum;
-
-        if (isDenomTokenA) {
-            poolPriceNum = spotPriceNum * tokenBMainnetPrice;
-        } else {
-            poolPriceNum = spotPriceNum * tokenAMainnetPrice;
-        }
-
-        const displayUsdPriceString =
-            poolPriceNum === Infinity || poolPriceNum === 0
-                ? '…'
-                : poolPriceNum < 0.00001
-                ? poolPriceNum.toExponential(2)
-                : poolPriceNum < 2
-                ? poolPriceNum.toPrecision(3)
-                : poolPriceNum >= 100000
-                ? formatAmountOld(poolPriceNum, 1)
-                : poolPriceNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        setPoolPriceUsdEquivalent('~$' + displayUsdPriceString);
-    };
-
-    useEffect(() => {
-        updatePoolPriceUsdEquivalent();
-    }, [
-        spotPriceDisplay,
-        isDenomTokenA,
-        tokenAMainnetPrice,
-        tokenBMainnetPrice,
-        tokenAAddress + tokenBAddress,
-    ]);
-
     const updateMainnetPricesAsync = async () => {
         const tokenAMainnetEquivalent =
-            chainId === '0x1'
+            chainId === '0x1' && tokenAAddress !== ZERO_ADDRESS
                 ? tokenAAddress
                 : testTokenMap
                       .get(tokenAAddress.toLowerCase() + '_' + chainId)
                       ?.split('_')[0];
         const tokenBMainnetEquivalent =
-            chainId === '0x1'
+            chainId === '0x1' && tokenBAddress !== ZERO_ADDRESS
                 ? tokenBAddress
                 : testTokenMap
                       .get(tokenBAddress.toLowerCase() + '_' + chainId)
                       ?.split('_')[0];
 
         if (tokenAMainnetEquivalent) {
-            const tokenAMainnetEthPrice = await cachedFetchTokenPrice(
+            const tokenAMainnetPrice = await cachedFetchTokenPrice(
                 tokenAMainnetEquivalent,
                 '0x1',
             );
-            const usdPrice = tokenAMainnetEthPrice?.usdPrice;
+            const usdPrice = tokenAMainnetPrice?.usdPrice;
 
             setTokenAMainnetPrice(usdPrice);
         } else {
@@ -219,11 +184,11 @@ function RangePriceInfo(props: propsIF) {
         }
 
         if (tokenBMainnetEquivalent) {
-            const tokenBMainnetEthPrice = await cachedFetchTokenPrice(
+            const tokenBMainnetPrice = await cachedFetchTokenPrice(
                 tokenBMainnetEquivalent,
                 '0x1',
             );
-            const usdPrice = tokenBMainnetEthPrice?.usdPrice;
+            const usdPrice = tokenBMainnetPrice?.usdPrice;
             setTokenBMainnetPrice(usdPrice);
         } else {
             setTokenBMainnetPrice(undefined);
@@ -255,35 +220,19 @@ function RangePriceInfo(props: propsIF) {
                 parseFloat(pinnedMaxPrice) * (tokenAMainnetPrice || 0);
         }
 
-        const minDisplayUsdPriceString =
-            minPriceNum === Infinity || minPriceNum === 0
-                ? '…'
-                : minPriceNum < 0.00001
-                ? minPriceNum.toExponential(2)
-                : minPriceNum < 2
-                ? minPriceNum.toPrecision(3)
-                : minPriceNum >= 100000
-                ? formatAmountOld(minPriceNum, 1)
-                : minPriceNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        setMinPriceUsdEquivalent('~$' + minDisplayUsdPriceString);
+        const minDisplayUsdPriceString = getFormattedNumber({
+            value: minPriceNum,
+            zeroDisplay: '…',
+            prefix: '~$',
+        });
+        setMinPriceUsdEquivalent(minDisplayUsdPriceString);
 
-        const maxDisplayUsdPriceString =
-            maxPriceNum === Infinity || maxPriceNum === 0
-                ? '…'
-                : maxPriceNum < 0.00001
-                ? maxPriceNum.toExponential(2)
-                : maxPriceNum < 2
-                ? maxPriceNum.toPrecision(3)
-                : maxPriceNum >= 100000
-                ? formatAmountOld(maxPriceNum, 1)
-                : maxPriceNum.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
-        setMaxPriceUsdEquivalent('~$' + maxDisplayUsdPriceString);
+        const maxDisplayUsdPriceString = getFormattedNumber({
+            value: maxPriceNum,
+            zeroDisplay: '…',
+            prefix: '~$',
+        });
+        setMaxPriceUsdEquivalent(maxDisplayUsdPriceString);
     }, [
         pinnedMinPrice,
         pinnedMaxPrice,
@@ -362,57 +311,11 @@ function RangePriceInfo(props: propsIF) {
             </div>
         );
 
-    // JSX frag for current pool price
-    const currentPoolPrice =
-        nonDenomTokenDollarEquivalentExists && !isEitherTokenStable ? (
-            <DefaultTooltip
-                interactive
-                title={`${poolPriceUsdEquivalent} USD per ${
-                    isDenomBase ? baseToken.symbol : quoteToken.symbol
-                } `}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
-            >
-                <div className={styles.price_display}>
-                    <h4 className={styles.price_title}>Current Price</h4>
-                    <span
-                        className={styles.current_price}
-                        onClick={() => {
-                            dispatch(toggleDidUserFlipDenom());
-                            setUserFlippedMaxMinDisplay(false);
-                        }}
-                    >
-                        {currentPrice === 'Infinity' || !currentPrice
-                            ? '…'
-                            : `${currentPrice}`}
-                    </span>
-                </div>
-            </DefaultTooltip>
-        ) : (
-            <div className={styles.price_display}>
-                <h4 className={styles.price_title}>Current Price</h4>
-                <span
-                    className={styles.current_price}
-                    onClick={() => {
-                        dispatch(toggleDidUserFlipDenom());
-                        setUserFlippedMaxMinDisplay(false);
-                    }}
-                >
-                    {currentPrice === 'Infinity' || !currentPrice
-                        ? '…'
-                        : `${currentPrice}`}
-                </span>
-            </div>
-        );
-
     return (
         <div className={styles.price_info_container}>
-            {apr}
             <div className={styles.price_info_content}>
+                {/* {aprDisplay} */}
                 {minimumPrice}
-                {currentPoolPrice}
                 {maximumPrice}
             </div>
         </div>

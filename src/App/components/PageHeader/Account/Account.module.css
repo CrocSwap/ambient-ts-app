@@ -48,7 +48,6 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
@@ -61,7 +60,6 @@
 }
 .more span {
     font-size: 18px;
-    /* font-weight: 800; */
     margin: 0 1.5px;
 }
 
@@ -69,11 +67,9 @@
     width: 100%;
     min-width: 196px;
     max-height: 450px;
-
     background-color: var(--dark1);
     box-shadow: rgba(80, 70, 114, 0.01) 0px 0px 1px, rgb(0 0 0 / 4%) 0px 4px 8px,
         rgb(0 0 0 / 4%) 0px 16px 24px, rgb(0 0 0 / 1%) 0px 24px 32px;
-    /* border: 1px solid rgb(25, 27, 31); */
     padding: 0.5rem;
     display: flex;
     flex-direction: column;
@@ -95,18 +91,6 @@
     color: rgb(195, 197, 203);
 }
 
-.authenticate_button {
-    background: var(--title-gradient);
-    border: none;
-    outline: none;
-    color: var(--dark2);
-    font-weight: 200;
-
-    border-radius: var(--border-radius);
-    width: 155px;
-    height: 25px;
-}
-
 .wallet_display {
     position: relative;
 }
@@ -119,11 +103,10 @@
     position: absolute;
     top: 50px;
     width: 347px;
-    height: 220px;
+    height: 280px;
     right: -40px;
     z-index: 9999;
     padding: 8px 1rem;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -133,7 +116,6 @@
 
 .wallet_wrapper {
     bottom: 0px;
-
     opacity: 0;
     pointer-events: none;
 }
@@ -154,7 +136,6 @@
 
 .block_number_div span {
     cursor: default !important;
-
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text1);
@@ -172,6 +153,7 @@
     animation: rotate 9.5s linear infinite;
     color: var(--text1);
 }
+
 .page_block_sign:before,
 .page_block_sign:after {
     content: ' ';

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
+import { tokenListURIs } from '../../utils/data/tokenListURIs';
+import { ZERO_ADDRESS } from '../../constants';
+import { USDC } from '../../utils/tokens/exports';
 
 export const useTokenSearch = (
     chainId: string,
@@ -17,10 +19,6 @@ export const useTokenSearch = (
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string>('');
 
-    const recentTxTokens = useAppSelector(
-        (state) => state.userData.recentTokens,
-    );
-
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
@@ -33,7 +31,7 @@ export const useTokenSearch = (
             setSearchAs('address');
             // if not an apparent token address, search name and symbol
             // if not an apparent token address, search name and symbol
-        } else if (cleanInput.length >= 2) {
+        } else if (cleanInput.length) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
             // otherwise treat as if there is no input entered
@@ -78,56 +76,24 @@ export const useTokenSearch = (
 
         // fn to run a token search by name or symbol
         function searchAsNameOrSymbol(): TokenIF[] {
-            // determine if the validated input is exactly two characters
-            // for two-character input, app should only return exact matches
-            const exactOnly = validatedInput.length === 2;
             // check tokens in `allTokenLists` for tokens that match validated input
-            return tokens.getTokensByNameOrSymbol(validatedInput, exactOnly);
+            return tokens.getTokensByNameOrSymbol(validatedInput);
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const outputTokens = tokens.defaultTokens;
-            // fn to add tokens from an array to the output array
-            const addTokensToOutput = (
-                newTokens: TokenIF[],
-                verificationNeeded: boolean,
-                maxToAdd: number,
-            ): void => {
-                // counter to track how many tokens from array have been added
-                let limiter = 0;
-                // logic to iterate through all tokens in array parameter
-                for (let i = 0; i < newTokens.length; i++) {
-                    // check if current token at index is already in the ouput variable
-                    const isInArray = outputTokens.some(
-                        (tk: TokenIF) =>
-                            tk.address.toLowerCase() ===
-                                newTokens[i].address.toLowerCase() &&
-                            tk.chainId === newTokens[i].chainId,
-                    );
-                    // check if token is recognized from a list (if necessary)
-                    const isTokenKnown = verificationNeeded
-                        ? tokens.verifyToken(newTokens[i].address)
-                        : true;
-                    // add token to output if not already there and limiter is below max
-                    if (!isInArray && isTokenKnown && limiter < maxToAdd) {
-                        limiter++;
-                        outputTokens.push(newTokens[i]);
-                    }
-                }
-            };
-            // add wallet tokens to output array
-            addTokensToOutput(walletTokens, true, 2);
-            // add tokens from recent txs to output array
-            addTokensToOutput(recentTxTokens ?? [], false, 2);
-            // add recent tokens to output array
-            addTokensToOutput(getRecentTokens(), false, 2);
-            // remove off-chain tokens from output array
-            const ouputTokensOnChain = outputTokens.filter(
-                (tk: TokenIF) => tk.chainId === parseInt(chainId),
-            );
-            return ouputTokensOnChain;
+            const ambientTokens: TokenIF[] = tokens.defaultTokens;
+            // get tokens from the Uniswap list, remove any already on Ambient list
+            const uniswapTokens: TokenIF[] = tokens
+                .getTokensFromList(tokenListURIs.uniswap)
+                .filter((uniTkn: TokenIF) => {
+                    return !ambientTokens
+                        .map((tkn: TokenIF) => tkn.address.toLowerCase())
+                        .includes(uniTkn.address.toLowerCase());
+                });
+            // combine the Ambient and Uniswap token lists
+            return ambientTokens.concat(uniswapTokens);
         }
 
         // declare an output variable
@@ -143,9 +109,71 @@ export const useTokenSearch = (
             default:
                 foundTokens = noSearch();
         }
-        // send found tokens to local state hook
-        // this will be the array of tokens returned by the hook
-        setOutputTokens(foundTokens);
+        // sort to list tokens higher which are recognized by more authorities
+        // keep tokens listed by Ambient at the top
+        const sortedTokens: TokenIF[] = foundTokens
+            .sort((a: TokenIF, b: TokenIF) => {
+                // output value
+                let rank: number;
+                // decision tree to determine sort order
+                // sort ambient-listed token higher if only one is listed by us
+                // otherwise sort by number of lists featuring the token overall
+                if (isOnAmbientList(a) && isOnAmbientList(b)) {
+                    rank = comparePopularity();
+                } else if (isOnAmbientList(a)) {
+                    rank = -1;
+                } else if (isOnAmbientList(b)) {
+                    rank = 1;
+                } else {
+                    rank = comparePopularity();
+                }
+                // fn to determine if a given token is on the ambient list
+                function isOnAmbientList(t: TokenIF): boolean {
+                    return !!t.listedBy?.includes(tokenListURIs.ambient);
+                }
+                // fn to determine which of the two tokens is more popular
+                function comparePopularity(): number {
+                    const getPopularity = (tkn: TokenIF): number =>
+                        tkn.listedBy?.length ?? 1;
+                    return getPopularity(b) - getPopularity(a);
+                }
+                // return the output variable
+                return rank;
+            })
+            // promote privileged tokens to the top of the list
+            .sort((a: TokenIF, b: TokenIF) => {
+                // fn to numerically prioritize a token (high = important)
+                const getPriority = (tkn: TokenIF): number => {
+                    const tknAddress: string = tkn.address.toLowerCase();
+                    // declare an output variable
+                    let priority: number;
+                    // canonical token addresses to assign probability
+                    const addresses = {
+                        nativeToken: ZERO_ADDRESS,
+                        USDC: USDC[
+                            chainId.toLowerCase() as keyof typeof USDC
+                        ].toLowerCase(),
+                    };
+                    if (tknAddress === ZERO_ADDRESS) {
+                        priority = 100;
+                    } else if (tknAddress === addresses.USDC) {
+                        priority = 90;
+                    } else if (tkn.listedBy) {
+                        priority = tkn.listedBy.length;
+                    } else {
+                        priority = 0;
+                    }
+                    // return numerical priority of the token
+                    return priority;
+                };
+                // token priority values (numeric)
+                const priorityTknA: number = getPriority(a);
+                const priorityTknB: number = getPriority(b);
+                const priority123ABC: number = b.name < a.name ? 1 : -1;
+                // sort tokens by relative priority level
+                return priorityTknB - priorityTknA || priority123ABC;
+            });
+        setOutputTokens(sortedTokens);
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
     }, [

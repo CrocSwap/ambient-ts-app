@@ -4,8 +4,7 @@
     border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
-    /* gap: 4px; */
-    height: 100px;
+    height: 200px;
     overflow-y: hidden;
 }
 .wallet_content::-webkit-scrollbar {
@@ -68,18 +67,14 @@
 
 .actions_container {
     width: 100%;
-    /* position: absolute; */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     bottom: 0;
     z-index: 9;
 }
-.actions_container button,
-.actions_container a {
+.account_button {
     cursor: pointer;
-    background: transparent;
-    background: var(--dark3);
     border: none;
     outline: none;
     padding: 6px 8px;
@@ -88,31 +83,17 @@
     flex-direction: row;
     align-items: center;
     gap: 4px;
-    color: var(--text2);
-    transition: all var(--animation-speed) ease-in-out;
     border-radius: var(--border-radius);
-}
 
-.actions_container button:first-of-type {
-    color: var(--accent5);
-    /* background: var(--title-gradient); */
-    background-position: 1% 50%;
-    background-size: 300% 300%;
+    background: var(--dark3);
     text-decoration: none;
-    /* border: 1px solid var(--accent1); */
-
-    background: var(--accent1);
+    color: var(--text2);
 }
-.actions_container button:first-of-type:hover,
-.actions_container button:first-of-type:focus-visible {
-    color: var(--text-grey-white);
 
-    /* border: 1px solid rgba(223, 190, 106, 0); */
-    background-position: 99% 50%;
-}
 .actions_container a:hover,
 .actions_container a:focus-visible {
-    color: var(--text1);
+    color: var(--text-grey-white);
+
 }
 
 .copy_button:focus-visible {

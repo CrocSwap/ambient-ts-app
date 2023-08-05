@@ -40,6 +40,26 @@
     list-style: none;
 }
 
+.info_button_container {
+    margin-top: 8px;
+    padding: 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info_container {
+    margin-top: 8px;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.advanced_info_container {
+    padding: 0 32px;
+}
+
 .control_title {
     color: var(--text2);
 }
@@ -54,45 +74,6 @@
 
 .url_link div {
     cursor: pointer;
-}
-
-.authenticate_button {
-    width: 100%;
-    outline: none;
-
-    padding: 12px 16px;
-    margin-bottom: 40px;
-    font-size: 16px;
-
-    line-height: 24px;
-
-    display: block;
-
-    height: auto;
-    cursor: pointer;
-    text-align: center;
-
-    background: transparent;
-    text-transform: capitalize;
-
-    border-radius: 4px;
-    transition: box-shadow var(--animation-speed) ease-in-out;
-
-    background: var(--title-gradient);
-    border: none;
-    outline: none;
-    color: var(--dark2);
-    font-weight: 200;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-}
-
-.authenticate_button:hover,
-.authenticate_button:focus-visible {
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
 .tutorial_button_container {
@@ -121,7 +102,7 @@
 .acknowledge_text {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    border: 1px var(--border);
+    border: 1px var(--dark3);
     border-radius: var(--border-radius);
     border: 0.1px solid var(--text3);
     text-align: center;

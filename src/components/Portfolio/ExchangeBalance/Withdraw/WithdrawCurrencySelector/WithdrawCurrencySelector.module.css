@@ -56,12 +56,11 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    align-items: center;
-    /* padding: 0.5rem 0; */
+   
+  
     min-height: 40px;
-    /* height: 40px; */
-}
 
+}
 .swap_input {
     width: 70%;
 }
@@ -69,12 +68,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 30%;
+    gap: 4px;
     cursor: pointer;
-}
+    padding: 0 4px;
+    border-radius: 4px;
+    transition: all var(--animation-speed) ease-in-out;
 
-.token_select img {
-    max-width: 100%;
+}
+.token_select:hover {
+    background: var(--dark3);
 }
 
 .token_list_text {

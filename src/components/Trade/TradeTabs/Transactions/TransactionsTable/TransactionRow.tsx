@@ -19,10 +19,19 @@ interface propsIF {
     ipadView: boolean;
     showPair: boolean;
     showColumns: boolean;
+    showTimestamp: boolean;
+
     isAccountView: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const { showColumns, ipadView, tx, isAccountView, showPair } = props;
+    const {
+        showColumns,
+        showTimestamp,
+        ipadView,
+        tx,
+        isAccountView,
+        showPair,
+    } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -34,8 +43,8 @@ function TransactionRow(props: propsIF) {
         userNameToDisplay,
         quoteTokenLogo,
         baseTokenLogo,
-        baseQuantityDisplayShort,
-        quoteQuantityDisplayShort,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         ownerId,
         truncatedDisplayPrice,
         truncatedLowDisplayPrice,
@@ -193,8 +202,8 @@ function TransactionRow(props: propsIF) {
         isAccountView,
         tx,
         elapsedTimeString,
-        baseQuantityDisplayShort,
-        quoteQuantityDisplayShort,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         isOwnerActiveAccount,
         ensName,
         ownerId,
@@ -256,7 +265,7 @@ function TransactionRow(props: propsIF) {
             tabIndex={0}
             onKeyDown={handleKeyPress}
         >
-            {!showColumns && TxTimeWithTooltip}
+            {showTimestamp && TxTimeWithTooltip}
             {isAccountView && showPair && tokenPair}
             {!showColumns && <li>{IDWithTooltip}</li>}
             {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}

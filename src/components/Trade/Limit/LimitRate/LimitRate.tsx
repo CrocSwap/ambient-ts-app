@@ -11,6 +11,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -28,7 +29,6 @@ export default function LimitRate(props: propsIF) {
         displayPrice,
         setDisplayPrice,
         previousDisplayPrice,
-        setPreviousDisplayPrice,
         isSellTokenBase,
         setPriceInputFieldBlurred,
         fieldId,
@@ -44,121 +44,115 @@ export default function LimitRate(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const isDenomBase = tradeData.isDenomBase;
-    const limitTick = tradeData.limitTick;
+    const isDenomBase: boolean = tradeData.isDenomBase;
+    const limitTick: number | undefined = tradeData.limitTick;
 
-    const increaseTick = () => {
+    const increaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick + gridSize));
             setPriceInputFieldBlurred(true);
         }
     };
 
-    const decreaseTick = () => {
+    const decreaseTick = (): void => {
         if (limitTick) {
             dispatch(setLimitTick(limitTick - gridSize));
             setPriceInputFieldBlurred(true);
         }
     };
 
-    const handleLimitChange = (value: string) => {
+    const handleLimitChange = async (value: string) => {
         IS_LOCAL_ENV && console.debug({ value });
-        const limitNonDisplay = isDenomBase
-            ? pool?.fromDisplayPrice(parseFloat(value))
-            : pool?.fromDisplayPrice(1 / parseFloat(value));
+        if (pool) {
+            const limit = await pool.fromDisplayPrice(
+                isDenomBase ? parseFloat(value) : 1 / parseFloat(value),
+            );
 
-        limitNonDisplay?.then((limit) => {
-            const pinnedTick: number = isSellTokenBase
-                ? pinTickLower(limit, gridSize)
-                : pinTickUpper(limit, gridSize);
-            dispatch(setLimitTick(pinnedTick));
-            setPriceInputFieldBlurred(true);
-        });
+            if (limit) {
+                const pinnedTick: number = isSellTokenBase
+                    ? pinTickLower(limit, gridSize)
+                    : pinTickUpper(limit, gridSize);
+
+                dispatch(setLimitTick(pinnedTick));
+            }
+        }
     };
 
-    const rateInput = (
-        <div className={styles.token_amount}>
-            <input
-                id={`${fieldId}-quantity`}
-                onFocus={() => {
-                    const limitRateInputField = document.getElementById(
-                        'limit-rate-quantity',
-                    );
+    const handleOnChange = (input: string) => setDisplayPrice(input);
 
-                    (limitRateInputField as HTMLInputElement).select();
-                }}
-                onChange={(event) => {
-                    const isValid =
-                        event.target.value === '' ||
-                        event.target.validity.valid;
-                    isValid ? setDisplayPrice(event.target.value) : null;
-                }}
-                className={styles.currency_quantity}
-                placeholder='0.0'
-                onBlur={(event) => {
-                    const isValid =
-                        event.target.value === '' ||
-                        event.target.validity.valid;
-                    const targetValue = event.target.value;
-                    if (isValid && targetValue !== previousDisplayPrice) {
-                        handleLimitChange(targetValue.replaceAll(',', ''));
-                        setPreviousDisplayPrice(targetValue);
-                    }
-                }}
-                value={displayPrice === 'NaN' ? '...' : displayPrice}
-                type='text'
-                inputMode='decimal'
-                autoComplete='off'
-                autoCorrect='off'
-                min='0'
-                minLength={1}
-                pattern='^[0-9,]*[.]?[0-9]*[Ee]?[+-]?[0-9]*[.]?[0-9]*$'
-                disabled={disable}
-                tabIndex={0}
-                aria-label='Limit Price.'
-                aria-live='polite'
-                aria-atomic='true'
-                aria-relevant='all'
-            />
-        </div>
-    );
+    const handleOnBlur = async (input: string) => {
+        let newDisplayPrice = removeLeadingZeros(input.replaceAll(',', ''));
+        if (input.startsWith('.')) newDisplayPrice = `0${input}`;
 
-    const buttonControls = (
-        <div className={styles.button_controls}>
-            <button
-                onClick={!isDenomBase ? increaseTick : decreaseTick}
-                aria-label='Increase limit tick.'
-            >
-                <HiPlus />
-            </button>
-            <button>
-                <HiMinus
-                    onClick={!isDenomBase ? decreaseTick : increaseTick}
-                    aria-label='Decrease limit tick.'
-                />
-            </button>
-        </div>
-    );
+        if (newDisplayPrice !== previousDisplayPrice) {
+            await handleLimitChange(newDisplayPrice);
+        }
+        setPriceInputFieldBlurred(true);
+    };
 
     return (
-        <div
-            className={`${styles.swapbox} ${
-                showOrderPulseAnimation && styles.pulse_animation
-            }`}
-        >
+        <div className={styles.swapbox}>
             <span
                 className={styles.direction}
                 style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    height: '19px',
                 }}
             >
                 <p>Price</p>
             </span>
-            <div className={styles.swap_input} id='limit_rate'>
-                {rateInput}
-                {buttonControls}
+            <div
+                className={`${styles.swap_input}  ${
+                    showOrderPulseAnimation && styles.pulse_animation
+                }`}
+                id='limit_rate'
+            >
+                <div className={styles.token_amount}>
+                    <input
+                        id={`${fieldId}-quantity`}
+                        onFocus={() => {
+                            const limitRateInputField = document.getElementById(
+                                'limit-rate-quantity',
+                            );
+
+                            (limitRateInputField as HTMLInputElement).select();
+                        }}
+                        onChange={(e) => handleOnChange(e.target.value)}
+                        className={styles.currency_quantity}
+                        placeholder='0.0'
+                        onBlur={(e) => handleOnBlur(e.target.value)}
+                        value={displayPrice === 'NaN' ? '...' : displayPrice}
+                        type='number'
+                        step='any'
+                        inputMode='decimal'
+                        autoComplete='off'
+                        autoCorrect='off'
+                        min='0'
+                        minLength={1}
+                        disabled={disable}
+                        tabIndex={0}
+                        aria-label='Limit Price.'
+                        aria-live='polite'
+                        aria-atomic='true'
+                        aria-relevant='all'
+                    />
+                </div>
+                <div className={styles.button_controls}>
+                    <button
+                        onClick={!isDenomBase ? increaseTick : decreaseTick}
+                        aria-label='Increase limit tick.'
+                    >
+                        <HiPlus />
+                    </button>
+                    <button
+                        onClick={!isDenomBase ? decreaseTick : increaseTick}
+                        aria-label='Decrease limit tick.'
+                    >
+                        <HiMinus />
+                    </button>
+                </div>
             </div>
         </div>
     );
