@@ -170,6 +170,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 const candleSeries = candles?.candles;
                 if (candleSeries && candleSeries.length > 0) {
                     setIsFetchingCandle(false);
+                } else {
+                    setIsCandleDataNull(true);
+                    setIsFetchingCandle(false);
                 }
             });
         } else {
