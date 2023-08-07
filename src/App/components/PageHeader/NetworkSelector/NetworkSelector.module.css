@@ -1,6 +1,10 @@
 .dropdown_menu_container {
     z-index: 99999;
     background-color: var(--dark2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 4px;
    
     border-radius: 4px;
     grid-gap: 4px;

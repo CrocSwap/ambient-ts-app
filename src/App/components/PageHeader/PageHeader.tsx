@@ -394,7 +394,6 @@ const PageHeader = function () {
                     />
                 )}
             </Link>
-
             {routeDisplay}
             <div className={styles.right_side}>
                 {show ? (

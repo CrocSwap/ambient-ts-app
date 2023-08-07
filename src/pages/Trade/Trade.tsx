@@ -33,7 +33,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { PoolNotInitalized } from '../../components/PoolNotInitialized/PoolNotInitialized';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
-import { PoolContext } from '../../contexts/PoolContext';
+import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -49,9 +49,10 @@ function Trade() {
         chartSettings,
         chartHeights,
         setChartHeight,
+        canvasRef,
     } = useContext(ChartContext);
 
-    const { isPoolInitialized } = useContext(PoolContext);
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { tokens } = useContext(TokenContext);
     const {
@@ -195,6 +196,7 @@ function Trade() {
                         )}
 
                         {!isCandleDataNull &&
+                            isPoolInitialized &&
                             activeMobileComponent !== 'chart' && (
                                 <button
                                     onClick={() =>
@@ -271,19 +273,8 @@ function Trade() {
                 padding: '0 8px',
             }}
         >
-            {isPoolInitialized && (
-                <PoolNotInitalized
-                    chainId={chainId}
-                    tokenA={
-                        isDenomBase ? tradeData.baseToken : tradeData.quoteToken
-                    }
-                    tokenB={
-                        isDenomBase ? tradeData.quoteToken : tradeData.baseToken
-                    }
-                />
-            )}
             {mobileTradeDropdown}
-            {activeMobileComponent === 'chart' && (
+            {activeMobileComponent === 'chart' && isPoolInitialized && (
                 <div
                     className={` ${fullScreenStyle}`}
                     style={{ marginLeft: '2rem' }}
@@ -373,6 +364,7 @@ function Trade() {
             <div
                 className={`${styles.middle_col}
                 ${tradeTableState === 'Expanded' ? styles.flex_column : ''}`}
+                ref={canvasRef}
             >
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}

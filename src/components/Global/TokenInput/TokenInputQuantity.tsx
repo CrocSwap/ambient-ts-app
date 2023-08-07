@@ -17,11 +17,11 @@ import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { SoloTokenSelect } from '../TokenSelectContainer/SoloTokenSelect';
 import styles from './TokenInputQuantity.module.css';
-import { PoolContext } from '../../../contexts/PoolContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -56,7 +56,7 @@ function TokenInputQuantity(props: propsIF) {
         parseInput,
     } = props;
     const { setInput: setTokenSelectInput } = useContext(TokenContext);
-    const { isPoolInitialized } = useContext(PoolContext);
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
     const { tradeData } = useAppSelector((state) => state);
     const { isDenomBase } = tradeData;
     const {

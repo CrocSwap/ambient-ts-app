@@ -16,7 +16,7 @@
     display: flex;
     /* justify-content: space-between; */
     align-items: center;
-    padding: 1rem 0;
+    padding: 1rem ;
     border-bottom: 1px solid var(--navbar-border);
 }
 .fixed {
@@ -95,15 +95,11 @@
     flex-direction: row;
   gap: 8px;
     align-items: center;
-
-
-   
 }
 
 
-
-.logo_text{
-    width: 30%;
+.logo_text {
+width: 30%;
 }
 
 .logo_container:focus-visible img {
@@ -200,7 +196,7 @@
 @media only screen and (min-width: 400px) {
     .primary_header {
         justify-content: space-between;
-        padding: 0 1rem;
+     
 
        
     }
