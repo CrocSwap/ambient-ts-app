@@ -12,7 +12,6 @@ import {
     fetchCandleSeriesHybrid,
 } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
-import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
@@ -52,14 +51,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         useContext(ChartContext);
     const { chainData, crocEnv } = useContext(CrocEnvContext);
     const {
-        baseToken: {
-            address: baseTokenAddress,
-            mainnetAddress: mainnetCanonBase,
-        },
-        quoteToken: {
-            address: quoteTokenAddress,
-            mainnetAddress: mainnetCanonQuote,
-        },
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
@@ -114,11 +107,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         timeOfEndCandle,
     };
 
-    const {
-        baseToken: mainnetBaseTokenAddress,
-        quoteToken: mainnetQuoteTokenAddress,
-    } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
-
     useEffect(() => {
         setCandleData(undefined);
     }, [baseTokenAddress + quoteTokenAddress]);
@@ -127,8 +115,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         isChartEnabled && fetchCandles();
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
+        baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
     ]);
 
@@ -141,8 +128,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         }
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
+        baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         candleScale.nCandles,
         candleScale.isShowLatestCandle,
@@ -153,8 +139,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isServerEnabled &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            mainnetBaseTokenAddress &&
-            mainnetQuoteTokenAddress &&
             candleTimeLocal &&
             crocEnv
         ) {
