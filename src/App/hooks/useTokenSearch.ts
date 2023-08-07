@@ -63,6 +63,12 @@ export const useTokenSearch = (
     // hook to track tokens to output and render in DOM
     const [outputTokens, setOutputTokens] = useState<TokenIF[]>([]);
 
+    // list of addresses of tokens in connected wallet
+    const walletTknAddresses = useMemo<string[]>(
+        () => walletTokens.map((wTkn: TokenIF) => wTkn.address.toLowerCase()),
+        [walletTokens.length],
+    );
+
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
         // fn to run a token search by contract address
@@ -158,6 +164,10 @@ export const useTokenSearch = (
                         priority = 100;
                     } else if (tknAddress === addresses.USDC) {
                         priority = 90;
+                    } else if (
+                        walletTknAddresses.includes(tkn.address.toLowerCase())
+                    ) {
+                        priority = 80;
                     } else if (tkn.listedBy) {
                         priority = tkn.listedBy.length;
                     } else {
@@ -179,7 +189,7 @@ export const useTokenSearch = (
     }, [
         chainId,
         tokens.defaultTokens,
-        walletTokens.length,
+        walletTknAddresses,
         getRecentTokens().length,
         validatedInput,
     ]);
