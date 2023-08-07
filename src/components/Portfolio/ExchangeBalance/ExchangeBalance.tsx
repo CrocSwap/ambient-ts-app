@@ -32,14 +32,11 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { useDispatch } from 'react-redux';
 import { TokenContext } from '../../../contexts/TokenContext';
-import { SoloTokenSelect } from '../../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import { AppStateContext } from '../../../contexts/AppStateContext';
 
 interface propsIF {
     fullLayoutActive: boolean;
     setFullLayoutActive: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
-    setIsTokenModalOpen?: (val: boolean) => void;
 }
 
 export default function ExchangeBalance(props: propsIF) {
@@ -47,7 +44,6 @@ export default function ExchangeBalance(props: propsIF) {
         fullLayoutActive,
         setFullLayoutActive,
         isModalView = false,
-        setIsTokenModalOpen,
     } = props;
 
     const { mainnetProvider } = useContext(CrocEnvContext);
@@ -70,14 +66,7 @@ export default function ExchangeBalance(props: propsIF) {
         cachedFetchNativeTokenBalance,
         cachedTokenDetails,
     } = useContext(CachedDataContext);
-    const { addTokenInfo, setInput } = useContext(TokenContext);
-    const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal, isOpen },
-    } = useContext(AppStateContext);
-
-    const closeModalCustom = () => {
-        setInput('');
-    };
+    const { addTokenInfo } = useContext(TokenContext);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -92,8 +81,6 @@ export default function ExchangeBalance(props: propsIF) {
     const [resolvedAddress, setResolvedAddress] = useState<
         string | undefined
     >();
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
-        useState(true);
 
     const isSendToAddressEns = sendToAddress?.endsWith('.eth');
     const isSendToAddressHex =
@@ -247,32 +234,6 @@ export default function ExchangeBalance(props: propsIF) {
         })();
     }, [sendToAddress, isSendToAddressHex]);
 
-    // Needed to disable clicks outside ExchangeBalanceModal if dismissing TokenSelectionModal via GlobalModal's close()
-    useEffect(() => {
-        if (!isOpen) setIsTokenModalOpen && setIsTokenModalOpen(false);
-    }, [isOpen]);
-
-    // Needed to disable clicks outside ExchangeBalanceModal properly if dismissing TokenSelectionModal via selecting a token
-    const closeTokenSelectionModal = () => {
-        setIsTokenModalOpen && setIsTokenModalOpen(false);
-        closeGlobalModal();
-    };
-
-    const openTokenSelectionModal = () => {
-        setIsTokenModalOpen && setIsTokenModalOpen(true);
-        openGlobalModal(
-            <SoloTokenSelect
-                modalCloseCustom={closeModalCustom}
-                closeModal={closeTokenSelectionModal}
-                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
-                isSingleToken={true}
-                tokenAorB={null}
-            />,
-            'Select Token',
-        );
-    };
-
     const accountData = [
         {
             label: 'Deposit',
@@ -283,7 +244,6 @@ export default function ExchangeBalance(props: propsIF) {
                     tokenWalletBalance={tokenWalletBalance}
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
-                    openTokenModal={openTokenSelectionModal}
                     selectedTokenDecimals={selectedTokenDecimals}
                 />
             ),
@@ -300,7 +260,6 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
-                    openTokenModal={openTokenSelectionModal}
                 />
             ),
             icon: withdrawImage,
@@ -316,7 +275,6 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
-                    openTokenModal={openTokenSelectionModal}
                 />
             ),
             icon: transferImage,
@@ -336,11 +294,8 @@ export default function ExchangeBalance(props: propsIF) {
                     width='20px'
                 />
             </IconWithTooltip>
-            {/* { fullLayoutActive && <p>Exchange Balance</p>} */}
         </section>
     );
-
-    // const titleOpacity = fullLayoutActive ? '0' : '1';
 
     const columnView = useMediaQuery('(max-width: 1200px)');
 
@@ -360,9 +315,6 @@ export default function ExchangeBalance(props: propsIF) {
                 className={`${styles.container} ${restrictWidthStyle}`}
             >
                 <motion.div className={styles.main_container}>
-                    {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
-                    Exchange Balance
-                </div> */}
                     <div className={styles.tabs_container}>
                         {(!fullLayoutActive || columnView || isModalView) && (
                             <TabComponent

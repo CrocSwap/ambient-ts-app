@@ -1,5 +1,4 @@
-import { createContext, useContext, useEffect } from 'react';
-import { fetchTokenLists } from '../App/functions/fetchTokenLists';
+import { createContext, useContext } from 'react';
 import {
     getRecentTokensParamsIF,
     useRecentTokens,
@@ -61,10 +60,6 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         getRecentTokens,
         addTokenInfo,
     };
-
-    useEffect(() => {
-        fetchTokenLists();
-    }, []);
 
     return (
         <TokenContext.Provider value={tokenContext}>
