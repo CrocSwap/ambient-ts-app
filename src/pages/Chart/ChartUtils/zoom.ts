@@ -312,6 +312,25 @@ export class Zoom {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         previousTouch: any,
     ) {
+        const domainX = scaleData?.xScale.domain();
+        const touch = event.sourceEvent.changedTouches[0];
+        const _currentPageX = touch.pageX;
+        const previousTouchPageX = previousTouch.pageX;
+        const _movementX = Math.floor(previousTouchPageX - _currentPageX) / 2;
+
+        scaleData?.xScale.domain([
+            domainX[0] + this.period * 1000 * _movementX,
+            domainX[1] + this.period * 1000 * _movementX,
+        ]);
+    }
+
+    public handlePanningOneTouchWithoutRescale(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        event: any,
+        scaleData: scaleData,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        previousTouch: any,
+    ) {
         const domainY = scaleData?.yScale.domain();
 
         const linearY = d3

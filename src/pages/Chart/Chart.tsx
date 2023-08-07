@@ -670,6 +670,8 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('zoom', (event: any) => {
+                        console.log('Nö1111');
+
                         async function newDomains() {
                             if (
                                 event.sourceEvent &&
@@ -684,12 +686,18 @@ export default function Chart(props: propsIF) {
                                         lastCandleDate,
                                     );
                                 } else if (
-                                    event.sourceEvent.type === 'touchmove' &&
-                                    event.sourceEvent.touches.length > 1 &&
+                                    event.sourceEvent.type === 'touchmove'
+                                    /*   event.sourceEvent.touches.length > 1 &&
                                     scaleData?.xScale &&
-                                    previousDeltaTouch
+                                    previousDeltaTouch */
                                 ) {
-                                    const domainX = scaleData?.xScale.domain();
+                                    zoomBase.handlePanningOneTouch(
+                                        event,
+                                        scaleData,
+                                        previousTouch,
+                                    );
+
+                                    /*    const domainX = scaleData?.xScale.domain();
                                     const linearX = d3
                                         .scaleTime()
                                         .domain(scaleData?.xScale.range())
@@ -723,8 +731,9 @@ export default function Chart(props: propsIF) {
                                         deltaX,
                                         scaleData?.xScale(touch1.clientX),
                                         period,
-                                    );
-                                } else {
+                                    ); */
+                                }
+                                /*  else {
                                     const domainX = scaleData?.xScale.domain();
                                     const linearX = d3
                                         .scaleTime()
@@ -772,7 +781,7 @@ export default function Chart(props: propsIF) {
                                             domainX[1] + deltaX,
                                         ]);
                                     }
-                                }
+                                } */
 
                                 changeScale();
 
@@ -792,6 +801,8 @@ export default function Chart(props: propsIF) {
                                         );
                                     } else {
                                         // Mobile
+                                        console.log('lasklas');
+
                                         const isMultiTouch =
                                             event.sourceEvent.touches.length >=
                                             2;
@@ -805,8 +816,11 @@ export default function Chart(props: propsIF) {
                                                 previousDeltaTouch,
                                             );
                                         } else {
+                                            console.log(
+                                                'handlePanningOneTouch',
+                                            );
                                             domain =
-                                                zoomBase.handlePanningOneTouch(
+                                                zoomBase.handlePanningOneTouchWithoutRescale(
                                                     event,
                                                     scaleData,
                                                     previousTouch,
@@ -814,7 +828,7 @@ export default function Chart(props: propsIF) {
                                         }
                                     }
 
-                                    setYaxisDomain(domain[0], domain[1]);
+                                    // setYaxisDomain(domain[0], domain[1]);
                                     //     if (
                                     //         event.sourceEvent.type ===
                                     //             'touchmove' &&
