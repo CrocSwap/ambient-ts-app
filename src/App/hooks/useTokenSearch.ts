@@ -88,18 +88,36 @@ export const useTokenSearch = (
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
-            // initialize an array of tokens to output, seeded with Ambient default
-            const ambientTokens: TokenIF[] = tokens.defaultTokens;
-            // get tokens from the Uniswap list, remove any already on Ambient list
-            const uniswapTokens: TokenIF[] = tokens
-                .getTokensFromList(tokenListURIs.uniswap)
-                .filter((uniTkn: TokenIF) => {
-                    return !ambientTokens
-                        .map((tkn: TokenIF) => tkn.address.toLowerCase())
-                        .includes(uniTkn.address.toLowerCase());
-                });
+            // fn to concatenate two token arrays with duplicate values removed
+            const patchLists = (
+                listA: TokenIF[],
+                listB: TokenIF[],
+            ): TokenIF[] => {
+                const addressesListA = listA.map((tkn: TokenIF) =>
+                    tkn.address.toLowerCase(),
+                );
+                const dedupedListB: TokenIF[] = listB.filter(
+                    (tkn: TokenIF) =>
+                        !addressesListA.includes(tkn.address.toLowerCase()),
+                );
+                return listA.concat(dedupedListB);
+            };
+            // array of ambient and uniswap tokens, no dupes
+            const baseTokenList: TokenIF[] = patchLists(
+                tokens.defaultTokens,
+                tokens.getTokensFromList(tokenListURIs.uniswap),
+            );
+            // ERC-20 tokens from connected wallet subject to universe verification
+            const verifiedWalletTokens: TokenIF[] = walletTokens.filter(
+                (tkn: TokenIF) => tokens.verify(tkn.address),
+            );
+            // array with tokens added to user's wallet (subject to verification)
+            const withWalletTokens: TokenIF[] = patchLists(
+                baseTokenList,
+                verifiedWalletTokens,
+            );
             // combine the Ambient and Uniswap token lists
-            return ambientTokens.concat(uniswapTokens);
+            return withWalletTokens;
         }
 
         // declare an output variable
