@@ -29,6 +29,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { FiRefreshCw } from 'react-icons/fi';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     disableReverseTokens: boolean;
@@ -128,13 +129,13 @@ function CurrencySelector(props: propsIF) {
 
     const walletBalanceLocaleString = props.sellToken
         ? tokenABalance
-            ? parseFloat(tokenABalance).toLocaleString(undefined, {
+            ? parseFloat(tokenABalance).toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
             : '...'
         : tokenBBalance
-        ? parseFloat(tokenBBalance || '...').toLocaleString(undefined, {
+        ? parseFloat(tokenBBalance || '...').toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
@@ -158,7 +159,7 @@ function CurrencySelector(props: propsIF) {
         ? tokenADexBalance
             ? (
                   parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-              ).toLocaleString(undefined, {
+              ).toLocaleString('en-US', {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })
@@ -166,7 +167,7 @@ function CurrencySelector(props: propsIF) {
         : tokenBDexBalance
         ? (
               parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
-          ).toLocaleString(undefined, {
+          ).toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
@@ -502,7 +503,6 @@ function CurrencySelector(props: propsIF) {
 
     return (
         <div className={styles.swapbox}>
-            <div className={styles.direction} />
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input} id='swap_sell_qty'>
                     <CurrencyQuantity
@@ -528,8 +528,8 @@ function CurrencySelector(props: propsIF) {
                     id='swap_token_selector'
                 >
                     <TokenIcon
-                        src={thisToken.logoURI}
-                        alt={thisToken.name}
+                        src={uriToHttp(thisToken.logoURI)}
+                        alt={thisToken.symbol}
                         size='2xl'
                     />
                     {tokenSymbol}

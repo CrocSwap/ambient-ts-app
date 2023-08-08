@@ -31,16 +31,33 @@ const useChatSocket = (
 
     async function getMsgWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
-        const response = await fetch(
-            CHAT_BACKEND_URL +
-                '/chat/api/messages/getMsgWithoutWebSocket/' +
-                encodedRoomInfo,
-            {
-                method: 'GET',
-            },
-        );
+        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getMsgWithoutWebSocket/${encodedRoomInfo}`;
+        console.log('url: ', url);
+        const response = await fetch(url, {
+            method: 'GET',
+        });
         const data = await response.json();
-        return data;
+        setMessages(data.reverse());
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
+        return data.reverse();
+    }
+
+    async function getMsgWithRest2(roomInfo: string, p?: number) {
+        const encodedRoomInfo = encodeURIComponent(roomInfo);
+        const queryParams = 'p=' + p;
+        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getMsgWithoutWebSocket/${encodedRoomInfo}?${queryParams}`;
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
+        setLastMessage(data);
+        setLastMessageText(data.message);
+        setMessageUser(data.sender);
+
+        return data.reverse();
     }
 
     async function updateLikeDislike(messageId: string, pl: any) {
@@ -234,6 +251,7 @@ const useChatSocket = (
         getRest();
 
         if (socketRef && socketRef.current) {
+            // eslint-disable-next-line
             socketRef.current.on('msg-recieve', (data: any) => {
                 console.log('msg-recieve', data);
                 setMessages([...messagesRef.current, data]);
@@ -293,6 +311,7 @@ const useChatSocket = (
         walletID: string | null,
         mentionedName: string | null,
         mentionedWalletID: string | null,
+        repliedMessage?: string | undefined,
     ) {
         socketRef.current.emit('send-msg', {
             from: currentUser,
@@ -303,6 +322,7 @@ const useChatSocket = (
             mentionedName: mentionedName,
             isMentionMessage: mentionedName ? true : false,
             mentionedWalletID,
+            repliedMessage: repliedMessage,
         });
     }
 
@@ -323,6 +343,7 @@ const useChatSocket = (
         userMap,
         updateVerifyDate,
         updateUserCache,
+        getMsgWithRest2,
     };
 };
 

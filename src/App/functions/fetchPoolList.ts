@@ -1,35 +1,63 @@
-import { GRAPHCACHE_URL, IS_LOCAL_ENV } from '../../constants';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
+import { GCServerPoolIF } from '../../utils/interfaces/exports';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
-const poolListEndpoint = GRAPHCACHE_URL + '/pool_list?';
-
-export const fetchPoolList = async (chainId: string, poolIdx?: number) => {
-    IS_LOCAL_ENV && console.debug('fetching pool list ');
-    if (poolIdx !== undefined) {
-        return fetch(
-            poolListEndpoint +
-                new URLSearchParams({
-                    chainId: chainId,
-                    poolIdx: poolIdx.toString(),
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                return json.data;
+export async function fetchPoolList(
+    crocEnv: CrocEnv,
+): Promise<GCServerPoolIF[]> {
+    const ENDPOINT: string =
+        GRAPHCACHE_SMALL_URL +
+        '/pool_list?' +
+        new URLSearchParams({
+            chainId: (await crocEnv.context).chain.chainId,
+            poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
+        });
+    return fetch(ENDPOINT)
+        .then((response) => response.json())
+        .then((json) => {
+            if (!json?.data) {
+                return [];
+            }
+            const payload = json?.data as GCServerPoolIF[];
+            // TODO:    this is a `Promise.allSettled()` because one bad call for
+            // TODO:    ... a contract with no `symbol()` method was failing and
+            // TODO:    ... taking everything down, instructions from Doug are to
+            // TODO:    ... drop the bad result and investigate more later
+            const pools: Promise<GCServerPoolIF[]> = Promise.allSettled(
+                payload,
+            ).then((results) => {
+                function getFulfilledValues<T>(
+                    promises: PromiseSettledResult<T>[],
+                ): T[] {
+                    // output variable for values from fulfilled promises
+                    const fulfilledValues: T[] = [];
+                    // array to hold rejected promises for troubleshooting
+                    const rejectedPromises: PromiseRejectedResult[] = [];
+                    // iterate over promises, push to each to the correct array
+                    for (const result of promises) {
+                        result.status === 'fulfilled'
+                            ? fulfilledValues.push(result.value)
+                            : rejectedPromises.push(result);
+                    }
+                    // warn about rejected promises in the console (localhost only)
+                    IS_LOCAL_ENV &&
+                        rejectedPromises.forEach(
+                            (reject: PromiseRejectedResult) => {
+                                console.warn(
+                                    'failed pool metadata query, see file fetchPoolList.ts to troubleshoot',
+                                    reject,
+                                );
+                            },
+                        );
+                    // return array of values from fulfilled promises
+                    return fulfilledValues;
+                }
+                return getFulfilledValues(results);
             });
-    } else {
-        return fetch(
-            poolListEndpoint +
-                new URLSearchParams({
-                    chainId: chainId,
-                }),
-        )
-            .then((response) => response.json())
-            .then((json) => {
-                return json.data;
-            });
-    }
-};
+            return pools;
+        });
+}
 
 export type PoolListFn = (
     chain: string,

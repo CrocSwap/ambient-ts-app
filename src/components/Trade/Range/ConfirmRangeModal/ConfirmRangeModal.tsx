@@ -17,6 +17,8 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../../utils/functions/uriToHttp';
 
 interface propsIF {
     sendTransaction: () => void;
@@ -72,21 +74,12 @@ function ConfirmRangeModal(props: propsIF) {
     const isTxDenied = txErrorCode === 'ACTION_REJECTED';
     const isTxException = txErrorCode !== '' && !isTxDenied;
 
-    const localeTokenAString =
-        tokenAQtyLocal > 999
-            ? tokenAQtyLocal.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenAQtyLocal.toString();
-
-    const localeTokenBString =
-        tokenBQtyLocal > 999
-            ? tokenBQtyLocal.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : tokenBQtyLocal.toString();
+    const localeTokenAString = getFormattedNumber({
+        value: tokenAQtyLocal,
+    });
+    const localeTokenBString = getFormattedNumber({
+        value: tokenBQtyLocal,
+    });
 
     const txDenied = (
         <TransactionDenied resetConfirmation={resetConfirmation} />
@@ -101,7 +94,7 @@ function ConfirmRangeModal(props: propsIF) {
             tokenBSymbol={tokenB.symbol}
             tokenBAddress={tokenB.address}
             tokenBDecimals={tokenB.decimals}
-            tokenBImage={tokenB.logoURI}
+            tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
             range
         />
@@ -121,13 +114,13 @@ function ConfirmRangeModal(props: propsIF) {
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
                         <TokenIcon
-                            src={tokenA.logoURI}
-                            alt={tokenA.name}
+                            src={uriToHttp(tokenA.logoURI)}
+                            alt={tokenA.symbol}
                             size='2xl'
                         />
                         <TokenIcon
-                            src={tokenB.logoURI}
-                            alt={tokenB.name}
+                            src={uriToHttp(tokenB.logoURI)}
+                            alt={tokenB.symbol}
                             size='2xl'
                         />
                     </div>
@@ -146,8 +139,8 @@ function ConfirmRangeModal(props: propsIF) {
                     <div className={styles.detail_line}>
                         <div>
                             <TokenIcon
-                                src={tokenA.logoURI}
-                                alt={tokenA.name}
+                                src={uriToHttp(tokenA.logoURI)}
+                                alt={tokenA.symbol}
                                 size='m'
                             />
                             <span>{tokenA.symbol}</span>
@@ -161,8 +154,8 @@ function ConfirmRangeModal(props: propsIF) {
                     <div className={styles.detail_line}>
                         <div>
                             <TokenIcon
-                                src={tokenB.logoURI}
-                                alt={tokenB.name}
+                                src={uriToHttp(tokenB.logoURI)}
+                                alt={tokenB.symbol}
                                 size='m'
                             />
                             <span>{tokenB.symbol}</span>

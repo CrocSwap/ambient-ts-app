@@ -9,7 +9,6 @@ import { CrocImpact } from '@crocswap-libs/sdk';
 import CurrencyConverter from '../../components/Swap/CurrencyConverter/CurrencyConverter';
 import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
-import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
 import Modal from '../../components/Global/Modal/Modal';
 import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
@@ -52,7 +51,10 @@ import { VscClose } from 'react-icons/vsc';
 import { getPriceImpactString } from '../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../App/hooks/useTradeData';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import uriToHttp from '../../utils/functions/uriToHttp';
+import OrderHeader from '../../components/Trade/OrderHeader/OrderHeader';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -394,6 +396,20 @@ function Swap(props: propsIF) {
         setShowExtraInfo: setShowExtraInfo,
     };
 
+    const byPassConfirmSwapButtonProps = {
+        initiateSwapMethod: initiateSwap,
+        newSwapTransactionHash: newSwapTransactionHash,
+        setNewSwapTransactionHash: setNewSwapTransactionHash,
+        txErrorCode: txErrorCode,
+        sellQtyString: sellQtyString,
+        buyQtyString: buyQtyString,
+        tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
+        resetConfirmation: resetConfirmation,
+        setShowBypassConfirm: setShowBypassConfirm,
+        showExtraInfo: showExtraInfo,
+        setShowExtraInfo: setShowExtraInfo,
+    };
+
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
@@ -417,11 +433,10 @@ function Swap(props: propsIF) {
                 ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -454,8 +469,8 @@ function Swap(props: propsIF) {
         isLiq: false,
         isTokenAPrimary: isTokenAPrimary,
         sellQtyString: sellQtyString,
-        buyQtyString: buyQtyString,
         setSellQtyString: setSellQtyString,
+        buyQtyString: buyQtyString,
         setBuyQtyString: setBuyQtyString,
         isWithdrawFromDexChecked: isWithdrawFromDexChecked,
         setIsWithdrawFromDexChecked: setIsWithdrawFromDexChecked,
@@ -471,7 +486,7 @@ function Swap(props: propsIF) {
     } = useContext(AppStateContext);
 
     const handleSwapButtonClickWithBypass = () => {
-        IS_LOCAL_ENV && console.debug('setting to true');
+        IS_LOCAL_ENV && console.debug('setting  bypass confirm to true');
         setShowBypassConfirm(true);
         initiateSwap();
     };
@@ -484,22 +499,20 @@ function Swap(props: propsIF) {
 
     const liquidityInsufficientWarningOrNull = isLiquidityInsufficient ? (
         <div className={styles.price_impact}>
-            <div className={styles.extra_row}>
-                <div className={styles.align_center}>
-                    <div
-                        style={{
-                            color: '#f6385b',
-                        }}
-                    >
-                        Current Pool Liquidity is Insufficient for this Swap
-                    </div>
+            <div className={styles.align_center}>
+                <div
+                    style={{
+                        color: '#f6385b',
+                    }}
+                >
+                    Current Pool Liquidity is Insufficient for this Swap
                 </div>
-                <div>
-                    <TooltipComponent
-                        title='Current Pool Liquidity is Insufficient for this Swap'
-                        placement='bottom'
-                    />
-                </div>
+            </div>
+            <div>
+                <TooltipComponent
+                    title='Current Pool Liquidity is Insufficient for this Swap'
+                    placement='bottom'
+                />
             </div>
         </div>
     ) : null;
@@ -507,17 +520,15 @@ function Swap(props: propsIF) {
     const priceImpactWarningOrNull =
         !isLiquidityInsufficient && priceImpactNum && priceImpactNum > 2 ? (
             <div className={styles.price_impact}>
-                <div className={styles.extra_row}>
-                    <div className={styles.align_center}>
-                        <div>Price Impact Warning</div>
-                        <TooltipComponent
-                            title='Difference Between Current (Spot) Price and Final Price'
-                            placement='bottom'
-                        />
-                    </div>
-                    <div className={styles.data}>
-                        {getPriceImpactString(priceImpactNum)}%
-                    </div>
+                <div className={styles.align_center}>
+                    <div>Price Impact Warning</div>
+                    <TooltipComponent
+                        title='Difference Between Current (Spot) Price and Final Price'
+                        placement='bottom'
+                    />
+                </div>
+                <div className={styles.data}>
+                    {getPriceImpactString(priceImpactNum)}%
                 </div>
             </div>
         ) : null;
@@ -566,7 +577,7 @@ function Swap(props: propsIF) {
 
     const liquidityProviderFeeString = (
         tradeData.liquidityFee * 100
-    ).toLocaleString(undefined, {
+    ).toLocaleString('en-US', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
@@ -600,12 +611,12 @@ function Swap(props: propsIF) {
                         >
                             Initialize Pool
                             <TokenIcon
-                                src={tokenA.logoURI}
+                                src={uriToHttp(tokenA.logoURI)}
                                 alt={tokenA.symbol}
                                 size='m'
                             />
                             <TokenIcon
-                                src={tokenB.logoURI}
+                                src={uriToHttp(tokenB.logoURI)}
                                 alt={tokenB.symbol}
                                 size='m'
                             />
@@ -636,11 +647,13 @@ function Swap(props: propsIF) {
             )}
             <div className={`${swapContainerStyle}`}>
                 {poolNotInitializedContent}
-                <ContentContainer
-                    isOnTradeRoute={isOnTradeRoute}
-                    padding={isOnTradeRoute ? '0 1rem' : '1rem'}
-                >
-                    <SwapHeader isOnTradeRoute={isOnTradeRoute} />
+                <ContentContainer isOnTradeRoute={isOnTradeRoute}>
+                    <OrderHeader
+                        slippage={swapSlippage}
+                        bypassConfirm={bypassConfirmSwap}
+                        settingsTitle='Swap'
+                        isSwapPage={!isOnTradeRoute}
+                    />
                     {navigationMenu}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -649,101 +662,116 @@ function Swap(props: propsIF) {
                     >
                         <CurrencyConverter {...currencyConverterProps} />
                     </motion.div>
-                    <ExtraInfo
-                        priceImpact={priceImpact}
-                        effectivePriceWithDenom={effectivePriceWithDenom}
-                        slippageTolerance={slippageTolerancePercentage}
-                        liquidityProviderFeeString={liquidityProviderFeeString}
-                        swapGasPriceinDollars={swapGasPriceinDollars}
-                        isQtyEntered={tradeData?.primaryQuantity !== ''}
-                    />
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
-                        isPoolInitialized &&
-                        !isTokenAAllowanceSufficient &&
-                        parseFloat(sellQtyString) > 0 &&
-                        sellQtyString !== 'Infinity' ? (
-                            approvalButton
+                    <div className={styles.info_button_container}>
+                        <ExtraInfo
+                            priceImpact={priceImpact}
+                            effectivePriceWithDenom={effectivePriceWithDenom}
+                            slippageTolerance={slippageTolerancePercentage}
+                            liquidityProviderFeeString={
+                                liquidityProviderFeeString
+                            }
+                            swapGasPriceinDollars={swapGasPriceinDollars}
+                            isQtyEntered={tradeData?.primaryQuantity !== ''}
+                        />
+                        {isUserConnected ===
+                        undefined ? null : isUserConnected === true ? (
+                            isPoolInitialized &&
+                            !isTokenAAllowanceSufficient &&
+                            parseFloat(sellQtyString) > 0 &&
+                            sellQtyString !== 'Infinity' ? (
+                                approvalButton
+                            ) : (
+                                <>
+                                    {!showBypassConfirm ? (
+                                        // user has hide confirmation modal off
+                                        <SwapButton
+                                            onClickFn={
+                                                areBothAckd
+                                                    ? bypassConfirmSwap.isEnabled
+                                                        ? handleSwapButtonClickWithBypass
+                                                        : openModal
+                                                    : ackAsNeeded
+                                            }
+                                            swapAllowed={
+                                                swapAllowed &&
+                                                sellQtyString !== '' &&
+                                                buyQtyString !== ''
+                                            }
+                                            swapButtonErrorMessage={
+                                                swapButtonErrorMessage
+                                            }
+                                            bypassConfirmSwap={
+                                                bypassConfirmSwap
+                                            }
+                                            areBothAckd={areBothAckd}
+                                        />
+                                    ) : (
+                                        // user has hide confirmation modal on
+                                        <BypassConfirmSwapButton
+                                            {...byPassConfirmSwapButtonProps}
+                                        />
+                                    )}
+                                    {ackTokenMessage && (
+                                        <p
+                                            className={styles.acknowledge_text}
+                                            dangerouslySetInnerHTML={{
+                                                __html: formattedAckTokenMessage,
+                                            }}
+                                        ></p>
+                                    )}
+                                    {needConfirmTokenA ||
+                                        (needConfirmTokenB && (
+                                            <div
+                                                className={
+                                                    styles.acknowledge_etherscan_links
+                                                }
+                                            >
+                                                {needConfirmTokenA && (
+                                                    <a
+                                                        href={
+                                                            blockExplorer +
+                                                            'token/' +
+                                                            tokenA.address
+                                                        }
+                                                        rel={
+                                                            'noopener noreferrer'
+                                                        }
+                                                        target='_blank'
+                                                        aria-label={`approve ${tokenA.symbol}`}
+                                                    >
+                                                        {tokenA.symbol ||
+                                                            tokenA.name}{' '}
+                                                        <FiExternalLink />
+                                                    </a>
+                                                )}
+                                                {needConfirmTokenB && (
+                                                    <a
+                                                        href={
+                                                            blockExplorer +
+                                                            'token/' +
+                                                            tokenB.address
+                                                        }
+                                                        rel={
+                                                            'noopener noreferrer'
+                                                        }
+                                                        target='_blank'
+                                                        aria-label={`approve ${tokenB.symbol}`}
+                                                    >
+                                                        {tokenB.symbol ||
+                                                            tokenB.name}{' '}
+                                                        <FiExternalLink />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        ))}
+                                </>
+                            )
                         ) : (
-                            <>
-                                {!showBypassConfirm ? (
-                                    // user has hide confirmation modal off
-                                    <SwapButton
-                                        onClickFn={
-                                            areBothAckd
-                                                ? bypassConfirmSwap.isEnabled
-                                                    ? handleSwapButtonClickWithBypass
-                                                    : openModal
-                                                : ackAsNeeded
-                                        }
-                                        swapAllowed={
-                                            swapAllowed &&
-                                            sellQtyString !== '' &&
-                                            buyQtyString !== ''
-                                        }
-                                        swapButtonErrorMessage={
-                                            swapButtonErrorMessage
-                                        }
-                                        bypassConfirmSwap={bypassConfirmSwap}
-                                        areBothAckd={areBothAckd}
-                                    />
-                                ) : (
-                                    // user has hide confirmation modal on
-                                    <BypassConfirmSwapButton
-                                        {...confirmSwapModalProps}
-                                    />
-                                )}
-                                {ackTokenMessage && (
-                                    <p
-                                        className={styles.acknowledge_text}
-                                        dangerouslySetInnerHTML={{
-                                            __html: formattedAckTokenMessage,
-                                        }}
-                                    ></p>
-                                )}
-                                <div
-                                    className={
-                                        styles.acknowledge_etherscan_links
-                                    }
-                                >
-                                    {needConfirmTokenA && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenA.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={`approve ${tokenA.symbol}`}
-                                        >
-                                            {tokenA.symbol || tokenA.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                    {needConfirmTokenB && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenB.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={`approve ${tokenB.symbol}`}
-                                        >
-                                            {tokenB.symbol || tokenB.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                </div>
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                    {priceImpactWarningOrNull}
-                    {liquidityInsufficientWarningOrNull}
+                            loginButton
+                        )}
+                        {priceImpactWarningOrNull}
+                        {liquidityInsufficientWarningOrNull}
+                    </div>
                 </ContentContainer>
                 {confirmSwapModalOrNull}
                 {isRelativeModalOpen && (

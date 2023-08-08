@@ -4,7 +4,13 @@ import { Message } from '../../Model/MessageModel';
 
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
-import { useContext, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import PositionBox from '../PositionBox/PositionBox';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -12,6 +18,7 @@ import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
+import ReplyMessage from '../ReplyMessage/ReplyMessage';
 interface MessageInputProps {
     currentUser: string;
     message?: Message;
@@ -26,12 +33,24 @@ interface MessageInputProps {
         walletID: string | null,
         mentionedName: string | null,
         mentionedWalletID: string | null,
+        replyMessageContent?: string | undefined,
     ) => void;
     inputListener?: (e: string) => void;
     users: User[];
     isLinkInCrocodileLabsLinks(word: string): boolean;
     isLink(url: string): boolean;
     disabled: boolean;
+    filterMessage(message: string): boolean;
+    showPopUp: boolean;
+    setShowPopUp: Dispatch<SetStateAction<boolean>>;
+    formatURL(url: string): string;
+    isLinkInCrocodileLabsLinksForInput(word: string): boolean;
+    setPopUpText: Dispatch<SetStateAction<string>>;
+    popUpText: string;
+    isReplyButtonPressed: boolean;
+    setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
+    replyMessageContent: Message | undefined;
+    setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -51,6 +70,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
     const [possibleMentUser, setPossibleMentUser] = useState<User | null>(null);
+    const [isExceedingMaxLength, setIsExceedingMaxLength] = useState(false);
     const [mentUser, setMentUser] = useState<User | null>(null);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
@@ -61,6 +81,13 @@ export default function MessageInput(props: MessageInputProps) {
         let msg = message;
         msg += emoji.emoji;
         setMessage(msg);
+        // if(msg.length >= 140)
+        // {
+        //     event.preventDefault(); // Prevent further input when the limit is reached
+        //     props.setShowPopUp(true);
+        //     props.setPopUpText('Maximum length exceeded (140 characters limit).');
+
+        // }
     };
 
     const handleEmojiPickerHideShow = () => {
@@ -97,16 +124,18 @@ export default function MessageInput(props: MessageInputProps) {
 
     const handleSendMessageButton = () => {
         if (
-            props.isLink(message) &&
-            !props.isLinkInCrocodileLabsLinks(message)
+            (props.isLink(message) || props.filterMessage(message)) &&
+            !props.isLinkInCrocodileLabsLinksForInput(message)
         ) {
-            // console.log('--------------------------DONT-------------------');
+            props.setShowPopUp(true);
+            props.setPopUpText('You cannot send this link.');
         } else {
-            handleSendMsg(message, roomId);
+            handleSendMsg(props.formatURL(message), roomId);
             setMessage('');
             setMentUser(null);
             setPossibleMentUser(null);
             dontShowEmojiPanel();
+            props.setShowPopUp(false);
         }
     };
 
@@ -122,12 +151,11 @@ export default function MessageInput(props: MessageInputProps) {
 
         if (e.key === 'Enter') {
             if (
-                props.isLink(message) &&
-                !props.isLinkInCrocodileLabsLinks(message)
+                (props.isLink(message) || props.filterMessage(message)) &&
+                !props.isLinkInCrocodileLabsLinksForInput(message)
             ) {
-                // console.log(
-                //     '--------------------------DONT-------------------',
-                // );
+                props.setShowPopUp(true);
+                props.setPopUpText('You cannot send this link.');
             } else {
                 // send msg if ment panel is not active
                 if (!mentPanelActive) {
@@ -136,6 +164,7 @@ export default function MessageInput(props: MessageInputProps) {
                     setPossibleMentUser(null);
                     setMessage('');
                     dontShowEmojiPanel();
+                    props.setShowPopUp(false);
                 }
                 // assign user for ment
                 else {
@@ -174,21 +203,14 @@ export default function MessageInput(props: MessageInputProps) {
                     ],
                 );
             }
+        } else if (e.key !== 'Backspace' && e.target.value.length >= 140) {
+            props.setShowPopUp(true);
+            props.setShowPopUp(true);
+            props.setPopUpText(
+                'Maximum length exceeded (140 characters limit).',
+            );
+            e.preventDefault(); // Prevent further input when the limit is reached
         }
-        // else if(e.key === 'ArrowUp' && mentPanelActive) {
-        //     e.preventDefault();
-        //     if(possibleMentUser === null) {
-        //         setPossibleMentUser(props.users[props.users.length - 1]);
-        //     }else{
-        //         const index = props.users.indexOf(possibleMentUser);
-        //         if(index > 0) {
-
-        //         }
-        //     }
-
-        // }else if(e.key === 'ArrowDown' && mentPanelActive) {
-        //     e.preventDefault();
-        // }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -236,6 +258,9 @@ export default function MessageInput(props: MessageInputProps) {
                 address,
                 mentUser ? userLabelForFilter(mentUser) : null,
                 mentUser ? mentUser.walletID : null,
+                props.replyMessageContent !== undefined
+                    ? props.replyMessageContent?._id
+                    : undefined,
             );
         }
     };
@@ -243,7 +268,7 @@ export default function MessageInput(props: MessageInputProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChangeMessage = async (e: any) => {
         setMessage(e.target.value);
-
+        props.setShowPopUp(false);
         // if (e.target.value.indexOf('@') !== -1 && possibleMentUser === null) {
         if (e.target.value.indexOf('@') !== -1) {
             if (possibleMentUser === null) {
@@ -297,6 +322,22 @@ export default function MessageInput(props: MessageInputProps) {
                                 : props.ensName
                         }
                     />
+                    <div>
+                        {props.isReplyButtonPressed ? (
+                            <ReplyMessage
+                                message={props.replyMessageContent?.message}
+                                ensName={props.ensName}
+                                setIsReplyButtonPressed={
+                                    props.setIsReplyButtonPressed
+                                }
+                                isReplyButtonPressed={
+                                    props.isReplyButtonPressed
+                                }
+                            />
+                        ) : (
+                            ''
+                        )}
+                    </div>
 
                     <div
                         className={
@@ -321,6 +362,7 @@ export default function MessageInput(props: MessageInputProps) {
                             autoComplete={'off'}
                             tabIndex={-1}
                             autoFocus={props.appPage}
+                            maxLength={140}
                         />
 
                         <BsEmojiSmile

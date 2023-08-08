@@ -14,30 +14,6 @@
     gap: 8px;
 }
 
-.option_button {
-    outline: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all var(--animation-speed) ease-in-out;
-    white-space: nowrap;
-    height: 23px;
-    padding: 5px 8px;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: var(--body-size);
-    /* line-height: var(--body-lh); */
-    color: var(--text1);
-
-    background: var(--dark1);
-    border: 1px solid var(--dark3);
-    border-radius: 50px;
-}
-
-.option_button:hover {
-    border: 1px solid var(--accent1);
-    color: var(--accent1);
-}
 
 .reposition_button {
     cursor: pointer;
@@ -85,13 +61,11 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text1);
-    background: transparent;
     outline: none;
-    border: none;
 }
 
 .dropdown_menu button:hover {
-    color: var(--text1);
+    color: var(--accent1);
 }
 
 .actions_menu {
@@ -106,8 +80,8 @@
     gap: 4px;
 }
 
-.example_menu {
-    position: relative;
+.menu_column button {
+    border: 1px solid transparent; 
 }
 
 .dropdown_button {
@@ -115,22 +89,20 @@
     outline: none;
     border: none;
     cursor: pointer;
-
-   
 }
 .dropdown_button:focus-visible {
-    border: 1px solid var(--text1);
+    border: 1px solid var(--accent1);
 }
 .dropdown_button path {
     color: var(--dark3);
 }
 .dropdown_button:hover{
     cursor: pointer;
-
 }
 
-.dropdown_button:hover path{
-    color: var(--text1);
+.dropdown_button:hover path, 
+.dropdown_button:hover circle {
+    color: var(--accent1);
     transition: all var(--animation-speed) ease-in-out;
 }
 .dropdown_wrapper,

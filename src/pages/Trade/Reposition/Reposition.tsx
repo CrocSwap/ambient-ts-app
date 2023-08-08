@@ -56,6 +56,7 @@ import { getPositionData } from '../../../App/functions/getPositionData';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 
 function Reposition() {
@@ -81,6 +82,7 @@ function Reposition() {
         setSimpleRangeWidth,
         setMaxRangePrice: setMaxPrice,
         setMinRangePrice: setMinPrice,
+        setCurrentRangeInReposition,
     } = useContext(RangeContext);
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
@@ -123,6 +125,13 @@ function Reposition() {
 
     // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
+
+    useEffect(() => {
+        setCurrentRangeInReposition('');
+        if (position) {
+            setCurrentRangeInReposition(position.positionId);
+        }
+    }, [position]);
 
     const [concLiq, setConcLiq] = useState<string>('');
 
@@ -176,34 +185,16 @@ function Reposition() {
         quoteTokenDecimals,
     );
 
-    const truncatedCurrentPoolDisplayPriceInBase = currentPoolDisplayPriceInBase
-        ? currentPoolDisplayPriceInBase < 2
-            ? currentPoolDisplayPriceInBase.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : currentPoolDisplayPriceInBase.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '0.00';
-
-    const truncatedCurrentPoolDisplayPriceInQuote =
-        currentPoolDisplayPriceInQuote
-            ? currentPoolDisplayPriceInQuote < 2
-                ? currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
-                : currentPoolDisplayPriceInQuote.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : '0.00';
+    const truncatedCurrentPoolDisplayPriceInBase = getFormattedNumber({
+        value: currentPoolDisplayPriceInBase,
+    });
+    const truncatedCurrentPoolDisplayPriceInQuote = getFormattedNumber({
+        value: currentPoolDisplayPriceInQuote,
+    });
 
     const currentPoolPriceDisplay =
         currentPoolPriceNonDisplay === 0
-            ? '0'
+            ? '...'
             : isDenomBase
             ? truncatedCurrentPoolDisplayPriceInBase
             : truncatedCurrentPoolDisplayPriceInQuote;
@@ -278,13 +269,7 @@ function Reposition() {
             setPinnedLowTick(pinnedDisplayPrices.pinnedLowTick);
             setPinnedHighTick(pinnedDisplayPrices.pinnedHighTick);
         }
-    }, [
-        rangeWidthPercentage,
-        currentPoolPriceTick,
-        currentPoolPriceDisplay,
-        position?.base,
-        position?.quote,
-    ]);
+    }, [position.positionId, rangeWidthPercentage, currentPoolPriceTick]);
 
     function mintArgsForReposition(
         lowTick: number,
@@ -399,20 +384,6 @@ function Reposition() {
         setMaxPrice(parseFloat(pinnedMaxPriceDisplayTruncated));
     }, [pinnedMaxPriceDisplayTruncated]);
 
-    function truncateString(qty?: number): string {
-        return qty
-            ? qty < 2
-                ? qty.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 6,
-                  })
-                : qty.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-            : '0.00';
-    }
-
     const [currentBaseQtyDisplayTruncated, setCurrentBaseQtyDisplayTruncated] =
         useState<string>(position?.positionLiqBaseTruncated || '0.00');
     const [
@@ -463,30 +434,14 @@ function Reposition() {
                     positionStats.positionLiqBaseDecimalCorrected;
                 const liqQuoteNum =
                     positionStats.positionLiqQuoteDecimalCorrected;
-                const liqBaseDisplay = liqBaseNum
-                    ? liqBaseNum < 2
-                        ? liqBaseNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 6,
-                          })
-                        : liqBaseNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          })
-                    : undefined;
+                const liqBaseDisplay = getFormattedNumber({
+                    value: liqBaseNum,
+                });
                 setCurrentBaseQtyDisplayTruncated(liqBaseDisplay || '0.00');
 
-                const liqQuoteDisplay = liqQuoteNum
-                    ? liqQuoteNum < 2
-                        ? liqQuoteNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 6,
-                          })
-                        : liqQuoteNum.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          })
-                    : undefined;
+                const liqQuoteDisplay = getFormattedNumber({
+                    value: liqQuoteNum,
+                });
                 setCurrentQuoteQtyDisplayTruncated(liqQuoteDisplay || '0.00');
             })
             .catch(console.error);
@@ -496,14 +451,8 @@ function Reposition() {
         fetchCurrentCollateral();
     }, [lastBlockNumber, JSON.stringify(position)]);
 
-    // const currentBaseQtyDisplay = position?.positionLiqBaseDecimalCorrected;
-    // const currentQuoteQtyDisplay = position?.positionLiqQuoteDecimalCorrected;
-    // const currentBaseQtyDisplayTruncated = truncateString(currentBaseQtyDisplay);
-    // const currentQuoteQtyDisplayTruncated = truncateString(currentQuoteQtyDisplay);
-
-    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('0.00');
-    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] =
-        useState<string>('0.00');
+    const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
+    const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
 
     const debouncedLowTick = useDebounce(pinnedLowTick, 500);
     const debouncedHighTick = useDebounce(pinnedHighTick, 500);
@@ -582,7 +531,6 @@ function Reposition() {
 
     useEffect(() => {
         if (
-            isPositionInRange ||
             !crocEnv ||
             !debouncedLowTick ||
             !debouncedHighTick ||
@@ -592,6 +540,8 @@ function Reposition() {
         ) {
             return;
         }
+        setNewBaseQtyDisplay('...');
+        setNewQuoteQtyDisplay('...');
         const pool = crocEnv.pool(position.base, position.quote);
 
         const repo = new CrocReposition(pool, {
@@ -600,21 +550,18 @@ function Reposition() {
             mint: mintArgsForReposition(debouncedLowTick, debouncedHighTick),
         });
 
+        setNewBaseQtyDisplay('...');
+        setNewQuoteQtyDisplay('...');
         repo.postBalance().then(([base, quote]: [number, number]) => {
-            setNewBaseQtyDisplay(truncateString(base));
-            setNewQuoteQtyDisplay(truncateString(quote));
+            setNewBaseQtyDisplay(getFormattedNumber({ value: base }));
+            setNewQuoteQtyDisplay(getFormattedNumber({ value: quote }));
         });
     }, [
-        isPositionInRange,
         crocEnv,
+        concLiq,
         debouncedLowTick, // Debounce because effect involves on-chain call
         debouncedHighTick,
-        position.baseSymbol,
-        position.quoteSymbol,
         currentPoolPriceTick,
-        position.positionLiq,
-        position.bidTick,
-        position.askTick,
     ]);
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
@@ -627,11 +574,10 @@ function Reposition() {
                 gasPriceInGwei * 260705 * 1e-9 * ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -759,8 +705,16 @@ function Reposition() {
                     newBaseQtyDisplay={newBaseQtyDisplay}
                     newQuoteQtyDisplay={newQuoteQtyDisplay}
                     rangeGasPriceinDollars={rangeGasPriceinDollars}
-                    currentMinPrice={position?.lowRangeDisplayInBase}
-                    currentMaxPrice={position?.highRangeDisplayInBase}
+                    currentMinPrice={
+                        isDenomBase
+                            ? position?.lowRangeDisplayInBase
+                            : position?.lowRangeDisplayInQuote
+                    }
+                    currentMaxPrice={
+                        isDenomBase
+                            ? position?.highRangeDisplayInBase
+                            : position?.highRangeDisplayInQuote
+                    }
                 />
                 <div className={styles.button_container}>
                     {!showBypassConfirmButton ? (

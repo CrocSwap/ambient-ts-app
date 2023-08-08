@@ -10,7 +10,6 @@ import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton
 import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-import RangeHeader from '../../../components/Trade/Range/RangeHeader/RangeHeader';
 // import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
@@ -59,7 +58,6 @@ import {
     rangeTutorialSteps,
     rangeTutorialStepsAdvanced,
 } from '../../../utils/tutorial/Range';
-import { formatAmountOld } from '../../../utils/numbers';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { diffHashSig } from '../../../utils/functions/diffHashSig';
@@ -73,6 +71,8 @@ import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
 
 function Range() {
     const {
@@ -96,6 +96,7 @@ function Range() {
         setChartTriggeredBy,
         chartTriggeredBy,
         setRescaleRangeBoundariesWithSlider,
+        setCurrentRangeInAdd,
     } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
     const {
@@ -193,20 +194,6 @@ function Range() {
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
-
-    const displayPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : displayPriceWithDenom < 0.0001
-            ? displayPriceWithDenom.toExponential(2)
-            : displayPriceWithDenom < 2
-            ? displayPriceWithDenom.toPrecision(3)
-            : displayPriceWithDenom >= 100000
-            ? formatAmountOld(displayPriceWithDenom, 1)
-            : displayPriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
 
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
@@ -325,6 +312,12 @@ function Range() {
             defaultHighTick,
         ],
     );
+
+    useEffect(() => {
+        if (!isAdd) {
+            setCurrentRangeInAdd('');
+        }
+    }, [isAdd]);
 
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
         useState(defaultMinPriceDifferencePercentage);
@@ -1040,11 +1033,10 @@ function Range() {
                 ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                '$' +
-                    gasPriceInDollarsNum.toLocaleString(undefined, {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }),
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
@@ -1060,7 +1052,9 @@ function Range() {
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
-        spotPriceDisplay: displayPriceString,
+        spotPriceDisplay: getFormattedNumber({
+            value: displayPriceWithDenom,
+        }),
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
         aprPercentage: aprPercentage,
@@ -1160,6 +1154,8 @@ function Range() {
         sendTransaction: sendTransaction,
         setShowBypassConfirmButton: setShowBypassConfirmButton,
         showBypassConfirmButton: showBypassConfirmButton,
+        tokenAInputQty: tokenAInputQty,
+        tokenBInputQty: tokenBInputQty,
     };
 
     // props for <RangeCurrencyConverter/> React element
@@ -1210,7 +1206,9 @@ function Range() {
     const rangeExtraInfoProps = {
         isQtyEntered: isQtyEntered,
         rangeGasPriceinDollars: rangeGasPriceinDollars,
-        poolPriceDisplay: displayPriceString,
+        poolPriceDisplay: getFormattedNumber({
+            value: displayPriceWithDenom,
+        }),
         slippageTolerance: slippageTolerancePercentage,
         liquidityProviderFeeString: liquidityProviderFeeString,
         quoteTokenIsBuy: true,
@@ -1222,12 +1220,7 @@ function Range() {
     };
 
     const baseModeContent = (
-        <div>
-            <RangeCurrencyConverter
-                {...rangeCurrencyConverterProps}
-                isAdvancedMode={false}
-            />
-            {advancedModeToggle}
+        <div className={styles.info_container}>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1236,49 +1229,46 @@ function Range() {
                 <RangeWidth {...rangeWidthProps} />
             </motion.div>
             <RangePriceInfo {...rangePriceInfoProps} />
-            <RangeExtraInfo {...rangeExtraInfoProps} />
         </div>
     );
     const advancedModeContent = (
         <>
-            <RangeCurrencyConverter
-                {...rangeCurrencyConverterProps}
-                isAdvancedMode
-            />
-            {advancedModeToggle}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <MinMaxPrice
-                    minPricePercentage={minPriceDifferencePercentage}
-                    maxPricePercentage={maxPriceDifferencePercentage}
-                    minPriceInputString={minPriceInputString}
-                    maxPriceInputString={maxPriceInputString}
-                    setMinPriceInputString={setMinPriceInputString}
-                    setMaxPriceInputString={setMaxPriceInputString}
-                    isDenomBase={isDenomBase}
-                    highBoundOnBlur={highBoundOnBlur}
-                    lowBoundOnBlur={lowBoundOnBlur}
-                    rangeLowTick={defaultLowTick}
-                    rangeHighTick={defaultHighTick}
-                    disable={isInvalidRange || !isPoolInitialized}
-                    maxPrice={maxPrice}
-                    minPrice={minPrice}
-                    setMaxPrice={setMaxPrice}
-                    setMinPrice={setMinPrice}
-                />
+                <div className={styles.advanced_info_container}>
+                    <MinMaxPrice
+                        minPricePercentage={minPriceDifferencePercentage}
+                        maxPricePercentage={maxPriceDifferencePercentage}
+                        minPriceInputString={minPriceInputString}
+                        maxPriceInputString={maxPriceInputString}
+                        setMinPriceInputString={setMinPriceInputString}
+                        setMaxPriceInputString={setMaxPriceInputString}
+                        isDenomBase={isDenomBase}
+                        highBoundOnBlur={highBoundOnBlur}
+                        lowBoundOnBlur={lowBoundOnBlur}
+                        rangeLowTick={defaultLowTick}
+                        rangeHighTick={defaultHighTick}
+                        disable={isInvalidRange || !isPoolInitialized}
+                        maxPrice={maxPrice}
+                        minPrice={minPrice}
+                        setMaxPrice={setMaxPrice}
+                        setMinPrice={setMinPrice}
+                    />
+                </div>
             </motion.div>
             <DividerDark addMarginTop />
 
             <AdvancedPriceInfo
-                poolPriceDisplay={displayPriceString}
+                poolPriceDisplay={getFormattedNumber({
+                    value: displayPriceWithDenom,
+                })}
                 isTokenABase={isTokenABase}
                 isOutOfRange={isOutOfRange}
                 aprPercentage={aprPercentage}
             />
-            <RangeExtraInfo {...rangeExtraInfoProps} />
         </>
     );
 
@@ -1433,9 +1423,10 @@ function Range() {
             )}
 
             <ContentContainer isOnTradeRoute>
-                <RangeHeader
-                    mintSlippage={mintSlippage}
-                    isTokenABase={isTokenABase}
+                <OrderHeader
+                    slippage={mintSlippage}
+                    bypassConfirm={bypassConfirmRange}
+                    settingsTitle='Pool'
                 />
                 {navigationMenu}
                 <motion.div
@@ -1443,90 +1434,102 @@ function Range() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    {advancedMode ? advancedModeContent : baseModeContent}
+                    <RangeCurrencyConverter
+                        {...rangeCurrencyConverterProps}
+                        isAdvancedMode
+                    />
+                    {advancedModeToggle}
                 </motion.div>
-                {isUserConnected === undefined ? null : isUserConnected ===
-                  true ? (
-                    poolPriceNonDisplay !== 0 &&
-                    parseFloat(tokenAInputQty) > 0 &&
-                    !isTokenAAllowanceSufficient ? (
-                        tokenAApprovalButton
-                    ) : poolPriceNonDisplay !== 0 &&
-                      parseFloat(tokenBInputQty) > 0 &&
-                      !isTokenBAllowanceSufficient ? (
-                        tokenBApprovalButton
-                    ) : showBypassConfirmButton ? (
-                        <BypassConfirmRangeButton
-                            {...bypassConfirmButtonProps}
-                        />
-                    ) : (
-                        <>
-                            <RangeButton
-                                onClickFn={
-                                    areBothAckd
-                                        ? bypassConfirmRange.isEnabled
-                                            ? handleRangeButtonClickWithBypass
-                                            : openConfirmationModal
-                                        : ackAsNeeded
-                                }
-                                rangeAllowed={
-                                    isPoolInitialized === true &&
-                                    rangeAllowed &&
-                                    !isInvalidRange
-                                }
-                                rangeButtonErrorMessage={
-                                    rangeButtonErrorMessage
-                                }
-                                isAmbient={isAmbient}
-                                isAdd={isAdd}
-                                areBothAckd={areBothAckd}
+                {advancedMode ? advancedModeContent : baseModeContent}
+                <div className={styles.info_button_container}>
+                    <RangeExtraInfo {...rangeExtraInfoProps} />
+                    {isUserConnected === undefined ? null : isUserConnected ===
+                      true ? (
+                        poolPriceNonDisplay !== 0 &&
+                        parseFloat(tokenAInputQty) > 0 &&
+                        !isTokenAAllowanceSufficient ? (
+                            tokenAApprovalButton
+                        ) : poolPriceNonDisplay !== 0 &&
+                          parseFloat(tokenBInputQty) > 0 &&
+                          !isTokenBAllowanceSufficient ? (
+                            tokenBApprovalButton
+                        ) : showBypassConfirmButton ? (
+                            <BypassConfirmRangeButton
+                                {...bypassConfirmButtonProps}
                             />
-                            {ackTokenMessage && (
-                                <p
-                                    className={styles.acknowledge_text}
-                                    dangerouslySetInnerHTML={{
-                                        __html: formattedAckTokenMessage,
-                                    }}
-                                ></p>
-                            )}
+                        ) : (
+                            <>
+                                <RangeButton
+                                    onClickFn={
+                                        areBothAckd
+                                            ? bypassConfirmRange.isEnabled
+                                                ? handleRangeButtonClickWithBypass
+                                                : openConfirmationModal
+                                            : ackAsNeeded
+                                    }
+                                    rangeAllowed={
+                                        isPoolInitialized === true &&
+                                        rangeAllowed &&
+                                        !isInvalidRange
+                                    }
+                                    rangeButtonErrorMessage={
+                                        rangeButtonErrorMessage
+                                    }
+                                    isAmbient={isAmbient}
+                                    isAdd={isAdd}
+                                    areBothAckd={areBothAckd}
+                                />
+                                {ackTokenMessage && (
+                                    <p
+                                        className={styles.acknowledge_text}
+                                        dangerouslySetInnerHTML={{
+                                            __html: formattedAckTokenMessage,
+                                        }}
+                                    ></p>
+                                )}
 
-                            <div className={styles.acknowledge_etherscan_links}>
-                                {needConfirmTokenA && (
-                                    <a
-                                        href={
-                                            blockExplorer +
-                                            'token/' +
-                                            tokenA.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                        aria-label={tokenA.symbol}
-                                    >
-                                        {tokenA.symbol || tokenA.name}{' '}
-                                        <FiExternalLink />
-                                    </a>
-                                )}
-                                {needConfirmTokenB && (
-                                    <a
-                                        href={
-                                            blockExplorer +
-                                            'token/' +
-                                            tokenB.address
-                                        }
-                                        rel={'noopener noreferrer'}
-                                        target='_blank'
-                                        aria-label={tokenB.symbol}
-                                    >
-                                        {tokenB.symbol || tokenB.name}{' '}
-                                        <FiExternalLink />
-                                    </a>
-                                )}
-                            </div>
-                        </>
-                    )
-                ) : (
-                    loginButton
-                )}
+                                <div
+                                    className={
+                                        styles.acknowledge_etherscan_links
+                                    }
+                                >
+                                    {needConfirmTokenA && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenA.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={tokenA.symbol}
+                                        >
+                                            {tokenA.symbol || tokenA.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                    {needConfirmTokenB && (
+                                        <a
+                                            href={
+                                                blockExplorer +
+                                                'token/' +
+                                                tokenB.address
+                                            }
+                                            rel={'noopener noreferrer'}
+                                            target='_blank'
+                                            aria-label={tokenB.symbol}
+                                        >
+                                            {tokenB.symbol || tokenB.name}{' '}
+                                            <FiExternalLink />
+                                        </a>
+                                    )}
+                                </div>
+                            </>
+                        )
+                    ) : (
+                        loginButton
+                    )}
+                </div>
             </ContentContainer>
             {isConfirmationModalOpen && (
                 <Modal
@@ -1537,7 +1540,9 @@ function Range() {
                     <ConfirmRangeModal
                         tokenAQtyLocal={tokenAQtyLocal}
                         tokenBQtyLocal={tokenBQtyLocal}
-                        spotPriceDisplay={displayPriceString}
+                        spotPriceDisplay={getFormattedNumber({
+                            value: displayPriceWithDenom,
+                        })}
                         isTokenABase={isTokenABase}
                         isAmbient={isAmbient}
                         isAdd={isAdd}

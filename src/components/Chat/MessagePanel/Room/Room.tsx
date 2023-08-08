@@ -6,9 +6,8 @@ import { useState, useEffect, useContext } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useChatApi from '../../Service/ChatApi';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import Toggle2 from '../../../Global/Toggle/Toggle2';
+import Toggle from '../../../Global/Button/Button';
 
 interface propsIF {
     selectedRoom: any;
@@ -150,24 +149,12 @@ export default function Room(props: propsIF) {
                 logoURI: currentPool.quoteToken.logoURI,
             },
             chainId: '33',
-            poolId: 10,
+            poolIdx: 10,
         };
 
         if (!roomArray.some(({ name }) => name === currentPoolRoom.name)) {
             roomArray.push(currentPoolRoom);
         }
-
-        const filteredArray1 = roomArray.filter((obj1) =>
-            favePools.pools.some(
-                (obj2) =>
-                    obj2.base.symbol + ' / ' + obj2.quote.symbol !==
-                        obj1.name &&
-                    obj1.name !==
-                        currentPool.baseToken.symbol +
-                            ' / ' +
-                            currentPool.quoteToken.symbol,
-            ),
-        );
 
         const index = roomArray.findIndex((obj1) =>
             favePools.pools.some(
@@ -214,7 +201,7 @@ export default function Room(props: propsIF) {
                       logoURI: string;
                   };
                   chainId: string;
-                  poolId: number;
+                  poolIdx: number;
                   speed: number;
                   id: number;
               }[] = [];
@@ -239,7 +226,7 @@ export default function Room(props: propsIF) {
                     logoURI: pool.quote.logoURI,
                 },
                 chainId: pool.chainId,
-                poolId: pool.poolId,
+                poolIdx: pool.poolIdx,
                 speed: findSpeed(pool),
                 id: findId(pool),
             };
@@ -504,7 +491,7 @@ export default function Room(props: propsIF) {
                             Focus Mentions{' '}
                         </span>
                         <span className={styles.only_mentions_toggle_wrapper}>
-                            <Toggle2
+                            {/* <Toggle
                                 key={'only_mentions_toggle'}
                                 isOn={props.focusMentions}
                                 disabled={false}
@@ -513,7 +500,7 @@ export default function Room(props: propsIF) {
                                 }
                                 id='only_mentions_toggle_id'
                                 aria-label={'only_mentions_toggle_aria_label'}
-                            />
+                            /> */}
                         </span>
                         {props.mentCount > 0 && (
                             <div

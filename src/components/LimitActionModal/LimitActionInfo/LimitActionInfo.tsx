@@ -32,9 +32,7 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                 <div className={styles.info_container}>
                     <Row>
                         <span>Total Value</span>
-                        <div className={styles.token_price}>
-                            {'$' + usdValue}
-                        </div>
+                        <div className={styles.token_price}>{usdValue}</div>
                     </Row>
                 </div>
                 <div className={styles.info_container}>

@@ -22,6 +22,7 @@
     gap: 0.5rem;
 
     border-radius: var(--border-radius);
+    margin-bottom: 16px;
 }
 
 .nav_container {
@@ -142,7 +143,7 @@
     /* bring your own prefixes */
     transform: translate(-50%, -50%);
 }
-.pool_init_bg{
+.pool_init_bg {
     width: 430px;
     height: 204px;
     background: var(--title-gradient);
@@ -151,45 +152,31 @@
 }
 
 .pool_not_initialialized_content {
-  
-
-  
-
-padding-top: 8px;
+    padding-top: 8px;
     border-radius: var(--border-radius);
-   
-  
 
-   
     box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
     display: flex;
     flex-direction: column;
-  
 
-   width: 100%;
-   height: 100%;
-    background: var(--dark1)
+    width: 100%;
+    height: 100%;
+    background: var(--dark1);
 }
-.pool_not_init_inner{
-
+.pool_not_init_inner {
     border-radius: var(--border-radius);
-   
-  
 
-   
     display: flex;
     flex-direction: column;
     gap: 8px;
 
-   justify-content: center;
+    justify-content: center;
     align-items: center;
     padding: 0 2rem;
 
-   width: 100%;
-   height: 100%;
-  
+    width: 100%;
+    height: 100%;
 }
-
 
 .pool_not_initialialized_content h2 {
     font-size: var(--header1-size);
@@ -213,7 +200,7 @@ padding-top: 8px;
     font-size: 16px;
     line-height: 24px;
 
-   height: 48px;
+    height: 48px;
     cursor: pointer;
     text-align: center;
 
@@ -223,7 +210,6 @@ padding-top: 8px;
     color: var(--text1);
     border-radius: 4px;
     transition: all var(--animation-speed) ease-out;
-
 
     background: linear-gradient(
         90deg,
@@ -236,12 +222,11 @@ padding-top: 8px;
 }
 
 .initialize_link:hover {
-    
-
     color: var(--dark1);
- 
-    background: linear-gradient(to left, var(--accent1) 34%, var(--accent5) 65%) right;
-background-size: 300% 100%;
+
+    background: linear-gradient(to left, var(--accent1) 34%, var(--accent5) 65%)
+        right;
+    background-size: 300% 100%;
 }
 
 .close_init {
@@ -250,10 +235,6 @@ background-size: 300% 100%;
     justify-content: flex-end;
     cursor: pointer;
     padding: 0 1rem;
-   
- 
-  
-   
 }
 
 .no_thanks {
@@ -265,7 +246,7 @@ background-size: 300% 100%;
 
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-   
+
     font-weight: 200;
 }
 
@@ -369,7 +350,8 @@ background-size: 300% 100%;
 
     .main__chart {
         flex: 1 0;
-        min-height: 350px;
+        min-height: 200px;
+        padding-bottom: 80px;
     }
     .main__chart_container {
         align-items: stretch;
@@ -383,12 +365,48 @@ background-size: 300% 100%;
         width: 100%;
     }
 
-    .hide_graph {
-        display: none;
+    .resizableParent {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .chartBox,
+    .tableBox {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .chartBox {
+        /* background-color: rgb(0, 255, 0); */
+        max-height: calc(100% - 54px);
+        min-height: 0px;
+    }
+
+    .tableBox {
+        /* background-color: rgb(255, 0, 0); */
+        flex: 1;
+        min-height: 54px;
+    }
+
+    .resizableBox {
+        background-color: var(--dark3);
+        z-index: 99;
     }
 
     .expand_table {
         height: 100%;
+    }
+}
+
+@media ((min-width: 801px) and (max-width:1200px)) {
+    .main__chart {
+        flex: 1 0;
+        min-height: 200px;
+        padding-bottom: 30px;
     }
 }
 
@@ -401,8 +419,8 @@ background-size: 300% 100%;
         height: 100%;
         background: var(--dark2);
 
-        display: grid;
-        grid-template-rows: auto 300px;
+        display: flex;
+        gap: 8px;
 
         position: relative;
     }
@@ -428,7 +446,9 @@ background-size: 300% 100%;
 
     .main__chart {
         flex: 1 0;
-        min-height: 350px;
+        min-height: 200px;
+        height: 100%;
+        padding: 0px;
     }
     .main__chart_container {
         background: var(--dark2);
@@ -438,7 +458,7 @@ background-size: 300% 100%;
         width: 100%;
         height: 100%;
         overflow: auto;
-        padding: 8px;
+        padding: 8px 8px 3px 8px;
     }
     .main__chart_container::-webkit-scrollbar {
         display: none;

@@ -1,0 +1,54 @@
+.dropdown_item {
+    background: var(--dark3);
+    border-radius: 4px;
+    padding-left: 4px;
+    padding-top: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    grid-gap: 4px;
+    gap: 4px;
+    transition: all 0.2s;
+    color: rgba(235, 235, 255, 0.4);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    position: absolute;
+    top: 0rem;
+    right: 1rem;
+}
+.id_tooltip_style {
+    margin-left: -100px;
+    background: var(--dark3);
+    color: var(--text1);
+    padding: 10px;
+    border-radius: 4px;
+    cursor: default;
+    font-family: var(--roboto);
+    white-space: nowrap;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.base_color {
+    color: var(--text1);
+}
+
+.hover_style:hover {
+    -webkit-mask-image: linear-gradient(
+        -75deg,
+        rgba(0, 0, 0, 0.6) 30%,
+        black 50%,
+        rgba(0, 0, 0, 0.6) 70%
+    );
+    -webkit-mask-size: 200%;
+    animation: shine 1.5s infinite;
+}
+
+.mono_font {
+    font-family: var(--roboto);
+    font-style: normal;
+    font-weight: 300;
+    font-size: 10px;
+    line-height: 10px;
+}

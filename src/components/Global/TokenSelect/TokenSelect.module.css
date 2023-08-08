@@ -1,24 +1,25 @@
 .main_container {
+    width: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-
     position: relative;
     transition: all var(--animation-speed) ease-in-out;
-
     background: transparent;
     outline: none;
     border: none;
     border-radius: var(--border-radius);
+    padding: 0 8px;
 }
 
 .main_container:hover,
 .main_container:focus-visible {
-    background: var(--dark1);
+    background: var(--dark2);
 
     cursor: pointer;
 }
+
 .main_container:focus-visible {
     border-left: 1px solid var(--text1);
 }
@@ -30,7 +31,6 @@
     align-items: center;
     padding: 10.5px 5px;
     border-radius: var(--border-radius);
-    /* width: 80%; */
     transition: all var(--animation-speed) ease-in-out;
 }
 
@@ -43,27 +43,15 @@
 
 .star_icon,
 .close_icon {
-    /* background: red; */
-
-    /* width: 10%; */
     display: flex;
     justify-content: center;
     align-items: center;
     transition: all var(--animation-speed) ease-in-out;
 }
 
-/* .main_container:hover .delete_container{
-  width: 100%;
-  left: 0;
-} */
 .close_icon_svg:hover {
     color: var(--accent5);
 }
-/* .modal_content:hover {
-    background: var(--dark2);
-    
-    cursor: pointer;
-} */
 
 .modal_tokens_info {
     display: flex;
@@ -102,10 +90,7 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text2);
-    /* font-weight: 400; */
 }
-
-/* toggle buttons */
 
 .delete_container {
     padding: 0 10px;
@@ -117,12 +102,10 @@
     overflow: hidden;
     height: 100%;
     transition: all var(--animation-speed) ease-in-out;
-
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-
     font-size: var(--body-size);
     font-size: 13px;
     line-height: var(--body-lh);
@@ -147,21 +130,15 @@
 
 .liqtype_buttons_container {
     font-size: 0;
-
-    /* width: 100%; */
 }
+
 .liqtype_buttons_container button {
     font-size: var(--body-size);
-
     line-height: var(--body-lh);
-    /* padding: 5px 0; */
-    /* width: 50%; */
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
     padding: 5px 12px;
-
     border: none;
-    /* border: 1px solid var(--negative); */
     border: 1px solid var(--accent5);
     outline: none;
 }
@@ -175,6 +152,7 @@
     border-top-right-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
 }
+
 .liqtype_buttons_container button:hover {
     color: var(--text2);
 }
@@ -185,11 +163,12 @@
     justify-content: flex-start;
     text-align: left;
 }
+
 .active_button {
     color: rgb(0, 0, 0);
-    /* background-color: var(--negative); */
     background: var(--title-gradient);
 }
+
 .non_active_button {
     color: white;
     background-color: transparent;
@@ -199,6 +178,7 @@
     cursor: pointer;
     transition: all var(--animation-speed) ease;
 }
+
 .primary_style {
     color: var(--accent5);
 }

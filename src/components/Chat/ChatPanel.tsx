@@ -3,7 +3,7 @@ import SentMessagePanel from './MessagePanel/SentMessagePanel/SentMessagePanel';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import Room from './MessagePanel/Room/Room';
-import { RiArrowDownSLine } from 'react-icons/ri';
+import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import useChatSocket from './Service/useChatSocket';
 import { PoolIF } from '../../utils/interfaces/exports';
@@ -11,12 +11,12 @@ import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount, useEnsName } from 'wagmi';
-import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
+import { IoIosArrowUp, IoIosArrowDown, IoIosClose } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import Toggle2 from '../Global/Toggle/Toggle2';
+import { Message } from './Model/MessageModel';
 import { ethers } from 'ethers';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 
@@ -51,6 +51,8 @@ function ChatPanel(props: propsIF) {
     const [userCurrentPool, setUserCurrentPool] = useState(
         currentPool.baseToken.symbol + ' / ' + currentPool.quoteToken.symbol,
     );
+    const [showPopUp, setShowPopUp] = useState(false);
+    const [popUpText, setPopUpText] = useState('false');
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -60,9 +62,17 @@ function ChatPanel(props: propsIF) {
     const [scrollDirection, setScrollDirection] = useState(String);
     const [notification, setNotification] = useState(0);
     const [isMessageDeleted, setIsMessageDeleted] = useState(false);
+    const [showPreviousMessagesButton, setShowPreviousMessagesButton] =
+        useState(false);
     const [isScrollToBottomButtonPressed, setIsScrollToBottomButtonPressed] =
         useState(true);
 
+    const [isReplyButtonPressed, setIsReplyButtonPressed] = useState(false);
+    const [replyMessageContent, setReplyMessageContent] = useState<
+        Message | undefined
+    >();
+
+    const [page, setPage] = useState(0);
     const [mentIndex, setMentIndex] = useState(-1);
     const [hasNewMention, setHasNewMention] = useState(false);
     const [messageCheckerInterval, setMessageCheckerInterval] = useState<any>();
@@ -76,6 +86,7 @@ function ChatPanel(props: propsIF) {
         sendMsg,
         deleteMsgFromList,
         users,
+        getMsgWithRest2,
         notis,
         updateLikeDislike,
         socketRef,
@@ -94,22 +105,45 @@ function ChatPanel(props: propsIF) {
 
     function isLink(url: string) {
         const urlPattern =
-            /.*(http|https):\/\/[a-z0-9]+([-.\w]*[a-z0-9])*\.([a-z]{2,5})(:[0-9]{1,5})?(\/.*)?$/i;
+            /^(https|http|ftp|ftps?:\/\/)?([a-z0-9]+([-.]{1}[a-z0-9]+)*\.[a-z]{2,7})(:[0-9]{1,5})?(\/.*)?$/gm;
         return urlPattern.test(url);
     }
 
+    const blockPattern = /\b\w+\.(?:com|org|net|co|io|edu|gov|mil|ac)\b.*$/;
+
+    function filterMessage(message: string) {
+        return blockPattern.test(message);
+    }
+
+    function formatURL(url: string) {
+        if (!/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+            return url;
+        }
+        return url;
+    }
+
     const crocodileLabsLinks = [
-        'https://www.crocswap.com/',
-        'https://twitter.com/CrocSwap',
-        'https://crocswap.medium.com/',
-        'https://www.linkedin.com/company/crocodile-labs/',
-        'https://github.com/CrocSwap',
-        'https://discord.com/invite/CrocSwap', // etherscan , ambient.finance //remove http
-        'https://www.crocswap.com/whitepaper',
+        'https://twitter.com/',
+        'https://docs.ambient.finance/',
+        'https://ambient.finance/',
     ];
 
     function isLinkInCrocodileLabsLinks(word: string) {
-        return crocodileLabsLinks.includes(word);
+        return crocodileLabsLinks.some((link) => word.includes(link));
+    }
+
+    function isLinkInCrocodileLabsLinksForInput(word: string) {
+        return crocodileLabsLinks.some((link) => {
+            try {
+                const url = new URL(link);
+                const domain = url.hostname;
+                return word.includes(domain);
+            } catch (error) {
+                console.error('Invalid URL:', link);
+                return false;
+            }
+        });
     }
 
     // eslint-disable-next-line
@@ -124,9 +158,12 @@ function ChatPanel(props: propsIF) {
         }
     }
 
+    function closePopUp() {
+        setShowPopUp(false);
+    }
+
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
-    // const mentPanelInputRef = useRef<HTMLInputElement>(null);
 
     const messageInputListener = (value: string) => {
         if (value.indexOf('@') !== -1) {
@@ -224,6 +261,8 @@ function ChatPanel(props: propsIF) {
         scrollToBottom();
         setNotification(0);
         getMsg();
+        setShowPreviousMessagesButton(false);
+        setPage(0);
     }, [room, isChatOpen === false]);
 
     useEffect(() => {
@@ -292,6 +331,26 @@ function ChatPanel(props: propsIF) {
         setScrollDirection('Scroll Down');
     };
 
+    const getPreviousMessages = async () => {
+        const nextPage = page + 1;
+        setPage(nextPage);
+
+        const data = await getMsgWithRest2(room, nextPage);
+        if (data.length === 0) {
+            setShowPreviousMessagesButton(false);
+        } else {
+            const scrollContainer = messageEnd.current; // Referring to the scrollable container
+            const scrollPositionBefore = scrollContainer.scrollTop;
+            const scrollPositionAfter = scrollContainer.scrollHeight / 4;
+            scrollContainer.scrollTo(
+                0,
+                scrollPositionAfter - scrollPositionBefore,
+            );
+        }
+
+        // Scroll to the middle of the container
+    };
+
     const scrollToBottom = async () => {
         const timer = setTimeout(() => {
             messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
@@ -344,26 +403,12 @@ function ChatPanel(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleWheel = (e: any) => {
         if (
-            e.nativeEvent.wheelDelta > 0 &&
-            messageEnd.current?.scrollHeight !==
-                messageEnd.current?.scrollHeight
+            e.target.scrollTop === 0 &&
+            e.target.clientHeight !== e.target.scrollHeight
         ) {
-            setScrollDirection('Scroll Up');
-            setIsScrollToBottomButtonPressed(false);
-        }
-        if (0 <= messageEnd.current?.scrollTop) {
-            setScrollDirection('Scroll Down');
-        }
-    };
-
-    const convertCurreny = (currencyPair: string) => {
-        if (currencyPair === 'Global') {
-            return 'global';
+            setShowPreviousMessagesButton(true);
         } else {
-            const [currencyA, currencyB] = currencyPair.split('/');
-            const lowercaseA = currencyA.trim().toLowerCase();
-            const lowercaseB = currencyB.trim().toLowerCase();
-            return `${lowercaseA}&${lowercaseB}`;
+            setShowPreviousMessagesButton(false);
         }
     };
 
@@ -461,7 +506,7 @@ function ChatPanel(props: propsIF) {
             className={styles.chat_header}
             onClick={() => setIsChatOpen(!isChatOpen)}
         >
-            <h2 className={styles.chat_title}>Chat</h2>
+            <h2 className={styles.chat_title}>Trollbox</h2>
 
             {isChatOpen && (
                 <div
@@ -514,7 +559,6 @@ function ChatPanel(props: propsIF) {
                 ) : (
                     <IoIosArrowDown
                         size={22}
-                        className={styles.close_button}
                         onClick={() => handleCloseChatPanel()}
                         role='button'
                         tabIndex={0}
@@ -557,8 +601,8 @@ function ChatPanel(props: propsIF) {
                             currentUser={currentUser}
                             resolvedAddress={resolvedAddress}
                             connectedAccountActive={address}
-                            moderator={moderator}
                             room={room}
+                            moderator={moderator}
                             isMessageDeleted={isMessageDeleted}
                             setIsMessageDeleted={setIsMessageDeleted}
                             nextMessage={
@@ -566,8 +610,8 @@ function ChatPanel(props: propsIF) {
                                     ? null
                                     : messages[i + 1]
                             }
-                            previousMessage={i === 0 ? null : messages[i - 1]}
                             deleteMsgFromList={deleteMsgFromList}
+                            previousMessage={i === 0 ? null : messages[i - 1]}
                             isLinkInCrocodileLabsLinks={
                                 isLinkInCrocodileLabsLinks
                             }
@@ -581,6 +625,18 @@ function ChatPanel(props: propsIF) {
                             userMap={userMap}
                             verifyWallet={verifyWallet}
                             isUserVerified={isVerified}
+                            formatURL={formatURL}
+                            isLinkInCrocodileLabsLinksForInput={
+                                isLinkInCrocodileLabsLinksForInput
+                            }
+                            showPopUp={showPopUp}
+                            setShowPopUp={setShowPopUp}
+                            popUpText={popUpText}
+                            setPopUpText={setPopUpText}
+                            isReplyButtonPressed={isReplyButtonPressed}
+                            setIsReplyButtonPressed={setIsReplyButtonPressed}
+                            replyMessageContent={replyMessageContent}
+                            setReplyMessageContent={setReplyMessageContent}
                         />
                     );
                 })}
@@ -674,6 +730,21 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
+    const sendingLink = (
+        <div className={styles.pop_up}>
+            <p>{popUpText}</p>
+            <div className={styles.close_button}>
+                <IoIosClose
+                    onClick={() => closePopUp()}
+                    size={20}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Close information box.'
+                />
+            </div>
+        </div>
+    );
+
     const messageInput = (
         <MessageInput
             currentUser={currentUser as string}
@@ -692,6 +763,19 @@ function ChatPanel(props: propsIF) {
             users={users}
             isLinkInCrocodileLabsLinks={isLinkInCrocodileLabsLinks}
             isLink={isLink}
+            showPopUp={showPopUp}
+            setShowPopUp={setShowPopUp}
+            filterMessage={filterMessage}
+            formatURL={formatURL}
+            isLinkInCrocodileLabsLinksForInput={
+                isLinkInCrocodileLabsLinksForInput
+            }
+            popUpText={popUpText}
+            setPopUpText={setPopUpText}
+            isReplyButtonPressed={isReplyButtonPressed}
+            setIsReplyButtonPressed={setIsReplyButtonPressed}
+            replyMessageContent={replyMessageContent}
+            setReplyMessageContent={setReplyMessageContent}
             disabled={inputDisabled}
         />
     );
@@ -756,9 +840,23 @@ function ChatPanel(props: propsIF) {
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
-
+                    <div className={styles.scroll_up}>
+                        {showPreviousMessagesButton ? (
+                            <RiArrowUpSLine
+                                role='button'
+                                size={27}
+                                color='#7371fc'
+                                onClick={() => getPreviousMessages()}
+                                tabIndex={0}
+                                aria-label='Read previous messages'
+                                style={{ cursor: 'pointer' }}
+                            />
+                        ) : (
+                            ''
+                        )}
+                    </div>
                     {messageList}
-
+                    {showPopUp ? sendingLink : ''}
                     {chatNotification}
 
                     {messageInput}

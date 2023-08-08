@@ -9,7 +9,6 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import OrderDetailsSimplify from './OrderDetailsSimplify/OrderDetailsSimplify';
 import TransactionDetailsGraph from '../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
-import { formatAmountOld } from '../../utils/numbers';
 import useCopyToClipboard from '../../utils/hooks/useCopyToClipboard';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
@@ -21,6 +20,7 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import modalBackground from '../../assets/images/backgrounds/background.png';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -76,7 +76,6 @@ export default function OrderDetails(props: propsIF) {
     }
 
     const [usdValue, setUsdValue] = useState<string>('...');
-    // const [usdValue, setUsdValue] = useState<string>(limitOrder.totalValueUSD.toString());
     const [baseCollateralDisplay, setBaseCollateralDisplay] =
         useState<string>(baseDisplayFrontend);
     const [quoteCollateralDisplay, setQuoteCollateralDisplay] =
@@ -117,19 +116,10 @@ export default function OrderDetails(props: propsIF) {
         ? baseDisplayFrontendNum * parsedLimitPriceNum
         : baseDisplayFrontendNum / parsedLimitPriceNum;
 
-    const approximateSellQtyTruncated =
-        approximateSellQty === 0
-            ? '0'
-            : approximateSellQty < 0.0001
-            ? approximateSellQty.toExponential(2)
-            : approximateSellQty < 2
-            ? approximateSellQty.toPrecision(3)
-            : approximateSellQty >= 100000
-            ? formatAmountOld(approximateSellQty)
-            : approximateSellQty.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const approximateSellQtyTruncated = getFormattedNumber({
+        value: approximateSellQty,
+        zeroDisplay: '0',
+    });
 
     const approximateBuyQty = isFillStarted
         ? isBid
@@ -147,19 +137,10 @@ export default function OrderDetails(props: propsIF) {
         ? quoteDisplayFrontendNum / parsedLimitPriceNum
         : quoteDisplayFrontendNum * parsedLimitPriceNum;
 
-    const approximateBuyQtyTruncated =
-        approximateBuyQty === 0
-            ? '0'
-            : approximateBuyQty < 0.0001
-            ? approximateBuyQty.toExponential(2)
-            : approximateBuyQty < 2
-            ? approximateBuyQty.toPrecision(3)
-            : approximateBuyQty >= 100000
-            ? formatAmountOld(approximateBuyQty)
-            : approximateBuyQty.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const approximateBuyQtyTruncated = getFormattedNumber({
+        value: approximateBuyQty,
+        zeroDisplay: '0',
+    });
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
@@ -213,29 +194,13 @@ export default function OrderDetails(props: propsIF) {
                     const isOrderClaimable = positionStats.claimableLiq !== 0;
                     setIsClaimable(isOrderClaimable);
 
-                    const liqBaseDisplay = liqBaseNum
-                        ? liqBaseNum < 2
-                            ? liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqBaseDisplay = getFormattedNumber({
+                        value: liqBaseNum,
+                    });
 
-                    const claimableBaseDisplay = claimableBaseNum
-                        ? claimableBaseNum < 2
-                            ? claimableBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : claimableBaseNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const claimableBaseDisplay = getFormattedNumber({
+                        value: claimableBaseNum,
+                    });
 
                     isOrderFilled
                         ? setBaseCollateralDisplay(
@@ -243,29 +208,13 @@ export default function OrderDetails(props: propsIF) {
                           )
                         : setBaseCollateralDisplay(liqBaseDisplay ?? '0.00');
 
-                    const liqQuoteDisplay = liqQuoteNum
-                        ? liqQuoteNum < 2
-                            ? liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : liqQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const liqQuoteDisplay = getFormattedNumber({
+                        value: liqQuoteNum,
+                    });
 
-                    const claimableQuoteDisplay = claimableQuoteNum
-                        ? claimableQuoteNum < 2
-                            ? claimableQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 6,
-                              })
-                            : claimableQuoteNum.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              })
-                        : undefined;
+                    const claimableQuoteDisplay = getFormattedNumber({
+                        value: claimableQuoteNum,
+                    });
 
                     isOrderFilled
                         ? setQuoteCollateralDisplay(
@@ -273,18 +222,12 @@ export default function OrderDetails(props: propsIF) {
                           )
                         : setQuoteCollateralDisplay(liqQuoteDisplay ?? '0.00');
 
-                    const usdValue = positionStats.totalValueUSD;
-
-                    if (usdValue) {
-                        setUsdValue(
-                            usdValue.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                            }),
-                        );
-                    } else {
-                        setUsdValue('0.00');
-                    }
+                    setUsdValue(
+                        getFormattedNumber({
+                            value: positionStats.totalValueUSD,
+                            isUSD: true,
+                        }),
+                    );
                 })
                 .catch(console.error);
         }

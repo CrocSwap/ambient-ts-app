@@ -9,6 +9,7 @@ import moment from 'moment';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { useMediaQuery } from '@material-ui/core';
 
 interface ItemRowPropsIF {
     title: string;
@@ -30,6 +31,7 @@ export default function TransactionDetailsSimplify(
     );
 
     const {
+        ensName,
         userNameToDisplay,
         txHashTruncated,
         txHash,
@@ -40,13 +42,12 @@ export default function TransactionDetailsSimplify(
         quoteTokenSymbol,
         baseTokenAddressTruncated,
         quoteTokenAddressTruncated,
-        txUsdValueLocaleString,
         isDenomBase,
-        baseQuantityDisplayLong,
-        quoteQuantityDisplayLong,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
         baseTokenAddress,
         quoteTokenAddress,
-
+        usdValue,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
@@ -57,6 +58,8 @@ export default function TransactionDetailsSimplify(
     } = useProcessTransaction(tx, userAddress);
 
     const { chainData } = useContext(CrocEnvContext);
+
+    const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
     const isAmbient = tx.positionType === 'ambient';
 
@@ -97,7 +100,9 @@ export default function TransactionDetailsSimplify(
             onClick={handleOpenExplorer}
             style={{ cursor: 'pointer' }}
         >
-            <p>{txHashTruncated}</p>
+            <p style={{ fontFamily: 'monospace' }}>
+                {showFullAddresses ? txHash : txHashTruncated}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
@@ -108,7 +113,13 @@ export default function TransactionDetailsSimplify(
             onClick={handleOpenWallet}
             style={{ cursor: 'pointer' }}
         >
-            <p>{userNameToDisplay}</p>
+            <p style={!ensName ? { fontFamily: 'monospace' } : undefined}>
+                {showFullAddresses
+                    ? ensName
+                        ? ensName
+                        : ownerId
+                    : userNameToDisplay}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
@@ -119,7 +130,9 @@ export default function TransactionDetailsSimplify(
             className={styles.link_row}
             style={{ cursor: 'pointer' }}
         >
-            <p>{baseTokenAddressTruncated}</p>
+            <p style={{ fontFamily: 'monospace' }}>
+                {showFullAddresses ? tx.base : baseTokenAddressTruncated}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
@@ -129,7 +142,9 @@ export default function TransactionDetailsSimplify(
             className={styles.link_row}
             style={{ cursor: 'pointer' }}
         >
-            <p>{quoteTokenAddressTruncated}</p>
+            <p style={{ fontFamily: 'monospace' }}>
+                {showFullAddresses ? tx.quote : quoteTokenAddressTruncated}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
@@ -211,8 +226,8 @@ export default function TransactionDetailsSimplify(
             content: (
                 <div style={{ cursor: 'default' }}>
                     {isBuy
-                        ? `${baseQuantityDisplayLong}${baseTokenSymbol}`
-                        : `${quoteQuantityDisplayLong}${quoteTokenSymbol}`}
+                        ? `${baseQuantityDisplay} ${baseTokenSymbol}`
+                        : `${quoteQuantityDisplay} ${quoteTokenSymbol}`}
                 </div>
             ),
             explanation:
@@ -236,8 +251,8 @@ export default function TransactionDetailsSimplify(
             content: (
                 <div style={{ cursor: 'default' }}>
                     {!isBuy
-                        ? `${baseQuantityDisplayLong} ${baseTokenSymbol}`
-                        : `${quoteQuantityDisplayLong} ${quoteTokenSymbol}`}
+                        ? `${baseQuantityDisplay} ${baseTokenSymbol}`
+                        : `${quoteQuantityDisplay} ${quoteTokenSymbol}`}
                 </div>
             ),
             explanation:
@@ -283,11 +298,7 @@ export default function TransactionDetailsSimplify(
     if (isSwap) {
         infoContent.push({
             title: 'Value ',
-            content: (
-                <div style={{ cursor: 'default' }}>
-                    {txUsdValueLocaleString}
-                </div>
-            ),
+            content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
             explanation: 'The appoximate US dollar value of the transaction',
         });
     } else {
@@ -307,11 +318,7 @@ export default function TransactionDetailsSimplify(
             },
             {
                 title: 'Value ',
-                content: (
-                    <div style={{ cursor: 'default' }}>
-                        {txUsdValueLocaleString}
-                    </div>
-                ),
+                content: <div style={{ cursor: 'default' }}>{usdValue}</div>,
                 explanation:
                     'The appoximate US dollar value of the transaction',
             },

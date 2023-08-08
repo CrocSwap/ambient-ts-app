@@ -3,8 +3,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 export const DefaultTooltip = withStyles({
     tooltip: {
-        color: '#ffffff',
-        backgroundColor: 'var(--dark3)',
+        color: 'var(--text1)',
+        backgroundColor: 'var(--dark2)',
         zIndex: 999,
     },
     arrow: {

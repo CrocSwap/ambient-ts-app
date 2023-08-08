@@ -23,6 +23,39 @@ export const mainnetUSDC = {
     symbol: 'USDC',
 };
 
+export const mainnetWBTC = {
+    address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+    chainId: 1,
+    decimals: 8,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+    name: 'Wrapped BTC',
+    symbol: 'WBTC',
+};
+
+export const mainnetPEPE = {
+    address: '0x6982508145454Ce325dDbE47a25d4ec3d2311933',
+    chainId: 1,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1682922725',
+    name: 'Pepe',
+    symbol: 'PEPE',
+};
+
+export const mainnetDAI = {
+    address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    chainId: 1,
+    decimals: 18,
+    fromList: '/ambient-token-list.json',
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
+    name: 'Dai Stablecoin',
+    symbol: 'DAI',
+};
+
 export const goerliETH = {
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -110,6 +143,9 @@ export const arbGoerliDAI = {
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
+    mainnetWBTC,
+    mainnetPEPE,
+    mainnetDAI,
     goerliETH,
     goerliUSDC,
     goerliWBTC,

@@ -20,9 +20,9 @@ interface Props {
     usernameStyle: string;
     userNameToDisplay: string;
     baseTokenLogo: string;
-    baseQuantityDisplayShort: string;
+    baseQuantityDisplay: string;
     quoteTokenLogo: string;
-    quoteQuantityDisplayShort: string;
+    quoteQuantityDisplay: string;
     elapsedTimeString: string;
     sideType: string;
     sideCharacter: string;
@@ -82,8 +82,8 @@ export const txRowConstants = (props: Props) => {
         isAccountView,
         tx,
         elapsedTimeString,
-        baseQuantityDisplayShort,
-        quoteQuantityDisplayShort,
+        baseQuantityDisplay,
+        quoteQuantityDisplay,
 
         isOwnerActiveAccount,
         ownerId,
@@ -352,7 +352,7 @@ export const txRowConstants = (props: Props) => {
                     textAlign: 'right',
                 }}
             >
-                {baseQuantityDisplayShort}
+                {baseQuantityDisplay}
                 {baseTokenLogoComponent}
             </div>
         </li>
@@ -374,7 +374,7 @@ export const txRowConstants = (props: Props) => {
                     textAlign: 'right',
                 }}
             >
-                {quoteQuantityDisplayShort}
+                {quoteQuantityDisplay}
                 {quoteTokenLogoComponent}
             </div>
         </li>
@@ -421,11 +421,11 @@ export const txRowConstants = (props: Props) => {
             >
                 {isBuy
                     ? isOrderRemove
-                        ? baseQuantityDisplayShort
-                        : quoteQuantityDisplayShort
+                        ? baseQuantityDisplay
+                        : quoteQuantityDisplay
                     : isOrderRemove
-                    ? quoteQuantityDisplayShort
-                    : baseQuantityDisplayShort}
+                    ? quoteQuantityDisplay
+                    : baseQuantityDisplay}
                 {valueArrows ? positiveArrow : ' '}
                 {isBuy
                     ? isOrderRemove
@@ -445,13 +445,13 @@ export const txRowConstants = (props: Props) => {
                 {isBuy
                     ? `${
                           isOrderRemove
-                              ? quoteQuantityDisplayShort
-                              : baseQuantityDisplayShort
+                              ? quoteQuantityDisplay
+                              : baseQuantityDisplay
                       }${valueArrows ? negativeArrow : ' '}`
                     : `${
                           isOrderRemove
-                              ? baseQuantityDisplayShort
-                              : quoteQuantityDisplayShort
+                              ? baseQuantityDisplay
+                              : quoteQuantityDisplay
                       }${valueArrows ? negativeArrow : ' '}`}
                 {isBuy
                     ? isOrderRemove

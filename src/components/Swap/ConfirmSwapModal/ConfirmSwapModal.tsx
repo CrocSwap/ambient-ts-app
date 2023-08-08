@@ -24,8 +24,9 @@ import { AiOutlineWarning } from 'react-icons/ai';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { getDisplayableEffectivePriceString } from '../../../App/functions/swap/getDisplayableEffectivePriceString';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -83,20 +84,15 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
 
-    const localeSellString =
-        parseFloat(sellQtyString) > 999
-            ? parseFloat(sellQtyString).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : sellQtyString;
-    const localeBuyString =
-        parseFloat(buyQtyString) > 999
-            ? parseFloat(buyQtyString).toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : buyQtyString;
+    const localeSellString = getFormattedNumber({
+        value: parseFloat(sellQtyString),
+        abbrevThreshold: 1000000000,
+    });
+
+    const localeBuyString = getFormattedNumber({
+        value: parseFloat(buyQtyString),
+        abbrevThreshold: 1000000000,
+    });
 
     const [baselineBlockNumber, setBaselineBlockNumber] =
         useState<number>(lastBlockNumber);
@@ -156,7 +152,7 @@ export default function ConfirmSwapModal(props: propsIF) {
     }, [currentBuyTokenPrice, baselineBuyTokenPrice]);
 
     const buyTokenPriceChangeString = buyTokenPriceChangePercentage
-        ? buyTokenPriceChangePercentage.toLocaleString(undefined, {
+        ? buyTokenPriceChangePercentage.toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })
@@ -178,7 +174,7 @@ export default function ConfirmSwapModal(props: propsIF) {
 
             <div className={styles.logo_display}>
                 <TokenIcon
-                    src={buyTokenData.logoURI}
+                    src={uriToHttp(buyTokenData.logoURI)}
                     alt={buyTokenData.symbol}
                     size='2xl'
                 />
@@ -219,7 +215,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             <h2>{localeSellString}</h2>
             <div className={styles.logo_display}>
                 <TokenIcon
-                    src={sellTokenData.logoURI}
+                    src={uriToHttp(sellTokenData.logoURI)}
                     alt={sellTokenData.symbol}
                     size='2xl'
                 />
@@ -257,12 +253,12 @@ export default function ConfirmSwapModal(props: propsIF) {
                         style={{ cursor: 'pointer' }}
                     >
                         {isDenomBaseLocal
-                            ? `${getDisplayableEffectivePriceString(
-                                  effectivePriceWithDenom,
-                              )} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                            : `${getDisplayableEffectivePriceString(
-                                  effectivePriceWithDenom,
-                              )} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                            ? `${getFormattedNumber({
+                                  value: effectivePriceWithDenom,
+                              })} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                            : `${getFormattedNumber({
+                                  value: effectivePriceWithDenom,
+                              })} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
                     </p>
                 </div>
                 <div className={styles.row}>
@@ -299,7 +295,7 @@ export default function ConfirmSwapModal(props: propsIF) {
             tokenBSymbol={buyTokenData.symbol}
             tokenBAddress={buyTokenData.address}
             tokenBDecimals={buyTokenData.decimals}
-            tokenBImage={buyTokenData.logoURI}
+            tokenBImage={uriToHttp(buyTokenData.logoURI)}
             chainId={buyTokenData.chainId}
         />
     );

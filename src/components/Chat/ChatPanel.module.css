@@ -26,6 +26,8 @@
     border-right: 0.5px solid var(--accent1);
 }
 
+
+
 .chat_body {
     display: flex;
     flex-direction: column;
@@ -72,12 +74,34 @@
 }
 
 .chat_notification {
-    display: flex;
-    position: relative;
-    justify-content: right;
+    
+    position: absolute;
+    top: 26rem;
+    left: 19.5rem;
     width: 95%;
     height: 1%;
     cursor: default;
+       
+}
+.pop_up {
+    padding: 5px 81px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+    color: rgba(235, 235, 255, 0.4);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    border-radius: 5px;
+    background: var(--dark3);
+}
+
+.scroll_up
+{
+    position: absolute;
+    right: 1rem;
+    top: 5rem;
+    z-index: 9;
 }
 
 .text {

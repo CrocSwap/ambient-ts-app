@@ -10,6 +10,11 @@ import { User } from '../../Model/UserModel';
 import { AiOutlineCheck, AiOutlineCheckCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
+import { IoReturnUpForwardSharp } from 'react-icons/io5';
+import ReplyMessage from '../ReplyMessage/ReplyMessage';
+import { SlOptions } from 'react-icons/sl';
+import Options from '../Options/Options';
+
 interface SentMessageProps {
     message: Message;
     ensName: string;
@@ -39,10 +44,21 @@ interface SentMessageProps {
         e?: any,
     ) => void;
     isUserVerified: boolean;
+    formatURL(url: string): void;
+    isLinkInCrocodileLabsLinksForInput(word: string): boolean;
+    showPopUp: boolean;
+    setShowPopUp: Dispatch<SetStateAction<boolean>>;
+    popUpText: string;
+    setPopUpText: Dispatch<SetStateAction<string>>;
+    isReplyButtonPressed: boolean;
+    setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
+    replyMessageContent: Message | undefined;
+    setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
     const [hasSeparator, setHasSeparator] = useState(false);
+    const [clickOptions, setClickOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);
@@ -50,13 +66,20 @@ function SentMessagePanel(props: SentMessageProps) {
     const [ok, setOk] = useState(false);
     const [flipped, setFlipped] = useState(false);
     const [flipRead, setFlipRead] = useState(false);
+    const [count, setCount] = useState(0);
+    const [repliedMessageText, setRepliedMessageText] = useState<string>('');
+    const [repliedMessageEnsName, setRepliedMessageEnsName] =
+        useState<string>('');
+    const [repliedMessageDate, setRepliedMessageDate] = useState<string>('');
+    const [repliedMessageWalletID, setRepliedMessageWalletID] =
+        useState<string>('');
 
     const likeCount = props.message.likes ? props.message.likes.length : 0;
     const dislikeCount = props.message.dislikes
         ? props.message.dislikes.length
         : 0;
 
-    const { deleteMessage } = useChatApi();
+    const { deleteMessage, getRepliedMessageInfo } = useChatApi();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -94,19 +117,18 @@ function SentMessagePanel(props: SentMessageProps) {
         const nextCurrentDiffInMs = Math.abs(
             nextMessageDate.getTime() - currentMessageDate.getTime(),
         );
-
         getDayAndName(
             props.previousMessage?.createdAt,
             props.message?.createdAt,
         );
 
         if (props.previousMessage?.sender === props.message?.sender) {
-            if (currentPreviousDiffInMs < 10 * 60 * 1000) {
+            if (currentPreviousDiffInMs < 1 * 60 * 1000) {
                 setShowAvatar(false);
                 setShowName(false);
                 setOk(true);
                 if (
-                    nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                    nextCurrentDiffInMs < 1 * 60 * 1000 &&
                     props.nextMessage?.sender === props.message?.sender
                 ) {
                     setHasSeparator(false);
@@ -115,7 +137,7 @@ function SentMessagePanel(props: SentMessageProps) {
                 }
             } else {
                 if (
-                    nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                    nextCurrentDiffInMs < 1 * 60 * 1000 &&
                     props.message?.sender === props.nextMessage?.sender
                 ) {
                     setShowAvatar(true);
@@ -131,7 +153,7 @@ function SentMessagePanel(props: SentMessageProps) {
             setShowAvatar(true);
             setShowName(true);
             if (
-                nextCurrentDiffInMs < 10 * 60 * 1000 &&
+                nextCurrentDiffInMs < 1 * 60 * 1000 &&
                 props.nextMessage?.sender === props.message?.sender
             ) {
                 setHasSeparator(false);
@@ -140,6 +162,36 @@ function SentMessagePanel(props: SentMessageProps) {
             }
         }
     }, [props.message, props.nextMessage, props.previousMessage]);
+
+    useEffect(() => {
+        if (
+            props.previousMessage &&
+            props.message &&
+            props.previousMessage.sender === props.message.sender
+        ) {
+            const previousMessageDate = new Date(
+                props.previousMessage.createdAt,
+            );
+            const currentMessageDate = new Date(props.message.createdAt);
+            const currentPreviousDiffInMs = Math.abs(
+                currentMessageDate.getTime() - previousMessageDate.getTime(),
+            );
+
+            if (currentPreviousDiffInMs < 1 * 60 * 1000) {
+                setCount((prevCount) => prevCount + 1);
+            } else {
+                setCount(0);
+            }
+        } else {
+            setCount(0);
+        }
+    }, [props.previousMessage, props.message]);
+
+    useEffect(() => {
+        if ('repliedMessage' in props.message) {
+            getReplyMessageInfo(props.message.repliedMessage as string);
+        }
+    }, [props.message]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -202,6 +254,24 @@ function SentMessagePanel(props: SentMessageProps) {
         window.open(url);
     }
 
+    function handleOpenExplorerAddHttp(url: string) {
+        window.open(convertToFullUrl(url));
+    }
+
+    function convertToFullUrl(domain: string): string {
+        const protocol = 'https://';
+        return protocol + domain;
+    }
+
+    function returnDomain(word: string) {
+        if (props.isLinkInCrocodileLabsLinks(word)) {
+            const url = new URL(word);
+            return url.hostname + url.pathname;
+        } else {
+            return word;
+        }
+    }
+
     function detectLinksFromMessage(url: string) {
         if (url.includes(' ')) {
             const words: string[] = url.split(' ');
@@ -212,28 +282,43 @@ function SentMessagePanel(props: SentMessageProps) {
                             onClick={() =>
                                 props.isLinkInCrocodileLabsLinks(word)
                                     ? handleOpenExplorer(word)
+                                    : props.isLinkInCrocodileLabsLinksForInput(
+                                          word,
+                                      )
+                                    ? handleOpenExplorerAddHttp(word)
                                     : ''
                             }
                             key={index}
                             style={
-                                props.isLinkInCrocodileLabsLinks(word)
+                                props.isLinkInCrocodileLabsLinks(word) ||
+                                props.isLinkInCrocodileLabsLinksForInput(word)
                                     ? { color: '#ab7de7', cursor: 'pointer' }
                                     : { color: 'white', cursor: 'default' }
                             }
                         >
-                            {' ' + word}
+                            {' ' + returnDomain(word)}
+                            {}
                         </span>
                     ))}
                 </>
             );
         } else {
-            if (props.isLinkInCrocodileLabsLinks(url)) {
+            if (
+                props.isLinkInCrocodileLabsLinks(url) ||
+                props.isLinkInCrocodileLabsLinksForInput(url)
+            ) {
                 return (
                     <p
                         style={{ color: '#ab7de7', cursor: 'pointer' }}
-                        onClick={() => handleOpenExplorer(url)}
+                        onClick={() =>
+                            props.isLinkInCrocodileLabsLinks(url)
+                                ? handleOpenExplorer(url)
+                                : props.isLinkInCrocodileLabsLinksForInput(url)
+                                ? handleOpenExplorerAddHttp(url)
+                                : ''
+                        }
                     >
-                        {url}
+                        {returnDomain(url)}
                     </p>
                 );
             } else {
@@ -328,16 +413,29 @@ function SentMessagePanel(props: SentMessageProps) {
         <Jazzicon diameter={25} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
-    function messageStyle() {
-        if (ok) {
-            if (!hasSeparator) {
-                return { width: '90%', marginBottom: -15 };
-            } else {
-                return { width: '90%', marginBottom: 0 };
-            }
-        } else {
-            return { width: '90%', marginBottom: -7 };
-        }
+    const repliedJazzicon =
+        'repliedMessage' in props.message ? (
+            <Jazzicon
+                svgStyles={{ marginBottom: '8px' }}
+                diameter={10}
+                seed={jsNumberForAddress(repliedMessageWalletID.toLowerCase())}
+            />
+        ) : undefined;
+
+    // function blockUser(userId: string) {
+
+    // }
+    function getReplyMessageInfo(_id: string) {
+        getRepliedMessageInfo(_id).then((result: any) => {
+            setRepliedMessageText(result[0].message);
+            setRepliedMessageDate(formatAMPM(result[0].createdAt));
+            setRepliedMessageEnsName(result[0].ensName);
+            setRepliedMessageWalletID(result[0].walletID);
+        });
+        return repliedMessageText;
+    }
+    function clickOptionButton() {
+        setClickOptions(!clickOptions);
     }
 
     function verificationDateCheck() {
@@ -375,6 +473,18 @@ function SentMessagePanel(props: SentMessageProps) {
         props.updateLikeDislike(props.message._id, payloadObj);
     }
 
+    function messageStyle() {
+        if (ok) {
+            if (!hasSeparator) {
+                return { width: '90%', marginBottom: -15 };
+            } else {
+                return { width: '90%', marginBottom: 0 };
+            }
+        } else {
+            return { width: '90%', marginBottom: -7 };
+        }
+    }
+
     return (
         <div
             className={`${styles.msg_bubble_container} ${
@@ -395,6 +505,19 @@ function SentMessagePanel(props: SentMessageProps) {
                             setFlipped(true);
                         }}
                     ></div>
+                    <div className={styles.options_button}>
+                        <Options
+                            setIsReplyButtonPressed={
+                                props.setIsReplyButtonPressed
+                            }
+                            message={props.message}
+                            isReplyButtonPressed={props.isReplyButtonPressed}
+                            replyMessageContent={props.replyMessageContent}
+                            setReplyMessageContent={
+                                props.setReplyMessageContent
+                            }
+                        />
+                    </div>
                     <div>
                         {daySeparator === '' ? (
                             ''
@@ -403,7 +526,33 @@ function SentMessagePanel(props: SentMessageProps) {
                         ) : (
                             ''
                         )}
+                        {'repliedMessage' in props.message && (
+                            <IoReturnUpForwardSharp
+                                style={{
+                                    position: 'absolute',
+                                    top: '-0.3rem',
+                                    left: '0.6rem',
+                                }}
+                            />
+                        )}
 
+                        {'repliedMessage' in props.message ? (
+                            <div className={styles.replied_box}>
+                                <ReplyMessage
+                                    message={repliedMessageText}
+                                    ensName={repliedMessageEnsName}
+                                    time={repliedMessageDate}
+                                    setIsReplyButtonPressed={
+                                        props.setIsReplyButtonPressed
+                                    }
+                                    isReplyButtonPressed={false}
+                                    myJazzicon={repliedJazzicon}
+                                    walletID={repliedMessageWalletID}
+                                />
+                            </div>
+                        ) : (
+                            ''
+                        )}
                         <div
                             className={
                                 props.isUserLoggedIn
@@ -527,7 +676,27 @@ function SentMessagePanel(props: SentMessageProps) {
                                     showAvatar={showAvatar}
                                 />
                                 {!isPosition && mentionedMessage()}
+                                {clickOptions ? (
+                                    <Options
+                                        setIsReplyButtonPressed={
+                                            props.setIsReplyButtonPressed
+                                        }
+                                        message={props.message}
+                                        isReplyButtonPressed={
+                                            props.isReplyButtonPressed
+                                        }
+                                        replyMessageContent={
+                                            props.replyMessageContent
+                                        }
+                                        setReplyMessageContent={
+                                            props.setReplyMessageContent
+                                        }
+                                    />
+                                ) : (
+                                    ''
+                                )}
                             </div>
+
                             {props.moderator ? (
                                 <FiDelete
                                     color='red'
@@ -539,10 +708,12 @@ function SentMessagePanel(props: SentMessageProps) {
                             ) : (
                                 ''
                             )}
-                            <div>
+                            <div className={styles.reply_message}>
                                 <p className={styles.message_date}>
                                     {formatAMPM(props.message.createdAt)}
                                 </p>
+
+                                <div></div>
                             </div>
 
                             {/* {snackbarContent} */}
@@ -596,6 +767,7 @@ function SentMessagePanel(props: SentMessageProps) {
                             {' '}
                             👍{' '}
                         </div>
+
                         <div
                             className={`${
                                 messageVoted == -1 ? styles.active : ''
@@ -615,34 +787,48 @@ function SentMessagePanel(props: SentMessageProps) {
                             👎{' '}
                         </div>
 
-                        <div className={styles.like_dislike_bar_wrapper}>
-                            <div
-                                className={styles.like_dislike_node_wrapper}
-                                style={{
-                                    width:
-                                        (likeCount /
-                                            (dislikeCount + likeCount)) *
-                                            100 +
-                                        '%',
-                                }}
-                            >
-                                <div className={styles.like_dislike_node}></div>
-                            </div>
-                            <div
-                                className={styles.like_dislike_node_wrapper}
-                                style={{
-                                    width:
-                                        (dislikeCount /
-                                            (dislikeCount + likeCount)) *
-                                            100 +
-                                        '%',
-                                }}
-                            >
+                        {likeCount + dislikeCount > 0 && (
+                            <>
                                 <div
-                                    className={`${styles.like_dislike_node} ${styles.dislike_node}`}
-                                ></div>
-                            </div>
-                        </div>
+                                    className={styles.like_dislike_bar_wrapper}
+                                >
+                                    <div
+                                        className={
+                                            styles.like_dislike_node_wrapper
+                                        }
+                                        style={{
+                                            width:
+                                                (likeCount /
+                                                    (dislikeCount +
+                                                        likeCount)) *
+                                                    100 +
+                                                '%',
+                                        }}
+                                    >
+                                        <div
+                                            className={styles.like_dislike_node}
+                                        ></div>
+                                    </div>
+                                    <div
+                                        className={
+                                            styles.like_dislike_node_wrapper
+                                        }
+                                        style={{
+                                            width:
+                                                (dislikeCount /
+                                                    (dislikeCount +
+                                                        likeCount)) *
+                                                    100 +
+                                                '%',
+                                        }}
+                                    >
+                                        <div
+                                            className={`${styles.like_dislike_node} ${styles.dislike_node}`}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

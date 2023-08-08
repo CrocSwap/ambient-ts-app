@@ -5,13 +5,13 @@ import { HiOutlineExternalLink } from 'react-icons/hi';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import trimString from '../../../../utils/functions/trimString';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { formatAmount } from '../../../../utils/numbers';
 import {
     PositionIF,
     TransactionIF,
 } from '../../../../utils/interfaces/exports';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     message: string;
@@ -81,25 +81,13 @@ export default function PositionBox(props: propsIF) {
 
     useEffect(() => {
         updateIsPosition();
-        // console.log('ddd ', posFingerprint);
     }, [message, posFingerprint, txFingerprint]);
 
-    useEffect(() => {
-        // console.log(
-        //     'aaaaaakdxsnbşljmnfc ',
-        //     transactionsData.find(
-        //         (item) =>
-        //             item.txHash ===
-        //             '0x42e90fa2db7ccffae0e6164b6daa43103ea6a38658601a59ba50372f57ad8105',
-        //     ),
-        // );
-    }, [message]);
-
-    function financial(x: any) {
-        console.log(x);
+    function financial(position: TransactionIF) {
         if (position?.entityType === 'limitOrder') {
             return position.bidTickInvPriceDecimalCorrected.toFixed(2);
         } else {
+            // TODO
             if (position?.entityType === 'swap') {
                 return position.askTickPriceDecimalCorrected.toFixed(2);
             } else if (position?.entityType === 'liqchange') {
@@ -199,35 +187,12 @@ export default function PositionBox(props: propsIF) {
                     const invPriceDecimalCorrected =
                         position.swapInvPriceDecimalCorrected;
 
-                    const nonInvertedPriceTruncated =
-                        priceDecimalCorrected === 0
-                            ? '0.00'
-                            : priceDecimalCorrected < 0.0001
-                            ? priceDecimalCorrected.toExponential(2)
-                            : priceDecimalCorrected < 2
-                            ? priceDecimalCorrected.toPrecision(3)
-                            : priceDecimalCorrected >= 100000
-                            ? formatAmount(priceDecimalCorrected)
-                            : priceDecimalCorrected.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
-                    const invertedPriceTruncated =
-                        invPriceDecimalCorrected === 0
-                            ? '0.00'
-                            : invPriceDecimalCorrected < 0.0001
-                            ? invPriceDecimalCorrected.toExponential(2)
-                            : invPriceDecimalCorrected < 2
-                            ? invPriceDecimalCorrected.toPrecision(3)
-                            : invPriceDecimalCorrected >= 100000
-                            ? formatAmount(invPriceDecimalCorrected)
-                            : invPriceDecimalCorrected.toLocaleString(
-                                  undefined,
-                                  {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  },
-                              );
+                    const nonInvertedPriceTruncated = getFormattedNumber({
+                        value: priceDecimalCorrected,
+                    });
+                    const invertedPriceTruncated = getFormattedNumber({
+                        value: invPriceDecimalCorrected,
+                    });
 
                     const truncatedDisplayPrice = tradeData.isDenomBase
                         ? (position.quoteSymbol
