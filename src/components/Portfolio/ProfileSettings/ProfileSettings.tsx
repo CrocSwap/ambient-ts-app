@@ -1,4 +1,4 @@
-import React, {
+import {
     Dispatch,
     SetStateAction,
     useContext,
@@ -9,7 +9,6 @@ import styles from './ProfileSettings.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
 import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
-// import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 
 import { motion } from 'framer-motion';
 import useChatApi from '../../Chat/Service/ChatApi';
@@ -48,7 +47,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     const [id, setId] = useState('');
     const { setShowProfileSettings } = props;
     const {
-        globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const host = CHAT_BACKEND_URL;
@@ -61,16 +59,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                 value={name}
                 placeholder={name ? name : 'Name'}
             />
-        </div>
-    );
-
-    const nftModalContent = (
-        <div className={styles.nft_modal_container}>
-            {/* {imageData.length ? (
-                imageData.map((img) => <img key={img} src={img} alt='' />)
-            ) : (
-                <h1>No nfts to display</h1>
-            )} */}
         </div>
     );
 
@@ -87,29 +75,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
         </div>
     );
 
-    const nftsPlaceholder = (
-        <>
-            {Array(3)
-                .fill(null)
-                .map((i) => (
-                    <div
-                        className={styles.no_image}
-                        onClick={() => openGlobalModal(nftModalContent, 'NFTs')}
-                        key={i}
-                    />
-                ))}
-        </>
-    );
-
-    false && nftsPlaceholder;
-    const nftsDisplay = (
-        <div className={styles.row}>
-            <h4>NFTs</h4>
-            <div className={styles.nft_container}>
-                {/* {imageData.length ? nfts : nftsPlaceholder} */}
-            </div>
-        </div>
-    );
     const themeDisplay = (
         <div className={styles.row}>
             <h4>Theme</h4>
@@ -171,7 +136,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                     <section>
                         {nameDisplay}
                         {profilePicDisplay}
-                        {nftsDisplay}
                         {themeDisplay}
                         {skinDisplay}
                     </section>

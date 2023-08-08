@@ -1,18 +1,16 @@
 import styles from '../Orders.module.css';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
-import OrderDetails from '../../../../OrderDetails/OrderDetails';
-
+import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
-
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useModal } from '../../../../Global/Modal/useModal';
 
 interface propsIF {
     showColumns: boolean;
@@ -25,7 +23,6 @@ function OrderRow(props: propsIF) {
     const { showColumns, ipadView, showPair, limitOrder, isAccountView } =
         props;
     const {
-        globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -68,6 +65,9 @@ function OrderRow(props: propsIF) {
         elapsedTimeString,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
+    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+        useModal();
+
     const orderMenuProps = {
         isOwnerActiveAccount: isOwnerActiveAccount,
         isOrderFilled: isOrderFilled,
@@ -106,19 +106,6 @@ function OrderRow(props: propsIF) {
             ? `${styles.border_left} ${sideType}_style`
             : null;
 
-    const openDetailsModal = () => {
-        IS_LOCAL_ENV && console.debug({ limitOrder });
-
-        openGlobalModal(
-            <OrderDetails
-                limitOrder={limitOrder}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-            />,
-        );
-    };
     const orderDomId =
         limitOrder.limitOrderId === currentPositionActive
             ? `order-${limitOrder.limitOrderId}`
@@ -249,6 +236,7 @@ function OrderRow(props: propsIF) {
         setCurrentPositionActive('');
         openDetailsModal();
     }
+
     const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
         event,
     ) => {
@@ -298,6 +286,15 @@ function OrderRow(props: propsIF) {
                     />
                 </li>
             </ul>
+            <OrderDetailsModal
+                limitOrder={limitOrder}
+                isBaseTokenMoneynessGreaterOrEqual={
+                    isBaseTokenMoneynessGreaterOrEqual
+                }
+                isAccountView={isAccountView}
+                isOpen={isDetailsModalOpen}
+                onClose={closeDetailsModal}
+            />
         </>
     );
 }

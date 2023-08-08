@@ -12,7 +12,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import styles from './SoloTokenSelect.module.css';
+import styles from './SoloTokenSelectModal.module.css';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -24,21 +24,22 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { handleWETH } from '../../../utils/data/handleWETH';
 import { ZERO_ADDRESS } from '../../../constants';
 import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
+import Modal from '../Modal/Modal';
 
 interface propsIF {
-    modalCloseCustom: () => void;
-    closeModal: () => void;
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
     isSingleToken: boolean;
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-export const SoloTokenSelect = (props: propsIF) => {
+export const SoloTokenSelectModal = (props: propsIF) => {
     const {
-        modalCloseCustom,
-        closeModal,
+        isOpen,
+        onClose,
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
         isSingleToken,
@@ -50,6 +51,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
     const {
         tokens,
         outputTokens,
@@ -61,14 +63,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     } = useContext(TokenContext);
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
-
-    // add an event listener for custom functionalities on modal close
-    // this needs to be coordinated with data in Modal.tsx
-    // later we'll abstract and import functionality to get rid of magic numbers
-    useEffect(
-        () => window.addEventListener('closeModalEvent', modalCloseCustom),
-        [],
-    );
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -103,7 +97,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         if (tokenAorB === 'A') {
             if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
                 reverseTokens && reverseTokens();
-                closeModal();
+                onClose();
                 return;
             }
             goToNewUrlParams(
@@ -117,7 +111,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         } else if (tokenAorB === 'B') {
             if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
                 reverseTokens && reverseTokens();
-                closeModal();
+                onClose();
                 return;
             }
             goToNewUrlParams(
@@ -142,7 +136,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
         setInput('');
         // close the token modal
-        closeModal();
+        onClose();
     };
 
     // hook to hold data for a token pulled from on-chain
@@ -237,13 +231,9 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
     }, [contentRouter]);
 
-    const clearInputField = () => {
-        const input = document.getElementById(
-            'token_select_input_field',
-        ) as HTMLInputElement;
-        if (input) input.value = '';
+    const clearInputFieldAndCloseModal = () => {
         setInput('');
-        input?.focus();
+        onClose();
     };
 
     useEffect(() => {
@@ -259,91 +249,91 @@ export const SoloTokenSelect = (props: propsIF) => {
     const [showWrappedNative, setShowWrappedNative] = useState<boolean>(false);
 
     return (
-        <section className={styles.container}>
-            <div className={styles.input_control_container}>
-                <input
-                    id='token_select_input_field'
-                    spellCheck='false'
-                    type='text'
-                    placeholder=' Search by token name or address'
-                    onChange={(e) => setInput(e.target.value)}
-                    style={{
-                        color: showSoloSelectTokenButtons
-                            ? 'var(--text2)'
-                            : 'var(--text3)',
-                    }}
-                />
-                {validatedInput && (
-                    <button
-                        className={styles.clearButton}
-                        onClick={clearInputField}
-                        aria-label='Clear input'
-                        tabIndex={0}
-                    >
-                        Clear
-                    </button>
-                )}
-            </div>
-            {handleWETH.check(validatedInput) && !showWrappedNative && (
-                <div className={styles.weth_warning}>
-                    <p className={styles.weth_text}>{handleWETH.message}</p>
-                    <button onClick={() => setShowWrappedNative(true)}>
-                        👍🏻
-                    </button>
+        <Modal
+            title='Select Token'
+            isOpen={isOpen}
+            onClose={clearInputFieldAndCloseModal}
+        >
+            <section className={styles.container}>
+                <div className={styles.input_control_container}>
+                    <input
+                        id='token_select_input_field'
+                        spellCheck='false'
+                        type='text'
+                        value={validatedInput}
+                        onChange={(e) => setInput(e.target.value)}
+                        placeholder=' Search name or enter an Address'
+                        style={{
+                            color: showSoloSelectTokenButtons
+                                ? 'var(--text2)'
+                                : 'var(--text3)',
+                        }}
+                    />
+                    {validatedInput && (
+                        <button
+                            className={styles.clearButton}
+                            onClick={() => setInput('')}
+                            aria-label='Clear input'
+                            tabIndex={0}
+                        >
+                            Clear
+                        </button>
+                    )}
                 </div>
-            )}
-            {handleWETH.check(validatedInput) &&
-                [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
-                    (token: TokenIF) => (
-                        <TokenSelect
-                            key={JSON.stringify(token)}
-                            token={token}
-                            chooseToken={chooseToken}
-                            fromListsText=''
-                        />
-                    ),
+                {handleWETH.check(validatedInput) && !showWrappedNative && (
+                    <div className={styles.weth_warning}>
+                        <p className={styles.weth_text}>{handleWETH.message}</p>
+                        <button onClick={() => setShowWrappedNative(true)}>
+                            👍🏻
+                        </button>
+                    </div>
                 )}
-            {showSoloSelectTokenButtons ? (
-                <div className={styles.scrollable_container}>
-                    {' '}
-                    {outputTokens
-                        .filter((token: TokenIF) => {
-                            console.log('hi!!');
-                            if (showWrappedNative) return true;
-                            const tknAddr = token.address.toLowerCase();
-                            const wnAddr: string | undefined =
-                                wrappedNatives.get(chainId);
-                            // return `false` when:
-                            // 1. wnAddr is defined (returned a value), AND
-                            // 2. wnAddr (lower case) matches tknAddr (lower case), AND
-                            // 3. `showWrappedNative` === `false`
-                            if (wnAddr && wnAddr.toLowerCase() === tknAddr) {
-                                return false;
-                            } else {
-                                wnAddr &&
-                                    console.log('this token is ' + token.name);
-                                wnAddr && console.log(wnAddr.toLowerCase());
-                                wnAddr && console.log(tknAddr);
-                                return true;
-                            }
-                        })
-                        .slice(0, MAX_TOKEN_COUNT)
-                        .map((token: TokenIF) => (
+                {handleWETH.check(validatedInput) &&
+                    [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
+                        (token: TokenIF) => (
                             <TokenSelect
                                 key={JSON.stringify(token)}
                                 token={token}
                                 chooseToken={chooseToken}
                                 fromListsText=''
                             />
-                        ))}
-                </div>
-            ) : (
-                <SoloTokenImport
-                    customToken={customToken}
-                    chooseToken={chooseToken}
-                    chainId={chainId}
-                />
-            )}
-        </section>
+                        ),
+                    )}
+                {showSoloSelectTokenButtons ? (
+                    <div className={styles.scrollable_container}>
+                        {outputTokens
+                            .filter((token: TokenIF) => {
+                                if (showWrappedNative) return true;
+                                const tknAddr = token.address.toLowerCase();
+                                const wnAddr: string | undefined =
+                                    wrappedNatives.get(chainId);
+                                if (
+                                    wnAddr &&
+                                    wnAddr.toLowerCase() === tknAddr
+                                ) {
+                                    return false;
+                                } else {
+                                    return true;
+                                }
+                            })
+                            .slice(0, MAX_TOKEN_COUNT)
+                            .map((token: TokenIF) => (
+                                <TokenSelect
+                                    key={JSON.stringify(token)}
+                                    token={token}
+                                    chooseToken={chooseToken}
+                                    fromListsText=''
+                                />
+                            ))}
+                    </div>
+                ) : (
+                    <SoloTokenImport
+                        customToken={customToken}
+                        chooseToken={chooseToken}
+                        chainId={chainId}
+                    />
+                )}
+            </section>
+        </Modal>
     );
 };

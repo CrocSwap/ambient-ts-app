@@ -28,15 +28,19 @@ import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHea
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { CrocPositionView } from '@crocswap-libs/sdk';
-import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
+import ModalHeader from '../Global/ModalHeader/ModalHeader';
+import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
+import Modal from '../Global/Modal/Modal';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-    type: 'Remove' | 'Claim';
+    type: LimitActionType;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function LimitActionModal(props: propsIF) {
-    const { limitOrder, type } = props;
+    const { limitOrder, type, isOpen, onClose } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -76,10 +80,10 @@ export default function LimitActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation) {
+        if (!showConfirmation || !isOpen) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txErrorCode, isOpen]);
 
     const updateLiq = async () => {
         try {
@@ -381,21 +385,18 @@ export default function LimitActionModal(props: propsIF) {
         isTransactionDenied,
     ]);
 
-    const confirmationContent = (
-        <>
-            <SimpleModalHeader
-                title={
-                    type === 'Remove'
-                        ? 'Remove Limit Order Confirmation'
-                        : 'Claim Limit Order Confirmation'
-                }
+    const confirmationModal = (
+        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+            <ModalHeader
+                title={`${type} Limit Order Confirmation`}
+                onClose={onClose}
             />
             <div className={styles.confirmation_container}>
                 <div className={styles.confirmation_content}>
                     {currentConfirmationData}
                 </div>
             </div>
-        </>
+        </Modal>
     );
     // ----------------------------END OF CONFIRMATION JSX------------------------------
 
@@ -407,14 +408,9 @@ export default function LimitActionModal(props: propsIF) {
         />
     ) : (
         <>
-            <SimpleModalHeader
-                title={
-                    showConfirmation
-                        ? ''
-                        : type === 'Remove'
-                        ? 'Remove Limit Order'
-                        : 'Claim Limit Order '
-                }
+            <ModalHeader
+                title={showConfirmation ? '' : `${type} Limit Order`}
+                onClose={onClose}
             />
             <div style={{ padding: '1rem ' }}>
                 <LimitActionTokenHeader
@@ -443,6 +439,11 @@ export default function LimitActionModal(props: propsIF) {
 
     // --------------------------------------------------------------------------------------
 
-    if (showConfirmation) return confirmationContent;
-    return <>{showSettingsOrMainContent}</>;
+    if (showConfirmation) return confirmationModal;
+
+    return (
+        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+            {showSettingsOrMainContent}
+        </Modal>
+    );
 }

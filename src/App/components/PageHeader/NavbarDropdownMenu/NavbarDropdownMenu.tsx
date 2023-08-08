@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode, useRef, useEffect, memo } from 'react';
+import { ReactNode, useRef, useEffect, memo, useContext } from 'react';
 
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
@@ -20,6 +20,7 @@ import {
 } from '../../../../constants';
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
+import { AppStateContext } from '../../../../contexts/AppStateContext';
 
 interface NavbarDropdownItemPropsIF {
     onClick: () => void;
@@ -33,17 +34,15 @@ interface NavbarDropdownMenuPropsIF {
     clickLogout: () => void;
     closeMenu?: () => void;
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    openWagmiModal: () => void;
 }
 
 function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
+    const { closeMenu, clickLogout, setIsNavbarMenuOpen, isUserLoggedIn } =
+        props;
+
     const {
-        closeMenu,
-        clickLogout,
-        setIsNavbarMenuOpen,
-        openWagmiModal,
-        isUserLoggedIn,
-    } = props;
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
 
     const [, , termsUrls] = useTermsAgreed();
 

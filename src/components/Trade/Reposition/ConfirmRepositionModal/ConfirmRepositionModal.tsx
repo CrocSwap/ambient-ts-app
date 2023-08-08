@@ -13,6 +13,7 @@ import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContex
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import Modal from '../../../Global/Modal/Modal';
 
 interface propsIF {
     position: PositionIF;
@@ -35,6 +36,8 @@ interface propsIF {
     newQuoteQtyDisplay: string;
     isTokenABase: boolean;
     isPositionInRange: boolean;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function ConfirmRepositionModal(props: propsIF) {
@@ -56,6 +59,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
         newQuoteQtyDisplay,
         isTokenABase,
         isPositionInRange,
+        isOpen,
+        onClose,
     } = props;
     const {
         bypassConfirmLimit,
@@ -219,34 +224,38 @@ export default function ConfirmRepositionModal(props: propsIF) {
     );
 
     return (
-        <div className={styles.confirm_range_modal_container}>
-            <div>{showConfirmation ? fullTxDetails2 : confirmationDisplay}</div>
-            <footer className={styles.modal_footer}>
-                {showConfirmation && (
-                    <Button
-                        title={
-                            isPositionInRange
-                                ? 'Position Currently In Range'
-                                : 'Send Reposition'
-                        }
-                        action={() => {
-                            // if this modal is launched we can infer user wants confirmation
-                            // if user enables bypass, update all settings in parallel
-                            // otherwise do not not make any change to persisted preferences
-                            if (currentSkipConfirm) {
-                                bypassConfirmSwap.enable();
-                                bypassConfirmLimit.enable();
-                                bypassConfirmRange.enable();
-                                bypassConfirmRepo.enable();
+        <Modal title='Confirm Reposition' isOpen={isOpen} onClose={onClose}>
+            <div className={styles.confirm_range_modal_container}>
+                <div>
+                    {showConfirmation ? fullTxDetails2 : confirmationDisplay}
+                </div>
+                <footer className={styles.modal_footer}>
+                    {showConfirmation && (
+                        <Button
+                            title={
+                                isPositionInRange
+                                    ? 'Position Currently In Range'
+                                    : 'Send Reposition'
                             }
-                            setShowConfirmation(false);
-                            onSend();
-                        }}
-                        disabled={isPositionInRange}
-                        flat
-                    />
-                )}
-            </footer>
-        </div>
+                            action={() => {
+                                // if this modal is launched we can infer user wants confirmation
+                                // if user enables bypass, update all settings in parallel
+                                // otherwise do not not make any change to persisted preferences
+                                if (currentSkipConfirm) {
+                                    bypassConfirmSwap.enable();
+                                    bypassConfirmLimit.enable();
+                                    bypassConfirmRange.enable();
+                                    bypassConfirmRepo.enable();
+                                }
+                                setShowConfirmation(false);
+                                onSend();
+                            }}
+                            disabled={isPositionInRange}
+                            flat
+                        />
+                    )}
+                </footer>
+            </div>
+        </Modal>
     );
 }
