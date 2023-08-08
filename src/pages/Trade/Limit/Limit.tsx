@@ -7,7 +7,6 @@ import {
 } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Global/Button/Button';
 import Modal from '../../../components/Global/Modal/Modal';
@@ -89,9 +88,6 @@ export default function Limit() {
         limitTickCopied,
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
-    const { sessionReceipts, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
     const { limitTickFromParams } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
@@ -112,7 +108,7 @@ export default function Limit() {
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] =
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
+    const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
     const [middleDisplayPrice, setMiddleDisplayPrice] = useState<number>(0);
@@ -122,16 +118,9 @@ export default function Limit() {
     const [displayPrice, setDisplayPrice] = useState('');
     const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
-    const [bypassConfirmation, setBypassConfirmation] = useState(false);
-    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
-
-    let receiveReceiptHashes: Array<string> = [];
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
 
     const tokenABalance = isSellTokenBase
         ? baseTokenBalance
@@ -359,26 +348,11 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
-    }, [sessionReceipts]);
-
-    useEffect(() => {
-        if (
-            !currentPendingTransactionsArray.length &&
-            !isWaitingForWallet &&
-            txErrorCode === ''
-        ) {
-            setBypassConfirmation(false);
-        }
-    }, [
-        currentPendingTransactionsArray.length,
-        isWaitingForWallet,
-        txErrorCode === '',
-    ]);
+        setShowConfirmation(false);
+    }, [bypassConfirmLimit.isEnabled]);
 
     useEffect(() => {
         setNewLimitOrderTransactionHash('');
-        setBypassConfirmation(false);
     }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
@@ -408,9 +382,8 @@ export default function Limit() {
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const resetConfirmation = () => {
-        setShowConfirmation(true);
+        setShowConfirmation(false);
         setTxErrorCode('');
-        setBypassConfirmation(false);
         setNewLimitOrderTransactionHash('');
     };
 
@@ -452,17 +425,11 @@ export default function Limit() {
         }
     };
 
-    const handleLimitButtonClickWithBypass = () => {
-        setBypassConfirmation(true);
-        sendLimitOrder();
-    };
-
     const sendLimitOrder = async () => {
         if (!crocEnv) return;
         if (limitTick === undefined) return;
         resetConfirmation();
-        setShowConfirmation(false);
-        setIsWaitingForWallet(true);
+        setShowConfirmation(true);
 
         const sellToken = tokenA.address;
         const buyToken = tokenB.address;
@@ -487,7 +454,6 @@ export default function Limit() {
             tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
-            setIsWaitingForWallet(false);
             if (tx?.hash)
                 dispatch(
                     addTransactionByType({
@@ -501,7 +467,6 @@ export default function Limit() {
             }
             console.error({ error });
             setTxErrorCode(error.code);
-            setIsWaitingForWallet(false);
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
@@ -578,6 +543,11 @@ export default function Limit() {
                 }
             }
         }
+    };
+
+    const handleModalOpen = () => {
+        resetConfirmation();
+        openModal();
     };
 
     const handleModalClose = (): void => {
@@ -718,7 +688,6 @@ export default function Limit() {
                             }
                             txErrorCode={txErrorCode}
                             showConfirmation={showConfirmation}
-                            setShowConfirmation={setShowConfirmation}
                             resetConfirmation={resetConfirmation}
                             startDisplayPrice={startDisplayPrice}
                             middleDisplayPrice={middleDisplayPrice}
@@ -741,8 +710,8 @@ export default function Limit() {
                     action={
                         areBothAckd
                             ? bypassConfirmLimit.isEnabled
-                                ? handleLimitButtonClickWithBypass
-                                : openModal
+                                ? sendLimitOrder
+                                : handleModalOpen
                             : ackAsNeeded
                     }
                     disabled={
@@ -755,7 +724,7 @@ export default function Limit() {
                 />
             }
             bypassConfirm={
-                bypassConfirmation ? (
+                showConfirmation && bypassConfirmLimit.isEnabled ? (
                     <SubmitTransaction
                         type='Limit'
                         newTransactionHash={newLimitOrderTransactionHash}

@@ -1,12 +1,5 @@
 // START: Import React and Dongles
-import {
-    Dispatch,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 // START: Import Other Local Files
 import { TokenPairIF } from '../../../utils/interfaces/exports';
@@ -26,7 +19,6 @@ interface propsIF {
     tokenPair: TokenPairIF;
     txErrorCode: string;
     showConfirmation: boolean;
-    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
     slippageTolerancePercentage: number;
     effectivePrice: number;
@@ -47,7 +39,6 @@ export default function ConfirmSwapModal(props: propsIF) {
         txErrorCode,
         resetConfirmation,
         showConfirmation,
-        setShowConfirmation,
         slippageTolerancePercentage,
         effectivePrice,
         isSellTokenBase,
@@ -226,12 +217,11 @@ export default function ConfirmSwapModal(props: propsIF) {
             txErrorCode={txErrorCode}
             showConfirmation={showConfirmation}
             statusText={
-                showConfirmation
+                !showConfirmation
                     ? 'Submit Swap'
                     : `Swapping ${localeSellString} ${sellTokenData.symbol} for ${localeBuyString} ${buyTokenData.symbol}`
             }
             initiate={initiateSwapMethod}
-            setShowConfirmation={setShowConfirmation}
             resetConfirmation={resetConfirmation}
             acknowledgeUpdate={
                 isWaitingForPriceChangeAckt && priceIncreaseComponent

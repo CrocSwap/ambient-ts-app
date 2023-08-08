@@ -50,7 +50,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../contexts/RangeContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
@@ -87,25 +86,19 @@ function Reposition() {
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
-    const [showConfirmation, setShowConfirmation] = useState(true);
+    const [showConfirmation, setShowConfirmation] = useState(false);
     const [txErrorCode, setTxErrorCode] = useState('');
 
     const resetConfirmation = () => {
-        setShowConfirmation(true);
+        setShowConfirmation(false);
         setTxErrorCode('');
+        setNewRepositionTransactionHash('');
     };
 
     const isRepositionSent = newRepositionTransactionHash !== '';
 
-    // locationHook object (we need this mainly for position data)
     const locationHook = useLocation();
-
-    // fn to conditionally navigate the user
-    // const navigate = useNavigate();
-
     const dispatch = useAppDispatch();
-
-    // redirect path to use in this module
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     // navigate the user to the redirect URL path if locationHook.state has no data
@@ -123,7 +116,6 @@ function Reposition() {
         return <Navigate to={linkGenPool.getFullURL(params ?? '')} replace />;
     }
 
-    // position data from the locationHook object
     const { position } = locationHook.state as { position: PositionIF };
 
     useEffect(() => {
@@ -160,7 +152,6 @@ function Reposition() {
             poolPriceNonDisplay: currentPoolPriceNonDisplay,
             isDenomBase,
         },
-        receiptData,
     } = useAppSelector((state) => state);
 
     const currentPoolPriceTick =
@@ -203,6 +194,11 @@ function Reposition() {
 
     // const currentlocationHook = locationHook.pathname;
     const [isModalOpen, openModal, closeModal] = useModal();
+
+    const handleModalOpen = () => {
+        resetConfirmation();
+        openModal();
+    };
 
     const handleModalClose = () => {
         closeModal();
@@ -289,8 +285,8 @@ function Reposition() {
         let tx;
         setTxErrorCode('');
 
-        // resetConfirmation();
-        setIsWaitingForWallet(true);
+        resetConfirmation();
+        setShowConfirmation(true);
 
         try {
             const pool = crocEnv.pool(position.base, position.quote);
@@ -310,7 +306,6 @@ function Reposition() {
                         txType: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
                     }),
                 );
-            setIsWaitingForWallet(false);
             // We want the user to exit themselves
             // navigate(redirectPath, { replace: true });
         } catch (error) {
@@ -319,7 +314,6 @@ function Reposition() {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setIsWaitingForWallet(false);
         }
 
         let receipt;
@@ -584,71 +578,6 @@ function Reposition() {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    const [bypassConfirmation, setBypassConfirmation] = useState(false);
-
-    const sessionReceipts = receiptData.sessionReceipts;
-
-    const pendingTransactions = receiptData.pendingTransactions;
-
-    let receiveReceiptHashes: Array<string> = [];
-
-    useEffect(() => {
-        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
-    }, [sessionReceipts]);
-
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
-
-    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
-
-    useEffect(() => {
-        if (
-            !currentPendingTransactionsArray.length &&
-            !isWaitingForWallet &&
-            txErrorCode === ''
-        ) {
-            setBypassConfirmation(false);
-        }
-    }, [
-        currentPendingTransactionsArray.length,
-        isWaitingForWallet,
-        txErrorCode === '',
-    ]);
-
-    const confirmRepositionModalProps = {
-        isPositionInRange: isPositionInRange,
-        position: position as PositionIF,
-        onSend: sendRepositionTransaction,
-        showConfirmation: showConfirmation,
-        setShowConfirmation: setShowConfirmation,
-        newRepositionTransactionHash: newRepositionTransactionHash,
-        resetConfirmation: resetConfirmation,
-        txErrorCode: txErrorCode,
-        minPriceDisplay: minPriceDisplay,
-        maxPriceDisplay: maxPriceDisplay,
-        currentBaseQtyDisplayTruncated: currentBaseQtyDisplayTruncated,
-        currentQuoteQtyDisplayTruncated: currentQuoteQtyDisplayTruncated,
-        newBaseQtyDisplay: newBaseQtyDisplay,
-        newQuoteQtyDisplay: newQuoteQtyDisplay,
-        isAmbient: isAmbient,
-        pinnedMinPriceDisplayTruncatedInBase:
-            pinnedMinPriceDisplayTruncatedInBase,
-        pinnedMinPriceDisplayTruncatedInQuote:
-            pinnedMinPriceDisplayTruncatedInQuote,
-        pinnedMaxPriceDisplayTruncatedInBase:
-            pinnedMaxPriceDisplayTruncatedInBase,
-        pinnedMaxPriceDisplayTruncatedInQuote:
-            pinnedMaxPriceDisplayTruncatedInQuote,
-        isTokenABase: isTokenABase,
-    };
-
-    const handleRepoButtonClickWithBypass = () => {
-        IS_LOCAL_ENV && console.debug('setting to true');
-        setBypassConfirmation(true);
-        sendRepositionTransaction();
-    };
-
     const txUrlOnBlockExplorer = `${blockExplorer}tx/${newRepositionTransactionHash}`;
 
     const etherscanButton = (
@@ -704,7 +633,16 @@ function Reposition() {
                     }
                 />
                 <div className={styles.button_container}>
-                    {!bypassConfirmation ? (
+                    {bypassConfirmRepo.isEnabled && showConfirmation ? (
+                        <SubmitTransaction
+                            type='Reposition'
+                            newTransactionHash={newRepositionTransactionHash}
+                            txErrorCode={txErrorCode}
+                            sendTransaction={sendRepositionTransaction}
+                            resetConfirmation={resetConfirmation}
+                            transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
+                        />
+                    ) : (
                         <Button
                             title={
                                 isRepositionSent
@@ -717,20 +655,11 @@ function Reposition() {
                             }
                             action={
                                 bypassConfirmRepo.isEnabled
-                                    ? handleRepoButtonClickWithBypass
-                                    : openModal
+                                    ? sendRepositionTransaction
+                                    : handleModalOpen
                             }
                             disabled={isRepositionSent || isPositionInRange}
                             flat
-                        />
-                    ) : (
-                        <SubmitTransaction
-                            type='Reposition'
-                            newTransactionHash={newRepositionTransactionHash}
-                            txErrorCode={txErrorCode}
-                            sendTransaction={sendRepositionTransaction}
-                            resetConfirmation={resetConfirmation}
-                            transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
                         />
                     )}
                 </div>
@@ -742,7 +671,41 @@ function Reposition() {
                     title=' Confirm Reposition'
                     centeredTitle
                 >
-                    <ConfirmRepositionModal {...confirmRepositionModalProps} />
+                    <ConfirmRepositionModal
+                        isPositionInRange={isPositionInRange}
+                        position={position as PositionIF}
+                        onSend={sendRepositionTransaction}
+                        showConfirmation={showConfirmation}
+                        newRepositionTransactionHash={
+                            newRepositionTransactionHash
+                        }
+                        resetConfirmation={resetConfirmation}
+                        txErrorCode={txErrorCode}
+                        minPriceDisplay={minPriceDisplay}
+                        maxPriceDisplay={maxPriceDisplay}
+                        currentBaseQtyDisplayTruncated={
+                            currentBaseQtyDisplayTruncated
+                        }
+                        currentQuoteQtyDisplayTruncated={
+                            currentQuoteQtyDisplayTruncated
+                        }
+                        newBaseQtyDisplay={newBaseQtyDisplay}
+                        newQuoteQtyDisplay={newQuoteQtyDisplay}
+                        isAmbient={isAmbient}
+                        pinnedMinPriceDisplayTruncatedInBase={
+                            pinnedMinPriceDisplayTruncatedInBase
+                        }
+                        pinnedMinPriceDisplayTruncatedInQuote={
+                            pinnedMinPriceDisplayTruncatedInQuote
+                        }
+                        pinnedMaxPriceDisplayTruncatedInBase={
+                            pinnedMaxPriceDisplayTruncatedInBase
+                        }
+                        pinnedMaxPriceDisplayTruncatedInQuote={
+                            pinnedMaxPriceDisplayTruncatedInQuote
+                        }
+                        isTokenABase={isTokenABase}
+                    />
                 </Modal>
             )}
         </div>

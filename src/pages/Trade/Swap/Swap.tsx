@@ -78,9 +78,6 @@ function Swap(props: propsIF) {
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
     const [isModalOpen, openModal, closeModal] = useModal();
-    const { sessionReceipts, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
     const {
@@ -111,12 +108,7 @@ function Swap(props: propsIF) {
         primaryQuantity !== '',
     );
 
-    // this apparently different from the `bypassConfirm` that I am working with
-    // it should possibly be renamed something different or better documented
-    const [showBypassConfirm, setShowBypassConfirm] = useState(false);
-    const [showExtraInfo, setShowExtraInfo] = useState(false);
-    const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
-
+    const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [isLiquidityInsufficient, setIsLiquidityInsufficient] =
         useState<boolean>(false);
     const [isApprovalPending, setIsApprovalPending] = useState(false);
@@ -127,7 +119,6 @@ function Swap(props: propsIF) {
         useState<boolean>(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] =
         useState<boolean>(dexBalSwap.outputToDexBal.isEnabled);
-    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
 
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -145,11 +136,6 @@ function Swap(props: propsIF) {
     const tokenADexBalance = isSellTokenBase
         ? baseTokenDexBalance
         : quoteTokenDexBalance;
-
-    let receiveReceiptHashes: Array<string> = [];
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
 
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
@@ -249,32 +235,12 @@ function Swap(props: propsIF) {
     ]);
 
     useEffect(() => {
-        if (
-            !currentPendingTransactionsArray.length &&
-            !isWaitingForWallet &&
-            txErrorCode === '' &&
-            bypassConfirmSwap.isEnabled
-        ) {
-            setNewSwapTransactionHash('');
-            setShowBypassConfirm(false);
-        }
-    }, [
-        currentPendingTransactionsArray.length,
-        isWaitingForWallet,
-        txErrorCode === '',
-        bypassConfirmSwap.isEnabled,
-    ]);
-
-    useEffect(() => {
         setNewSwapTransactionHash('');
-        setShowBypassConfirm(false);
     }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
-        receiveReceiptHashes = sessionReceipts.map(
-            (receipt) => JSON.parse(receipt)?.transactionHash,
-        );
-    }, [sessionReceipts]);
+        setShowConfirmation(false);
+    }, [bypassConfirmSwap.isEnabled]);
 
     // calculate price of gas for swap
     useEffect(() => {
@@ -300,16 +266,14 @@ function Swap(props: propsIF) {
     }, [tokenADexBalance]);
 
     const resetConfirmation = () => {
-        setShowConfirmation(true);
+        setShowConfirmation(false);
         setTxErrorCode('');
-        setShowBypassConfirm(false);
         setNewSwapTransactionHash('');
     };
 
     async function initiateSwap() {
         resetConfirmation();
-        setShowConfirmation(false);
-        setIsWaitingForWallet(true);
+        setShowConfirmation(true);
         if (!crocEnv) return;
 
         const sellTokenAddress = tokenA.address;
@@ -333,7 +297,6 @@ function Swap(props: propsIF) {
             tx = await plan.swap({
                 surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
             });
-            setIsWaitingForWallet(false);
 
             setNewSwapTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
@@ -350,7 +313,6 @@ function Swap(props: propsIF) {
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setIsWaitingForWallet(false);
         }
 
         let receipt;
@@ -381,6 +343,11 @@ function Swap(props: propsIF) {
             dispatch(removePendingTx(receipt.transactionHash));
         }
     }
+
+    const handleModalOpen = () => {
+        resetConfirmation();
+        openModal();
+    };
 
     const handleModalClose = () => {
         closeModal();
@@ -446,40 +413,10 @@ function Swap(props: propsIF) {
         }
     };
 
-    const handleSwapButtonClickWithBypass = () => {
-        IS_LOCAL_ENV && console.debug('setting  bypass confirm to true');
-        setShowBypassConfirm(true);
-        initiateSwap();
-    };
-
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
         needConfirmTokenA && tokens.acknowledge(tokenA);
         needConfirmTokenB && tokens.acknowledge(tokenB);
-    };
-
-    const confirmSwapModalProps = {
-        tokenPair: { dataTokenA: tokenA, dataTokenB: tokenB },
-        isDenomBase: isDenomBase,
-        baseTokenSymbol: baseToken.symbol,
-        quoteTokenSymbol: quoteToken.symbol,
-        initiateSwapMethod: initiateSwap,
-        newSwapTransactionHash: newSwapTransactionHash,
-        txErrorCode: txErrorCode,
-        showConfirmation: showConfirmation,
-        setShowConfirmation: setShowConfirmation,
-        resetConfirmation: resetConfirmation,
-        slippageTolerancePercentage: slippageTolerancePercentage,
-        effectivePrice: effectivePrice,
-        isSellTokenBase: isSellTokenBase,
-        sellQtyString: sellQtyString,
-        buyQtyString: buyQtyString,
-        setShowBypassConfirm: setShowBypassConfirm,
-        setNewSwapTransactionHash: setNewSwapTransactionHash,
-        showBypassConfirm,
-        showExtraInfo: showExtraInfo,
-        setShowExtraInfo: setShowExtraInfo,
-        isTokenAPrimary: isTokenAPrimary,
     };
 
     const liquidityInsufficientWarning = isLiquidityInsufficient ? (
@@ -567,7 +504,28 @@ function Swap(props: propsIF) {
                         title='Swap Confirmation'
                         centeredTitle
                     >
-                        <ConfirmSwapModal {...confirmSwapModalProps} />
+                        <ConfirmSwapModal
+                            tokenPair={{
+                                dataTokenA: tokenA,
+                                dataTokenB: tokenB,
+                            }}
+                            isDenomBase={isDenomBase}
+                            baseTokenSymbol={baseToken.symbol}
+                            quoteTokenSymbol={quoteToken.symbol}
+                            initiateSwapMethod={initiateSwap}
+                            newSwapTransactionHash={newSwapTransactionHash}
+                            txErrorCode={txErrorCode}
+                            showConfirmation={showConfirmation}
+                            resetConfirmation={resetConfirmation}
+                            slippageTolerancePercentage={
+                                slippageTolerancePercentage
+                            }
+                            effectivePrice={effectivePrice}
+                            isSellTokenBase={isSellTokenBase}
+                            sellQtyString={sellQtyString}
+                            buyQtyString={buyQtyString}
+                            isTokenAPrimary={isTokenAPrimary}
+                        />
                     </Modal>
                 ) : undefined
             }
@@ -589,8 +547,8 @@ function Swap(props: propsIF) {
                     action={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
-                                ? handleSwapButtonClickWithBypass
-                                : openModal
+                                ? initiateSwap
+                                : handleModalOpen
                             : ackAsNeeded
                     }
                     disabled={
@@ -603,7 +561,7 @@ function Swap(props: propsIF) {
                 />
             }
             bypassConfirm={
-                showBypassConfirm ? (
+                showConfirmation && bypassConfirmSwap.isEnabled ? (
                     <SubmitTransaction
                         type='Swap'
                         newTransactionHash={newSwapTransactionHash}

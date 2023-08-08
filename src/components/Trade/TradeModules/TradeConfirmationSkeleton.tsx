@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 
 // START: Import JSX Components
 import Button from '../../Global/Button/Button';
@@ -24,7 +24,6 @@ interface propsIF {
     showConfirmation: boolean;
     statusText: string;
     initiate: () => Promise<void>;
-    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
     poolTokenDisplay?: React.ReactNode;
     transactionDetails?: React.ReactNode;
@@ -43,7 +42,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         txErrorCode,
         statusText,
         showConfirmation,
-        setShowConfirmation,
         resetConfirmation,
         poolTokenDisplay,
         acknowledgeUpdate,
@@ -115,13 +113,13 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             )}
             {extraNotes && extraNotes}
             <footer>
-                {!acknowledgeUpdate ? (
-                    <>
-                        <ConfirmationModalControl
-                            tempBypassConfirm={skipFutureConfirmation}
-                            setTempBypassConfirm={setSkipFutureConfirmation}
-                        />
-                        {showConfirmation ? (
+                {!showConfirmation ? (
+                    !acknowledgeUpdate ? (
+                        <>
+                            <ConfirmationModalControl
+                                tempBypassConfirm={skipFutureConfirmation}
+                                setTempBypassConfirm={setSkipFutureConfirmation}
+                            />
                             <Button
                                 title={statusText}
                                 action={() => {
@@ -135,24 +133,23 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                         bypassConfirmRepo.enable();
                                     }
                                     initiate();
-                                    setShowConfirmation(false);
                                 }}
                                 flat
                                 disabled={!!acknowledgeUpdate}
                             />
-                        ) : (
-                            <SubmitTransaction
-                                type={type}
-                                newTransactionHash={transactionHash}
-                                txErrorCode={txErrorCode}
-                                resetConfirmation={resetConfirmation}
-                                sendTransaction={initiate}
-                                transactionPendingDisplayString={statusText}
-                            />
-                        )}
-                    </>
+                        </>
+                    ) : (
+                        acknowledgeUpdate
+                    )
                 ) : (
-                    acknowledgeUpdate
+                    <SubmitTransaction
+                        type={type}
+                        newTransactionHash={transactionHash}
+                        txErrorCode={txErrorCode}
+                        resetConfirmation={resetConfirmation}
+                        sendTransaction={initiate}
+                        transactionPendingDisplayString={statusText}
+                    />
                 )}
             </footer>
         </div>

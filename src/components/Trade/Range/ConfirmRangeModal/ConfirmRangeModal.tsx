@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, memo } from 'react';
+import { memo } from 'react';
 
 // START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
@@ -27,7 +27,6 @@ interface propsIF {
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
     showConfirmation: boolean;
-    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     txErrorCode: string;
     resetConfirmation: () => void;
     isAdd: boolean;
@@ -48,7 +47,6 @@ function ConfirmRangeModal(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
         txErrorCode,
         showConfirmation,
-        setShowConfirmation,
         resetConfirmation,
         isAdd,
         tokenAQty,
@@ -149,7 +147,7 @@ function ConfirmRangeModal(props: propsIF) {
             showConfirmation={showConfirmation}
             poolTokenDisplay={poolTokenDisplay}
             statusText={
-                showConfirmation
+                !showConfirmation
                     ? isAdd
                         ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
                         : `Submit ${isAmbient ? 'Ambient' : ''} Liquidity`
@@ -158,7 +156,6 @@ function ConfirmRangeModal(props: propsIF) {
                       } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}`
             }
             initiate={sendTransaction}
-            setShowConfirmation={setShowConfirmation}
             resetConfirmation={resetConfirmation}
         />
     );

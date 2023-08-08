@@ -1,5 +1,5 @@
 import styles from '../../TradeModules/TradeConfirmationSkeleton.module.css';
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { useContext } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
@@ -13,7 +13,6 @@ interface propsIF {
     newLimitOrderTransactionHash: string;
     txErrorCode: string;
     showConfirmation: boolean;
-    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
     startDisplayPrice: number;
     middleDisplayPrice: number;
@@ -27,7 +26,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         txErrorCode,
         resetConfirmation,
         showConfirmation,
-        setShowConfirmation,
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
@@ -126,12 +124,11 @@ export default function ConfirmLimitModal(props: propsIF) {
             transactionHash={newLimitOrderTransactionHash}
             txErrorCode={txErrorCode}
             statusText={
-                showConfirmation
+                !showConfirmation
                     ? 'Submit Limit Order'
                     : `Submitting Limit to Swap ${localeSellString} ${tokenA.symbol} for ${localeBuyString} ${tokenB.symbol}`
             }
             showConfirmation={showConfirmation}
-            setShowConfirmation={setShowConfirmation}
             resetConfirmation={resetConfirmation}
         />
     );

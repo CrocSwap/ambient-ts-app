@@ -2,12 +2,9 @@ import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 import { motion } from 'framer-motion';
 import { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import Button from '../../../components/Global/Button/Button';
-// import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import { useModal } from '../../../components/Global/Modal/useModal';
-// import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
@@ -127,7 +124,6 @@ function Range() {
             advancedMode,
             liquidityFee,
         },
-        receiptData: { sessionReceipts, pendingTransactions },
         graphData,
     } = useAppSelector((state) => state);
 
@@ -187,11 +183,9 @@ function Range() {
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
-    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const [showConfirmation, setShowConfirmation] = useState(true);
-    const [bypassConfirmation, setBypassConfirmation] = useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -328,10 +322,6 @@ function Range() {
         : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
     const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
 
-    let receiveReceiptHashes: Array<string> = [];
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
     const depositSkew = useMemo(
         () =>
             concDepositSkew(
@@ -484,8 +474,11 @@ function Range() {
     }, [rangeWidthPercentage]);
 
     useEffect(() => {
+        setShowConfirmation(false);
+    }, [bypassConfirmRange.isEnabled]);
+
+    useEffect(() => {
         setNewRangeTransactionHash('');
-        setBypassConfirmation(false);
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 
@@ -613,30 +606,12 @@ function Range() {
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
-        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
-    }, [sessionReceipts]);
-
-    useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
 
     useEffect(() => {
         setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
     }, [tokenBDexBalance]);
-
-    useEffect(() => {
-        if (
-            !currentPendingTransactionsArray.length &&
-            !isWaitingForWallet &&
-            txErrorCode === ''
-        ) {
-            setBypassConfirmation(false);
-        }
-    }, [
-        currentPendingTransactionsArray.length,
-        isWaitingForWallet,
-        txErrorCode === '',
-    ]);
 
     useEffect(() => {
         if (advancedMode) {
@@ -987,9 +962,8 @@ function Range() {
     };
 
     const resetConfirmation = () => {
-        setShowConfirmation(true);
+        setShowConfirmation(false);
         setTxErrorCode('');
-        setBypassConfirmation(false);
         setNewRangeTransactionHash('');
     };
 
@@ -997,8 +971,7 @@ function Range() {
         if (!crocEnv) return;
 
         resetConfirmation();
-        setShowConfirmation(false);
-        setIsWaitingForWallet(true);
+        setShowConfirmation(true);
 
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
 
@@ -1065,14 +1038,12 @@ function Range() {
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
                     }),
                 );
-            setIsWaitingForWallet(false);
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setIsWaitingForWallet(false);
         }
 
         let receipt;
@@ -1099,14 +1070,14 @@ function Range() {
         }
     };
 
+    const handleModalOpen = () => {
+        resetConfirmation();
+        openConfirmationModal();
+    };
+
     const handleModalClose = () => {
         closeConfirmationModal();
         resetConfirmation();
-    };
-
-    const handleRangeButtonClickWithBypass = () => {
-        setBypassConfirmation(true);
-        sendTransaction();
     };
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
@@ -1328,16 +1299,6 @@ function Range() {
                     />
                 </div>
             </motion.div>
-            {/* <DividerDark addMarginTop /> */}
-
-            {/* <AdvancedPriceInfo
-                poolPriceDisplay={getFormattedNumber({
-                    value: displayPriceWithDenom,
-                })}
-                isTokenABase={isTokenABase}
-                isOutOfRange={isOutOfRange}
-                aprPercentage={aprPercentage}
-            /> */}
         </>
     );
 
@@ -1417,7 +1378,6 @@ function Range() {
                             newRangeTransactionHash={newRangeTransactionHash}
                             resetConfirmation={resetConfirmation}
                             showConfirmation={showConfirmation}
-                            setShowConfirmation={setShowConfirmation}
                             txErrorCode={txErrorCode}
                             isInRange={!isOutOfRange}
                             pinnedMinPriceDisplayTruncatedInBase={
@@ -1456,8 +1416,8 @@ function Range() {
                     action={
                         areBothAckd
                             ? bypassConfirmRange.isEnabled
-                                ? handleRangeButtonClickWithBypass
-                                : openConfirmationModal
+                                ? sendTransaction
+                                : handleModalOpen
                             : ackAsNeeded
                     }
                     disabled={
@@ -1470,7 +1430,7 @@ function Range() {
                 />
             }
             bypassConfirm={
-                bypassConfirmation ? (
+                showConfirmation && bypassConfirmRange.isEnabled ? (
                     <SubmitTransaction
                         type='Range'
                         newTransactionHash={newRangeTransactionHash}

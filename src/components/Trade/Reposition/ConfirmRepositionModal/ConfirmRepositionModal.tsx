@@ -1,6 +1,5 @@
 import styles from './ConfirmRepositionModal.module.css';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { Dispatch, SetStateAction } from 'react';
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from '../../Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -13,7 +12,6 @@ interface propsIF {
     newRepositionTransactionHash: string;
     onSend: () => Promise<void>;
     showConfirmation: boolean;
-    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
     txErrorCode: string;
     minPriceDisplay: string;
@@ -40,7 +38,6 @@ export default function ConfirmRepositionModal(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
         onSend,
         showConfirmation,
-        setShowConfirmation,
         newRepositionTransactionHash,
         resetConfirmation,
         txErrorCode,
@@ -167,14 +164,13 @@ export default function ConfirmRepositionModal(props: propsIF) {
             txErrorCode={txErrorCode}
             showConfirmation={showConfirmation}
             statusText={
-                showConfirmation
+                !showConfirmation
                     ? isPositionInRange
                         ? 'Position Currently In Range'
                         : 'Send Reposition'
                     : 'Repositioning'
             }
             initiate={onSend}
-            setShowConfirmation={setShowConfirmation}
             resetConfirmation={resetConfirmation}
             poolTokenDisplay={poolTokenDisplay}
         />
