@@ -11,7 +11,6 @@ import { WagmiConfig, createClient, configureChains } from 'wagmi';
 
 import { infuraProvider } from 'wagmi/providers/infura';
 
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { getWagmiChains } from './utils/data/chains';
 import Moralis from 'moralis/.';
@@ -49,7 +48,13 @@ if (!doReload) {
     const client = createClient({
         autoConnect: true,
         connectors: [
-            new MetaMaskConnector({ chains }),
+            new InjectedConnector({
+                chains,
+                options: {
+                    name: 'MetaMask',
+                    shimDisconnect: true,
+                },
+            }),
             new InjectedConnector({
                 chains,
                 options: {
