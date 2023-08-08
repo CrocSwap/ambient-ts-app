@@ -1,13 +1,20 @@
-import { useState, useEffect, ChangeEvent, memo } from 'react';
+import {
+    useState,
+    useEffect,
+    ChangeEvent,
+    memo,
+    Dispatch,
+    SetStateAction,
+} from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { useModal } from '../Modal/useModal';
 import Spinner from '../Spinner/Spinner';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
 import styles from './TokenInputQuantity.module.css';
+import { useModal } from '../Modal/useModal';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -23,6 +30,7 @@ interface propsIF {
     showPulseAnimation?: boolean;
     disable?: boolean;
     disabledContent?: React.ReactNode;
+    setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -40,9 +48,16 @@ function TokenInputQuantity(props: propsIF) {
         handleTokenInputEvent,
         reverseTokens,
         parseInput,
+        setTokenModalOpen = () => null,
     } = props;
 
     const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
+
+    // needed to not dismiss exchangebalance modal when closing the token select modal
+    useEffect(() => {
+        setTokenModalOpen(isTokenSelectOpen);
+    }, [isTokenSelectOpen]);
+
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
 
@@ -158,7 +173,7 @@ function TokenInputQuantity(props: propsIF) {
                 onClose={closeTokenSelect}
                 showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                 setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
-                isSingleToken={false}
+                isSingleToken={!tokenAorB}
                 tokenAorB={tokenAorB}
                 reverseTokens={reverseTokens}
             />

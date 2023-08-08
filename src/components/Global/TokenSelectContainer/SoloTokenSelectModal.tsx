@@ -50,6 +50,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
     const {
         tokens,
         outputTokens,
@@ -256,8 +257,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         id='token_select_input_field'
                         spellCheck='false'
                         type='text'
-                        placeholder=' Search name or enter an Address'
+                        value={validatedInput}
                         onChange={(e) => setInput(e.target.value)}
+                        placeholder=' Search name or enter an Address'
                         style={{
                             color: showSoloSelectTokenButtons
                                 ? 'var(--text2)'

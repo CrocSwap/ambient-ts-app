@@ -306,6 +306,7 @@ export default function TransactionsMenu(props: propsIF) {
     }, [showDropdownMenu]);
 
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
+
     const dropdownTransactionsMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
             <button
@@ -317,6 +318,11 @@ export default function TransactionsMenu(props: propsIF) {
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
+
+    const handleCloseModal = () => {
+        clickOutsideHandler();
+        closeDetailsModal();
+    };
 
     return (
         <div onClick={(event) => event.stopPropagation()}>
@@ -331,7 +337,7 @@ export default function TransactionsMenu(props: propsIF) {
                 }
                 isAccountView={isAccountView}
                 isOpen={isDetailsModalOpen}
-                onClose={closeDetailsModal}
+                onClose={handleCloseModal}
             />
         </div>
     );

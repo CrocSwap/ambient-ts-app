@@ -5,20 +5,19 @@ import NavItem from '../NavItem/NavItem';
 import styles from './ExchangeBalanceDropdown.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { useModal } from '../../../../components/Global/Modal/useModal';
 
 export const ExchangeBalanceDropdown = () => {
-    // TODO: investigate #2763
-    const [isModalOpen] = useModal();
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
+    const [tokenModalOpen, setTokenModalOpen] = useState(false);
 
     const escapePressed = useKeyPress('Escape');
 
     useEffect(() => {
-        if (fullLayoutActive && !isModalOpen && escapePressed) {
+        if (fullLayoutActive && !tokenModalOpen && escapePressed) {
             setFullLayoutActive(false);
         }
     }, [escapePressed]);
+
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
@@ -26,13 +25,14 @@ export const ExchangeBalanceDropdown = () => {
             icon={<img src={coins} />}
             open={fullLayoutActive}
             setOpen={setFullLayoutActive}
-            allowClicksOutside={isModalOpen}
+            allowClicksOutside={tokenModalOpen}
             square={showMobileVersion}
         >
             <div className={styles.dropdown}>
                 <ExchangeBalance
                     fullLayoutActive={fullLayoutActive}
                     setFullLayoutActive={setFullLayoutActive}
+                    setTokenModalOpen={setTokenModalOpen}
                     isModalView
                 />
             </div>

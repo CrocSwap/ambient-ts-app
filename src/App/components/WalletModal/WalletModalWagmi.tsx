@@ -3,7 +3,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 import { useConnect, useAccount, useDisconnect } from 'wagmi';
 
 // START: Import Local Files
-import styles from './WalletModal.module.css';
+import styles from './WalletModalWagmi.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import WalletButton from './WalletButton/WalletButton';
@@ -265,7 +265,6 @@ export default function WalletModalWagmi() {
             handleBack={clickBackArrow}
             showBackButton={showBackArrow}
             title={!hasAgreedTerms ? 'Welcome' : activeTitle}
-            centeredTitle={activeTitle === 'Choose a Wallet' ? true : false}
         >
             {!hasAgreedTerms ? (
                 <GateWallet recordAgreed={recordAgreed} termUrls={termUrls} />

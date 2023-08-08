@@ -43,6 +43,7 @@ interface propsIF {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
+    setTokenModalOpen: Dispatch<SetStateAction<string>>;
 }
 
 export default function Transfer(props: propsIF) {
@@ -54,6 +55,7 @@ export default function Transfer(props: propsIF) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
+        setTokenModalOpen,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
@@ -207,28 +209,6 @@ export default function Transfer(props: propsIF) {
 
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
-
-                        //  if (newTransactionHash) {
-                        //      fetch(
-                        //          newSwapCacheEndpoint +
-                        //              new URLSearchParams({
-                        //                  tx: newTransactionHash,
-                        //                  user: account ?? '',
-                        //                  base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                        //                  quote: isSellTokenBase
-                        //                      ? buyTokenAddress
-                        //                      : sellTokenAddress,
-                        //                  poolIdx: (await env.context).chain.poolIndex.toString(),
-                        //                  isBuy: isSellTokenBase.toString(),
-                        //                  inBaseQty: inBaseQty.toString(),
-                        //                  qty: crocQty.toString(),
-                        //                  override: 'false',
-                        //                  chainId: chainId,
-                        //                  limitPrice: '0',
-                        //                  minOut: '0',
-                        //              }),
-                        //      );
-                        //  }
                     } else if (isTransactionFailedError(error)) {
                         console.error({ error });
                         receipt = error.receipt;
@@ -291,8 +271,6 @@ export default function Transfer(props: propsIF) {
         if (isTokenDexBalanceGreaterThanZero) {
             setTransferQtyNonDisplay(tokenDexBalance);
 
-            // if (transferInput && tokenExchangeDepositsDisplay)
-            //     transferInput.value = tokenExchangeDepositsDisplay;
             if (tokenExchangeDepositsDisplay)
                 setInputValue(tokenExchangeDepositsDisplay);
         }

@@ -123,11 +123,6 @@ export const AppStateContextProvider = (props: {
         ],
     );
 
-    useEffect(() => {
-        console.log('wallet was toggled open/closed');
-        console.log({ isWagmiModalOpenWallet });
-    }, [isWagmiModalOpenWallet]);
-
     // Heartbeat that checks if the chat server is reachable and has a stable db connection every 60 seconds.
     const { getStatus } = useChatApi();
     useEffect(() => {
