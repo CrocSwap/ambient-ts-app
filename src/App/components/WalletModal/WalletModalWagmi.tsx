@@ -154,12 +154,7 @@ export default function WalletModalWagmi() {
                     !delayForHelpTextElapsed ? (
                         ''
                     ) : (
-                        <div>
-                            Please check your wallet for notifications.
-                            <br />
-                            <br />
-                            You may need to refresh the page and try again.
-                        </div>
+                        <div>Please check your wallet for notifications.</div>
                     )
                 }
             />
@@ -176,7 +171,7 @@ export default function WalletModalWagmi() {
 
     const metamaskErrorPage = (
         <div className={styles.metamask_pending_container}>
-            <CircleLoaderFailed />
+            <CircleLoaderFailed size='48' />
             <p>The connection to MetaMask was rejected. </p>
             <p>Please try again.</p>
             <Button
@@ -191,7 +186,7 @@ export default function WalletModalWagmi() {
 
     const notAvailablePage = (
         <div className={styles.metamask_pending_container}>
-            <CircleLoaderFailed />
+            <CircleLoaderFailed size='48' />
             <p>Ambient is not available in the United States.</p>
             <Button
                 title='Close'

@@ -11,7 +11,7 @@ export default function WaitingConfirmation(props: WaitingConfirmationPropsIF) {
 
     return (
         <div className={styles.wallet_confirm}>
-            {!noAnimation && <Spinner size={30} bg='var(--dark1)' />}
+            {!noAnimation && <Spinner size={150} bg='var(--dark1)' />}
             {!noAnimation && <h2>Waiting For Confirmation</h2>}
             <div>{content}</div>
         </div>

@@ -40,7 +40,7 @@ export default function SubmitTransaction(props: propsIF) {
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenB } = useAppSelector((state) => state.tradeData);
 
     const confirmSendMessage = (
         <WaitingConfirmation
@@ -79,11 +79,11 @@ export default function SubmitTransaction(props: propsIF) {
         <TransactionSubmitted
             type={type}
             hash={newTransactionHash}
-            tokenBSymbol={tokenA.symbol}
-            tokenBAddress={tokenA.address}
-            tokenBDecimals={tokenA.decimals}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
             tokenBImage={uriToHttp(tokenB.logoURI)}
-            chainId={tokenA.chainId}
+            chainId={tokenB.chainId}
             noAnimation
         />
     );

@@ -56,7 +56,7 @@ export function CircleLoaderCompleted(props: CircleLoaderProps) {
     );
 }
 export function CircleLoaderFailed(props: CircleLoaderProps) {
-    const widthAndHeight = props.size ? props.size : '3rem';
+    const widthAndHeight = props.size ? props.size : '30';
 
     return (
         <>
@@ -66,7 +66,10 @@ export function CircleLoaderFailed(props: CircleLoaderProps) {
                     height: widthAndHeight,
                 }}
             >
-                <AiOutlineCloseCircle size={30} color='var(--negative)' />
+                <AiOutlineCloseCircle
+                    size={widthAndHeight}
+                    color='var(--negative)'
+                />
             </motion.span>
         </>
     );
