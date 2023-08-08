@@ -80,7 +80,7 @@ export default function Modal(props: ModalPropsIF) {
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
-                onMouseDown={onClose}
+                onClick={onClose}
                 role='dialog'
                 aria-modal='true'
             >
@@ -95,16 +95,18 @@ export default function Modal(props: ModalPropsIF) {
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    {headerJSX}
-                    <section
-                        className={styles.modal_content}
-                        aria-live='polite'
-                        aria-atomic='true'
-                        aria-relevant='additions text'
-                    >
-                        {children}
-                    </section>
-                    {footerOrNull}
+                    <div onClick={(e) => e.stopPropagation()}>
+                        {headerJSX}
+                        <section
+                            className={styles.modal_content}
+                            aria-live='polite'
+                            aria-atomic='true'
+                            aria-relevant='additions text'
+                        >
+                            {children}
+                        </section>
+                        {footerOrNull}
+                    </div>
                 </motion.div>
             </aside>
         </GlobalModalPortal>
