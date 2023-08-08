@@ -696,10 +696,10 @@ export default function RangeActionModal(props: propsIF) {
                 title={
                     showSettings
                         ? `${
-                              type === 'Remove' ? 'Remove Position' : 'Harvest'
+                              type === 'Remove' ? 'Remove Liquidity' : 'Harvest'
                           } Settings`
                         : type === 'Remove'
-                        ? 'Remove Position'
+                        ? 'Remove Liquidity'
                         : 'Harvest Confirmation'
                 }
                 onBackButton={() => {
