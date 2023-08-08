@@ -295,7 +295,6 @@ function OrderRow(props: propsIF) {
                 isOpen={isDetailsModalOpen}
                 onClose={closeDetailsModal}
             />
-            ,
         </>
     );
 }
