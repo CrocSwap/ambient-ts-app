@@ -327,7 +327,7 @@ export default function RangesMenu(props: propsIF) {
             {isRemoveRangeModalOpen && (
                 <Modal
                     onClose={handleModalClose}
-                    title='Remove Position'
+                    title='Remove Liquidity'
                     noHeader
                 >
                     <RangeActionModal
