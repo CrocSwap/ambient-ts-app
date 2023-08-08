@@ -9,8 +9,6 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
 import styles from '../../Trade/TradeModules/TradeConfirmationSkeleton.module.css';
-import uriToHttp from '../../../utils/functions/uriToHttp';
-import Modal from '../../Global/Modal/Modal';
 
 interface propsIF {
     initiateSwapMethod: () => Promise<void>;

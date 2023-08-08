@@ -592,63 +592,72 @@ function Reposition() {
                     positionHash={position.firstMintTx}
                     resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
-                <RepositionPriceInfo
-                    position={position}
-                    currentPoolPriceDisplay={currentPoolPriceDisplay}
-                    currentPoolPriceTick={currentPoolPriceTick}
-                    rangeWidthPercentage={rangeWidthPercentage}
-                    minPriceDisplay={minPriceDisplay}
-                    maxPriceDisplay={maxPriceDisplay}
-                    currentBaseQtyDisplayTruncated={
-                        currentBaseQtyDisplayTruncated
-                    }
-                    currentQuoteQtyDisplayTruncated={
-                        currentQuoteQtyDisplayTruncated
-                    }
-                    newBaseQtyDisplay={newBaseQtyDisplay}
-                    newQuoteQtyDisplay={newQuoteQtyDisplay}
-                    rangeGasPriceinDollars={rangeGasPriceinDollars}
-                    currentMinPrice={
-                        isDenomBase
-                            ? position?.lowRangeDisplayInBase
-                            : position?.lowRangeDisplayInQuote
-                    }
-                    currentMaxPrice={
-                        isDenomBase
-                            ? position?.highRangeDisplayInBase
-                            : position?.highRangeDisplayInQuote
-                    }
-                />
-                <div className={styles.button_container}>
-                    {bypassConfirmRepo.isEnabled && showConfirmation ? (
-                        <SubmitTransaction
-                            type='Reposition'
-                            newTransactionHash={newRepositionTransactionHash}
-                            txErrorCode={txErrorCode}
-                            sendTransaction={sendRepositionTransaction}
-                            resetConfirmation={resetConfirmation}
-                            transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
-                        />
-                    ) : (
-                        <Button
-                            title={
-                                isRepositionSent
-                                    ? 'Reposition Sent'
-                                    : isPositionInRange
-                                    ? 'Position Currently In Range'
-                                    : bypassConfirmRepo.isEnabled
-                                    ? 'Reposition'
-                                    : 'Confirm'
-                            }
-                            action={
-                                bypassConfirmRepo.isEnabled
-                                    ? sendRepositionTransaction
-                                    : handleModalOpen
-                            }
-                            disabled={isRepositionSent || isPositionInRange}
-                            flat
-                        />
-                    )}
+                <div className={styles.reposition_content}>
+                    <RepositionRangeWidth
+                        rangeWidthPercentage={rangeWidthPercentage}
+                        setRangeWidthPercentage={setRangeWidthPercentage}
+                    />
+                    <RepositionPriceInfo
+                        position={position}
+                        currentPoolPriceDisplay={currentPoolPriceDisplay}
+                        currentPoolPriceTick={currentPoolPriceTick}
+                        rangeWidthPercentage={rangeWidthPercentage}
+                        minPriceDisplay={minPriceDisplay}
+                        maxPriceDisplay={maxPriceDisplay}
+                        currentBaseQtyDisplayTruncated={
+                            currentBaseQtyDisplayTruncated
+                        }
+                        currentQuoteQtyDisplayTruncated={
+                            currentQuoteQtyDisplayTruncated
+                        }
+                        newBaseQtyDisplay={newBaseQtyDisplay}
+                        newQuoteQtyDisplay={newQuoteQtyDisplay}
+                        rangeGasPriceinDollars={rangeGasPriceinDollars}
+                        currentMinPrice={
+                            isDenomBase
+                                ? position?.lowRangeDisplayInBase
+                                : position?.lowRangeDisplayInQuote
+                        }
+                        currentMaxPrice={
+                            isDenomBase
+                                ? position?.highRangeDisplayInBase
+                                : position?.highRangeDisplayInQuote
+                        }
+                    />
+                    <div className={styles.button_container}>
+                        {bypassConfirmRepo.isEnabled && showConfirmation ? (
+                            <SubmitTransaction
+                                type='Reposition'
+                                newTransactionHash={
+                                    newRepositionTransactionHash
+                                }
+                                txErrorCode={txErrorCode}
+                                sendTransaction={sendRepositionTransaction}
+                                resetConfirmation={resetConfirmation}
+                                transactionPendingDisplayString={`Repositioning transaction with ${tokenA.symbol} and ${tokenB.symbol}`}
+                            />
+                        ) : (
+                            <Button
+                                title={
+                                    isRepositionSent
+                                        ? 'Reposition Sent'
+                                        : isPositionInRange
+                                        ? 'Position Currently In Range'
+                                        : bypassConfirmRepo.isEnabled
+                                        ? 'Reposition'
+                                        : 'Confirm'
+                                }
+                                action={
+                                    bypassConfirmRepo.isEnabled
+                                        ? sendRepositionTransaction
+                                        : handleModalOpen
+                                }
+                                disabled={isRepositionSent || isPositionInRange}
+                                flat
+                            />
+                        )}
+                    </div>
+                    {isRepositionSent ? etherscanButton : null}
                 </div>
             </div>
             <ConfirmRepositionModal
