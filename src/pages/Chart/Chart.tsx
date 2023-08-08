@@ -65,6 +65,8 @@ import {
     renderSubchartCrCanvas,
     scaleData,
     setCanvasResolution,
+    standardDeviation,
+    zoomUtils,
 } from './ChartUtils/chartUtils';
 import { Zoom } from './ChartUtils/zoom';
 import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
@@ -250,7 +252,12 @@ export default function Chart(props: propsIF) {
 
     const zoomBase = new Zoom(setCandleDomains, period);
     const unparsedCandleData = useMemo(() => {
-        const data = unparsedData.candles.sort((a, b) => b.time - a.time);
+        const data = unparsedData.candles
+            .sort((a, b) => b.time - a.time)
+            .map((item) => ({
+                ...item,
+                isFakeData: false,
+            }));
         if (poolPriceWithoutDenom && data && data.length > 0) {
             const fakeData = {
                 time: data[0].time + period,
@@ -288,15 +295,19 @@ export default function Chart(props: propsIF) {
                 invPriceCloseDecimalCorrected:
                     data[0].invPriceOpenExclMEVDecimalCorrected,
                 isCrocData: false,
+                isFakeData: true,
             };
 
-            if (data[0].isCrocData) {
+            // added candle for pool price market price match
+            if (!data[0].isFakeData) {
                 data.unshift(fakeData);
+            } else {
+                data[0] = fakeData;
             }
         }
 
         return data;
-    }, [diffHashSigChart(unparsedData.candles)]);
+    }, [diffHashSigChart(unparsedData.candles), poolPriceWithoutDenom]);
 
     const visibleCandleData = useMemo(() => {
         const numberOfCandlesToDisplay = mobileView ? 50 : 20;
@@ -319,11 +330,14 @@ export default function Chart(props: propsIF) {
         return unparsedCandleData;
     }, [diffHashSigScaleData(scaleData), unparsedCandleData]);
 
-    const lastCandleData = unparsedCandleData.reduce(function (prev, current) {
+    const lastCandleData = unparsedCandleData?.reduce(function (prev, current) {
         return prev.time > current.time ? prev : current;
     });
 
-    const firstCandleData = unparsedCandleData.reduce(function (prev, current) {
+    const firstCandleData = unparsedCandleData?.reduce(function (
+        prev,
+        current,
+    ) {
         return prev.time < current.time ? prev : current;
     });
     const [lastCandleDataCenter, setLastCandleDataCenter] = useState(0);
@@ -414,6 +428,7 @@ export default function Chart(props: propsIF) {
         useHandleSwipeBack(d3Container);
     }, [d3Container === null]);
 
+    // calculates time croc icon will be found
     const lastCrDate = useMemo(() => {
         const nowDate = new Date();
 
@@ -435,80 +450,13 @@ export default function Chart(props: propsIF) {
         }
     }, [diffHashSigChart(unparsedCandleData)]);
 
-    useEffect(() => {
-        if (poolPriceWithoutDenom && unparsedCandleData) {
-            const data = unparsedData.candles;
-            const fakeData = {
-                time: data[0].time + period,
-                invMinPriceExclMEVDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                maxPriceExclMEVDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                minPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                invPriceOpenExclMEVDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                priceOpenExclMEVDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invPriceCloseExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                priceCloseExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                period: period,
-                tvlData: {
-                    time: data[0].time,
-                    tvl: data[0].tvlData.tvl,
-                },
-                volumeUSD: 0,
-                averageLiquidityFee: 0,
-                minPriceDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                maxPriceDecimalCorrected: 0,
-                priceOpenDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                priceCloseDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invMinPriceDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                invMaxPriceDecimalCorrected: 0,
-                invPriceOpenDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                invPriceCloseDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                isCrocData: false,
-            };
-
-            if (data[0].isCrocData) {
-                data.unshift(fakeData);
-            }
-        }
-    }, [unparsedCandleData === undefined]);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const standardDeviation = (arr: any, usePopulation = false) => {
-        const mean =
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            arr.reduce((acc: any, val: any) => acc + val, 0) / arr.length;
-        return Math.sqrt(
-            arr
-                .reduce(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (acc: any, val: any) => acc.concat((val - mean) ** 2),
-                    [],
-                )
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                .reduce((acc: any, val: any) => acc + val, 0) /
-                (arr.length - (usePopulation ? 0 : 1)),
-        );
-    };
-    useEffect(() => {
-        setRescale(true);
-    }, [denomInBase]);
-
     const render = useCallback(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nd = d3.select('#d3fc_group').node() as any;
         if (nd) nd.requestRedraw();
     }, []);
 
+    // controls the distance of the mouse to the range lines, if close, activates the dragRange event
     const canUserDragRange = useMemo<boolean>(() => {
         if (
             chartMousemoveEvent &&
@@ -542,8 +490,16 @@ export default function Chart(props: propsIF) {
         }
 
         return false;
-    }, [ranges, chartMousemoveEvent, mainCanvasBoundingClientRect]);
+    }, [
+        ranges,
+        chartMousemoveEvent,
+        mainCanvasBoundingClientRect,
+        location.pathname,
+        tradeData.advancedMode,
+        simpleRangeWidth,
+    ]);
 
+    // controls the distance of the mouse to the limit line, if close, activates the dragLimit event
     const canUserDragLimit = useMemo<boolean>(() => {
         if (
             chartMousemoveEvent &&
@@ -568,7 +524,12 @@ export default function Chart(props: propsIF) {
             );
         }
         return false;
-    }, [limit, chartMousemoveEvent, mainCanvasBoundingClientRect]);
+    }, [
+        limit,
+        chartMousemoveEvent,
+        mainCanvasBoundingClientRect,
+        location.pathname,
+    ]);
 
     useEffect(() => {
         if (isLineDrag) {
@@ -581,7 +542,12 @@ export default function Chart(props: propsIF) {
                 isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
             );
         }
-    }, [canUserDragLimit, canUserDragRange, isOnCandleOrVolumeMouseLocation]);
+    }, [
+        canUserDragLimit,
+        canUserDragRange,
+        isLineDrag,
+        isOnCandleOrVolumeMouseLocation,
+    ]);
 
     useEffect(() => {
         if (isChartZoom && chartZoomEvent !== 'wheel') {
@@ -592,7 +558,7 @@ export default function Chart(props: propsIF) {
                 isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
             );
         }
-    }, [isChartZoom]);
+    }, [chartZoomEvent, isChartZoom, isOnCandleOrVolumeMouseLocation]);
 
     useEffect(() => {
         if (isChartZoom && chartZoomEvent !== 'wheel') {
@@ -603,12 +569,14 @@ export default function Chart(props: propsIF) {
                 isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
             );
         }
-    }, [isChartZoom]);
+    }, [chartZoomEvent, isChartZoom, isOnCandleOrVolumeMouseLocation]);
 
     useEffect(() => {
+        // auto zoom active
         setRescale(true);
-    }, [location.pathname, period]);
+    }, [location.pathname, period, denomInBase]);
 
+    // finds candle closest to the mouse
     const snapForCandle = (point: number, filtered: Array<CandleData>) => {
         if (scaleData) {
             if (point == undefined) return [];
@@ -621,6 +589,7 @@ export default function Chart(props: propsIF) {
         return filtered[0];
     };
 
+    // calculates first fetch candle domain for time and pool change
     useEffect(() => {
         if (scaleData) {
             const xDomain = scaleData?.xScale.domain();
@@ -652,7 +621,7 @@ export default function Chart(props: propsIF) {
                 };
             });
         }
-    }, [diffHashSigScaleData(scaleData, 'x'), lastCandleData]);
+    }, [diffHashSigScaleData(scaleData, 'x'), lastCandleData, period]);
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined && unparsedCandleData !== undefined) {
@@ -786,6 +755,26 @@ export default function Chart(props: propsIF) {
                                     if (domain) {
                                         setYaxisDomain(domain[0], domain[1]);
                                     }
+
+                                    if (
+                                        tradeData.advancedMode &&
+                                        liquidityData
+                                    ) {
+                                        const liqAllBidPrices =
+                                            liquidityData?.liqBidData.map(
+                                                (
+                                                    liqPrices: LiquidityDataLocal,
+                                                ) => liqPrices.liqPrices,
+                                            );
+                                        const liqBidDeviation =
+                                            standardDeviation(liqAllBidPrices);
+
+                                        fillLiqAdvanced(
+                                            liqBidDeviation,
+                                            scaleData,
+                                            liquidityData,
+                                        );
+                                    }
                                 }
 
                                 clickedForLine = true;
@@ -823,22 +812,19 @@ export default function Chart(props: propsIF) {
                             );
                         }
                         if (clickedForLine) {
+                            // fires click event when zoom takes too short
                             if (
                                 zoomTimeout &&
                                 event.sourceEvent.type !== 'wheel' &&
                                 event.sourceEvent.timeStamp - zoomTimeout < 1
                             ) {
-                                const {
-                                    isHoverCandleOrVolumeData,
-                                    _selectedDate,
-                                    nearest,
-                                } = candleOrVolumeDataHoverStatus(
-                                    event.sourceEvent.offsetX,
-                                    event.sourceEvent.offsetY,
-                                );
+                                const { isHoverCandleOrVolumeData, nearest } =
+                                    candleOrVolumeDataHoverStatus(
+                                        event.sourceEvent.offsetX,
+                                        event.sourceEvent.offsetY,
+                                    );
                                 selectedDateEvent(
                                     isHoverCandleOrVolumeData,
-                                    _selectedDate,
                                     nearest,
                                 );
                             }
@@ -871,7 +857,7 @@ export default function Chart(props: propsIF) {
         location,
         diffHashSigScaleData(scaleData),
         showLatest,
-        liquidityData?.liqBidData,
+        liquidityData,
         simpleRangeWidth,
         ranges,
         limit,
@@ -880,6 +866,9 @@ export default function Chart(props: propsIF) {
         maxTickForLimit,
         canUserDragRange,
         canUserDragLimit,
+        unparsedCandleData,
+        period,
+        tradeData.advancedMode,
     ]);
 
     useEffect(() => {
@@ -912,6 +901,7 @@ export default function Chart(props: propsIF) {
         }
     };
 
+    // when the auto button is clicked, the chart is auto scale
     useEffect(() => {
         if (scaleData !== undefined && liquidityData !== undefined) {
             if (rescale) {
@@ -924,8 +914,10 @@ export default function Chart(props: propsIF) {
                     const liqAllBidPrices = liquidityData?.liqBidData.map(
                         (liqData: LiquidityDataLocal) => liqData.liqPrices,
                     );
+                    // enlarges data to the end of the domain
                     const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
+                    // liq for advance mod is drawn forever
                     fillLiqAdvanced(liqBidDeviation, scaleData, liquidityData);
                 }
             }
@@ -934,24 +926,24 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         setMarketLineValue();
-    }, [
-        unparsedCandleData[0]?.invPriceCloseExclMEVDecimalCorrected,
-        unparsedCandleData[0]?.priceCloseExclMEVDecimalCorrected,
-    ]);
+    }, [poolPriceWithoutDenom, denomInBase]);
 
     const setMarketLineValue = () => {
-        const lastCandlePrice = denomInBase
-            ? lastCandleData?.invPriceCloseExclMEVDecimalCorrected
-            : lastCandleData?.priceCloseExclMEVDecimalCorrected;
+        if (poolPriceWithoutDenom !== undefined) {
+            const lastCandlePrice = denomInBase
+                ? 1 / poolPriceWithoutDenom
+                : poolPriceWithoutDenom;
 
-        setMarket(() => {
-            return [
-                {
-                    name: 'Current Market Price',
-                    value: lastCandlePrice !== undefined ? lastCandlePrice : 0,
-                },
-            ];
-        });
+            setMarket(() => {
+                return [
+                    {
+                        name: 'Current Market Price',
+                        value:
+                            lastCandlePrice !== undefined ? lastCandlePrice : 0,
+                    },
+                ];
+            });
+        }
     };
     // set default limit tick
     useEffect(() => {
@@ -959,6 +951,7 @@ export default function Chart(props: propsIF) {
             dispatch(setLimitTick(undefined));
     }, []);
 
+    // calculate range value for denom
     useEffect(() => {
         if (!tradeData.advancedMode && simpleRangeWidth === 100) {
             const lowTick = currentPoolPriceTick - simpleRangeWidth * 100;
@@ -1015,11 +1008,6 @@ export default function Chart(props: propsIF) {
         }
     };
 
-    // Targets
-    useEffect(() => {
-        setMarketLineValue();
-    }, [location, denomInBase]);
-
     useEffect(() => {
         if (
             (location.pathname.includes('pool') ||
@@ -1031,12 +1019,13 @@ export default function Chart(props: propsIF) {
             }
         }
     }, [
-        location,
+        location.pathname,
         denomInBase,
         minPrice,
         maxPrice,
         rescaleRangeBoundariesWithSlider,
         tradeData.advancedMode,
+        chartTriggeredBy,
     ]);
 
     useEffect(() => {
@@ -1059,9 +1048,10 @@ export default function Chart(props: propsIF) {
         tradeData.advancedMode,
         ranges,
         liquidityData?.liqBidData,
-        // diffHashSigScaleData(scaleData),
+        diffHashSigScaleData(scaleData),
     ]);
 
+    // performs reverse token function when limit line position (sell /buy) changes
     function reverseTokenForChart(
         limitPreviousData: number,
         newLimitValue: number,
@@ -1093,6 +1083,7 @@ export default function Chart(props: propsIF) {
         return { noGoZoneMin: noGoZoneMin, noGoZoneMax: noGoZoneMax };
     };
 
+    // finds border ticks of nogozone
     const setLimitTickNearNoGoZone = (low: number, high: number) => {
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(parseFloat(low.toString()))
@@ -1140,6 +1131,7 @@ export default function Chart(props: propsIF) {
         });
     };
 
+    // If the limit is set to no gozone, it will jump to the nearest tick
     function setLimitForNoGoZone(newLimitValue: number) {
         const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
@@ -1155,7 +1147,7 @@ export default function Chart(props: propsIF) {
         return newLimitValue;
     }
 
-    // Drag Type
+    // create drag events
     useEffect(() => {
         if (scaleData) {
             let newLimitValue: number;
@@ -1170,6 +1162,8 @@ export default function Chart(props: propsIF) {
             let draggingLine: string | undefined = undefined;
 
             let cancelDrag = false;
+
+            // clicking esc while dragging the line sets the line to the last value
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const cancelDragEvent = (event: any) => {
                 if (event.key === 'Escape') {
@@ -1715,6 +1709,17 @@ export default function Chart(props: propsIF) {
         minTickForLimit,
         maxTickForLimit,
         simpleRangeWidth,
+        liquidityData?.topBoundary,
+        liquidityData?.lowBoundary,
+        scaleData,
+        isDenomBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        currentPoolPriceTick,
+        denomInBase,
+        isTokenABase,
+        chainData.gridSize,
+        rescale,
     ]);
 
     useEffect(() => {
@@ -1730,6 +1735,7 @@ export default function Chart(props: propsIF) {
         }
     }, [reset]);
 
+    // create x axis
     useEffect(() => {
         if (mainZoom && d3CanvasMain.current) {
             d3.select<Element, unknown>(d3CanvasMain.current).call(mainZoom);
@@ -1764,7 +1770,7 @@ export default function Chart(props: propsIF) {
         // d3.select('#limit-line-canvas')?.node(),
     ]);
 
-    // Horizontal Lines
+    // create market line and liquidity tooltip
     useEffect(() => {
         if (scaleData !== undefined) {
             const marketLine = d3fc
@@ -1800,6 +1806,7 @@ export default function Chart(props: propsIF) {
         }
     }, [scaleData, liquidityDepthScale, liquidityScale, isUserConnected]);
 
+    // when click reset chart should be auto scale
     useEffect(() => {
         if (
             scaleData !== undefined &&
@@ -1826,12 +1833,7 @@ export default function Chart(props: propsIF) {
             setReset(false);
             setShowLatest(false);
         }
-    }, [
-        // diffHashSigScaleData(scaleData),
-        reset,
-        minTickForLimit,
-        maxTickForLimit,
-    ]);
+    }, [reset, minTickForLimit, maxTickForLimit]);
 
     useEffect(() => {
         if (
@@ -2230,8 +2232,7 @@ export default function Chart(props: propsIF) {
                     crDataIndicator.context(ctx);
                 });
         }
-
-        // renderCanvasArray([d3CanvasCrIndicator]);
+        renderCanvasArray([d3CanvasCrIndicator]);
     }, [crDataIndicator, isCrDataIndActive, xAxisActiveTooltip]);
 
     useEffect(() => {
@@ -2255,6 +2256,7 @@ export default function Chart(props: propsIF) {
                     marketLine.context(ctx);
                 });
         }
+        renderCanvasArray([d3CanvasMarketLine]);
     }, [market, marketLine]);
 
     function noGoZone(poolPrice: number) {
@@ -2454,6 +2456,7 @@ export default function Chart(props: propsIF) {
         lastCandleData,
         mainCanvasBoundingClientRect,
         selectedDate,
+        bandwidth,
     ]);
 
     // mouseleave
@@ -2476,14 +2479,10 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const onClickCanvas = (event: PointerEvent) => {
-                const { isHoverCandleOrVolumeData, _selectedDate, nearest } =
+                const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(event.offsetX, event.offsetY);
 
-                selectedDateEvent(
-                    isHoverCandleOrVolumeData,
-                    _selectedDate,
-                    nearest,
-                );
+                selectedDateEvent(isHoverCandleOrVolumeData, nearest);
 
                 setCrosshairActive('none');
 
@@ -2628,7 +2627,6 @@ export default function Chart(props: propsIF) {
         liqMode,
         location.pathname,
         isChartZoom,
-        // diffHashSigScaleData(scaleData),
         limit,
         ranges,
         liquidityScale,
@@ -2636,7 +2634,6 @@ export default function Chart(props: propsIF) {
         isLineDrag,
         unparsedCandleData?.length,
         tradeData.advancedMode,
-        !tradeData.advancedMode && simpleRangeWidth === 100,
         lastCrDate,
         showVolume,
         xAxisActiveTooltip,
@@ -2644,6 +2641,7 @@ export default function Chart(props: propsIF) {
         isCrDataIndActive,
         bandwidth,
         diffHashSigChart(unparsedCandleData),
+        liquidityData,
     ]);
 
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
@@ -2800,7 +2798,8 @@ export default function Chart(props: propsIF) {
                 ? limitTop > yValue && limitBot < yValue
                 : limitTop < yValue && limitBot > yValue;
         if (
-            nearest.time === lastCandleData?.time &&
+            nearest &&
+            nearest?.time === lastCandleData?.time &&
             dateControl &&
             checkYLocation &&
             scaleData
@@ -2839,23 +2838,26 @@ export default function Chart(props: propsIF) {
             setIsShowLastCandleTooltip(false);
         }
 
+        /**
+         * isHoverCandleOrVolumeData : mouse over candle or volume data
+         * nearest : data information closest to the mouse
+         */
         return {
             isHoverCandleOrVolumeData:
                 nearest &&
                 dateControl &&
                 nearest.time !== lastCandleData?.time &&
                 (checkYLocation || isSelectedVolume),
-            _selectedDate: nearest?.time * 1000,
             nearest: nearest,
         };
     };
 
     const selectedDateEvent = (
         isHoverCandleOrVolumeData: boolean,
-        _selectedDate: number,
         nearest: CandleData | undefined,
     ) => {
-        if (isHoverCandleOrVolumeData) {
+        if (isHoverCandleOrVolumeData && nearest) {
+            const _selectedDate = nearest?.time * 1000;
             if (selectedDate === undefined || selectedDate !== _selectedDate) {
                 props.setCurrentData(nearest);
 
@@ -2951,14 +2953,7 @@ export default function Chart(props: propsIF) {
                 relocateTooltip(xAxisTooltip, lastCrDate);
             }
         }
-    }, [
-        xAxisActiveTooltip,
-        xAxisTooltip,
-        isCrDataIndActive,
-        lastCrDate,
-        reset,
-        latest,
-    ]);
+    }, [xAxisActiveTooltip, xAxisTooltip, isCrDataIndActive, lastCrDate]);
 
     useEffect(() => {
         if (xAxisTooltip && scaleData && xAxisActiveTooltip === 'egg') {
@@ -2973,7 +2968,7 @@ export default function Chart(props: propsIF) {
                 relocateTooltip(xAxisTooltip, timeOfEndCandle);
             }
         }
-    }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle, reset, latest]);
+    }, [xAxisTooltip, xAxisActiveTooltip, timeOfEndCandle]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const relocateTooltip = (tooltip: any, data: number) => {
@@ -3004,7 +2999,10 @@ export default function Chart(props: propsIF) {
                 scaleData?.volumeScale.domain(domain);
             }
         }
-    }, [diffHashSigScaleData(scaleData, 'x')]);
+    }, [
+        diffHashSigScaleData(scaleData, 'x'),
+        diffHashSigChart(unparsedCandleData),
+    ]);
 
     // Candle transactions
     useEffect(() => {
@@ -3019,7 +3017,7 @@ export default function Chart(props: propsIF) {
         } else {
             props.changeState(false, undefined);
         }
-    }, [selectedDate]);
+    }, [selectedDate, unparsedCandleData]);
 
     const onBlurRange = (
         range: lineValue[],

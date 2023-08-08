@@ -53,6 +53,13 @@ if (!doReload) {
             new InjectedConnector({
                 chains,
                 options: {
+                    name: 'Rabby',
+                    shimDisconnect: true,
+                },
+            }),
+            new InjectedConnector({
+                chains,
+                options: {
                     name: 'Brave',
                     shimDisconnect: true,
                 },
@@ -60,7 +67,7 @@ if (!doReload) {
             new InjectedConnector({
                 chains,
                 options: {
-                    name: 'Injected Wallet',
+                    name: 'Other (Injected) Wallet',
                     shimDisconnect: true,
                 },
             }),

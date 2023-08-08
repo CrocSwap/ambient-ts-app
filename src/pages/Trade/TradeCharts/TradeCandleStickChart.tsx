@@ -189,12 +189,6 @@ function TradeCandleStickChart(props: propsIF) {
         }
     };
 
-    useEffect(() => {
-        if (unparsedCandleData === undefined) {
-            clearLiquidityData();
-        }
-    }, [unparsedCandleData === undefined]);
-
     // Parse liquidtiy data
     const liquidityData: liquidityChartData | undefined = useMemo(() => {
         if (
@@ -710,6 +704,9 @@ function TradeCandleStickChart(props: propsIF) {
                             isShowLatestCandle: false,
                         };
                     });
+                } else {
+                    // resets the graph if the calculated domain is less than the value with min time
+                    resetChart();
                 }
             }
             setPrevFirsCandle(() => firtCandleTimeState);
@@ -717,32 +714,35 @@ function TradeCandleStickChart(props: propsIF) {
         }
     }, [period, diffHashSig(unparsedCandleData)]);
 
+    const resetChart = () => {
+        const nowDate = Date.now();
+
+        const snapDiff = nowDate % (period * 1000);
+
+        const snappedTime =
+            nowDate -
+            (snapDiff > period * 1000 - snapDiff
+                ? -1 * (period * 1000 - snapDiff)
+                : snapDiff);
+
+        const minDomain = snappedTime - 100 * 1000 * period;
+        const maxDomain = snappedTime + 39 * 1000 * period;
+
+        scaleData?.xScale.domain([minDomain, maxDomain]);
+
+        setCandleScale((prev: candleScale) => {
+            return {
+                isFetchForTimeframe: !prev.isFetchForTimeframe,
+                lastCandleDate: undefined,
+                nCandles: 200,
+                isShowLatestCandle: true,
+            };
+        });
+    };
     // resetting Chart
     useEffect(() => {
         if (isCandleDataNull && scaleData) {
-            const nowDate = Date.now();
-
-            const snapDiff = nowDate % (period * 1000);
-
-            const snappedTime =
-                nowDate -
-                (snapDiff > period * 1000 - snapDiff
-                    ? -1 * (period * 1000 - snapDiff)
-                    : snapDiff);
-
-            const minDomain = snappedTime - 100 * 1000 * period;
-            const maxDomain = snappedTime + 39 * 1000 * period;
-
-            scaleData?.xScale.domain([minDomain, maxDomain]);
-
-            setCandleScale((prev: candleScale) => {
-                return {
-                    isFetchForTimeframe: !prev.isFetchForTimeframe,
-                    lastCandleDate: undefined,
-                    nCandles: 200,
-                    isShowLatestCandle: true,
-                };
-            });
+            resetChart();
         }
     }, [isCandleDataNull]);
 

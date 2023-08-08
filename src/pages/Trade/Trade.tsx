@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
+import { useParams, Outlet, NavLink } from 'react-router-dom';
 import { Resizable } from 're-resizable';
 import {
     useEffect,
@@ -9,14 +10,6 @@ import {
     memo,
     useRef,
 } from 'react';
-import {
-    useParams,
-    Outlet,
-    Link,
-    NavLink,
-    useNavigate,
-} from 'react-router-dom';
-import { VscClose } from 'react-icons/vsc';
 import { BsCaretDownFill } from 'react-icons/bs';
 
 // START: Import JSX Components
@@ -38,11 +31,8 @@ import {
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
-import { TradeTokenContext } from '../../contexts/TradeTokenContext';
-import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
-import uriToHttp from '../../utils/functions/uriToHttp';
+import { PoolNotInitalized } from '../../components/PoolNotInitialized/PoolNotInitialized';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
@@ -59,6 +49,7 @@ function Trade() {
         chartSettings,
         chartHeights,
         setChartHeight,
+        canvasRef,
     } = useContext(ChartContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
@@ -68,11 +59,6 @@ function Trade() {
         setOutsideControl,
         setSelectedOutsideTab,
     } = useContext(TradeTableContext);
-
-    const {
-        baseToken: { address: baseTokenAddress },
-        quoteToken: { address: quoteTokenAddress },
-    } = useContext(TradeTokenContext);
 
     const routes = [
         {
@@ -89,7 +75,6 @@ function Trade() {
         },
     ];
 
-    const navigate = useNavigate();
     const provider = useProvider();
     const { params } = useParams();
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
@@ -100,19 +85,6 @@ function Trade() {
 
     const { tradeData } = useAppSelector((state) => state);
     const { isDenomBase, limitTick } = tradeData;
-    const baseTokenLogo = isDenomBase
-        ? tradeData.baseToken.logoURI
-        : tradeData.quoteToken.logoURI;
-    const quoteTokenLogo = isDenomBase
-        ? tradeData.quoteToken.logoURI
-        : tradeData.baseToken.logoURI;
-
-    const baseTokenSymbol = isDenomBase
-        ? tradeData.baseToken.symbol
-        : tradeData.quoteToken.symbol;
-    const quoteTokenSymbol = isDenomBase
-        ? tradeData.quoteToken.symbol
-        : tradeData.baseToken.symbol;
 
     const tradeTableRef = useRef<HTMLDivElement>(null);
 
@@ -260,55 +232,6 @@ function Trade() {
         tradeData.quoteToken.name,
     ]);
 
-    const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
-
-    const showPoolNotInitializedContent = isPoolInitialized === false;
-
-    const poolNotInitializedContent = showPoolNotInitializedContent ? (
-        <div className={styles.pool_not_initialialized_container}>
-            <div className={styles.pool_init_bg}>
-                <div className={styles.pool_not_initialialized_content}>
-                    <div
-                        className={styles.close_init}
-                        onClick={() => navigate(-1)}
-                    >
-                        <VscClose size={28} />
-                    </div>
-                    <div className={styles.pool_not_init_inner}>
-                        <h2>This pool has not been initialized.</h2>
-                        <h3>Do you want to initialize it?</h3>
-                        <Link
-                            to={linkGenInitPool.getFullURL({
-                                chain: chainId,
-                                tokenA: baseTokenAddress,
-                                tokenB: quoteTokenAddress,
-                            })}
-                            className={styles.initialize_link}
-                        >
-                            Initialize Pool
-                            <TokenIcon
-                                src={uriToHttp(baseTokenLogo)}
-                                alt={baseTokenSymbol}
-                                size='m'
-                            />
-                            <TokenIcon
-                                src={uriToHttp(quoteTokenLogo)}
-                                alt={quoteTokenSymbol}
-                                size='m'
-                            />
-                        </Link>
-                        <button
-                            className={styles.no_thanks}
-                            onClick={() => navigate(-1)}
-                        >
-                            No, take me back.
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    ) : null;
-
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const tradeChartsProps = {
@@ -343,7 +266,17 @@ function Trade() {
                 padding: '0 8px',
             }}
         >
-            {poolNotInitializedContent}
+            {!isPoolInitialized && (
+                <PoolNotInitalized
+                    chainId={chainId}
+                    tokenA={
+                        isDenomBase ? tradeData.baseToken : tradeData.quoteToken
+                    }
+                    tokenB={
+                        isDenomBase ? tradeData.quoteToken : tradeData.baseToken
+                    }
+                />
+            )}
             {mobileTradeDropdown}
             {activeMobileComponent === 'chart' && (
                 <div
@@ -380,10 +313,21 @@ function Trade() {
 
     return (
         <section className={`${styles.main_layout}`}>
-            {poolNotInitializedContent}
+            {isPoolInitialized === false && (
+                <PoolNotInitalized
+                    chainId={chainId}
+                    tokenA={
+                        isDenomBase ? tradeData.baseToken : tradeData.quoteToken
+                    }
+                    tokenB={
+                        isDenomBase ? tradeData.quoteToken : tradeData.baseToken
+                    }
+                />
+            )}
             <div
                 className={`${styles.middle_col}
                 ${tradeTableState === 'Expanded' ? styles.flex_column : ''}`}
+                ref={canvasRef}
             >
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}

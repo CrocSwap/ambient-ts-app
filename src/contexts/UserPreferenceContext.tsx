@@ -73,11 +73,15 @@ export const UserPreferenceContextProvider = (props: {
 
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
         () =>
-            getMoneynessRank(baseTokenAddress.toLowerCase() + '_' + chainId) -
-                getMoneynessRank(
-                    quoteTokenAddress.toLowerCase() + '_' + chainId,
-                ) >=
-            0,
+            baseTokenAddress && quoteTokenAddress
+                ? getMoneynessRank(
+                      baseTokenAddress.toLowerCase() + '_' + chainId,
+                  ) -
+                      getMoneynessRank(
+                          quoteTokenAddress.toLowerCase() + '_' + chainId,
+                      ) >=
+                  0
+                : false,
         [baseTokenAddress, quoteTokenAddress, chainId],
     );
     function updateDenomIsInBase() {

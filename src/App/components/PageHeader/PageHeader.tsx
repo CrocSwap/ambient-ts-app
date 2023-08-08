@@ -6,7 +6,7 @@ import NetworkSelector from './NetworkSelector/NetworkSelector';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/ambient_logo.png';
-import logoText from '../../../assets/images/logos/logo_text.png';
+import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import {
     useAppDispatch,
@@ -383,12 +383,14 @@ const PageHeader = function () {
             }`}
         >
             <Link to='/' className={styles.logo_container} aria-label='Home'>
-                <img src={logo} alt='ambient' className={styles.logo} />
-                {desktopScreen && (
+                {desktopScreen ? (
+                    <img src={mainLogo} alt='' />
+                ) : (
                     <img
-                        src={logoText}
+                        src={logo}
                         alt='ambient'
-                        className={styles.logo_text}
+                        className={styles.logo}
+                        style={{ maxWidth: '70%', maxHeight: '70%' }}
                     />
                 )}
             </Link>
@@ -413,7 +415,7 @@ const PageHeader = function () {
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
                                     <div className={styles.branch}>
-                                        {BRANCH_NAME}{' '}
+                                        {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
                                     </div>
                                 ) : null}

@@ -20,7 +20,6 @@ import { CachedDataContext } from './CachedDataContext';
 import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
-import { PoolContext } from './PoolContext';
 
 interface CandleContextIF {
     candleData: CandlesByPoolAndDuration | undefined;
@@ -52,7 +51,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const { chartSettings, isEnabled: isChartEnabled } =
         useContext(ChartContext);
     const { chainData, crocEnv } = useContext(CrocEnvContext);
-    const { pool: pool } = useContext(PoolContext);
     const {
         baseToken: {
             address: baseTokenAddress,
@@ -123,7 +121,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         setCandleData(undefined);
-    }, [pool]);
+    }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
         isChartEnabled && fetchCandles();
@@ -132,7 +130,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         mainnetBaseTokenAddress,
         mainnetQuoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleTimeLocal,
     ]);
 
     useEffect(() => {
@@ -147,7 +144,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         mainnetBaseTokenAddress,
         mainnetQuoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleTimeLocal,
         candleScale.nCandles,
         candleScale.isShowLatestCandle,
     ]);
@@ -169,7 +165,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 ? Date.now() / 1000
                 : candleScale.lastCandleDate || 0;
             const nCandles =
-                candleScale?.nCandles > 3000 ? 3000 : candleScale?.nCandles;
+                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);

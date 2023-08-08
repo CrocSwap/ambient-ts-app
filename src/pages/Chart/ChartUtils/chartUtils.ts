@@ -2,6 +2,7 @@
 import { DetailedHTMLProps, HTMLAttributes, MutableRefObject } from 'react';
 import * as d3 from 'd3';
 import { LiquidityDataLocal } from '../../Trade/TradeCharts/TradeCharts';
+import { CandleData } from '../../../App/functions/fetchCandleSeries';
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -23,6 +24,9 @@ declare global {
     }
 }
 
+export interface CandleDataChart extends CandleData {
+    isFakeData: boolean;
+}
 export type liquidityChartData = {
     liqAskData: LiquidityDataLocal[];
     liqBidData: LiquidityDataLocal[];
