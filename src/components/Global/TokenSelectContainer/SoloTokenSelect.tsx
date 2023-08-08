@@ -23,6 +23,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { handleWETH } from '../../../utils/data/handleWETH';
 import { ZERO_ADDRESS } from '../../../constants';
+import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
 
 interface propsIF {
     modalCloseCustom: () => void;
@@ -255,6 +256,8 @@ export const SoloTokenSelect = (props: propsIF) => {
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
+    const [showWrappedNative, setShowWrappedNative] = useState<boolean>(false);
+
     return (
         <section className={styles.container}>
             <div className={styles.input_control_container}>
@@ -281,8 +284,13 @@ export const SoloTokenSelect = (props: propsIF) => {
                     </button>
                 )}
             </div>
-            {handleWETH.check(validatedInput) && (
-                <p className={styles.weth_text}>{handleWETH.message}</p>
+            {handleWETH.check(validatedInput) && !showWrappedNative && (
+                <div className={styles.weth_warning}>
+                    <p className={styles.weth_text}>{handleWETH.message}</p>
+                    <button onClick={() => setShowWrappedNative(true)}>
+                        👍🏻
+                    </button>
+                </div>
             )}
             {handleWETH.check(validatedInput) &&
                 [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
@@ -299,6 +307,26 @@ export const SoloTokenSelect = (props: propsIF) => {
                 <div className={styles.scrollable_container}>
                     {' '}
                     {outputTokens
+                        .filter((token: TokenIF) => {
+                            console.log('hi!!');
+                            if (showWrappedNative) return true;
+                            const tknAddr = token.address.toLowerCase();
+                            const wnAddr: string | undefined =
+                                wrappedNatives.get(chainId);
+                            // return `false` when:
+                            // 1. wnAddr is defined (returned a value), AND
+                            // 2. wnAddr (lower case) matches tknAddr (lower case), AND
+                            // 3. `showWrappedNative` === `false`
+                            if (wnAddr && wnAddr.toLowerCase() === tknAddr) {
+                                return false;
+                            } else {
+                                wnAddr &&
+                                    console.log('this token is ' + token.name);
+                                wnAddr && console.log(wnAddr.toLowerCase());
+                                wnAddr && console.log(tknAddr);
+                                return true;
+                            }
+                        })
                         .slice(0, MAX_TOKEN_COUNT)
                         .map((token: TokenIF) => (
                             <TokenSelect
