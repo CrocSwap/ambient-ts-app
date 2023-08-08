@@ -30,7 +30,7 @@ export function createRectLabel(
         );
         context.fillText(subString.toString(), x + 1, y + textHeight / 3);
         context.fillText(
-            text,
+            text.split('.')[0],
             x +
                 3 +
                 context.measureText('0.0').width / 2 +

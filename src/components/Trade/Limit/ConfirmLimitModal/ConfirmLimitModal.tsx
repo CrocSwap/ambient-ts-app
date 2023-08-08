@@ -17,6 +17,8 @@ interface propsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -31,6 +33,8 @@ export default function ConfirmLimitModal(props: propsIF) {
         endDisplayPrice,
         tokenAInputQty,
         tokenBInputQty,
+        isOpen = false,
+        onClose = () => null,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -115,6 +119,8 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     return (
         <TradeConfirmationSkeleton
+            isOpen={isOpen}
+            onClose={onClose}
             type='Limit'
             initiate={initiateLimitOrderMethod}
             tokenA={{ token: tokenA, quantity: tokenAInputQty }}

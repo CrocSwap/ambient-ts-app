@@ -27,6 +27,8 @@ interface propsIF {
     newQuoteQtyDisplay: string;
     isTokenABase: boolean;
     isPositionInRange: boolean;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function ConfirmRepositionModal(props: propsIF) {
@@ -47,6 +49,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
         newQuoteQtyDisplay,
         isTokenABase,
         isPositionInRange,
+        isOpen,
+        onClose,
     } = props;
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
@@ -173,6 +177,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
             initiate={onSend}
             resetConfirmation={resetConfirmation}
             poolTokenDisplay={poolTokenDisplay}
+            isOpen={isOpen}
+            onClose={onClose}
         />
     );
 }

@@ -6,7 +6,6 @@ import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Global/Button/Button';
-import Modal from '../../../components/Global/Modal/Modal';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import ConfirmSwapModal from '../../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
@@ -350,8 +349,8 @@ function Swap(props: propsIF) {
     };
 
     const handleModalClose = () => {
-        closeModal();
         resetConfirmation();
+        closeModal();
     };
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
@@ -498,36 +497,28 @@ function Swap(props: propsIF) {
                 />
             }
             modal={
-                isModalOpen ? (
-                    <Modal
-                        onClose={handleModalClose}
-                        title='Swap Confirmation'
-                        centeredTitle
-                    >
-                        <ConfirmSwapModal
-                            tokenPair={{
-                                dataTokenA: tokenA,
-                                dataTokenB: tokenB,
-                            }}
-                            isDenomBase={isDenomBase}
-                            baseTokenSymbol={baseToken.symbol}
-                            quoteTokenSymbol={quoteToken.symbol}
-                            initiateSwapMethod={initiateSwap}
-                            newSwapTransactionHash={newSwapTransactionHash}
-                            txErrorCode={txErrorCode}
-                            showConfirmation={showConfirmation}
-                            resetConfirmation={resetConfirmation}
-                            slippageTolerancePercentage={
-                                slippageTolerancePercentage
-                            }
-                            effectivePrice={effectivePrice}
-                            isSellTokenBase={isSellTokenBase}
-                            sellQtyString={sellQtyString}
-                            buyQtyString={buyQtyString}
-                            isTokenAPrimary={isTokenAPrimary}
-                        />
-                    </Modal>
-                ) : undefined
+                <ConfirmSwapModal
+                    onClose={handleModalClose}
+                    isOpen={isModalOpen}
+                    tokenPair={{
+                        dataTokenA: tokenA,
+                        dataTokenB: tokenB,
+                    }}
+                    isDenomBase={isDenomBase}
+                    baseTokenSymbol={baseToken.symbol}
+                    quoteTokenSymbol={quoteToken.symbol}
+                    initiateSwapMethod={initiateSwap}
+                    newSwapTransactionHash={newSwapTransactionHash}
+                    txErrorCode={txErrorCode}
+                    showConfirmation={showConfirmation}
+                    resetConfirmation={resetConfirmation}
+                    slippageTolerancePercentage={slippageTolerancePercentage}
+                    effectivePrice={effectivePrice}
+                    isSellTokenBase={isSellTokenBase}
+                    sellQtyString={sellQtyString}
+                    buyQtyString={buyQtyString}
+                    isTokenAPrimary={isTokenAPrimary}
+                />
             }
             button={
                 <Button

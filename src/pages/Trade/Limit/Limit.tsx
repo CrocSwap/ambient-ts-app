@@ -74,7 +74,7 @@ export default function Limit() {
     );
 
     const dispatch = useAppDispatch();
-    const [isModalOpen, openModal, closeModal] = useModal();
+    const [isOpen, openModal, closeModal] = useModal();
     const {
         baseToken,
         quoteToken,
@@ -551,8 +551,8 @@ export default function Limit() {
     };
 
     const handleModalClose = (): void => {
-        closeModal();
         resetConfirmation();
+        closeModal();
     };
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
@@ -672,29 +672,21 @@ export default function Limit() {
                 />
             }
             modal={
-                isModalOpen ? (
-                    <Modal
-                        onClose={handleModalClose}
-                        title='Limit Confirmation'
-                        centeredTitle
-                    >
-                        <ConfirmLimitModal
-                            initiateLimitOrderMethod={sendLimitOrder}
-                            tokenAInputQty={tokenAInputQty}
-                            tokenBInputQty={tokenBInputQty}
-                            insideTickDisplayPrice={endDisplayPrice}
-                            newLimitOrderTransactionHash={
-                                newLimitOrderTransactionHash
-                            }
-                            txErrorCode={txErrorCode}
-                            showConfirmation={showConfirmation}
-                            resetConfirmation={resetConfirmation}
-                            startDisplayPrice={startDisplayPrice}
-                            middleDisplayPrice={middleDisplayPrice}
-                            endDisplayPrice={endDisplayPrice}
-                        />
-                    </Modal>
-                ) : undefined
+                <ConfirmLimitModal
+                    onClose={handleModalClose}
+                    isOpen={isOpen}
+                    initiateLimitOrderMethod={sendLimitOrder}
+                    tokenAInputQty={tokenAInputQty}
+                    tokenBInputQty={tokenBInputQty}
+                    insideTickDisplayPrice={endDisplayPrice}
+                    newLimitOrderTransactionHash={newLimitOrderTransactionHash}
+                    txErrorCode={txErrorCode}
+                    showConfirmation={showConfirmation}
+                    resetConfirmation={resetConfirmation}
+                    startDisplayPrice={startDisplayPrice}
+                    middleDisplayPrice={middleDisplayPrice}
+                    endDisplayPrice={endDisplayPrice}
+                />
             }
             button={
                 <Button

@@ -23,16 +23,20 @@ import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHea
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { CrocPositionView } from '@crocswap-libs/sdk';
-import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
+import ModalHeader from '../Global/ModalHeader/ModalHeader';
+import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
+import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-    type: 'Remove' | 'Claim';
+    type: LimitActionType;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function LimitActionModal(props: propsIF) {
-    const { limitOrder, type } = props;
+    const { limitOrder, type, isOpen, onClose } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -72,10 +76,10 @@ export default function LimitActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation) {
+        if (!showConfirmation || !isOpen) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txErrorCode, isOpen]);
 
     const updateLiq = async () => {
         try {
@@ -332,13 +336,10 @@ export default function LimitActionModal(props: propsIF) {
             onBackClick={resetConfirmation}
         />
     ) : (
-        <>
-            <SimpleModalHeader
-                title={
-                    type === 'Remove'
-                        ? 'Remove Limit Order'
-                        : 'Claim Limit Order '
-                }
+        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+            <ModalHeader
+                title={showConfirmation ? '' : `${type} Limit Order`}
+                onClose={onClose}
             />
             <div style={{ padding: '1rem ' }}>
                 <LimitActionTokenHeader
@@ -378,6 +379,6 @@ export default function LimitActionModal(props: propsIF) {
                     )}
                 </div>
             </div>
-        </>
+        </Modal>
     );
 }

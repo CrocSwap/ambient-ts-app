@@ -180,7 +180,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     {warnings && warnings}
                 </div>
             </ContentContainer>
-            {modal && modal}
+            {modal}
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}

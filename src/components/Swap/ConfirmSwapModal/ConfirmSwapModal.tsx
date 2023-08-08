@@ -9,6 +9,8 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
 import styles from '../../Trade/TradeModules/TradeConfirmationSkeleton.module.css';
+import uriToHttp from '../../../utils/functions/uriToHttp';
+import Modal from '../../Global/Modal/Modal';
 
 interface propsIF {
     initiateSwapMethod: () => Promise<void>;
@@ -25,6 +27,8 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
+    isOpen: boolean;
+    onClose?: () => void;
     isTokenAPrimary: boolean;
 }
 
@@ -44,6 +48,8 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
+        isOpen = false,
+        onClose = () => null,
         isTokenAPrimary,
     } = props;
 
@@ -209,6 +215,8 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     return (
         <TradeConfirmationSkeleton
+            isOpen={isOpen}
+            onClose={onClose}
             type='Swap'
             tokenA={{ token: sellTokenData, quantity: sellQtyString }}
             tokenB={{ token: buyTokenData, quantity: buyQtyString }}

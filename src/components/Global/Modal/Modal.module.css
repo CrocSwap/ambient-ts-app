@@ -70,7 +70,7 @@
 
 .modal_content {
     /* padding: 20px; */
-    background: var(--dark2);
+    background: var(--dark1);
     border-radius: var(--border-radius);
 
     /* min-height: 250px; */
@@ -86,6 +86,7 @@
 
 @media only screen and (min-width: 500px) {
     .modal_body {
+        margin: auto;
         min-width: 400px;
     }
 }

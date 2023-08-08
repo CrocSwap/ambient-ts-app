@@ -13,7 +13,7 @@ import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { ExchangeBalanceModal } from '../ExchangeBalanceModal/ExchangeBalanceModal';
+import { ExchangeBalanceDropdown } from '../ExchangeBalanceDropdown/ExchangeBalanceDropdown';
 import { getFormattedNumber } from '../../../functions/getFormattedNumber';
 
 interface propsIF {
@@ -30,17 +30,11 @@ interface propsIF {
               amount: string | undefined;
           }[]
         | null;
-    openWagmiModal: () => void;
 }
 
 export default function Account(props: propsIF) {
-    const {
-        nativeBalance,
-        clickLogout,
-        ensName,
-        walletDropdownTokenData,
-        openWagmiModal,
-    } = props;
+    const { nativeBalance, clickLogout, ensName, walletDropdownTokenData } =
+        props;
 
     const {
         snackbar: { open: openSnackbar },
@@ -154,7 +148,7 @@ export default function Account(props: propsIF) {
     return (
         <div className={styles.account_container}>
             {isUserLoggedIn && walletDisplay}
-            {isConnected && <ExchangeBalanceModal />}
+            {isConnected && <ExchangeBalanceDropdown />}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}
@@ -164,7 +158,6 @@ export default function Account(props: propsIF) {
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
-                    openWagmiModal={openWagmiModal}
                 />
             </NavItem>
         </div>

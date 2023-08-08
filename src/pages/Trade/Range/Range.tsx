@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Global/Button/Button';
-import Modal from '../../../components/Global/Modal/Modal';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
@@ -103,11 +102,8 @@ function Range() {
     );
 
     const dispatch = useAppDispatch();
-    const [
-        isConfirmationModalOpen,
-        openConfirmationModal,
-        closeConfirmationModal,
-    ] = useModal();
+    const [isOpen, openModal, closeModal] = useModal();
+
     const {
         tradeData: {
             isDenomBase,
@@ -1072,12 +1068,12 @@ function Range() {
 
     const handleModalOpen = () => {
         resetConfirmation();
-        openConfirmationModal();
+        openModal();
     };
 
     const handleModalClose = () => {
-        closeConfirmationModal();
         resetConfirmation();
+        closeModal();
     };
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
@@ -1353,48 +1349,38 @@ function Range() {
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
-                isConfirmationModalOpen ? (
-                    <Modal
-                        onClose={handleModalClose}
-                        title={'Pool Confirmation'}
-                        centeredTitle
-                    >
-                        <ConfirmRangeModal
-                            tokenAQty={
-                                isTokenAInputDisabled ? '' : tokenAInputQty
-                            }
-                            tokenBQty={
-                                isTokenBInputDisabled ? '' : tokenBInputQty
-                            }
-                            spotPriceDisplay={getFormattedNumber({
-                                value: displayPriceWithDenom,
-                            })}
-                            isTokenABase={isTokenABase}
-                            isAmbient={isAmbient}
-                            isAdd={isAdd}
-                            maxPriceDisplay={maxPriceDisplay}
-                            minPriceDisplay={minPriceDisplay}
-                            sendTransaction={sendTransaction}
-                            newRangeTransactionHash={newRangeTransactionHash}
-                            resetConfirmation={resetConfirmation}
-                            showConfirmation={showConfirmation}
-                            txErrorCode={txErrorCode}
-                            isInRange={!isOutOfRange}
-                            pinnedMinPriceDisplayTruncatedInBase={
-                                pinnedMinPriceDisplayTruncatedInBase
-                            }
-                            pinnedMinPriceDisplayTruncatedInQuote={
-                                pinnedMinPriceDisplayTruncatedInQuote
-                            }
-                            pinnedMaxPriceDisplayTruncatedInBase={
-                                pinnedMaxPriceDisplayTruncatedInBase
-                            }
-                            pinnedMaxPriceDisplayTruncatedInQuote={
-                                pinnedMaxPriceDisplayTruncatedInQuote
-                            }
-                        />
-                    </Modal>
-                ) : undefined
+                <ConfirmRangeModal
+                    tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
+                    tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
+                    spotPriceDisplay={getFormattedNumber({
+                        value: displayPriceWithDenom,
+                    })}
+                    isTokenABase={isTokenABase}
+                    isAmbient={isAmbient}
+                    isAdd={isAdd}
+                    maxPriceDisplay={maxPriceDisplay}
+                    minPriceDisplay={minPriceDisplay}
+                    sendTransaction={sendTransaction}
+                    newRangeTransactionHash={newRangeTransactionHash}
+                    resetConfirmation={resetConfirmation}
+                    showConfirmation={showConfirmation}
+                    txErrorCode={txErrorCode}
+                    isInRange={!isOutOfRange}
+                    pinnedMinPriceDisplayTruncatedInBase={
+                        pinnedMinPriceDisplayTruncatedInBase
+                    }
+                    pinnedMinPriceDisplayTruncatedInQuote={
+                        pinnedMinPriceDisplayTruncatedInQuote
+                    }
+                    pinnedMaxPriceDisplayTruncatedInBase={
+                        pinnedMaxPriceDisplayTruncatedInBase
+                    }
+                    pinnedMaxPriceDisplayTruncatedInQuote={
+                        pinnedMaxPriceDisplayTruncatedInQuote
+                    }
+                    isOpen={isOpen}
+                    onClose={handleModalClose}
+                />
             }
             button={
                 <Button

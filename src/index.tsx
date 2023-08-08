@@ -5,17 +5,16 @@ import { store } from './utils/state/store';
 import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
-import './i18n/config.ts';
+import './i18n/config';
 
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
 
 import { infuraProvider } from 'wagmi/providers/infura';
 
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { getWagmiChains } from './utils/data/chains';
 import Moralis from 'moralis/.';
-import { MORALIS_KEY } from './constants';
+import { GLOBAL_MODAL_PORTAL_ID, MORALIS_KEY } from './constants';
 import { GlobalContexts } from './contexts/GlobalContexts';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
@@ -49,7 +48,20 @@ if (!doReload) {
     const client = createClient({
         autoConnect: true,
         connectors: [
-            new MetaMaskConnector({ chains }),
+            new InjectedConnector({
+                chains,
+                options: {
+                    name: 'MetaMask',
+                    shimDisconnect: true,
+                },
+            }),
+            new InjectedConnector({
+                chains,
+                options: {
+                    name: 'Rabby',
+                    shimDisconnect: true,
+                },
+            }),
             new InjectedConnector({
                 chains,
                 options: {
@@ -60,7 +72,7 @@ if (!doReload) {
             new InjectedConnector({
                 chains,
                 options: {
-                    name: 'Injected Wallet',
+                    name: 'Other (Injected) Wallet',
                     shimDisconnect: true,
                 },
             }),
@@ -84,6 +96,7 @@ if (!doReload) {
                     <BrowserRouter>
                         <GlobalContexts>
                             <App />
+                            <div id={GLOBAL_MODAL_PORTAL_ID} />
                         </GlobalContexts>
                     </BrowserRouter>
                 </Provider>

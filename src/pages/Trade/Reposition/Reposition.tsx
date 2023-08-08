@@ -1,11 +1,6 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState, memo } from 'react';
-import {
-    useLocation,
-    // useNavigate,
-    useParams,
-    Navigate,
-} from 'react-router-dom';
+import { useLocation, useParams, Navigate } from 'react-router-dom';
 import {
     CrocPositionView,
     CrocReposition,
@@ -13,16 +8,13 @@ import {
 } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
-// import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
-import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
-import { useModal } from '../../../components/Global/Modal/useModal';
 import {
     useAppDispatch,
     useAppSelector,
@@ -30,7 +22,6 @@ import {
 import { PositionIF } from '../../../utils/interfaces/exports';
 import { getPinnedPriceValuesFromTicks } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-// import { BigNumber } from 'ethers';
 import {
     addPendingTx,
     addReceipt,
@@ -56,6 +47,7 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 
 function Reposition() {
@@ -83,6 +75,8 @@ function Reposition() {
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
     } = useContext(RangeContext);
+
+    const [isOpen, openModal, closeModal] = useModal();
 
     const [newRepositionTransactionHash, setNewRepositionTransactionHash] =
         useState('');
@@ -192,17 +186,14 @@ function Reposition() {
             ? truncatedCurrentPoolDisplayPriceInBase
             : truncatedCurrentPoolDisplayPriceInQuote;
 
-    // const currentlocationHook = locationHook.pathname;
-    const [isModalOpen, openModal, closeModal] = useModal();
-
     const handleModalOpen = () => {
         resetConfirmation();
         openModal();
     };
 
     const handleModalClose = () => {
-        closeModal();
         resetConfirmation();
+        closeModal();
     };
 
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState(10);
@@ -594,16 +585,12 @@ function Reposition() {
     );
 
     return (
-        <div className={styles.repositionContainer}>
-            <RepositionHeader
-                setRangeWidthPercentage={setRangeWidthPercentage}
-                positionHash={position.firstMintTx}
-                resetTxHash={() => setNewRepositionTransactionHash('')}
-            />
-            <div className={styles.reposition_content}>
-                <RepositionRangeWidth
-                    rangeWidthPercentage={rangeWidthPercentage}
+        <>
+            <div className={styles.repositionContainer}>
+                <RepositionHeader
                     setRangeWidthPercentage={setRangeWidthPercentage}
+                    positionHash={position.firstMintTx}
+                    resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
                 <RepositionPriceInfo
                     position={position}
@@ -663,52 +650,41 @@ function Reposition() {
                         />
                     )}
                 </div>
-                {isRepositionSent ? etherscanButton : null}
             </div>
-            {isModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title=' Confirm Reposition'
-                    centeredTitle
-                >
-                    <ConfirmRepositionModal
-                        isPositionInRange={isPositionInRange}
-                        position={position as PositionIF}
-                        onSend={sendRepositionTransaction}
-                        showConfirmation={showConfirmation}
-                        newRepositionTransactionHash={
-                            newRepositionTransactionHash
-                        }
-                        resetConfirmation={resetConfirmation}
-                        txErrorCode={txErrorCode}
-                        minPriceDisplay={minPriceDisplay}
-                        maxPriceDisplay={maxPriceDisplay}
-                        currentBaseQtyDisplayTruncated={
-                            currentBaseQtyDisplayTruncated
-                        }
-                        currentQuoteQtyDisplayTruncated={
-                            currentQuoteQtyDisplayTruncated
-                        }
-                        newBaseQtyDisplay={newBaseQtyDisplay}
-                        newQuoteQtyDisplay={newQuoteQtyDisplay}
-                        isAmbient={isAmbient}
-                        pinnedMinPriceDisplayTruncatedInBase={
-                            pinnedMinPriceDisplayTruncatedInBase
-                        }
-                        pinnedMinPriceDisplayTruncatedInQuote={
-                            pinnedMinPriceDisplayTruncatedInQuote
-                        }
-                        pinnedMaxPriceDisplayTruncatedInBase={
-                            pinnedMaxPriceDisplayTruncatedInBase
-                        }
-                        pinnedMaxPriceDisplayTruncatedInQuote={
-                            pinnedMaxPriceDisplayTruncatedInQuote
-                        }
-                        isTokenABase={isTokenABase}
-                    />
-                </Modal>
-            )}
-        </div>
+            <ConfirmRepositionModal
+                isPositionInRange={isPositionInRange}
+                position={position as PositionIF}
+                onSend={sendRepositionTransaction}
+                showConfirmation={showConfirmation}
+                newRepositionTransactionHash={newRepositionTransactionHash}
+                resetConfirmation={resetConfirmation}
+                txErrorCode={txErrorCode}
+                minPriceDisplay={minPriceDisplay}
+                maxPriceDisplay={maxPriceDisplay}
+                currentBaseQtyDisplayTruncated={currentBaseQtyDisplayTruncated}
+                currentQuoteQtyDisplayTruncated={
+                    currentQuoteQtyDisplayTruncated
+                }
+                newBaseQtyDisplay={newBaseQtyDisplay}
+                newQuoteQtyDisplay={newQuoteQtyDisplay}
+                isAmbient={isAmbient}
+                pinnedMinPriceDisplayTruncatedInBase={
+                    pinnedMinPriceDisplayTruncatedInBase
+                }
+                pinnedMinPriceDisplayTruncatedInQuote={
+                    pinnedMinPriceDisplayTruncatedInQuote
+                }
+                pinnedMaxPriceDisplayTruncatedInBase={
+                    pinnedMaxPriceDisplayTruncatedInBase
+                }
+                pinnedMaxPriceDisplayTruncatedInQuote={
+                    pinnedMaxPriceDisplayTruncatedInQuote
+                }
+                isTokenABase={isTokenABase}
+                isOpen={isOpen}
+                onClose={handleModalClose}
+            />
+        </>
     );
 }
 

@@ -10,6 +10,7 @@ interface propsIF {
     setTransferQty: Dispatch<SetStateAction<string | undefined>>;
     inputValue: string;
     setInputValue: Dispatch<SetStateAction<string>>;
+    setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 function TransferCurrencySelector(props: propsIF) {
@@ -19,6 +20,7 @@ function TransferCurrencySelector(props: propsIF) {
         setTransferQty,
         inputValue,
         setInputValue,
+        setTokenModalOpen,
     } = props;
 
     const handleOnChange = (input: string) => {
@@ -56,6 +58,7 @@ function TransferCurrencySelector(props: propsIF) {
             parseInput={parseInput}
             disable={disable}
             token={selectedToken}
+            setTokenModalOpen={setTokenModalOpen}
         />
     );
 }

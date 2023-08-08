@@ -40,11 +40,13 @@ import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
-import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
+import ModalHeader from '../Global/ModalHeader/ModalHeader';
+import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
+import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 
 interface propsIF {
-    type: 'Remove' | 'Harvest';
+    type: RangeModalActionType;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     isPositionInRange: boolean;
@@ -55,7 +57,8 @@ interface propsIF {
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
     position: PositionIF;
-    handleModalClose: () => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function RangeActionModal(props: propsIF) {
@@ -64,8 +67,9 @@ export default function RangeActionModal(props: propsIF) {
         position,
         baseTokenAddress,
         quoteTokenAddress,
-        handleModalClose,
         isAmbient,
+        isOpen,
+        onClose,
     } = props;
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
@@ -310,10 +314,10 @@ export default function RangeActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation) {
+        if (!showConfirmation || !isOpen) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txErrorCode, isOpen]);
 
     const posHash =
         position.positionType === 'ambient'
@@ -690,9 +694,9 @@ export default function RangeActionModal(props: propsIF) {
     );
 
     return (
-        <>
-            <SimpleModalHeader
-                onClose={handleModalClose}
+        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+            <ModalHeader
+                onClose={onClose}
                 title={
                     showSettings
                         ? `${
@@ -714,6 +718,6 @@ export default function RangeActionModal(props: propsIF) {
                     {buttonToDisplay}
                 </div>
             </div>
-        </>
+        </Modal>
     );
 }

@@ -32,6 +32,8 @@ interface propsIF {
     isAdd: boolean;
     tokenAQty: string;
     tokenBQty: string;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 function ConfirmRangeModal(props: propsIF) {
@@ -51,6 +53,8 @@ function ConfirmRangeModal(props: propsIF) {
         isAdd,
         tokenAQty,
         tokenBQty,
+        isOpen = false,
+        onClose = () => null,
     } = props;
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
@@ -157,6 +161,8 @@ function ConfirmRangeModal(props: propsIF) {
             }
             initiate={sendTransaction}
             resetConfirmation={resetConfirmation}
+            isOpen={isOpen}
+            onClose={onClose}
         />
     );
 }

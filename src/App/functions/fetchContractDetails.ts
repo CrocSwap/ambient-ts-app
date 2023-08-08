@@ -37,19 +37,38 @@ export const fetchContractDetails = async (
         name = undefined;
 
     try {
-        decimals = contract.decimals();
-        symbol = contract.symbol();
-        name = contract.name();
+        decimals = await contract.decimals();
     } catch (error) {
         console.warn({ error });
+    }
+
+    try {
+        symbol = await contract.symbol();
+    } catch (error) {
+        // attempt to parse data as bytes32 in case of a non-compliant token
+        try {
+            symbol = ethers.utils.parseBytes32String(error.data);
+        } catch (error) {
+            console.warn({ error });
+        }
+    }
+
+    try {
+        name = await contract.name();
+    } catch (error) {
+        try {
+            name = ethers.utils.parseBytes32String(error.data);
+        } catch (error) {
+            console.warn({ error });
+        }
     }
 
     return {
         address: address,
         chainId: parseInt(_chainId),
-        decimals: await decimals,
-        symbol: await symbol,
-        name: await name,
+        decimals: decimals,
+        symbol: symbol,
+        name: name,
         fromList: 'custom_token',
         logoURI: '',
     };
