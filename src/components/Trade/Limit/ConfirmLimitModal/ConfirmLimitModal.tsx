@@ -13,6 +13,7 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import Modal from '../../../Global/Modal/Modal';
 
 interface propsIF {
     initiateLimitOrderMethod: () => void;
@@ -27,6 +28,8 @@ interface propsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function ConfirmLimitModal(props: propsIF) {
@@ -42,6 +45,8 @@ export default function ConfirmLimitModal(props: propsIF) {
         endDisplayPrice,
         tokenAInputQty,
         tokenBInputQty,
+        isOpen = false,
+        onClose = () => null,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -214,31 +219,33 @@ export default function ConfirmLimitModal(props: propsIF) {
         : confirmSendMessage;
 
     return (
-        <div className={styles.modal_container}>
-            <section className={styles.modal_content}>
-                {showConfirmation ? fullTxDetails : confirmationDisplay}
-            </section>
-            <footer className={styles.modal_footer}>
-                {showConfirmation && (
-                    <Button
-                        title='Submit Limit Order'
-                        // if this modal is launched we can infer user wants confirmation
-                        // if user enables bypass, update all settings in parallel
-                        // otherwise do not not make any change to persisted preferences
-                        action={() => {
-                            if (currentSkipConfirm) {
-                                bypassConfirmSwap.enable();
-                                bypassConfirmLimit.enable();
-                                bypassConfirmRange.enable();
-                                bypassConfirmRepo.enable();
-                            }
-                            initiateLimitOrderMethod();
-                            setShowConfirmation(false);
-                        }}
-                        flat
-                    />
-                )}
-            </footer>
-        </div>
+        <Modal title='Limit Confirmation' onClose={onClose} isOpen={isOpen}>
+            <div className={styles.modal_container}>
+                <section className={styles.modal_content}>
+                    {showConfirmation ? fullTxDetails : confirmationDisplay}
+                </section>
+                <footer className={styles.modal_footer}>
+                    {showConfirmation && (
+                        <Button
+                            title='Submit Limit Order'
+                            // if this modal is launched we can infer user wants confirmation
+                            // if user enables bypass, update all settings in parallel
+                            // otherwise do not not make any change to persisted preferences
+                            action={() => {
+                                if (currentSkipConfirm) {
+                                    bypassConfirmSwap.enable();
+                                    bypassConfirmLimit.enable();
+                                    bypassConfirmRange.enable();
+                                    bypassConfirmRepo.enable();
+                                }
+                                initiateLimitOrderMethod();
+                                setShowConfirmation(false);
+                            }}
+                            flat
+                        />
+                    )}
+                </footer>
+            </div>
+        </Modal>
     );
 }

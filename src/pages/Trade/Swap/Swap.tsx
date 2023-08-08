@@ -6,7 +6,6 @@ import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Global/Button/Button';
-import Modal from '../../../components/Global/Modal/Modal';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import ConfirmSwapModal from '../../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
@@ -380,9 +379,9 @@ function Swap(props: propsIF) {
     }
 
     const handleModalClose = () => {
-        closeModal();
         setNewSwapTransactionHash('');
         resetConfirmation();
+        closeModal();
     };
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
@@ -477,6 +476,8 @@ function Swap(props: propsIF) {
         showBypassConfirm,
         showExtraInfo: showExtraInfo,
         setShowExtraInfo: setShowExtraInfo,
+        onClose: handleModalClose,
+        isOpen: isModalOpen,
         isTokenAPrimary: isTokenAPrimary,
     };
 
@@ -558,17 +559,7 @@ function Swap(props: propsIF) {
                     showExtraInfoDropdown={primaryQuantity !== ''}
                 />
             }
-            modal={
-                isModalOpen ? (
-                    <Modal
-                        onClose={handleModalClose}
-                        title='Swap Confirmation'
-                        centeredTitle
-                    >
-                        <ConfirmSwapModal {...confirmSwapModalProps} />
-                    </Modal>
-                ) : undefined
-            }
+            modal={<ConfirmSwapModal {...confirmSwapModalProps} />}
             button={
                 <Button
                     title={

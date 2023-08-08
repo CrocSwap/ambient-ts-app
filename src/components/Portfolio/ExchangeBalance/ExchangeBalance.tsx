@@ -36,6 +36,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 interface propsIF {
     fullLayoutActive: boolean;
     setFullLayoutActive: Dispatch<SetStateAction<boolean>>;
+    setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
 }
 
@@ -44,6 +45,7 @@ export default function ExchangeBalance(props: propsIF) {
         fullLayoutActive,
         setFullLayoutActive,
         isModalView = false,
+        setTokenModalOpen = () => null,
     } = props;
 
     const { mainnetProvider } = useContext(CrocEnvContext);
@@ -245,6 +247,7 @@ export default function ExchangeBalance(props: propsIF) {
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     selectedTokenDecimals={selectedTokenDecimals}
+                    setTokenModalOpen={setTokenModalOpen}
                 />
             ),
             icon: depositImage,
@@ -260,6 +263,7 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
+                    setTokenModalOpen={setTokenModalOpen}
                 />
             ),
             icon: withdrawImage,
@@ -275,6 +279,7 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
+                    setTokenModalOpen={setTokenModalOpen}
                 />
             ),
             icon: transferImage,

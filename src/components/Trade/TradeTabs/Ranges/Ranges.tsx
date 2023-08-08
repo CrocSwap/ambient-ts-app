@@ -1,10 +1,5 @@
-/* eslint-disable no-irregular-whitespace */
-// todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
-
 // START: Import React and Dongles
 import { useEffect, useState, useContext, memo, useRef } from 'react';
-
-// START: Import JSX Components
 
 // START: Import Local Files
 import styles from './Ranges.module.css';

@@ -10,6 +10,7 @@ interface propsIF {
     setWithdrawQty: Dispatch<SetStateAction<string | undefined>>;
     inputValue: string;
     setInputValue: Dispatch<SetStateAction<string>>;
+    setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function WithdrawCurrencySelector(props: propsIF) {
@@ -19,6 +20,7 @@ export default function WithdrawCurrencySelector(props: propsIF) {
         setWithdrawQty,
         inputValue,
         setInputValue,
+        setTokenModalOpen,
     } = props;
 
     const handleOnChange = (input: string) => {
@@ -56,6 +58,7 @@ export default function WithdrawCurrencySelector(props: propsIF) {
             parseInput={parseInput}
             disable={disable}
             token={selectedToken}
+            setTokenModalOpen={setTokenModalOpen}
         />
     );
 }
