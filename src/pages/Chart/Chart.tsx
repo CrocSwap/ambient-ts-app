@@ -66,7 +66,6 @@ import {
     scaleData,
     setCanvasResolution,
     standardDeviation,
-    zoomUtils,
 } from './ChartUtils/chartUtils';
 import { Zoom } from './ChartUtils/zoom';
 import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
@@ -2523,47 +2522,6 @@ export default function Chart(props: propsIF) {
                     onClickCanvas(event);
                 },
             );
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            // d3.select(d3Xaxis.current).on('mousemove', (event: any) => {
-            //     d3.select(event.currentTarget).style('cursor', 'col-resize');
-
-            //     const isEgg =
-            //         timeOfEndCandle &&
-            //         event.layerX > scaleData?.xScale(timeOfEndCandle) - 15 &&
-            //         event.layerX < scaleData?.xScale(timeOfEndCandle) + 15;
-
-            //     const isCroc =
-            //         lastCrDate &&
-            //         event.layerX > scaleData?.xScale(lastCrDate) - 15 &&
-            //         event.layerX < scaleData?.xScale(lastCrDate) + 15;
-
-            //     if (isEgg || isCroc) {
-            //         d3.select(event.currentTarget).style('cursor', 'default');
-
-            //         setXaxisActiveTooltip(isCroc ? 'croc' : 'egg');
-            //     } else {
-            //         setXaxisActiveTooltip('');
-            //     }
-
-            //     setCrosshairActive('none');
-            // });
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            // d3.select(d3Xaxis.current).on('click', (event: any) => {
-            //     const isCroc =
-            //         lastCrDate &&
-            //         event.layerX > scaleData?.xScale(lastCrDate) - 15 &&
-            //         event.layerX < scaleData?.xScale(lastCrDate) + 15;
-
-            //     if (isCroc) {
-            //         if (!isCrDataIndActive) {
-            //             setIsCrDataIndActive(true);
-            //         } else {
-            //             setIsCrDataIndActive(false);
-            //         }
-            //     }
-            // });
-
             render();
 
             d3.select(d3Container.current).on(
