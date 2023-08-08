@@ -75,7 +75,7 @@ export const useTokenSearch = (
         tokens: TokenIF[],
     ): TokenIF[] {
         // convert the chainId to a 0x hex string, if necessary
-        const chainAsString =
+        const chainAsString: string =
             typeof chainId === 'number' ? '0x' + chainId.toString(16) : chainId;
         // get the address of the wrapped native on the current chain from data
         const wnAddr: string | undefined = wrappedNatives.get(chainAsString);
@@ -103,7 +103,10 @@ export const useTokenSearch = (
         // fn to run a token search by name or symbol
         function searchAsNameOrSymbol(): TokenIF[] {
             // check tokens in `allTokenLists` for tokens that match validated input
-            return tokens.getTokensByNameOrSymbol(validatedInput);
+            const foundTokens: TokenIF[] =
+                tokens.getTokensByNameOrSymbol(validatedInput);
+            // return tokens with wrapped native from current chain removed
+            return removeWrappedNative(chainId, foundTokens);
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
