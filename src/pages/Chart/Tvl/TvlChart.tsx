@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import {
+    memo,
+    useCallback,
+    useEffect,
+    useRef,
+    useState,
+    useContext,
+} from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
@@ -8,21 +15,22 @@ import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
+import { Zoom } from '../ChartUtils/zoom';
 import {
     diffHashSig,
     diffHashSigScaleData,
 } from '../../../utils/functions/diffHashSig';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
+import { CandleContext } from '../../../contexts/CandleContext';
 
 interface TvlData {
     tvlData: Array<CandleData>;
-    period: number | undefined;
+    period: number;
     subChartValues: any;
     crosshairForSubChart: any;
     scaleData: any;
     render: any;
-    getNewCandleData: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
@@ -40,7 +48,6 @@ function TvlChart(props: TvlData) {
         period,
         scaleData,
         crosshairForSubChart,
-        getNewCandleData,
         subChartValues,
         yAxisWidth,
         setCrossHairLocation,
@@ -71,6 +78,8 @@ function TvlChart(props: TvlData) {
     const [tvlHorizontalyValue, setTvlHorizontalyValue] = useState<any>();
     const [buffer, setBuffer] = useState<any>();
     const [resizeHeight, setResizeHeight] = useState<number>();
+    const { setCandleDomains } = useContext(CandleContext);
+    const zoomBase = new Zoom(setCandleDomains, period);
 
     useEffect(() => {
         if (tvlyScale === undefined) {
@@ -119,7 +128,7 @@ function TvlChart(props: TvlData) {
     }, [diffHashSig(tvlData)]);
 
     useEffect(() => {
-        if (tvlData !== undefined) {
+        if (tvlData !== undefined && period) {
             let date: any | undefined = undefined;
 
             const zoom = d3
@@ -138,7 +147,7 @@ function TvlChart(props: TvlData) {
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
 
-                    getNewCandleData(domainX[0] + deltaX, date);
+                    zoomBase.getNewCandleDataLeft(domainX[0] + deltaX, date);
 
                     scaleData?.xScale.domain([
                         domainX[0] + deltaX,

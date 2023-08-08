@@ -673,12 +673,28 @@ function TradeCandleStickChart(props: propsIF) {
 
                 const minDate = 1657868400; // 15 July 2022
 
-                const firstTime = Math.floor(fethcingCandles / 1000);
+                let firstTime = Math.floor(fethcingCandles / 1000);
 
                 if (firstTime > minDate && fethcingCandles > domainLeft) {
-                    const nCandles = Math.floor(
+                    let nCandles = Math.floor(
                         (fethcingCandles - domainLeft) / (period * 1000),
                     );
+
+                    if (nCandles < 139) {
+                        const nDiffFirstTime = Math.floor(
+                            (Date.now() - firstTime * 1000) / (period * 1000),
+                        );
+
+                        const tempFirstTime =
+                            firstTime + period * nDiffFirstTime;
+                        if (nDiffFirstTime < 139 && nCandles > 5) {
+                            firstTime = tempFirstTime;
+                            nCandles = nCandles + (nDiffFirstTime + 100);
+                        } else {
+                            firstTime = firstTime + period * 100;
+                            nCandles = 200;
+                        }
+                    }
 
                     setCandleScale((prev: candleScale) => {
                         return {
