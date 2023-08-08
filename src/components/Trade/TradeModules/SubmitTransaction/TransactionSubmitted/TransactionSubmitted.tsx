@@ -48,7 +48,7 @@ export default function TransactionSubmitted(props: PropsIF) {
     const addToMetaMaskButton = (
         <Button
             flat
-            title={`Add ${tokenBSymbol} to MetaMask`}
+            title={`Import ${tokenBSymbol} into Connected Wallet`}
             // action={props.onClickFn}
             action={handleAddToMetaMask}
             disabled={false}
