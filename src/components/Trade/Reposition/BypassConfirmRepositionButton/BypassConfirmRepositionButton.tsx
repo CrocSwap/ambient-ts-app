@@ -181,18 +181,6 @@ function BypassConfirmRepositionButton(props: propsIF) {
                         {confirmationDisplay}
                     </section>
                 )}
-                {/* <span className={styles.close_icon_container}>
-                    <button
-                        tabIndex={0}
-                        onClick={() => {
-                            resetConfirmation();
-                            setShowBypassConfirm(false);
-                            setNewRepositionTransactionHash('');
-                        }}
-                    >
-                        Submit another transaction
-                    </button>
-                </span> */}
             </div>
         </section>
     );
