@@ -39,8 +39,8 @@ if (!doReload) {
         [
             infuraProvider({
                 apiKey:
-                    // process.env.REACT_APP_INFURA_KEY ||
-                    'af3c7cf672f142b1ba579cbae221cd1c', // croc labs #2
+                    process.env.REACT_APP_INFURA_KEY ||
+                    '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
             }),
         ],
     );
