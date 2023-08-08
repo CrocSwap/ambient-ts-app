@@ -53,11 +53,19 @@ export class Zoom {
             (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
         );
 
-        // const isZoomingIn = deltaX > 0;
-        // const isZoomingOut = deltaX < 0;
-        // const isZoomingInWithCandleCount = isZoomingOut || Math.abs(lastTime - firstTime) >= period * 1000 * 2;
-        // const isZoomingOutCandleCount = isZoomingIn || Math.abs(lastTime - firstTime) <= period * 1000 * maxNumCandlesForZoom;
-        if (isPressAltOrShiftKey) {
+        const isZoomingIn = deltaX > 0;
+        const isZoomingOut = deltaX < 0;
+        const isZoomingInWithCandleCount =
+            isZoomingIn ||
+            Math.abs(lastTime - firstTime) >= this.period * 1000 * 2;
+        const isZoomingOutCandleCount =
+            isZoomingOut ||
+            Math.abs(lastTime - firstTime) <=
+                this.period * 1000 * maxNumCandlesForZoom;
+        if (
+            isPressAltOrShiftKey ||
+            !(isZoomingInWithCandleCount && isZoomingOutCandleCount)
+        ) {
             this.wheelWithPressAltKey(
                 deltaX,
                 scaleData,
@@ -92,7 +100,7 @@ export class Zoom {
         deltaX: number,
         scaleData: scaleData,
         mouseX: number,
-        lastCandleDate: number,
+        firstCandleDate: number,
     ) {
         const domainX = scaleData.xScale.domain();
         const domain = this.changeCandleSize(domainX, deltaX, mouseX);
@@ -101,7 +109,7 @@ export class Zoom {
             scaleData?.xScale.domain(domain);
         }
 
-        this.getNewCandleDataLeftWithRight(scaleData, lastCandleDate);
+        this.getNewCandleDataLeftWithRight(scaleData, firstCandleDate);
     }
 
     private wheelWithoutPressKey(
@@ -288,21 +296,33 @@ export class Zoom {
         this.setCandleDomains(candleDomain);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    public handlePanning(event: any, scaleData: scaleData) {
-        const domainY = scaleData?.yScale.domain();
-        const linearY = d3
-            .scaleLinear()
-            .domain(scaleData?.yScale.range())
-            .range([domainY[1] - domainY[0], 0]);
+    public handlePanning(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        event: any,
+        scaleData: scaleData,
+        lastCandleDate: number,
+        firstCandleDate: number,
+    ) {
+        const domainX = scaleData?.xScale.domain();
 
-        const deltaY = linearY(event.sourceEvent.movementY);
-        const domain = [
-            Math.min(domainY[1], domainY[0]) + deltaY,
-            Math.max(domainY[1], domainY[0]) + deltaY,
-        ];
+        const lastTime = domainX[1];
 
-        return domain;
+        const firstTime = domainX[0];
+        const linearX = d3
+            .scaleTime()
+            .domain(scaleData?.xScale.range())
+            .range([0, domainX[1] - domainX[0]]);
+
+        const deltaX = linearX(event.sourceEvent.movementX);
+
+        this.wheelWithPressAltKey(
+            deltaX,
+            scaleData,
+            firstTime,
+            firstCandleDate,
+            lastCandleDate,
+            lastTime,
+        );
     }
 
     public handlePanningOneTouch(
@@ -311,63 +331,50 @@ export class Zoom {
         scaleData: scaleData,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         previousTouch: any,
+        bandwidth: number,
+        firstCandleDate: number,
+        lastCandleDate: number,
     ) {
         const domainX = scaleData?.xScale.domain();
-        const touch = event.sourceEvent.changedTouches[0];
-        const _currentPageX = touch.pageX;
-        const previousTouchPageX = previousTouch.pageX;
-        const _movementX = Math.floor(previousTouchPageX - _currentPageX) / 2;
-
-        scaleData?.xScale.domain([
-            domainX[0] + this.period * 1000 * _movementX,
-            domainX[1] + this.period * 1000 * _movementX,
-        ]);
-    }
-
-    public handlePanningOneTouchWithoutRescale(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        event: any,
-        scaleData: scaleData,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        previousTouch: any,
-    ) {
-        const domainY = scaleData?.yScale.domain();
-
-        const linearY = d3
-            .scaleLinear()
-            .domain(scaleData?.yScale.range())
-            .range([domainY[1] - domainY[0], 0]);
-
-        const touch = event.sourceEvent.changedTouches[0];
-
-        const _currentPageY = touch.pageY;
-        const previousTouchPageY = previousTouch.pageY;
-        const _movementY = _currentPageY - previousTouchPageY;
-
-        const deltaY = linearY(_movementY);
-
-        const domain = [
-            Math.min(domainY[1], domainY[0]) + deltaY,
-            Math.max(domainY[1], domainY[0]) + deltaY,
-        ];
-
-        return domain;
-    }
-
-    public handlePanningMultiTouch(
-        scaleData: scaleData,
-        event: any,
-        previousDeltaTouch: number,
-    ) {
-        const touch1 = event.sourceEvent.touches[0];
-        const touch2 = event.sourceEvent.touches[1];
-
-        const domainX = scaleData?.xScale.domain();
-
         const linearX = d3
             .scaleTime()
             .domain(scaleData?.xScale.range())
             .range([0, domainX[1] - domainX[0]]);
+
+        const touch = event.sourceEvent.changedTouches[0];
+        const currentPageX = touch.pageX;
+        const previousTouchPageX = previousTouch.pageX;
+        const movement = currentPageX - previousTouchPageX;
+        // calculate panning speed based on bandwidth
+        const deltaX = linearX(movement) * (1 + Math.sqrt(bandwidth));
+        const lastTime = domainX[1];
+
+        const firstTime = domainX[0];
+        this.wheelWithPressAltKey(
+            deltaX,
+            scaleData,
+            firstTime,
+            firstCandleDate,
+            lastCandleDate,
+            lastTime,
+        );
+    }
+
+    public handlePanningMultiTouch(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        event: any,
+        scaleData: scaleData,
+        previousDeltaTouch: number,
+        previousDeltaTouchLocation: number,
+    ) {
+        const domainX = scaleData?.xScale.domain();
+        const linearX = d3
+            .scaleTime()
+            .domain(scaleData?.xScale.range())
+            .range([0, domainX[1] - domainX[0]]);
+
+        const touch1 = event.sourceEvent.touches[0];
+        const touch2 = event.sourceEvent.touches[1];
 
         const deltaTouch = Math.hypot(
             touch1.pageX - touch2.pageX,
@@ -386,6 +393,132 @@ export class Zoom {
         }
         const deltaX = linearX(movement);
 
-        this.changeCandleSize(domainX, deltaX, touch1.clientX);
+        const mouseX = scaleData?.xScale.invert(touch1.pageX);
+
+        const domain = this.changeCandleSize(
+            domainX,
+            deltaX,
+            mouseX,
+            scaleData?.xScale.invert(previousDeltaTouchLocation),
+        );
+        scaleData?.xScale.domain(domain);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public handlePanningY(event: any, scaleData: scaleData) {
+        const domainY = scaleData?.yScale.domain();
+        const linearY = d3
+            .scaleLinear()
+            .domain(scaleData?.yScale.range())
+            .range([domainY[1] - domainY[0], 0]);
+
+        const deltaY = linearY(event.sourceEvent.movementY);
+        const domain = [
+            Math.min(domainY[1], domainY[0]) + deltaY,
+            Math.max(domainY[1], domainY[0]) + deltaY,
+        ];
+
+        return domain;
+    }
+
+    public handlePanningX(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        event: any,
+        scaleData: scaleData,
+        firstCandleDate: number,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        previousTouch: any,
+    ) {
+        const domainX = scaleData?.xScale.domain();
+
+        let deltaX;
+        if (event.sourceEvent.type === 'touchmove') {
+            deltaX = this.handlePanningXMobile(event, scaleData, previousTouch);
+        } else {
+            deltaX = this.handlePanningXDesktop(event, scaleData);
+        }
+        const lastTime = domainX[1];
+
+        const firstTime = domainX[0];
+        const isZoomingIn = deltaX > 0;
+
+        const isZoomingOutCandleCount =
+            isZoomingIn ||
+            Math.abs(lastTime - firstTime) <=
+                this.period * 1000 * maxNumCandlesForZoom;
+
+        if (deltaX !== undefined && isZoomingOutCandleCount) {
+            this.getNewCandleDataLeft(domainX[0] + deltaX, firstCandleDate);
+
+            scaleData?.xScale.domain([domainX[0] + deltaX, domainX[1]]);
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    public handlePanningXDesktop(event: any, scaleData: scaleData) {
+        const domainX = scaleData?.xScale.domain();
+
+        const linearX = d3
+            .scaleTime()
+            .domain(scaleData?.xScale.range())
+            .range([0, domainX[1] - domainX[0]]);
+
+        const deltaX = linearX(-event.sourceEvent.movementX);
+        return deltaX;
+    }
+
+    public handlePanningXMobile(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        event: any,
+        scaleData: scaleData,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        previousTouch: any,
+    ) {
+        const domainX = scaleData?.xScale.domain();
+        const linearX = d3
+            .scaleTime()
+            .domain(scaleData?.xScale.range())
+            .range([0, domainX[1] - domainX[0]]);
+
+        const touch = event.sourceEvent.changedTouches[0];
+        const currentPageX = touch.pageX;
+        const previousTouchPageX = previousTouch.pageX;
+        const movement = previousTouchPageX - currentPageX;
+        const deltaX = linearX(movement);
+
+        return deltaX;
+    }
+
+    public handlePanningYMobile(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        event: any,
+        scaleData: scaleData,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        previousTouch: any,
+    ) {
+        if (event.sourceEvent.touches.length === 1) {
+            const domainY = scaleData?.yScale.domain();
+
+            const linearY = d3
+                .scaleLinear()
+                .domain(scaleData?.yScale.range())
+                .range([domainY[1] - domainY[0], 0]);
+
+            const touch = event.sourceEvent.changedTouches[0];
+
+            const _currentPageY = touch.pageY;
+            const previousTouchPageY = previousTouch.pageY;
+            const _movementY = _currentPageY - previousTouchPageY;
+
+            const deltaY = linearY(_movementY);
+
+            const domain = [
+                Math.min(domainY[1], domainY[0]) + deltaY,
+                Math.max(domainY[1], domainY[0]) + deltaY,
+            ];
+
+            return domain;
+        }
+        return undefined;
     }
 }

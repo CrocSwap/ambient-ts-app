@@ -14,7 +14,7 @@ import {
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
 import { CandleContext } from '../../../../contexts/CandleContext';
-import { correctStyleForData, xAxisTick } from '../../calcuteAxisDate';
+import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
 import moment from 'moment';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 import { Zoom } from '../../ChartUtils/zoom';
@@ -400,96 +400,47 @@ export default function XAxisCanvas(props: xAxisIF) {
     useEffect(() => {
         const lastCandleDate = lastCandleData?.time * 1000;
         const firstCandleDate = firstCandleData?.time * 1000;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let previousTouch: any | undefined = undefined; // event
+
         const xAxisZoom = d3
             .zoom()
-            .on('zoom', async (event) => {
-                if (scaleData) {
-                    if (event.sourceEvent.type === 'wheel') {
-                        zoomBase.zoomWithWheel(
-                            event,
-                            scaleData,
-                            firstCandleDate,
-                            lastCandleDate,
-                        );
-                    }
-
-                    // else if (
-                    //     event.sourceEvent.type === 'touchmove' &&
-                    //     event.sourceEvent.touches.length > 1 &&
-                    //     previousDeltaTouch
-                    // ) {
-                    //     const domainX = scaleData?.xScale.domain();
-                    //     const linearX = d3
-                    //         .scaleTime()
-                    //         .domain(scaleData?.xScale.range())
-                    //         .range([0, domainX[1] - domainX[0]]);
-
-                    //     // mobile
-                    //     const touch1 = event.sourceEvent.touches[0];
-                    //     const touch2 = event.sourceEvent.touches[1];
-
-                    //     const deltaTouch = Math.hypot(
-                    //         touch1.pageX - touch2.pageX,
-                    //         touch1.pageY - touch2.pageY,
-                    //     );
-
-                    //     let movement = Math.abs(
-                    //         touch1.pageX - touch2.pageX,
-                    //     );
-
-                    //     if (previousDeltaTouch > deltaTouch) {
-                    //         // zoom out
-                    //         movement = movement / 10;
-                    //     }
-                    //     if (previousDeltaTouch < deltaTouch) {
-                    //         // zoom in
-                    //         movement = -movement / 10;
-                    //     }
-                    //     const deltaX = linearX(movement);
-
-                    //     zoomBase.changeCandleSize(
-                    //         domainX,
-                    //         deltaX,
-                    //         scaleData?.xScale(touch1.clientX),
-                    //     );
-                    // }
-                    else {
-                        const domainX = scaleData?.xScale.domain();
-
-                        const linearX = d3
-                            .scaleTime()
-                            .domain(scaleData?.xScale.range())
-                            .range([0, domainX[1] - domainX[0]]);
-
-                        const deltaX = linearX(-event.sourceEvent.movementX);
-
-                        if (deltaX !== undefined) {
-                            zoomBase.getNewCandleDataLeft(
-                                domainX[0] + deltaX,
-                                firstCandleDate,
-                            );
-
-                            if (
-                                (deltaX > 0 ||
-                                    Math.abs(domainX[1] - domainX[0]) <=
-                                        period * 1000 * 2000) &&
-                                (deltaX < 0 ||
-                                    !(
-                                        unparsedCandleData.length <= 2 &&
-                                        unparsedCandleData[0].time * 1000 !==
-                                            lastCandleDate
-                                    ))
-                            ) {
-                                scaleData?.xScale.domain([
-                                    domainX[0] + deltaX,
-                                    domainX[1],
-                                ]);
-                            }
-                        }
-                    }
-                    changeScale();
-                    render();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .on('start', (event: any) => {
+                if (event.sourceEvent.type.includes('touch')) {
+                    // mobile
+                    previousTouch = event.sourceEvent.touches[0];
                 }
+            })
+            .on('zoom', async (event) => {
+                async function newDomains() {
+                    if (scaleData) {
+                        if (event.sourceEvent.type === 'wheel') {
+                            zoomBase.zoomWithWheel(
+                                event,
+                                scaleData,
+                                firstCandleDate,
+                                lastCandleDate,
+                            );
+                        } else {
+                            zoomBase.handlePanningX(
+                                event,
+                                scaleData,
+                                firstCandleDate,
+                                previousTouch,
+                            );
+                        }
+                        changeScale();
+                        render();
+                    }
+                }
+
+                newDomains().then(() => {
+                    // mobile
+                    if (event.sourceEvent.type.includes('touch')) {
+                        previousTouch = event.sourceEvent.changedTouches[0];
+                    }
+                });
             })
             .on('end', () => {
                 showLatestActive();
