@@ -3,7 +3,8 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../constants';
-import { USDC, wrappedNatives } from '../../utils/tokens/exports';
+import { USDC } from '../../utils/tokens/exports';
+import removeWrappedNative from '../../utils/functions/removeWrappedNative';
 
 export const useTokenSearch = (
     chainId: string,
@@ -68,26 +69,6 @@ export const useTokenSearch = (
         () => walletTokens.map((wTkn: TokenIF) => wTkn.address.toLowerCase()),
         [walletTokens.length],
     );
-
-    // fn to remove the wrapped native token of the current chain from a token array
-    function removeWrappedNative(
-        chainId: string | number,
-        tokens: TokenIF[],
-    ): TokenIF[] {
-        // convert the chainId to a 0x hex string, if necessary
-        const chainAsString: string =
-            typeof chainId === 'number' ? '0x' + chainId.toString(16) : chainId;
-        // get the address of the wrapped native on the current chain from data
-        const wnAddr: string | undefined = wrappedNatives.get(chainAsString);
-        // return the token array with the wrapped native removed, or the original
-        // ... token array if the current chain has no wrapped native token specified
-        return wnAddr
-            ? tokens.filter(
-                  (tkn: TokenIF) =>
-                      tkn.address.toLowerCase() !== wnAddr.toLowerCase(),
-              )
-            : tokens;
-    }
 
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
