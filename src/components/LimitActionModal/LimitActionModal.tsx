@@ -80,10 +80,10 @@ export default function LimitActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation) {
+        if (!showConfirmation || !isOpen) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txErrorCode, isOpen]);
 
     const updateLiq = async () => {
         try {

@@ -321,10 +321,10 @@ export default function RangeActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation) {
+        if (!showConfirmation || !isOpen) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txErrorCode, isOpen]);
 
     const posHash =
         position.positionType === 'ambient'
