@@ -62,13 +62,17 @@ export default function PoolsListItem(props: propsIF) {
         return output as pageNames;
     }, [pathname]);
 
-    const { tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [addrTokenA, addrTokenB] =
-        tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
+        tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
+            ? [pool.base.address, pool.quote.address]
+            : tokenA.address.toLowerCase() === pool.quote.address.toLowerCase()
+            ? [pool.quote.address, pool.base.address]
+            : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
             ? [pool.quote.address, pool.base.address]
             : [pool.base.address, pool.quote.address];
 

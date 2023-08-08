@@ -3,7 +3,7 @@ import { TokenIF } from '../../utils/interfaces/exports';
 import { tokenMethodsIF } from './useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../constants';
-import { USDC, WETH } from '../../utils/tokens/exports';
+import { USDC, wrappedNatives } from '../../utils/tokens/exports';
 
 export const useTokenSearch = (
     chainId: string,
@@ -63,6 +63,32 @@ export const useTokenSearch = (
     // hook to track tokens to output and render in DOM
     const [outputTokens, setOutputTokens] = useState<TokenIF[]>([]);
 
+    // list of addresses of tokens in connected wallet
+    const walletTknAddresses = useMemo<string[]>(
+        () => walletTokens.map((wTkn: TokenIF) => wTkn.address.toLowerCase()),
+        [walletTokens.length],
+    );
+
+    // fn to remove the wrapped native token of the current chain from a token array
+    function removeWrappedNative(
+        chainId: string | number,
+        tokens: TokenIF[],
+    ): TokenIF[] {
+        // convert the chainId to a 0x hex string, if necessary
+        const chainAsString =
+            typeof chainId === 'number' ? '0x' + chainId.toString(16) : chainId;
+        // get the address of the wrapped native on the current chain from data
+        const wnAddr: string | undefined = wrappedNatives.get(chainAsString);
+        // return the token array with the wrapped native removed, or the original
+        // ... token array if the current chain has no wrapped native token specified
+        return wnAddr
+            ? tokens.filter(
+                  (tkn: TokenIF) =>
+                      tkn.address.toLowerCase() !== wnAddr.toLowerCase(),
+              )
+            : tokens;
+    }
+
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
         // fn to run a token search by contract address
@@ -82,24 +108,41 @@ export const useTokenSearch = (
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
-            // initialize an array of tokens to output, seeded with Ambient default
-            const ambientTokens: TokenIF[] = tokens.defaultTokens;
-            // get tokens from the Uniswap list, remove any already on Ambient list
-            const uniswapTokens: TokenIF[] = tokens
-                .getTokensFromList(tokenListURIs.uniswap)
-                .filter((uniTkn: TokenIF) => {
-                    return !ambientTokens
-                        .map((tkn: TokenIF) => tkn.address.toLowerCase())
-                        .includes(uniTkn.address.toLowerCase());
-                });
-            // combine the Ambient and Uniswap token lists, WETH removed
-            return ambientTokens
-                .concat(uniswapTokens)
-                .filter(
-                    (tkn: TokenIF) =>
-                        tkn.address.toLowerCase() !==
-                        WETH[chainId.toLowerCase() as keyof typeof WETH],
+            // fn to concatenate two token arrays with duplicate values removed
+            const patchLists = (
+                listA: TokenIF[],
+                listB: TokenIF[],
+            ): TokenIF[] => {
+                const addressesListA = listA.map((tkn: TokenIF) =>
+                    tkn.address.toLowerCase(),
                 );
+                const dedupedListB: TokenIF[] = listB.filter(
+                    (tkn: TokenIF) =>
+                        !addressesListA.includes(tkn.address.toLowerCase()),
+                );
+                return listA.concat(dedupedListB);
+            };
+            // array of ambient and uniswap tokens, no dupes
+            const baseTokenList: TokenIF[] = patchLists(
+                tokens.defaultTokens,
+                tokens.getTokensFromList(tokenListURIs.uniswap),
+            );
+            // ERC-20 tokens from connected wallet subject to universe verification
+            const verifiedWalletTokens: TokenIF[] = walletTokens.filter(
+                (tkn: TokenIF) => tokens.verify(tkn.address),
+            );
+            // array with tokens added to user's wallet (subject to verification)
+            const withWalletTokens: TokenIF[] = patchLists(
+                baseTokenList,
+                verifiedWalletTokens,
+            );
+            // remove the wrapped native token (if present)
+            const tknsNoWrappedNative = removeWrappedNative(
+                chainId,
+                withWalletTokens,
+            );
+            // combine the Ambient and Uniswap token lists
+            return tknsNoWrappedNative;
         }
 
         // declare an output variable
@@ -164,6 +207,10 @@ export const useTokenSearch = (
                         priority = 100;
                     } else if (tknAddress === addresses.USDC) {
                         priority = 90;
+                    } else if (
+                        walletTknAddresses.includes(tkn.address.toLowerCase())
+                    ) {
+                        priority = 80;
                     } else if (tkn.listedBy) {
                         priority = tkn.listedBy.length;
                     } else {
@@ -185,7 +232,7 @@ export const useTokenSearch = (
     }, [
         chainId,
         tokens.defaultTokens,
-        walletTokens.length,
+        walletTknAddresses,
         getRecentTokens().length,
         validatedInput,
     ]);
