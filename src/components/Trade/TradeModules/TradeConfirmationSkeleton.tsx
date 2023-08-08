@@ -14,6 +14,7 @@ import ConfirmationModalControl from '../../Global/ConfirmationModalControl/Conf
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import SubmitTransaction from './SubmitTransaction/SubmitTransaction';
+import Modal from '../../Global/Modal/Modal';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -23,6 +24,8 @@ interface propsIF {
     txErrorCode: string;
     showConfirmation: boolean;
     statusText: string;
+    isOpen: boolean;
+    onClose?: () => void;
     initiate: () => Promise<void>;
     resetConfirmation: () => void;
     poolTokenDisplay?: React.ReactNode;
@@ -33,6 +36,8 @@ interface propsIF {
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
     const {
+        isOpen = false,
+        onClose = () => null,
         type,
         initiate,
         tokenA: { token: tokenA, quantity: tokenAQuantity },
@@ -99,59 +104,67 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     );
 
     return (
-        <div
-            className={styles.modal_container}
-            aria-label='Transaction Confirmation modal'
+        <Modal
+            title={`${type === 'Range' ? 'Pool' : type} Confirmation`}
+            onClose={onClose}
+            isOpen={isOpen}
         >
-            {type === 'Swap' || type === 'Limit'
-                ? tokenDisplay
-                : poolTokenDisplay}
-            {transactionDetails && (
-                <div className={styles.extra_info_container}>
-                    {transactionDetails}
-                </div>
-            )}
-            {extraNotes && extraNotes}
-            <footer>
-                {!showConfirmation ? (
-                    !acknowledgeUpdate ? (
-                        <>
-                            <ConfirmationModalControl
-                                tempBypassConfirm={skipFutureConfirmation}
-                                setTempBypassConfirm={setSkipFutureConfirmation}
-                            />
-                            <Button
-                                title={statusText}
-                                action={() => {
-                                    // if this modal is launched we can infer user wants confirmation
-                                    // if user enables bypass, update all settings in parallel
-                                    // otherwise do not not make any change to persisted preferences
-                                    if (skipFutureConfirmation) {
-                                        bypassConfirmSwap.enable();
-                                        bypassConfirmLimit.enable();
-                                        bypassConfirmRange.enable();
-                                        bypassConfirmRepo.enable();
-                                    }
-                                    initiate();
-                                }}
-                                flat
-                                disabled={!!acknowledgeUpdate}
-                            />
-                        </>
-                    ) : (
-                        acknowledgeUpdate
-                    )
-                ) : (
-                    <SubmitTransaction
-                        type={type}
-                        newTransactionHash={transactionHash}
-                        txErrorCode={txErrorCode}
-                        resetConfirmation={resetConfirmation}
-                        sendTransaction={initiate}
-                        transactionPendingDisplayString={statusText}
-                    />
+            <div
+                className={styles.modal_container}
+                aria-label='Transaction Confirmation modal'
+            >
+                {type === 'Swap' || type === 'Limit'
+                    ? tokenDisplay
+                    : poolTokenDisplay}
+                {transactionDetails && (
+                    <div className={styles.extra_info_container}>
+                        {transactionDetails}
+                    </div>
                 )}
-            </footer>
-        </div>
+                {extraNotes && extraNotes}
+                <footer>
+                    {!showConfirmation ? (
+                        !acknowledgeUpdate ? (
+                            <>
+                                <ConfirmationModalControl
+                                    tempBypassConfirm={skipFutureConfirmation}
+                                    setTempBypassConfirm={
+                                        setSkipFutureConfirmation
+                                    }
+                                />
+                                <Button
+                                    title={statusText}
+                                    action={() => {
+                                        // if this modal is launched we can infer user wants confirmation
+                                        // if user enables bypass, update all settings in parallel
+                                        // otherwise do not not make any change to persisted preferences
+                                        if (skipFutureConfirmation) {
+                                            bypassConfirmSwap.enable();
+                                            bypassConfirmLimit.enable();
+                                            bypassConfirmRange.enable();
+                                            bypassConfirmRepo.enable();
+                                        }
+                                        initiate();
+                                    }}
+                                    flat
+                                    disabled={!!acknowledgeUpdate}
+                                />
+                            </>
+                        ) : (
+                            acknowledgeUpdate
+                        )
+                    ) : (
+                        <SubmitTransaction
+                            type={type}
+                            newTransactionHash={transactionHash}
+                            txErrorCode={txErrorCode}
+                            resetConfirmation={resetConfirmation}
+                            sendTransaction={initiate}
+                            transactionPendingDisplayString={statusText}
+                        />
+                    )}
+                </footer>
+            </div>
+        </Modal>
     );
 }
