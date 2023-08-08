@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import useKeyPress from '../../../App/hooks/useKeyPress';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../constants';
-import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 export const useModal = (
     modalCloseCustom?: () => void,

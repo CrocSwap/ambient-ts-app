@@ -9,7 +9,6 @@ import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationMo
 // START: Import Local Files
 import styles from './TransactionSettingsModal.module.css';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { VscClose } from 'react-icons/vsc';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
