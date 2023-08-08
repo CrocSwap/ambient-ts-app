@@ -12,6 +12,7 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
+import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -43,6 +44,7 @@ export default function LimitRate(props: propsIF) {
     const { showOrderPulseAnimation } = useContext(TradeTableContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const isDenomBase: boolean = tradeData.isDenomBase;
     const limitTick: number | undefined = tradeData.limitTick;
@@ -121,9 +123,17 @@ export default function LimitRate(props: propsIF) {
                         }}
                         onChange={(e) => handleOnChange(e.target.value)}
                         className={styles.currency_quantity}
-                        placeholder='0.0'
+                        placeholder={
+                            !isPoolInitialized ? 'Pool not initialized' : '0.0'
+                        }
                         onBlur={(e) => handleOnBlur(e.target.value)}
-                        value={displayPrice === 'NaN' ? '...' : displayPrice}
+                        value={
+                            !isPoolInitialized
+                                ? 'Pool not initialized'
+                                : displayPrice === 'NaN'
+                                ? '...'
+                                : displayPrice
+                        }
                         type='number'
                         step='any'
                         inputMode='decimal'
@@ -131,7 +141,7 @@ export default function LimitRate(props: propsIF) {
                         autoCorrect='off'
                         min='0'
                         minLength={1}
-                        disabled={disable}
+                        disabled={disable || !isPoolInitialized}
                         tabIndex={0}
                         aria-label='Limit Price.'
                         aria-live='polite'
@@ -139,7 +149,11 @@ export default function LimitRate(props: propsIF) {
                         aria-relevant='all'
                     />
                 </div>
-                <div className={styles.button_controls}>
+                <div
+                    className={`${styles.button_controls} ${
+                        !isPoolInitialized && styles.button_control_disable
+                    }`}
+                >
                     <button
                         onClick={!isDenomBase ? increaseTick : decreaseTick}
                         aria-label='Increase limit tick.'
