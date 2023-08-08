@@ -95,7 +95,6 @@ function TradeModuleHeader(props: propsIF) {
                     <IconWithTooltip title='Settings' placement='left'>
                         <div
                             onClick={openSettingsModal}
-                            style={{ cursor: 'pointer' }}
                             className={`${styles.settings_container}
                             ${styles.settings_icon}`}
                             id='settings_button'

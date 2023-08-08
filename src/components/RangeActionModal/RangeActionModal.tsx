@@ -754,7 +754,7 @@ export default function RangeActionModal(props: propsIF) {
     );
 
     const confirmationModal = (
-        <Modal usingCustomHeader isOpen={isOpen}>
+        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
             <div className={styles.confirmation_container}>
                 <ModalHeader
                     onClose={onClose}
@@ -785,7 +785,7 @@ export default function RangeActionModal(props: propsIF) {
     if (showConfirmation) return confirmationModal;
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen}>
+        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
             <ModalHeader
                 onClose={onClose}
                 title={

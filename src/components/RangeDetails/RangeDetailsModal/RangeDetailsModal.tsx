@@ -264,7 +264,7 @@ export default function RangeDetailsModal(props: propsIF) {
     );
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen}>
+        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
             <div className={styles.outer_container}>
                 <RangeDetailsHeader
                     onClose={onClose}

@@ -175,7 +175,7 @@ export default function TransactionDetailsModal(props: propsIF) {
     };
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen}>
+        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
             <div className={styles.outer_container}>
                 <TransactionDetailsHeader {...transactionDetailsHeaderProps} />
                 {showShareComponent ? (

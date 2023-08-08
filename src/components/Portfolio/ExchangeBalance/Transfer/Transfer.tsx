@@ -43,7 +43,7 @@ interface propsIF {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
-    setTokenModalOpen: Dispatch<SetStateAction<string>>;
+    setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Transfer(props: propsIF) {
@@ -323,6 +323,7 @@ export default function Transfer(props: propsIF) {
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 disable={isCurrencyFieldDisabled}
+                setTokenModalOpen={setTokenModalOpen}
             />
             <div className={styles.additional_info}>
                 <div

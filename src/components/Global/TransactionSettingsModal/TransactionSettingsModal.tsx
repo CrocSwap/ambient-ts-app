@@ -69,71 +69,56 @@ export default function TransactionSettingsModal(props: propsIF) {
     } ${module} confirmation modal`;
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen}>
-            <section>
-                <div className={styles.settings_title}>
-                    <div style={{ width: '22px' }} />
-                    {module + ' Settings'}
-                    <VscClose
-                        size={22}
-                        role='button'
-                        onClick={onClose}
-                        className={styles.close_button}
+        <Modal title={`${module} Settings`} isOpen={isOpen} onClose={onClose}>
+            <div className={styles.settings_container}>
+                <section>
+                    {module !== 'Limit Order' && (
+                        <SlippageTolerance
+                            persistedSlippage={persistedSlippage}
+                            setCurrentSlippage={setCurrentSlippage}
+                            handleKeyDown={handleKeyDown}
+                            presets={
+                                isPairStable
+                                    ? slippage.presets.stable
+                                    : slippage.presets.volatile
+                            }
+                        />
+                    )}
+                    {module === 'Swap' && currentSlippage > 1 && (
+                        <div className={styles.frontrun_warning}>
+                            <FiAlertTriangle size={28} color='var(--accent2)' />
+                            <div>
+                                <p>
+                                    Your transaction may be frontrun and result
+                                    in an unfavorable trade
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                    <ConfirmationModalControl
+                        tempBypassConfirm={currentSkipConfirm}
+                        setTempBypassConfirm={setCurrentSkipConfirm}
+                        displayInSettings={true}
+                    />
+                </section>
+                <div className={styles.button_container}>
+                    <Button
+                        title={
+                            module === 'Limit Order'
+                                ? 'Submit Settings'
+                                : currentSlippage > 0
+                                ? 'Submit'
+                                : 'Enter a Valid Slippage'
+                        }
+                        action={updateSettings}
+                        disabled={
+                            module !== 'Limit Order' && currentSlippage <= 0
+                        }
+                        flat
+                        customAriaLabel={confirmAriaLabel}
                     />
                 </div>
-                <div className={styles.settings_container}>
-                    <section>
-                        {module !== 'Limit Order' && (
-                            <SlippageTolerance
-                                persistedSlippage={persistedSlippage}
-                                setCurrentSlippage={setCurrentSlippage}
-                                handleKeyDown={handleKeyDown}
-                                presets={
-                                    isPairStable
-                                        ? slippage.presets.stable
-                                        : slippage.presets.volatile
-                                }
-                            />
-                        )}
-                        {module === 'Swap' && currentSlippage > 1 && (
-                            <div className={styles.frontrun_warning}>
-                                <FiAlertTriangle
-                                    size={28}
-                                    color='var(--accent2)'
-                                />
-                                <div>
-                                    <p>
-                                        Your transaction may be frontrun and
-                                        result in an unfavorable trade
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                        <ConfirmationModalControl
-                            tempBypassConfirm={currentSkipConfirm}
-                            setTempBypassConfirm={setCurrentSkipConfirm}
-                            displayInSettings={true}
-                        />
-                    </section>
-                    <div className={styles.button_container}>
-                        <Button
-                            title={
-                                module === 'Limit Order'
-                                    ? 'Submit Settings'
-                                    : currentSlippage > 0
-                                    ? 'Submit'
-                                    : 'Enter a Valid Slippage'
-                            }
-                            action={updateSettings}
-                            disabled={
-                                module !== 'Limit Order' && currentSlippage <= 0
-                            }
-                            flat
-                            customAriaLabel={confirmAriaLabel}
-                        />
-                    </div>
-                </div>
-            </section>
+            </div>
         </Modal>
     );
 }

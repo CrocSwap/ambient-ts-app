@@ -6,19 +6,17 @@ import { RiCloseFill } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './Modal.module.css';
-import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import GlobalModalPortal from '../../GlobalModalPortal';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../constants';
 
 // interface for React functional component
 interface ModalPropsIF {
-    isOpen?: boolean;
-    onClose?: () => void;
+    isOpen: boolean;
+    onClose: () => void;
     handleBack?: () => void;
     showBackButton?: boolean;
     title?: string;
     footer?: ReactNode;
-    noHeader?: boolean;
     noBackground?: boolean;
     children: ReactNode;
     centeredTitle?: boolean;
@@ -32,7 +30,6 @@ export default function Modal(props: ModalPropsIF) {
         handleBack,
         title = '',
         footer,
-        noHeader,
         noBackground,
         children,
         showBackButton,
@@ -76,17 +73,14 @@ export default function Modal(props: ModalPropsIF) {
 
     const footerJSX = <footer className={styles.modal_footer}>{footer}</footer>;
 
-    const headerOrNull = noHeader ? null : headerJSX;
     const footerOrNull = !footer ? null : footerJSX;
-
-    const desktopView = useMediaQuery('(min-width: 720px)');
 
     return (
         <GlobalModalPortal isOpen={isOpen}>
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
-                onMouseDown={desktopView ? onClose : undefined}
+                onMouseDown={onClose}
                 role='dialog'
                 aria-modal='true'
             >
@@ -98,11 +92,10 @@ export default function Modal(props: ModalPropsIF) {
                 ${styles.modal_body}
                 ${noBackground ? styles.no_background_modal : null}
                 `}
-                    onMouseDown={(e) => e.stopPropagation()}
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    {headerOrNull}
+                    {headerJSX}
                     <section
                         className={styles.modal_content}
                         aria-live='polite'

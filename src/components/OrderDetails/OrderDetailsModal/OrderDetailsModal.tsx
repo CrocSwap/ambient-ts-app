@@ -310,7 +310,7 @@ export default function OrderDetailsModal(props: propsIF) {
     );
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen}>
+        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
             <div className={styles.outer_container}>
                 <OrderDetailsHeader
                     copyOrderDetailsToClipboard={copyOrderDetailsToClipboard}
