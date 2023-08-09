@@ -117,17 +117,18 @@ function Orders(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
+    const ipadView = useMediaQuery('(max-width: 600px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const showColumns = useMediaQuery('(max-width: 1800px)');
+    const showColumns = useMediaQuery('(max-width: 1599px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
+    // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const sideType = (
