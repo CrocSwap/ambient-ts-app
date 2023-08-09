@@ -119,9 +119,9 @@ function Ranges(props: propsIF) {
 
     // ---------------------
     // transactions per page media queries
-    const showColumns = useMediaQuery('(max-width: 1900px)');
+    const showColumns = useMediaQuery('(max-width: 1599px)');
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
 
     useEffect(() => {
         setCurrentPage(1);
@@ -195,16 +195,18 @@ function Ranges(props: propsIF) {
             </div>
         );
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
+    const ipadView = useMediaQuery('(max-width: 600px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
+    const showTimestamp = useMediaQuery('(min-width: 1200px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
+    // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const minMax = (
@@ -225,7 +227,7 @@ function Ranges(props: propsIF) {
         {
             name: 'Last Updated',
             className: '',
-            show: showPair,
+            show: showPair && showTimestamp,
             slug: 'time',
             sortable: true,
         },
@@ -362,6 +364,7 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
+            showTimestamp={showTimestamp}
             showPair={showPair}
         />
     ));
@@ -373,6 +376,7 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
+            showTimestamp={showTimestamp}
             showPair={showPair}
         />
     ));

@@ -120,10 +120,41 @@
 .main_list_container .row_container,
 .main_list_container .header {
     width: 100%;
-    /* table row was living space at end so I changed it to table and added a fixed table layout*/
-    display: table-row;
-    table-layout: fixed;
-    display: table;
+    display: grid;
+    align-items: center;
+}
+/* The reason we use % for the last column is it allows slight overlap.
+ which helps with how the claimable column has a bigger header than the actual icon below. */
+@media only screen and (max-width: 600px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for sub-iPad view (410px)*/
+        grid-template-columns:  2.2fr 1fr 1.8fr 34%
+    }
+}
+
+@media only screen and (max-width: 1199px) and (min-width:601px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for iPad view (580px)*/
+        grid-template-columns:  2fr 1.2fr 1.1fr 1.4fr 1.6fr 1fr 21%;
+    }
+}
+
+@media only screen and (max-width: 1599px) and (min-width:1200px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for merged view (1280px) with sidebar expanded */
+        grid-template-columns:  minmax(100px, 2.3fr) minmax(72px, 1.2fr) minmax(56px,1.1fr) minmax(78px,1.4fr) minmax(86px,1.6fr) minmax(52px,1fr) minmax(103px,25%);
+    }
+}
+
+@media only screen and (min-width: 1600px)  {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for full view (1600px) with sidebar expanded */
+        grid-template-columns: 2.1fr 2.2fr 2.8fr 1.8fr 1.2fr 1.2fr 2fr 2fr 2fr 1.2fr 14%;
+    }
 }
 
 .main_list_container .row_container > li,
