@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { AiOutlineWarning } from 'react-icons/ai';
-import styles from './YourStyles.module.css'; // Import your styles here
-import styled, { css } from 'styled-components';
+import styles from './WarningBox.module.css'; // Import your styles here
 
 interface WarningBoxProps {
     title: string;
     details: string;
-    action: () => void;
+    button: React.ReactNode;
 }
 
 export const WarningBox: React.FC<WarningBoxProps> = ({
     title,
     details,
-    action,
+    button,
 }) => {
     return (
         <div className={` ${styles.warning_box}`}>
@@ -27,7 +26,7 @@ export const WarningBox: React.FC<WarningBoxProps> = ({
                 </div>
                 <p>{details}</p>
             </ul>
-            <button onClick={action}>Accept</button>
+            {button}
         </div>
     );
 };

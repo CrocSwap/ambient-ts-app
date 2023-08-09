@@ -3,12 +3,12 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 
 // START: Import Other Local Files
 import { TokenPairIF } from '../../../utils/interfaces/exports';
-import { AiOutlineWarning } from 'react-icons/ai';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
 import styles from '../../Trade/TradeModules/TradeConfirmationSkeleton.module.css';
+import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 
 interface propsIF {
     initiateSwapMethod: () => Promise<void>;
@@ -142,30 +142,21 @@ export default function ConfirmSwapModal(props: propsIF) {
         : undefined;
 
     const priceIncreaseComponent = (
-        <div className={` ${styles.warning_box}`}>
-            <ul>
-                <div>
-                    <AiOutlineWarning
-                        color='var(--other-red)'
-                        size={20}
-                        style={{ marginRight: '4px' }}
-                    />
-                    Price Updated
-                </div>
-                <p>
-                    The price of {buyTokenData.symbol} has increased by{' '}
-                    {buyTokenPriceChangeString + '%'}
-                </p>
-            </ul>
-            <button
-                onClick={() => {
-                    setBaselineBlockNumber(lastBlockNumber);
-                    setIsWaitingForPriceChangeAckt(false);
-                }}
-            >
-                Accept
-            </button>
-        </div>
+        <WarningBox
+            title='Price Updated'
+            details={`The price of ${buyTokenData.symbol} has increased by
+        ${buyTokenPriceChangeString}%`}
+            button={
+                <button
+                    onClick={() => {
+                        setBaselineBlockNumber(lastBlockNumber);
+                        setIsWaitingForPriceChangeAckt(false);
+                    }}
+                >
+                    Accept
+                </button>
+            }
+        />
     );
 
     const transactionDetails = (
