@@ -5,7 +5,7 @@ import styles from './WarningBox.module.css'; // Import your styles here
 interface WarningBoxProps {
     title: string;
     details: string;
-    button: React.ReactNode;
+    button?: React.ReactNode;
 }
 
 export const WarningBox: React.FC<WarningBoxProps> = ({
@@ -26,7 +26,7 @@ export const WarningBox: React.FC<WarningBoxProps> = ({
                 </div>
                 <p>{details}</p>
             </ul>
-            {button}
+            {button && button}
         </div>
     );
 };
