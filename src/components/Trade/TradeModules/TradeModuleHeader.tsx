@@ -1,36 +1,36 @@
-import { useContext, memo } from 'react';
+import { memo } from 'react';
 import { AiOutlineShareAlt } from 'react-icons/ai';
-import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+import ContentHeader from '../../Global/ContentHeader/ContentHeader';
+import TransactionSettingsModal, {
+    TransactionModuleType,
+} from '../../Global/TransactionSettingsModal/TransactionSettingsModal';
+import ShareModal from '../../Global/ShareModal/ShareModal';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
-import ContentHeader from '../../Global/ContentHeader/ContentHeader';
-import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import Modal from '../../Global/Modal/Modal';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { useModal } from '../../Global/Modal/useModal';
-import ShareModal from '../../Global/ShareModal/ShareModal';
-import TransactionSettings from '../../Global/TransactionSettings/TransactionSettings';
 import styles from './TradeModuleHeader.module.css';
 
 interface propsIF {
     slippage: SlippageMethodsIF;
     bypassConfirm: skipConfirmIF;
-    settingsTitle: 'Swap' | 'Limit Order' | 'Pool' | 'Reposition';
+    settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
 }
 
 function TradeModuleHeader(props: propsIF) {
     const { slippage, bypassConfirm, settingsTitle, isSwapPage } = props;
 
-    const {
-        globalModal: { open: openGlobalModal },
-    } = useContext(AppStateContext);
+    const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
+        useModal();
 
-    const [isModalOpen, openModal, closeModal] = useModal();
+    const [isShareModalOpen, openShareModal, closeShareModal] = useModal();
+
     const dispatch = useAppDispatch();
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -38,94 +38,84 @@ function TradeModuleHeader(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    return (
-        <div className={isSwapPage ? styles.swap_page_header : ''}>
-            <ContentHeader>
-                <AiOutlineShareAlt
-                    className={styles.share_button}
-                    onClick={() => openGlobalModal(<ShareModal />, 'Share')}
-                    id='share_button'
-                    role='button'
-                    tabIndex={0}
-                    aria-label='Share button'
-                />
+    // TODO: refactor this into its own file
+    const settingsSvg = (
+        <svg
+            width='14'
+            height='14'
+            viewBox='0 0 14 14'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+            className={styles.hoverable_icon}
+        >
+            <rect
+                y='9.625'
+                width='8.75'
+                height='1.75'
+                rx='0.875'
+                fill=''
+            ></rect>
+            <rect
+                x='5.25'
+                y='2.625'
+                width='8.75'
+                height='1.75'
+                rx='0.875'
+                fill=''
+            ></rect>
+            <circle cx='12.25' cy='10.5' r='1.75' fill=''></circle>
+            <circle cx='1.75' cy='3.5' r='1.75' fill=''></circle>
+        </svg>
+    );
 
-                {isSwapPage ? (
-                    <span className={styles.title}>Swap</span>
-                ) : (
-                    <div
-                        className={styles.token_info}
-                        onClick={() => dispatch(toggleDidUserFlipDenom())}
-                    >
-                        {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                        {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
-                    </div>
-                )}
-                <IconWithTooltip title='Settings' placement='left'>
-                    <div
-                        onClick={openModal}
-                        style={{ cursor: 'pointer' }}
-                        className={styles.settings_icon}
-                        id='settings_button'
+    return (
+        <>
+            <div className={isSwapPage ? styles.swap_page_header : ''}>
+                <ContentHeader>
+                    <AiOutlineShareAlt
+                        className={styles.share_button}
+                        onClick={openShareModal}
+                        id='share_button'
                         role='button'
                         tabIndex={0}
-                        aria-label='Settings button'
-                    >
-                        <svg
-                            width='14'
-                            height='14'
-                            viewBox='0 0 14 14'
-                            fill='none'
-                            xmlns='http://www.w3.org/2000/svg'
-                            className={styles.hoverable_icon}
+                        aria-label='Share button'
+                    />
+
+                    {isSwapPage ? (
+                        <span className={styles.title}>Swap</span>
+                    ) : (
+                        <div
+                            className={styles.token_info}
+                            onClick={() => dispatch(toggleDidUserFlipDenom())}
                         >
-                            <rect
-                                y='9.625'
-                                width='8.75'
-                                height='1.75'
-                                rx='0.875'
-                                fill=''
-                            ></rect>
-                            <rect
-                                x='5.25'
-                                y='2.625'
-                                width='8.75'
-                                height='1.75'
-                                rx='0.875'
-                                fill=''
-                            ></rect>
-                            <circle
-                                cx='12.25'
-                                cy='10.5'
-                                r='1.75'
-                                fill=''
-                            ></circle>
-                            <circle
-                                cx='1.75'
-                                cy='3.5'
-                                r='1.75'
-                                fill=''
-                            ></circle>
-                        </svg>
-                    </div>
-                </IconWithTooltip>
-                {isModalOpen && (
-                    <Modal
-                        noHeader
-                        title='modal'
-                        onClose={closeModal}
-                        centeredTitle
-                    >
-                        <TransactionSettings
-                            module={settingsTitle}
-                            slippage={slippage}
-                            onClose={closeModal}
-                            bypassConfirm={bypassConfirm}
-                        />
-                    </Modal>
-                )}
-            </ContentHeader>
-        </div>
+                            {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                            {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                        </div>
+                    )}
+                    <IconWithTooltip title='Settings' placement='left'>
+                        <div
+                            onClick={openSettingsModal}
+                            className={`${styles.settings_container}
+                            ${styles.settings_icon}`}
+                            id='settings_button'
+                            role='button'
+                            tabIndex={0}
+                            aria-label='Settings button'
+                        >
+                            {settingsSvg}
+                        </div>
+                    </IconWithTooltip>
+                </ContentHeader>
+            </div>
+            <TransactionSettingsModal
+                module={settingsTitle}
+                slippage={slippage}
+                bypassConfirm={bypassConfirm}
+                isOpen={isSettingsModalOpen}
+                onClose={closeSettingsModal}
+            />
+            <ShareModal isOpen={isShareModalOpen} onClose={closeShareModal} />
+        </>
     );
 }
 

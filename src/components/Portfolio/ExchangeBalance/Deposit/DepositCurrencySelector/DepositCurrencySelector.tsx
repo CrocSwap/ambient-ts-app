@@ -10,11 +10,18 @@ interface propsIF {
     setDepositQty: Dispatch<SetStateAction<string | undefined>>;
     inputValue: string;
     setInputValue: Dispatch<SetStateAction<string>>;
+    setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function DepositCurrencySelector(props: propsIF) {
-    const { disable, selectedToken, setDepositQty, inputValue, setInputValue } =
-        props;
+    const {
+        disable,
+        selectedToken,
+        setDepositQty,
+        inputValue,
+        setInputValue,
+        setTokenModalOpen,
+    } = props;
 
     const handleOnChange = (input: string) => {
         setInputValue(input);
@@ -51,6 +58,7 @@ export default function DepositCurrencySelector(props: propsIF) {
             parseInput={parseInput}
             disable={disable}
             token={selectedToken}
+            setTokenModalOpen={setTokenModalOpen}
         />
     );
 }
