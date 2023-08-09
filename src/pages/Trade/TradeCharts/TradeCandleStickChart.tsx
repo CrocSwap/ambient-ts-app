@@ -27,6 +27,7 @@ import {
     liquidityChartData,
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -130,6 +131,8 @@ function TradeCandleStickChart(props: propsIF) {
         poolPriceNonDisplay === undefined
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    const mobileView = useMediaQuery('(max-width: 600px)');
 
     useEffect(() => {
         setIsLoading(true);
@@ -523,7 +526,7 @@ function TradeCandleStickChart(props: propsIF) {
         if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
         }
-    }, [unparsedCandleData === undefined]);
+    }, [unparsedCandleData === undefined, mobileView]);
 
     // Liq Scale
     useEffect(() => {
@@ -575,7 +578,7 @@ function TradeCandleStickChart(props: propsIF) {
             period
         ) {
             const temp = [...unparsedCandleData];
-            const boundaryCandles = temp.splice(0, 99);
+            const boundaryCandles = temp.splice(0, mobileView ? 30 : 99);
 
             const priceRange = d3fc
                 .extentLinear()
@@ -597,7 +600,10 @@ function TradeCandleStickChart(props: propsIF) {
                 .extentLinear()
                 .accessors([(d: any) => d.time * 1000])
                 .padUnit('domain')
-                .pad([period * 1000, (period / 2) * 80 * 1000]);
+                .pad([
+                    period * 1000,
+                    (period / 2) * (mobileView ? 30 : 80) * 1000,
+                ]);
 
             let xScale: any = undefined;
 
