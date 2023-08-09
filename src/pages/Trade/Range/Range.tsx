@@ -59,6 +59,7 @@ import {
     getPinnedPriceValuesFromTicks,
     getPinnedPriceValuesFromDisplayPrices,
 } from './rangeFunctions';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -70,8 +71,7 @@ function Range() {
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { isPoolInitialized, poolPriceDisplay, ambientApy, dailyVol } =
-        useContext(PoolContext);
+    const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
     const {
         simpleRangeWidth,
         setSimpleRangeWidth,
@@ -103,6 +103,7 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const dispatch = useAppDispatch();
     const [isOpen, openModal, closeModal] = useModal();
@@ -1123,6 +1124,8 @@ function Range() {
         ) {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
+        } else if (!isPoolInitialized) {
+            setRangeButtonErrorMessage('Pool Not Initialized');
         } else {
             if (isWithdrawTokenAFromDexChecked) {
                 if (
@@ -1376,14 +1379,16 @@ function Range() {
                 </>
             }
             inputOptions={
-                <>
+                <section
+                    className={!isPoolInitialized && styles.advanced_disabled}
+                >
                     {
                         <div className={styles.denomination_switch_container}>
                             <AdvancedModeToggle advancedMode={advancedMode} />
                         </div>
                     }
                     {advancedMode ? advancedModeContent : baseModeContent}
-                </>
+                </section>
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
