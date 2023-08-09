@@ -2,11 +2,8 @@ import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 import { motion } from 'framer-motion';
 import { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import Button from '../../../components/Global/Button/Button';
-// import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import { useModal } from '../../../components/Global/Modal/useModal';
-// import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
@@ -14,7 +11,7 @@ import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/Range
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
+import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
 import { IS_LOCAL_ENV } from '../../../constants';
@@ -59,6 +56,7 @@ import {
     getPinnedPriceValuesFromTicks,
     getPinnedPriceValuesFromDisplayPrices,
 } from './rangeFunctions';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -70,8 +68,7 @@ function Range() {
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { isPoolInitialized, poolPriceDisplay, ambientApy, dailyVol } =
-        useContext(PoolContext);
+    const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
     const {
         simpleRangeWidth,
         setSimpleRangeWidth,
@@ -103,6 +100,7 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const dispatch = useAppDispatch();
     const [isOpen, openModal, closeModal] = useModal();
@@ -123,7 +121,6 @@ function Range() {
             advancedMode,
             liquidityFee,
         },
-        receiptData: { sessionReceipts, pendingTransactions },
         graphData,
     } = useAppSelector((state) => state);
 
@@ -183,12 +180,9 @@ function Range() {
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
-    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
-    const [showConfirmation, setShowConfirmation] = useState(true);
-    const [showBypassConfirmButton, setShowBypassConfirmButton] =
-        useState(false);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -325,10 +319,6 @@ function Range() {
         : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
     const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
 
-    let receiveReceiptHashes: Array<string> = [];
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
     const depositSkew = useMemo(
         () =>
             concDepositSkew(
@@ -481,8 +471,11 @@ function Range() {
     }, [rangeWidthPercentage]);
 
     useEffect(() => {
+        setShowConfirmation(false);
+    }, [bypassConfirmRange.isEnabled]);
+
+    useEffect(() => {
         setNewRangeTransactionHash('');
-        setShowBypassConfirmButton(false);
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
 
@@ -610,30 +603,12 @@ function Range() {
     }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
-        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
-    }, [sessionReceipts]);
-
-    useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
 
     useEffect(() => {
         setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
     }, [tokenBDexBalance]);
-
-    useEffect(() => {
-        if (
-            !currentPendingTransactionsArray.length &&
-            !isWaitingForWallet &&
-            txErrorCode === ''
-        ) {
-            setShowBypassConfirmButton(false);
-        }
-    }, [
-        currentPendingTransactionsArray.length,
-        isWaitingForWallet,
-        txErrorCode === '',
-    ]);
 
     useEffect(() => {
         if (advancedMode) {
@@ -984,15 +959,16 @@ function Range() {
     };
 
     const resetConfirmation = () => {
-        setShowConfirmation(true);
+        setShowConfirmation(false);
         setTxErrorCode('');
+        setNewRangeTransactionHash('');
     };
 
     const sendTransaction = async () => {
         if (!crocEnv) return;
 
         resetConfirmation();
-        setIsWaitingForWallet(true);
+        setShowConfirmation(true);
 
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
 
@@ -1059,14 +1035,12 @@ function Range() {
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
                     }),
                 );
-            setIsWaitingForWallet(false);
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setIsWaitingForWallet(false);
         }
 
         let receipt;
@@ -1093,15 +1067,14 @@ function Range() {
         }
     };
 
-    const handleModalClose = () => {
-        setNewRangeTransactionHash('');
+    const handleModalOpen = () => {
         resetConfirmation();
-        closeModal();
+        openModal();
     };
 
-    const handleRangeButtonClickWithBypass = () => {
-        setShowBypassConfirmButton(true);
-        sendTransaction();
+    const handleModalClose = () => {
+        resetConfirmation();
+        closeModal();
     };
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
@@ -1123,6 +1096,8 @@ function Range() {
         ) {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
+        } else if (!isPoolInitialized) {
+            setRangeButtonErrorMessage('Pool Not Initialized');
         } else {
             if (isWithdrawTokenAFromDexChecked) {
                 if (
@@ -1323,16 +1298,6 @@ function Range() {
                     />
                 </div>
             </motion.div>
-            {/* <DividerDark addMarginTop /> */}
-
-            {/* <AdvancedPriceInfo
-                poolPriceDisplay={getFormattedNumber({
-                    value: displayPriceWithDenom,
-                })}
-                isTokenABase={isTokenABase}
-                isOutOfRange={isOutOfRange}
-                aprPercentage={aprPercentage}
-            /> */}
         </>
     );
 
@@ -1376,29 +1341,23 @@ function Range() {
                 </>
             }
             inputOptions={
-                <>
+                <section
+                    className={!isPoolInitialized && styles.advanced_disabled}
+                >
                     {
                         <div className={styles.denomination_switch_container}>
                             <AdvancedModeToggle advancedMode={advancedMode} />
                         </div>
                     }
                     {advancedMode ? advancedModeContent : baseModeContent}
-                </>
+                </section>
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
                 isOpen ? (
                     <ConfirmRangeModal
-                        tokenAQtyLocal={
-                            isTokenAInputDisabled
-                                ? 0
-                                : parseFloat(tokenAInputQty)
-                        }
-                        tokenBQtyLocal={
-                            isTokenBInputDisabled
-                                ? 0
-                                : parseFloat(tokenBInputQty)
-                        }
+                        tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
+                        tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
                         spotPriceDisplay={getFormattedNumber({
                             value: displayPriceWithDenom,
                         })}
@@ -1411,7 +1370,6 @@ function Range() {
                         newRangeTransactionHash={newRangeTransactionHash}
                         resetConfirmation={resetConfirmation}
                         showConfirmation={showConfirmation}
-                        setShowConfirmation={setShowConfirmation}
                         txErrorCode={txErrorCode}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
@@ -1452,8 +1410,8 @@ function Range() {
                     action={
                         areBothAckd
                             ? bypassConfirmRange.isEnabled
-                                ? handleRangeButtonClickWithBypass
-                                : openModal
+                                ? sendTransaction
+                                : handleModalOpen
                             : ackAsNeeded
                     }
                     disabled={
@@ -1466,14 +1424,13 @@ function Range() {
                 />
             }
             bypassConfirm={
-                showBypassConfirmButton ? (
-                    <BypassConfirmButton
+                showConfirmation && bypassConfirmRange.isEnabled ? (
+                    <SubmitTransaction
+                        type='Range'
                         newTransactionHash={newRangeTransactionHash}
                         txErrorCode={txErrorCode}
                         resetConfirmation={resetConfirmation}
-                        setShowBypassConfirmButton={setShowBypassConfirmButton}
                         sendTransaction={sendTransaction}
-                        setNewTransactionHash={setNewRangeTransactionHash}
                         transactionPendingDisplayString={`Minting a Position with ${
                             tokenAInputQty ?? '0'
                         } ${tokenA.symbol} and ${tokenBInputQty ?? '0'} ${

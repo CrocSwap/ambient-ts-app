@@ -1,18 +1,17 @@
 import styles from './TransactionSubmitted.module.css';
-import Animation from '../../Global/Animation/Animation';
-import completed from '../../../assets/animations/completed.json';
-
+import Animation from '../../../../Global/Animation/Animation';
+import completed from '../../../../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import { useContext } from 'react';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 
-interface TransactionSubmittedProps {
+interface PropsIF {
     hash: string;
     content: string;
     noAnimation?: boolean;
 }
 
-export default function TxSubmittedSimplify(props: TransactionSubmittedProps) {
+export default function TxSubmittedSimplify(props: PropsIF) {
     const { hash, content, noAnimation } = props;
     const {
         chainData: { blockExplorer },

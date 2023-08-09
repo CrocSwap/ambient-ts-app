@@ -1,8 +1,10 @@
 import {
+    useContext,
     useState,
     useEffect,
     ChangeEvent,
     memo,
+    useRef,
     Dispatch,
     SetStateAction,
 } from 'react';
@@ -14,6 +16,11 @@ import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
 import styles from './TokenInputQuantity.module.css';
+import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import { Link } from 'react-router-dom';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { useModal } from '../Modal/useModal';
 
 interface propsIF {
@@ -50,6 +57,13 @@ function TokenInputQuantity(props: propsIF) {
         parseInput,
         setTokenModalOpen = () => null,
     } = props;
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
+    const { tradeData } = useAppSelector((state) => state);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
     const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
 
@@ -105,6 +119,56 @@ function TokenInputQuantity(props: propsIF) {
             <div className={styles.token_list_text}>{token.symbol}</div>
         );
 
+    const tokenSelectRef = useRef(null);
+
+    const poolNotInitializedContent = tokenSelectRef.current && (
+        <div className={styles.disabled_text}>
+            This pool has not been initialized.
+            <div className={styles.warning_text}>
+                <Link
+                    to={linkGenInitPool.getFullURL({
+                        chain: chainId,
+                        tokenA: tradeData.tokenA.address,
+                        tokenB: tradeData.tokenB.address,
+                    })}
+                    className={styles.warning_text}
+                >
+                    Initialize it to continue.
+                </Link>
+            </div>
+        </div>
+    );
+
+    const input = (
+        <input
+            id={fieldId ? `${fieldId}_qty` : undefined}
+            className={styles.input}
+            placeholder={isLoading ? '' : '0.0'}
+            onChange={(event) => onChange(event)}
+            onBlur={(event) => onBlur(event.target.value)}
+            value={isLoading ? '' : displayValue}
+            type='number'
+            step='any'
+            inputMode='decimal'
+            autoComplete='off'
+            autoCorrect='off'
+            min='0'
+            minLength={1}
+            disabled={disable}
+        />
+    );
+    const inputContent = (() => {
+        switch (true) {
+            case !isPoolInitialized:
+                return poolNotInitializedContent;
+            case disabledContent:
+                return disabledContent;
+            case isPoolInitialized:
+                return input;
+            default:
+                return input;
+        }
+    })();
     return (
         <div className={styles.container} id={fieldId}>
             {label && <span className={styles.label}>{label}</span>}
@@ -124,28 +188,7 @@ function TokenInputQuantity(props: propsIF) {
                                 />
                             </div>
                         ) : (
-                            <>
-                                {disabledContent && disabledContent}
-
-                                <input
-                                    id={fieldId ? `${fieldId}_qty` : undefined}
-                                    className={styles.input}
-                                    placeholder={isLoading ? '' : '0.0'}
-                                    onChange={(event) => onChange(event)}
-                                    onBlur={(event) =>
-                                        onBlur(event.target.value)
-                                    }
-                                    value={isLoading ? '' : displayValue}
-                                    type='number'
-                                    step='any'
-                                    inputMode='decimal'
-                                    autoComplete='off'
-                                    autoCorrect='off'
-                                    min='0'
-                                    minLength={1}
-                                    disabled={disable}
-                                />
-                            </>
+                            inputContent
                         )}
                     </div>
                 </div>
@@ -155,6 +198,7 @@ function TokenInputQuantity(props: propsIF) {
                     onClick={openTokenSelect}
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
+                    ref={tokenSelectRef}
                 >
                     <TokenIcon
                         src={uriToHttp(token.logoURI)}
