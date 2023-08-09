@@ -159,14 +159,16 @@ export default function SubmitTransaction(props: propsIF) {
                     </section>
                 )}
                 <div className={styles.action_button_container}>
-                    {!isTransactionPending && !disableSubmitAgain && (
+                    {!isTransactionPending && (
                         <span className={styles.close_icon_container}>
                             <button
                                 onClick={() => {
                                     resetConfirmation();
                                 }}
                             >
-                                Submit another transaction
+                                {disableSubmitAgain
+                                    ? 'Reset'
+                                    : 'Submit another transaction'}
                             </button>
                         </span>
                     )}
