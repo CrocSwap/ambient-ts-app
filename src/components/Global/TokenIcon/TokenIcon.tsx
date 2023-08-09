@@ -1,4 +1,4 @@
-import { Suspense, memo, useState } from 'react';
+import { Suspense, memo, useEffect, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { IS_LOCAL_ENV } from '../../../constants';
@@ -44,6 +44,10 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
             );
         setFetchError(true);
     };
+
+    useEffect(() => {
+        setFetchError(false);
+    }, [src]);
 
     const noTokenIcon: JSX.Element = (
         <NoTokenIcon tokenInitial={alt?.charAt(0)} width={getIconWidth(size)} />
