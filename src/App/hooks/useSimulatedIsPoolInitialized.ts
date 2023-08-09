@@ -18,5 +18,7 @@ export const useSimulatedIsPoolInitialized = () => {
         return () => clearTimeout(timeoutId);
     }, [poolContext.pool]);
 
-    return simulatedIsPoolInitialized || poolContext.isPoolInitialized;
+    return poolContext.isPoolInitialized === undefined
+        ? simulatedIsPoolInitialized
+        : poolContext.isPoolInitialized;
 };

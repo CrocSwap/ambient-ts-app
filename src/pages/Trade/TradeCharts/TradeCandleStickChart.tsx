@@ -64,7 +64,8 @@ function TradeCandleStickChart(props: propsIF) {
         useContext(CandleContext);
     const { chartSettings } = useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
-    const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
+    const { poolPriceDisplay: poolPriceWithoutDenom, isPoolInitialized } =
+        useContext(PoolContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -767,6 +768,7 @@ function TradeCandleStickChart(props: propsIF) {
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading &&
                 candleData !== undefined &&
+                isPoolInitialized !== undefined &&
                 prevPeriod === period &&
                 !isFetchingCandle ? (
                     <Chart
