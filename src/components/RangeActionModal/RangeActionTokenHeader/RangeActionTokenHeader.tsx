@@ -1,7 +1,6 @@
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './RangeActionTokenHeader.module.css';
-import { RiListSettingsLine } from 'react-icons/ri';
 
 interface RangeActionTokenHeaderIF {
     isPositionInRange: boolean;
