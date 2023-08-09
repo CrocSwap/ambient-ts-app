@@ -19,10 +19,7 @@ export default function LimitActionTokenHeader(
     const dispatch = useAppDispatch();
 
     return (
-        <div
-            className={styles.container}
-            style={{ paddingBottom: '1rem', margin: '0 1rem 1rem' }}
-        >
+        <div className={styles.container}>
             <div
                 className={styles.token_info}
                 onClick={() => {

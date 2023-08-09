@@ -1,17 +1,9 @@
 import styles from './TransactionException.module.css';
-import Button from '../Button/Button';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { ZERO_ADDRESS } from '../../../constants';
-import DividerDark from '../DividerDark/DividerDark';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { ZERO_ADDRESS } from '../../../../../constants';
+import DividerDark from '../../../../Global/DividerDark/DividerDark';
 
-interface propsIF {
-    resetConfirmation: () => void;
-    initiateTx?: () => void;
-}
-
-export default function TransactionException(props: propsIF) {
-    const { resetConfirmation, initiateTx } = props;
-
+export default function TransactionException() {
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -27,8 +19,6 @@ export default function TransactionException(props: propsIF) {
 
     return (
         <div className={styles.removal_pending}>
-            <h2>Transaction Exception</h2>
-
             {rangeModuleActive && isEthSecondary ? (
                 <>
                     <p>
@@ -59,14 +49,6 @@ export default function TransactionException(props: propsIF) {
                     </p>
                 </>
             )}
-            <Button
-                flat
-                title='Try Again'
-                action={() => {
-                    if (initiateTx) initiateTx();
-                    resetConfirmation();
-                }}
-            />
         </div>
     );
 }
