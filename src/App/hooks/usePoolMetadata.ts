@@ -208,7 +208,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                 loadingStatus: true,
             }),
         );
-    }, [tradeData.tokenA.address, tradeData.tokenB.address]);
+    }, [tradeData.baseToken.address, tradeData.quoteToken.address]);
 
     // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
     // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
