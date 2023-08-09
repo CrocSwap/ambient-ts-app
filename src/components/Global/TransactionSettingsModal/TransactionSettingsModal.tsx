@@ -7,24 +7,30 @@ import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 
 // START: Import Local Files
-import styles from './TransactionSettings.module.css';
+import styles from './TransactionSettingsModal.module.css';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
-import { VscClose } from 'react-icons/vsc';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { FiAlertTriangle } from 'react-icons/fi';
+import Modal from '../Modal/Modal';
+
+export type TransactionModuleType =
+    | 'Swap'
+    | 'Limit Order'
+    | 'Pool'
+    | 'Reposition';
 
 // interface for component props
 interface propsIF {
-    module: 'Swap' | 'Limit Order' | 'Pool' | 'Reposition';
+    module: TransactionModuleType;
     slippage: SlippageMethodsIF;
-    onClose: () => void;
     bypassConfirm: skipConfirmIF;
+    onClose: () => void;
 }
 
-export default function TransactionSettings(props: propsIF) {
+export default function TransactionSettingsModal(props: propsIF) {
     const { module, slippage, onClose, bypassConfirm } = props;
     const {
         chainData: { chainId },
@@ -61,17 +67,7 @@ export default function TransactionSettings(props: propsIF) {
     } ${module} confirmation modal`;
 
     return (
-        <section>
-            <div className={styles.settings_title}>
-                <div style={{ width: '22px' }} />
-                {module + ' Settings'}
-                <VscClose
-                    size={22}
-                    role='button'
-                    onClick={onClose}
-                    className={styles.close_button}
-                />
-            </div>
+        <Modal title={`${module} Settings`} onClose={onClose}>
             <div className={styles.settings_container}>
                 <section>
                     {module !== 'Limit Order' && (
@@ -121,6 +117,6 @@ export default function TransactionSettings(props: propsIF) {
                     />
                 </div>
             </div>
-        </section>
+        </Modal>
     );
 }

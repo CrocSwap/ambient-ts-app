@@ -2,13 +2,13 @@ import React, { useContext, useState } from 'react';
 import styles from './PageHeaderMobile.module.css';
 import { FaWallet } from 'react-icons/fa';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import logo from '../../../assets/images/logos/ambient_logo.png';
+import logo from '../../../assets/images/logos/logo_mark.svg';
 import NavbarDropdownMenu from './NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from './NavItem/NavItem';
 import { FiMenu } from 'react-icons/fi';
 import trimString from '../../../utils/functions/trimString';
 import { Link, useLocation } from 'react-router-dom';
-import { ExchangeBalanceModal } from './ExchangeBalanceModal/ExchangeBalanceModal';
+import { ExchangeBalanceDropdown } from './ExchangeBalanceDropdown/ExchangeBalanceDropdown';
 
 interface PropsIF {
     clickLogout: () => Promise<void>;
@@ -24,6 +24,7 @@ const PageHeaderMobile = (props: PropsIF) => {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+
     const [openNavbarMenu, setOpenNavbarMenu] = useState(false);
     const connectedEnsOrAddressTruncated = ensName
         ? trimString(ensName, 10, 3, '…')
@@ -68,10 +69,9 @@ const PageHeaderMobile = (props: PropsIF) => {
                         isUserLoggedIn={isUserLoggedIn}
                         clickLogout={clickLogout}
                         setIsNavbarMenuOpen={setOpenNavbarMenu}
-                        openWagmiModal={openWagmiModal}
                     />
                 </NavItem>
-                {isUserLoggedIn && <ExchangeBalanceModal />}
+                {isUserLoggedIn && <ExchangeBalanceDropdown />}
             </div>
         </div>
     );

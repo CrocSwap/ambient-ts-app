@@ -1,4 +1,4 @@
-import styles from './TransactionDetails.module.css';
+import styles from './TransactionDetailsModal.module.css';
 import { useState, useRef, useContext, useEffect } from 'react';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
@@ -16,15 +16,18 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import Modal from '../Modal/Modal';
 
 interface propsIF {
     tx: TransactionIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
+    onClose: () => void;
 }
 
-export default function TransactionDetails(props: propsIF) {
-    const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView } = props;
+export default function TransactionDetailsModal(props: propsIF) {
+    const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
+        props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -68,11 +71,6 @@ export default function TransactionDetails(props: propsIF) {
             .then((response) => response?.json())
             .then(async (json) => {
                 if (!crocEnv || !json?.data) {
-                    // setBaseCollateralDisplay(undefined);
-                    // setQuoteCollateralDisplay(undefined);
-                    // setUsdValue(undefined);
-                    // setBaseFeesDisplay(undefined);
-                    // setQuoteFeesDisplay(undefined);
                     return;
                 }
 
@@ -88,50 +86,12 @@ export default function TransactionDetails(props: propsIF) {
                     cachedTokenDetails,
                     cachedEnsResolve,
                 );
-                // const liqBaseNum =
-                //     positionStats.positionLiqBaseDecimalCorrected;
-                // const liqQuoteNum =
-                //     positionStats.positionLiqQuoteDecimalCorrected;
-
-                // const liqBaseDisplay = getFormattedNumber({
-                //     value: liqBaseNum,
-                // });
-                // setBaseCollateralDisplay(liqBaseDisplay);
-
-                // const liqQuoteDisplay = getFormattedNumber({
-                //     value: liqQuoteNum,
-                // });
-                // setQuoteCollateralDisplay(liqQuoteDisplay);
-
-                // setUsdValue(
-                //     getFormattedNumber({
-                //         value: position.totalValueUSD,
-                //         isUSD: true,
-                //     }),
-                // );
 
                 setUpdatedPositionApy(
                     positionStats.aprEst
                         ? positionStats.aprEst * 100
                         : undefined,
                 );
-
-                // const baseFeeDisplayNum =
-                //     positionStats.feesLiqBaseDecimalCorrected;
-                // const quoteFeeDisplayNum =
-                //     positionStats.feesLiqQuoteDecimalCorrected;
-
-                // const baseFeeDisplayTruncated = getFormattedNumber({
-                //     value: baseFeeDisplayNum,
-                //     zeroDisplay: '0',
-                // });
-                // setBaseFeesDisplay(baseFeeDisplayTruncated);
-
-                // const quoteFeesDisplayTruncated = getFormattedNumber({
-                //     value: quoteFeeDisplayNum,
-                //     zeroDisplay: '0',
-                // });
-                // setQuoteFeesDisplay(quoteFeesDisplayTruncated);
             })
             .catch(console.error);
     }, [lastBlockNumber, crocEnv, chainId]);
@@ -200,20 +160,22 @@ export default function TransactionDetails(props: propsIF) {
         setShowShareComponent,
         showShareComponent,
         handleCopyAddress,
+        onClose,
     };
 
     return (
-        <div className={styles.outer_container}>
-            <TransactionDetailsHeader {...transactionDetailsHeaderProps} />
-
-            {showShareComponent ? (
-                shareComponent
-            ) : (
-                <TransactionDetailsSimplify
-                    tx={tx}
-                    isAccountView={isAccountView}
-                />
-            )}
-        </div>
+        <Modal usingCustomHeader onClose={onClose}>
+            <div className={styles.outer_container}>
+                <TransactionDetailsHeader {...transactionDetailsHeaderProps} />
+                {showShareComponent ? (
+                    shareComponent
+                ) : (
+                    <TransactionDetailsSimplify
+                        tx={tx}
+                        isAccountView={isAccountView}
+                    />
+                )}
+            </div>
+        </Modal>
     );
 }

@@ -1,0 +1,80 @@
+.range_slider {
+    width: 100%; /* Specific width is required for Firefox. */
+    height: 10px;
+    border-radius: 10px;
+    outline: none;
+    box-shadow: var(--dark-box-shadow);
+    background: var(--dark1); /* Otherwise white in Chrome */
+    -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+}
+
+.range_slider:focus {
+    outline: none;
+}
+
+/* Special styling for WebKit/Blink */
+.range_slider::-webkit-slider-thumb {
+    background: var(--dark2);
+    width: 20px;
+    height: 36px;
+    margin-top: -14px;
+    cursor: grab;
+    border: 1px solid var(--accent5);
+    box-sizing: border-box;
+    box-shadow: var(--dark-box-shadow);
+    border-radius: 10px;
+    -webkit-appearance: none;
+}
+
+.range_slider_grab::-webkit-slider-thumb {
+    cursor: grab;
+}
+
+/* All the same stuff for Firefox */
+.range_slider_grab::-moz-range-thumb {
+    cursor: grab;
+}
+
+.range_slider_grabbing::-webkit-slider-thumb {
+    cursor: grabbing;
+}
+
+/* All the same stuff for Firefox */
+.range_slider_grabbing::-moz-range-thumb {
+    cursor: grabbing;
+}
+
+/* All the same stuff for Firefox */
+.range_slider::-moz-range-thumb {
+    background: var(--dark2);
+    width: 18px;
+    height: 36px;
+    border: 1px solid var(--accent5);
+    border-radius: 10px;
+    box-shadow: var(--dark-box-shadow);
+}
+
+.range_slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8.4px;
+    cursor: pointer;
+    border: var(--dark-border);
+    border-radius: 10px;
+    background: var(--accent1);
+    box-shadow: var(--dark-box-shadow);
+}
+
+.range_slider::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    cursor: pointer;
+    border: var(--dark-border);
+    border-radius: 10px;
+    background: var(--accent1);
+    box-shadow: var(--dark-box-shadow);
+}
+
+.range_slider:focus::-webkit-slider-runnable-track {
+    background: var(--accent1); /* Otherwise white in Chrome */
+    border-radius: 10px;
+}

@@ -47,17 +47,12 @@ interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string | undefined;
     connectedAccountActive: boolean;
-    openTokenModal: () => void;
 }
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
-    const {
-        resolvedAddressTokens,
-        resolvedAddress,
-        connectedAccountActive,
-        openTokenModal,
-    } = props;
+    const { resolvedAddressTokens, resolvedAddress, connectedAccountActive } =
+        props;
 
     const dispatch = useAppDispatch();
     const {
@@ -292,7 +287,6 @@ export default function PortfolioTabs(props: propsIF) {
         resolvedAddressTokens: resolvedAddressTokens,
         connectedAccountActive: connectedAccountActive,
         resolvedAddress: resolvedAddress ?? '',
-        openTokenModal: openTokenModal,
         cachedFetchTokenPrice: cachedFetchTokenPrice,
     };
 
