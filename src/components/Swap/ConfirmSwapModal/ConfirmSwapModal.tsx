@@ -27,6 +27,7 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import Modal from '../../Global/Modal/Modal';
 
 interface propsIF {
     initiateSwapMethod: () => void;
@@ -44,6 +45,8 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
+    isOpen: boolean;
+    onClose?: () => void;
     isTokenAPrimary: boolean;
 }
 
@@ -64,6 +67,8 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
+        isOpen = false,
+        onClose = () => null,
         isTokenAPrimary,
     } = props;
 
@@ -323,43 +328,45 @@ export default function ConfirmSwapModal(props: propsIF) {
         : confirmSendMessage;
 
     return (
-        <div
-            className={styles.modal_container}
-            aria-label='Swap Confirmation modal'
-        >
-            <section
-                className={styles.modal_content}
-                aria-live='polite'
-                aria-atomic='true'
-                aria-relevant='additions text'
+        <Modal title='Swap Confirmation' onClose={onClose} isOpen={isOpen}>
+            <div
+                className={styles.modal_container}
+                aria-label='Swap Confirmation modal'
             >
-                {showConfirmation ? fullTxDetails2 : confirmationDisplay}
-            </section>
-            <footer className={styles.modal_footer}>
-                {showConfirmation &&
-                    (!isWaitingForPriceChangeAckt ? (
-                        <Button
-                            title='Submit Swap'
-                            action={() => {
-                                // if this modal is launched we can infer user wants confirmation
-                                // if user enables bypass, update all settings in parallel
-                                // otherwise do not not make any change to persisted preferences
-                                if (tempBypassConfirm) {
-                                    bypassConfirmSwap.enable();
-                                    bypassConfirmLimit.enable();
-                                    bypassConfirmRange.enable();
-                                    bypassConfirmRepo.enable();
-                                }
-                                initiateSwapMethod();
-                                setShowConfirmation(false);
-                            }}
-                            flat
-                            disabled={isWaitingForPriceChangeAckt}
-                        />
-                    ) : (
-                        priceIncreaseComponent
-                    ))}
-            </footer>
-        </div>
+                <section
+                    className={styles.modal_content}
+                    aria-live='polite'
+                    aria-atomic='true'
+                    aria-relevant='additions text'
+                >
+                    {showConfirmation ? fullTxDetails2 : confirmationDisplay}
+                </section>
+                <footer className={styles.modal_footer}>
+                    {showConfirmation &&
+                        (!isWaitingForPriceChangeAckt ? (
+                            <Button
+                                title='Submit Swap'
+                                action={() => {
+                                    // if this modal is launched we can infer user wants confirmation
+                                    // if user enables bypass, update all settings in parallel
+                                    // otherwise do not not make any change to persisted preferences
+                                    if (tempBypassConfirm) {
+                                        bypassConfirmSwap.enable();
+                                        bypassConfirmLimit.enable();
+                                        bypassConfirmRange.enable();
+                                        bypassConfirmRepo.enable();
+                                    }
+                                    initiateSwapMethod();
+                                    setShowConfirmation(false);
+                                }}
+                                flat
+                                disabled={isWaitingForPriceChangeAckt}
+                            />
+                        ) : (
+                            priceIncreaseComponent
+                        ))}
+                </footer>
+            </div>
+        </Modal>
     );
 }

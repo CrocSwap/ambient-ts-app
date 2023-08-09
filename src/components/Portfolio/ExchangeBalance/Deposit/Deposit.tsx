@@ -41,6 +41,7 @@ interface propsIF {
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     selectedTokenDecimals: number;
+    setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Deposit(props: propsIF) {
@@ -51,6 +52,7 @@ export default function Deposit(props: propsIF) {
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
         selectedTokenDecimals,
+        setTokenModalOpen = () => null,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -391,6 +393,7 @@ export default function Deposit(props: propsIF) {
                 setDepositQty={setDepositQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
+                setTokenModalOpen={setTokenModalOpen}
             />
             <div className={styles.additional_info}>
                 <div

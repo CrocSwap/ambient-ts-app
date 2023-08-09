@@ -370,10 +370,13 @@ function Trade() {
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                 <div className={styles.resizableParent}>
                     {!isPoolInitialized && poolNotInitContent}
+
                     {isPoolInitialized && (
                         <Resizable
                             className={styles.chartBox}
-                            enable={{ bottom: true }}
+                            enable={{
+                                bottom: !isChartFullScreen && !isCandleDataNull,
+                            }}
                             size={{
                                 width: '100%',
                                 height: chartHeights.current,
@@ -413,7 +416,7 @@ function Trade() {
                                 }
                             }}
                             handleClasses={
-                                isChartFullScreen
+                                isChartFullScreen || isCandleDataNull
                                     ? undefined
                                     : { bottom: styles.resizableBox }
                             }

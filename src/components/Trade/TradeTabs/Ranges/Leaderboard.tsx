@@ -1,6 +1,3 @@
-/* eslint-disable no-irregular-whitespace */
-// todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
-
 // START: Import React and Dongles
 import { useContext, useEffect, useState, memo } from 'react';
 
@@ -75,17 +72,11 @@ function Leaderboard() {
         </div>
     );
 
-    // ----------------------
-
-    // const sidebarOpen = false;
-
     const ipadView = useMediaQuery('(max-width: 580px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
     const showColumns = useMediaQuery('(max-width: 1900px)');
     const phoneScreen = useMediaQuery('(max-width: 500px)');
-
-    // const showColumns = sidebarOpen || desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -210,7 +201,6 @@ function Leaderboard() {
         },
         {
             name: 'Status',
-            // name: ' ',
             className: '',
             show: true,
             slug: 'status',

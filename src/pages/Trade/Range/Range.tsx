@@ -5,7 +5,6 @@ import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
 import Button from '../../../components/Global/Button/Button';
 // import DividerDark from '../../../components/Global/DividerDark/DividerDark';
-import Modal from '../../../components/Global/Modal/Modal';
 import { useModal } from '../../../components/Global/Modal/useModal';
 // import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
@@ -107,11 +106,8 @@ function Range() {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const dispatch = useAppDispatch();
-    const [
-        isConfirmationModalOpen,
-        openConfirmationModal,
-        closeConfirmationModal,
-    ] = useModal();
+    const [isOpen, openModal, closeModal] = useModal();
+
     const {
         tradeData: {
             isDenomBase,
@@ -1099,9 +1095,9 @@ function Range() {
     };
 
     const handleModalClose = () => {
-        closeConfirmationModal();
         setNewRangeTransactionHash('');
         resetConfirmation();
+        closeModal();
     };
 
     const handleRangeButtonClickWithBypass = () => {
@@ -1396,53 +1392,43 @@ function Range() {
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
-                isConfirmationModalOpen ? (
-                    <Modal
-                        onClose={handleModalClose}
-                        title={'Pool Confirmation'}
-                        centeredTitle
-                    >
-                        <ConfirmRangeModal
-                            tokenAQtyLocal={
-                                isTokenAInputDisabled
-                                    ? 0
-                                    : parseFloat(tokenAInputQty)
-                            }
-                            tokenBQtyLocal={
-                                isTokenBInputDisabled
-                                    ? 0
-                                    : parseFloat(tokenBInputQty)
-                            }
-                            spotPriceDisplay={getFormattedNumber({
-                                value: displayPriceWithDenom,
-                            })}
-                            isTokenABase={isTokenABase}
-                            isAmbient={isAmbient}
-                            isAdd={isAdd}
-                            maxPriceDisplay={maxPriceDisplay}
-                            minPriceDisplay={minPriceDisplay}
-                            sendTransaction={sendTransaction}
-                            newRangeTransactionHash={newRangeTransactionHash}
-                            resetConfirmation={resetConfirmation}
-                            showConfirmation={showConfirmation}
-                            setShowConfirmation={setShowConfirmation}
-                            txErrorCode={txErrorCode}
-                            isInRange={!isOutOfRange}
-                            pinnedMinPriceDisplayTruncatedInBase={
-                                pinnedMinPriceDisplayTruncatedInBase
-                            }
-                            pinnedMinPriceDisplayTruncatedInQuote={
-                                pinnedMinPriceDisplayTruncatedInQuote
-                            }
-                            pinnedMaxPriceDisplayTruncatedInBase={
-                                pinnedMaxPriceDisplayTruncatedInBase
-                            }
-                            pinnedMaxPriceDisplayTruncatedInQuote={
-                                pinnedMaxPriceDisplayTruncatedInQuote
-                            }
-                        />
-                    </Modal>
-                ) : undefined
+                <ConfirmRangeModal
+                    tokenAQtyLocal={
+                        isTokenAInputDisabled ? 0 : parseFloat(tokenAInputQty)
+                    }
+                    tokenBQtyLocal={
+                        isTokenBInputDisabled ? 0 : parseFloat(tokenBInputQty)
+                    }
+                    spotPriceDisplay={getFormattedNumber({
+                        value: displayPriceWithDenom,
+                    })}
+                    isTokenABase={isTokenABase}
+                    isAmbient={isAmbient}
+                    isAdd={isAdd}
+                    maxPriceDisplay={maxPriceDisplay}
+                    minPriceDisplay={minPriceDisplay}
+                    sendTransaction={sendTransaction}
+                    newRangeTransactionHash={newRangeTransactionHash}
+                    resetConfirmation={resetConfirmation}
+                    showConfirmation={showConfirmation}
+                    setShowConfirmation={setShowConfirmation}
+                    txErrorCode={txErrorCode}
+                    isInRange={!isOutOfRange}
+                    pinnedMinPriceDisplayTruncatedInBase={
+                        pinnedMinPriceDisplayTruncatedInBase
+                    }
+                    pinnedMinPriceDisplayTruncatedInQuote={
+                        pinnedMinPriceDisplayTruncatedInQuote
+                    }
+                    pinnedMaxPriceDisplayTruncatedInBase={
+                        pinnedMaxPriceDisplayTruncatedInBase
+                    }
+                    pinnedMaxPriceDisplayTruncatedInQuote={
+                        pinnedMaxPriceDisplayTruncatedInQuote
+                    }
+                    isOpen={isOpen}
+                    onClose={handleModalClose}
+                />
             }
             button={
                 <Button
@@ -1465,7 +1451,7 @@ function Range() {
                         areBothAckd
                             ? bypassConfirmRange.isEnabled
                                 ? handleRangeButtonClickWithBypass
-                                : openConfirmationModal
+                                : openModal
                             : ackAsNeeded
                     }
                     disabled={

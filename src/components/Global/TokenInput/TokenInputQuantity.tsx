@@ -5,23 +5,23 @@ import {
     ChangeEvent,
     memo,
     useRef,
+    Dispatch,
+    SetStateAction,
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { TokenContext } from '../../../contexts/TokenContext';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import Modal from '../Modal/Modal';
-import { useModal } from '../Modal/useModal';
 import Spinner from '../Spinner/Spinner';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import TokenIcon from '../TokenIcon/TokenIcon';
-import { SoloTokenSelect } from '../TokenSelectContainer/SoloTokenSelect';
+import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
 import styles from './TokenInputQuantity.module.css';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import { useModal } from '../Modal/useModal';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -37,6 +37,7 @@ interface propsIF {
     showPulseAnimation?: boolean;
     disable?: boolean;
     disabledContent?: React.ReactNode;
+    setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -54,8 +55,8 @@ function TokenInputQuantity(props: propsIF) {
         handleTokenInputEvent,
         reverseTokens,
         parseInput,
+        setTokenModalOpen = () => null,
     } = props;
-    const { setInput: setTokenSelectInput } = useContext(TokenContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const { tradeData } = useAppSelector((state) => state);
     const { isDenomBase } = tradeData;
@@ -65,10 +66,13 @@ function TokenInputQuantity(props: propsIF) {
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
-    const modalCloseCustom = (): void => setTokenSelectInput('');
+    const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] =
-        useModal(modalCloseCustom);
+    // needed to not dismiss exchangebalance modal when closing the token select modal
+    useEffect(() => {
+        setTokenModalOpen(isTokenSelectOpen);
+    }, [isTokenSelectOpen]);
+
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
 
@@ -194,7 +198,7 @@ function TokenInputQuantity(props: propsIF) {
                 <button
                     id={fieldId ? `${fieldId}_token_selector` : undefined}
                     className={styles.token_select}
-                    onClick={openTokenModal}
+                    onClick={openTokenSelect}
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
                     ref={tokenSelectRef}
@@ -211,28 +215,15 @@ function TokenInputQuantity(props: propsIF) {
 
             {includeWallet && includeWallet}
 
-            {isTokenModalOpen && (
-                <Modal
-                    onClose={closeTokenModal}
-                    title='Select Token'
-                    centeredTitle
-                    handleBack={() => setTokenSelectInput('')}
-                    showBackButton={false}
-                    footer={null}
-                >
-                    <SoloTokenSelect
-                        modalCloseCustom={modalCloseCustom}
-                        closeModal={closeTokenModal}
-                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                        setShowSoloSelectTokenButtons={
-                            setShowSoloSelectTokenButtons
-                        }
-                        isSingleToken={!tokenAorB}
-                        tokenAorB={tokenAorB}
-                        reverseTokens={reverseTokens}
-                    />
-                </Modal>
-            )}
+            <SoloTokenSelectModal
+                isOpen={isTokenSelectOpen}
+                onClose={closeTokenSelect}
+                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                isSingleToken={!tokenAorB}
+                tokenAorB={tokenAorB}
+                reverseTokens={reverseTokens}
+            />
         </div>
     );
 }
