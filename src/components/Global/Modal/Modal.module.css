@@ -39,6 +39,7 @@
     /* max-height: 80vh; */
     color: var(--text1);
     top: 1rem;
+    margin: auto;
 
     /* min-height: 80vh; */
 }

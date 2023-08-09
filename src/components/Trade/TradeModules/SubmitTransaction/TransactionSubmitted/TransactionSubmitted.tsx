@@ -1,13 +1,14 @@
 import styles from './TransactionSubmitted.module.css';
-import Animation from '../../Global/Animation/Animation';
-import completed from '../../../assets/animations/completed.json';
+import Animation from '../../../../Global/Animation/Animation';
+import completed from '../../../../../assets/animations/completed.json';
 import addTokenToWallet from './addTokenToWallet';
-import Button from '../../Global/Button/Button';
+import Button from '../../../../Global/Button/Button';
 import { FiExternalLink } from 'react-icons/fi';
 import { useLocation } from 'react-router-dom';
-import { getChainExplorer } from '../../../utils/data/chains';
+import { getChainExplorer } from '../../../../../utils/data/chains';
 
-interface TransactionSubmittedProps {
+interface PropsIF {
+    type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
     hash: string;
     tokenBAddress: string;
     tokenBSymbol: string;
@@ -15,23 +16,18 @@ interface TransactionSubmittedProps {
     tokenBImage: string;
     chainId: string | number;
     noAnimation?: boolean;
-    limit?: boolean;
-    range?: boolean;
-    reposition?: boolean;
 }
 
-export default function TransactionSubmitted(props: TransactionSubmittedProps) {
+export default function TransactionSubmitted(props: PropsIF) {
     const {
+        type,
         hash,
         tokenBAddress,
         tokenBSymbol,
         tokenBDecimals,
         tokenBImage,
         noAnimation,
-        limit,
-        range,
         chainId,
-        reposition,
     } = props;
 
     const blockExplorer = getChainExplorer(chainId);
@@ -52,7 +48,7 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
     const addToMetaMaskButton = (
         <Button
             flat
-            title={`Add ${tokenBSymbol} to MetaMask`}
+            title={`Import ${tokenBSymbol} into Connected Wallet`}
             // action={props.onClickFn}
             action={handleAddToMetaMask}
             disabled={false}
@@ -90,11 +86,11 @@ export default function TransactionSubmitted(props: TransactionSubmittedProps) {
             </div>
 
             <h2 style={{ marginBottom: '15px' }}>
-                {limit
+                {type === 'Limit'
                     ? 'Limit Transaction Successfully Submitted'
-                    : range
+                    : type === 'Range'
                     ? 'Pool Transaction Successfully Submitted'
-                    : reposition
+                    : type === 'Reposition'
                     ? 'Reposition Successfully Submitted'
                     : 'Swap Transaction Successfully Submitted'}
             </h2>

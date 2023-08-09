@@ -7,8 +7,7 @@
     align-items: center;
 
     text-align: center;
-    gap: 1rem;
-    padding: 0 1rem;
+    gap: 2px;
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
