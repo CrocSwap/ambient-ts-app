@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
+import { PoolContext } from './PoolContext';
 
 type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
 
@@ -37,6 +38,7 @@ export const TradeTableContextProvider = (props: {
 }) => {
     const { isCandleSelected, isCandleDataNull } = useContext(CandleContext);
     const { setChartHeight, chartHeights } = useContext(ChartContext);
+    const { isPoolInitialized } = useContext(PoolContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -157,14 +159,14 @@ export const TradeTableContextProvider = (props: {
     }, [location.pathname]);
 
     useEffect(() => {
-        if (isCandleDataNull) {
+        if (isCandleDataNull && isPoolInitialized) {
             setChartHeight(4);
             setTradeTableState('Expanded');
         } else {
             setChartHeight(chartHeights.default);
             setTradeTableState(undefined);
         }
-    }, [isCandleDataNull]);
+    }, [isCandleDataNull, isPoolInitialized]);
 
     return (
         <TradeTableContext.Provider value={tradeTableContext}>
