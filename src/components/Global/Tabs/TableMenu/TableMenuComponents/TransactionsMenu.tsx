@@ -326,7 +326,7 @@ export default function TransactionsMenu(props: propsIF) {
     return (
         <div onClick={(event) => event.stopPropagation()}>
             <div className={styles.main_container}>
-                {desktopView && transactionsMenu}
+                {transactionsMenu}
                 {dropdownTransactionsMenu}
             </div>
             {isDetailsModalOpen && (

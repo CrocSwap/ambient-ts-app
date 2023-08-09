@@ -275,7 +275,7 @@ function TransactionRow(props: propsIF) {
                 onKeyDown={handleKeyPress}
             >
                 {showTimestamp && TxTimeWithTooltip}
-                {isAccountView && showPair && tokenPair}
+                {isAccountView && tokenPair}
                 {!showColumns && <li>{IDWithTooltip}</li>}
                 {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
                 {showColumns && txIdColumnComponent}
