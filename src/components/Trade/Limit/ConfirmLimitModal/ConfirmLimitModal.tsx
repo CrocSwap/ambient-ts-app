@@ -28,7 +28,6 @@ interface propsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
-    isOpen: boolean;
     onClose: () => void;
 }
 
@@ -45,7 +44,6 @@ export default function ConfirmLimitModal(props: propsIF) {
         endDisplayPrice,
         tokenAInputQty,
         tokenBInputQty,
-        isOpen = false,
         onClose = () => null,
     } = props;
 
@@ -219,7 +217,7 @@ export default function ConfirmLimitModal(props: propsIF) {
         : confirmSendMessage;
 
     return (
-        <Modal title='Limit Confirmation' onClose={onClose} isOpen={isOpen}>
+        <Modal title='Limit Confirmation' onClose={onClose}>
             <div className={styles.modal_container}>
                 <section className={styles.modal_content}>
                     {showConfirmation ? fullTxDetails : confirmationDisplay}

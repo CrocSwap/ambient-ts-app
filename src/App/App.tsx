@@ -58,6 +58,7 @@ export default function App() {
             isEnabled: isChatEnabled,
         },
         theme: { selected: selectedTheme },
+        wagmiModal: { isOpen: isWagmiModalOpen },
     } = useContext(AppStateContext);
     const { isChainSupported, defaultUrlParams } = useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
@@ -281,7 +282,7 @@ export default function App() {
             {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <GlobalPopup />
             <SnackbarComponent />
-            <WalletModalWagmi />
+            {isWagmiModalOpen && <WalletModalWagmi />}
         </>
     );
 }

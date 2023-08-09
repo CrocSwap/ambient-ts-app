@@ -41,7 +41,6 @@ interface propsIF {
     isAdd: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
-    isOpen: boolean;
     onClose: () => void;
 }
 
@@ -63,7 +62,6 @@ function ConfirmRangeModal(props: propsIF) {
         isAdd,
         tokenAQtyLocal,
         tokenBQtyLocal,
-        isOpen = false,
         onClose = () => null,
     } = props;
 
@@ -218,7 +216,7 @@ function ConfirmRangeModal(props: propsIF) {
         : confirmSendMessage;
 
     return (
-        <Modal title='Pool Confirmation' onClose={onClose} isOpen={isOpen}>
+        <Modal title='Pool Confirmation' onClose={onClose}>
             <div className={styles.confirm_range_modal_container}>
                 <div>
                     {showConfirmation ? fullTxDetails : confirmationDisplay}
