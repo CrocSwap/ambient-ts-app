@@ -161,19 +161,14 @@ function Transactions(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', transactionData);
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const showTimestamp = useMediaQuery('(min-width: 1000px)');
+    const ipadView = useMediaQuery('(max-width: 600px)');
+    const showTimestamp = useMediaQuery('(min-width: 1200px)');
 
-    // const showColumns = isAccountView
-    //     ? isSidebarOpen
-    //         ? useMediaQuery('(max-width: 1850px)')
-    //         : useMediaQuery('(max-width: 1500px)')
-    //     : isSidebarOpen
-    //     ? useMediaQuery('(max-width: 1850px)')
-    //     : useMediaQuery('(max-width: 1600px)');
+    const showColumns = isAccountView
+        ? useMediaQuery('(max-width: 1850px)')
+        : useMediaQuery('(max-width: 1599px)');
 
-    const showColumns = false;
+    // const showColumns = false;
 
     const getCandleData = () =>
         crocEnv &&
@@ -239,10 +234,11 @@ function Transactions(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
+    // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const sideType = (
@@ -264,7 +260,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isAccountView && showPair,
+            show: isAccountView,
             slug: 'pool',
             sortable: true,
         },
@@ -457,7 +453,6 @@ function Transactions(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             showTimestamp={showTimestamp}
-            showPair={showPair}
             isAccountView={isAccountView}
         />
     ));
@@ -468,7 +463,6 @@ function Transactions(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             showTimestamp={showTimestamp}
-            showPair={showPair}
             isAccountView={isAccountView}
         />
     ));

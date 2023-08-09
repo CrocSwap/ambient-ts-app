@@ -267,7 +267,6 @@ export default function TransactionsMenu(props: propsIF) {
     // eslint-disable-next-line
     const view1NoSidebar =
         useMediaQuery('(min-width: 1280px)') && !isSidebarOpen;
-    const desktopView = useMediaQuery('(min-width: 768px)');
 
     // --------------------------------
     const transactionsMenu = (
@@ -278,7 +277,7 @@ export default function TransactionsMenu(props: propsIF) {
         <div className={styles.menu_column}>
             {detailsButton}
             {explorerButton}
-            {!desktopView && copyButton}
+            {copyButton}
             {walletButton}
         </div>
     );

@@ -185,7 +185,7 @@ export default function RangesMenu(props: propsIF) {
                 });
                 handleCopyClick();
             }}
-            content='Copy Trade'
+            content={useMediaQuery('(max-width: 1500px)') ? 'Copy' : 'Copy Trade'}
         />
     ) : null;
 
