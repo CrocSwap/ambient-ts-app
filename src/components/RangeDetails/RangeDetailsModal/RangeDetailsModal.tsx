@@ -41,7 +41,6 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
-    isOpen: boolean;
     onClose: () => void;
 }
 
@@ -65,7 +64,6 @@ export default function RangeDetailsModal(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
-        isOpen,
         onClose,
     } = props;
     console.log('woooh');
@@ -264,7 +262,7 @@ export default function RangeDetailsModal(props: propsIF) {
     );
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+        <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
                 <RangeDetailsHeader
                     onClose={onClose}

@@ -1387,43 +1387,50 @@ function Range() {
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
-                <ConfirmRangeModal
-                    tokenAQtyLocal={
-                        isTokenAInputDisabled ? 0 : parseFloat(tokenAInputQty)
-                    }
-                    tokenBQtyLocal={
-                        isTokenBInputDisabled ? 0 : parseFloat(tokenBInputQty)
-                    }
-                    spotPriceDisplay={getFormattedNumber({
-                        value: displayPriceWithDenom,
-                    })}
-                    isTokenABase={isTokenABase}
-                    isAmbient={isAmbient}
-                    isAdd={isAdd}
-                    maxPriceDisplay={maxPriceDisplay}
-                    minPriceDisplay={minPriceDisplay}
-                    sendTransaction={sendTransaction}
-                    newRangeTransactionHash={newRangeTransactionHash}
-                    resetConfirmation={resetConfirmation}
-                    showConfirmation={showConfirmation}
-                    setShowConfirmation={setShowConfirmation}
-                    txErrorCode={txErrorCode}
-                    isInRange={!isOutOfRange}
-                    pinnedMinPriceDisplayTruncatedInBase={
-                        pinnedMinPriceDisplayTruncatedInBase
-                    }
-                    pinnedMinPriceDisplayTruncatedInQuote={
-                        pinnedMinPriceDisplayTruncatedInQuote
-                    }
-                    pinnedMaxPriceDisplayTruncatedInBase={
-                        pinnedMaxPriceDisplayTruncatedInBase
-                    }
-                    pinnedMaxPriceDisplayTruncatedInQuote={
-                        pinnedMaxPriceDisplayTruncatedInQuote
-                    }
-                    isOpen={isOpen}
-                    onClose={handleModalClose}
-                />
+                isOpen ? (
+                    <ConfirmRangeModal
+                        tokenAQtyLocal={
+                            isTokenAInputDisabled
+                                ? 0
+                                : parseFloat(tokenAInputQty)
+                        }
+                        tokenBQtyLocal={
+                            isTokenBInputDisabled
+                                ? 0
+                                : parseFloat(tokenBInputQty)
+                        }
+                        spotPriceDisplay={getFormattedNumber({
+                            value: displayPriceWithDenom,
+                        })}
+                        isTokenABase={isTokenABase}
+                        isAmbient={isAmbient}
+                        isAdd={isAdd}
+                        maxPriceDisplay={maxPriceDisplay}
+                        minPriceDisplay={minPriceDisplay}
+                        sendTransaction={sendTransaction}
+                        newRangeTransactionHash={newRangeTransactionHash}
+                        resetConfirmation={resetConfirmation}
+                        showConfirmation={showConfirmation}
+                        setShowConfirmation={setShowConfirmation}
+                        txErrorCode={txErrorCode}
+                        isInRange={!isOutOfRange}
+                        pinnedMinPriceDisplayTruncatedInBase={
+                            pinnedMinPriceDisplayTruncatedInBase
+                        }
+                        pinnedMinPriceDisplayTruncatedInQuote={
+                            pinnedMinPriceDisplayTruncatedInQuote
+                        }
+                        pinnedMaxPriceDisplayTruncatedInBase={
+                            pinnedMaxPriceDisplayTruncatedInBase
+                        }
+                        pinnedMaxPriceDisplayTruncatedInQuote={
+                            pinnedMaxPriceDisplayTruncatedInQuote
+                        }
+                        onClose={handleModalClose}
+                    />
+                ) : (
+                    <></>
+                )
             }
             button={
                 <Button

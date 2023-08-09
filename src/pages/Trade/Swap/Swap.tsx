@@ -559,7 +559,13 @@ function Swap(props: propsIF) {
                     showExtraInfoDropdown={primaryQuantity !== ''}
                 />
             }
-            modal={<ConfirmSwapModal {...confirmSwapModalProps} />}
+            modal={
+                isModalOpen ? (
+                    <ConfirmSwapModal {...confirmSwapModalProps} />
+                ) : (
+                    <></>
+                )
+            }
             button={
                 <Button
                     title={

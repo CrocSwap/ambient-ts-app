@@ -263,7 +263,6 @@ export default function WalletModalWagmi() {
 
     return (
         <Modal
-            isOpen={isModalOpen}
             onClose={closeModal}
             handleBack={clickBackArrow}
             showBackButton={showBackArrow}

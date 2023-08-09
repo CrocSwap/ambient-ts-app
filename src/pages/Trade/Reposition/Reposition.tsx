@@ -739,7 +739,9 @@ function Reposition() {
                     {isRepositionSent ? etherscanButton : null}
                 </div>
             </div>
-            <ConfirmRepositionModal {...confirmRepositionModalProps} />
+            {isOpen && (
+                <ConfirmRepositionModal {...confirmRepositionModalProps} />
+            )}
         </>
     );
 }
