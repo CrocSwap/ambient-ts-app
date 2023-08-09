@@ -36,9 +36,14 @@ export default function SubmitTransaction(props: propsIF) {
         disableSubmitAgain,
     } = props;
 
-    const transactionApproved = newTransactionHash !== '';
+    const isTransactionApproved = newTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+    const isTransactionPending = !(
+        isTransactionApproved ||
+        isTransactionDenied ||
+        isTransactionException
+    );
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
@@ -91,7 +96,7 @@ export default function SubmitTransaction(props: propsIF) {
         ? transactionException
         : isTransactionDenied
         ? transactionDenied
-        : transactionApproved
+        : isTransactionApproved
         ? transactionSubmitted
         : lastReceipt && !isLastReceiptSuccess
         ? transactionFailed
@@ -102,7 +107,7 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionDenied ||
         (lastReceipt && !isLastReceiptSuccess)
             ? 'var(--negative)'
-            : transactionApproved
+            : isTransactionApproved
             ? 'var(--positive)'
             : 'var(--accent1)';
 
@@ -110,7 +115,7 @@ export default function SubmitTransaction(props: propsIF) {
         <CircleLoaderFailed size='30px' />
     ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
         <CircleLoaderFailed size='30px' />
-    ) : transactionApproved ? (
+    ) : isTransactionApproved ? (
         <CircleLoaderCompleted size='30px' />
     ) : (
         <Spinner size='30' bg='var(--dark2)' />
@@ -122,7 +127,7 @@ export default function SubmitTransaction(props: propsIF) {
         ? 'Transaction Denied'
         : lastReceipt && !isLastReceiptSuccess
         ? 'Transaction Failed'
-        : transactionApproved
+        : isTransactionApproved
         ? 'Transaction Submitted'
         : transactionPendingDisplayString;
 
@@ -137,9 +142,7 @@ export default function SubmitTransaction(props: propsIF) {
                 >
                     <div>{animationDisplay}</div>
                     <div style={{ color: buttonColor }}>{buttonText}</div>
-                    {isTransactionDenied ||
-                    transactionApproved ||
-                    isTransactionException ? (
+                    {!isTransactionPending ? (
                         showExtraInfo ? (
                             <RiArrowUpSLine size={20} />
                         ) : (
@@ -155,29 +158,31 @@ export default function SubmitTransaction(props: propsIF) {
                         {confirmationDisplay}
                     </section>
                 )}
-                {transactionApproved && !disableSubmitAgain && (
-                    <span className={styles.close_icon_container}>
-                        <button
-                            onClick={() => {
-                                resetConfirmation();
-                            }}
-                        >
-                            Submit another transaction
-                        </button>
-                    </span>
-                )}
-                {(isTransactionDenied || isTransactionException) && (
-                    <span className={styles.close_icon_container}>
-                        <button
-                            onClick={() => {
-                                resetConfirmation();
-                                sendTransaction();
-                            }}
-                        >
-                            Retry
-                        </button>
-                    </span>
-                )}
+                <div className={styles.action_button_container}>
+                    {!isTransactionPending && !disableSubmitAgain && (
+                        <span className={styles.close_icon_container}>
+                            <button
+                                onClick={() => {
+                                    resetConfirmation();
+                                }}
+                            >
+                                Submit another transaction
+                            </button>
+                        </span>
+                    )}
+                    {(isTransactionDenied || isTransactionException) && (
+                        <span className={styles.close_icon_container}>
+                            <button
+                                onClick={() => {
+                                    resetConfirmation();
+                                    sendTransaction();
+                                }}
+                            >
+                                Retry
+                            </button>
+                        </span>
+                    )}
+                </div>
             </div>
         </section>
     );

@@ -61,3 +61,10 @@
     align-items: center;
     gap: 8px;
 }
+
+.action_button_container {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: flex-end;
+}
