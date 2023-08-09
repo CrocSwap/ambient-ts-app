@@ -12,7 +12,8 @@ interface propsIF {
 }
 
 function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
-    const getIconWidth = (size: TokenIconSize) => {
+    // translate human-readable icon width to CSS value
+    const getIconWidth = (size: TokenIconSize): string => {
         switch (size) {
             case '3xl':
                 return '35px';
@@ -35,6 +36,7 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
         }
     };
 
+    // bool to trigger fallback error handling
     const [fetchError, setFetchError] = useState<boolean>(false);
 
     const handleFetchError = (): void => {
@@ -45,6 +47,8 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
         setFetchError(true);
     };
 
+    // this fixes a bug when the app sometimes gets an empty string for URI src
+    // sometimes this happens post-load for still undetermined reasons
     useEffect(() => {
         setFetchError(false);
     }, [src]);
@@ -52,6 +56,10 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
     const noTokenIcon: JSX.Element = (
         <NoTokenIcon tokenInitial={alt?.charAt(0)} width={getIconWidth(size)} />
     );
+
+    // TODO: not great practice to use the same item for both loader and error fallback
+    // TODO: ... makes it difficult to tell where the error is when seeing the fallback
+    // TODO: ... best practice we should change this up in the future
 
     return (
         <Suspense fallback={noTokenIcon}>
