@@ -706,24 +706,28 @@ export default function Limit() {
                     />
                 }
                 modal={
-                    <ConfirmLimitModal
-                        initiateLimitOrderMethod={sendLimitOrder}
-                        tokenAInputQty={tokenAInputQty}
-                        tokenBInputQty={tokenBInputQty}
-                        insideTickDisplayPrice={endDisplayPrice}
-                        newLimitOrderTransactionHash={
-                            newLimitOrderTransactionHash
-                        }
-                        txErrorCode={txErrorCode}
-                        showConfirmation={showConfirmation}
-                        setShowConfirmation={setShowConfirmation}
-                        resetConfirmation={resetConfirmation}
-                        startDisplayPrice={startDisplayPrice}
-                        middleDisplayPrice={middleDisplayPrice}
-                        endDisplayPrice={endDisplayPrice}
-                        onClose={handleModalClose}
-                        isOpen={isOpen}
-                    />
+                    isOpen ? (
+                        <ConfirmLimitModal
+                            initiateLimitOrderMethod={sendLimitOrder}
+                            tokenAInputQty={tokenAInputQty}
+                            tokenBInputQty={tokenBInputQty}
+                            insideTickDisplayPrice={endDisplayPrice}
+                            newLimitOrderTransactionHash={
+                                newLimitOrderTransactionHash
+                            }
+                            txErrorCode={txErrorCode}
+                            showConfirmation={showConfirmation}
+                            setShowConfirmation={setShowConfirmation}
+                            resetConfirmation={resetConfirmation}
+                            startDisplayPrice={startDisplayPrice}
+                            middleDisplayPrice={middleDisplayPrice}
+                            endDisplayPrice={endDisplayPrice}
+                            onClose={handleModalClose}
+                            isOpen={isOpen}
+                        />
+                    ) : (
+                        <></>
+                    )
                 }
                 button={
                     <Button

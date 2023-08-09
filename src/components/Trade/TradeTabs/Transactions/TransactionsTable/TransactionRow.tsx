@@ -307,15 +307,17 @@ function TransactionRow(props: propsIF) {
                     />
                 </li>
             </ul>
-            <TransactionDetailsModal
-                tx={tx}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-                isOpen={isDetailsModalOpen}
-                onClose={closeDetailsModal}
-            />
+            {isDetailsModalOpen && (
+                <TransactionDetailsModal
+                    tx={tx}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    isOpen={isDetailsModalOpen}
+                    onClose={closeDetailsModal}
+                />
+            )}
         </>
     );
 }

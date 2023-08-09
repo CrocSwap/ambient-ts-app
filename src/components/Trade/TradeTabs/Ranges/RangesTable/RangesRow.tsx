@@ -309,16 +309,18 @@ function RangesRow(props: propsIF) {
                     />
                 </li>
             </ul>
-            <RangeDetailsModal
-                position={position}
-                {...rangeDetailsProps}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-                isOpen={isDetailsModalOpen}
-                onClose={closeDetailsModal}
-            />
+            {isDetailsModalOpen && (
+                <RangeDetailsModal
+                    position={position}
+                    {...rangeDetailsProps}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    isOpen={isDetailsModalOpen}
+                    onClose={closeDetailsModal}
+                />
+            )}
         </>
     );
 }

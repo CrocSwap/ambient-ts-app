@@ -286,15 +286,17 @@ function OrderRow(props: propsIF) {
                     />
                 </li>
             </ul>
-            <OrderDetailsModal
-                limitOrder={limitOrder}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-                isOpen={isDetailsModalOpen}
-                onClose={closeDetailsModal}
-            />
+            {isDetailsModalOpen && (
+                <OrderDetailsModal
+                    limitOrder={limitOrder}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    isOpen={isDetailsModalOpen}
+                    onClose={closeDetailsModal}
+                />
+            )}
         </>
     );
 }

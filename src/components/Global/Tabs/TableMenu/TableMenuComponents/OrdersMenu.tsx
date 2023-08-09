@@ -235,21 +235,25 @@ export default function OrdersMenu(props: propsIF) {
                 {ordersMenu}
                 {dropdownOrdersMenu}
             </div>
-            <OrderDetailsModal
-                limitOrder={limitOrder}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-                isOpen={isDetailsModalOpen}
-                onClose={closeDetailsModal}
-            />
-            <LimitActionModal
-                limitOrder={limitOrder}
-                type={limitModalAction}
-                isOpen={isActionModalOpen}
-                onClose={closeActionModal}
-            />
+            {isDetailsModalOpen && (
+                <OrderDetailsModal
+                    limitOrder={limitOrder}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    isOpen={isDetailsModalOpen}
+                    onClose={closeDetailsModal}
+                />
+            )}
+            {isActionModalOpen && (
+                <LimitActionModal
+                    limitOrder={limitOrder}
+                    type={limitModalAction}
+                    isOpen={isActionModalOpen}
+                    onClose={closeActionModal}
+                />
+            )}
         </div>
     );
 }

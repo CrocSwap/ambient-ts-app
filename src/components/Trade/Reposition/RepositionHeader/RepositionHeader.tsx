@@ -66,13 +66,15 @@ function RepositionHeader(props: propsIF) {
                     }}
                 />
             </ContentHeader>
-            <TransactionSettingsModal
-                module='Reposition'
-                slippage={repoSlippage}
-                bypassConfirm={bypassConfirmRepo}
-                onClose={closeModal}
-                isOpen={isOpen}
-            />
+            {isOpen && (
+                <TransactionSettingsModal
+                    module='Reposition'
+                    slippage={repoSlippage}
+                    bypassConfirm={bypassConfirmRepo}
+                    onClose={closeModal}
+                    isOpen={isOpen}
+                />
+            )}
         </>
     );
 }

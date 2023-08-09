@@ -107,14 +107,21 @@ function TradeModuleHeader(props: propsIF) {
                     </IconWithTooltip>
                 </ContentHeader>
             </div>
-            <TransactionSettingsModal
-                module={settingsTitle}
-                slippage={slippage}
-                bypassConfirm={bypassConfirm}
-                isOpen={isSettingsModalOpen}
-                onClose={closeSettingsModal}
-            />
-            <ShareModal isOpen={isShareModalOpen} onClose={closeShareModal} />
+            {isSettingsModalOpen && (
+                <TransactionSettingsModal
+                    module={settingsTitle}
+                    slippage={slippage}
+                    bypassConfirm={bypassConfirm}
+                    isOpen={isSettingsModalOpen}
+                    onClose={closeSettingsModal}
+                />
+            )}
+            {isShareModalOpen && (
+                <ShareModal
+                    isOpen={isShareModalOpen}
+                    onClose={closeShareModal}
+                />
+            )}
         </>
     );
 }
