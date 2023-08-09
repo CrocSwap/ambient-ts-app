@@ -59,7 +59,6 @@ function TokenInputQuantity(props: propsIF) {
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const { tradeData } = useAppSelector((state) => state);
-    const { isDenomBase } = tradeData;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -120,8 +119,6 @@ function TokenInputQuantity(props: propsIF) {
             <div className={styles.token_list_text}>{token.symbol}</div>
         );
 
-    const tokenA = isDenomBase ? tradeData.baseToken : tradeData.quoteToken;
-    const tokenB = isDenomBase ? tradeData.baseToken : tradeData.quoteToken;
     const tokenSelectRef = useRef(null);
 
     const poolNotInitializedContent = tokenSelectRef.current && (
@@ -131,8 +128,8 @@ function TokenInputQuantity(props: propsIF) {
                 <Link
                     to={linkGenInitPool.getFullURL({
                         chain: chainId,
-                        tokenA: tokenA.address,
-                        tokenB: tokenB.address,
+                        tokenA: tradeData.tokenA.address,
+                        tokenB: tradeData.tokenB.address,
                     })}
                     className={styles.warning_text}
                 >
