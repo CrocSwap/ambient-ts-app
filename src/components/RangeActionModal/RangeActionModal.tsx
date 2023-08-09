@@ -2,7 +2,6 @@ import styles from './RangeActionModal.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHeader';
 import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
-import RangeActionButton from './RangeActionButton/RangeActionButton';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
@@ -595,17 +594,27 @@ export default function RangeActionModal(props: propsIF) {
                     disableSubmitAgain
                 />
             ) : (
-                <RangeActionButton
-                    onClick={type === 'Remove' ? removeFn : harvestFn}
+                <Button
+                    title={
+                        !(
+                            (type === 'Remove'
+                                ? liquidityToBurn === undefined ||
+                                  liquidityToBurn.isZero()
+                                : !areFeesAvailableToWithdraw) || showSettings
+                        )
+                            ? type === 'Remove'
+                                ? 'Remove Liquidity'
+                                : 'Harvest Fees'
+                            : '...'
+                    }
                     disabled={
                         (type === 'Remove'
                             ? liquidityToBurn === undefined ||
                               liquidityToBurn.isZero()
                             : !areFeesAvailableToWithdraw) || showSettings
                     }
-                    title={
-                        type === 'Remove' ? 'Remove Liquidity' : 'Harvest Fees'
-                    }
+                    action={type === 'Remove' ? removeFn : harvestFn}
+                    flat
                 />
             )}
         </div>

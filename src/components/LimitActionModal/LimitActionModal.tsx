@@ -16,7 +16,6 @@ import {
     isTransactionReplacedError,
     isTransactionFailedError,
 } from '../../utils/TransactionError';
-import LimitActionButton from './LimitActionButton/LimitActionButton';
 import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
@@ -27,6 +26,8 @@ import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import Button from '../Global/Button/Button';
+import styles from './LimitActionModal.module.css';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -337,11 +338,8 @@ export default function LimitActionModal(props: propsIF) {
         />
     ) : (
         <Modal usingCustomHeader onClose={onClose}>
-            <ModalHeader
-                title={showConfirmation ? '' : `${type} Limit Order`}
-                onClose={onClose}
-            />
-            <div style={{ padding: '1rem ' }}>
+            <ModalHeader title={`${type} Limit Order`} onClose={onClose} />
+            <div className={styles.main_content_container}>
                 <LimitActionTokenHeader
                     isDenomBase={isDenomBase}
                     isOrderFilled={isOrderFilled}
@@ -350,7 +348,7 @@ export default function LimitActionModal(props: propsIF) {
                     baseTokenLogoURI={baseTokenLogo}
                     quoteTokenLogoURI={quoteTokenLogo}
                 />
-                <div style={{ padding: '0 8px' }}>
+                <div className={styles.info_container}>
                     <LimitActionInfo {...limitInfoProps} />
                     {showConfirmation ? (
                         <SubmitTransaction
@@ -367,14 +365,17 @@ export default function LimitActionModal(props: propsIF) {
                             disableSubmitAgain
                         />
                     ) : (
-                        <LimitActionButton
-                            onClick={type === 'Remove' ? removeFn : claimFn}
-                            disabled={currentLiquidity === undefined}
+                        <Button
                             title={
-                                type === 'Remove'
+                                !currentLiquidity
+                                    ? '...'
+                                    : type === 'Remove'
                                     ? 'Remove Limit Order'
                                     : 'Claim Limit Order'
                             }
+                            disabled={!currentLiquidity}
+                            action={type === 'Remove' ? removeFn : claimFn}
+                            flat={true}
                         />
                     )}
                 </div>
