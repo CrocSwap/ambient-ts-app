@@ -5,6 +5,7 @@ import {
     Dispatch,
     SetStateAction,
     useContext,
+    useRef,
 } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
@@ -22,9 +23,10 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { handleWETH } from '../../../utils/data/handleWETH';
-import { ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
 import Modal from '../Modal/Modal';
+import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -246,8 +248,6 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
-    const [showWrappedNative, setShowWrappedNative] = useState<boolean>(false);
-
     return (
         <Modal
             title='Select Token'
@@ -280,10 +280,26 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         </button>
                     )}
                 </div>
-                {handleWETH.check(validatedInput) && !showWrappedNative && (
+                {handleWETH.check(validatedInput) && (
                     <div className={styles.weth_warning}>
                         <p className={styles.weth_text}>{handleWETH.message}</p>
-                        <button onClick={() => setShowWrappedNative(true)}>
+                        <button
+                            onClick={() => {
+                                try {
+                                    chooseToken(
+                                        tokens.getTokenByAddress(
+                                            wrappedNatives.get(
+                                                chainId,
+                                            ) as string,
+                                        ) as TokenIF,
+                                        false,
+                                    );
+                                } catch (err) {
+                                    IS_LOCAL_ENV && console.warn(err);
+                                    onClose();
+                                }
+                            }}
+                        >
                             👍🏻
                         </button>
                     </div>
@@ -301,21 +317,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                 {showSoloSelectTokenButtons ? (
                     <div className={styles.scrollable_container}>
-                        {outputTokens
-                            .filter((token: TokenIF) => {
-                                if (showWrappedNative) return true;
-                                const tknAddr = token.address.toLowerCase();
-                                const wnAddr: string | undefined =
-                                    wrappedNatives.get(chainId);
-                                if (
-                                    wnAddr &&
-                                    wnAddr.toLowerCase() === tknAddr
-                                ) {
-                                    return false;
-                                } else {
-                                    return true;
-                                }
-                            })
+                        {removeWrappedNative(chainId, outputTokens)
                             .slice(0, MAX_TOKEN_COUNT)
                             .map((token: TokenIF) => (
                                 <TokenSelect

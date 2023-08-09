@@ -68,7 +68,7 @@ export default function RangeDetailsModal(props: propsIF) {
         isOpen,
         onClose,
     } = props;
-
+    console.log('woooh');
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
