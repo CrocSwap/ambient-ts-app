@@ -129,7 +129,7 @@ export default function ConfirmLimitModal(props: propsIF) {
             statusText={
                 !showConfirmation
                     ? 'Submit Limit Order'
-                    : `Submitting Limit to Swap ${localeSellString} ${tokenA.symbol} for ${localeBuyString} ${tokenB.symbol}`
+                    : `Submitting Limit Order to Swap ${localeSellString} ${tokenA.symbol} for ${localeBuyString} ${tokenB.symbol}`
             }
             showConfirmation={showConfirmation}
             resetConfirmation={resetConfirmation}
