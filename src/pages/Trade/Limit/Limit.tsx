@@ -5,16 +5,36 @@ import {
     priceHalfAboveTick,
     priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
-
-// START: Import React Functional Components
+import { useContext, useState, useEffect } from 'react';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { useTradeData } from '../../../App/hooks/useTradeData';
 import Button from '../../../components/Global/Button/Button';
+import { useModal } from '../../../components/Global/Modal/useModal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
-
-// START: Import Local Files
+import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
+import LimitRate from '../../../components/Trade/Limit/LimitRate/LimitRate';
+import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/LimitTokenInput';
+import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
+import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
+import { IS_LOCAL_ENV } from '../../../constants';
+import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import {
-    useAppDispatch,
     useAppSelector,
+    useAppDispatch,
 } from '../../../utils/hooks/reduxToolkit';
+import {
+    addPendingTx,
+    addTransactionByType,
+    removePendingTx,
+    addReceipt,
+} from '../../../utils/state/receiptDataSlice';
 import {
     setLimitTick,
     setLimitTickCopied,
@@ -25,31 +45,6 @@ import {
     isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { limitTutorialSteps } from '../../../utils/tutorial/Limit';
-import { IS_LOCAL_ENV } from '../../../constants';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { useTradeData } from '../../../App/hooks/useTradeData';
-import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { useModal } from '../../../components/Global/Modal/useModal';
-import { useContext, useEffect, useState } from 'react';
-import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
-import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
-import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import {
-    addPendingTx,
-    addTransactionByType,
-    removePendingTx,
-    addReceipt,
-} from '../../../utils/state/receiptDataSlice';
-import LimitRate from '../../../components/Trade/Limit/LimitRate/LimitRate';
-import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/LimitTokenInput';
-import BypassConfirmButton from '../../../components/Trade/TradeModules/BypassConfirmButton/BypassConfirmButton';
 
 export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
@@ -77,10 +72,8 @@ export default function Limit() {
         UserPreferenceContext,
     );
 
-    const { limitTickFromParams } = useTradeData();
-    const [isOpen, openModal, closeModal] = useModal();
-
     const dispatch = useAppDispatch();
+    const [isOpen, openModal, closeModal] = useModal();
     const {
         baseToken,
         quoteToken,
@@ -94,9 +87,7 @@ export default function Limit() {
         limitTickCopied,
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
-    const { sessionReceipts, pendingTransactions } = useAppSelector(
-        (state) => state.receiptData,
-    );
+    const { limitTickFromParams } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
@@ -116,7 +107,7 @@ export default function Limit() {
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] =
         useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
+    const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
     const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
     const [middleDisplayPrice, setMiddleDisplayPrice] = useState<number>(0);
@@ -126,17 +117,9 @@ export default function Limit() {
     const [displayPrice, setDisplayPrice] = useState('');
     const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
-    const [showBypassConfirmButton, setShowBypassConfirmButton] =
-        useState(false);
-    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
-
-    let receiveReceiptHashes: Array<string> = [];
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
 
     const tokenABalance = isSellTokenBase
         ? baseTokenBalance
@@ -364,26 +347,11 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
-    }, [sessionReceipts]);
-
-    useEffect(() => {
-        if (
-            !currentPendingTransactionsArray.length &&
-            !isWaitingForWallet &&
-            txErrorCode === ''
-        ) {
-            setShowBypassConfirmButton(false);
-        }
-    }, [
-        currentPendingTransactionsArray.length,
-        isWaitingForWallet,
-        txErrorCode === '',
-    ]);
+        setShowConfirmation(false);
+    }, [bypassConfirmLimit.isEnabled]);
 
     useEffect(() => {
         setNewLimitOrderTransactionHash('');
-        setShowBypassConfirmButton(false);
     }, [baseToken.address + quoteToken.address]);
 
     useEffect(() => {
@@ -413,8 +381,9 @@ export default function Limit() {
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const resetConfirmation = () => {
-        setShowConfirmation(true);
+        setShowConfirmation(false);
         setTxErrorCode('');
+        setNewLimitOrderTransactionHash('');
     };
 
     const updateLimitErrorMessage = () =>
@@ -455,16 +424,11 @@ export default function Limit() {
         }
     };
 
-    const handleLimitButtonClickWithBypass = () => {
-        setShowBypassConfirmButton(true);
-        sendLimitOrder();
-    };
-
     const sendLimitOrder = async () => {
         if (!crocEnv) return;
         if (limitTick === undefined) return;
         resetConfirmation();
-        setIsWaitingForWallet(true);
+        setShowConfirmation(true);
 
         const sellToken = tokenA.address;
         const buyToken = tokenB.address;
@@ -489,7 +453,6 @@ export default function Limit() {
             tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
-            setIsWaitingForWallet(false);
             if (tx?.hash)
                 dispatch(
                     addTransactionByType({
@@ -503,7 +466,6 @@ export default function Limit() {
             }
             console.error({ error });
             setTxErrorCode(error.code);
-            setIsWaitingForWallet(false);
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
@@ -582,8 +544,12 @@ export default function Limit() {
         }
     };
 
+    const handleModalOpen = () => {
+        resetConfirmation();
+        openModal();
+    };
+
     const handleModalClose = (): void => {
-        setNewLimitOrderTransactionHash('');
         resetConfirmation();
         closeModal();
     };
@@ -655,142 +621,134 @@ export default function Limit() {
     };
 
     return (
-        <>
-            <TradeModuleSkeleton
-                header={
-                    <TradeModuleHeader
-                        slippage={mintSlippage}
-                        bypassConfirm={bypassConfirmLimit}
-                        settingsTitle='Limit Order'
-                    />
-                }
-                input={
-                    <LimitTokenInput
-                        tokenAInputQty={{
-                            value: tokenAInputQty,
-                            set: setTokenAInputQty,
-                        }}
-                        tokenBInputQty={{
-                            value: tokenBInputQty,
-                            set: setTokenBInputQty,
-                        }}
-                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                        isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                        limitTickDisplayPrice={middleDisplayPrice}
-                        handleLimitButtonMessage={handleLimitButtonMessage}
-                        toggleDexSelection={toggleDexSelection}
-                    />
-                }
-                inputOptions={
-                    <LimitRate
-                        previousDisplayPrice={previousDisplayPrice}
-                        displayPrice={displayPrice}
-                        setDisplayPrice={setDisplayPrice}
-                        setPreviousDisplayPrice={setPreviousDisplayPrice}
-                        isSellTokenBase={isSellTokenBase}
-                        setPriceInputFieldBlurred={setPriceInputFieldBlurred}
-                        fieldId='limit-rate'
-                    />
-                }
-                transactionDetails={
-                    <LimitExtraInfo
-                        showExtraInfoDropdown={
-                            tokenAInputQty !== '' || tokenBInputQty !== ''
+        <TradeModuleSkeleton
+            header={
+                <TradeModuleHeader
+                    slippage={mintSlippage}
+                    bypassConfirm={bypassConfirmLimit}
+                    settingsTitle='Limit Order'
+                />
+            }
+            input={
+                <LimitTokenInput
+                    tokenAInputQty={{
+                        value: tokenAInputQty,
+                        set: setTokenAInputQty,
+                    }}
+                    tokenBInputQty={{
+                        value: tokenBInputQty,
+                        set: setTokenBInputQty,
+                    }}
+                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                    limitTickDisplayPrice={middleDisplayPrice}
+                    handleLimitButtonMessage={handleLimitButtonMessage}
+                    toggleDexSelection={toggleDexSelection}
+                />
+            }
+            inputOptions={
+                <LimitRate
+                    previousDisplayPrice={previousDisplayPrice}
+                    displayPrice={displayPrice}
+                    setDisplayPrice={setDisplayPrice}
+                    setPreviousDisplayPrice={setPreviousDisplayPrice}
+                    isSellTokenBase={isSellTokenBase}
+                    setPriceInputFieldBlurred={setPriceInputFieldBlurred}
+                    fieldId='limit-rate'
+                />
+            }
+            transactionDetails={
+                <LimitExtraInfo
+                    showExtraInfoDropdown={
+                        tokenAInputQty !== '' || tokenBInputQty !== ''
+                    }
+                    orderGasPriceInDollars={orderGasPriceInDollars}
+                    liquidityProviderFeeString={liquidityProviderFeeString}
+                    isTokenABase={isSellTokenBase}
+                    startDisplayPrice={startDisplayPrice}
+                    middleDisplayPrice={middleDisplayPrice}
+                    endDisplayPrice={endDisplayPrice}
+                />
+            }
+            modal={
+                isOpen ? (
+                    <ConfirmLimitModal
+                        onClose={handleModalClose}
+                        initiateLimitOrderMethod={sendLimitOrder}
+                        tokenAInputQty={tokenAInputQty}
+                        tokenBInputQty={tokenBInputQty}
+                        insideTickDisplayPrice={endDisplayPrice}
+                        newLimitOrderTransactionHash={
+                            newLimitOrderTransactionHash
                         }
-                        orderGasPriceInDollars={orderGasPriceInDollars}
-                        liquidityProviderFeeString={liquidityProviderFeeString}
-                        isTokenABase={isSellTokenBase}
+                        txErrorCode={txErrorCode}
+                        showConfirmation={showConfirmation}
+                        resetConfirmation={resetConfirmation}
                         startDisplayPrice={startDisplayPrice}
                         middleDisplayPrice={middleDisplayPrice}
                         endDisplayPrice={endDisplayPrice}
                     />
-                }
-                modal={
-                    isOpen ? (
-                        <ConfirmLimitModal
-                            initiateLimitOrderMethod={sendLimitOrder}
-                            tokenAInputQty={tokenAInputQty}
-                            tokenBInputQty={tokenBInputQty}
-                            insideTickDisplayPrice={endDisplayPrice}
-                            newLimitOrderTransactionHash={
-                                newLimitOrderTransactionHash
-                            }
-                            txErrorCode={txErrorCode}
-                            showConfirmation={showConfirmation}
-                            setShowConfirmation={setShowConfirmation}
-                            resetConfirmation={resetConfirmation}
-                            startDisplayPrice={startDisplayPrice}
-                            middleDisplayPrice={middleDisplayPrice}
-                            endDisplayPrice={endDisplayPrice}
-                            onClose={handleModalClose}
-                        />
-                    ) : (
-                        <></>
-                    )
-                }
-                button={
+                ) : (
+                    <></>
+                )
+            }
+            button={
+                <Button
+                    title={
+                        areBothAckd
+                            ? limitAllowed
+                                ? bypassConfirmLimit.isEnabled
+                                    ? 'Submit Limit Order'
+                                    : 'Confirm'
+                                : limitButtonErrorMessage
+                            : 'Acknowledge'
+                    }
+                    action={
+                        areBothAckd
+                            ? bypassConfirmLimit.isEnabled
+                                ? sendLimitOrder
+                                : handleModalOpen
+                            : ackAsNeeded
+                    }
+                    disabled={
+                        (!limitAllowed ||
+                            !isOrderValid ||
+                            poolPriceNonDisplay === 0) &&
+                        areBothAckd
+                    }
+                    flat
+                />
+            }
+            bypassConfirm={
+                showConfirmation && bypassConfirmLimit.isEnabled ? (
+                    <SubmitTransaction
+                        type='Limit'
+                        newTransactionHash={newLimitOrderTransactionHash}
+                        txErrorCode={txErrorCode}
+                        resetConfirmation={resetConfirmation}
+                        sendTransaction={sendLimitOrder}
+                        transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}
+                    />
+                ) : undefined
+            }
+            approveButton={
+                !isTokenAAllowanceSufficient &&
+                parseFloat(tokenAInputQty) > 0 ? (
                     <Button
                         title={
-                            areBothAckd
-                                ? limitAllowed
-                                    ? bypassConfirmLimit.isEnabled
-                                        ? 'Submit Limit Order'
-                                        : 'Confirm'
-                                    : limitButtonErrorMessage
-                                : 'Acknowledge'
+                            !isApprovalPending
+                                ? `Approve ${tokenA.symbol}`
+                                : `${tokenA.symbol} Approval Pending`
                         }
-                        action={
-                            areBothAckd
-                                ? bypassConfirmLimit.isEnabled
-                                    ? handleLimitButtonClickWithBypass
-                                    : openModal
-                                : ackAsNeeded
-                        }
-                        disabled={
-                            (!limitAllowed ||
-                                !isOrderValid ||
-                                poolPriceNonDisplay === 0) &&
-                            areBothAckd
-                        }
-                        flat
+                        disabled={isApprovalPending}
+                        action={async () => {
+                            await approve(tokenA.address, tokenA.symbol);
+                        }}
+                        flat={true}
                     />
-                }
-                bypassConfirm={
-                    showBypassConfirmButton ? (
-                        <BypassConfirmButton
-                            newTransactionHash={newLimitOrderTransactionHash}
-                            txErrorCode={txErrorCode}
-                            resetConfirmation={resetConfirmation}
-                            setShowBypassConfirmButton={
-                                setShowBypassConfirmButton
-                            }
-                            sendTransaction={sendLimitOrder}
-                            setNewTransactionHash={
-                                setNewLimitOrderTransactionHash
-                            }
-                            transactionPendingDisplayString={`Submitting Limit Order to Swap ${tokenAInputQty} ${tokenA.symbol} for ${tokenBInputQty} ${tokenB.symbol}`}
-                        />
-                    ) : undefined
-                }
-                approveButton={
-                    !isTokenAAllowanceSufficient &&
-                    parseFloat(tokenAInputQty) > 0 ? (
-                        <Button
-                            title={
-                                !isApprovalPending
-                                    ? `Approve ${tokenA.symbol}`
-                                    : `${tokenA.symbol} Approval Pending`
-                            }
-                            disabled={isApprovalPending}
-                            action={async () => {
-                                await approve(tokenA.address, tokenA.symbol);
-                            }}
-                            flat={true}
-                        />
-                    ) : undefined
-                }
-                tutorialSteps={limitTutorialSteps}
-            />
-        </>
+                ) : undefined
+            }
+            tutorialSteps={limitTutorialSteps}
+        />
     );
 }

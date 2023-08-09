@@ -97,6 +97,11 @@
     height: 40px;
 }
 
+.button_control_disable{
+    pointer-events: none;
+    filter: blur(2px);
+}
+
 .button_controls button {
     background: none;
     color: inherit;

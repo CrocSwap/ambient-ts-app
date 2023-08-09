@@ -27,6 +27,9 @@
 
 .animation_container h2 {
     color: var(--text1);
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
 .animation_container p {
     color: var(--text2);

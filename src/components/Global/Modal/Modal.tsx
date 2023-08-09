@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode } from 'react';
+import { ReactNode, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BiArrowBack } from 'react-icons/bi';
 import { RiCloseFill } from 'react-icons/ri';
@@ -8,6 +8,7 @@ import { RiCloseFill } from 'react-icons/ri';
 import styles from './Modal.module.css';
 import GlobalModalPortal from '../../GlobalModalPortal';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../constants';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 // interface for React functional component
 interface ModalPropsIF {
@@ -37,6 +38,19 @@ export default function Modal(props: ModalPropsIF) {
         usingCustomHeader = false,
         onClose = () => null,
     } = props;
+
+    const escFunction = useCallback((event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            onClose();
+        }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener('keydown', escFunction, false);
+        return () => {
+            document.removeEventListener('keydown', escFunction, false);
+        };
+    }, []);
 
     // jsx for the back element
     const backElement = (
@@ -73,12 +87,14 @@ export default function Modal(props: ModalPropsIF) {
 
     const footerOrNull = !footer ? null : footerJSX;
 
+    const desktopView = useMediaQuery('(min-width: 720px)');
+
     return (
         <GlobalModalPortal>
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}
-                onClick={onClose}
+                onMouseDown={desktopView ? onClose : undefined}
                 role='dialog'
                 aria-modal='true'
             >
@@ -90,10 +106,11 @@ export default function Modal(props: ModalPropsIF) {
                 ${styles.modal_body}
                 ${noBackground ? styles.no_background_modal : null}
                 `}
+                    onMouseDown={(e) => e.stopPropagation()}
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    <div onClick={(e) => e.stopPropagation()}>
+                    <div>
                         {headerJSX}
                         <section
                             className={styles.modal_content}

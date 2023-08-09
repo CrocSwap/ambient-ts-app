@@ -40,6 +40,12 @@
     list-style: none;
 }
 
+.advanced_disabled{
+    pointer-events: none;
+    opacity: 0.2;
+    filter: blur(2px);
+}
+
 .info_button_container {
     margin-top: 8px;
     padding: 0 32px;
