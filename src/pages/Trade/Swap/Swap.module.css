@@ -1,0 +1,43 @@
+.price_impact {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    border: 1px solid var(--dark3);
+    border-radius: var(--border-radius);
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    font-weight: 300;
+
+    color: var(--other-red) !important;
+
+    padding: 4px 8px;
+}
+
+.price_impact svg {
+    color: var(--other-red) !important;
+}
+
+.align_center {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    gap: 5px;
+}
+
+@media only screen and (min-width: 700px) {
+    .align_center {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
+        text-align: start;
+    }
+
+    .data {
+        text-align: end;
+    }
+}

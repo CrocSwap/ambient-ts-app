@@ -9,6 +9,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ConnectWalletButton } from '../../../components/Global/ConnectWalletButton/ConnectWalletButton';
 
 // interface for React functional component props
 interface propsIF {
@@ -98,7 +99,7 @@ export default function SidebarAccordion(props: propsIF) {
         sidebar.isOpen ? (
             <div className={styles.connect_button}>
                 <p>Your recent {item.name.toLowerCase()} will display here.</p>
-                <button onClick={openWagmiModal}>Connect Wallet</button>
+                <ConnectWalletButton onClick={openWagmiModal} thin />
             </div>
         ) : (
             showOpenContentOrNull

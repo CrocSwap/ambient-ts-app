@@ -35,9 +35,8 @@ export const TradeTableContext = createContext<TradeTableContextIF>(
 export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { isCandleSelected } = useContext(CandleContext);
-    const { setChartHeight, chartHeights } =
-        useContext(ChartContext);
+    const { isCandleSelected, isCandleDataNull } = useContext(CandleContext);
+    const { setChartHeight, chartHeights } = useContext(ChartContext);
 
     const { pathname: currentLocation } = useLocation();
 
@@ -156,6 +155,16 @@ export const TradeTableContextProvider = (props: {
         )
             toggleTradeTabBasedOnRoute();
     }, [location.pathname]);
+
+    useEffect(() => {
+        if (isCandleDataNull) {
+            setChartHeight(4);
+            setTradeTableState('Expanded');
+        } else {
+            setChartHeight(chartHeights.default);
+            setTradeTableState(undefined);
+        }
+    }, [isCandleDataNull]);
 
     return (
         <TradeTableContext.Provider value={tradeTableContext}>

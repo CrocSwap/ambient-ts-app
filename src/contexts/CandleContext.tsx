@@ -12,7 +12,6 @@ import {
     fetchCandleSeriesHybrid,
 } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
-import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
@@ -52,14 +51,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         useContext(ChartContext);
     const { chainData, crocEnv } = useContext(CrocEnvContext);
     const {
-        baseToken: {
-            address: baseTokenAddress,
-            mainnetAddress: mainnetCanonBase,
-        },
-        quoteToken: {
-            address: quoteTokenAddress,
-            mainnetAddress: mainnetCanonQuote,
-        },
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
@@ -114,19 +107,16 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         timeOfEndCandle,
     };
 
-    const {
-        baseToken: mainnetBaseTokenAddress,
-        quoteToken: mainnetQuoteTokenAddress,
-    } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
+    useEffect(() => {
+        setCandleData(undefined);
+    }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
         isChartEnabled && fetchCandles();
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
+        baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleTimeLocal,
     ]);
 
     useEffect(() => {
@@ -138,10 +128,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         }
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
+        baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleTimeLocal,
         candleScale.nCandles,
         candleScale.isShowLatestCandle,
     ]);
@@ -151,8 +139,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             isServerEnabled &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            mainnetBaseTokenAddress &&
-            mainnetQuoteTokenAddress &&
             candleTimeLocal &&
             crocEnv
         ) {
@@ -163,7 +149,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 ? Date.now() / 1000
                 : candleScale.lastCandleDate || 0;
             const nCandles =
-                candleScale?.nCandles > 3000 ? 3000 : candleScale?.nCandles;
+                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
@@ -183,8 +169,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
                 const candleSeries = candles?.candles;
                 if (candleSeries && candleSeries.length > 0) {
-                    setIsFetchingCandle(false);
+                    setIsCandleDataNull(false);
+                } else {
+                    setIsCandleDataNull(true);
                 }
+                setIsFetchingCandle(false);
             });
         } else {
             setIsCandleDataNull(true);

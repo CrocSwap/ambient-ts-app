@@ -14,6 +14,7 @@ import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
 import Portfolio from '../pages/Portfolio/Portfolio';
+import TradeSwap from '../pages/Trade/Swap/Swap';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -28,7 +29,6 @@ import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFoo
 /** * **** Import Local Files *******/
 import './App.css';
 import { IS_LOCAL_ENV } from '../constants';
-import GlobalModal from './components/GlobalModal/GlobalModal';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
@@ -43,6 +43,7 @@ import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 /** ***** React Function *******/
 export default function App() {
@@ -57,6 +58,7 @@ export default function App() {
             isEnabled: isChatEnabled,
         },
         theme: { selected: selectedTheme },
+        wagmiModal: { isOpen: isWagmiModalOpen },
     } = useContext(AppStateContext);
     const { isChainSupported, defaultUrlParams } = useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
@@ -143,6 +145,7 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <>
@@ -178,7 +181,7 @@ export default function App() {
                             />
                             <Route
                                 path='market/:params'
-                                element={<Swap isOnTradeRoute={true} />}
+                                element={<TradeSwap isOnTradeRoute={true} />}
                             />
                             <Route
                                 path='limit'
@@ -276,11 +279,10 @@ export default function App() {
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
             </div>
-            <SidebarFooter />
-            <GlobalModal />
+            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <GlobalPopup />
             <SnackbarComponent />
-            <WalletModalWagmi />
+            {isWagmiModalOpen && <WalletModalWagmi />}
         </>
     );
 }

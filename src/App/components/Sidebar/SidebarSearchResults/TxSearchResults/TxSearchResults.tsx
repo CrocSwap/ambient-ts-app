@@ -34,11 +34,19 @@ export default function TxSearchResults(props: propsIF) {
         setSelectedOutsideTab(0);
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.txId);
-        linkGenMarket.navigate({
-            chain: chainId,
-            tokenA: tx.base,
-            tokenB: tx.quote,
-        });
+        linkGenMarket.navigate(
+            tx.isBuy
+                ? {
+                      chain: chainId,
+                      tokenA: tx.base,
+                      tokenB: tx.quote,
+                  }
+                : {
+                      chain: chainId,
+                      tokenA: tx.quote,
+                      tokenB: tx.base,
+                  },
+        );
     };
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element

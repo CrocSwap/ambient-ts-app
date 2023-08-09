@@ -19,6 +19,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import Modal from '../../../Global/Modal/Modal';
 
 interface propsIF {
     sendTransaction: () => void;
@@ -40,6 +41,7 @@ interface propsIF {
     isAdd: boolean;
     tokenAQtyLocal: number;
     tokenBQtyLocal: number;
+    onClose: () => void;
 }
 
 function ConfirmRangeModal(props: propsIF) {
@@ -60,6 +62,7 @@ function ConfirmRangeModal(props: propsIF) {
         isAdd,
         tokenAQtyLocal,
         tokenBQtyLocal,
+        onClose = () => null,
     } = props;
 
     const {
@@ -213,36 +216,42 @@ function ConfirmRangeModal(props: propsIF) {
         : confirmSendMessage;
 
     return (
-        <div className={styles.confirm_range_modal_container}>
-            <div>{showConfirmation ? fullTxDetails : confirmationDisplay}</div>
-            <footer className={styles.modal_footer}>
-                {showConfirmation && (
-                    <Button
-                        title={
-                            isAdd
-                                ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
-                                : `Submit ${
-                                      isAmbient ? 'Ambient' : ''
-                                  } Liquidity`
-                        }
-                        action={() => {
-                            // if this modal is launched we can infer user wants confirmation
-                            // if user enables bypass, update all settings in parallel
-                            // otherwise do not not make any change to persisted preferences
-                            if (currentSkipConfirm) {
-                                bypassConfirmSwap.enable();
-                                bypassConfirmLimit.enable();
-                                bypassConfirmRange.enable();
-                                bypassConfirmRepo.enable();
+        <Modal title='Pool Confirmation' onClose={onClose}>
+            <div className={styles.confirm_range_modal_container}>
+                <div>
+                    {showConfirmation ? fullTxDetails : confirmationDisplay}
+                </div>
+                <footer className={styles.modal_footer}>
+                    {showConfirmation && (
+                        <Button
+                            title={
+                                isAdd
+                                    ? `Add ${
+                                          isAmbient ? 'Ambient' : ''
+                                      } Liquidity`
+                                    : `Submit ${
+                                          isAmbient ? 'Ambient' : ''
+                                      } Liquidity`
                             }
-                            sendTransaction();
-                            setShowConfirmation(false);
-                        }}
-                        flat
-                    />
-                )}
-            </footer>
-        </div>
+                            action={() => {
+                                // if this modal is launched we can infer user wants confirmation
+                                // if user enables bypass, update all settings in parallel
+                                // otherwise do not not make any change to persisted preferences
+                                if (currentSkipConfirm) {
+                                    bypassConfirmSwap.enable();
+                                    bypassConfirmLimit.enable();
+                                    bypassConfirmRange.enable();
+                                    bypassConfirmRepo.enable();
+                                }
+                                sendTransaction();
+                                setShowConfirmation(false);
+                            }}
+                            flat
+                        />
+                    )}
+                </footer>
+            </div>
+        </Modal>
     );
 }
 
