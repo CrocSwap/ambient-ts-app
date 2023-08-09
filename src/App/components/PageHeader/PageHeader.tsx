@@ -5,7 +5,7 @@ import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-import logo from '../../../assets/images/logos/ambient_logo.png';
+import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import {

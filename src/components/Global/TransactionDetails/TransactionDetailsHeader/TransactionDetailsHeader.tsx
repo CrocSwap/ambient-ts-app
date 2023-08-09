@@ -1,6 +1,6 @@
 import styles from './TransactionDetailsHeader.module.css';
 import { Dispatch, SetStateAction } from 'react';
-import logo from '../../../../assets/images/logos/ambient_logo.png';
+import logo from '../../../../assets/images/logos/logo_mark.svg';
 import logoText from '../../../../assets/images/logos/logo_text.png';
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';

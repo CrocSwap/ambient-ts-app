@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import styles from './PageHeaderMobile.module.css';
 import { FaWallet } from 'react-icons/fa';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import logo from '../../../assets/images/logos/ambient_logo.png';
+import logo from '../../../assets/images/logos/logo_mark.svg';
 import NavbarDropdownMenu from './NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from './NavItem/NavItem';
 import { FiMenu } from 'react-icons/fi';
