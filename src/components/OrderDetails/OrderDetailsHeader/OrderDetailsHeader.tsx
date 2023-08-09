@@ -1,17 +1,18 @@
 import styles from './OrderDetailsHeader.module.css';
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import logoText from '../../../assets/images/logos/logo_text.png';
 
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+
 interface OrderDetailsPropsIF {
     copyOrderDetailsToClipboard: () => Promise<void>;
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
     handleCopyPositionId(): void;
+    onClose: () => void;
 }
 export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
     const {
@@ -19,10 +20,8 @@ export default function OrderDetailsHeader(props: OrderDetailsPropsIF) {
         showShareComponent,
         setShowShareComponent,
         copyOrderDetailsToClipboard,
+        onClose,
     } = props;
-    const {
-        globalModal: { close: onClose },
-    } = useContext(AppStateContext);
 
     const copySlotIDIconWithTooltip = (
         <IconWithTooltip

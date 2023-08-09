@@ -35,13 +35,15 @@ import { getFormattedNumber } from '../../functions/getFormattedNumber';
 
 const PageHeader = function () {
     const {
-        wagmiModal: { open: openWagmiModal },
-    } = useContext(AppStateContext);
-    const {
         crocEnv,
         setCrocEnv,
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
+
+    const {
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
+
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -137,7 +139,6 @@ const PageHeader = function () {
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
         walletDropdownTokenData,
-        openWagmiModal: openWagmiModal,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
@@ -145,7 +146,7 @@ const PageHeader = function () {
         <button
             className={styles.authenticate_button}
             style={!desktopScreen ? { width: '140px' } : undefined}
-            onClick={() => openWagmiModal()}
+            onClick={openWagmiModal}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}
         </button>

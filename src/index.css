@@ -9,8 +9,6 @@
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
     --mono: monospace, 'Lexend Deca' sans-serif;
-    --portfolio-banner: url('./assets/images/backgrounds/account_image.png')
-        no-repeat center center;
 
     /* font */
     --title-ts: 0px 0px 150px rgba(70, 183, 219, 0.5),

@@ -334,7 +334,9 @@ function Trade() {
                 <div className={styles.resizableParent}>
                     <Resizable
                         className={styles.chartBox}
-                        enable={{ bottom: true }}
+                        enable={{
+                            bottom: !isChartFullScreen && !isCandleDataNull,
+                        }}
                         size={{ width: '100%', height: chartHeights.current }}
                         minHeight={4}
                         onResizeStart={() => {
@@ -369,7 +371,7 @@ function Trade() {
                             }
                         }}
                         handleClasses={
-                            isChartFullScreen
+                            isChartFullScreen || isCandleDataNull
                                 ? undefined
                                 : { bottom: styles.resizableBox }
                         }
