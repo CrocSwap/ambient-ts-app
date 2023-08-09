@@ -66,7 +66,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const [dailyVol] = useState<number | undefined>();
 
     const {
-        // isPoolInitialized,
+        isPoolInitialized,
         poolPriceDisplay,
         isPoolPriceChangePositive,
         poolPriceChangePercent,
@@ -89,8 +89,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     const poolContext = {
         poolList,
         pool,
-        // isPoolInitialized,
-        isPoolInitialized: false,
+        isPoolInitialized,
         poolPriceDisplay,
         isPoolPriceChangePositive,
         poolPriceChangePercent,
