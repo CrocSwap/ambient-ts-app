@@ -660,39 +660,42 @@ function Reposition() {
                     {isRepositionSent ? etherscanButton : null}
                 </div>
             </div>
-            <ConfirmRepositionModal
-                isPositionInRange={isPositionInRange}
-                position={position as PositionIF}
-                onSend={sendRepositionTransaction}
-                showConfirmation={showConfirmation}
-                newRepositionTransactionHash={newRepositionTransactionHash}
-                resetConfirmation={resetConfirmation}
-                txErrorCode={txErrorCode}
-                minPriceDisplay={minPriceDisplay}
-                maxPriceDisplay={maxPriceDisplay}
-                currentBaseQtyDisplayTruncated={currentBaseQtyDisplayTruncated}
-                currentQuoteQtyDisplayTruncated={
-                    currentQuoteQtyDisplayTruncated
-                }
-                newBaseQtyDisplay={newBaseQtyDisplay}
-                newQuoteQtyDisplay={newQuoteQtyDisplay}
-                isAmbient={isAmbient}
-                pinnedMinPriceDisplayTruncatedInBase={
-                    pinnedMinPriceDisplayTruncatedInBase
-                }
-                pinnedMinPriceDisplayTruncatedInQuote={
-                    pinnedMinPriceDisplayTruncatedInQuote
-                }
-                pinnedMaxPriceDisplayTruncatedInBase={
-                    pinnedMaxPriceDisplayTruncatedInBase
-                }
-                pinnedMaxPriceDisplayTruncatedInQuote={
-                    pinnedMaxPriceDisplayTruncatedInQuote
-                }
-                isTokenABase={isTokenABase}
-                isOpen={isOpen}
-                onClose={handleModalClose}
-            />
+            {isOpen && (
+                <ConfirmRepositionModal
+                    isPositionInRange={isPositionInRange}
+                    position={position as PositionIF}
+                    onSend={sendRepositionTransaction}
+                    showConfirmation={showConfirmation}
+                    newRepositionTransactionHash={newRepositionTransactionHash}
+                    resetConfirmation={resetConfirmation}
+                    txErrorCode={txErrorCode}
+                    minPriceDisplay={minPriceDisplay}
+                    maxPriceDisplay={maxPriceDisplay}
+                    currentBaseQtyDisplayTruncated={
+                        currentBaseQtyDisplayTruncated
+                    }
+                    currentQuoteQtyDisplayTruncated={
+                        currentQuoteQtyDisplayTruncated
+                    }
+                    newBaseQtyDisplay={newBaseQtyDisplay}
+                    newQuoteQtyDisplay={newQuoteQtyDisplay}
+                    isAmbient={isAmbient}
+                    pinnedMinPriceDisplayTruncatedInBase={
+                        pinnedMinPriceDisplayTruncatedInBase
+                    }
+                    pinnedMinPriceDisplayTruncatedInQuote={
+                        pinnedMinPriceDisplayTruncatedInQuote
+                    }
+                    pinnedMaxPriceDisplayTruncatedInBase={
+                        pinnedMaxPriceDisplayTruncatedInBase
+                    }
+                    pinnedMaxPriceDisplayTruncatedInQuote={
+                        pinnedMaxPriceDisplayTruncatedInQuote
+                    }
+                    isTokenABase={isTokenABase}
+                    onClose={handleModalClose}
+                />
+            )}
         </>
     );
 }

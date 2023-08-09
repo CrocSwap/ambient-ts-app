@@ -36,10 +36,9 @@ function SocialLink(props: SocialLinkPropsIF) {
 }
 
 interface propsIF {
-    isOpen: boolean;
     onClose: () => void;
 }
-export default function ShareModal({ isOpen, onClose }: propsIF) {
+export default function ShareModal({ onClose }: propsIF) {
     const location = useLocation();
     // const currentUrl = location.href
     const currentPathname = location.pathname;
@@ -102,7 +101,7 @@ export default function ShareModal({ isOpen, onClose }: propsIF) {
     );
 
     return (
-        <Modal title='Share' isOpen={isOpen} onClose={onClose}>
+        <Modal title='Share' onClose={onClose}>
             <div className={styles.option_control_container}>
                 {shareIconsContent}
 

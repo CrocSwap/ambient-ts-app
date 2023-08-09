@@ -24,7 +24,6 @@ interface propsIF {
     txErrorCode: string;
     showConfirmation: boolean;
     statusText: string;
-    isOpen: boolean;
     onClose?: () => void;
     initiate: () => Promise<void>;
     resetConfirmation: () => void;
@@ -36,7 +35,6 @@ interface propsIF {
 
 export default function TradeConfirmationSkeleton(props: propsIF) {
     const {
-        isOpen = false,
         onClose = () => null,
         type,
         initiate,
@@ -107,7 +105,6 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
         <Modal
             title={`${type === 'Range' ? 'Pool' : type} Confirmation`}
             onClose={onClose}
-            isOpen={isOpen}
         >
             <div
                 className={styles.modal_container}

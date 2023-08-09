@@ -330,15 +330,16 @@ export default function TransactionsMenu(props: propsIF) {
                 {desktopView && transactionsMenu}
                 {dropdownTransactionsMenu}
             </div>
-            <TransactionDetailsModal
-                tx={tx}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-                isOpen={isDetailsModalOpen}
-                onClose={handleCloseModal}
-            />
+            {isDetailsModalOpen && (
+                <TransactionDetailsModal
+                    tx={tx}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    onClose={handleCloseModal}
+                />
+            )}
         </div>
     );
 }

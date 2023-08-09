@@ -694,7 +694,7 @@ export default function RangeActionModal(props: propsIF) {
     );
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+        <Modal usingCustomHeader onClose={onClose}>
             <ModalHeader
                 onClose={onClose}
                 title={

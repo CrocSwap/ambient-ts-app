@@ -497,28 +497,33 @@ function Swap(props: propsIF) {
                 />
             }
             modal={
-                <ConfirmSwapModal
-                    onClose={handleModalClose}
-                    isOpen={isModalOpen}
-                    tokenPair={{
-                        dataTokenA: tokenA,
-                        dataTokenB: tokenB,
-                    }}
-                    isDenomBase={isDenomBase}
-                    baseTokenSymbol={baseToken.symbol}
-                    quoteTokenSymbol={quoteToken.symbol}
-                    initiateSwapMethod={initiateSwap}
-                    newSwapTransactionHash={newSwapTransactionHash}
-                    txErrorCode={txErrorCode}
-                    showConfirmation={showConfirmation}
-                    resetConfirmation={resetConfirmation}
-                    slippageTolerancePercentage={slippageTolerancePercentage}
-                    effectivePrice={effectivePrice}
-                    isSellTokenBase={isSellTokenBase}
-                    sellQtyString={sellQtyString}
-                    buyQtyString={buyQtyString}
-                    isTokenAPrimary={isTokenAPrimary}
-                />
+                isModalOpen ? (
+                    <ConfirmSwapModal
+                        onClose={handleModalClose}
+                        tokenPair={{
+                            dataTokenA: tokenA,
+                            dataTokenB: tokenB,
+                        }}
+                        isDenomBase={isDenomBase}
+                        baseTokenSymbol={baseToken.symbol}
+                        quoteTokenSymbol={quoteToken.symbol}
+                        initiateSwapMethod={initiateSwap}
+                        newSwapTransactionHash={newSwapTransactionHash}
+                        txErrorCode={txErrorCode}
+                        showConfirmation={showConfirmation}
+                        resetConfirmation={resetConfirmation}
+                        slippageTolerancePercentage={
+                            slippageTolerancePercentage
+                        }
+                        effectivePrice={effectivePrice}
+                        isSellTokenBase={isSellTokenBase}
+                        sellQtyString={sellQtyString}
+                        buyQtyString={buyQtyString}
+                        isTokenAPrimary={isTokenAPrimary}
+                    />
+                ) : (
+                    <></>
+                )
             }
             button={
                 <Button

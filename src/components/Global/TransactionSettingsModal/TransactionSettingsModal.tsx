@@ -23,11 +23,10 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     bypassConfirm: skipConfirmIF;
     onClose: () => void;
-    isOpen: boolean;
 }
 
 export default function TransactionSettingsModal(props: propsIF) {
-    const { module, slippage, onClose, bypassConfirm, isOpen } = props;
+    const { module, slippage, onClose, bypassConfirm } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -63,7 +62,7 @@ export default function TransactionSettingsModal(props: propsIF) {
     } ${module} confirmation modal`;
 
     return (
-        <Modal title={`${module} Settings`} isOpen={isOpen} onClose={onClose}>
+        <Modal title={`${module} Settings`} onClose={onClose}>
             <div className={styles.settings_container}>
                 <section>
                     {module !== 'Limit Order' && (

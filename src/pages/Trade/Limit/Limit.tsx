@@ -671,21 +671,26 @@ export default function Limit() {
                 />
             }
             modal={
-                <ConfirmLimitModal
-                    onClose={handleModalClose}
-                    isOpen={isOpen}
-                    initiateLimitOrderMethod={sendLimitOrder}
-                    tokenAInputQty={tokenAInputQty}
-                    tokenBInputQty={tokenBInputQty}
-                    insideTickDisplayPrice={endDisplayPrice}
-                    newLimitOrderTransactionHash={newLimitOrderTransactionHash}
-                    txErrorCode={txErrorCode}
-                    showConfirmation={showConfirmation}
-                    resetConfirmation={resetConfirmation}
-                    startDisplayPrice={startDisplayPrice}
-                    middleDisplayPrice={middleDisplayPrice}
-                    endDisplayPrice={endDisplayPrice}
-                />
+                isOpen ? (
+                    <ConfirmLimitModal
+                        onClose={handleModalClose}
+                        initiateLimitOrderMethod={sendLimitOrder}
+                        tokenAInputQty={tokenAInputQty}
+                        tokenBInputQty={tokenBInputQty}
+                        insideTickDisplayPrice={endDisplayPrice}
+                        newLimitOrderTransactionHash={
+                            newLimitOrderTransactionHash
+                        }
+                        txErrorCode={txErrorCode}
+                        showConfirmation={showConfirmation}
+                        resetConfirmation={resetConfirmation}
+                        startDisplayPrice={startDisplayPrice}
+                        middleDisplayPrice={middleDisplayPrice}
+                        endDisplayPrice={endDisplayPrice}
+                    />
+                ) : (
+                    <></>
+                )
             }
             button={
                 <Button

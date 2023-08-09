@@ -1349,38 +1349,41 @@ function Range() {
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
-                <ConfirmRangeModal
-                    tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
-                    tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
-                    spotPriceDisplay={getFormattedNumber({
-                        value: displayPriceWithDenom,
-                    })}
-                    isTokenABase={isTokenABase}
-                    isAmbient={isAmbient}
-                    isAdd={isAdd}
-                    maxPriceDisplay={maxPriceDisplay}
-                    minPriceDisplay={minPriceDisplay}
-                    sendTransaction={sendTransaction}
-                    newRangeTransactionHash={newRangeTransactionHash}
-                    resetConfirmation={resetConfirmation}
-                    showConfirmation={showConfirmation}
-                    txErrorCode={txErrorCode}
-                    isInRange={!isOutOfRange}
-                    pinnedMinPriceDisplayTruncatedInBase={
-                        pinnedMinPriceDisplayTruncatedInBase
-                    }
-                    pinnedMinPriceDisplayTruncatedInQuote={
-                        pinnedMinPriceDisplayTruncatedInQuote
-                    }
-                    pinnedMaxPriceDisplayTruncatedInBase={
-                        pinnedMaxPriceDisplayTruncatedInBase
-                    }
-                    pinnedMaxPriceDisplayTruncatedInQuote={
-                        pinnedMaxPriceDisplayTruncatedInQuote
-                    }
-                    isOpen={isOpen}
-                    onClose={handleModalClose}
-                />
+                isOpen ? (
+                    <ConfirmRangeModal
+                        tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
+                        tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
+                        spotPriceDisplay={getFormattedNumber({
+                            value: displayPriceWithDenom,
+                        })}
+                        isTokenABase={isTokenABase}
+                        isAmbient={isAmbient}
+                        isAdd={isAdd}
+                        maxPriceDisplay={maxPriceDisplay}
+                        minPriceDisplay={minPriceDisplay}
+                        sendTransaction={sendTransaction}
+                        newRangeTransactionHash={newRangeTransactionHash}
+                        resetConfirmation={resetConfirmation}
+                        showConfirmation={showConfirmation}
+                        txErrorCode={txErrorCode}
+                        isInRange={!isOutOfRange}
+                        pinnedMinPriceDisplayTruncatedInBase={
+                            pinnedMinPriceDisplayTruncatedInBase
+                        }
+                        pinnedMinPriceDisplayTruncatedInQuote={
+                            pinnedMinPriceDisplayTruncatedInQuote
+                        }
+                        pinnedMaxPriceDisplayTruncatedInBase={
+                            pinnedMaxPriceDisplayTruncatedInBase
+                        }
+                        pinnedMaxPriceDisplayTruncatedInQuote={
+                            pinnedMaxPriceDisplayTruncatedInQuote
+                        }
+                        onClose={handleModalClose}
+                    />
+                ) : (
+                    <></>
+                )
             }
             button={
                 <Button

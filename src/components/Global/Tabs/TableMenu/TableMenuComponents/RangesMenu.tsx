@@ -318,19 +318,22 @@ export default function RangesMenu(props: propsIF) {
                 {rangesMenu}
                 {dropdownRangesMenu}
             </div>
-            <RangeDetailsModal
-                position={position}
-                isOpen={isRangeDetailsModalOpen}
-                onClose={closeRangeDetailsModal}
-                {...rangeDetailsProps}
-            />
-            <RangeActionModal
-                type={rangeModalAction}
-                isOpen={isRangeActionModalOpen}
-                onClose={handleActionModalClose}
-                position={position}
-                {...rangeDetailsProps}
-            />
+            {isRangeDetailsModalOpen && (
+                <RangeDetailsModal
+                    position={position}
+                    onClose={closeRangeDetailsModal}
+                    {...rangeDetailsProps}
+                />
+            )}
+            {isRangeActionModalOpen && (
+                <RangeActionModal
+                    type={rangeModalAction}
+                    isOpen={isRangeActionModalOpen}
+                    onClose={handleActionModalClose}
+                    position={position}
+                    {...rangeDetailsProps}
+                />
+            )}
         </div>
     );
 }

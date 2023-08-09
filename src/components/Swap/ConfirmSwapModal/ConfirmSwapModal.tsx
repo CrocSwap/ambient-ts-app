@@ -25,7 +25,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
-    isOpen: boolean;
     onClose?: () => void;
     isTokenAPrimary: boolean;
 }
@@ -46,7 +45,6 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
-        isOpen = false,
         onClose = () => null,
         isTokenAPrimary,
     } = props;
@@ -213,7 +211,6 @@ export default function ConfirmSwapModal(props: propsIF) {
 
     return (
         <TradeConfirmationSkeleton
-            isOpen={isOpen}
             onClose={onClose}
             type='Swap'
             tokenA={{ token: sellTokenData, quantity: sellQtyString }}

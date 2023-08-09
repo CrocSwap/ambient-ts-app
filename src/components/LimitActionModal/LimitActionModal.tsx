@@ -336,7 +336,7 @@ export default function LimitActionModal(props: propsIF) {
             onBackClick={resetConfirmation}
         />
     ) : (
-        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+        <Modal usingCustomHeader onClose={onClose}>
             <ModalHeader
                 title={showConfirmation ? '' : `${type} Limit Order`}
                 onClose={onClose}
