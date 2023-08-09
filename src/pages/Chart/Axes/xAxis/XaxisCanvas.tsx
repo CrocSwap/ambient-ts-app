@@ -18,7 +18,7 @@ import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
 import moment from 'moment';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 import { Zoom } from '../../ChartUtils/zoom';
-
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     lastCrDate: number | undefined;
@@ -84,6 +84,8 @@ export default function XAxisCanvas(props: xAxisIF) {
 
     const location = useLocation();
 
+    const mobileView = useMediaQuery('(max-width: 600px)');
+
     useEffect(() => {
         if (scaleData) {
             const _xAxis = d3fc.axisBottom().scale(scaleData?.xScale);
@@ -100,7 +102,7 @@ export default function XAxisCanvas(props: xAxisIF) {
         Y: number,
     ) => {
         if (scaleData) {
-            const _width = 65; // magic number of pixels to blur surrounding price
+            const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
 
             const timeOfEndCandleLocation = timeOfEndCandle
@@ -111,115 +113,141 @@ export default function XAxisCanvas(props: xAxisIF) {
                 : undefined;
             scaleData.xScaleTime.domain(xScale.domain());
 
-            const data = correctStyleForData(
-                scaleData?.xScale.domain()[0],
-                scaleData?.xScale.domain()[1],
-                scaleData?.xScaleTime.ticks(),
-            );
+            const canvas = d3
+                .select(d3Xaxis.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
-            const filteredData = data.reduce(
-                (acc: xAxisTick[], d: xAxisTick) => {
-                    const sameTime = acc.find((d1: xAxisTick) => {
-                        return d1.date.getTime() === d.date.getTime();
-                    });
-                    if (!sameTime) {
-                        acc.push(d);
-                    }
-                    return acc;
-                },
-                [],
-            );
+            if (canvas !== null) {
+                const rectCanvas = canvas.getBoundingClientRect();
 
-            filteredData.forEach((d: xAxisTick) => {
-                if (d.date instanceof Date) {
-                    let formatValue = undefined;
-                    context.textAlign = 'center';
-                    context.textBaseline = 'top';
-                    context.fillStyle = 'rgba(189,189,189,0.8)';
-                    context.font = '50 11.425px Lexend Deca';
-                    context.filter = ' blur(0px)';
+                const width = rectCanvas.width;
 
-                    if (
-                        moment(d.date).format('HH:mm') === '00:00' ||
-                        period === 86400
-                    ) {
-                        formatValue = moment(d.date).format('DD');
-                    } else {
-                        formatValue = moment(d.date).format('HH:mm');
-                    }
+                const factor = width / (width < 500 ? 75 : 100);
 
-                    if (
-                        moment(d.date)
-                            .format('DD')
-                            .match(/^(01)$/) &&
-                        moment(d.date).format('HH:mm') === '00:00'
-                    ) {
-                        formatValue =
-                            moment(d.date).format('MMM') === 'Jan'
-                                ? moment(d.date).format('YYYY')
-                                : moment(d.date).format('MMM');
-                    }
+                const ticks = scaleData?.xScaleTime.ticks(factor);
 
-                    if (
-                        crosshairActive !== 'none' &&
-                        xScale(d.date) > xScale(crosshairData[0].x) - _width &&
-                        xScale(d.date) < xScale(crosshairData[0].x) + _width &&
-                        d.date !== crosshairData[0].x
-                    ) {
-                        context.filter = ' blur(7px)';
-                    }
+                const data = correctStyleForData(
+                    scaleData?.xScale.domain()[0],
+                    scaleData?.xScale.domain()[1],
+                    ticks,
+                );
 
-                    if (d.style) {
-                        context.font = '900 12px Lexend Deca';
-                    }
+                const filteredData = data.reduce(
+                    (acc: xAxisTick[], d: xAxisTick) => {
+                        const sameTime = acc.find((d1: xAxisTick) => {
+                            return d1.date.getTime() === d.date.getTime();
+                        });
+                        if (!sameTime) {
+                            acc.push(d);
+                        }
+                        return acc;
+                    },
+                    [],
+                );
 
-                    context.beginPath();
+                filteredData.forEach((d: xAxisTick) => {
+                    if (d.date instanceof Date) {
+                        let formatValue = undefined;
+                        context.textAlign = 'center';
+                        context.textBaseline = 'top';
+                        context.fillStyle = 'rgba(189,189,189,0.8)';
+                        context.font = '50 11.425px Lexend Deca';
+                        context.filter = ' blur(0px)';
 
-                    if (
-                        d.date.getTime() !== lastCrDate &&
-                        !(
-                            (firstCrDateLocation &&
-                                xScale(d.date) >
-                                    firstCrDateLocation - _width / 2 &&
-                                xScale(d.date) <
-                                    firstCrDateLocation + _width / 2) ||
-                            (timeOfEndCandleLocation &&
-                                xScale(d.date) >
-                                    timeOfEndCandleLocation - _width / 2 &&
-                                xScale(d.date) <
-                                    timeOfEndCandleLocation + _width / 2)
-                        )
-                    ) {
-                        if (formatValue) {
-                            const indexValue = filteredData.findIndex(
-                                (d1: xAxisTick) => d1.date === d.date,
-                            );
-                            if (!d.style) {
-                                const maxIndex =
-                                    indexValue === filteredData.length - 1
-                                        ? indexValue
-                                        : indexValue + 1;
-                                const minIndex =
-                                    indexValue === 0
-                                        ? indexValue
-                                        : indexValue - 1;
-                                const lastData = filteredData[maxIndex];
-                                const beforeData = filteredData[minIndex];
+                        if (
+                            moment(d.date).format('HH:mm') === '00:00' ||
+                            period === 86400
+                        ) {
+                            formatValue = moment(d.date).format('DD');
+                        } else {
+                            formatValue = moment(d.date).format('HH:mm');
+                        }
 
-                                if (
-                                    beforeData.style ||
-                                    (lastData.style && xScale(d.date.getTime()))
-                                ) {
+                        if (
+                            moment(d.date)
+                                .format('DD')
+                                .match(/^(01)$/) &&
+                            moment(d.date).format('HH:mm') === '00:00'
+                        ) {
+                            formatValue =
+                                moment(d.date).format('MMM') === 'Jan'
+                                    ? moment(d.date).format('YYYY')
+                                    : moment(d.date).format('MMM');
+                        }
+
+                        if (
+                            crosshairActive !== 'none' &&
+                            xScale(d.date) >
+                                xScale(crosshairData[0].x) - _width &&
+                            xScale(d.date) <
+                                xScale(crosshairData[0].x) + _width &&
+                            d.date !== crosshairData[0].x
+                        ) {
+                            context.filter = ' blur(7px)';
+                        }
+
+                        if (d.style) {
+                            context.font = '900 12px Lexend Deca';
+                        }
+
+                        context.beginPath();
+
+                        if (
+                            d.date.getTime() !== lastCrDate &&
+                            !(
+                                (firstCrDateLocation &&
+                                    xScale(d.date) >
+                                        firstCrDateLocation - 65 / 2 &&
+                                    xScale(d.date) <
+                                        firstCrDateLocation + 65 / 2) ||
+                                (timeOfEndCandleLocation &&
+                                    xScale(d.date) >
+                                        timeOfEndCandleLocation - _width / 2 &&
+                                    xScale(d.date) <
+                                        timeOfEndCandleLocation + _width / 2)
+                            )
+                        ) {
+                            if (formatValue) {
+                                const indexValue = filteredData.findIndex(
+                                    (d1: xAxisTick) => d1.date === d.date,
+                                );
+                                if (!d.style) {
+                                    const maxIndex =
+                                        indexValue === filteredData.length - 1
+                                            ? indexValue
+                                            : indexValue + 1;
+                                    const minIndex =
+                                        indexValue === 0
+                                            ? indexValue
+                                            : indexValue - 1;
+                                    const lastData = filteredData[maxIndex];
+                                    const beforeData = filteredData[minIndex];
+
                                     if (
-                                        Math.abs(
-                                            xScale(beforeData.date.getTime()) -
-                                                xScale(d.date.getTime()),
-                                        ) > _width &&
-                                        Math.abs(
-                                            xScale(lastData.date.getTime()) -
-                                                xScale(d.date.getTime()),
-                                        ) > _width
+                                        beforeData.style ||
+                                        (lastData.style &&
+                                            xScale(d.date.getTime()))
                                     ) {
+                                        if (
+                                            Math.abs(
+                                                xScale(
+                                                    beforeData.date.getTime(),
+                                                ) - xScale(d.date.getTime()),
+                                            ) > _width &&
+                                            Math.abs(
+                                                xScale(
+                                                    lastData.date.getTime(),
+                                                ) - xScale(d.date.getTime()),
+                                            ) > _width
+                                        ) {
+                                            context.fillText(
+                                                formatValue,
+                                                xScale(d.date.getTime()),
+                                                Y + tickSize,
+                                            );
+                                        }
+                                    } else {
                                         context.fillText(
                                             formatValue,
                                             xScale(d.date.getTime()),
@@ -233,74 +261,72 @@ export default function XAxisCanvas(props: xAxisIF) {
                                         Y + tickSize,
                                     );
                                 }
-                            } else {
-                                context.fillText(
-                                    formatValue,
-                                    xScale(d.date.getTime()),
-                                    Y + tickSize,
-                                );
                             }
                         }
+                        context.restore();
                     }
-                    context.restore();
-                }
-            });
+                });
 
-            let dateCrosshair;
-            context.filter = ' blur(0px)';
-
-            context.font = '800 13px Lexend Deca';
-            if (period === 86400) {
-                dateCrosshair = moment(crosshairData[0].x)
-                    .subtract(utcDiffHours, 'hours')
-                    .format('MMM DD YYYY');
-            } else {
-                dateCrosshair = moment(crosshairData[0].x).format(
-                    'MMM DD HH:mm',
-                );
-            }
-
-            context.beginPath();
-
-            if (dateCrosshair && crosshairActive !== 'none') {
-                context.fillText(
-                    dateCrosshair,
-                    xScale(crosshairData[0].x),
-                    Y + tickSize,
-                );
-            }
-
-            if (
-                firstCrDateLocation &&
-                xScale(crosshairData[0].x) >
-                    firstCrDateLocation - (_width - 15) &&
-                xScale(crosshairData[0].x) <
-                    firstCrDateLocation + (_width - 15) &&
-                crosshairActive !== 'none'
-            ) {
-                context.filter = ' blur(7px)';
-            }
-
-            if (firstCrDateLocation) {
-                context.fillText('🐊', firstCrDateLocation, Y + tickSize);
-            }
-
-            if (timeOfEndCandle && timeOfEndCandleLocation) {
+                let dateCrosshair;
                 context.filter = ' blur(0px)';
 
+                context.font = '800 13px Lexend Deca';
+                if (period === 86400) {
+                    dateCrosshair = moment(crosshairData[0].x)
+                        .subtract(utcDiffHours, 'hours')
+                        .format('MMM DD YYYY');
+                } else {
+                    dateCrosshair = moment(crosshairData[0].x).format(
+                        'MMM DD HH:mm',
+                    );
+                }
+
+                context.beginPath();
+
+                if (dateCrosshair && crosshairActive !== 'none') {
+                    context.fillText(
+                        dateCrosshair,
+                        xScale(crosshairData[0].x),
+                        Y + tickSize,
+                    );
+                }
+
                 if (
+                    firstCrDateLocation &&
                     xScale(crosshairData[0].x) >
-                        timeOfEndCandleLocation - (_width - 15) &&
+                        firstCrDateLocation - (_width - 15) &&
                     xScale(crosshairData[0].x) <
-                        timeOfEndCandleLocation + (_width - 15) &&
+                        firstCrDateLocation + (_width - 15) &&
                     crosshairActive !== 'none'
                 ) {
                     context.filter = ' blur(7px)';
                 }
-                context.fillText('🥚', timeOfEndCandleLocation, Y + tickSize);
-            }
 
-            context.restore();
+                if (firstCrDateLocation) {
+                    context.fillText('🐊', firstCrDateLocation, Y + tickSize);
+                }
+
+                if (timeOfEndCandle && timeOfEndCandleLocation) {
+                    context.filter = ' blur(0px)';
+
+                    if (
+                        xScale(crosshairData[0].x) >
+                            timeOfEndCandleLocation - (_width - 15) &&
+                        xScale(crosshairData[0].x) <
+                            timeOfEndCandleLocation + (_width - 15) &&
+                        crosshairActive !== 'none'
+                    ) {
+                        context.filter = ' blur(7px)';
+                    }
+                    context.fillText(
+                        '🥚',
+                        timeOfEndCandleLocation,
+                        Y + tickSize,
+                    );
+                }
+
+                context.restore();
+            }
         }
     };
 
