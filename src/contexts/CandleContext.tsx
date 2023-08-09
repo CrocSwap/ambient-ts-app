@@ -176,7 +176,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 setIsFetchingCandle(false);
             });
         } else {
-            setIsCandleDataNull(true);
+            setIsFetchingCandle(true);
         }
     };
 
