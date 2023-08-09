@@ -314,7 +314,6 @@ function TransactionRow(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     isAccountView={isAccountView}
-                    isOpen={isDetailsModalOpen}
                     onClose={closeDetailsModal}
                 />
             )}

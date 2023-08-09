@@ -337,7 +337,6 @@ export default function TransactionsMenu(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     isAccountView={isAccountView}
-                    isOpen={isDetailsModalOpen}
                     onClose={handleCloseModal}
                 />
             )}

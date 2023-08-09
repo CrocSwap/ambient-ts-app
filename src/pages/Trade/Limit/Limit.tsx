@@ -723,7 +723,6 @@ export default function Limit() {
                             middleDisplayPrice={middleDisplayPrice}
                             endDisplayPrice={endDisplayPrice}
                             onClose={handleModalClose}
-                            isOpen={isOpen}
                         />
                     ) : (
                         <></>

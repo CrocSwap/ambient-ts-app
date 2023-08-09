@@ -72,7 +72,6 @@ function RepositionHeader(props: propsIF) {
                     slippage={repoSlippage}
                     bypassConfirm={bypassConfirmRepo}
                     onClose={closeModal}
-                    isOpen={isOpen}
                 />
             )}
         </>

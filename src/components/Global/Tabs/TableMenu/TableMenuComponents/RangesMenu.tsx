@@ -321,7 +321,6 @@ export default function RangesMenu(props: propsIF) {
             {isRangeDetailsModalOpen && (
                 <RangeDetailsModal
                     position={position}
-                    isOpen={isRangeDetailsModalOpen}
                     onClose={closeRangeDetailsModal}
                     {...rangeDetailsProps}
                 />

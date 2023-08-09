@@ -11,7 +11,6 @@ import { GLOBAL_MODAL_COMPONENT_ID } from '../../../constants';
 
 // interface for React functional component
 interface ModalPropsIF {
-    isOpen: boolean;
     onClose: () => void;
     handleBack?: () => void;
     showBackButton?: boolean;
@@ -36,7 +35,6 @@ export default function Modal(props: ModalPropsIF) {
         headerRightItems,
         centeredTitle = true,
         usingCustomHeader = false,
-        isOpen = false,
         onClose = () => null,
     } = props;
 
@@ -76,7 +74,7 @@ export default function Modal(props: ModalPropsIF) {
     const footerOrNull = !footer ? null : footerJSX;
 
     return (
-        <GlobalModalPortal isOpen={isOpen}>
+        <GlobalModalPortal>
             <aside
                 id={GLOBAL_MODAL_COMPONENT_ID}
                 className={styles.outside_modal}

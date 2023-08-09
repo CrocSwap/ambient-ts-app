@@ -1426,7 +1426,6 @@ function Range() {
                         pinnedMaxPriceDisplayTruncatedInQuote={
                             pinnedMaxPriceDisplayTruncatedInQuote
                         }
-                        isOpen={isOpen}
                         onClose={handleModalClose}
                     />
                 ) : (

@@ -242,7 +242,6 @@ export default function OrdersMenu(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     isAccountView={isAccountView}
-                    isOpen={isDetailsModalOpen}
                     onClose={closeDetailsModal}
                 />
             )}

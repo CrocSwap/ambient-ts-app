@@ -169,7 +169,6 @@ function TokenInputQuantity(props: propsIF) {
             {includeWallet && includeWallet}
             {isTokenSelectOpen && (
                 <SoloTokenSelectModal
-                    isOpen={isTokenSelectOpen}
                     onClose={closeTokenSelect}
                     showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                     setShowSoloSelectTokenButtons={

@@ -317,7 +317,6 @@ function RangesRow(props: propsIF) {
                         isBaseTokenMoneynessGreaterOrEqual
                     }
                     isAccountView={isAccountView}
-                    isOpen={isDetailsModalOpen}
                     onClose={closeDetailsModal}
                 />
             )}
