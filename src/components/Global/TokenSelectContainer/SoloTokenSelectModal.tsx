@@ -5,7 +5,6 @@ import {
     Dispatch,
     SetStateAction,
     useContext,
-    useRef,
 } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
