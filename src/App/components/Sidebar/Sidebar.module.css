@@ -109,7 +109,7 @@
 }
 
 .sidebar_link:hover svg {
-    color: white;
+    color: var(--accent1);
     cursor: pointer;
 }
 
@@ -139,7 +139,7 @@
 }
 
 .link_text {
-    color: var(--accent1);
+    color: var(--text1);
     transition: all var(--animation-speed) ease-in-out;
     font-weight: 500;
     font-size: 12px;
@@ -153,7 +153,7 @@
 }
 
 .sidebar_link:hover > .link_text {
-    color: var(--text1);
+    color: var(--accent1);
 }
 
 .sidebar_link .arrow {
@@ -162,7 +162,7 @@
 }
 
 .sidebar_link .icon {
-    color: var(--accent1);
+    color: var(--text1);
 }
 
 .sidebar_link .closed {
