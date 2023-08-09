@@ -36,7 +36,6 @@ interface propsIF {
     newQuoteQtyDisplay: string;
     isTokenABase: boolean;
     isPositionInRange: boolean;
-    isOpen: boolean;
     onClose: () => void;
 }
 
@@ -59,7 +58,6 @@ export default function ConfirmRepositionModal(props: propsIF) {
         newQuoteQtyDisplay,
         isTokenABase,
         isPositionInRange,
-        isOpen,
         onClose,
     } = props;
     const {
@@ -224,7 +222,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
     );
 
     return (
-        <Modal title='Confirm Reposition' isOpen={isOpen} onClose={onClose}>
+        <Modal title='Confirm Reposition' onClose={onClose}>
             <div className={styles.confirm_range_modal_container}>
                 <div>
                     {showConfirmation ? fullTxDetails2 : confirmationDisplay}

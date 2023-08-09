@@ -31,13 +31,11 @@ interface propsIF {
     isSingleToken: boolean;
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
-    isOpen: boolean;
     onClose: () => void;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
     const {
-        isOpen,
         onClose,
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
@@ -246,11 +244,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const MAX_TOKEN_COUNT = 300;
 
     return (
-        <Modal
-            title='Select Token'
-            isOpen={isOpen}
-            onClose={clearInputFieldAndCloseModal}
-        >
+        <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>
             <section className={styles.container}>
                 <div className={styles.input_control_container}>
                     <input

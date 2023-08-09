@@ -386,7 +386,7 @@ export default function LimitActionModal(props: propsIF) {
     ]);
 
     const confirmationModal = (
-        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+        <Modal usingCustomHeader onClose={onClose}>
             <ModalHeader
                 title={`${type} Limit Order Confirmation`}
                 onClose={onClose}
@@ -442,7 +442,7 @@ export default function LimitActionModal(props: propsIF) {
     if (showConfirmation) return confirmationModal;
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+        <Modal usingCustomHeader onClose={onClose}>
             {showSettingsOrMainContent}
         </Modal>
     );

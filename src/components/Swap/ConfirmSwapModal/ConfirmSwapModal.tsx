@@ -45,7 +45,6 @@ interface propsIF {
     isSellTokenBase: boolean;
     sellQtyString: string;
     buyQtyString: string;
-    isOpen: boolean;
     onClose?: () => void;
     isTokenAPrimary: boolean;
 }
@@ -67,7 +66,6 @@ export default function ConfirmSwapModal(props: propsIF) {
         isSellTokenBase,
         sellQtyString,
         buyQtyString,
-        isOpen = false,
         onClose = () => null,
         isTokenAPrimary,
     } = props;
@@ -328,7 +326,7 @@ export default function ConfirmSwapModal(props: propsIF) {
         : confirmSendMessage;
 
     return (
-        <Modal title='Swap Confirmation' onClose={onClose} isOpen={isOpen}>
+        <Modal title='Swap Confirmation' onClose={onClose}>
             <div
                 className={styles.modal_container}
                 aria-label='Swap Confirmation modal'
