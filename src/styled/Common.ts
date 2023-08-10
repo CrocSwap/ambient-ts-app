@@ -39,6 +39,10 @@ const FlexContainer = styled.div<FlexContainerProps>`
         justifyContent && `justify-content: ${justifyContent}`};
 `;
 
+const Font = css<{ font?: 'font-logo' | 'font-family' | 'roboto' | 'mono' }>`
+    ${({ font }) => font && `font-family: var(--${font})`}
+`;
+
 const FontSize = css<{ fontSize?: 'header1' | 'header2' | 'header' | 'body' }>`
     ${({ fontSize }) =>
         fontSize &&
@@ -68,4 +72,4 @@ const Color = css<{
     ${({ background }) =>
         background && `background-color: var(--${background})`};
 `;
-export { FlexContainer, GridContainer, FontSize, Color };
+export { FlexContainer, GridContainer, Font, FontSize, Color };
