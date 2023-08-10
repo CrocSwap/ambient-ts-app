@@ -1794,8 +1794,6 @@ export default function Chart(props: propsIF) {
             const minDomain = snappedTime - 100 * 1000 * period;
             const maxDomain = snappedTime + 39 * 1000 * period;
 
-            console.log('domain changed 2');
-
             scaleData?.xScale.domain([minDomain, maxDomain]);
 
             changeScale();
@@ -1822,8 +1820,6 @@ export default function Chart(props: propsIF) {
             const centerX = unparsedCandleData[latestCandleIndex].time * 1000;
 
             if (rescale) {
-                console.log('domain changed 3');
-
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
                     centerX + diff * 0.2,
@@ -1851,8 +1847,6 @@ export default function Chart(props: propsIF) {
                 const domain = [centerY - diffY / 2, centerY + diffY / 2];
 
                 setYaxisDomain(domain[0], domain[1]);
-
-                console.log('domain changed 4');
 
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
