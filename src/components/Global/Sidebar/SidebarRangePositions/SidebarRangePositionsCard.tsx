@@ -64,15 +64,15 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     return (
         <div className={styles.container} onClick={() => handleClick(position)}>
             <div>{pair}</div>
+            <div>{rangeDisplay}</div>
+            <div className={styles.status_display}>{value}</div>
             <div>
-                {rangeDisplay}
                 <div className={styles.range_status_container}>
                     <div className={rangeStatusStyle}>
                         <div className={styles.inner_circle_2}></div>
                     </div>
                 </div>
             </div>
-            <div className={styles.status_display}>{value}</div>
         </div>
     );
 }

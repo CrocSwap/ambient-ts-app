@@ -152,12 +152,7 @@ export default function WalletModalWagmi() {
                     !delayForHelpTextElapsed ? (
                         ''
                     ) : (
-                        <div>
-                            Please check your wallet for notifications.
-                            <br />
-                            <br />
-                            You may need to refresh the page and try again.
-                        </div>
+                        <div>Please check your wallet for notifications.</div>
                     )
                 }
             />
@@ -174,9 +169,8 @@ export default function WalletModalWagmi() {
 
     const metamaskErrorPage = (
         <div className={styles.metamask_pending_container}>
-            <CircleLoaderFailed />
-            <p>The connection to MetaMask was rejected. </p>
-            <p>Please try again.</p>
+            <CircleLoaderFailed size='48' />
+            <p>The connection to your wallet was rejected. </p>
             <Button
                 title='Try Again'
                 flat={true}
@@ -189,7 +183,7 @@ export default function WalletModalWagmi() {
 
     const notAvailablePage = (
         <div className={styles.metamask_pending_container}>
-            <CircleLoaderFailed />
+            <CircleLoaderFailed size='48' />
             <p>Ambient is not available in the United States.</p>
             <Button
                 title='Close'
@@ -224,9 +218,9 @@ export default function WalletModalWagmi() {
             case 'wallets':
                 return 'Choose a Wallet';
             case 'metamaskPending':
-                return 'Waiting for MetaMask';
+                return 'Waiting for Wallet';
             case 'metamaskError':
-                return 'MetaMask Error';
+                return 'Wallet Connection Error';
             case 'magicLogin':
             case 'magicLoginPending':
                 return 'Log In With Email';

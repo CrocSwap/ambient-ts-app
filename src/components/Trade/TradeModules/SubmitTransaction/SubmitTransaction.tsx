@@ -1,46 +1,51 @@
-import { Dispatch, SetStateAction, useState } from 'react';
+import { useState } from 'react';
 import { RiArrowUpSLine, RiArrowDownSLine } from 'react-icons/ri';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     CircleLoaderFailed,
     CircleLoaderCompleted,
-    CircleLoader,
 } from '../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../../../Global/TransactionException/TransactionException';
-import TransactionFailed from '../../../Global/TransactionFailed/TransactionFailed';
-import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
+import Spinner from '../../../Global/Spinner/Spinner';
+import TransactionDenied from './TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
-import styles from './BypassConfirmButton.module.css';
+import styles from './SubmitTransaction.module.css';
+import TransactionException from './TransactionException/TransactionException';
+import TransactionFailed from './TransactionFailed/TransactionFailed';
+import TransactionSubmitted from './TransactionSubmitted/TransactionSubmitted';
 
 interface propsIF {
+    type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
     newTransactionHash: string;
     txErrorCode: string;
     resetConfirmation: () => void;
-    setShowBypassConfirmButton: Dispatch<SetStateAction<boolean>>;
     sendTransaction: () => Promise<void>;
-    setNewTransactionHash: Dispatch<SetStateAction<string>>;
     transactionPendingDisplayString: string;
+    disableSubmitAgain?: boolean;
 }
-export default function BypassConfirmButton(props: propsIF) {
+export default function SubmitTransaction(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
 
     const {
+        type,
         newTransactionHash,
         txErrorCode,
         resetConfirmation,
-        setShowBypassConfirmButton,
         sendTransaction,
-        setNewTransactionHash,
         transactionPendingDisplayString,
+        disableSubmitAgain,
     } = props;
 
-    const transactionApproved = newTransactionHash !== '';
+    const isTransactionApproved = newTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+    const isTransactionPending = !(
+        isTransactionApproved ||
+        isTransactionDenied ||
+        isTransactionException
+    );
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenB } = useAppSelector((state) => state.tradeData);
 
     const confirmSendMessage = (
         <WaitingConfirmation
@@ -54,13 +59,7 @@ export default function BypassConfirmButton(props: propsIF) {
         setShowExtraInfo(false);
     }
 
-    const transactionDenied = (
-        <TransactionDenied
-            resetConfirmation={handleReset}
-            initiateTx={sendTransaction}
-            noAnimation
-        />
-    );
+    const transactionDenied = <TransactionDenied noAnimation />;
     const transactionFailed = (
         <TransactionFailed
             noAnimation
@@ -68,12 +67,7 @@ export default function BypassConfirmButton(props: propsIF) {
             initiateTx={sendTransaction}
         />
     );
-    const transactionException = (
-        <TransactionException
-            resetConfirmation={handleReset}
-            initiateTx={sendTransaction}
-        />
-    );
+    const transactionException = <TransactionException />;
 
     const lastReceipt =
         receiptData?.sessionReceipts.length > 0
@@ -88,12 +82,13 @@ export default function BypassConfirmButton(props: propsIF) {
 
     const transactionSubmitted = (
         <TransactionSubmitted
+            type={type}
             hash={newTransactionHash}
-            tokenBSymbol={tokenA.symbol}
-            tokenBAddress={tokenA.address}
-            tokenBDecimals={tokenA.decimals}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
             tokenBImage={uriToHttp(tokenB.logoURI)}
-            chainId={tokenA.chainId}
+            chainId={tokenB.chainId}
             noAnimation
         />
     );
@@ -101,28 +96,29 @@ export default function BypassConfirmButton(props: propsIF) {
         ? transactionException
         : isTransactionDenied
         ? transactionDenied
-        : transactionApproved
+        : isTransactionApproved
         ? transactionSubmitted
         : lastReceipt && !isLastReceiptSuccess
         ? transactionFailed
         : confirmSendMessage;
 
-    const buttonColor = isTransactionException
-        ? 'orange'
-        : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess)
-        ? 'var(--negative)'
-        : transactionApproved
-        ? 'var(--positive)'
-        : 'var(--accent1)';
+    const buttonColor =
+        isTransactionException ||
+        isTransactionDenied ||
+        (lastReceipt && !isLastReceiptSuccess)
+            ? 'var(--negative)'
+            : isTransactionApproved
+            ? 'var(--positive)'
+            : 'var(--accent1)';
 
     const animationDisplay = isTransactionException ? (
         <CircleLoaderFailed size='30px' />
     ) : isTransactionDenied || (lastReceipt && !isLastReceiptSuccess) ? (
         <CircleLoaderFailed size='30px' />
-    ) : transactionApproved ? (
+    ) : isTransactionApproved ? (
         <CircleLoaderCompleted size='30px' />
     ) : (
-        <CircleLoader size='30px' />
+        <Spinner size='30' bg='var(--dark2)' />
     );
 
     const buttonText = isTransactionException
@@ -131,7 +127,7 @@ export default function BypassConfirmButton(props: propsIF) {
         ? 'Transaction Denied'
         : lastReceipt && !isLastReceiptSuccess
         ? 'Transaction Failed'
-        : transactionApproved
+        : isTransactionApproved
         ? 'Transaction Submitted'
         : transactionPendingDisplayString;
 
@@ -144,14 +140,16 @@ export default function BypassConfirmButton(props: propsIF) {
                     className={styles.button_content}
                     onClick={() => setShowExtraInfo(!showExtraInfo)}
                 >
-                    <div style={{ color: buttonColor }}>
-                        <div style={{ width: '35px' }}>{animationDisplay}</div>
-                        <div>{buttonText}</div>
-                    </div>
-                    {showExtraInfo ? (
-                        <RiArrowUpSLine size={20} />
+                    <div>{animationDisplay}</div>
+                    <div style={{ color: buttonColor }}>{buttonText}</div>
+                    {!isTransactionPending ? (
+                        showExtraInfo ? (
+                            <RiArrowUpSLine size={20} />
+                        ) : (
+                            <RiArrowDownSLine size={20} />
+                        )
                     ) : (
-                        <RiArrowDownSLine size={20} />
+                        <div />
                     )}
                 </button>
 
@@ -160,17 +158,33 @@ export default function BypassConfirmButton(props: propsIF) {
                         {confirmationDisplay}
                     </section>
                 )}
-                <span className={styles.close_icon_container}>
-                    <button
-                        onClick={() => {
-                            resetConfirmation();
-                            setShowBypassConfirmButton(false);
-                            setNewTransactionHash('');
-                        }}
-                    >
-                        Submit another transaction
-                    </button>
-                </span>
+                <div className={styles.action_button_container}>
+                    {!isTransactionPending && (
+                        <span className={styles.close_icon_container}>
+                            <button
+                                onClick={() => {
+                                    resetConfirmation();
+                                }}
+                            >
+                                {disableSubmitAgain
+                                    ? 'Reset'
+                                    : 'Submit another transaction'}
+                            </button>
+                        </span>
+                    )}
+                    {(isTransactionDenied || isTransactionException) && (
+                        <span className={styles.close_icon_container}>
+                            <button
+                                onClick={() => {
+                                    resetConfirmation();
+                                    sendTransaction();
+                                }}
+                            >
+                                Retry
+                            </button>
+                        </span>
+                    )}
+                </div>
             </div>
         </section>
     );
