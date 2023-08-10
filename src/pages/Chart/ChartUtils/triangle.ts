@@ -10,7 +10,7 @@ export function createTriangle(xScale: any, yScale: any) {
         .crossValue(() => {
             return xScale.domain()[0];
         })
-        .mainValue((d: any) => d.value)
+        .mainValue((d: number) => d)
         .size(180)
         .type(d3.symbolTriangle)
         .decorate((context: any) => {
