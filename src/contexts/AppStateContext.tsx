@@ -28,7 +28,7 @@ interface AppStateContextIF {
         isEnabled: boolean;
         setIsEnabled: (val: boolean) => void;
     };
-    server: { isEnabled: boolean };
+    server: { isEnabled: boolean; isUserOnline: boolean };
     subscriptions: { isEnabled: boolean };
     wagmiModal: {
         isOpen: boolean;
@@ -49,6 +49,10 @@ export const AppStateContextProvider = (props: {
     const [isTutorialMode, setIsTutorialMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [isChatEnabled, setIsChatEnabled] = useState(CHAT_ENABLED);
+    const [isUserOnline, setIsUserOnline] = useState(navigator.onLine);
+
+    window.ononline = () => setIsUserOnline(true);
+    window.onoffline = () => setIsUserOnline(false);
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
@@ -96,7 +100,7 @@ export const AppStateContextProvider = (props: {
                 isEnabled: isChatEnabled,
                 setIsEnabled: setIsChatEnabled,
             },
-            server: { isEnabled: isServerEnabled },
+            server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
             subscriptions: { isEnabled: areSubscriptionsEnabled },
             wagmiModal: {
                 isOpen: isWagmiModalOpenWallet,
@@ -113,6 +117,7 @@ export const AppStateContextProvider = (props: {
             isChatOpen,
             isChatEnabled,
             isServerEnabled,
+            isUserOnline,
             areSubscriptionsEnabled,
             isAppOverlayActive,
             isTutorialMode,
