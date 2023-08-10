@@ -55,9 +55,8 @@
 
 .card_container:hover{
     transition: all var(--animation-speed) ease-in-out;
-    background: var(--dark2);
+    background: var(--dark1);
     cursor: pointer;
-    
 }
 
 .header {

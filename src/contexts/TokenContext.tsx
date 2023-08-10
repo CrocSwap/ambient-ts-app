@@ -12,6 +12,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 interface TokenContextIF {
     tokens: tokenMethodsIF;
     outputTokens: TokenIF[];
+    rawInput: string;
     validatedInput: string;
     setInput: (val: string) => void;
     searchType: string;
@@ -33,12 +34,13 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         chainData.chainId,
     );
 
-    const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
-        chainData.chainId,
-        tokens,
-        connectedUserErc20Tokens ?? [],
-        getRecentTokens,
-    );
+    const [outputTokens, validatedInput, setInput, searchType, rawInput] =
+        useTokenSearch(
+            chainData.chainId,
+            tokens,
+            connectedUserErc20Tokens ?? [],
+            getRecentTokens,
+        );
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
         const oldToken: TokenIF | undefined = tokens.getTokenByAddress(
@@ -53,6 +55,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const tokenContext = {
         tokens,
         outputTokens,
+        rawInput,
         validatedInput,
         setInput,
         searchType,
