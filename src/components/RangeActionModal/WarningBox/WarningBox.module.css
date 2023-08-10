@@ -42,7 +42,7 @@
 }
 .text_only p {
     color: var(--other-red);
-    font-size: var(--body-size);
+    font-size: var(--header-size);
     line-height: var(--body-lh);
     text-align: center;
     cursor: default;
@@ -56,7 +56,7 @@
     outline: none;
     border: none;
     border-radius: var(--border-radius);
-
+    width: 195px;
     padding: 6px 8px;
 }
 

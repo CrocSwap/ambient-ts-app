@@ -299,7 +299,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                         }
                                     }}
                                 >
-                                    I understand, use WETH anyway
+                                    I understand, use WETH
                                 </button>
                             }
                         />
