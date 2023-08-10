@@ -17,7 +17,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 
-    font-weight: 200;
+    font-weight: 300;
     color: var(--text1);
 }
 .fee_tier {

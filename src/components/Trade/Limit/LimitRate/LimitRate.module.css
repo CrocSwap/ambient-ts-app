@@ -1,7 +1,7 @@
 /* Input */
 
 .currency_quantity {
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
     color: var(--text1);
@@ -24,7 +24,7 @@
 }
 .currency_quantity::placeholder {
     color: var(--text3);
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
 }
@@ -133,7 +133,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text1);
-    font-weight: 200;
+    font-weight: 300;
 }
 
 /* bottom info */

@@ -32,7 +32,7 @@
 }
 
 .currency_row_container h2 {
-    font-weight: 200;
+    font-weight: 300;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text1);
@@ -68,7 +68,6 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
 }
-
 
 .extra_note {
     font-size: var(--body-size);

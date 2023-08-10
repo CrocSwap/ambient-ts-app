@@ -170,7 +170,7 @@ function RangesRow(props: propsIF) {
         isOwnerActiveAccount && (showAllData || isLeaderboard)
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
-            ? 'gradient_text'
+            ? 'primary_color'
             : 'username_base_color';
 
     const activePositionStyle =

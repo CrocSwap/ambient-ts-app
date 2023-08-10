@@ -9,7 +9,7 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { ConnectWalletButton } from '../../../components/Global/ConnectWalletButton/ConnectWalletButton';
+import { ConnectWalletButton } from '../../../components/Global/Button/ConnectWalletButton';
 
 // interface for React functional component props
 interface propsIF {
