@@ -33,6 +33,19 @@
     padding-top: 6px;
 }
 
+.text_only{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+}
+.text_only p{
+    color: var(--other-red);
+    font-size: var(--body-size);
+    line-height: var(--body-lh); 
+    text-align: center;
+}
+
 .warning_box button {
     cursor: pointer;
     background: var(--other-red);
