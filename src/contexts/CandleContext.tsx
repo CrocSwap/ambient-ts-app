@@ -165,7 +165,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 cachedFetchTokenPrice,
             ).then((candles) => {
                 setCandleData(candles);
-                setIsCandleDataNull(false);
 
                 const candleSeries = candles?.candles;
                 if (candleSeries && candleSeries.length > 0) {
