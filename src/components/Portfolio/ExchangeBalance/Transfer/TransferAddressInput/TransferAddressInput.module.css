@@ -1,7 +1,7 @@
 /* Input */
 
 .currency_quantity {
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
     color: white;
@@ -19,7 +19,7 @@
 }
 .currency_quantity::placeholder {
     color: var(--text2);
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
 }

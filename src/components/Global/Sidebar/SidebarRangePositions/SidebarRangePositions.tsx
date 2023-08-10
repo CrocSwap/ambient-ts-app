@@ -78,10 +78,11 @@ export default function SidebarRangePositions(props: propsIF) {
 
     return (
         <SidebarPoolsListContainer fontSize={'body'}>
-            <SidebarPoolsListHeaderContainer>
+            <SidebarPoolsListHeaderContainer range>
                 <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Range</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Value</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader></SidebarPoolsListHeader>
             </SidebarPoolsListHeaderContainer>
             <SidebarPoolsListItemsContainer>
                 {userPositions &&

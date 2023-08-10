@@ -109,9 +109,8 @@
 }
 
 .sidebar_link:hover svg {
-    color: white;
+    color: var(--accent1);
     cursor: pointer;
-    max-width: 15px;
 }
 
 .sidebar_item {
@@ -140,7 +139,7 @@
 }
 
 .link_text {
-    color: var(--accent5);
+    color: var(--text1);
     transition: all var(--animation-speed) ease-in-out;
     font-weight: 500;
     font-size: 12px;
@@ -154,12 +153,24 @@
 }
 
 .sidebar_link:hover > .link_text {
+    color: var(--accent1);
+}
+
+.sidebar_link .arrow {
+    width: 2rem;
+    min-width: 2rem;
+}
+
+.sidebar_link .icon {
     color: var(--text1);
 }
 
-.sidebar_link svg {
-    width: 2rem;
-    min-width: 2rem;
+.sidebar_link .closed {
+    color: var(--text2);
+}
+
+.sidebar_link .closed:hover, .search__icon:hover {
+    color: var(--accent1);
 }
 
 .accordion_container {
@@ -203,29 +214,6 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text2);
-}
-.connect_button button {
-    cursor: pointer;
-    background: var(--title-gradient);
-    border: none;
-    outline: none;
-    color: var(--dark2);
-    font-weight: 200;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 4px;
-
-    border-radius: var(--border-radius);
-    width: 155px;
-    height: 25px;
-    transition: box-shadow var(--animation-speed) ease-in-out;
-}
-
-.connect_button button:hover {
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-        0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
 /* SEARCH CONTAINER */

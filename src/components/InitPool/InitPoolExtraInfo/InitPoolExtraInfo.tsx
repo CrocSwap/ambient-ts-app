@@ -63,7 +63,11 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
         },
         {
             title: 'Liquidity Provider Fee',
-            tooltipTitle: `This is a dynamically updated rate to reward ${baseToken.symbol} / ${quoteToken.symbol} liquidity providers.`,
+            tooltipTitle: `This is a dynamically updated rate to reward ${
+                isDenomBase ? baseToken.symbol : quoteToken.symbol
+            } / ${
+                isDenomBase ? quoteToken.symbol : baseToken.symbol
+            } liquidity providers.`,
             data: 'Dynamic',
         },
         {
