@@ -254,7 +254,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         type='text'
                         value={rawInput}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder=' Search name or enter an Address'
+                        placeholder=' Search name or paste address'
                         style={{
                             color: showSoloSelectTokenButtons
                                 ? 'var(--text2)'
