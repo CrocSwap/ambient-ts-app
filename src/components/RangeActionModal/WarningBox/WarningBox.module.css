@@ -38,6 +38,7 @@
     flex-direction: row;
     align-items: center;
     gap: 1rem;
+    vertical-align: middle;
 }
 .text_only p{
     color: var(--other-red);
@@ -46,8 +47,8 @@
     text-align: center;
 }
 
-.warning_box button {
-    cursor: pointer;
+.warning_box button , .text_only button{
+ cursor: pointer;
     background: var(--other-red);
     color: var(--dark1);
     outline: none;
@@ -55,4 +56,12 @@
     border-radius: var(--border-radius);
 
     padding: 6px 8px;
+}
+
+.warning_box svg, .text_only svg{
+    pointer-events: none !important;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

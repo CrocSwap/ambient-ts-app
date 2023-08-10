@@ -22,10 +22,12 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { handleWETH } from '../../../utils/data/handleWETH';
-import { ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import { FaThumbsUp } from 'react-icons/fa';
+import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -273,12 +275,33 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         </button>
                     )}
                 </div>
-                <div style={{ padding: '0 1rem' }}>
+                <div style={{ padding: '1rem' }}>
                     {handleWETH.check(validatedInput) && (
                         <WarningBox
                             title=''
                             details={handleWETH.message}
-                            textOnly
+                            noBackground
+                            button={
+                                <button
+                                    onClick={() => {
+                                        try {
+                                            chooseToken(
+                                                tokens.getTokenByAddress(
+                                                    wrappedNatives.get(
+                                                        chainId,
+                                                    ) as string,
+                                                ) as TokenIF,
+                                                false,
+                                            );
+                                        } catch (err) {
+                                            IS_LOCAL_ENV && console.warn(err);
+                                            onClose();
+                                        }
+                                    }}
+                                >
+                                    <FaThumbsUp color='var(--dark1)' />
+                                </button>
+                            }
                         />
                     )}
                 </div>

@@ -6,25 +6,26 @@ interface WarningBoxProps {
     title: string;
     details: string;
     button?: React.ReactNode;
-    textOnly?: boolean;
+    noBackground?: boolean;
 }
 
 export const WarningBox: React.FC<WarningBoxProps> = ({
     title,
     details,
     button,
-    textOnly,
+    noBackground,
 }) => {
-    const textOnlyWarning = (
+    const noBackgroundWarning = (
         <div className={styles.text_only}>
             <div>
                 <IoWarningOutline color='var(--other-red)' size={24} />
             </div>
             <p>{details}</p>
+            {button && button}
         </div>
     );
 
-    if (textOnly) return textOnlyWarning;
+    if (noBackground) return noBackgroundWarning;
     return (
         <div className={` ${styles.warning_box}`}>
             <ul>
