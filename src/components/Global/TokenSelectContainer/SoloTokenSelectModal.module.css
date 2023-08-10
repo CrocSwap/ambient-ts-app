@@ -73,6 +73,16 @@
     align-items: center;
 }
 
+.weth_warning {
+    display: flex;
+    flex-direction: row;
+}
+
+.weth_warning > button {
+    min-width: 20%;
+    font-size: 30px;
+}
+
 .weth_text {
     font-size: var(--body-size);
     line-height: var(--body-lh);

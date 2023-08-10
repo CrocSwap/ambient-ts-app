@@ -4,6 +4,7 @@ import { tokenMethodsIF } from './useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../constants';
 import { USDC } from '../../utils/tokens/exports';
+import removeWrappedNative from '../../utils/functions/removeWrappedNative';
 
 export const useTokenSearch = (
     chainId: string,
@@ -83,7 +84,10 @@ export const useTokenSearch = (
         // fn to run a token search by name or symbol
         function searchAsNameOrSymbol(): TokenIF[] {
             // check tokens in `allTokenLists` for tokens that match validated input
-            return tokens.getTokensByNameOrSymbol(validatedInput);
+            const foundTokens: TokenIF[] =
+                tokens.getTokensByNameOrSymbol(validatedInput);
+            // return tokens with wrapped native from current chain removed
+            return removeWrappedNative(chainId, foundTokens);
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
@@ -116,8 +120,13 @@ export const useTokenSearch = (
                 baseTokenList,
                 verifiedWalletTokens,
             );
+            // remove the wrapped native token (if present)
+            const tknsNoWrappedNative = removeWrappedNative(
+                chainId,
+                withWalletTokens,
+            );
             // combine the Ambient and Uniswap token lists
-            return withWalletTokens;
+            return tknsNoWrappedNative;
         }
 
         // declare an output variable
