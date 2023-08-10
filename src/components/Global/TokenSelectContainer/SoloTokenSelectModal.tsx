@@ -26,6 +26,8 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
 import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
+import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import { FaThumbsUp } from 'react-icons/fa';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -274,28 +276,31 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                 </div>
                 {handleWETH.check(validatedInput) && (
-                    <div className={styles.weth_warning}>
-                        <p className={styles.weth_text}>{handleWETH.message}</p>
-                        <button
-                            onClick={() => {
-                                try {
-                                    chooseToken(
-                                        tokens.getTokenByAddress(
-                                            wrappedNatives.get(
-                                                chainId,
-                                            ) as string,
-                                        ) as TokenIF,
-                                        false,
-                                    );
-                                } catch (err) {
-                                    IS_LOCAL_ENV && console.warn(err);
-                                    onClose();
-                                }
-                            }}
-                        >
-                            👍🏻
-                        </button>
-                    </div>
+                    <WarningBox
+                        title=''
+                        details={handleWETH.message}
+                        button={
+                            <button
+                                onClick={() => {
+                                    try {
+                                        chooseToken(
+                                            tokens.getTokenByAddress(
+                                                wrappedNatives.get(
+                                                    chainId,
+                                                ) as string,
+                                            ) as TokenIF,
+                                            false,
+                                        );
+                                    } catch (err) {
+                                        IS_LOCAL_ENV && console.warn(err);
+                                        onClose();
+                                    }
+                                }}
+                            >
+                                <FaThumbsUp color='var(--dark1)' />
+                            </button>
+                        }
+                    />
                 )}
                 {handleWETH.check(validatedInput) &&
                     [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
