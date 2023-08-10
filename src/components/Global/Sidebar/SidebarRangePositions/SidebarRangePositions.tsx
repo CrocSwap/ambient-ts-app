@@ -77,7 +77,7 @@ export default function SidebarRangePositions(props: propsIF) {
     };
 
     return (
-        <SidebarPoolsListContainer>
+        <SidebarPoolsListContainer fontSize={'body'}>
             <SidebarPoolsListHeaderContainer>
                 <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Range</SidebarPoolsListHeader>
