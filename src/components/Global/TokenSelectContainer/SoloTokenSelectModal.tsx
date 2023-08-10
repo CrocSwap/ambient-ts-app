@@ -56,6 +56,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const {
         tokens,
         outputTokens,
+        rawInput,
         validatedInput,
         setInput,
         searchType,
@@ -255,9 +256,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         id='token_select_input_field'
                         spellCheck='false'
                         type='text'
-                        value={validatedInput}
+                        value={rawInput}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder=' Search name or enter an Address'
+                        placeholder=' Search name or paste address'
                         style={{
                             color: showSoloSelectTokenButtons
                                 ? 'var(--text2)'

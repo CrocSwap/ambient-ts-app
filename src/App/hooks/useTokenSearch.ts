@@ -11,7 +11,7 @@ export const useTokenSearch = (
     tokens: tokenMethodsIF,
     walletTokens: TokenIF[],
     getRecentTokens: () => TokenIF[],
-): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
+): [TokenIF[], string, Dispatch<SetStateAction<string>>, string, string] => {
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value
     // raw input from the user
@@ -225,5 +225,5 @@ export const useTokenSearch = (
     // validatedInput ➜ user input after validation mods
     // setInput ➜ function to update raw user input from the DOM
     // searchAs ➜ type of search the app is running
-    return [outputTokens, validatedInput, setInput, searchAs];
+    return [outputTokens, validatedInput, setInput, searchAs, input];
 };
