@@ -14,5 +14,5 @@ export const handleWETH = {
         return isWeth;
     },
     message:
-        'It looks like you want to use Wrapped Ether (WETH). Do you know that you can trade Native Ether (ETH) at lower gas cost on Ambient?',
+        'It looks like you want to use Wrapped Ether (WETH). Ambient uses Native Ether (ETH) to lower gas costs.',
 };
