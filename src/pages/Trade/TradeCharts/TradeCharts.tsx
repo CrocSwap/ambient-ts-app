@@ -33,6 +33,8 @@ interface propsIF {
     ) => void;
     selectedDate: number | undefined;
     setSelectedDate: Dispatch<number | undefined>;
+    setIsChartLoading: Dispatch<React.SetStateAction<boolean>>;
+    isChartLoading: boolean;
 }
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,7 +71,7 @@ function TradeCharts(props: propsIF) {
         chartSettings,
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
-        canvasRef,
+        chartCanvasRef,
     } = useContext(ChartContext);
 
     const { pathname } = useLocation();
@@ -195,7 +197,7 @@ function TradeCharts(props: propsIF) {
                 padding: isChartFullScreen ? '1rem' : '0',
                 background: isChartFullScreen ? 'var(--dark2)' : '',
             }}
-            ref={canvasRef}
+            ref={chartCanvasRef}
         >
             <div className={`${styles.graph_style}`}>
                 {isTutorialActive && (
@@ -240,6 +242,8 @@ function TradeCharts(props: propsIF) {
                     showLatest={showLatest}
                     setShowLatest={setShowLatest}
                     setShowTooltip={setShowTooltip}
+                    isLoading={props.isChartLoading}
+                    setIsLoading={props.setIsChartLoading}
                 />
             </div>
             <TutorialOverlay

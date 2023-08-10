@@ -5,8 +5,8 @@ import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-import logo from '../../../assets/images/logos/ambient_logo.png';
-import logoText from '../../../assets/images/logos/logo_text.png';
+import logo from '../../../assets/images/logos/logo_mark.svg';
+import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import {
     useAppDispatch,
@@ -35,9 +35,15 @@ import { getFormattedNumber } from '../../functions/getFormattedNumber';
 
 const PageHeader = function () {
     const {
+        crocEnv,
+        setCrocEnv,
+        chainData: { chainId, poolIndex: poolId },
+    } = useContext(CrocEnvContext);
+
+    const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { crocEnv, setCrocEnv } = useContext(CrocEnvContext);
+
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -133,7 +139,6 @@ const PageHeader = function () {
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
         walletDropdownTokenData,
-        openWagmiModal: openWagmiModal,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
@@ -141,7 +146,7 @@ const PageHeader = function () {
         <button
             className={styles.authenticate_button}
             style={!desktopScreen ? { width: '140px' } : undefined}
-            onClick={() => openWagmiModal()}
+            onClick={openWagmiModal}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}
         </button>
@@ -171,7 +176,12 @@ const PageHeader = function () {
                 .isInit();
             Promise.resolve(promise).then((poolExists: boolean) => {
                 poolExists &&
-                    recentPools.add(tradeData.baseToken, tradeData.quoteToken);
+                    recentPools.add(
+                        tradeData.baseToken,
+                        tradeData.quoteToken,
+                        chainId,
+                        poolId,
+                    );
             });
         }
     }, [baseAddressInRtk, quoteAddressInRtk, crocEnv]);
@@ -374,12 +384,14 @@ const PageHeader = function () {
             }`}
         >
             <Link to='/' className={styles.logo_container} aria-label='Home'>
-                <img src={logo} alt='ambient' className={styles.logo} />
-                {desktopScreen && (
+                {desktopScreen ? (
+                    <img src={mainLogo} alt='' />
+                ) : (
                     <img
-                        src={logoText}
+                        src={logo}
                         alt='ambient'
-                        className={styles.logo_text}
+                        className={styles.logo}
+                        style={{ maxWidth: '70%', maxHeight: '70%' }}
                     />
                 )}
             </Link>
@@ -404,7 +416,7 @@ const PageHeader = function () {
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
                                     <div className={styles.branch}>
-                                        {BRANCH_NAME}{' '}
+                                        {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
                                     </div>
                                 ) : null}

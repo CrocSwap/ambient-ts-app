@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { DISCORD_LINK } from '../../../constants';
+import Modal from '../Modal/Modal';
 
 interface SocialLinkPropsIF {
     // eslint-disable-next-line
@@ -33,7 +34,11 @@ function SocialLink(props: SocialLinkPropsIF) {
         </a>
     );
 }
-export default function ShareModal() {
+
+interface propsIF {
+    onClose: () => void;
+}
+export default function ShareModal({ onClose }: propsIF) {
     const location = useLocation();
     // const currentUrl = location.href
     const currentPathname = location.pathname;
@@ -46,7 +51,6 @@ export default function ShareModal() {
         `ambient.finance${currentPathname}`,
     );
 
-    const linkToShareTruncated = linkToShare.slice(0, 50) + '...';
     const socialLinksData = [
         {
             name: 'Twitter',
@@ -97,27 +101,29 @@ export default function ShareModal() {
     );
 
     return (
-        <div className={styles.option_control_container}>
-            {shareIconsContent}
+        <Modal title='Share' onClose={onClose}>
+            <div className={styles.option_control_container}>
+                {shareIconsContent}
 
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                <input
-                    type='text'
-                    placeholder={`${linkToShareTruncated}`}
-                    disabled={true}
-                    onChange={(e) => setLinkToShare(e?.target.value)}
-                />
+                <p className={styles.control_title}>URL:</p>
+                <p className={styles.url_link}>
+                    <input
+                        type='text'
+                        placeholder={`${linkToShare}`}
+                        disabled={true}
+                        onChange={(e) => setLinkToShare(e?.target.value)}
+                    />
 
-                <button
-                    onClick={handleCopyAddress}
-                    className={styles.copy_button}
-                    tabIndex={0}
-                    aria-label='Copy to clipboard'
-                >
-                    <FiCopy size={25} />
-                </button>
-            </p>
-        </div>
+                    <button
+                        onClick={handleCopyAddress}
+                        className={styles.copy_button}
+                        tabIndex={0}
+                        aria-label='Copy to clipboard'
+                    >
+                        <FiCopy size={25} />
+                    </button>
+                </p>
+            </div>
+        </Modal>
     );
 }

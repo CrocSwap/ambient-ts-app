@@ -40,8 +40,8 @@ interface propsIF {
     tokenWalletBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
-    openTokenModal: () => void;
     selectedTokenDecimals: number;
+    setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Deposit(props: propsIF) {
@@ -51,8 +51,8 @@ export default function Deposit(props: propsIF) {
         tokenWalletBalance,
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
-        openTokenModal,
         selectedTokenDecimals,
+        setTokenModalOpen = () => null,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -377,7 +377,6 @@ export default function Deposit(props: propsIF) {
                 getFormattedNumber({
                     value: gasPriceInDollarsNum,
                     isUSD: true,
-                    prefix: '$',
                 }),
             );
         }
@@ -389,13 +388,12 @@ export default function Deposit(props: propsIF) {
                 Deposit collateral for future trading at lower gas costs:
             </div>
             <DepositCurrencySelector
-                fieldId='exchange-balance-deposit'
-                onClick={() => openTokenModal()}
                 disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
+                setTokenModalOpen={setTokenModalOpen}
             />
             <div className={styles.additional_info}>
                 <div

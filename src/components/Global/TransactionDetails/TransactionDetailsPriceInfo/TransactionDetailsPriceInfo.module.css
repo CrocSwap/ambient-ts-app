@@ -84,7 +84,7 @@
 .max_price {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    font-weight: 200;
+    font-weight: 300;
     letter-spacing: -0.02em;
 }
 

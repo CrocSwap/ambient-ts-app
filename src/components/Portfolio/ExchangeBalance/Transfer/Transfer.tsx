@@ -43,7 +43,7 @@ interface propsIF {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
-    openTokenModal: () => void;
+    setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Transfer(props: propsIF) {
@@ -55,7 +55,7 @@ export default function Transfer(props: propsIF) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
-        openTokenModal,
+        setTokenModalOpen,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
@@ -209,28 +209,6 @@ export default function Transfer(props: propsIF) {
 
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
-
-                        //  if (newTransactionHash) {
-                        //      fetch(
-                        //          newSwapCacheEndpoint +
-                        //              new URLSearchParams({
-                        //                  tx: newTransactionHash,
-                        //                  user: account ?? '',
-                        //                  base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                        //                  quote: isSellTokenBase
-                        //                      ? buyTokenAddress
-                        //                      : sellTokenAddress,
-                        //                  poolIdx: (await env.context).chain.poolIndex.toString(),
-                        //                  isBuy: isSellTokenBase.toString(),
-                        //                  inBaseQty: inBaseQty.toString(),
-                        //                  qty: crocQty.toString(),
-                        //                  override: 'false',
-                        //                  chainId: chainId,
-                        //                  limitPrice: '0',
-                        //                  minOut: '0',
-                        //              }),
-                        //      );
-                        //  }
                     } else if (isTransactionFailedError(error)) {
                         console.error({ error });
                         receipt = error.receipt;
@@ -293,8 +271,6 @@ export default function Transfer(props: propsIF) {
         if (isTokenDexBalanceGreaterThanZero) {
             setTransferQtyNonDisplay(tokenDexBalance);
 
-            // if (transferInput && tokenExchangeDepositsDisplay)
-            //     transferInput.value = tokenExchangeDepositsDisplay;
             if (tokenExchangeDepositsDisplay)
                 setInputValue(tokenExchangeDepositsDisplay);
         }
@@ -325,7 +301,6 @@ export default function Transfer(props: propsIF) {
                 getFormattedNumber({
                     value: gasPriceInDollarsNum,
                     isUSD: true,
-                    prefix: '$',
                 }),
             );
         }
@@ -343,13 +318,12 @@ export default function Transfer(props: propsIF) {
                 disable={isAddressFieldDisabled}
             />
             <TransferCurrencySelector
-                fieldId='exchange-balance-transfer'
-                onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setTransferQty={setTransferQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 disable={isCurrencyFieldDisabled}
+                setTokenModalOpen={setTokenModalOpen}
             />
             <div className={styles.additional_info}>
                 <div

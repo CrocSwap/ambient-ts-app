@@ -1,8 +1,6 @@
-
-
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;200;300;400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;300;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;400;500&display=swap');
 
 /* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
@@ -11,8 +9,6 @@
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
     --mono: monospace, 'Lexend Deca' sans-serif;
-    --portfolio-banner: url('./assets/images/backgrounds/account_image.png')
-        no-repeat center center;
 
     /* font */
     --title-ts: 0px 0px 150px rgba(70, 183, 219, 0.5),

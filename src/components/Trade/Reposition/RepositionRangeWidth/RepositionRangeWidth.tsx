@@ -8,6 +8,7 @@ import {
     handleRangeSlider,
 } from './repositionRangeWidthFunctions';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import RangeSlider from '../../../Global/RangeSlider/RangeSlider';
 
 interface IRepositionRangeWidth {
     rangeWidthPercentage: number;
@@ -139,22 +140,14 @@ function RepositionRangeWidth(props: IRepositionRangeWidth) {
                         : '± ' + rangeWidthPercentage + '%'}
                 </span>
                 <div className={styles.range_width_input}>
-                    <input
-                        size={28}
-                        aria-labelledby='reposition-input slider'
-                        id='reposition-input-slider-range'
-                        min='1'
-                        max='100'
-                        step='1'
-                        defaultValue={10}
-                        type='range'
+                    <RangeSlider
                         className={styles.percentage_input}
+                        aria-labelledby='reposition-input slider'
+                        defaultValue={10}
+                        id='reposition-input-slider-range'
                         onChange={(event) =>
                             handleRangeSlider(event, setRangeWidthPercentage)
                         }
-                        onClick={() => {
-                            setRescaleRangeBoundariesWithSlider(true);
-                        }}
                     />
                 </div>
 

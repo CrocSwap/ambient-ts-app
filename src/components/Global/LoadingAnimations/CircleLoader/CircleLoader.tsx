@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import styles from './CircleLoader.module.css';
-import { ImCheckmark } from 'react-icons/im';
-import { AiOutlineClose } from 'react-icons/ai';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { IoCheckmarkCircleOutline } from 'react-icons/io5';
 const spinTransition = {
     loop: Infinity,
     ease: 'linear',
@@ -41,31 +41,22 @@ export function CircleLoader(props: CircleLoaderProps) {
 export function CircleLoaderCompleted(props: CircleLoaderProps) {
     const widthAndHeight = props.size ? props.size : '3rem';
 
-    const borderColorStyle = props.borderColor
-        ? `0.2rem solid ${props.borderColor}`
-        : ' 0.2rem solid var(--positive)';
-
-    const borderTop = '0.2rem solid var(--positive)';
     return (
         <>
             <motion.span
                 style={{
                     width: widthAndHeight,
                     height: widthAndHeight,
-                    border: borderColorStyle,
-                    borderTop: borderTop,
                 }}
                 className={styles.circle_completed}
-                // animate={{ rotate: 360 }}
-                transition={spinTransition}
             >
-                <ImCheckmark size={20} color='var(--positive)' />
+                <IoCheckmarkCircleOutline size={30} color='var(--positive)' />
             </motion.span>
         </>
     );
 }
 export function CircleLoaderFailed(props: CircleLoaderProps) {
-    const widthAndHeight = props.size ? props.size : '3rem';
+    const widthAndHeight = props.size ? props.size : '30';
 
     return (
         <>
@@ -74,9 +65,11 @@ export function CircleLoaderFailed(props: CircleLoaderProps) {
                     width: widthAndHeight,
                     height: widthAndHeight,
                 }}
-                className={styles.circle_failed}
             >
-                <AiOutlineClose size={30} color='#F6385B' />
+                <AiOutlineCloseCircle
+                    size={widthAndHeight}
+                    color='var(--negative)'
+                />
             </motion.span>
         </>
     );

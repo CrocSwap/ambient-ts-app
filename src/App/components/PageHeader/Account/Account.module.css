@@ -91,18 +91,6 @@
     color: rgb(195, 197, 203);
 }
 
-.authenticate_button {
-    background: var(--title-gradient);
-    border: none;
-    outline: none;
-    color: var(--dark2);
-    font-weight: 200;
-
-    border-radius: var(--border-radius);
-    width: 155px;
-    height: 25px;
-}
-
 .wallet_display {
     position: relative;
 }
