@@ -92,7 +92,7 @@
 }
 
 .price_status_content h2 {
-    font-weight: 200;
+    font-weight: 300;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--accent5);

@@ -66,7 +66,7 @@ export default function RangeDetailsModal(props: propsIF) {
         maxRangeDenomByMoneyness,
         onClose,
     } = props;
-
+    console.log('woooh');
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );

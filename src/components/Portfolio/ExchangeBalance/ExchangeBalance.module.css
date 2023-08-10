@@ -80,7 +80,7 @@ ul.tab_navs {
     line-height: 22.5px;
     color: var(--text2);
     background: var(--dark1);
-    font-weight: 200;
+    font-weight: 300;
     text-align: center;
     padding: 8px;
     border-radius: var(--border-radius);
@@ -95,7 +95,7 @@ ul.tab_navs {
     line-height: 22.5px;
     color: var(--text2);
     background: var(--dark1);
-    font-weight: 200;
+    font-weight: 300;
     text-align: center;
     padding: 8px;
     margin: 0 0 0 -5px;

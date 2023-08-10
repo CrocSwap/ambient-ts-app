@@ -1,6 +1,6 @@
 .menu {
     position: relative;
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
     color: var(--text1);
@@ -68,7 +68,7 @@
     align-items: center;
     gap: 1rem;
     /* background: darkblue; */
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
     color: var(--text1);
