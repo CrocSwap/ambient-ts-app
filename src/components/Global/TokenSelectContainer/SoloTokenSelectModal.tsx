@@ -26,7 +26,6 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { FaThumbsUp } from 'react-icons/fa';
 import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
 
 interface propsIF {
@@ -300,7 +299,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                         }
                                     }}
                                 >
-                                    <FaThumbsUp color='var(--dark1)' />
+                                    I understand, use WETH anyway
                                 </button>
                             }
                         />

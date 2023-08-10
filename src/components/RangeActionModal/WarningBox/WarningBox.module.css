@@ -33,22 +33,24 @@
     padding-top: 6px;
 }
 
-.text_only{
+.text_only {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 1rem;
     vertical-align: middle;
 }
-.text_only p{
+.text_only p {
     color: var(--other-red);
     font-size: var(--body-size);
-    line-height: var(--body-lh); 
+    line-height: var(--body-lh);
     text-align: center;
+    cursor: default;
 }
 
-.warning_box button , .text_only button{
- cursor: pointer;
+.warning_box button,
+.text_only button {
+    cursor: pointer;
     background: var(--other-red);
     color: var(--dark1);
     outline: none;
@@ -58,7 +60,8 @@
     padding: 6px 8px;
 }
 
-.warning_box svg, .text_only svg{
+.warning_box svg,
+.text_only svg {
     pointer-events: none !important;
 
     display: flex;
