@@ -55,9 +55,11 @@ import LimitLineChart from './LimitLine/LimitLineChart';
 import FeeRateChart from './FeeRate/FeeRateChart';
 import RangeLinesChart from './RangeLine/RangeLinesChart';
 import {
+    CandleDataChart,
     SubChartValue,
     chartItemStates,
     crosshair,
+    defaultCandleBandwith,
     fillLiqAdvanced,
     lineValue,
     liquidityChartData,
@@ -70,6 +72,7 @@ import {
 import { Zoom } from './ChartUtils/zoom';
 import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
+import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -154,6 +157,11 @@ export default function Chart(props: propsIF) {
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
+
+    const { isChartZoom: isChartZoom, setIsChartZoom: setIsChartZoom } =
+        useContext(ChartContext);
+
+    const [isZoomEnd, setIsZoomEnd] = useState(false);
     const [chartHeights, setChartHeights] = useState(0);
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -240,7 +248,6 @@ export default function Chart(props: propsIF) {
     const [boundaries, setBoundaries] = useState<boolean>();
 
     const [isLineDrag, setIsLineDrag] = useState(false);
-    const [isChartZoom, setIsChartZoom] = useState(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState<crosshair[]>([
@@ -249,7 +256,6 @@ export default function Chart(props: propsIF) {
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
-    const zoomBase = new Zoom(setCandleDomains, period);
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles
             .sort((a, b) => b.time - a.time)
@@ -308,25 +314,39 @@ export default function Chart(props: propsIF) {
         return data;
     }, [diffHashSigChart(unparsedData.candles), poolPriceWithoutDenom]);
 
-    const visibleCandleData = useMemo(() => {
+    const calculateVisibleCandles = (
+        scaleData: scaleData | undefined,
+        unparsedCandleData: CandleDataChart[],
+        period: number,
+        mobileView: boolean,
+    ) => {
         const numberOfCandlesToDisplay = mobileView ? 50 : 20;
 
         if (scaleData) {
             const xmin =
-                scaleData?.xScale.domain()[0] -
+                scaleData.xScale.domain()[0] -
                 period * 1000 * numberOfCandlesToDisplay;
             const xmax =
-                scaleData?.xScale.domain()[1] +
+                scaleData.xScale.domain()[1] +
                 period * 1000 * numberOfCandlesToDisplay;
 
             const filtered = unparsedCandleData.filter(
-                (data: CandleData) =>
+                (data: CandleDataChart) =>
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
 
             return filtered;
         }
         return unparsedCandleData;
+    };
+
+    const visibleCandleData = useMemo(() => {
+        return calculateVisibleCandles(
+            scaleData,
+            unparsedCandleData,
+            period,
+            mobileView,
+        );
     }, [diffHashSigScaleData(scaleData), unparsedCandleData]);
 
     const lastCandleData = unparsedCandleData?.reduce(function (prev, current) {
@@ -339,6 +359,7 @@ export default function Chart(props: propsIF) {
     ) {
         return prev.time < current.time ? prev : current;
     });
+
     const [lastCandleDataCenter, setLastCandleDataCenter] = useState(0);
     const [subChartValues, setsubChartValues] = useState([
         {
@@ -378,8 +399,6 @@ export default function Chart(props: propsIF) {
 
     // NoGoZone
     const [noGoZoneBoudnaries, setNoGoZoneBoudnaries] = useState([[0, 0]]);
-
-    const defaultCandleBandwith = 5;
 
     const [mainZoom, setMainZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
@@ -422,6 +441,10 @@ export default function Chart(props: propsIF) {
     const isScientific = poolPriceNonDisplay
         ? poolPriceNonDisplay.toString().includes('e')
         : false;
+
+    const zoomBase = useMemo(() => {
+        return new Zoom(setCandleDomains, period);
+    }, [period]);
 
     useEffect(() => {
         useHandleSwipeBack(d3Container);
@@ -557,18 +580,11 @@ export default function Chart(props: propsIF) {
                 isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
             );
         }
-    }, [chartZoomEvent, isChartZoom, isOnCandleOrVolumeMouseLocation]);
-
-    useEffect(() => {
-        if (isChartZoom && chartZoomEvent !== 'wheel') {
-            d3.select(d3CanvasMain.current).style('cursor', 'grabbing');
-        } else {
-            d3.select(d3CanvasMain.current).style(
-                'cursor',
-                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
-            );
-        }
-    }, [chartZoomEvent, isChartZoom, isOnCandleOrVolumeMouseLocation]);
+    }, [
+        chartZoomEvent,
+        //  isChartZoom,
+        isOnCandleOrVolumeMouseLocation,
+    ]);
 
     useEffect(() => {
         // auto zoom active
@@ -590,7 +606,7 @@ export default function Chart(props: propsIF) {
 
     // calculates first fetch candle domain for time and pool change
     useEffect(() => {
-        if (scaleData) {
+        if (scaleData && !isChartZoom) {
             const xDomain = scaleData?.xScale.domain();
             const isFutureDay =
                 new Date(xDomain[1]).getTime() > new Date().getTime();
@@ -620,10 +636,19 @@ export default function Chart(props: propsIF) {
                 };
             });
         }
-    }, [diffHashSigScaleData(scaleData, 'x'), lastCandleData, period]);
+    }, [
+        diffHashSigScaleData(scaleData, 'x'),
+        lastCandleData,
+        period,
+        // isChartZoom
+    ]);
     // Zoom
     useEffect(() => {
-        if (scaleData !== undefined && unparsedCandleData !== undefined) {
+        if (
+            scaleData !== undefined &&
+            unparsedCandleData !== undefined &&
+            !isChartZoom
+        ) {
             let clickedForLine = false;
             let zoomTimeout: number | undefined = undefined;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -637,7 +662,8 @@ export default function Chart(props: propsIF) {
                     .zoom()
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('start', (event: any) => {
-                        setIsChartZoom(true);
+                        // setIsChartZoom(true);
+
                         if (event.sourceEvent.type.includes('touch')) {
                             // mobile
                             previousTouch = event.sourceEvent.touches[0];
@@ -732,6 +758,8 @@ export default function Chart(props: propsIF) {
                                     );
                                 }
 
+                                render();
+
                                 if (rescale) {
                                     changeScale();
                                 } else {
@@ -777,6 +805,7 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 clickedForLine = true;
+
                                 render();
                             }
                         }
@@ -799,7 +828,8 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('end', (event: any) => {
-                        setIsChartZoom(false);
+                        // setIsZoomEnd(true);
+                        // setIsChartZoom(false);
                         setChartZoomEvent('');
                         if (
                             event.sourceEvent &&
@@ -868,10 +898,13 @@ export default function Chart(props: propsIF) {
         unparsedCandleData,
         period,
         tradeData.advancedMode,
+        // isChartZoom,
     ]);
 
     useEffect(() => {
-        render();
+        if (!isChartZoom) {
+            render();
+        }
     }, [diffHashSigScaleData(scaleData)]);
 
     useEffect(() => {
@@ -927,7 +960,7 @@ export default function Chart(props: propsIF) {
         setMarketLineValue();
     }, [poolPriceWithoutDenom, denomInBase]);
 
-    const setMarketLineValue = () => {
+    const setMarketLineValue = useCallback(() => {
         if (poolPriceWithoutDenom !== undefined) {
             const lastCandlePrice = denomInBase
                 ? 1 / poolPriceWithoutDenom
@@ -943,7 +976,7 @@ export default function Chart(props: propsIF) {
                 ];
             });
         }
-    };
+    }, [poolPriceWithoutDenom, denomInBase]);
     // set default limit tick
     useEffect(() => {
         if (tradeData.limitTick && Math.abs(tradeData.limitTick) === Infinity)
@@ -1825,7 +1858,7 @@ export default function Chart(props: propsIF) {
             const minDomain = snappedTime - 100 * 1000 * period;
             const maxDomain = snappedTime + 39 * 1000 * period;
 
-            console.log('domain changed 2');
+            // console.log('domain changed 2');
 
             scaleData?.xScale.domain([minDomain, maxDomain]);
 
@@ -1853,7 +1886,7 @@ export default function Chart(props: propsIF) {
             const centerX = unparsedCandleData[latestCandleIndex].time * 1000;
 
             if (rescale) {
-                console.log('domain changed 3');
+                // console.log('domain changed 3');
 
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
@@ -1883,7 +1916,7 @@ export default function Chart(props: propsIF) {
 
                 setYaxisDomain(domain[0], domain[1]);
 
-                console.log('domain changed 4');
+                // console.log('domain changed 4');
 
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
@@ -2450,38 +2483,60 @@ export default function Chart(props: propsIF) {
 
     // mousemove
     useEffect(() => {
-        d3.select(d3CanvasMain.current).on(
-            'mousemove',
-            function (event: MouseEvent<HTMLDivElement>) {
-                mousemove(event);
-            },
-        );
+        if (!isChartZoom) {
+            d3.select(d3CanvasMain.current).on(
+                'mousemove',
+                function (event: MouseEvent<HTMLDivElement>) {
+                    mousemove(event);
+                },
+            );
+        }
     }, [
-        diffHashSigScaleData(scaleData),
         diffHashSigChart(visibleCandleData),
         lastCandleData,
         mainCanvasBoundingClientRect,
         selectedDate,
         bandwidth,
+        // isChartZoom,
     ]);
 
     // mouseleave
-    useEffect(() => {
-        d3.select(d3CanvasMain.current).on(
-            'mouseleave',
-            (event: MouseEvent<HTMLDivElement>) => {
-                mouseLeaveCanvas();
-                setChartMousemoveEvent(undefined);
-                setMouseLeaveEvent(event);
-            },
-        );
+    useEffect(
+        () => {
+            d3.select(d3CanvasMain.current).on(
+                'mouseleave',
+                (event: MouseEvent<HTMLDivElement>) => {
+                    if (!isChartZoom) {
+                        mouseLeaveCanvas();
+                        setChartMousemoveEvent(undefined);
+                        setMouseLeaveEvent(event);
+                    }
+                },
+            );
+        },
+        [
+            // isChartZoom
+        ],
+    );
 
-        // d3.select(d3Xaxis.current).on('mouseleave', () => {
-        //     mouseLeaveCanvas();
-        // });
-    }, []);
+    // mouseenter
+    useEffect(
+        () => {
+            const mouseEnterCanvas = () => {
+                props.setShowTooltip(true);
+            };
 
-    // Call drawChart()
+            d3.select(d3CanvasMain.current).on('mouseenter', () => {
+                if (!isChartZoom) {
+                    mouseEnterCanvas();
+                }
+            });
+        },
+        [
+            // isChartZoom
+        ],
+    );
+
     useEffect(() => {
         if (scaleData !== undefined) {
             const onClickCanvas = (event: PointerEvent) => {
@@ -2534,56 +2589,46 @@ export default function Chart(props: propsIF) {
             d3.select(d3Container.current).on(
                 'mouseleave',
                 (event: MouseEvent<HTMLDivElement>) => {
-                    setCrosshairActive('none');
-                    setMouseLeaveEvent(event);
-                    setChartMousemoveEvent(undefined);
-                    if (unparsedCandleData) {
-                        const lastData = unparsedCandleData.find(
-                            (item: CandleData) =>
-                                item.time ===
-                                d3.max(
-                                    unparsedCandleData,
-                                    (data: CandleData) => data.time,
-                                ),
-                        );
+                    if (!isChartZoom) {
+                        setCrosshairActive('none');
+                        setMouseLeaveEvent(event);
+                        setChartMousemoveEvent(undefined);
+                        if (unparsedCandleData) {
+                            const lastData = unparsedCandleData.find(
+                                (item: CandleData) =>
+                                    item.time ===
+                                    d3.max(
+                                        unparsedCandleData,
+                                        (data: CandleData) => data.time,
+                                    ),
+                            );
 
-                        setsubChartValues((prevState: SubChartValue[]) => {
-                            const newData = [...prevState];
+                            setsubChartValues((prevState: SubChartValue[]) => {
+                                const newData = [...prevState];
 
-                            newData.filter(
-                                (target: SubChartValue) =>
-                                    target.name === 'tvl',
-                            )[0].value = lastData
-                                ? lastData.tvlData.tvl
-                                : undefined;
+                                newData.filter(
+                                    (target: SubChartValue) =>
+                                        target.name === 'tvl',
+                                )[0].value = lastData
+                                    ? lastData.tvlData.tvl
+                                    : undefined;
 
-                            newData.filter(
-                                (target: SubChartValue) =>
-                                    target.name === 'feeRate',
-                            )[0].value = lastData
-                                ? lastData.averageLiquidityFee
-                                : undefined;
-                            return newData;
-                        });
-                    }
+                                newData.filter(
+                                    (target: SubChartValue) =>
+                                        target.name === 'feeRate',
+                                )[0].value = lastData
+                                    ? lastData.averageLiquidityFee
+                                    : undefined;
+                                return newData;
+                            });
+                        }
 
-                    if (selectedDate === undefined) {
-                        props.setShowTooltip(false);
+                        if (selectedDate === undefined) {
+                            props.setShowTooltip(false);
+                        }
                     }
                 },
             );
-
-            const mouseEnterCanvas = () => {
-                if (!isLineDrag) {
-                    setCrosshairActive('chart');
-                }
-
-                props.setShowTooltip(true);
-            };
-
-            d3.select(d3CanvasMain.current).on('mouseenter', () => {
-                mouseEnterCanvas();
-            });
         }
     }, [
         denomInBase,
@@ -2591,7 +2636,7 @@ export default function Chart(props: propsIF) {
         isSidebarOpen,
         liqMode,
         location.pathname,
-        isChartZoom,
+        // isChartZoom,
         limit,
         ranges,
         liquidityScale,
@@ -2949,25 +2994,25 @@ export default function Chart(props: propsIF) {
                 .style('left', scaleData.xScale(data) - width + 'px');
         }
     };
-    useEffect(() => {
-        if (scaleData && scaleData?.xScale) {
-            const xmin = scaleData?.xScale.domain()[0];
+    // useEffect(() => {
+    //     if (scaleData && scaleData?.xScale) {
+    //         const xmin = scaleData?.xScale.domain()[0];
 
-            const filtered = unparsedCandleData?.filter(
-                (data: CandleData) => data.time * 1000 >= xmin,
-            );
+    //         const filtered = unparsedCandleData?.filter(
+    //             (data: CandleData) => data.time * 1000 >= xmin,
+    //         );
 
-            const minYBoundary = d3.min(filtered, (d) => d.volumeUSD);
-            const maxYBoundary = d3.max(filtered, (d) => d.volumeUSD);
-            if (minYBoundary !== undefined && maxYBoundary !== undefined) {
-                const domain = [0, maxYBoundary / 1.05];
-                scaleData?.volumeScale.domain(domain);
-            }
-        }
-    }, [
-        diffHashSigScaleData(scaleData, 'x'),
-        diffHashSigChart(unparsedCandleData),
-    ]);
+    //         const minYBoundary = d3.min(filtered, (d) => d.volumeUSD);
+    //         const maxYBoundary = d3.max(filtered, (d) => d.volumeUSD);
+    //         if (minYBoundary !== undefined && maxYBoundary !== undefined) {
+    //             const domain = [0, maxYBoundary / 1.05];
+    //             scaleData?.volumeScale.domain(domain);
+    //         }
+    //     }
+    // }, [
+    //     diffHashSigScaleData(scaleData, 'x'),
+    //     diffHashSigChart(unparsedCandleData),
+    // ]);
 
     // Candle transactions
     useEffect(() => {
@@ -3244,6 +3289,7 @@ export default function Chart(props: propsIF) {
                                 lastCrDate={lastCrDate}
                                 isCrDataIndActive={isCrDataIndActive}
                                 xAxisActiveTooltip={xAxisActiveTooltip}
+                                zoomBase={zoomBase}
                             />
                         </>
                     )}
@@ -3271,6 +3317,7 @@ export default function Chart(props: propsIF) {
                                 lastCrDate={lastCrDate}
                                 isCrDataIndActive={isCrDataIndActive}
                                 xAxisActiveTooltip={xAxisActiveTooltip}
+                                zoomBase={zoomBase}
                             />
                         </>
                     )}
@@ -3298,6 +3345,7 @@ export default function Chart(props: propsIF) {
                             showLatestActive={showLatestActive}
                             unparsedCandleData={unparsedCandleData}
                             xAxisActiveTooltip={xAxisActiveTooltip}
+                            zoomBase={zoomBase}
                         />
                     </div>
                 </div>

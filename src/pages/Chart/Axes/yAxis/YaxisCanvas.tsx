@@ -1,4 +1,11 @@
-import { useEffect, useRef, useState, MouseEvent } from 'react';
+import {
+    useEffect,
+    useRef,
+    useState,
+    MouseEvent,
+    memo,
+    useContext,
+} from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -25,6 +32,7 @@ import {
     standardDeviation,
 } from '../../ChartUtils/chartUtils';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
@@ -68,7 +76,7 @@ type yLabel = {
     height: number;
 };
 
-export default function YAxisCanvas(props: yAxisIF) {
+function YAxisCanvas(props: yAxisIF) {
     const {
         scaleData,
         ranges,
@@ -109,9 +117,11 @@ export default function YAxisCanvas(props: yAxisIF) {
 
     const [yAxisZoom, setYaxisZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
+    const { isChartZoom: isChartZoom } = useContext(ChartContext);
 
     const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
 
+    const [yTickValueLength, setYTickValueLength] = useState();
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const location = useLocation();
@@ -126,53 +136,65 @@ export default function YAxisCanvas(props: yAxisIF) {
         }
     }, [scaleData, location]);
 
-    function changeyAxisWidth() {
-        let yTickValueLength =
-            formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
-        let result = false;
-        scaleData?.yScale.ticks().forEach((element: number) => {
-            if (formatPoolPriceAxis(element).length > 4) {
-                result = true;
-                yTickValueLength =
-                    yTickValueLength > formatPoolPriceAxis(element).length - 1
-                        ? yTickValueLength
-                        : formatPoolPriceAxis(element).length - 1;
-            }
-        });
-        if (result) {
-            if (yTickValueLength > 4 && yTickValueLength < 8) {
-                setYaxisWidth('6rem');
-                setYaxisCanvasWidth(70);
-            }
-            if (yTickValueLength >= 8) {
-                setYaxisWidth('7rem');
-                setYaxisCanvasWidth(85);
-            }
-            if (yTickValueLength >= 10) {
-                setYaxisWidth('8rem');
-                setYaxisCanvasWidth(100);
-            }
-            if (yTickValueLength >= 13) {
-                setYaxisWidth('9rem');
-                setYaxisCanvasWidth(117);
-            }
-            if (yTickValueLength >= 15) {
-                setYaxisWidth('10rem');
-                setYaxisCanvasWidth(134);
-            }
-            if (yTickValueLength >= 16) {
-                setYaxisCanvasWidth(142);
-            }
-            if (yTickValueLength >= 17) {
-                setYaxisCanvasWidth(147);
-            }
-            if (yTickValueLength >= 20) {
-                setYaxisWidth('11rem');
-                setYaxisCanvasWidth(152);
-            }
-        }
-        if (yTickValueLength <= 4) setYaxisWidth('5rem');
-    }
+    // useEffect(() => {
+
+    //     if (yTickValueLength) {
+
+    //         let result = false;
+
+    //         let tempYTickValueLength = formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1
+    //         scaleData?.yScale.ticks().forEach((element: number) => {
+    //             if (formatPoolPriceAxis(element).length > 4) {
+    //                 result = true;
+
+    //                 tempYTickValueLength = yTickValueLength > formatPoolPriceAxis(element).length - 1
+    //                         ? yTickValueLength
+    //                         : formatPoolPriceAxis(element).length - 1;
+    //             }
+    //         });
+
+    //     }
+    //     if (result) {
+    //         tempYTickValueLength =
+    //     }
+
+    // }, [third])
+
+    // function changeyAxisWidth() {
+
+    //         if (yTickValueLength > 4 && yTickValueLength < 8) {
+    //             setYaxisWidth('6rem');
+    //             setYaxisCanvasWidth(70);
+    //         }
+    //         if (yTickValueLength >= 8) {
+    //             setYaxisWidth('7rem');
+    //             setYaxisCanvasWidth(85);
+    //         }
+    //         if (yTickValueLength >= 10) {
+    //             setYaxisWidth('8rem');
+    //             setYaxisCanvasWidth(100);
+    //         }
+    //         if (yTickValueLength >= 13) {
+    //             setYaxisWidth('9rem');
+    //             setYaxisCanvasWidth(117);
+    //         }
+    //         if (yTickValueLength >= 15) {
+    //             setYaxisWidth('10rem');
+    //             setYaxisCanvasWidth(134);
+    //         }
+    //         if (yTickValueLength >= 16) {
+    //             setYaxisCanvasWidth(142);
+    //         }
+    //         if (yTickValueLength >= 17) {
+    //             setYaxisCanvasWidth(147);
+    //         }
+    //         if (yTickValueLength >= 20) {
+    //             setYaxisWidth('11rem');
+    //             setYaxisCanvasWidth(152);
+    //         }
+
+    //     if (yTickValueLength <= 4) setYaxisWidth('5rem');
+    // }
 
     const sameLocationRange = () => {
         if (scaleData) {
@@ -575,215 +597,228 @@ export default function YAxisCanvas(props: yAxisIF) {
                 );
             }
 
-            changeyAxisWidth();
+            // changeyAxisWidth();
         }
     };
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let previousTouch: any | undefined = undefined; // event
-
-        let firstLocation: number;
-        let newCenter: number;
-        let previousDeltaTouchYaxis: number;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const startZoom = (event: any) => {
-            if (event.sourceEvent.type.includes('touch') && scaleData) {
-                // mobile
-                previousTouch = event.sourceEvent.changedTouches[0];
-                firstLocation = previousTouch.pageY;
-                newCenter = scaleData?.yScale.invert(firstLocation);
-
-                if (event.sourceEvent.touches.length > 1) {
-                    previousDeltaTouchYaxis = Math.hypot(
-                        0,
-                        event.sourceEvent.touches[0].pageY -
-                            event.sourceEvent.touches[1].pageY,
-                    );
-                    firstLocation = previousDeltaTouchYaxis;
-                    newCenter = scaleData?.yScale.invert(firstLocation);
-                }
-            } else {
-                firstLocation = event.sourceEvent.offsetY;
-            }
-        };
-
-        const yAxisZoom = d3
-            .zoom()
-            .on('start', (event) => {
-                startZoom(event);
-            })
+        if (!isChartZoom) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .on('zoom', async (event: any) => {
-                (async () => {
-                    if (scaleData) {
-                        const domainY = scaleData?.yScale.domain();
-                        const center =
-                            domainY[1] !== domainY[0]
-                                ? (domainY[1] + domainY[0]) / 2
-                                : domainY[0] / 2;
-                        let deltaY;
+            let previousTouch: any | undefined = undefined; // event
 
-                        if (event.sourceEvent.type === 'touchmove') {
-                            const touch = event.sourceEvent.changedTouches[0];
+            let firstLocation: number;
+            let newCenter: number;
+            let previousDeltaTouchYaxis: number;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const startZoom = (event: any) => {
+                if (event.sourceEvent.type.includes('touch') && scaleData) {
+                    // mobile
+                    previousTouch = event.sourceEvent.changedTouches[0];
+                    firstLocation = previousTouch.pageY;
+                    newCenter = scaleData?.yScale.invert(firstLocation);
 
-                            const _currentPageY = touch.pageY;
-                            const previousTouchPageY = previousTouch.pageY;
-                            const _movementY =
-                                _currentPageY - previousTouchPageY;
-                            deltaY = _movementY;
-                        } else {
-                            deltaY = event.sourceEvent.movementY / 1.5;
-                            newCenter = scaleData?.yScale.invert(firstLocation);
-                        }
-
-                        const dy = event.sourceEvent.deltaY / 3;
-
-                        const factor = Math.pow(
-                            2,
-                            event.sourceEvent.type === 'wheel'
-                                ? -dy * 0.003
-                                : event.sourceEvent.type === 'mousemove'
-                                ? -deltaY * 0.003
-                                : event.sourceEvent.type === 'touchmove'
-                                ? -deltaY * 0.005
-                                : 1,
+                    if (event.sourceEvent.touches.length > 1) {
+                        previousDeltaTouchYaxis = Math.hypot(
+                            0,
+                            event.sourceEvent.touches[0].pageY -
+                                event.sourceEvent.touches[1].pageY,
                         );
+                        firstLocation = previousDeltaTouchYaxis;
+                        newCenter = scaleData?.yScale.invert(firstLocation);
+                    }
+                } else {
+                    firstLocation = event.sourceEvent.offsetY;
+                }
+            };
 
-                        if (
-                            event.sourceEvent.type !== 'touchmove' ||
-                            event.sourceEvent.touches.length === 1
-                        ) {
-                            const size = (domainY[1] - domainY[0]) / factor;
+            const yAxisZoom = d3
+                .zoom()
+                .on('start', (event) => {
+                    startZoom(event);
+                })
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .on('zoom', async (event: any) => {
+                    (async () => {
+                        if (scaleData) {
+                            const domainY = scaleData?.yScale.domain();
+                            const center =
+                                domainY[1] !== domainY[0]
+                                    ? (domainY[1] + domainY[0]) / 2
+                                    : domainY[0] / 2;
+                            let deltaY;
 
-                            const diff = domainY[1] - domainY[0];
+                            if (event.sourceEvent.type === 'touchmove') {
+                                const touch =
+                                    event.sourceEvent.changedTouches[0];
 
-                            const distance =
-                                newCenter > center
-                                    ? Math.abs(
-                                          newCenter -
-                                              scaleData?.yScale.domain()[1],
-                                      )
-                                    : Math.abs(
-                                          newCenter -
-                                              scaleData?.yScale.domain()[0],
-                                      );
-                            const diffFactor = (diff - distance) / distance;
-
-                            const bottomDiff = size / (diffFactor + 1);
-                            const topDiff = size - bottomDiff;
-
-                            if (newCenter > center) {
-                                const domain = [
-                                    newCenter - topDiff,
-                                    newCenter + bottomDiff,
-                                ];
-                                await scaleData?.yScale.domain(domain);
+                                const _currentPageY = touch.pageY;
+                                const previousTouchPageY = previousTouch.pageY;
+                                const _movementY =
+                                    _currentPageY - previousTouchPageY;
+                                deltaY = _movementY;
                             } else {
-                                const domain = [
-                                    newCenter - bottomDiff,
-                                    newCenter + topDiff,
-                                ];
-                                await scaleData?.yScale.domain(domain);
+                                deltaY = event.sourceEvent.movementY / 1.5;
+                                newCenter =
+                                    scaleData?.yScale.invert(firstLocation);
                             }
-                        } else if (event.sourceEvent.touches.length > 1) {
-                            const touch1 = event.sourceEvent.touches[0];
-                            const touch2 = event.sourceEvent.touches[1];
-                            const deltaTouch = Math.hypot(
-                                0,
-                                touch1.pageY - touch2.pageY,
+
+                            const dy = event.sourceEvent.deltaY / 3;
+
+                            const factor = Math.pow(
+                                2,
+                                event.sourceEvent.type === 'wheel'
+                                    ? -dy * 0.003
+                                    : event.sourceEvent.type === 'mousemove'
+                                    ? -deltaY * 0.003
+                                    : event.sourceEvent.type === 'touchmove'
+                                    ? -deltaY * 0.005
+                                    : 1,
                             );
 
-                            const currentDelta =
-                                scaleData?.yScale.invert(deltaTouch);
-                            const delta =
-                                Math.abs(currentDelta - newCenter) * 0.03;
+                            if (
+                                event.sourceEvent.type !== 'touchmove' ||
+                                event.sourceEvent.touches.length === 1
+                            ) {
+                                const size = (domainY[1] - domainY[0]) / factor;
 
-                            if (previousDeltaTouchYaxis > deltaTouch) {
-                                const domainMax =
-                                    scaleData?.yScale.domain()[1] + delta;
-                                const domainMin =
-                                    scaleData?.yScale.domain()[0] - delta;
+                                const diff = domainY[1] - domainY[0];
 
-                                scaleData?.yScale.domain([
-                                    Math.min(domainMin, domainMax),
-                                    Math.max(domainMin, domainMax),
-                                ]);
-                            }
-                            if (previousDeltaTouchYaxis < deltaTouch) {
-                                const domainMax =
-                                    scaleData?.yScale.domain()[1] - delta * 0.5;
-                                const domainMin =
-                                    scaleData?.yScale.domain()[0] + delta * 0.5;
+                                const distance =
+                                    newCenter > center
+                                        ? Math.abs(
+                                              newCenter -
+                                                  scaleData?.yScale.domain()[1],
+                                          )
+                                        : Math.abs(
+                                              newCenter -
+                                                  scaleData?.yScale.domain()[0],
+                                          );
+                                const diffFactor = (diff - distance) / distance;
 
-                                if (domainMax === domainMin) {
-                                    scaleData?.yScale.domain([
-                                        Math.min(domainMin, domainMax) + delta,
-                                        Math.max(domainMin, domainMax) - delta,
-                                    ]);
+                                const bottomDiff = size / (diffFactor + 1);
+                                const topDiff = size - bottomDiff;
+
+                                if (newCenter > center) {
+                                    const domain = [
+                                        newCenter - topDiff,
+                                        newCenter + bottomDiff,
+                                    ];
+                                    scaleData?.yScale.domain(domain);
                                 } else {
+                                    const domain = [
+                                        newCenter - bottomDiff,
+                                        newCenter + topDiff,
+                                    ];
+                                    scaleData?.yScale.domain(domain);
+                                }
+                            } else if (event.sourceEvent.touches.length > 1) {
+                                const touch1 = event.sourceEvent.touches[0];
+                                const touch2 = event.sourceEvent.touches[1];
+                                const deltaTouch = Math.hypot(
+                                    0,
+                                    touch1.pageY - touch2.pageY,
+                                );
+
+                                const currentDelta =
+                                    scaleData?.yScale.invert(deltaTouch);
+                                const delta =
+                                    Math.abs(currentDelta - newCenter) * 0.03;
+
+                                if (previousDeltaTouchYaxis > deltaTouch) {
+                                    const domainMax =
+                                        scaleData?.yScale.domain()[1] + delta;
+                                    const domainMin =
+                                        scaleData?.yScale.domain()[0] - delta;
+
                                     scaleData?.yScale.domain([
                                         Math.min(domainMin, domainMax),
                                         Math.max(domainMin, domainMax),
                                     ]);
                                 }
+                                if (previousDeltaTouchYaxis < deltaTouch) {
+                                    const domainMax =
+                                        scaleData?.yScale.domain()[1] -
+                                        delta * 0.5;
+                                    const domainMin =
+                                        scaleData?.yScale.domain()[0] +
+                                        delta * 0.5;
+
+                                    if (domainMax === domainMin) {
+                                        scaleData?.yScale.domain([
+                                            Math.min(domainMin, domainMax) +
+                                                delta,
+                                            Math.max(domainMin, domainMax) -
+                                                delta,
+                                        ]);
+                                    } else {
+                                        scaleData?.yScale.domain([
+                                            Math.min(domainMin, domainMax),
+                                            Math.max(domainMin, domainMax),
+                                        ]);
+                                    }
+                                }
                             }
                         }
-                    }
-                })().then(() => {
-                    if (event.sourceEvent.type.includes('touch')) {
-                        // mobile
-                        previousTouch = event.sourceEvent.changedTouches[0];
+                    })().then(() => {
+                        if (event.sourceEvent.type.includes('touch')) {
+                            // mobile
+                            previousTouch = event.sourceEvent.changedTouches[0];
 
-                        if (event.sourceEvent.touches.length > 1) {
-                            previousDeltaTouchYaxis = Math.hypot(
-                                0,
-                                event.sourceEvent.touches[0].pageY -
-                                    event.sourceEvent.touches[1].pageY,
+                            if (event.sourceEvent.touches.length > 1) {
+                                previousDeltaTouchYaxis = Math.hypot(
+                                    0,
+                                    event.sourceEvent.touches[0].pageY -
+                                        event.sourceEvent.touches[1].pageY,
+                                );
+                            }
+                        }
+                    });
+                    if (tradeData.advancedMode && liquidityData) {
+                        const liqAllBidPrices = liquidityData?.liqBidData.map(
+                            (liqData: LiquidityDataLocal) => liqData.liqPrices,
+                        );
+                        const liqBidDeviation =
+                            standardDeviation(liqAllBidPrices);
+
+                        if (scaleData) {
+                            fillLiqAdvanced(
+                                liqBidDeviation,
+                                scaleData,
+                                liquidityData,
                             );
                         }
                     }
+
+                    setRescale(() => {
+                        return false;
+                    });
+
+                    setMarketLineValue();
+                    render();
+                })
+                .filter((event) => {
+                    const isWheel = event.type === 'wheel';
+
+                    const isLabel =
+                        yAxisLabels?.find((element: yLabel) => {
+                            return (
+                                event.offsetY > element?.y &&
+                                event.offsetY < element?.y + element?.height
+                            );
+                        }) !== undefined;
+
+                    return !isLabel || isWheel;
                 });
-                if (tradeData.advancedMode && liquidityData) {
-                    const liqAllBidPrices = liquidityData?.liqBidData.map(
-                        (liqData: LiquidityDataLocal) => liqData.liqPrices,
-                    );
-                    const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-                    if (scaleData) {
-                        fillLiqAdvanced(
-                            liqBidDeviation,
-                            scaleData,
-                            liquidityData,
-                        );
-                    }
-                }
-
-                setRescale(() => {
-                    return false;
-                });
-
-                setMarketLineValue();
-                render();
-            })
-            .filter((event) => {
-                const isWheel = event.type === 'wheel';
-
-                const isLabel =
-                    yAxisLabels?.find((element: yLabel) => {
-                        return (
-                            event.offsetY > element?.y &&
-                            event.offsetY < element?.y + element?.height
-                        );
-                    }) !== undefined;
-
-                return !isLabel || isWheel;
+            setYaxisZoom(() => {
+                return yAxisZoom;
             });
-
-        setYaxisZoom(() => {
-            return yAxisZoom;
-        });
-    }, [diffHashSigScaleData(scaleData), liquidityData?.liqBidData]);
+        }
+    }, [
+        diffHashSigScaleData(scaleData, 'y'),
+        liquidityData?.liqBidData,
+        // isChartZoom,
+    ]);
 
     useEffect(() => {
         if (yAxis && yAxisZoom && d3Yaxis.current) {
@@ -890,3 +925,5 @@ export default function YAxisCanvas(props: yAxisIF) {
         ></d3fc-canvas>
     );
 }
+
+export default memo(YAxisCanvas);

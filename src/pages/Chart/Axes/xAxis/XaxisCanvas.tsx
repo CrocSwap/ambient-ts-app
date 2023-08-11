@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useContext } from 'react';
+import { useEffect, useRef, useState, useContext, memo } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -17,8 +17,8 @@ import { CandleContext } from '../../../../contexts/CandleContext';
 import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
 import moment from 'moment';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
-import { Zoom } from '../../ChartUtils/zoom';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { ChartContext } from '../../../../contexts/ChartContext';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     lastCrDate: number | undefined;
@@ -43,9 +43,11 @@ interface xAxisIF {
     render: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     showLatestActive: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    zoomBase: any;
 }
 
-export default function XAxisCanvas(props: xAxisIF) {
+function XAxisCanvas(props: xAxisIF) {
     const {
         scaleData,
         lastCrDate,
@@ -66,6 +68,7 @@ export default function XAxisCanvas(props: xAxisIF) {
         changeScale,
         render,
         showLatestActive,
+        zoomBase,
     } = props;
 
     const d3Xaxis = useRef<HTMLInputElement | null>(null);
@@ -74,8 +77,8 @@ export default function XAxisCanvas(props: xAxisIF) {
     const [xAxis, setXaxis] = useState<any>();
     const [xAxisZoom, setXaxisZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
-    const { setCandleDomains } = useContext(CandleContext);
-    const zoomBase = new Zoom(setCandleDomains, period);
+
+    const { isChartZoom: isChartZoom } = useContext(ChartContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -379,13 +382,12 @@ export default function XAxisCanvas(props: xAxisIF) {
         }
     }, [
         timeOfEndCandle,
-        diffHashSigScaleData(scaleData, 'x'),
         diffHashSig(crosshairData),
         isLineDrag,
         reset,
         location,
         crosshairActive,
-        xAxis,
+        xAxis === undefined,
     ]);
 
     useEffect(() => {
@@ -424,58 +426,65 @@ export default function XAxisCanvas(props: xAxisIF) {
     }, []);
 
     useEffect(() => {
-        const lastCandleDate = lastCandleData?.time * 1000;
-        const firstCandleDate = firstCandleData?.time * 1000;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let previousTouch: any | undefined = undefined; // event
-
-        const xAxisZoom = d3
-            .zoom()
+        if (!isChartZoom) {
+            const lastCandleDate = lastCandleData?.time * 1000;
+            const firstCandleDate = firstCandleData?.time * 1000;
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .on('start', (event: any) => {
-                if (event.sourceEvent.type.includes('touch')) {
-                    // mobile
-                    previousTouch = event.sourceEvent.touches[0];
-                }
-            })
-            .on('zoom', async (event) => {
-                async function newDomains() {
-                    if (scaleData) {
-                        if (event.sourceEvent.type === 'wheel') {
-                            zoomBase.zoomWithWheel(
-                                event,
-                                scaleData,
-                                firstCandleDate,
-                                lastCandleDate,
-                            );
-                        } else {
-                            zoomBase.handlePanningX(
-                                event,
-                                scaleData,
-                                firstCandleDate,
-                                previousTouch,
-                            );
-                        }
-                        changeScale();
-                        render();
-                    }
-                }
+            let previousTouch: any | undefined = undefined; // event
 
-                newDomains().then(() => {
-                    // mobile
+            const xAxisZoom = d3
+                .zoom()
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .on('start', (event: any) => {
                     if (event.sourceEvent.type.includes('touch')) {
-                        previousTouch = event.sourceEvent.changedTouches[0];
+                        // mobile
+                        previousTouch = event.sourceEvent.touches[0];
                     }
-                });
-            })
-            .on('end', () => {
-                showLatestActive();
-            });
+                })
+                .on('zoom', async (event) => {
+                    async function newDomains() {
+                        if (scaleData) {
+                            if (event.sourceEvent.type === 'wheel') {
+                                zoomBase.zoomWithWheel(
+                                    event,
+                                    scaleData,
+                                    firstCandleDate,
+                                    lastCandleDate,
+                                );
+                            } else {
+                                zoomBase.handlePanningX(
+                                    event,
+                                    scaleData,
+                                    firstCandleDate,
+                                    previousTouch,
+                                );
+                            }
+                            changeScale();
+                            render();
+                        }
+                    }
 
-        setXaxisZoom(() => {
-            return xAxisZoom;
-        });
-    }, [scaleData, firstCandleData, lastCandleData]);
+                    newDomains().then(() => {
+                        // mobile
+                        if (event.sourceEvent.type.includes('touch')) {
+                            previousTouch = event.sourceEvent.changedTouches[0];
+                        }
+                    });
+                })
+                .on('end', () => {
+                    showLatestActive();
+                });
+
+            setXaxisZoom(() => {
+                return xAxisZoom;
+            });
+        }
+    }, [
+        diffHashSigScaleData(scaleData, 'x'),
+        firstCandleData,
+        lastCandleData,
+        // isChartZoom,
+    ]);
 
     useEffect(() => {
         if (xAxis && xAxisZoom && d3Xaxis.current) {
@@ -501,3 +510,4 @@ export default function XAxisCanvas(props: xAxisIF) {
         ></d3fc-canvas>
     );
 }
+export default memo(XAxisCanvas);
