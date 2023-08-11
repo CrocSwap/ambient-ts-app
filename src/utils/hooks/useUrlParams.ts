@@ -169,7 +169,7 @@ export const useUrlParams = (
         dispatch(setTokenB(dfltB));
     }
 
-    useEffect(() => {
+    useEffect((): (() => void) => {
         let flag = true;
 
         const processTokenAddr = async (
