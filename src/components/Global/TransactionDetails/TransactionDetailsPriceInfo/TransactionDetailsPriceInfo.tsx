@@ -128,14 +128,14 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         </motion.div>
     );
 
-    const buySellBaseToken = (
+    const baseToken = (
         <TokenIcon
             src={uriToHttp(baseTokenLogo)}
             alt={baseTokenSymbol}
             size='xs'
         />
     );
-    const buySellQuoteToken = (
+    const quoteToken = (
         <TokenIcon
             src={uriToHttp(quoteTokenLogo)}
             alt={quoteTokenSymbol}
@@ -143,62 +143,74 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         />
     );
 
+    const buyQuoteRow = (
+        <Row>
+            <p>
+                {tx.entityType === 'liqchange'
+                    ? tx.quoteSymbol + ': '
+                    : 'Buy: '}
+            </p>
+
+            <div>
+                {quoteQuantityDisplay.replace(/[()]/g, '')}
+                {quoteToken}
+            </div>
+        </Row>
+    );
+    const sellBaseRow = (
+        <Row>
+            <p>
+                {tx.entityType === 'liqchange'
+                    ? tx.baseSymbol + ': '
+                    : 'Sell: '}
+            </p>
+            <div>
+                {baseQuantityDisplay.replace(/[()]/g, '')}
+                {baseToken}
+            </div>
+        </Row>
+    );
+
     const isBuyTransactionDetails = (
         <div className={styles.tx_details}>
-            <Row>
-                <p>
-                    {tx.entityType === 'liqchange'
-                        ? tx.quoteSymbol + ': '
-                        : 'Buy: '}
-                </p>
-
-                <div>
-                    {quoteQuantityDisplay.replace(/[()]/g, '')}
-                    {buySellQuoteToken}
-                </div>
-            </Row>
+            {isDenomBase ? sellBaseRow : buyQuoteRow}
             <span className={styles.divider}></span>
-
-            <Row>
-                <p>
-                    {tx.entityType === 'liqchange'
-                        ? tx.baseSymbol + ': '
-                        : 'Sell: '}
-                </p>
-                <div>
-                    {baseQuantityDisplay.replace(/[()]/g, '')}
-                    {buySellBaseToken}
-                </div>
-            </Row>
+            {isDenomBase ? buyQuoteRow : sellBaseRow}
         </div>
+    );
+
+    const buyBaseRow = (
+        <Row>
+            <p>
+                {tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Buy: '}
+            </p>
+
+            <div>
+                {baseQuantityDisplay.replace(/[()]/g, '')}
+                {baseToken}
+            </div>
+        </Row>
+    );
+
+    const sellQuoteRow = (
+        <Row>
+            <p>
+                {tx.entityType === 'liqchange'
+                    ? tx.quoteSymbol + ': '
+                    : 'Sell: '}
+            </p>
+            <div>
+                {quoteQuantityDisplay.replace(/[()]/g, '')}
+                {quoteToken}
+            </div>
+        </Row>
     );
 
     const isSellTransactionDetails = (
         <div className={styles.tx_details}>
-            <Row>
-                <p>
-                    {tx.entityType === 'liqchange'
-                        ? tx.baseSymbol + ': '
-                        : 'Buy: '}
-                </p>
-
-                <div>
-                    {baseQuantityDisplay.replace(/[()]/g, '')}
-                    {buySellBaseToken}
-                </div>
-            </Row>
+            {isDenomBase ? buyBaseRow : sellQuoteRow}
             <span className={styles.divider}></span>
-            <Row>
-                <p>
-                    {tx.entityType === 'liqchange'
-                        ? tx.quoteSymbol + ': '
-                        : 'Sell: '}
-                </p>
-                <div>
-                    {quoteQuantityDisplay.replace(/[()]/g, '')}
-                    {buySellQuoteToken}
-                </div>
-            </Row>
+            {isDenomBase ? sellQuoteRow : buyBaseRow}
         </div>
     );
 
