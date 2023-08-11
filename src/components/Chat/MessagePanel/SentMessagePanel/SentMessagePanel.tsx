@@ -1,7 +1,14 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { Dispatch, SetStateAction, memo, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    memo,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
@@ -12,8 +19,8 @@ import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
-import { SlOptions } from 'react-icons/sl';
 import Options from '../Options/Options';
+import Menu from '../Options/Menu/Menu';
 
 interface SentMessageProps {
     message: Message;
@@ -57,6 +64,7 @@ interface SentMessageProps {
 }
 
 function SentMessagePanel(props: SentMessageProps) {
+    const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
     const [hasSeparator, setHasSeparator] = useState(false);
     const [clickOptions, setClickOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
@@ -162,6 +170,7 @@ function SentMessagePanel(props: SentMessageProps) {
             }
         }
     }, [props.message, props.nextMessage, props.previousMessage]);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (
@@ -349,12 +358,24 @@ function SentMessagePanel(props: SentMessageProps) {
                                 {' ' + detectLinksFromMessage(word)}
                             </span>
                         ))}
+                        <div className={styles.roomInfo}>
+                            {' '}
+                            {props.room === 'Admins'
+                                ? props.message.roomInfo
+                                : ''}
+                        </div>
                     </div>
                 );
             } else {
                 return (
                     <div className={styles.message}>
                         {detectLinksFromMessage(props.message.message)}
+                        <div className={styles.roomInfo}>
+                            {' '}
+                            {props.room === 'Admins'
+                                ? props.message.roomInfo
+                                : ''}{' '}
+                        </div>
                     </div>
                 );
             }
@@ -380,12 +401,23 @@ function SentMessagePanel(props: SentMessageProps) {
                                 {' ' + detectLinksFromMessage(word)}
                             </span>
                         ))}
+                        <div className={styles.roomInfo}>
+                            {' '}
+                            {props.room === 'Admins'
+                                ? props.message.roomInfo
+                                : ''}
+                        </div>
                     </div>
                 );
             } else {
                 return (
                     <div className={styles.message_without_avatar}>
                         {detectLinksFromMessage(props.message.message)}
+                        <div className={styles.roomInfo}>
+                            {props.room === 'Admins'
+                                ? props.message.roomInfo
+                                : ''}
+                        </div>
                     </div>
                 );
             }
@@ -721,7 +753,7 @@ function SentMessagePanel(props: SentMessageProps) {
                         {hasSeparator ? (
                             <hr style={{ cursor: 'default' }} />
                         ) : (
-                            ''
+                            <></>
                         )}
                     </div>
                 </div>

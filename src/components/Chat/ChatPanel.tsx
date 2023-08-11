@@ -95,6 +95,7 @@ function ChatPanel(props: propsIF) {
         userMap,
         updateVerifyDate,
         updateUserCache,
+        getAllMessages,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -335,8 +336,11 @@ function ChatPanel(props: propsIF) {
         const nextPage = page + 1;
         setPage(nextPage);
 
-        const data = await getMsgWithRest2(room, nextPage);
-        if (data.length === 0) {
+        const data =
+            room === 'Admins'
+                ? await getAllMessages(nextPage)
+                : await getMsgWithRest2(room, nextPage);
+        if (data.length === 0 || data.length < 20) {
             setShowPreviousMessagesButton(false);
         } else {
             const scrollContainer = messageEnd.current; // Referring to the scrollable container
@@ -347,8 +351,6 @@ function ChatPanel(props: propsIF) {
                 scrollPositionAfter - scrollPositionBefore,
             );
         }
-
-        // Scroll to the middle of the container
     };
 
     const scrollToBottom = async () => {
@@ -368,9 +370,11 @@ function ChatPanel(props: propsIF) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
+        const tolerance = 0.6;
+
         if (
-            e.target.scrollHeight - e.target.scrollTop ===
-            e.target.clientHeight
+            e.target.scrollTop + e.target.clientHeight + tolerance >=
+            e.target.scrollHeight
         ) {
             setNotification(0);
             setIsScrollToBottomButtonPressed(false);
@@ -404,7 +408,8 @@ function ChatPanel(props: propsIF) {
     const handleWheel = (e: any) => {
         if (
             e.target.scrollTop === 0 &&
-            e.target.clientHeight !== e.target.scrollHeight
+            e.target.clientHeight !== e.target.scrollHeight &&
+            messages.length >= 20
         ) {
             setShowPreviousMessagesButton(true);
         } else {
@@ -668,8 +673,9 @@ function ChatPanel(props: propsIF) {
                                 color='#7371fc'
                                 onClick={() => scrollToBottomButton()}
                                 tabIndex={0}
-                                aria-label='Scroll to bottom button'
+                                aria-label='Scroll to bottom'
                                 style={{ cursor: 'pointer' }}
+                                title={'Scroll To Bottom'}
                             />
                         </span>
                     </div>
@@ -692,6 +698,7 @@ function ChatPanel(props: propsIF) {
                                 tabIndex={0}
                                 aria-label='Scroll to bottom button'
                                 style={{ cursor: 'pointer' }}
+                                title={'Scroll To Bottom'}
                             />
                         </span>
                     </div>
@@ -707,8 +714,9 @@ function ChatPanel(props: propsIF) {
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
-                            aria-label='Scroll to bottom button'
+                            aria-label='Scroll to bottom'
                             style={{ cursor: 'pointer' }}
+                            title={'Scroll To Bottom'}
                         />
                     </span>
                 ) : (
@@ -719,8 +727,9 @@ function ChatPanel(props: propsIF) {
                             color='#7371fc'
                             onClick={() => scrollToBottomButton()}
                             tabIndex={0}
-                            aria-label='Scroll to bottom button'
+                            aria-label='Scroll to bottom'
                             style={{ cursor: 'pointer' }}
+                            title={'Scroll To Bottom'}
                         />
                     </span>
                 )
@@ -837,6 +846,7 @@ function ChatPanel(props: propsIF) {
                         notis={notis}
                         mentCount={ments.length}
                         mentIndex={mentIndex}
+                        moderator={moderator}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
@@ -848,8 +858,9 @@ function ChatPanel(props: propsIF) {
                                 color='#7371fc'
                                 onClick={() => getPreviousMessages()}
                                 tabIndex={0}
-                                aria-label='Read previous messages'
+                                aria-label='Show previous messages'
                                 style={{ cursor: 'pointer' }}
+                                title='Show previous messages'
                             />
                         ) : (
                             ''

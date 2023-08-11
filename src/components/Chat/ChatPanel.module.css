@@ -101,7 +101,7 @@
     position: absolute;
     right: 1rem;
     top: 5rem;
-    z-index: 9;
+    z-index: 15;
 }
 
 .text {

@@ -104,6 +104,8 @@
     align-self: stretch;
     word-break: break-word;
     white-space: normal;
+    display: flex;
+    flex-direction: row;
 }
 
 .message_without_avatar {
@@ -126,6 +128,8 @@
     align-self: stretch;
     word-break: break-word;
     white-space: normal;
+    display: flex;
+    flex-direction: row;
 }
 
 .mention_message {
@@ -278,6 +282,27 @@
 .main picture {
     max-width: 100%;
 }
+
+.dropdown_item{
+    background: var(--dark3);
+    border-radius: 4px;
+    padding-left: 4px;
+    padding-top: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-end;
+    grid-gap: 4px;
+    grid-gap: 4px;
+    gap: 4px;
+    transition: all 0.2s;
+    color: rgba(235, 235, 255, 0.4);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    position: absolute;
+    top: 0rem;
+    right: 1rem;
+    flex-direction: column;
+    }
 
 
 
@@ -524,6 +549,12 @@
     top: 30%; 
     left: 100%; 
     transform: translateX(-50%); 
+  }
+
+  .roomInfo {
+    position:absolute;
+    left: 9rem; 
+    color: pink;
   }
   
   .msg_bubble_container:hover .options_button {

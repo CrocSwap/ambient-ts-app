@@ -29,6 +29,7 @@ interface propsIF {
     notis?: Map<string, number>;
     mentCount: number;
     mentIndex: number;
+    moderator: boolean;
 }
 
 export default function Room(props: propsIF) {
@@ -49,15 +50,13 @@ export default function Room(props: propsIF) {
     const [roomArray] = useState<PoolIF[]>([]);
     const [isHovering, setIsHovering] = useState(false);
     const { updateUser } = useChatApi();
-
-    // non-empty space
-    const defaultRooms = [
+    const [defaultRooms, setDefaultRooms] = useState([
         {
             id: 100,
             name: 'Global',
             value: 'Global',
         },
-    ];
+    ]);
 
     const isFullScreenDefaultRooms = [
         {
@@ -180,6 +179,30 @@ export default function Room(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (
+            props.moderator &&
+            defaultRooms.find((room) => room.name === 'Admins') === undefined
+        ) {
+            setDefaultRooms([
+                ...defaultRooms,
+                {
+                    id: 101,
+                    name: 'Admins',
+                    value: 'Admins',
+                },
+            ]);
+        } else {
+            const index = defaultRooms.findIndex(
+                (room) => room.name === 'Admins',
+            );
+            if (index === -1) {
+                return;
+            }
+            defaultRooms.splice(index, 1);
+        }
+    }, [props.moderator]);
+
+    useEffect(() => {
         const fave:
             | PoolIF[]
             | {
@@ -263,7 +286,10 @@ export default function Room(props: propsIF) {
         });
         const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
         favoritePoolsArray.splice(0, middleIndex);
-        if (props.selectedRoom !== 'Global') {
+        if (
+            defaultRooms.find((room) => room.name === props.selectedRoom) ===
+            undefined
+        ) {
             const index = roomArray
                 .map((e) => e.name)
                 .indexOf(props.selectedRoom);
@@ -345,9 +371,41 @@ export default function Room(props: propsIF) {
             }
         } else {
             if (selectedRoom === 'Global') {
-                if (roomArray.length !== 0) {
-                    return '';
-                }
+                const reverseRooms = [...defaultRooms].reverse();
+                const index = reverseRooms.findIndex(
+                    (room) => room.name === 'Global',
+                );
+                reverseRooms.splice(index, 1);
+                return reverseRooms.map((tab) => (
+                    <div
+                        className={styles.dropdown_item}
+                        key={tab.id}
+                        data-value={tab.value}
+                        onClick={(event: any) =>
+                            handleRoomClick(event, tab.name)
+                        }
+                    >
+                        {tab.name}
+                    </div>
+                ));
+            } else if (selectedRoom === 'Admins') {
+                const reverseRooms = [...defaultRooms].reverse();
+                const index = reverseRooms.findIndex(
+                    (room) => room.name === 'Admins',
+                );
+                reverseRooms.splice(index, 1);
+                return reverseRooms.map((tab) => (
+                    <div
+                        className={styles.dropdown_item}
+                        key={tab.id}
+                        data-value={tab.value}
+                        onClick={(event: any) =>
+                            handleRoomClick(event, tab.name)
+                        }
+                    >
+                        {tab.name}
+                    </div>
+                ));
             } else {
                 const reverseRooms = [...defaultRooms].reverse();
                 return reverseRooms.map((tab) => (

@@ -34,6 +34,7 @@ interface MessageInputProps {
         mentionedName: string | null,
         mentionedWalletID: string | null,
         replyMessageContent?: string | undefined,
+        repliedMessageRoomInfo?: string | undefined,
     ) => void;
     inputListener?: (e: string) => void;
     users: User[];
@@ -75,6 +76,8 @@ export default function MessageInput(props: MessageInputProps) {
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
     const roomId = props.room;
+
+    const isRoomAdmins = roomId === 'Admins';
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
@@ -123,6 +126,9 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     const handleSendMessageButton = () => {
+        if (message === '') {
+            return;
+        }
         if (
             (props.isLink(message) || props.filterMessage(message)) &&
             !props.isLinkInCrocodileLabsLinksForInput(message)
@@ -249,19 +255,45 @@ export default function MessageInput(props: MessageInputProps) {
         console.log(msg);
         console.log(mentUser);
         if (msg !== '' && address) {
-            console.log(mentUser);
-            props.sendMsg(
-                props.currentUser,
-                message,
-                roomId,
-                props.ensName,
-                address,
-                mentUser ? userLabelForFilter(mentUser) : null,
-                mentUser ? mentUser.walletID : null,
-                props.replyMessageContent !== undefined
-                    ? props.replyMessageContent?._id
-                    : undefined,
-            );
+            if (
+                (isRoomAdmins && props.replyMessageContent === undefined) ||
+                props.replyMessageContent?.roomInfo !== 'Admins'
+            ) {
+                console.log(
+                    'evet',
+                    isRoomAdmins,
+                    props.replyMessageContent,
+                    props.replyMessageContent?.roomInfo,
+                );
+                props.sendMsg(
+                    props.currentUser,
+                    message,
+                    props.replyMessageContent?.roomInfo as string,
+                    props.ensName,
+                    address,
+                    mentUser ? userLabelForFilter(mentUser) : null,
+                    mentUser ? mentUser.walletID : null,
+                    props.replyMessageContent !== undefined
+                        ? props.replyMessageContent?._id
+                        : undefined,
+                );
+            } else {
+                console.log('bu mu');
+                props.sendMsg(
+                    props.currentUser,
+                    message,
+                    roomId,
+                    props.ensName,
+                    address,
+                    mentUser ? userLabelForFilter(mentUser) : null,
+                    mentUser ? mentUser.walletID : null,
+                    props.replyMessageContent !== undefined
+                        ? props.replyMessageContent?._id
+                        : undefined,
+                );
+            }
+            props.setIsReplyButtonPressed(false);
+            props.setReplyMessageContent(undefined);
         }
     };
 
