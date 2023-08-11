@@ -43,11 +43,11 @@ const useChatSocket = (
             method: 'GET',
         });
         const data = await response.json();
-        setMessages(data.reverse());
+        setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
         setLastMessage(data);
         setLastMessageText(data.message);
         setMessageUser(data.sender);
-        return data.reverse();
+        return data;
     }
 
     async function getMsgWithRest2(roomInfo: string, p?: number) {
@@ -148,6 +148,7 @@ const useChatSocket = (
         ensName: string,
         walletID: string | null,
         repliedMessage?: string | undefined,
+        repliedMessageRoomInfo?: string | undefined,
     ) {
         socketRef.current.emit('send-msg', {
             from: currentUser,
@@ -156,6 +157,7 @@ const useChatSocket = (
             ensName: ensName,
             walletID: walletID,
             repliedMessage: repliedMessage,
+            repliedMessageRoomInfo: repliedMessageRoomInfo,
         });
     }
 

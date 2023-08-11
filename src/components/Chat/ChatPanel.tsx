@@ -284,7 +284,7 @@ function ChatPanel(props: propsIF) {
             room === 'Admins'
                 ? await getAllMessages(nextPage)
                 : await getMsgWithRest2(room, nextPage);
-        if (data.length === 0) {
+        if (data.length === 0 || data.length < 20) {
             setShowPreviousMessagesButton(false);
         } else {
             const scrollContainer = messageEnd.current; // Referring to the scrollable container
@@ -320,7 +320,8 @@ function ChatPanel(props: propsIF) {
         }
         if (
             e.target.scrollTop === 0 &&
-            e.target.clientHeight !== e.target.scrollHeight
+            e.target.clientHeight !== e.target.scrollHeight &&
+            messages.length >= 20
         ) {
             setShowPreviousMessagesButton(true);
         } else {

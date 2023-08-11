@@ -32,6 +32,7 @@ interface MessageInputProps {
         ensName: string,
         walletID: string | null,
         replyMessageContent?: string | undefined,
+        repliedMessageRoomInfo?: string | undefined,
     ) => void;
     inputListener?: (e: string) => void;
     users: User[];
@@ -71,6 +72,8 @@ export default function MessageInput(props: MessageInputProps) {
 
     const roomId = props.room;
 
+    const isRoomAdmins = roomId === 'Admins';
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -86,7 +89,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const handleEmojiPickerHideShow = () => {
-        if (!isUserLoggedIn || props.room === 'Admins') {
+        if (!isUserLoggedIn) {
             setShowEmojiPicker(false);
         } else {
             setShowEmojiPicker(!showEmojiPicker);
@@ -98,12 +101,10 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     function messageInputText() {
-        if (isConnected && address && props.room !== 'Admins') {
+        if (isConnected && address) {
             return 'Type to chat. Enter to submit.';
         } else {
-            if (props.room === 'Admins') {
-                return 'You can read all messages';
-            } else return 'Please log in to chat.';
+            return 'Please log in to chat.';
         }
     }
 
@@ -212,16 +213,39 @@ export default function MessageInput(props: MessageInputProps) {
 
     const handleSendMsg = async (msg: string, roomId: string) => {
         if (msg !== '' && address) {
-            props.sendMsg(
-                props.currentUser,
-                message,
-                roomId,
-                props.ensName,
-                address,
-                props.replyMessageContent !== undefined
-                    ? props.replyMessageContent?._id
-                    : undefined,
-            );
+            if (
+                (isRoomAdmins && props.replyMessageContent === undefined) ||
+                props.replyMessageContent?.roomInfo !== 'Admins'
+            ) {
+                console.log(
+                    'evet',
+                    isRoomAdmins,
+                    props.replyMessageContent,
+                    props.replyMessageContent?.roomInfo,
+                );
+                props.sendMsg(
+                    props.currentUser,
+                    message,
+                    props.replyMessageContent?.roomInfo as string,
+                    props.ensName,
+                    address,
+                    props.replyMessageContent !== undefined
+                        ? props.replyMessageContent?._id
+                        : undefined,
+                );
+            } else {
+                console.log('bu mu');
+                props.sendMsg(
+                    props.currentUser,
+                    message,
+                    roomId,
+                    props.ensName,
+                    address,
+                    props.replyMessageContent !== undefined
+                        ? props.replyMessageContent?._id
+                        : undefined,
+                );
+            }
         }
         props.setIsReplyButtonPressed(false);
         props.setReplyMessageContent(undefined);
@@ -253,9 +277,7 @@ export default function MessageInput(props: MessageInputProps) {
     return (
         <div
             className={
-                !isConnected || props.room === 'Admins'
-                    ? styles.input_box_not_allowed
-                    : styles.input_box
+                !isConnected ? styles.input_box_not_allowed : styles.input_box
             }
         >
             <PositionBox
@@ -281,18 +303,16 @@ export default function MessageInput(props: MessageInputProps) {
             </div>
             <div
                 className={
-                    !isConnected || props.room === 'Admins'
-                        ? styles.input_not_allowed
-                        : styles.input
+                    !isConnected ? styles.input_not_allowed : styles.input
                 }
             >
                 <input
                     type='text'
                     id='box'
                     placeholder={messageInputText()}
-                    disabled={!isConnected || props.room === 'Admins'}
+                    disabled={!isConnected}
                     className={
-                        !isConnected || props.room === 'Admins'
+                        !isConnected
                             ? styles.input_text_not_allowed
                             : styles.input_text
                     }
@@ -307,7 +327,7 @@ export default function MessageInput(props: MessageInputProps) {
 
                 <BsEmojiSmile
                     className={
-                        isUserLoggedIn || props.room !== 'Admins'
+                        isUserLoggedIn
                             ? styles.svgButton
                             : styles.not_LoggedIn_svgButton
                     }
@@ -316,7 +336,7 @@ export default function MessageInput(props: MessageInputProps) {
                 {}
                 <div
                     className={
-                        isUserLoggedIn || props.room !== 'Admins'
+                        isUserLoggedIn
                             ? styles.send_message_button
                             : styles.not_LoggedIn_send_message_button
                     }
@@ -336,7 +356,7 @@ export default function MessageInput(props: MessageInputProps) {
                             strokeLinecap='round'
                             strokeLinejoin='round'
                             className={
-                                isUserLoggedIn || props.room !== 'Admins'
+                                isUserLoggedIn
                                     ? styles.svgButton
                                     : styles.not_LoggedIn_svgButton
                             }

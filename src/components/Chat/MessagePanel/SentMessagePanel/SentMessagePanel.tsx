@@ -131,23 +131,6 @@ function SentMessagePanel(props: SentMessageProps) {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                dropdownRef.current &&
-                !dropdownRef.current.contains(event.target as Node)
-            ) {
-                setIsMoreButtonPressed(false);
-            }
-        };
-
-        document.addEventListener('click', handleClickOutside);
-
-        return () => {
-            document.removeEventListener('click', handleClickOutside);
-        };
-    }, [setIsMoreButtonPressed]);
-
-    useEffect(() => {
         if (
             props.previousMessage &&
             props.message &&
