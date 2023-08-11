@@ -42,6 +42,7 @@ interface propsIF {
     isEmpty: boolean;
     isPositionInRange: boolean;
     handleAccountClick: () => void;
+    isAccountView: boolean;
 }
 
 export type RangeModalActionType = 'Harvest' | 'Remove';
@@ -57,6 +58,7 @@ export default function RangesMenu(props: propsIF) {
         rangeDetailsProps,
         position,
         isPositionInRange,
+        isAccountView,
     } = props;
 
     const {
@@ -109,6 +111,14 @@ export default function RangesMenu(props: propsIF) {
     const tradeData = useAppSelector((state) => state.tradeData);
     const rtkTokenA = tradeData.tokenA.address;
     const rtkTokenB = tradeData.tokenB.address;
+
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? sidebar.isOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
+        : sidebar.isOpen
+        ? useMediaQuery('(max-width: 1500px)')
+        : useMediaQuery('(max-width: 1250px)');
 
     const positionMatchesLoggedInUser =
         userMatchesConnectedAccount && isUserLoggedIn;
@@ -185,7 +195,7 @@ export default function RangesMenu(props: propsIF) {
                 });
                 handleCopyClick();
             }}
-            content='Copy Trade'
+            content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
         />
     ) : null;
 
