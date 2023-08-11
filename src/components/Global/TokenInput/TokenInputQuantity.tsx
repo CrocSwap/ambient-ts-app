@@ -159,7 +159,7 @@ function TokenInputQuantity(props: propsIF) {
     );
     const inputContent = (() => {
         switch (true) {
-            case !isPoolInitialized:
+            case !isPoolInitialized && fieldId !== 'exchangeBalance':
                 return poolNotInitializedContent;
             case disabledContent:
                 return disabledContent;
