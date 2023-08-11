@@ -55,9 +55,8 @@ function Ranges(props: propsIF) {
     );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
-    const receiptData = useAppSelector((state) => state.receiptData);
-    const pendingTransactions = receiptData.transactionsByType.filter(
-        (tx) => tx.txAction === 'New' && tx.txType === 'Range',
+    const { transactionsByType, pendingTransactions } = useAppSelector(
+        (state) => state.receiptData,
     );
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -408,15 +407,22 @@ function Ranges(props: propsIF) {
         <div>
             <ul ref={listRef}>
                 {pendingTransactions.length > 0 &&
-                    pendingTransactions.map((tx) => (
-                        <RowPlaceholder
-                            extraStyle={styles.row_container}
-                            key={tx.txHash}
-                            id={trimString(tx.txHash.toString(), 6, 4, '…')}
-                            showColumns={showColumns}
-                            showPair={showPair}
-                        />
-                    ))}
+                    transactionsByType
+                        .filter(
+                            (tx) =>
+                                tx.txAction === 'New' &&
+                                tx.txType === 'Range' &&
+                                pendingTransactions.includes(tx.txHash),
+                        )
+                        .map((tx) => (
+                            <RowPlaceholder
+                                extraStyle={styles.row_container}
+                                key={tx.txHash}
+                                id={trimString(tx.txHash.toString(), 6, 4, '…')}
+                                showColumns={showColumns}
+                                showPair={showPair}
+                            />
+                        ))}
                 {currentRowItemContent}
             </ul>
             {

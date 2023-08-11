@@ -58,9 +58,8 @@ function Orders(props: propsIF) {
     );
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const receiptData = useAppSelector((state) => state.receiptData);
-    const pendingTransactions = receiptData.transactionsByType.filter(
-        (tx) => tx.txAction === 'New' && tx.txType === 'Range',
+    const { transactionsByType, pendingTransactions } = useAppSelector(
+        (state) => state.receiptData,
     );
 
     const baseTokenAddress = tradeData.baseToken.address;
@@ -426,15 +425,22 @@ function Orders(props: propsIF) {
         <div onKeyDown={handleKeyDownViewOrder}>
             <ul ref={listRef}>
                 {pendingTransactions.length > 0 &&
-                    pendingTransactions.map((tx) => (
-                        <RowPlaceholder
-                            extraStyle={styles.row_container}
-                            key={tx.txHash}
-                            id={trimString(tx.txHash.toString(), 6, 4, '…')}
-                            showColumns={showColumns}
-                            showPair={showPair}
-                        />
-                    ))}
+                    transactionsByType
+                        .filter(
+                            (tx) =>
+                                tx.txAction === 'New' &&
+                                tx.txType === 'Limit' &&
+                                pendingTransactions.includes(tx.txHash),
+                        )
+                        .map((tx) => (
+                            <RowPlaceholder
+                                extraStyle={styles.row_container}
+                                key={tx.txHash}
+                                id={trimString(tx.txHash.toString(), 6, 4, '…')}
+                                showColumns={showColumns}
+                                showPair={showPair}
+                            />
+                        ))}
                 {currentRowItemContent}
             </ul>
             {
