@@ -59,6 +59,7 @@ function TransferCurrencySelector(props: propsIF) {
             disable={disable}
             token={selectedToken}
             setTokenModalOpen={setTokenModalOpen}
+            fieldId='exchangeBalance'
         />
     );
 }
