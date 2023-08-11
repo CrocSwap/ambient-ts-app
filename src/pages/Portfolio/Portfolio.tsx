@@ -348,7 +348,7 @@ function Portfolio(props: propsIF) {
             <div
                 className={
                     !userAccount
-                        ? ''
+                        ? styles.full_table
                         : fullLayoutActive
                         ? styles.full_layout_container
                         : styles.tabs_exchange_balance_container
