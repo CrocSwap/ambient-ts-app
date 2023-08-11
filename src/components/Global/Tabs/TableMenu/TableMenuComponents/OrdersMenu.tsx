@@ -114,6 +114,14 @@ export default function OrdersMenu(props: propsIF) {
         openActionModal();
     };
 
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1500px)')
+        : useMediaQuery('(max-width: 1250px)');
+
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
     const minView = useMediaQuery('(min-width: 720px)');
@@ -173,7 +181,7 @@ export default function OrdersMenu(props: propsIF) {
                 );
                 handleCopyOrder();
             }}
-            content='Copy Trade'
+            content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
         />
     ) : null;
     const detailsButton = (

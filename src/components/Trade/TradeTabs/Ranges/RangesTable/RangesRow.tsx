@@ -306,6 +306,7 @@ function RangesRow(props: propsIF) {
                         {...rangeMenuProps}
                         isEmpty={position.totalValueUSD === 0}
                         handleAccountClick={handleAccountClick}
+                        isAccountView={isAccountView}
                     />
                 </li>
             </ul>
