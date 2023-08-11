@@ -11,6 +11,7 @@ import {
     updateRangeWithButton,
     handleRangeSlider,
 } from './rangeWidthFunctions';
+import RangeSlider from '../../../Global/RangeSlider/RangeSlider';
 
 // interface for React functional component props
 interface RangeWidthPropsIF {
@@ -180,17 +181,10 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 {rangeWidthTooltip}
             </span>
             <div className={styles.range_width_input}>
-                <input
-                    size={28}
-                    aria-labelledby='input slider'
-                    aria-label='Input slider for range width'
-                    id='input-slider-range'
-                    min='1'
-                    max='100'
-                    step='1'
-                    defaultValue={rangeWidthPercentage}
-                    type='range'
+                <RangeSlider
                     className={styles.percentage_input}
+                    defaultValue={rangeWidthPercentage}
+                    id='input-slider-range'
                     onChange={(event) =>
                         handleRangeSlider(event, setRangeWidthPercentage)
                     }

@@ -45,7 +45,7 @@ interface propsIF {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
-    openTokenModal: () => void;
+    setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Withdraw(props: propsIF) {
@@ -57,7 +57,7 @@ export default function Withdraw(props: propsIF) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
-        openTokenModal,
+        setTokenModalOpen,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -338,7 +338,6 @@ export default function Withdraw(props: propsIF) {
                 getFormattedNumber({
                     value: gasPriceInDollarsNum,
                     isUSD: true,
-                    prefix: '$',
                 }),
             );
         }
@@ -352,13 +351,12 @@ export default function Withdraw(props: propsIF) {
             {toggleContent}
             {transferAddressOrNull}
             <WithdrawCurrencySelector
-                fieldId='exchange-balance-withdraw'
-                onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setWithdrawQty={setWithdrawQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 disable={isCurrencyFieldDisabled}
+                setTokenModalOpen={setTokenModalOpen}
             />
             <div className={styles.additional_info}>
                 <div

@@ -74,15 +74,19 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                     );
 
                     const isBaseTokenMoneynessGreaterOrEqual =
-                        getMoneynessRank(
-                            pool.base.address.toLowerCase() + '_' + chainId,
-                        ) -
-                            getMoneynessRank(
-                                pool.quote.address.toLowerCase() +
-                                    '_' +
-                                    chainId,
-                            ) >=
-                        0;
+                        pool.base.address && pool.quote.address
+                            ? getMoneynessRank(
+                                  pool.base.address.toLowerCase() +
+                                      '_' +
+                                      chainId,
+                              ) -
+                                  getMoneynessRank(
+                                      pool.quote.address.toLowerCase() +
+                                          '_' +
+                                          chainId,
+                                  ) >=
+                              0
+                            : false;
 
                     const shouldInvertDisplay =
                         !isBaseTokenMoneynessGreaterOrEqual;
@@ -237,8 +241,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     const poolLink = linkGenMarket.getFullURL({
         chain: chainId,
-        tokenA: quoteAddr,
-        tokenB: baseAddr,
+        tokenA: baseAddr,
+        tokenB: quoteAddr,
     });
 
     useEffect(() => {

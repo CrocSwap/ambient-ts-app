@@ -264,13 +264,11 @@ export const useProcessTransaction = (
     const usdValueString = getFormattedNumber({
         value: usdValueNum,
         isUSD: true,
-        prefix: '$',
     });
 
     const totalFlowUSD = getFormattedNumber({
         value: totalFlowAbsNum,
         isUSD: true,
-        prefix: '$',
     });
 
     // --------------------------------------------------------

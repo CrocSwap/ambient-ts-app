@@ -1,4 +1,3 @@
-import styles from '../SidebarTable.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -11,6 +10,13 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import {
+    SidebarPoolsListContainer,
+    SidebarPoolsListHeader,
+    SidebarPoolsListHeaderContainer,
+    SidebarPoolsListItemsContainer,
+    SidebarPoolsListViewMoreContainer,
+} from '../../../../styled/Sidebar';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];
@@ -71,13 +77,13 @@ export default function SidebarLimitOrders(props: propsIF) {
     };
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <div>Pool</div>
-                <div>Price</div>
-                <div>Value</div>
-            </header>
-            <div className={styles.content}>
+        <SidebarPoolsListContainer>
+            <SidebarPoolsListHeaderContainer>
+                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>Price</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>Value</SidebarPoolsListHeader>
+            </SidebarPoolsListHeaderContainer>
+            <SidebarPoolsListItemsContainer>
                 {limitOrderByUser &&
                     limitOrderByUser.map((order: LimitOrderIF) => (
                         <SidebarLimitOrdersCard
@@ -90,14 +96,13 @@ export default function SidebarLimitOrders(props: propsIF) {
                         />
                     ))}
                 {isUserConnected && (
-                    <div
-                        className={styles.view_more}
+                    <SidebarPoolsListViewMoreContainer
                         onClick={handleViewMoreClick}
                     >
                         View More
-                    </div>
+                    </SidebarPoolsListViewMoreContainer>
                 )}
-            </div>
-        </div>
+            </SidebarPoolsListItemsContainer>
+        </SidebarPoolsListContainer>
     );
 }

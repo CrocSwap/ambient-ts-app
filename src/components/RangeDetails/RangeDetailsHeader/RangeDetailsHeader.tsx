@@ -1,5 +1,5 @@
 import styles from './RangeDetailsHeader.module.css';
-import logo from '../../../assets/images/logos/ambient_logo.png';
+import logo from '../../../assets/images/logos/logo_mark.svg';
 import logoText from '../../../assets/images/logos/logo_text.png';
 
 import { FiCopy } from 'react-icons/fi';

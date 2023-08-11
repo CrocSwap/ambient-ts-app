@@ -128,8 +128,6 @@ function SelectedRange(props: propsIF) {
     return (
         <>
             <div className={styles.selected_range}>
-                {/* {switchButtons} */}
-                {<div />}
                 {!isAmbient ? selectedRangeDisplay : null}
                 <div style={{ padding: '0 1rem' }}>{extraInfoData}</div>
             </div>
