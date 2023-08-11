@@ -10,7 +10,6 @@ import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
@@ -66,9 +65,6 @@ function Transactions(props: propsIF) {
         tradeTableState,
         toggleTradeTable,
     } = useContext(TradeTableContext);
-    const {
-        sidebar: { isOpen: isSidebarOpen },
-    } = useContext(SidebarContext);
     const { setOutsideControl } = useContext(TradeTableContext);
     const { tokens } = useContext(TokenContext);
 
