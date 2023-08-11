@@ -25,8 +25,8 @@ import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import TransactionsRowPlaceholder from './TransactionsTable/TransactionsRowPlaceholder';
 import trimString from '../../../../utils/functions/trimString';
+import RowPlaceholder from '../../../Global/RowPlaceholder/RowPlaceholder';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -516,7 +516,8 @@ function Transactions(props: propsIF) {
             <ul ref={listRef} id='current_row_scroll'>
                 {pendingTransactions.length > 0 &&
                     pendingTransactions.map((tx) => (
-                        <TransactionsRowPlaceholder
+                        <RowPlaceholder
+                            extraStyle={styles.row_container}
                             key={tx.txHash}
                             id={trimString(tx.txHash.toString(), 6, 4, '…')}
                             showColumns={showColumns}

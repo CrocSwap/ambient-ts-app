@@ -19,8 +19,8 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
-import TransactionsRowPlaceholder from '../Transactions/TransactionsTable/TransactionsRowPlaceholder';
 import trimString from '../../../../utils/functions/trimString';
+import RowPlaceholder from '../../../Global/RowPlaceholder/RowPlaceholder';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -427,7 +427,8 @@ function Orders(props: propsIF) {
             <ul ref={listRef}>
                 {pendingTransactions.length > 0 &&
                     pendingTransactions.map((tx) => (
-                        <TransactionsRowPlaceholder
+                        <RowPlaceholder
+                            extraStyle={styles.row_container}
                             key={tx.txHash}
                             id={trimString(tx.txHash.toString(), 6, 4, '…')}
                             showColumns={showColumns}

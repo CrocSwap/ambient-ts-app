@@ -19,7 +19,7 @@ import Spinner from '../../../Global/Spinner/Spinner';
 import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import trimString from '../../../../utils/functions/trimString';
-import TransactionsRowPlaceholder from '../Transactions/TransactionsTable/TransactionsRowPlaceholder';
+import RowPlaceholder from '../../../Global/RowPlaceholder/RowPlaceholder';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -409,7 +409,8 @@ function Ranges(props: propsIF) {
             <ul ref={listRef}>
                 {pendingTransactions.length > 0 &&
                     pendingTransactions.map((tx) => (
-                        <TransactionsRowPlaceholder
+                        <RowPlaceholder
+                            extraStyle={styles.row_container}
                             key={tx.txHash}
                             id={trimString(tx.txHash.toString(), 6, 4, '…')}
                             showColumns={showColumns}

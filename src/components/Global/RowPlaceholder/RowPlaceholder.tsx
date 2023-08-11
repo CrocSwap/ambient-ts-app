@@ -1,29 +1,27 @@
 import { memo } from 'react';
-import styles from '../Transactions.module.css';
+import styles from './RowPlaceholder.module.css';
 
-interface propsIF {
+interface RowPlaceholderPropsIF {
     id: string;
     showPair: boolean;
     showColumns: boolean;
+    extraStyle: string;
 }
 
-const TransactionsRowPlaceholder = (props: propsIF) => {
-    const { id, showColumns, showPair } = props;
+const RowPlaceholder = (props: RowPlaceholderPropsIF) => {
+    const { id, showColumns, showPair, extraStyle } = props;
 
     const timeElement = <p className='base_color'>Now</p>;
 
     const idElement = (
-        <p className={`${styles.base_color} ${styles.mono_font}`}>{id}</p>
+        <p className={`${styles.base_color} ${styles.mono_font} ${styles.hover_style}`}>{id}</p>
     );
 
-    const walletElement = <p className={`${styles.gradient_text}`}>you</p>;
+    const walletElement = <p className={`owned_tx_contrast ${styles.hover_style} ${styles.id_style}`} >you</p>;
 
     return (
         <>
-            <ul
-                className={`${styles.row_container} ${styles.border_left}`}
-                id={id}
-            >
+            <ul className={`${extraStyle} ${styles.border_left}`} id={id}>
                 {showPair && <li>{timeElement}</li>}
                 <li>{idElement}</li>
                 {!showColumns && <li>{walletElement}</li>}
@@ -38,4 +36,4 @@ const TransactionsRowPlaceholder = (props: propsIF) => {
     );
 };
 
-export default memo(TransactionsRowPlaceholder);
+export default memo(RowPlaceholder);
