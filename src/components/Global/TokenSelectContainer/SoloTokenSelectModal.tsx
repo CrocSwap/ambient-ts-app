@@ -237,12 +237,16 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         onClose();
     };
 
+    const deviceHasKeyboard = 'ontouchstart' in document.documentElement;
+
     useEffect(() => {
+        if (deviceHasKeyboard) return;
+
         const input = document.getElementById(
             'token_select_input_field',
         ) as HTMLInputElement;
         if (input) input.focus();
-    }, []);
+    }, [deviceHasKeyboard]);
 
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
