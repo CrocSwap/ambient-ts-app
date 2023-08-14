@@ -18,7 +18,6 @@ import { correctStyleForData, xAxisTick } from './calculateXaxisTicks';
 import moment from 'moment';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { ChartContext } from '../../../../contexts/ChartContext';
 interface xAxisIF {
     scaleData: scaleData | undefined;
     lastCrDate: number | undefined;
@@ -45,6 +44,7 @@ interface xAxisIF {
     showLatestActive: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     zoomBase: any;
+    isChartZoom: boolean;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -69,6 +69,7 @@ function XAxisCanvas(props: xAxisIF) {
         render,
         showLatestActive,
         zoomBase,
+        isChartZoom,
     } = props;
 
     const d3Xaxis = useRef<HTMLInputElement | null>(null);
@@ -77,8 +78,6 @@ function XAxisCanvas(props: xAxisIF) {
     const [xAxis, setXaxis] = useState<any>();
     const [xAxisZoom, setXaxisZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
-
-    const { isChartZoom: isChartZoom } = useContext(ChartContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -483,7 +482,7 @@ function XAxisCanvas(props: xAxisIF) {
         diffHashSigScaleData(scaleData, 'x'),
         firstCandleData,
         lastCandleData,
-        // isChartZoom,
+        isChartZoom,
     ]);
 
     useEffect(() => {

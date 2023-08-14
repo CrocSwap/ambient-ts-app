@@ -1,12 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    memo,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-    useContext,
-} from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
@@ -21,7 +14,6 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
-import { ChartContext } from '../../../contexts/ChartContext';
 
 interface TvlData {
     tvlData: Array<CandleData>;
@@ -40,6 +32,7 @@ interface TvlData {
     isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
     zoomBase: any;
+    isChartZoom: boolean;
 }
 
 function TvlChart(props: TvlData) {
@@ -58,11 +51,11 @@ function TvlChart(props: TvlData) {
         isCrDataIndActive,
         xAxisActiveTooltip,
         zoomBase,
+        isChartZoom,
     } = props;
 
     // const tvlMainDiv = useRef(null);
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
-    const { isChartZoom: isChartZoom } = useContext(ChartContext);
 
     const d3CanvasArea = useRef(null);
     const d3CanvasCrosshair = useRef(null);
@@ -161,11 +154,7 @@ function TvlChart(props: TvlData) {
                 return zoom;
             });
         }
-    }, [
-        tvlData,
-        diffHashSigScaleData(scaleData, 'x'),
-        // isChartZoom
-    ]);
+    }, [tvlData, diffHashSigScaleData(scaleData, 'x'), isChartZoom]);
 
     useEffect(() => {
         if (tvlyScale !== undefined) {

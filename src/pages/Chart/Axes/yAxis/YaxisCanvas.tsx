@@ -1,11 +1,4 @@
-import {
-    useEffect,
-    useRef,
-    useState,
-    MouseEvent,
-    memo,
-    useContext,
-} from 'react';
+import { useEffect, useRef, useState, MouseEvent, memo } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -32,7 +25,6 @@ import {
     standardDeviation,
 } from '../../ChartUtils/chartUtils';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { ChartContext } from '../../../../contexts/ChartContext';
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
@@ -67,6 +59,7 @@ interface yAxisIF {
     yAxisWidth: string;
     simpleRangeWidth: number;
     poolPriceDisplay: number;
+    isChartZoom: boolean;
 }
 
 type yLabel = {
@@ -106,6 +99,7 @@ function YAxisCanvas(props: yAxisIF) {
         yAxisWidth,
         simpleRangeWidth,
         poolPriceDisplay,
+        isChartZoom,
     } = props;
 
     const d3Yaxis = useRef<HTMLInputElement | null>(null);
@@ -117,11 +111,9 @@ function YAxisCanvas(props: yAxisIF) {
 
     const [yAxisZoom, setYaxisZoom] =
         useState<d3.ZoomBehavior<Element, unknown>>();
-    const { isChartZoom: isChartZoom } = useContext(ChartContext);
 
     const [yAxisCanvasWidth, setYaxisCanvasWidth] = useState(70);
 
-    const [yTickValueLength, setYTickValueLength] = useState();
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const location = useLocation();
@@ -136,65 +128,53 @@ function YAxisCanvas(props: yAxisIF) {
         }
     }, [scaleData, location]);
 
-    // useEffect(() => {
-
-    //     if (yTickValueLength) {
-
-    //         let result = false;
-
-    //         let tempYTickValueLength = formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1
-    //         scaleData?.yScale.ticks().forEach((element: number) => {
-    //             if (formatPoolPriceAxis(element).length > 4) {
-    //                 result = true;
-
-    //                 tempYTickValueLength = yTickValueLength > formatPoolPriceAxis(element).length - 1
-    //                         ? yTickValueLength
-    //                         : formatPoolPriceAxis(element).length - 1;
-    //             }
-    //         });
-
-    //     }
-    //     if (result) {
-    //         tempYTickValueLength =
-    //     }
-
-    // }, [third])
-
-    // function changeyAxisWidth() {
-
-    //         if (yTickValueLength > 4 && yTickValueLength < 8) {
-    //             setYaxisWidth('6rem');
-    //             setYaxisCanvasWidth(70);
-    //         }
-    //         if (yTickValueLength >= 8) {
-    //             setYaxisWidth('7rem');
-    //             setYaxisCanvasWidth(85);
-    //         }
-    //         if (yTickValueLength >= 10) {
-    //             setYaxisWidth('8rem');
-    //             setYaxisCanvasWidth(100);
-    //         }
-    //         if (yTickValueLength >= 13) {
-    //             setYaxisWidth('9rem');
-    //             setYaxisCanvasWidth(117);
-    //         }
-    //         if (yTickValueLength >= 15) {
-    //             setYaxisWidth('10rem');
-    //             setYaxisCanvasWidth(134);
-    //         }
-    //         if (yTickValueLength >= 16) {
-    //             setYaxisCanvasWidth(142);
-    //         }
-    //         if (yTickValueLength >= 17) {
-    //             setYaxisCanvasWidth(147);
-    //         }
-    //         if (yTickValueLength >= 20) {
-    //             setYaxisWidth('11rem');
-    //             setYaxisCanvasWidth(152);
-    //         }
-
-    //     if (yTickValueLength <= 4) setYaxisWidth('5rem');
-    // }
+    function changeyAxisWidth() {
+        let yTickValueLength =
+            formatPoolPriceAxis(scaleData?.yScale.ticks()[0]).length - 1;
+        let result = false;
+        scaleData?.yScale.ticks().forEach((element: number) => {
+            if (formatPoolPriceAxis(element).length > 4) {
+                result = true;
+                yTickValueLength =
+                    yTickValueLength > formatPoolPriceAxis(element).length - 1
+                        ? yTickValueLength
+                        : formatPoolPriceAxis(element).length - 1;
+            }
+        });
+        if (result) {
+            if (yTickValueLength > 4 && yTickValueLength < 8) {
+                setYaxisWidth('6rem');
+                setYaxisCanvasWidth(70);
+            }
+            if (yTickValueLength >= 8) {
+                setYaxisWidth('7rem');
+                setYaxisCanvasWidth(85);
+            }
+            if (yTickValueLength >= 10) {
+                setYaxisWidth('8rem');
+                setYaxisCanvasWidth(100);
+            }
+            if (yTickValueLength >= 13) {
+                setYaxisWidth('9rem');
+                setYaxisCanvasWidth(117);
+            }
+            if (yTickValueLength >= 15) {
+                setYaxisWidth('10rem');
+                setYaxisCanvasWidth(134);
+            }
+            if (yTickValueLength >= 16) {
+                setYaxisCanvasWidth(142);
+            }
+            if (yTickValueLength >= 17) {
+                setYaxisCanvasWidth(147);
+            }
+            if (yTickValueLength >= 20) {
+                setYaxisWidth('11rem');
+                setYaxisCanvasWidth(152);
+            }
+        }
+        if (yTickValueLength <= 4) setYaxisWidth('5rem');
+    }
 
     const sameLocationRange = () => {
         if (scaleData) {
@@ -597,7 +577,7 @@ function YAxisCanvas(props: yAxisIF) {
                 );
             }
 
-            // changeyAxisWidth();
+            changeyAxisWidth();
         }
     };
 
@@ -703,13 +683,13 @@ function YAxisCanvas(props: yAxisIF) {
                                         newCenter - topDiff,
                                         newCenter + bottomDiff,
                                     ];
-                                    scaleData?.yScale.domain(domain);
+                                    await scaleData?.yScale.domain(domain);
                                 } else {
                                     const domain = [
                                         newCenter - bottomDiff,
                                         newCenter + topDiff,
                                     ];
-                                    scaleData?.yScale.domain(domain);
+                                    await scaleData?.yScale.domain(domain);
                                 }
                             } else if (event.sourceEvent.touches.length > 1) {
                                 const touch1 = event.sourceEvent.touches[0];
@@ -817,7 +797,7 @@ function YAxisCanvas(props: yAxisIF) {
     }, [
         diffHashSigScaleData(scaleData, 'y'),
         liquidityData?.liqBidData,
-        // isChartZoom,
+        isChartZoom,
     ]);
 
     useEffect(() => {

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { scaleData } from './chartUtils';
 import * as d3 from 'd3';
 import { candleDomain } from '../../../utils/state/tradeDataSlice';
@@ -168,12 +168,6 @@ export class Zoom {
         }
     }
 
-    public render() {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const nd = d3.select('#d3fc_group').node() as any;
-        if (nd) nd.requestRedraw();
-    }
-
     private wheelWithPressAltKey(
         deltaX: number,
         scaleData: scaleData,
@@ -191,22 +185,28 @@ export class Zoom {
         }
 
         scaleData?.xScale.domain([firstTime - deltaX, lastTime - deltaX]);
-        // this.render();
     }
 
     public getNewCandleDataRight(scaleData: scaleData, lastCandleTime: number) {
         let lastDomainDate =
             scaleData?.xScale.domain()[1] + this.period * 1000 * 200;
         const nowDate = Date.now();
+        const snapDiff = nowDate % (this.period * 1000);
+
+        const snappedTime = nowDate + (this.period * 1000 - snapDiff);
         if (lastDomainDate > nowDate) {
             lastDomainDate = nowDate;
         }
-        const candleDomain = {
-            lastCandleDate: lastDomainDate,
-            domainBoundry: lastCandleTime,
-        };
 
-        // this.setCandleDomains(candleDomain);
+        // update candle domainif dont have last data
+        if (lastCandleTime < snappedTime) {
+            const candleDomain = {
+                lastCandleDate: lastDomainDate,
+                domainBoundry: lastCandleTime,
+            };
+
+            this.setCandleDomains(candleDomain);
+        }
     }
 
     public getNewCandleDataLeft(newBoundary: number, firstCandleTime: number) {
@@ -225,7 +225,7 @@ export class Zoom {
                 domainBoundry: finalData,
             };
 
-            // this.setCandleDomains(candleDomain);
+            this.setCandleDomains(candleDomain);
         }
     }
 
@@ -407,7 +407,7 @@ export class Zoom {
             mouseX,
             scaleData?.xScale.invert(previousDeltaTouchLocation),
         );
-        // scaleData?.xScale.domain(domain);
+        scaleData?.xScale.domain(domain);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -423,7 +423,6 @@ export class Zoom {
             Math.min(domainY[1], domainY[0]) + deltaY,
             Math.max(domainY[1], domainY[0]) + deltaY,
         ];
-        // console.log('handlePanningY');
 
         return domain;
     }
