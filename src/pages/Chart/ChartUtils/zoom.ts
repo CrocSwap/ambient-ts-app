@@ -352,7 +352,7 @@ export class Zoom {
         const previousTouchPageX = previousTouch.pageX;
         const movement = currentPageX - previousTouchPageX;
         // calculate panning speed based on bandwidth
-        const deltaX = linearX(movement) * (1 + Math.sqrt(bandwidth));
+        const deltaX = linearX(movement) * Math.sqrt(bandwidth);
         const lastTime = domainX[1];
 
         const firstTime = domainX[0];
