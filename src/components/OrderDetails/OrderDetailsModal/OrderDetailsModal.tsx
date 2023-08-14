@@ -67,6 +67,7 @@ export default function OrderDetailsModal(props: propsIF) {
         baseTokenLogo,
         quoteTokenLogo,
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         posHash,
@@ -110,9 +111,7 @@ export default function OrderDetailsModal(props: propsIF) {
         quoteDisplayFrontend.replace(/,/, ''),
     );
 
-    const isFillStarted = isBid
-        ? quoteDisplayFrontendNum !== 0
-        : baseDisplayFrontendNum !== 0;
+    const isFillStarted = isLimitOrderPartiallyFilled || isOrderFilled;
 
     const approximateSellQty = isBid
         ? isDenomBase

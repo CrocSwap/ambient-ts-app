@@ -59,37 +59,44 @@ export default function PriceInfo(props: propsIF) {
 
     const isOnTradeRoute = pathname.includes('trade');
 
-    const buyContent = (
-        <div className={styles.buy_content}>
-            <p>Buy:</p>
+    const isLimitOrderPartiallyFilled = isFillStarted && !isOrderFilled;
+
+    const sellContent = (
+        <div className={styles.sell_content}>
+            <p>{isLimitOrderPartiallyFilled ? 'Sell (remaining):' : 'Sell:'}</p>
             <p>
-                {isOrderFilled
-                    ? isBid
-                        ? quoteDisplayFrontend
-                        : baseDisplayFrontend
-                    : approximateBuyQtyTruncated}
+                {isBid
+                    ? isOrderFilled
+                        ? approximateSellQtyTruncated + ' ' + baseTokenSymbol
+                        : baseDisplayFrontend + ' ' + baseTokenSymbol
+                    : isOrderFilled
+                    ? approximateSellQtyTruncated + ' ' + quoteTokenSymbol
+                    : quoteDisplayFrontend + ' ' + quoteTokenSymbol}
 
                 <TokenIcon
-                    src={isBid ? quoteTokenLogo : baseTokenLogo}
-                    alt={isBid ? quoteTokenSymbol : baseTokenSymbol}
+                    src={!isBid ? quoteTokenLogo : baseTokenLogo}
+                    alt={!isBid ? quoteTokenSymbol : baseTokenSymbol}
                     size='xl'
                 />
             </p>
         </div>
     );
-    const sellContent = (
-        <div className={styles.sell_content}>
-            <p>Sell:</p>
+
+    const buyContent = (
+        <div className={styles.buy_content}>
+            <p>{isLimitOrderPartiallyFilled ? 'Buy (completed):' : 'Buy:'}</p>
             <p>
-                {isFillStarted
-                    ? approximateSellQtyTruncated
-                    : isBid
-                    ? baseDisplayFrontend
-                    : quoteDisplayFrontend}
+                {isBid
+                    ? isLimitOrderPartiallyFilled
+                        ? quoteDisplayFrontend + ' ' + quoteTokenSymbol
+                        : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
+                    : isOrderFilled
+                    ? baseDisplayFrontend + ' ' + baseTokenSymbol
+                    : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol}
 
                 <TokenIcon
-                    src={!isBid ? quoteTokenLogo : baseTokenLogo}
-                    alt={!isBid ? quoteTokenSymbol : baseTokenSymbol}
+                    src={isBid ? quoteTokenLogo : baseTokenLogo}
+                    alt={isBid ? quoteTokenSymbol : baseTokenSymbol}
                     size='xl'
                 />
             </p>
@@ -120,7 +127,11 @@ export default function PriceInfo(props: propsIF) {
     const orderType = (
         <div className={styles.order_type}>
             <p>Order Type:</p>
-            <p>Limit</p>
+            <p>
+                {isLimitOrderPartiallyFilled
+                    ? 'Partially Filled Limit'
+                    : 'Limit'}
+            </p>
         </div>
     );
     const totalValue = (

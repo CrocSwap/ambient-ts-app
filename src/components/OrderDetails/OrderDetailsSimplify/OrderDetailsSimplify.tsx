@@ -53,14 +53,10 @@ export default function OrderDetailsSimplify(
         baseDisplayFrontend,
         quoteDisplayFrontend,
         isOrderFilled,
-        // quoteTokenLogo,
-        // baseTokenLogo,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenName,
         quoteTokenName,
-        isFillStarted,
-        // truncatedDisplayPrice,
         isDenomBase,
         usdValue,
         limitOrder,
@@ -227,14 +223,23 @@ export default function OrderDetailsSimplify(
         {
             title: 'From Qty ',
             content: isBid
-                ? isFillStarted
+                ? isOrderFilled
                     ? approximateSellQtyTruncated + ' ' + baseTokenSymbol
                     : baseDisplayFrontend + ' ' + baseTokenSymbol
-                : isFillStarted
+                : isOrderFilled
                 ? approximateSellQtyTruncated + ' ' + quoteTokenSymbol
                 : quoteDisplayFrontend + ' ' + quoteTokenSymbol,
-            explanation:
-                'The quantity of the sell token (scaled by its decimals value)',
+            explanation: isLimitOrderPartiallyFilled
+                ? `The remaining quantity of ${
+                      isBid ? baseTokenSymbol : quoteTokenSymbol
+                  }`
+                : isOrderFilled
+                ? `The approximate input quantity of ${
+                      isBid ? baseTokenSymbol : quoteTokenSymbol
+                  }`
+                : `The input quantity of ${
+                      isBid ? baseTokenSymbol : quoteTokenSymbol
+                  }`,
         },
         {
             title: 'To Token ',
@@ -253,14 +258,23 @@ export default function OrderDetailsSimplify(
         {
             title: 'To Qty ',
             content: isBid
-                ? isOrderFilled
+                ? isLimitOrderPartiallyFilled
                     ? quoteDisplayFrontend + ' ' + quoteTokenSymbol
                     : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
                 : isOrderFilled
                 ? baseDisplayFrontend + ' ' + baseTokenSymbol
                 : approximateBuyQtyTruncated + ' ' + baseTokenSymbol,
-            explanation:
-                'The quantity of the to/buy token (scaled by its decimals value)',
+            explanation: isLimitOrderPartiallyFilled
+                ? `The currently filled quantity of ${
+                      isBid ? quoteTokenSymbol : baseTokenSymbol
+                  }`
+                : isOrderFilled
+                ? `The output quantity of ${
+                      isBid ? quoteTokenSymbol : baseTokenSymbol
+                  } `
+                : `The expected output quantity of ${
+                      isBid ? quoteTokenSymbol : baseTokenSymbol
+                  } `,
         },
 
         {
@@ -272,7 +286,7 @@ export default function OrderDetailsSimplify(
                 : isDenomBase
                 ? `1  ${baseTokenSymbol} = ${startPriceDisplay}  ${quoteTokenSymbol}`
                 : `1  ${quoteTokenSymbol} = ${startPriceDisplay}  ${baseTokenSymbol}`,
-            explanation: 'Price at which the limit order fill starts',
+            explanation: 'Price at which token conversion starts',
         },
         {
             title: 'Fill Middle ',
@@ -285,7 +299,7 @@ export default function OrderDetailsSimplify(
                 : `1  ${quoteTokenSymbol} = ${middlePriceDisplay}  ${baseTokenSymbol}`,
 
             explanation:
-                'The effective price - halfway between start and finish',
+                'The effective conversion price - halfway between start and finish',
         },
         {
             title: 'Fill End ',
@@ -297,7 +311,8 @@ export default function OrderDetailsSimplify(
                 ? `1  ${baseTokenSymbol} = ${truncatedDisplayPrice}  ${quoteTokenSymbol}`
                 : `1  ${quoteTokenSymbol} = ${truncatedDisplayPrice}  ${baseTokenSymbol}`,
 
-            explanation: 'Price at which limit order fill ends',
+            explanation:
+                'Price at which conversion ends and limit order can be claimed',
         },
         {
             title: 'Value ',
