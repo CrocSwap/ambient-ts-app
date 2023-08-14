@@ -117,12 +117,15 @@ export default function PoolCard(props: propsIF) {
                     </div>
                     <div className={styles.column}>
                         <div className={styles.row}></div>
+                        {/*
+                            // code is temporarily disabled pending
+                            // ... new back-end data handling logic
                         <div className={styles.row}>
                             <div className={styles.row_title}>24h APR</div>
                             <div className={styles.apr}>
                                 {poolApy === undefined ? '…' : `${poolApy}%`}
                             </div>
-                        </div>
+                        </div> */}
                         <div className={styles.row}>
                             <div className={styles.row_title}>Volume</div>
                             <div className={styles.vol}>
