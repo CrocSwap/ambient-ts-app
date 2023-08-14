@@ -306,8 +306,8 @@ export class Zoom {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         event: any,
         scaleData: scaleData,
-        lastCandleDate: number,
         firstCandleDate: number,
+        lastCandleDate: number,
     ) {
         const domainX = scaleData?.xScale.domain();
 

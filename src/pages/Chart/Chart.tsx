@@ -1068,7 +1068,7 @@ export default function Chart(props: propsIF) {
         tradeData.advancedMode,
         ranges,
         liquidityData?.liqBidData,
-        diffHashSigScaleData(scaleData),
+        diffHashSigScaleData(scaleData, 'y'),
     ]);
 
     // performs reverse token function when limit line position (sell /buy) changes
