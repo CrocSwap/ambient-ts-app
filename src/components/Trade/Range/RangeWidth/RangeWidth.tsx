@@ -32,6 +32,8 @@ function RangeWidth(props: RangeWidthPropsIF) {
     } = useContext(AppStateContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
+    const inputId = 'input-slider-range';
+
     const PercentageOptionContent = (
         <>
             <div className={styles.percentage_options}>
@@ -45,6 +47,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                         updateRangeWithButton(
                             (1 / 20) * 100,
                             setRangeWidthPercentage,
+                            inputId,
                         );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
@@ -62,6 +65,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                         updateRangeWithButton(
                             (1 / 10) * 100,
                             setRangeWidthPercentage,
+                            inputId,
                         );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
@@ -79,6 +83,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                         updateRangeWithButton(
                             (1 / 4) * 100,
                             setRangeWidthPercentage,
+                            inputId,
                         );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
@@ -96,6 +101,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                         updateRangeWithButton(
                             (1 / 2) * 100,
                             setRangeWidthPercentage,
+                            inputId,
                         );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
@@ -111,7 +117,11 @@ function RangeWidth(props: RangeWidthPropsIF) {
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
-                        updateRangeWithButton(100, setRangeWidthPercentage);
+                        updateRangeWithButton(
+                            100,
+                            setRangeWidthPercentage,
+                            inputId,
+                        );
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='use Ambient range width.'
