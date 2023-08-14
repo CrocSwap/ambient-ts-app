@@ -168,10 +168,10 @@ export default function OrderDetailsSimplify(
     );
 
     const status = isOrderFilled
-        ? 'Filled'
+        ? 'Fill Complete'
         : isLimitOrderPartiallyFilled
-        ? 'Partially Filled'
-        : 'Not Yet Filled';
+        ? 'Fill Partially Complete'
+        : 'Fill Not Yet Started';
 
     const infoContent = [
         {
@@ -203,7 +203,7 @@ export default function OrderDetailsSimplify(
         {
             title: 'Status ',
             content: status,
-            explanation: 'The current fill status of the order.',
+            explanation: 'The current fill status of the order',
         },
 
         {
