@@ -170,7 +170,25 @@ function SentMessagePanel(props: SentMessageProps) {
             }
         }
     }, [props.message, props.nextMessage, props.previousMessage]);
+
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target as Node)
+            ) {
+                setIsMoreButtonPressed(false);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [setIsMoreButtonPressed]);
 
     useEffect(() => {
         if (
@@ -548,6 +566,8 @@ function SentMessagePanel(props: SentMessageProps) {
                             setReplyMessageContent={
                                 props.setReplyMessageContent
                             }
+                            isMoreButtonPressed={isMoreButtonPressed}
+                            setIsMoreButtonPressed={setIsMoreButtonPressed}
                         />
                     </div>
                     <div>
@@ -558,15 +578,25 @@ function SentMessagePanel(props: SentMessageProps) {
                         ) : (
                             ''
                         )}
-                        {'repliedMessage' in props.message && (
-                            <IoReturnUpForwardSharp
-                                style={{
-                                    position: 'absolute',
-                                    top: '-0.3rem',
-                                    left: '0.6rem',
-                                }}
-                            />
-                        )}
+                        {'repliedMessage' in props.message &&
+                            (showAvatar ? (
+                                <IoReturnUpForwardSharp
+                                    style={{
+                                        position: 'absolute',
+                                        top: '-0.3rem',
+                                        left: '0.6rem',
+                                    }}
+                                />
+                            ) : (
+                                <IoReturnUpForwardSharp
+                                    style={{
+                                        position: 'absolute',
+                                        top: '-0.3rem',
+                                        left: '0.6rem',
+                                        transform: 'scaleY(-1)',
+                                    }}
+                                />
+                            ))}
 
                         {'repliedMessage' in props.message ? (
                             <div className={styles.replied_box}>
@@ -708,7 +738,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                     showAvatar={showAvatar}
                                 />
                                 {!isPosition && mentionedMessage()}
-                                {clickOptions ? (
+                                {isMoreButtonPressed ? (
                                     <Options
                                         setIsReplyButtonPressed={
                                             props.setIsReplyButtonPressed
@@ -723,13 +753,19 @@ function SentMessagePanel(props: SentMessageProps) {
                                         setReplyMessageContent={
                                             props.setReplyMessageContent
                                         }
+                                        isMoreButtonPressed={
+                                            isMoreButtonPressed
+                                        }
+                                        setIsMoreButtonPressed={
+                                            setIsMoreButtonPressed
+                                        }
                                     />
                                 ) : (
-                                    ''
+                                    <></>
                                 )}
                             </div>
 
-                            {props.moderator ? (
+                            {/* {props.moderator ? (
                                 <FiDelete
                                     color='red'
                                     onClick={() =>
@@ -739,7 +775,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                 />
                             ) : (
                                 ''
-                            )}
+                            )} */}
                             <div className={styles.reply_message}>
                                 <p className={styles.message_date}>
                                     {formatAMPM(props.message.createdAt)}
