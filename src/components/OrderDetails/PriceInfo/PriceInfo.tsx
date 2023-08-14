@@ -154,8 +154,12 @@ export default function PriceInfo(props: propsIF) {
                 {tokenPairDetails}
                 {orderType}
                 {totalValue}
-                {buyContent}
-                {sellContent}
+                {(isDenomBase && isBid) || (!isDenomBase && !isBid)
+                    ? sellContent
+                    : buyContent}
+                {(isDenomBase && isBid) || (!isDenomBase && !isBid)
+                    ? buyContent
+                    : sellContent}
                 {priceStatusContent}
             </div>
         </div>
