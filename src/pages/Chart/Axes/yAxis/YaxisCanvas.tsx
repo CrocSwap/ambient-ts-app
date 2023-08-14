@@ -28,14 +28,14 @@ import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber
 
 interface yAxisIF {
     scaleData: scaleData | undefined;
-    market: Array<lineValue>;
+    market: number;
     liqMode: string;
     liqTransitionPointforCurve: number;
     liqTransitionPointforDepth: number;
     lineSellColor: string;
     lineBuyColor: string;
     ranges: Array<lineValue>;
-    limit: Array<lineValue>;
+    limit: number;
     isAmbientOrAdvanced: boolean;
     checkLimitOrder: boolean;
     sellOrderStyle: string;
@@ -227,12 +227,11 @@ function YAxisCanvas(props: yAxisIF) {
     const sameLocationLimit = () => {
         if (scaleData) {
             const resultData =
-                scaleData?.yScale(limit[0].value) -
-                scaleData?.yScale(market[0].value);
+                scaleData?.yScale(limit) - scaleData?.yScale(market);
             const resultLocationData = resultData < 0 ? -20 : 20;
             const isSameLocation = Math.abs(resultData) < 20;
             const sameLocationData =
-                scaleData?.yScale(market[0].value) + resultLocationData;
+                scaleData?.yScale(market) + resultLocationData;
             return {
                 isSameLocation: isSameLocation,
                 sameLocationData: sameLocationData,
@@ -339,18 +338,16 @@ function YAxisCanvas(props: yAxisIF) {
             });
 
             if (market) {
-                const isScientificMarketTick = market[0].value
-                    .toString()
-                    .includes('e');
+                const isScientificMarketTick = market.toString().includes('e');
 
                 let marketSubString = undefined;
 
                 let marketTick = getFormattedNumber({
-                    value: market[0].value,
+                    value: market,
                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                 }).replace(',', '');
                 if (isScientificMarketTick) {
-                    const splitNumber = market[0].value.toString().split('e');
+                    const splitNumber = market.toString().split('e');
                     marketSubString =
                         Math.abs(Number(splitNumber[1])) -
                         (splitNumber.includes('.') ? 2 : 1);
@@ -361,7 +358,7 @@ function YAxisCanvas(props: yAxisIF) {
 
                 createRectLabel(
                     context,
-                    yScale(market[0].value),
+                    yScale(market),
                     X,
                     'white',
                     'black',
@@ -476,26 +473,24 @@ function YAxisCanvas(props: yAxisIF) {
                 const { isSameLocation, sameLocationData } =
                     sameLocationLimit();
 
-                const isScientificLimitTick = limit[0].value
-                    .toString()
-                    .includes('e');
+                const isScientificLimitTick = limit.toString().includes('e');
 
                 let limitTick = getFormattedNumber({
-                    value: limit[0].value,
+                    value: limit,
                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                 }).replace(',', '');
 
                 let limitSubString = undefined;
 
                 if (isScientificLimitTick) {
-                    const splitNumber = limit[0].value.toString().split('e');
+                    const splitNumber = limit.toString().split('e');
 
                     limitSubString =
                         Math.abs(Number(splitNumber[1])) -
                         (splitNumber.includes('.') ? 2 : 1);
 
                     const scientificValue = getFormattedNumber({
-                        value: limit[0].value,
+                        value: limit,
                         abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                     });
 
@@ -506,9 +501,7 @@ function YAxisCanvas(props: yAxisIF) {
                 if (checkLimitOrder) {
                     createRectLabel(
                         context,
-                        isSameLocation
-                            ? sameLocationData
-                            : yScale(limit[0].value),
+                        isSameLocation ? sameLocationData : yScale(limit),
                         X,
                         sellOrderStyle === 'order_sell'
                             ? lineSellColor
@@ -522,9 +515,7 @@ function YAxisCanvas(props: yAxisIF) {
                 } else {
                     createRectLabel(
                         context,
-                        isSameLocation
-                            ? sameLocationData
-                            : yScale(limit[0].value),
+                        isSameLocation ? sameLocationData : yScale(limit),
                         X,
                         '#7772FE',
                         'white',
@@ -535,7 +526,7 @@ function YAxisCanvas(props: yAxisIF) {
                     );
                 }
                 addYaxisLabel(
-                    isSameLocation ? sameLocationData : yScale(limit[0].value),
+                    isSameLocation ? sameLocationData : yScale(limit),
                 );
             }
 

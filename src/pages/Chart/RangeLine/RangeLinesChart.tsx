@@ -219,7 +219,7 @@ export default function RangeLinesChart(props: propsIF) {
                             horizontalBand([
                                 [ranges[0].value, ranges[1].value],
                             ]);
-                            triangle(ranges);
+                            triangle([ranges[0].value, ranges[1].value]);
                         }
                     })
                     .on('measure', () => {
@@ -242,7 +242,7 @@ export default function RangeLinesChart(props: propsIF) {
             let color = 'rgba(235, 235, 255)';
 
             triangle.decorate((context: any, datum: any) => {
-                color = datum.value > passValue ? lineSellColor : lineBuyColor;
+                color = datum > passValue ? lineSellColor : lineBuyColor;
                 const rotateDegree = 90;
                 context.rotate((rotateDegree * Math.PI) / 180);
                 context.strokeStyle = color;

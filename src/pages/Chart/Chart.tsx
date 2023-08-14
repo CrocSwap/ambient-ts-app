@@ -235,19 +235,9 @@ export default function Chart(props: propsIF) {
         },
     ]);
 
-    const [limit, setLimit] = useState<lineValue[]>([
-        {
-            name: 'Limit',
-            value: 0,
-        },
-    ]);
+    const [limit, setLimit] = useState<number>(0);
 
-    const [market, setMarket] = useState<lineValue[]>([
-        {
-            name: 'Market Value',
-            value: 0,
-        },
-    ]);
+    const [market, setMarket] = useState<number>(0);
 
     const [boundaries, setBoundaries] = useState<boolean>();
 
@@ -548,7 +538,7 @@ export default function Chart(props: propsIF) {
                 chartMousemoveEvent.clientY - mainCanvasBoundingClientRect?.top;
 
             const mousePlacement = scaleData?.yScale.invert(offsetY);
-            const limitLineValue = limit[0].value;
+            const limitLineValue = limit;
 
             return (
                 mousePlacement < limitLineValue + lineBuffer &&
@@ -971,13 +961,7 @@ export default function Chart(props: propsIF) {
                 : poolPriceWithoutDenom;
 
             setMarket(() => {
-                return [
-                    {
-                        name: 'Current Market Price',
-                        value:
-                            lastCandlePrice !== undefined ? lastCandlePrice : 0,
-                    },
-                ];
+                return lastCandlePrice !== undefined ? lastCandlePrice : 0;
             });
         }
     }, [poolPriceWithoutDenom, denomInBase]);
@@ -1607,7 +1591,7 @@ export default function Chart(props: propsIF) {
 
                     d3.select('#y-axis-canvas').style('cursor', 'none');
 
-                    oldLimitValue = limit[0].value;
+                    oldLimitValue = limit;
                 })
                 .on('drag', function (event) {
                     if (!cancelDrag) {
@@ -1665,12 +1649,7 @@ export default function Chart(props: propsIF) {
                                         )
                                     ) {
                                         setLimit(() => {
-                                            return [
-                                                {
-                                                    name: 'Limit',
-                                                    value: newLimitValue,
-                                                },
-                                            ];
+                                            return newLimitValue;
                                         });
                                     }
                                 });
@@ -1679,12 +1658,7 @@ export default function Chart(props: propsIF) {
                     } else {
                         if (oldLimitValue !== undefined) {
                             setLimit(() => {
-                                return [
-                                    {
-                                        name: 'Limit',
-                                        value: oldLimitValue as number,
-                                    },
-                                ];
+                                return oldLimitValue as number;
                             });
                         }
                     }
@@ -1709,12 +1683,7 @@ export default function Chart(props: propsIF) {
                     } else {
                         if (oldLimitValue !== undefined) {
                             setLimit(() => {
-                                return [
-                                    {
-                                        name: 'Limit',
-                                        value: oldLimitValue as number,
-                                    },
-                                ];
+                                return oldLimitValue as number;
                             });
                         }
                     }
@@ -1811,7 +1780,7 @@ export default function Chart(props: propsIF) {
         if (scaleData !== undefined) {
             const marketLine = d3fc
                 .annotationCanvasLine()
-                .value((d: lineValue) => d.value)
+                .value((d: number) => d)
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale);
 
@@ -1862,8 +1831,6 @@ export default function Chart(props: propsIF) {
             const minDomain = snappedTime - 100 * 1000 * period;
             const maxDomain = snappedTime + 39 * 1000 * period;
 
-            // console.log('domain changed 2');
-
             scaleData?.xScale.domain([minDomain, maxDomain]);
 
             changeScale();
@@ -1890,8 +1857,6 @@ export default function Chart(props: propsIF) {
             const centerX = unparsedCandleData[latestCandleIndex].time * 1000;
 
             if (rescale) {
-                // console.log('domain changed 3');
-
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
                     centerX + diff * 0.2,
@@ -1919,8 +1884,6 @@ export default function Chart(props: propsIF) {
                 const domain = [centerY - diffY / 2, centerY + diffY / 2];
 
                 setYaxisDomain(domain[0], domain[1]);
-
-                // console.log('domain changed 4');
 
                 scaleData?.xScale.domain([
                     centerX - diff * 0.8,
@@ -2290,7 +2253,7 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     ctx.setLineDash([5, 3]);
-                    marketLine(market);
+                    marketLine([market]);
                 })
                 .on('measure', (event: CustomEvent) => {
                     scaleData?.xScale.range([0, event.detail.width]);
@@ -2336,6 +2299,8 @@ export default function Chart(props: propsIF) {
                         : d.maxPriceExclMEVDecimalCorrected,
                 );
 
+                const marketPrice = market;
+
                 if (minYBoundary && maxYBoundary) {
                     const diffBoundray = Math.abs(maxYBoundary - minYBoundary);
                     const buffer = diffBoundray
@@ -2356,9 +2321,19 @@ export default function Chart(props: propsIF) {
                                 (target: lineValue) => target.name === 'Max',
                             )[0].value;
 
-                            const low = Math.min(min, max, minYBoundary);
+                            const low = Math.min(
+                                min,
+                                max,
+                                minYBoundary,
+                                marketPrice,
+                            );
 
-                            const high = Math.max(min, max, maxYBoundary);
+                            const high = Math.max(
+                                min,
+                                max,
+                                maxYBoundary,
+                                marketPrice,
+                            );
 
                             const bufferForRange = Math.abs(
                                 (low - high) /
@@ -2405,17 +2380,19 @@ export default function Chart(props: propsIF) {
                             scaleData?.yScale.domain(domain);
                         }
                     } else if (location.pathname.includes('/limit')) {
-                        const value = limit[0].value;
+                        const value = limit;
                         const low = Math.min(
                             minYBoundary,
                             value,
                             minTickForLimit,
+                            marketPrice,
                         );
 
                         const high = Math.max(
                             maxYBoundary,
                             value,
                             maxTickForLimit,
+                            marketPrice,
                         );
 
                         const bufferForLimit = Math.abs((low - high) / 6);
@@ -2429,8 +2406,10 @@ export default function Chart(props: propsIF) {
                         }
                     } else {
                         const domain = [
-                            Math.min(minYBoundary, maxYBoundary) - buffer,
-                            Math.max(minYBoundary, maxYBoundary) + buffer / 2,
+                            Math.min(minYBoundary, maxYBoundary, marketPrice) -
+                                buffer,
+                            Math.max(minYBoundary, maxYBoundary, marketPrice) +
+                                buffer / 2,
                         ];
 
                         setYaxisDomain(domain[0], domain[1]);
@@ -2567,7 +2546,7 @@ export default function Chart(props: propsIF) {
                             newLimitValue <= noGoZoneMax
                         )
                     ) {
-                        onBlurLimitRate(limit[0].value, newLimitValue);
+                        onBlurLimitRate(limit, newLimitValue);
                     }
                 }
             };
@@ -3075,12 +3054,7 @@ export default function Chart(props: propsIF) {
             if (!tickDispPrice) {
                 reverseTokenForChart(limitPreviousData, newLimitValue);
                 setLimit(() => {
-                    return [
-                        {
-                            name: 'Limit',
-                            value: newLimitValue,
-                        },
-                    ];
+                    return newLimitValue;
                 });
             } else {
                 tickDispPrice.then((tp) => {
@@ -3089,12 +3063,7 @@ export default function Chart(props: propsIF) {
                     newLimitValue = displayPriceWithDenom;
                     reverseTokenForChart(limitPreviousData, newLimitValue);
                     setLimit(() => {
-                        return [
-                            {
-                                name: 'Limit',
-                                value: newLimitValue,
-                            },
-                        ];
+                        return newLimitValue;
                     });
                 });
             }
