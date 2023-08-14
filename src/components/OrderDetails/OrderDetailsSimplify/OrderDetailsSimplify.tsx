@@ -90,6 +90,7 @@ export default function OrderDetailsSimplify(
         truncatedDisplayPriceDenomByMoneyness,
         startPriceDisplayDenomByMoneyness,
         middlePriceDisplayDenomByMoneyness,
+        isLimitOrderPartiallyFilled,
         isBaseTokenMoneynessGreaterOrEqual,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
@@ -170,7 +171,11 @@ export default function OrderDetailsSimplify(
         'MM/DD/YYYY HH:mm',
     );
 
-    const status = isOrderFilled ? 'Filled' : 'Not Filled';
+    const status = isOrderFilled
+        ? 'Filled'
+        : isLimitOrderPartiallyFilled
+        ? 'Partially Filled'
+        : 'Not Yet Filled';
 
     const infoContent = [
         {

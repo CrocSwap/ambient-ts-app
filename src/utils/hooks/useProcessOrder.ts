@@ -168,6 +168,8 @@ export const useProcessOrder = (
             ? limitOrder.positionLiqQuoteDecimalCorrected
             : limitOrder.claimableLiqQuoteDecimalCorrected;
 
+    const isLimitOrderPartiallyFilled = liqBaseNum !== 0 && liqQuoteNum !== 0;
+
     const baseQty = getFormattedNumber({
         value: liqBaseNum,
         zeroDisplay: '0',
@@ -426,6 +428,7 @@ export const useProcessOrder = (
 
         // open order status
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
 
         // price
         startPriceDisplay,
