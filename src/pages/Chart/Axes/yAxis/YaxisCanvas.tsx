@@ -576,7 +576,12 @@ function YAxisCanvas(props: yAxisIF) {
         if (!isChartZoom) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let previousTouch: any | undefined = undefined; // event
+            const canvas = d3
+                .select(d3Yaxis.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
+            const rectCanvas = canvas.getBoundingClientRect();
             let firstLocation: number;
             let newCenter: number;
             let previousDeltaTouchYaxis: number;
@@ -585,7 +590,7 @@ function YAxisCanvas(props: yAxisIF) {
                 if (event.sourceEvent.type.includes('touch') && scaleData) {
                     // mobile
                     previousTouch = event.sourceEvent.changedTouches[0];
-                    firstLocation = previousTouch.pageY;
+                    firstLocation = previousTouch.pageY - rectCanvas.top;
                     newCenter = scaleData?.yScale.invert(firstLocation);
 
                     if (event.sourceEvent.touches.length > 1) {
@@ -674,13 +679,13 @@ function YAxisCanvas(props: yAxisIF) {
                                         newCenter - topDiff,
                                         newCenter + bottomDiff,
                                     ];
-                                    await scaleData?.yScale.domain(domain);
+                                    scaleData?.yScale.domain(domain);
                                 } else {
                                     const domain = [
                                         newCenter - bottomDiff,
                                         newCenter + topDiff,
                                     ];
-                                    await scaleData?.yScale.domain(domain);
+                                    scaleData?.yScale.domain(domain);
                                 }
                             } else if (event.sourceEvent.touches.length > 1) {
                                 const touch1 = event.sourceEvent.touches[0];
