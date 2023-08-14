@@ -27,6 +27,11 @@ import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
+import { useLocation } from 'react-router-dom';
+import {
+    setLocalTokenA,
+    setLocalTokenB,
+} from '../../../utils/state/localPairDataSlice';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -73,6 +78,10 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const linkGenAny: linkGenMethodsIF = useLinkGen();
 
     const provider = useProvider();
+    const location = useLocation();
+    const currentLocation = location.pathname;
+
+    const isLocalPair = currentLocation.includes('testpage');
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
@@ -82,6 +91,19 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         // dispatch token data object to RTK
         if (isSingleToken) {
             dispatch(setSoloToken(tkn));
+        }
+
+        if (isLocalPair) {
+            if (tokenAorB === 'A') {
+                console.log('token a', console.log(tkn));
+                dispatch(setLocalTokenA(tkn));
+            }
+            if (tokenAorB === 'B') {
+                console.log('token b', console.log(tkn));
+                dispatch(setLocalTokenB(tkn));
+            }
+            onClose();
+            return;
         }
 
         // array of recent tokens from App.tsx (current session only)

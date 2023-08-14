@@ -1,14 +1,11 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
-import { useLocation } from 'react-router-dom';
-const location = useLocation();
-const currentLocation = location.pathname;
+import truncateDecimals from '../../utils/data/truncateDecimals';
 
 export function updateRangeWithButton(
     value: number,
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>,
 ) {
-    const inputSlider = document.getElementById('input-slider-range');
+    const inputSlider = document.getElementById('init-slider-range');
     const valueString = value.toString();
     if (inputSlider && valueString) {
         (inputSlider as HTMLInputElement).value = valueString;

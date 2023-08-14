@@ -35,6 +35,9 @@ import uriToHttp from '../../utils/functions/uriToHttp';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
+import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
+import { LocalPairDataIF } from '../../utils/state/localPairDataSlice';
+import TokenInputQuantity from '../../components/Global/TokenInput/TokenInputQuantity';
 
 // react functional component
 export default function InitPool() {
@@ -529,6 +532,109 @@ export default function InitPool() {
             flat={true}
         />
     );
+
+    // Newwwwww
+    const [tokenModalOpen, setTokenModalOpen] = useState(false);
+    const localPair: LocalPairDataIF = useAppSelector(
+        (state) => state.localPairData,
+    );
+    // const tokenA = localPair.tokens[0]
+    // const tokenB = localPair.tokens[1]
+
+    const simpleTokenSelect = (
+        <div className={styles.local_token_container}>
+            <p className={styles.label_title}>Select Tokens</p>
+            <LocalTokenSelect
+                tokenAorB={'A'}
+                token={tokenA}
+                setTokenModalOpen={setTokenModalOpen}
+            />
+            <LocalTokenSelect
+                tokenAorB={'B'}
+                token={tokenB}
+                setTokenModalOpen={setTokenModalOpen}
+            />
+        </div>
+    );
+
+    const initPriceContainer = (
+        <div className={styles.pool_price_container}>
+            <p className={styles.label_title}>Initial Price</p>
+            <section style={{ width: '100%' }}>
+                <input
+                    id='initial-pool-price-quantity'
+                    className={styles.currency_quantity}
+                    placeholder={placeholderText}
+                    type='string'
+                    onChange={handleInputChange}
+                    onBlur={handleDisplayUpdate}
+                    value={initialPriceForDOM}
+                    inputMode='decimal'
+                    autoComplete='off'
+                    autoCorrect='off'
+                    min='0'
+                    minLength={1}
+                    pattern={exponentialNumRegEx.source}
+                />
+            </section>
+        </div>
+    );
+
+    const collateralContent = (
+        <div className={styles.collateral_container}>
+            <p className={styles.label_title}>Collateral</p>
+            <TokenInputQuantity
+                tokenAorB={'A'}
+                value={'0'}
+                handleTokenInputEvent={() => console.log('yes')}
+                disable={false}
+                token={tokenA}
+                setTokenModalOpen={setTokenModalOpen}
+                fieldId='select'
+            />
+            <TokenInputQuantity
+                tokenAorB={'A'}
+                value={'0'}
+                handleTokenInputEvent={() => console.log('yes')}
+                disable={false}
+                token={tokenA}
+                setTokenModalOpen={setTokenModalOpen}
+                fieldId='select'
+            />
+        </div>
+    );
+
+    const newContent = (
+        <section className={styles.main}>
+            <div className={styles.outer_container}>
+                <div className={styles.gradient_container}>
+                    <div className={styles.main_container}>
+                        <header>
+                            <p />
+                            Initialize Pool
+                            <p />
+                        </header>
+
+                        <div className={styles.inner_container}>
+                            <div className={styles.left_container}>
+                                {simpleTokenSelect}
+                                {initPriceContainer}
+                                {collateralContent}
+                            </div>
+
+                            <div className={styles.right_container}>
+                                right side
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+
+    const yes = true;
+
+    if (yes) return newContent;
 
     return (
         <section className={styles.main}>

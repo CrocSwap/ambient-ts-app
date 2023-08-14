@@ -15,19 +15,18 @@
     justify-content: center;
 }
 
-.init_pool_container {
+/* .init_pool_container {
     margin-top: 64px;
     display: flex;
     flex-direction: column;
     border-radius: var(--border-radius);
-    /* gap: 1rem; */
+    
 }
 
 .top_content {
     display: flex;
     flex-direction: column;
     border-radius: var(--border-radius);
-    /* gap: 1rem; */
 }
 .top_content header {
     display: flex;
@@ -35,7 +34,6 @@
     justify-content: space-between;
     align-items: center;
     height: 41px;
-    /* gap: 4px; */
 }
 .top_content header h1 {
     font-size: var(--header2-size);
@@ -44,7 +42,6 @@
     color: var(--text1);
     text-transform: capitalize;
     text-align: center;
-    /* padding: 0.5rem; */
 }
 .top_content header p {
     display: flex;
@@ -146,9 +143,6 @@
 
 @media only screen and (min-width: 768px) {
     .top_content {
-        /* display: flex;
-        justify-content: center;
-        align-items: center; */
 
         background-color: var(--dark1);
     }
@@ -165,4 +159,103 @@
         width: 100%;
         height: 100%;
     }
+} */
+
+.gradient_container{
+    background: var(--title-gradient);
+    padding: 1px;
+    border-radius: var(--border-radius);
+}
+
+.main_container{
+    background: var(--dark1);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+}
+
+.main_container header{
+    height: 41px;
+
+display: flex;
+flex-direction: row;
+align-items: center;
+justify-content: space-between;
+
+font-size: var(--header1-size);
+line-height: var(--header1-lh);
+font-weight: 200;
+color: var(--text1);
+}
+.outer_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+}
+
+.left_container, .right_container{
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.local_token_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+}
+
+.label_title{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text2);
+    gap: 8px;
+}
+.pool_price_container, .collateral_container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.currency_quantity {
+    width: 100%;
+
+    font-weight: 300;
+    height: 31px;
+    padding: 4px 16px;
+
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--text1);
+    text-align: start;
+
+    border: none;
+    border-radius: var(--border-radius);
+    outline: 0;
+    background-color: var(--dark2);
+    background-clip: padding-box;
+
+    transition: border-color var(--animation-speed) ease-in-out,
+        box-shadow var(--animation-speed) ease-in-out;
+}
+
+.currency_quantity::placeholder {
+    color: var(--text3);
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 22px;
+}
+
+
+
+@media only screen and (min-width: 768px) {
+.inner_container{
+  
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   width: 772px;
+}
+
 }
