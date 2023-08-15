@@ -74,6 +74,9 @@ import { Zoom } from './ChartUtils/zoom';
 import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useDebounce from '../../App/hooks/useDebounce';
+import Toolbar from './Draw/Toolbar/Toolbar';
+import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
+import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -146,6 +149,7 @@ export default function Chart(props: propsIF) {
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
+    const { isDrawActive } = useContext(ChartContext);
 
     const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
@@ -3225,6 +3229,9 @@ export default function Chart(props: propsIF) {
                         ></d3fc-canvas>
 
                         <YAxisCanvas {...yAxisCanvasProps} />
+                        {isDrawActive && scaleData && (
+                            <DrawCanvas scaleData={scaleData} />
+                        )}
                     </div>
                     {showFeeRate && (
                         <>

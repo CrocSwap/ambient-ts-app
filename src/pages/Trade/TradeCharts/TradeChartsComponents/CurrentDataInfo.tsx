@@ -4,6 +4,7 @@ import { Dispatch, memo, SetStateAction } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import Toolbar from '../../../Chart/Draw/Toolbar/Toolbar';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
@@ -73,6 +74,10 @@ function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
             )}
 
             <div className={styles.chart_overlay_container}>
+                <div className={styles.settings_container}>
+                    <Toolbar />
+                </div>
+
                 {showLatest && (
                     <div className={styles.settings_container}>
                         <button

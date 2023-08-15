@@ -1,0 +1,18 @@
+.icon_grid {
+    display: flex;
+    gap: 20px;
+    margin: 0 auto;
+    margin-right: 10px;
+  }
+  
+  .icon_card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  
+  .label {
+    font-size: 14px;
+  }
+  
