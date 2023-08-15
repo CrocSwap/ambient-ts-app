@@ -119,7 +119,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                     !showPositionsOnlyToggle && styles.disable_right
                 }`}
             >
-                {/* <p>{isShowAllEnabled ? 'All ' + label : 'My ' + label}</p> */}
                 <p
                     onClick={() => {
                         unselectCandle();
