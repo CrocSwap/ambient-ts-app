@@ -126,7 +126,7 @@ export default function PriceInfo(props: propsIF) {
     const totalValue = (
         <div className={styles.order_type}>
             <p>Total Value:</p>
-            <p>${usdValue}</p>
+            <p>{usdValue}</p>
         </div>
     );
 

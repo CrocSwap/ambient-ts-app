@@ -1,11 +1,11 @@
 import styles from './TransactionDetailsHeader.module.css';
-import { Dispatch, SetStateAction, useContext } from 'react';
-import logo from '../../../../assets/images/logos/ambient_logo.png';
+import { Dispatch, SetStateAction } from 'react';
+import logo from '../../../../assets/images/logos/logo_mark.svg';
 import logoText from '../../../../assets/images/logos/logo_text.png';
 import { FiCopy } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import IconWithTooltip from '../../IconWithTooltip/IconWithTooltip';
-import { AppStateContext } from '../../../../contexts/AppStateContext';
+
 interface TransactionDetailsHeaderPropsIF {
     copyTransactionDetailsToClipboard: () => Promise<void>;
     showSettings: boolean;
@@ -13,7 +13,9 @@ interface TransactionDetailsHeaderPropsIF {
     showShareComponent: boolean;
     setShowShareComponent: Dispatch<SetStateAction<boolean>>;
     handleCopyAddress(): void;
+    onClose: () => void;
 }
+
 export default function TransactionDetailsHeader(
     props: TransactionDetailsHeaderPropsIF,
 ) {
@@ -22,11 +24,8 @@ export default function TransactionDetailsHeader(
         copyTransactionDetailsToClipboard,
         showShareComponent,
         setShowShareComponent,
+        onClose,
     } = props;
-
-    const {
-        globalModal: { close: onClose },
-    } = useContext(AppStateContext);
 
     const copyTxHashIconWithTooltip = (
         <IconWithTooltip

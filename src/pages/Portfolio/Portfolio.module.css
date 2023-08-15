@@ -130,9 +130,16 @@
         margin-left: 4px;
         gap: 1rem;
     }
+
+    .full_table{
+        display: grid;
+        flex: 1;
+    }
+
     .full_layout_container {
         display: grid;
-        grid-template-columns: auto 50px;
+        grid-template-columns: auto 36px;
+        column-gap: 16px;
 
         flex: 1;
     }

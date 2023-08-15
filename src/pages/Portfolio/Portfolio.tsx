@@ -14,7 +14,6 @@ import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { fetchEnsAddress } from '../../App/functions/fetchAddress';
 import { Navigate, useParams } from 'react-router-dom';
-import { useModal } from '../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { setResolvedAddressRedux } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
@@ -49,7 +48,7 @@ function Portfolio(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { tokens, setInput } = useContext(TokenContext);
+    const { tokens } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
 
@@ -116,10 +115,6 @@ function Portfolio(props: propsIF) {
             }
         })();
     }, [addressFromParams, isAddressEns, mainnetProvider]);
-
-    const modalCloseCustom = (): void => setInput('');
-
-    const [, openTokenModal] = useModal(modalCloseCustom);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -294,7 +289,6 @@ function Portfolio(props: propsIF) {
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,
-        openTokenModal: openTokenModal,
         fullLayoutToggle: fullLayerToggle,
         tokens: tokens,
     };
@@ -353,7 +347,9 @@ function Portfolio(props: propsIF) {
 
             <div
                 className={
-                    fullLayoutActive
+                    !userAccount
+                        ? styles.full_table
+                        : fullLayoutActive
                         ? styles.full_layout_container
                         : styles.tabs_exchange_balance_container
                 }

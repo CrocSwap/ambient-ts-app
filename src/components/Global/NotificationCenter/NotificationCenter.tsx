@@ -1,4 +1,3 @@
-import styles from './NotificationCenter.module.css';
 import { AnimateSharedLayout } from 'framer-motion';
 import { useEffect, useRef, useState, useMemo } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
@@ -53,7 +52,7 @@ const NotificationCenter = () => {
 
     return (
         <AnimateSharedLayout>
-            <div className={styles.container}>
+            <div>
                 <span ref={activityCenterRef}>
                     <ActivityIndicator
                         value={receiveReceiptHashes.length}

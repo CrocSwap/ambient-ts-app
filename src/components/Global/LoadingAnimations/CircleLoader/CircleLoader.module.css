@@ -11,9 +11,6 @@
 }
 
 .circle_completed {
-    border-radius: 50%;
-    /* position: absolute; */
-    box-sizing: border-box;
     top: 0;
     left: 0;
 
@@ -40,7 +37,7 @@
 }
 
 .circle_failed p {
-    font-weight: 200;
+    font-weight: 300;
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
