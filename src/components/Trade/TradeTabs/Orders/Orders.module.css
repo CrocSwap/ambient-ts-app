@@ -58,7 +58,6 @@
     align-items: center;
     flex-direction: column;
 
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
     margin: 0 auto;
 }
 
@@ -142,12 +141,8 @@
 .mono_font {
     font-family: var(--roboto);
 }
-.gradient_text {
-    background: var(--title-gradient);
-    font-family: var(--font-logo);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.primary_color {
+    color: var(--accent1);
 }
 .owned_tx_contrast {
     color: var(--accent2);
@@ -167,7 +162,6 @@
     padding: 10px;
     display: flex;
     justify-content: center;
-   
 }
 
 .view_more_button {

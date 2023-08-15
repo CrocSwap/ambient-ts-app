@@ -12,7 +12,6 @@ import {
     fetchCandleSeriesHybrid,
 } from '../App/functions/fetchCandleSeries';
 import useDebounce from '../App/hooks/useDebounce';
-import { translateMainnetForGraphcache } from '../utils/data/testTokenMap';
 import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
@@ -46,20 +45,14 @@ export const CandleContext = createContext<CandleContextIF>(
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
-        server: { isEnabled: isServerEnabled },
+        server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
     } = useContext(AppStateContext);
     const { chartSettings, isEnabled: isChartEnabled } =
         useContext(ChartContext);
     const { chainData, crocEnv } = useContext(CrocEnvContext);
     const {
-        baseToken: {
-            address: baseTokenAddress,
-            mainnetAddress: mainnetCanonBase,
-        },
-        quoteToken: {
-            address: quoteTokenAddress,
-            mainnetAddress: mainnetCanonQuote,
-        },
+        baseToken: { address: baseTokenAddress },
+        quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
@@ -114,23 +107,21 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         timeOfEndCandle,
     };
 
-    const {
-        baseToken: mainnetBaseTokenAddress,
-        quoteToken: mainnetQuoteTokenAddress,
-    } = translateMainnetForGraphcache(mainnetCanonBase, mainnetCanonQuote);
+    useEffect(() => {
+        setCandleData(undefined);
+    }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
-        isChartEnabled && fetchCandles();
+        isChartEnabled && isUserOnline && fetchCandles();
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
+        isUserOnline,
+        baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleTimeLocal,
     ]);
 
     useEffect(() => {
-        if (isChartEnabled && candleScale.isShowLatestCandle) {
+        if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
             const interval = setInterval(() => {
                 fetchCandles(true);
             }, 60000);
@@ -138,10 +129,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         }
     }, [
         isChartEnabled,
-        mainnetBaseTokenAddress,
-        mainnetQuoteTokenAddress,
+        isUserOnline,
+        baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
-        candleTimeLocal,
         candleScale.nCandles,
         candleScale.isShowLatestCandle,
     ]);
@@ -149,10 +139,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const fetchCandles = (bypassSpinner = false) => {
         if (
             isServerEnabled &&
+            isUserOnline &&
             baseTokenAddress &&
             quoteTokenAddress &&
-            mainnetBaseTokenAddress &&
-            mainnetQuoteTokenAddress &&
             candleTimeLocal &&
             crocEnv
         ) {
@@ -163,7 +152,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 ? Date.now() / 1000
                 : candleScale.lastCandleDate || 0;
             const nCandles =
-                candleScale?.nCandles > 3000 ? 3000 : candleScale?.nCandles;
+                candleScale?.nCandles > 2999 ? 2999 : candleScale?.nCandles;
 
             !bypassSpinner && setIsFetchingCandle(true);
             setTimeOfEndCandle(undefined);
@@ -179,15 +168,17 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 cachedFetchTokenPrice,
             ).then((candles) => {
                 setCandleData(candles);
-                setIsCandleDataNull(false);
 
                 const candleSeries = candles?.candles;
                 if (candleSeries && candleSeries.length > 0) {
-                    setIsFetchingCandle(false);
+                    setIsCandleDataNull(false);
+                } else {
+                    setIsCandleDataNull(true);
                 }
+                setIsFetchingCandle(false);
             });
         } else {
-            setIsCandleDataNull(true);
+            setIsFetchingCandle(true);
         }
     };
 

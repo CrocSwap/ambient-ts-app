@@ -1,14 +1,12 @@
 import styles from './PoolCard.module.css';
 import { Link } from 'react-router-dom';
-
-import { topPoolIF } from '../../../App/hooks/useTopPools';
-
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import { PoolIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
-    pool: topPoolIF;
+    pool: PoolIF;
 }
 
 export default function PoolCard(props: propsIF) {
@@ -72,12 +70,16 @@ export default function PoolCard(props: propsIF) {
                         <TokenIcon
                             size='2xl'
                             src={uriToHttp(
-                                shouldInvertDisplay
+                                shouldInvertDisplay === undefined
+                                    ? pool.base.logoURI
+                                    : shouldInvertDisplay
                                     ? pool.base.logoURI
                                     : pool.quote.logoURI,
                             )}
                             alt={
-                                shouldInvertDisplay
+                                shouldInvertDisplay === undefined
+                                    ? pool.base.symbol
+                                    : shouldInvertDisplay
                                     ? pool.base.symbol
                                     : pool.quote.symbol
                             }
@@ -85,19 +87,25 @@ export default function PoolCard(props: propsIF) {
                         <TokenIcon
                             size='2xl'
                             src={uriToHttp(
-                                shouldInvertDisplay
+                                shouldInvertDisplay === undefined
+                                    ? pool.quote.logoURI
+                                    : shouldInvertDisplay
                                     ? pool.quote.logoURI
                                     : pool.base.logoURI,
                             )}
                             alt={
-                                shouldInvertDisplay
+                                shouldInvertDisplay === undefined
+                                    ? pool.quote.symbol
+                                    : shouldInvertDisplay
                                     ? pool.quote.symbol
                                     : pool.base.symbol
                             }
                         />
                     </div>
                     <div className={styles.tokens_name}>
-                        {shouldInvertDisplay
+                        {shouldInvertDisplay === undefined
+                            ? `${pool.base.symbol} / ${pool.quote.symbol}`
+                            : shouldInvertDisplay
                             ? `${pool.base.symbol} / ${pool.quote.symbol}`
                             : `${pool.quote.symbol} / ${pool.base.symbol}`}
                     </div>
@@ -109,12 +117,15 @@ export default function PoolCard(props: propsIF) {
                     </div>
                     <div className={styles.column}>
                         <div className={styles.row}></div>
+                        {/*
+                            // code is temporarily disabled pending
+                            // ... new back-end data handling logic
                         <div className={styles.row}>
                             <div className={styles.row_title}>24h APR</div>
                             <div className={styles.apr}>
                                 {poolApy === undefined ? '…' : `${poolApy}%`}
                             </div>
-                        </div>
+                        </div> */}
                         <div className={styles.row}>
                             <div className={styles.row_title}>Volume</div>
                             <div className={styles.vol}>

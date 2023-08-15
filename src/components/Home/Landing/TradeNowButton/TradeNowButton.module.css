@@ -49,11 +49,7 @@
     font-size: 30px;
     line-height: 38px;
 
-    background: var(--title-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
+    color: var(--accent1) !important;
 }
 .nav_button_text {
     font-size: 20px;

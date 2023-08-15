@@ -7,6 +7,8 @@ import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import styles from './Stats.module.css';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { Fade } from 'react-reveal';
 
 interface StatCardProps {
     title: string;
@@ -98,8 +100,10 @@ export default function Stats() {
             value: totalFeesString ? totalFeesString : '…',
         },
     ];
-    return (
-        <div className={styles.container}>
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+
+    const mobileWrapper = (
+        <Fade up>
             <div
                 className={styles.title}
                 aria-label='Ambient Finance Stats'
@@ -112,6 +116,33 @@ export default function Stats() {
                     <StatCard key={idx} title={card.title} value={card.value} />
                 ))}
             </ul>
+        </Fade>
+    );
+
+    return (
+        <div className={styles.container}>
+            {showMobileVersion ? (
+                mobileWrapper
+            ) : (
+                <>
+                    <div
+                        className={styles.title}
+                        aria-label='Ambient Finance Stats'
+                        tabIndex={0}
+                    >
+                        Ambient Finance Stats
+                    </div>
+                    <ul className={styles.content}>
+                        {statCardData.map((card, idx) => (
+                            <StatCard
+                                key={idx}
+                                title={card.title}
+                                value={card.value}
+                            />
+                        ))}
+                    </ul>
+                </>
+            )}
         </div>
     );
 }

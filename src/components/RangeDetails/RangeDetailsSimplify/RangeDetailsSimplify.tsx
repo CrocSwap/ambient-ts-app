@@ -347,7 +347,6 @@ export default function RangeDetailsSimplify(
                     <p>{title}</p>
                     <TooltipComponent title={explanation} placement={'right'} />
                 </div>
-
                 <div>{content}</div>
             </div>
         );

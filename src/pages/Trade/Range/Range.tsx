@@ -1,91 +1,74 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// START: Import React and Dongles
-import { useState, useEffect, useMemo, useContext, memo } from 'react';
-import { motion } from 'framer-motion';
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
-
-// START: Import JSX Elements
-import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
-import RangeButton from '../../../components/Trade/Range/RangeButton/RangeButton';
-import RangeCurrencyConverter from '../../../components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter';
-import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
-import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
-// import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
-import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
-import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
-import AdvancedPriceInfo from '../../../components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo';
-import DividerDark from '../../../components/Global/DividerDark/DividerDark';
-import Modal from '../../../components/Global/Modal/Modal';
+import { motion } from 'framer-motion';
+import { useContext, useState, useEffect, useMemo, memo } from 'react';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Global/Button/Button';
-import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
+import { useModal } from '../../../components/Global/Modal/useModal';
+import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
+import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
-import { FiExternalLink } from 'react-icons/fi';
-// START: Import Local Files
-import styles from './Range.module.css';
-import {
-    getPinnedPriceValuesFromDisplayPrices,
-    getPinnedPriceValuesFromTicks,
-    roundDownTick,
-    roundUpTick,
-} from './rangeFunctions';
+import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
+import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
+import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
+import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
+import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
+import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
+import { IS_LOCAL_ENV } from '../../../constants';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { PoolContext } from '../../../contexts/PoolContext';
+import { RangeContext } from '../../../contexts/RangeContext';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { isStablePair } from '../../../utils/data/stablePairs';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
+import { diffHashSig } from '../../../utils/functions/diffHashSig';
+import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../utils/TransactionError';
-import truncateDecimals from '../../../utils/data/truncateDecimals';
-import { PositionIF } from '../../../utils/interfaces/exports';
-import { useModal } from '../../../components/Global/Modal/useModal';
-import {
-    setAdvancedHighTick,
-    setAdvancedLowTick,
-    setIsLinesSwitched,
-} from '../../../utils/state/tradeDataSlice';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import {
     addPendingTx,
-    addReceipt,
     addTransactionByType,
     removePendingTx,
+    addReceipt,
 } from '../../../utils/state/receiptDataSlice';
-import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
-import BypassConfirmRangeButton from '../../../components/Trade/Range/RangeButton/BypassConfirmRangeButton';
-import TutorialOverlay from '../../../components/Global/TutorialOverlay/TutorialOverlay';
 import {
-    rangeTutorialSteps,
-    rangeTutorialStepsAdvanced,
-} from '../../../utils/tutorial/Range';
-import { IS_LOCAL_ENV } from '../../../constants';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { diffHashSig } from '../../../utils/functions/diffHashSig';
-import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import { RangeContext } from '../../../contexts/RangeContext';
-import { PoolContext } from '../../../contexts/PoolContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { isStablePair } from '../../../utils/data/stablePairs';
-import { useTradeData } from '../../../App/hooks/useTradeData';
-import { getReceiptTxHashes } from '../../../App/functions/getReceiptTxHashes';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import OrderHeader from '../../../components/Trade/OrderHeader/OrderHeader';
+    setAdvancedLowTick,
+    setAdvancedHighTick,
+    setIsLinesSwitched,
+    setIsTokenAPrimaryRange,
+} from '../../../utils/state/tradeDataSlice';
+import {
+    TransactionError,
+    isTransactionReplacedError,
+    isTransactionFailedError,
+} from '../../../utils/TransactionError';
+import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
+import styles from './Range.module.css';
+import {
+    roundDownTick,
+    roundUpTick,
+    getPinnedPriceValuesFromTicks,
+    getPinnedPriceValuesFromDisplayPrices,
+} from './rangeFunctions';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+
+const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
+const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
 function Range() {
     const {
-        tutorial: { isActive: isTutorialActive },
-        wagmiModal: { open: openWagmiModal },
-    } = useContext(AppStateContext);
-    const {
-        chainData: { chainId, gridSize, blockExplorer },
+        crocEnv,
+        chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const { isPoolInitialized, poolPriceDisplay, ambientApy, dailyVol } =
-        useContext(PoolContext);
+    const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
     const {
         simpleRangeWidth,
         setSimpleRangeWidth,
@@ -105,60 +88,28 @@ function Range() {
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
+        baseToken: {
+            balance: baseTokenBalance,
+            dexBalance: baseTokenDexBalance,
+        },
+        quoteToken: {
+            balance: quoteTokenBalance,
+            dexBalance: quoteTokenDexBalance,
+        },
     } = useContext(TradeTokenContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
-
-    const [
-        isConfirmationModalOpen,
-        openConfirmationModal,
-        closeConfirmationModal,
-    ] = useModal();
-
-    const [
-        tokenAQtyCoveredByWalletBalance,
-        setTokenAQtyCoveredByWalletBalance,
-    ] = useState<number>(0);
-
-    const [
-        tokenBQtyCoveredByWalletBalance,
-        setTokenBQtyCoveredByWalletBalance,
-    ] = useState<number>(0);
-
-    const [isAmbient, setIsAmbient] = useState(false);
-
-    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
-    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const dispatch = useAppDispatch();
+    const [isOpen, openModal, closeModal] = useModal();
 
-    // local state values whether tx will use dex balance preferentially over
-    // ... wallet funds, this layer of logic matters because the DOM may need
-    // ... to use wallet funds without switching the persisted preference
-    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] =
-        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
-    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
-        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
-
-    const { crocEnv } = useContext(CrocEnvContext);
-    const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
-    const [showConfirmation, setShowConfirmation] = useState(true);
-    const [txErrorCode, setTxErrorCode] = useState('');
-    const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
-        string | undefined
-    >();
-    const userPositions = useAppSelector(
-        (state) => state.graphData,
-    ).positionsByUser.positions.filter((x) => x.chainId === chainId);
-
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
     const {
         tradeData: {
             isDenomBase,
             isTokenAPrimaryRange,
+            primaryQuantityRange,
             isLinesSwitched,
             tokenA,
             tokenB,
@@ -170,17 +121,83 @@ function Range() {
             advancedMode,
             liquidityFee,
         },
-        receiptData,
+        graphData,
     } = useAppSelector((state) => state);
 
-    const { navigationMenu } = useTradeData();
+    const [tokenAAllowed, setTokenAAllowed] = useState<boolean>(false);
+    const [tokenBAllowed, setTokenBAllowed] = useState<boolean>(false);
+    const [isTokenAInputDisabled, setIsTokenAInputDisabled] = useState(false);
+    const [isTokenBInputDisabled, setIsTokenBInputDisabled] = useState(false);
 
-    const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
+    const [tokenAInputQty, setTokenAInputQty] = useState<string>(
+        isTokenAPrimaryRange ? primaryQuantityRange : '',
+    );
+    const [tokenBInputQty, setTokenBInputQty] = useState<string>(
+        !isTokenAPrimaryRange ? primaryQuantityRange : '',
+    );
+    const [rangeWidthPercentage, setRangeWidthPercentage] =
+        useState<number>(simpleRangeWidth);
+    const [isAmbient, setIsAmbient] = useState(false);
 
-    const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
-    const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
+    const [minPriceInputString, setMinPriceInputString] = useState<string>('');
+    const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
+    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
+        useState(DEFAULT_MIN_PRICE_DIFF_PERCENTAGE);
+    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
+        useState(DEFAULT_MAX_PRICE_DIFF_PERCENTAGE);
+    const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
+        useState(0);
+    const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] =
+        useState(0);
+    const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] =
+        useState('');
+    const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] =
+        useState('');
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
+        useState(false);
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
+        useState(false);
+    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined
+    >();
+
+    // local state values whether tx will use dex balance preferentially over
+    // ... wallet funds, this layer of logic matters because the DOM may need
+    // ... to use wallet funds without switching the persisted preference
+    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] =
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
+    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
+
+    const [showConfirmation, setShowConfirmation] = useState(false);
+
+    const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState('');
+    const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
+        useState<string>('');
+
+    const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
+        string | undefined
+    >();
 
     const isTokenABase = tokenA.address === baseTokenAddress;
+    const tokenADecimals = tokenA.decimals;
+    const tokenBDecimals = tokenB.decimals;
+    const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
+    const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
@@ -194,12 +211,6 @@ function Range() {
         isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
-
-    const tokenADecimals = tokenA.decimals;
-    const tokenBDecimals = tokenB.decimals;
-    const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
-    const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-
     const poolPriceCharacter = isDenomBase
         ? isTokenABase
             ? getUnicodeCharacter(tokenB.symbol)
@@ -207,17 +218,239 @@ function Range() {
         : !isTokenABase
         ? getUnicodeCharacter(tokenB.symbol)
         : getUnicodeCharacter(tokenA.symbol);
-
-    const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
-        useState<string>('');
-
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    const [rangeWidthPercentage, setRangeWidthPercentage] =
-        useState<number>(simpleRangeWidth);
+    const ticksInParams =
+        location.pathname.includes('lowTick') &&
+        location.pathname.includes('highTick');
+    const shouldResetAdvancedLowTick =
+        !ticksInParams &&
+        (advancedLowTick === 0 ||
+            advancedHighTick > currentPoolPriceTick + 100000 ||
+            advancedLowTick < currentPoolPriceTick - 100000);
+    const shouldResetAdvancedHighTick =
+        !ticksInParams &&
+        (advancedHighTick === 0 ||
+            advancedHighTick > currentPoolPriceTick + 100000 ||
+            advancedLowTick < currentPoolPriceTick - 100000);
+    // default low tick to seed in the DOM (range lower value)
+    const defaultLowTick = useMemo(() => {
+        const value = shouldResetAdvancedLowTick
+            ? roundDownTick(
+                  currentPoolPriceTick +
+                      DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
+                  gridSize,
+              )
+            : advancedLowTick;
+        return value;
+    }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
+    // default high tick to seed in the DOM (range upper value)
+    const defaultHighTick = useMemo(() => {
+        const value = shouldResetAdvancedHighTick
+            ? roundUpTick(
+                  currentPoolPriceTick +
+                      DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
+                  gridSize,
+              )
+            : advancedHighTick;
+        return value;
+    }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
+
+    const userPositions = graphData.positionsByUser.positions.filter(
+        (x) => x.chainId === chainId,
+    );
+    const isAdd = useMemo(
+        () =>
+            userPositions.length > 0 &&
+            userPositions.some((position: PositionIF) => {
+                if (isAmbient && position.positionType === 'ambient') {
+                    return true;
+                } else if (
+                    !isAmbient &&
+                    defaultLowTick === position.bidTick &&
+                    defaultHighTick === position.askTick
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }),
+        [
+            diffHashSig(userPositions),
+            isAmbient,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
+
+    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
+    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+    const tokenADexBalance = isTokenABase
+        ? baseTokenDexBalance
+        : quoteTokenDexBalance;
+    const tokenBDexBalance = isTokenABase
+        ? quoteTokenDexBalance
+        : baseTokenDexBalance;
+    const tokenASurplusMinusTokenARemainderNum =
+        parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+    const tokenBSurplusMinusTokenBRemainderNum =
+        parseFloat(tokenBDexBalance || '0') - parseFloat(tokenBInputQty || '0');
+    const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
+        ? tokenASurplusMinusTokenARemainderNum < 0
+            ? tokenASurplusMinusTokenARemainderNum * -1
+            : 0
+        : parseFloat(tokenAInputQty || '0');
+    const tokenBQtyCoveredByWalletBalance = isWithdrawTokenBFromDexChecked
+        ? tokenBSurplusMinusTokenBRemainderNum < 0
+            ? tokenBSurplusMinusTokenBRemainderNum * -1
+            : 0
+        : parseFloat(tokenBInputQty || '0');
+    const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
+    const showExtraInfoDropdown =
+        tokenAInputQty !== '' || tokenBInputQty !== '';
+
+    const rangeSpanAboveCurrentPrice = defaultHighTick - currentPoolPriceTick;
+    const rangeSpanBelowCurrentPrice = currentPoolPriceTick - defaultLowTick;
+    const isOutOfRange = !advancedMode
+        ? false
+        : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
+    const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
+
+    const depositSkew = useMemo(
+        () =>
+            concDepositSkew(
+                poolPriceNonDisplay ?? 0,
+                rangeLowBoundNonDisplayPrice,
+                rangeHighBoundNonDisplayPrice,
+            ),
+        [
+            poolPriceNonDisplay,
+            rangeLowBoundNonDisplayPrice,
+            rangeHighBoundNonDisplayPrice,
+        ],
+    );
+
+    const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
+    const maxPriceDisplay = isAmbient
+        ? 'Infinity'
+        : pinnedMaxPriceDisplayTruncated;
+
+    let aprPercentage = ambientApy;
+    if (!isAmbient && ambientApy && poolPriceNonDisplay) {
+        const concFactor = capitalConcFactor(
+            poolPriceNonDisplay,
+            rangeLowBoundNonDisplayPrice,
+            rangeHighBoundNonDisplayPrice,
+        );
+        aprPercentage = ambientApy * concFactor;
+    }
+    let daysInRange = isAmbient ? Infinity : 0;
+    if (!isAmbient && dailyVol && poolPriceNonDisplay) {
+        const upperPercent = Math.log(
+            rangeHighBoundNonDisplayPrice / poolPriceNonDisplay,
+        );
+        const lowerPercent = Math.log(
+            poolPriceNonDisplay / rangeLowBoundNonDisplayPrice,
+        );
+
+        if (upperPercent > 0 && lowerPercent > 0) {
+            const daysBelow = Math.pow(upperPercent / dailyVol, 2);
+            const daysAbove = Math.pow(lowerPercent / dailyVol, 2);
+            daysInRange = Math.min(daysBelow, daysAbove);
+        }
+    }
+
+    const pinnedMinPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
+        [
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
+    const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
+        [
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
+    const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
+        [
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
+    const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
+        [
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
+
+    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
+        undefined,
+        {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        },
+    );
+
+    const isTokenAAllowanceSufficient =
+        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
+
+    const isTokenBAllowanceSufficient =
+        parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
+
+    // values if either token needs to be confirmed before transacting
+    const needConfirmTokenA = !tokens.verify(tokenA.address);
+    const needConfirmTokenB = !tokens.verify(tokenB.address);
+    // value showing if no acknowledgement is necessary
+    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
@@ -237,81 +470,14 @@ function Range() {
         }
     }, [rangeWidthPercentage]);
 
-    const [minPriceInputString, setMinPriceInputString] = useState<string>('');
-    const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
-
-    const defaultMinPriceDifferencePercentage = -10;
-    const defaultMaxPriceDifferencePercentage = 10;
-
-    const ticksInParams =
-        location.pathname.includes('lowTick') &&
-        location.pathname.includes('highTick');
-
-    const shouldResetAdvancedLowTick =
-        !ticksInParams &&
-        (advancedLowTick === 0 ||
-            advancedHighTick > currentPoolPriceTick + 100000 ||
-            advancedLowTick < currentPoolPriceTick - 100000);
-
-    const shouldResetAdvancedHighTick =
-        !ticksInParams &&
-        (advancedHighTick === 0 ||
-            advancedHighTick > currentPoolPriceTick + 100000 ||
-            advancedLowTick < currentPoolPriceTick - 100000);
-
-    // default low tick to seed in the DOM (range lower value)
-    const defaultLowTick = useMemo(() => {
-        const value = shouldResetAdvancedLowTick
-            ? roundDownTick(
-                  currentPoolPriceTick +
-                      defaultMinPriceDifferencePercentage * 100,
-                  gridSize,
-              )
-            : advancedLowTick;
-        return value;
-    }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
-
-    // default high tick to seed in the DOM (range upper value)
-    const defaultHighTick = useMemo(() => {
-        const value = shouldResetAdvancedHighTick
-            ? roundUpTick(
-                  currentPoolPriceTick +
-                      defaultMaxPriceDifferencePercentage * 100,
-                  gridSize,
-              )
-            : advancedHighTick;
-        return value;
-    }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
+    useEffect(() => {
+        setShowConfirmation(false);
+    }, [bypassConfirmRange.isEnabled]);
 
     useEffect(() => {
         setNewRangeTransactionHash('');
-        setShowBypassConfirmButton(false);
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
-
-    const selectedRangeMatchesOpenPosition = (position: PositionIF) => {
-        if (isAmbient && position.positionType === 'ambient') {
-            return true;
-        } else if (
-            !isAmbient &&
-            defaultLowTick === position.bidTick &&
-            defaultHighTick === position.askTick
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-
-    const isAdd = useMemo(
-        () => userPositions.some(selectedRangeMatchesOpenPosition),
-        [
-            diffHashSig(userPositions),
-            isAmbient,
-            defaultLowTick,
-            defaultHighTick,
-        ],
-    );
 
     useEffect(() => {
         if (!isAdd) {
@@ -319,71 +485,51 @@ function Range() {
         }
     }, [isAdd]);
 
-    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
-        useState(defaultMinPriceDifferencePercentage);
-    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
-        useState(defaultMaxPriceDifferencePercentage);
-
-    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
-        | {
-              pinnedMinPriceDisplay: string;
-              pinnedMaxPriceDisplay: string;
-              pinnedMinPriceDisplayTruncated: string;
-              pinnedMaxPriceDisplayTruncated: string;
-              pinnedMinPriceDisplayTruncatedWithCommas: string;
-              pinnedMaxPriceDisplayTruncatedWithCommas: string;
-              pinnedLowTick: number;
-              pinnedHighTick: number;
-              pinnedMinPriceNonDisplay: number;
-              pinnedMaxPriceNonDisplay: number;
-          }
-        | undefined
-    >();
-
-    const updatePinnedDisplayPrices = () => {
-        if (
-            Math.abs(currentPoolPriceTick) === Infinity ||
-            Math.abs(currentPoolPriceTick) === 0
-        )
-            return;
-        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-
-        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-            isDenomBase,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            lowTick,
-            highTick,
-            gridSize,
-        );
-
-        setPinnedDisplayPrices(pinnedDisplayPrices);
-
-        setRangeLowBoundNonDisplayPrice(
-            pinnedDisplayPrices.pinnedMinPriceNonDisplay,
-        );
-        setRangeHighBoundNonDisplayPrice(
-            pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-        );
-
-        setPinnedMinPriceDisplayTruncated(
-            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-        );
-        setPinnedMaxPriceDisplayTruncated(
-            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-        );
-
-        dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-        dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
-
-        setMaxPrice(
-            parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
-        );
-        setMinPrice(
-            parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
-        );
-    };
+    useEffect(() => {
+        if (!isAmbient) {
+            if (isTokenABase) {
+                if (defaultHighTick < currentPoolPriceTick) {
+                    setIsTokenBInputDisabled(true);
+                    if (defaultHighTick > defaultLowTick) {
+                        setIsTokenAInputDisabled(false);
+                    } else setIsTokenAInputDisabled(true);
+                } else if (defaultLowTick > currentPoolPriceTick) {
+                    setIsTokenAInputDisabled(true);
+                    if (defaultLowTick < defaultHighTick) {
+                        setIsTokenBInputDisabled(false);
+                    } else setIsTokenBInputDisabled(true);
+                } else {
+                    setIsTokenAInputDisabled(false);
+                    setIsTokenBInputDisabled(false);
+                }
+            } else {
+                if (defaultHighTick < currentPoolPriceTick) {
+                    setIsTokenAInputDisabled(true);
+                    if (defaultHighTick > defaultLowTick) {
+                        setIsTokenBInputDisabled(false);
+                    } else setIsTokenBInputDisabled(true);
+                } else if (defaultLowTick > currentPoolPriceTick) {
+                    setIsTokenBInputDisabled(true);
+                    if (defaultLowTick < defaultHighTick) {
+                        setIsTokenAInputDisabled(false);
+                    } else setIsTokenBInputDisabled(true);
+                } else {
+                    setIsTokenBInputDisabled(false);
+                    setIsTokenAInputDisabled(false);
+                }
+            }
+        } else {
+            setIsTokenBInputDisabled(false);
+            setIsTokenAInputDisabled(false);
+        }
+    }, [
+        isAmbient,
+        isTokenABase,
+        currentPoolPriceTick,
+        defaultLowTick,
+        defaultHighTick,
+        isDenomBase,
+    ]);
 
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
@@ -446,144 +592,23 @@ function Range() {
         baseToken.address + quoteToken.address,
     ]);
 
-    const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
-
-    const showExtraInfoDropdown =
-        tokenAInputQty !== '' || tokenBInputQty !== '';
-
-    const rangeSpanAboveCurrentPrice = defaultHighTick - currentPoolPriceTick;
-    const rangeSpanBelowCurrentPrice = currentPoolPriceTick - defaultLowTick;
-
-    const isOutOfRange = !advancedMode
-        ? false
-        : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
-
-    const isInvalidRange = !isAmbient && defaultHighTick <= defaultLowTick;
-
     useEffect(() => {
-        if (
-            isPoolInitialized === undefined ||
-            poolPriceNonDisplay === undefined
-        ) {
-            setRangeButtonErrorMessage('…');
-        } else if (!isPoolInitialized) {
-            setRangeButtonErrorMessage('Pool Not Initialized');
-        } else if (isInvalidRange) {
-            setRangeButtonErrorMessage('Please Enter a Valid Range');
-        } else if (!isQtyEntered) {
-            setRangeButtonErrorMessage('Enter an Amount');
-        }
+        handleRangeButtonMessageTokenA(tokenAInputQty);
+        handleRangeButtonMessageTokenB(tokenBInputQty);
     }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
 
-    const [isTokenADisabled, setIsTokenADisabled] = useState(false);
-    const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
+    useEffect(() => {
+        if (isTokenAInputDisabled) dispatch(setIsTokenAPrimaryRange(false));
+        if (isTokenBInputDisabled) dispatch(setIsTokenAPrimaryRange(true));
+    }, [isTokenAInputDisabled, isTokenBInputDisabled]);
 
     useEffect(() => {
-        if (!isAmbient) {
-            if (isTokenABase) {
-                if (defaultHighTick < currentPoolPriceTick) {
-                    setIsTokenBDisabled(true);
-                    if (defaultHighTick > defaultLowTick) {
-                        setIsTokenADisabled(false);
-                    } else setIsTokenADisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
-                    setIsTokenADisabled(true);
-                    if (defaultLowTick < defaultHighTick) {
-                        setIsTokenBDisabled(false);
-                    } else setIsTokenBDisabled(true);
-                } else {
-                    setIsTokenADisabled(false);
-                    setIsTokenBDisabled(false);
-                }
-            } else {
-                if (defaultHighTick < currentPoolPriceTick) {
-                    setIsTokenADisabled(true);
-                    if (defaultHighTick > defaultLowTick) {
-                        setIsTokenBDisabled(false);
-                    } else setIsTokenBDisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
-                    setIsTokenBDisabled(true);
-                    if (defaultLowTick < defaultHighTick) {
-                        setIsTokenADisabled(false);
-                    } else setIsTokenBDisabled(true);
-                } else {
-                    setIsTokenBDisabled(false);
-                    setIsTokenADisabled(false);
-                }
-            }
-        } else {
-            setIsTokenBDisabled(false);
-            setIsTokenADisabled(false);
-        }
-    }, [
-        isAmbient,
-        isTokenABase,
-        currentPoolPriceTick,
-        defaultLowTick,
-        defaultHighTick,
-        isDenomBase,
-    ]);
-
-    const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
-        useState(0);
-    const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] =
-        useState(0);
-
-    const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] =
-        useState('');
-    const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] =
-        useState('');
-
-    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
-        useState(false);
-
-    const lowBoundOnBlur = () => {
-        setRangeLowBoundFieldBlurred(true);
-    };
-
-    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
-        useState(false);
-    const highBoundOnBlur = () => {
-        setRangeHighBoundFieldBlurred(true);
-    };
-
-    const resetConfirmation = () => {
-        setShowConfirmation(true);
-        setTxErrorCode('');
-    };
-
-    const [showBypassConfirmButton, setShowBypassConfirmButton] =
-        useState(false);
-
-    const sessionReceipts = receiptData.sessionReceipts;
-
-    const pendingTransactions = receiptData.pendingTransactions;
-
-    let receiveReceiptHashes: Array<string> = [];
+        setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
+    }, [tokenADexBalance]);
 
     useEffect(() => {
-        receiveReceiptHashes = getReceiptTxHashes(sessionReceipts);
-    }, [sessionReceipts]);
-
-    const currentPendingTransactionsArray = pendingTransactions.filter(
-        (hash: string) => !receiveReceiptHashes.includes(hash),
-    );
-
-    const [isWaitingForWallet, setIsWaitingForWallet] = useState(false);
-
-    useEffect(() => {
-        if (
-            !currentPendingTransactionsArray.length &&
-            !isWaitingForWallet &&
-            txErrorCode === ''
-        ) {
-            setShowBypassConfirmButton(false);
-        }
-    }, [
-        currentPendingTransactionsArray.length,
-        isWaitingForWallet,
-        txErrorCode === '',
-    ]);
+        setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
+    }, [tokenBDexBalance]);
 
     useEffect(() => {
         if (advancedMode) {
@@ -870,59 +895,80 @@ function Range() {
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
-    const depositSkew = useMemo(
-        () =>
-            concDepositSkew(
-                poolPriceNonDisplay ?? 0,
-                rangeLowBoundNonDisplayPrice,
-                rangeHighBoundNonDisplayPrice,
-            ),
-        [
-            poolPriceNonDisplay,
-            rangeLowBoundNonDisplayPrice,
-            rangeHighBoundNonDisplayPrice,
-        ],
-    );
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageRangeCostInGasDrops = 140000;
+            const gasPriceInDollarsNum =
+                gasPriceInGwei *
+                averageRangeCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
-    const maxPriceDisplay = isAmbient
-        ? 'Infinity'
-        : pinnedMaxPriceDisplayTruncated;
-
-    let aprPercentage = ambientApy;
-
-    if (!isAmbient && ambientApy && poolPriceNonDisplay) {
-        const concFactor = capitalConcFactor(
-            poolPriceNonDisplay,
-            rangeLowBoundNonDisplayPrice,
-            rangeHighBoundNonDisplayPrice,
-        );
-        aprPercentage = ambientApy * concFactor;
-    }
-
-    let daysInRange = isAmbient ? Infinity : 0;
-
-    if (!isAmbient && dailyVol && poolPriceNonDisplay) {
-        const upperPercent = Math.log(
-            rangeHighBoundNonDisplayPrice / poolPriceNonDisplay,
-        );
-        const lowerPercent = Math.log(
-            poolPriceNonDisplay / rangeLowBoundNonDisplayPrice,
-        );
-
-        if (upperPercent > 0 && lowerPercent > 0) {
-            const daysBelow = Math.pow(upperPercent / dailyVol, 2);
-            const daysAbove = Math.pow(lowerPercent / dailyVol, 2);
-            daysInRange = Math.min(daysBelow, daysAbove);
+            setRangeGasPriceinDollars(
+                getFormattedNumber({
+                    value: gasPriceInDollarsNum,
+                    isUSD: true,
+                }),
+            );
         }
-    }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
+    const updatePinnedDisplayPrices = () => {
+        if (
+            Math.abs(currentPoolPriceTick) === Infinity ||
+            Math.abs(currentPoolPriceTick) === 0
+        )
+            return;
+        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+            isDenomBase,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            lowTick,
+            highTick,
+            gridSize,
+        );
+
+        setPinnedDisplayPrices(pinnedDisplayPrices);
+
+        setRangeLowBoundNonDisplayPrice(
+            pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+        );
+        setRangeHighBoundNonDisplayPrice(
+            pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+        );
+
+        setPinnedMinPriceDisplayTruncated(
+            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+        );
+        setPinnedMaxPriceDisplayTruncated(
+            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+        );
+
+        dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
+        dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+
+        setMaxPrice(
+            parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+        );
+        setMinPrice(
+            parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+        );
+    };
+
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode('');
+        setNewRangeTransactionHash('');
+    };
 
     const sendTransaction = async () => {
         if (!crocEnv) return;
 
         resetConfirmation();
-        setIsWaitingForWallet(true);
+        setShowConfirmation(true);
 
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
 
@@ -936,7 +982,7 @@ function Range() {
             tx = await (isAmbient
                 ? isTokenAPrimaryRange
                     ? pool.mintAmbientQuote(
-                          tokenAInputQty,
+                          isTokenAInputDisabled ? 0 : tokenAInputQty,
                           [minPrice, maxPrice],
                           {
                               surplus: [
@@ -946,7 +992,7 @@ function Range() {
                           },
                       )
                     : pool.mintAmbientBase(
-                          tokenBInputQty,
+                          isTokenBInputDisabled ? 0 : tokenBInputQty,
                           [minPrice, maxPrice],
                           {
                               surplus: [
@@ -957,7 +1003,7 @@ function Range() {
                       )
                 : isTokenAPrimaryRange
                 ? pool.mintRangeQuote(
-                      tokenAInputQty,
+                      isTokenAInputDisabled ? 0 : tokenAInputQty,
                       [defaultLowTick, defaultHighTick],
                       [minPrice, maxPrice],
                       {
@@ -968,7 +1014,7 @@ function Range() {
                       },
                   )
                 : pool.mintRangeBase(
-                      tokenBInputQty,
+                      isTokenBInputDisabled ? 0 : tokenBInputQty,
                       [defaultLowTick, defaultHighTick],
                       [minPrice, maxPrice],
                       {
@@ -989,14 +1035,12 @@ function Range() {
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
                     }),
                 );
-            setIsWaitingForWallet(false);
         } catch (error) {
             if (error.reason === 'sending a transaction requires a signer') {
                 location.reload();
             }
             console.error({ error });
             setTxErrorCode(error?.code);
-            setIsWaitingForWallet(false);
         }
 
         let receipt;
@@ -1023,269 +1067,99 @@ function Range() {
         }
     };
 
-    useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageRangeCostInGasDrops = 140000;
-            const gasPriceInDollarsNum =
-                gasPriceInGwei *
-                averageRangeCostInGasDrops *
-                1e-9 *
-                ethMainnetUsdPrice;
-
-            setRangeGasPriceinDollars(
-                getFormattedNumber({
-                    value: gasPriceInDollarsNum,
-                    isUSD: true,
-                    prefix: '$',
-                }),
-            );
-        }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    // TODO:  @Emily refactor this fragment to use the same denomination switch
-    // TODO:  ... component used in the Market and Limit modules
-    const advancedModeToggle = (
-        <div className={styles.denomination_switch_container}>
-            <AdvancedModeToggle advancedMode={advancedMode} />
-        </div>
-    );
-
-    // props for <RangePriceInfo/> React element
-    const rangePriceInfoProps = {
-        pinnedDisplayPrices: pinnedDisplayPrices,
-        spotPriceDisplay: getFormattedNumber({
-            value: displayPriceWithDenom,
-        }),
-        maxPriceDisplay: maxPriceDisplay,
-        minPriceDisplay: minPriceDisplay,
-        aprPercentage: aprPercentage,
-        daysInRange: daysInRange,
-        isTokenABase: isTokenABase,
-        poolPriceCharacter: poolPriceCharacter,
-        isAmbient: isAmbient,
+    const handleModalOpen = () => {
+        resetConfirmation();
+        openModal();
     };
-
-    const pinnedMinPriceDisplayTruncatedInBase = useMemo(
-        () =>
-            getPinnedPriceValuesFromTicks(
-                true,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                defaultLowTick,
-                defaultHighTick,
-                gridSize,
-            ).pinnedMinPriceDisplayTruncatedWithCommas,
-        [
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            defaultLowTick,
-            defaultHighTick,
-        ],
-    );
-
-    const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
-        () =>
-            getPinnedPriceValuesFromTicks(
-                false,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                defaultLowTick,
-                defaultHighTick,
-                gridSize,
-            ).pinnedMinPriceDisplayTruncatedWithCommas,
-        [
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            defaultLowTick,
-            defaultHighTick,
-        ],
-    );
-
-    const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
-        () =>
-            getPinnedPriceValuesFromTicks(
-                true,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                defaultLowTick,
-                defaultHighTick,
-                gridSize,
-            ).pinnedMaxPriceDisplayTruncatedWithCommas,
-        [
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            defaultLowTick,
-            defaultHighTick,
-        ],
-    );
-
-    const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
-        () =>
-            getPinnedPriceValuesFromTicks(
-                false,
-                baseTokenDecimals,
-                quoteTokenDecimals,
-                defaultLowTick,
-                defaultHighTick,
-                gridSize,
-            ).pinnedMaxPriceDisplayTruncatedWithCommas,
-        [
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            defaultLowTick,
-            defaultHighTick,
-        ],
-    );
 
     const handleModalClose = () => {
-        closeConfirmationModal();
-        setNewRangeTransactionHash('');
         resetConfirmation();
+        closeModal();
     };
 
-    const handleRangeButtonClickWithBypass = () => {
-        setShowBypassConfirmButton(true);
-        sendTransaction();
+    const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (tokenAorB === 'A') {
+            setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
+        } else {
+            setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
+        }
     };
 
-    const bypassConfirmButtonProps = {
-        newRangeTransactionHash: newRangeTransactionHash,
-        txErrorCode: txErrorCode,
-        resetConfirmation: resetConfirmation,
-        sendTransaction: sendTransaction,
-        setShowBypassConfirmButton: setShowBypassConfirmButton,
-        showBypassConfirmButton: showBypassConfirmButton,
-        tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
+    const handleRangeButtonMessageTokenA = (tokenAAmount: string) => {
+        if (poolPriceNonDisplay === 0) {
+            setTokenAAllowed(false);
+            setRangeButtonErrorMessage('Invalid Token Pair');
+        } else if (
+            (isNaN(parseFloat(tokenAAmount)) ||
+                parseFloat(tokenAAmount) <= 0) &&
+            !isTokenAInputDisabled
+        ) {
+            setTokenAAllowed(false);
+            setRangeButtonErrorMessage('Enter an Amount');
+        } else if (!isPoolInitialized) {
+            setRangeButtonErrorMessage('Pool Not Initialized');
+        } else {
+            if (isWithdrawTokenAFromDexChecked) {
+                if (
+                    parseFloat(tokenAAmount) >
+                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
+                ) {
+                    setTokenAAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                    );
+                } else {
+                    setTokenAAllowed(true);
+                }
+            } else {
+                if (parseFloat(tokenAAmount) > parseFloat(tokenABalance)) {
+                    setTokenAAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${tokenA.symbol} Amount Exceeds Wallet Balance`,
+                    );
+                } else {
+                    setTokenAAllowed(true);
+                }
+            }
+        }
     };
 
-    // props for <RangeCurrencyConverter/> React element
-    const rangeCurrencyConverterProps = {
-        isAmbient: isAmbient,
-        isTokenABase: isTokenABase,
-        depositSkew: depositSkew,
-        isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
-        setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
-        isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
-        setIsWithdrawTokenBFromDexChecked: setIsWithdrawTokenBFromDexChecked,
-        setTokenAInputQty: setTokenAInputQty,
-        setTokenBInputQty: setTokenBInputQty,
-        setRangeButtonErrorMessage: setRangeButtonErrorMessage,
-        setRangeAllowed: setRangeAllowed,
-        isTokenADisabled: isTokenADisabled,
-        isTokenBDisabled: isTokenBDisabled,
-        isOutOfRange: isOutOfRange,
-        rangeSpanAboveCurrentPrice: rangeSpanAboveCurrentPrice,
-        rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
-        tokenAInputQty: tokenAInputQty,
-        tokenBInputQty: tokenBInputQty,
-        tokenAQtyLocal,
-        tokenBQtyLocal,
-        setTokenAQtyLocal,
-        setTokenBQtyLocal,
-        setTokenAQtyCoveredByWalletBalance: setTokenAQtyCoveredByWalletBalance,
-        setTokenBQtyCoveredByWalletBalance: setTokenBQtyCoveredByWalletBalance,
+    const handleRangeButtonMessageTokenB = (tokenBAmount: string) => {
+        if (poolPriceNonDisplay === 0) {
+            setTokenBAllowed(false);
+            setRangeButtonErrorMessage('Invalid Token Pair');
+        } else if (
+            (isNaN(parseFloat(tokenBAmount)) ||
+                parseFloat(tokenBAmount) <= 0) &&
+            !isTokenBInputDisabled
+        ) {
+            setTokenBAllowed(false);
+            setRangeButtonErrorMessage('Enter an Amount');
+        } else {
+            if (isWithdrawTokenBFromDexChecked) {
+                if (
+                    parseFloat(tokenBAmount) >
+                    parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
+                ) {
+                    setTokenBAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${tokenB.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
+                    );
+                } else {
+                    setTokenBAllowed(true);
+                }
+            } else {
+                if (parseFloat(tokenBAmount) > parseFloat(tokenBBalance)) {
+                    setTokenBAllowed(false);
+                    setRangeButtonErrorMessage(
+                        `${tokenB.symbol} Amount Exceeds Wallet Balance`,
+                    );
+                } else {
+                    setTokenBAllowed(true);
+                }
+            }
+        }
     };
-
-    // props for <RangeWidth/> React element
-    const rangeWidthProps = {
-        rangeWidthPercentage: rangeWidthPercentage,
-        setRangeWidthPercentage: setRangeWidthPercentage,
-        setRescaleRangeBoundariesWithSlider:
-            setRescaleRangeBoundariesWithSlider,
-    };
-    // props for <RangeExtraInfo/> React element
-
-    const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
-        undefined,
-        {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        },
-    );
-
-    const rangeExtraInfoProps = {
-        isQtyEntered: isQtyEntered,
-        rangeGasPriceinDollars: rangeGasPriceinDollars,
-        poolPriceDisplay: getFormattedNumber({
-            value: displayPriceWithDenom,
-        }),
-        slippageTolerance: slippageTolerancePercentage,
-        liquidityProviderFeeString: liquidityProviderFeeString,
-        quoteTokenIsBuy: true,
-        isTokenABase: isTokenABase,
-        showExtraInfoDropdown: showExtraInfoDropdown,
-        isBalancedMode: !advancedMode,
-        aprPercentage: aprPercentage,
-        daysInRange: daysInRange,
-    };
-
-    const baseModeContent = (
-        <div className={styles.info_container}>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-            >
-                <RangeWidth {...rangeWidthProps} />
-            </motion.div>
-            <RangePriceInfo {...rangePriceInfoProps} />
-        </div>
-    );
-    const advancedModeContent = (
-        <>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-            >
-                <div className={styles.advanced_info_container}>
-                    <MinMaxPrice
-                        minPricePercentage={minPriceDifferencePercentage}
-                        maxPricePercentage={maxPriceDifferencePercentage}
-                        minPriceInputString={minPriceInputString}
-                        maxPriceInputString={maxPriceInputString}
-                        setMinPriceInputString={setMinPriceInputString}
-                        setMaxPriceInputString={setMaxPriceInputString}
-                        isDenomBase={isDenomBase}
-                        highBoundOnBlur={highBoundOnBlur}
-                        lowBoundOnBlur={lowBoundOnBlur}
-                        rangeLowTick={defaultLowTick}
-                        rangeHighTick={defaultHighTick}
-                        disable={isInvalidRange || !isPoolInitialized}
-                        maxPrice={maxPrice}
-                        minPrice={minPrice}
-                        setMaxPrice={setMaxPrice}
-                        setMinPrice={setMinPrice}
-                    />
-                </div>
-            </motion.div>
-            <DividerDark addMarginTop />
-
-            <AdvancedPriceInfo
-                poolPriceDisplay={getFormattedNumber({
-                    value: displayPriceWithDenom,
-                })}
-                isTokenABase={isTokenABase}
-                isOutOfRange={isOutOfRange}
-                aprPercentage={aprPercentage}
-            />
-        </>
-    );
-
-    const isTokenAAllowanceSufficient =
-        parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
-
-    const isTokenBAllowanceSufficient =
-        parseFloat(tokenBAllowance) >= tokenBQtyCoveredByWalletBalance;
-
-    const loginButton = (
-        <button onClick={openWagmiModal} className={styles.authenticate_button}>
-            Connect Wallet
-        </button>
-    );
-
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string, tokenSymbol: string) => {
         if (!crocEnv) return;
@@ -1337,210 +1211,153 @@ function Range() {
         }
     };
 
-    const tokenAApprovalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Approve ${tokenA.symbol}`
-                    : `${tokenA.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenA.address, tokenA.symbol);
-            }}
-            flat={true}
-        />
-    );
-
-    const tokenBApprovalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Approve ${tokenB.symbol}`
-                    : `${tokenB.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenB.address, tokenB.symbol);
-            }}
-            flat={true}
-        />
-    );
-
-    const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
-
-    // values if either token needs to be confirmed before transacting
-    const needConfirmTokenA = !tokens.verifyToken(tokenA.address);
-    const needConfirmTokenB = !tokens.verifyToken(tokenB.address);
-
-    // token acknowledgement needed message (empty string if none needed)
-    const ackTokenMessage = useMemo<string>(() => {
-        // !Important   any changes to verbiage in this code block must be approved
-        // !Important   ... by Doug, get in writing by email or request specific
-        // !Important   ... review for a pull request on GitHub
-        let text: string;
-        if (needConfirmTokenA && needConfirmTokenB) {
-            text = `The tokens ${tokenA.symbol || tokenA.name} and ${
-                tokenB.symbol || tokenB.name
-            } are not listed on any major reputable token list. Please be sure these are the actual tokens you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
-        } else if (needConfirmTokenA) {
-            text = `The token ${
-                tokenA.symbol || tokenA.name
-            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
-        } else if (needConfirmTokenB) {
-            text = `The token ${
-                tokenB.symbol || tokenB.name
-            } is not listed on any major reputable token list. Please be sure this is the actual token you want to trade. Many fraudulent tokens will use the same name and symbol as other major tokens. Always conduct your own research before trading.`;
-        } else {
-            text = '';
-        }
-        return text;
-    }, [needConfirmTokenA, needConfirmTokenB]);
-    const formattedAckTokenMessage = ackTokenMessage.replace(
-        /\b(not)\b/g,
-        '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
-    );
-
-    // value showing if no acknowledgement is necessary
-    const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
-
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
-        needConfirmTokenA && tokens.ackToken(tokenA);
-        needConfirmTokenB && tokens.ackToken(tokenB);
+        needConfirmTokenA && tokens.acknowledge(tokenA);
+        needConfirmTokenB && tokens.acknowledge(tokenB);
     };
 
-    return (
-        <section data-testid={'range'} className={styles.scrollable_container}>
-            {isTutorialActive && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
-                    >
-                        Tutorial Mode
-                    </button>
-                </div>
-            )}
+    const rangeWidthProps = {
+        rangeWidthPercentage: rangeWidthPercentage,
+        setRangeWidthPercentage: setRangeWidthPercentage,
+        setRescaleRangeBoundariesWithSlider:
+            setRescaleRangeBoundariesWithSlider,
+    };
 
-            <ContentContainer isOnTradeRoute>
-                <OrderHeader
+    const rangePriceInfoProps = {
+        pinnedDisplayPrices: pinnedDisplayPrices,
+        spotPriceDisplay: getFormattedNumber({
+            value: displayPriceWithDenom,
+        }),
+        maxPriceDisplay: maxPriceDisplay,
+        minPriceDisplay: minPriceDisplay,
+        aprPercentage: aprPercentage,
+        daysInRange: daysInRange,
+        isTokenABase: isTokenABase,
+        poolPriceCharacter: poolPriceCharacter,
+        isAmbient: isAmbient,
+    };
+
+    const rangeExtraInfoProps = {
+        isQtyEntered: isQtyEntered,
+        rangeGasPriceinDollars: rangeGasPriceinDollars,
+        poolPriceDisplay: getFormattedNumber({
+            value: displayPriceWithDenom,
+        }),
+        slippageTolerance: slippageTolerancePercentage,
+        liquidityProviderFeeString: liquidityProviderFeeString,
+        quoteTokenIsBuy: true,
+        isTokenABase: isTokenABase,
+        showExtraInfoDropdown: showExtraInfoDropdown,
+        isBalancedMode: !advancedMode,
+        aprPercentage: aprPercentage,
+        daysInRange: daysInRange,
+    };
+
+    const baseModeContent = (
+        <div className={styles.info_container}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <RangeWidth {...rangeWidthProps} />
+            </motion.div>
+            <RangePriceInfo {...rangePriceInfoProps} />
+        </div>
+    );
+    const advancedModeContent = (
+        <>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <div className={styles.advanced_info_container}>
+                    <MinMaxPrice
+                        minPricePercentage={minPriceDifferencePercentage}
+                        maxPricePercentage={maxPriceDifferencePercentage}
+                        minPriceInputString={minPriceInputString}
+                        maxPriceInputString={maxPriceInputString}
+                        setMinPriceInputString={setMinPriceInputString}
+                        setMaxPriceInputString={setMaxPriceInputString}
+                        isDenomBase={isDenomBase}
+                        highBoundOnBlur={() =>
+                            setRangeHighBoundFieldBlurred(true)
+                        }
+                        lowBoundOnBlur={() =>
+                            setRangeLowBoundFieldBlurred(true)
+                        }
+                        rangeLowTick={defaultLowTick}
+                        rangeHighTick={defaultHighTick}
+                        disable={isInvalidRange || !isPoolInitialized}
+                        maxPrice={maxPrice}
+                        minPrice={minPrice}
+                        setMaxPrice={setMaxPrice}
+                        setMinPrice={setMinPrice}
+                    />
+                </div>
+            </motion.div>
+        </>
+    );
+
+    return (
+        <TradeModuleSkeleton
+            header={
+                <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmRange}
                     settingsTitle='Pool'
                 />
-                {navigationMenu}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <RangeCurrencyConverter
-                        {...rangeCurrencyConverterProps}
-                        isAdvancedMode
+            }
+            input={
+                <>
+                    <RangeTokenInput
+                        isAmbient={isAmbient}
+                        depositSkew={depositSkew}
+                        isWithdrawFromDexChecked={{
+                            tokenA: isWithdrawTokenAFromDexChecked,
+                            tokenB: isWithdrawTokenBFromDexChecked,
+                        }}
+                        isOutOfRange={isOutOfRange}
+                        tokenAInputQty={{
+                            value: tokenAInputQty,
+                            set: setTokenAInputQty,
+                        }}
+                        tokenBInputQty={{
+                            value: tokenBInputQty,
+                            set: setTokenBInputQty,
+                        }}
+                        toggleDexSelection={toggleDexSelection}
+                        handleButtonMessage={{
+                            tokenA: handleRangeButtonMessageTokenA,
+                            tokenB: handleRangeButtonMessageTokenB,
+                        }}
+                        isInputDisabled={{
+                            tokenA: isTokenAInputDisabled,
+                            tokenB: isTokenBInputDisabled,
+                        }}
                     />
-                    {advancedModeToggle}
-                </motion.div>
-                {advancedMode ? advancedModeContent : baseModeContent}
-                <div className={styles.info_button_container}>
-                    <RangeExtraInfo {...rangeExtraInfoProps} />
-                    {isUserConnected === undefined ? null : isUserConnected ===
-                      true ? (
-                        poolPriceNonDisplay !== 0 &&
-                        parseFloat(tokenAInputQty) > 0 &&
-                        !isTokenAAllowanceSufficient ? (
-                            tokenAApprovalButton
-                        ) : poolPriceNonDisplay !== 0 &&
-                          parseFloat(tokenBInputQty) > 0 &&
-                          !isTokenBAllowanceSufficient ? (
-                            tokenBApprovalButton
-                        ) : showBypassConfirmButton ? (
-                            <BypassConfirmRangeButton
-                                {...bypassConfirmButtonProps}
-                            />
-                        ) : (
-                            <>
-                                <RangeButton
-                                    onClickFn={
-                                        areBothAckd
-                                            ? bypassConfirmRange.isEnabled
-                                                ? handleRangeButtonClickWithBypass
-                                                : openConfirmationModal
-                                            : ackAsNeeded
-                                    }
-                                    rangeAllowed={
-                                        isPoolInitialized === true &&
-                                        rangeAllowed &&
-                                        !isInvalidRange
-                                    }
-                                    rangeButtonErrorMessage={
-                                        rangeButtonErrorMessage
-                                    }
-                                    isAmbient={isAmbient}
-                                    isAdd={isAdd}
-                                    areBothAckd={areBothAckd}
-                                />
-                                {ackTokenMessage && (
-                                    <p
-                                        className={styles.acknowledge_text}
-                                        dangerouslySetInnerHTML={{
-                                            __html: formattedAckTokenMessage,
-                                        }}
-                                    ></p>
-                                )}
-
-                                <div
-                                    className={
-                                        styles.acknowledge_etherscan_links
-                                    }
-                                >
-                                    {needConfirmTokenA && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenA.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenA.symbol}
-                                        >
-                                            {tokenA.symbol || tokenA.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                    {needConfirmTokenB && (
-                                        <a
-                                            href={
-                                                blockExplorer +
-                                                'token/' +
-                                                tokenB.address
-                                            }
-                                            rel={'noopener noreferrer'}
-                                            target='_blank'
-                                            aria-label={tokenB.symbol}
-                                        >
-                                            {tokenB.symbol || tokenB.name}{' '}
-                                            <FiExternalLink />
-                                        </a>
-                                    )}
-                                </div>
-                            </>
-                        )
-                    ) : (
-                        loginButton
-                    )}
-                </div>
-            </ContentContainer>
-            {isConfirmationModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title={'Pool Confirmation'}
-                    centeredTitle
+                </>
+            }
+            inputOptions={
+                <section
+                    className={!isPoolInitialized && styles.advanced_disabled}
                 >
+                    {
+                        <div className={styles.denomination_switch_container}>
+                            <AdvancedModeToggle advancedMode={advancedMode} />
+                        </div>
+                    }
+                    {advancedMode ? advancedModeContent : baseModeContent}
+                </section>
+            }
+            transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
+            modal={
+                isOpen ? (
                     <ConfirmRangeModal
-                        tokenAQtyLocal={tokenAQtyLocal}
-                        tokenBQtyLocal={tokenBQtyLocal}
+                        tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
+                        tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
                         spotPriceDisplay={getFormattedNumber({
                             value: displayPriceWithDenom,
                         })}
@@ -1553,7 +1370,6 @@ function Range() {
                         newRangeTransactionHash={newRangeTransactionHash}
                         resetConfirmation={resetConfirmation}
                         showConfirmation={showConfirmation}
-                        setShowConfirmation={setShowConfirmation}
                         txErrorCode={txErrorCode}
                         isInRange={!isOutOfRange}
                         pinnedMinPriceDisplayTruncatedInBase={
@@ -1568,19 +1384,96 @@ function Range() {
                         pinnedMaxPriceDisplayTruncatedInQuote={
                             pinnedMaxPriceDisplayTruncatedInQuote
                         }
+                        onClose={handleModalClose}
                     />
-                </Modal>
-            )}
-            <TutorialOverlay
-                isTutorialEnabled={isTutorialEnabled}
-                setIsTutorialEnabled={setIsTutorialEnabled}
-                steps={
-                    !advancedMode
-                        ? rangeTutorialStepsAdvanced
-                        : rangeTutorialSteps
-                }
-            />
-        </section>
+                ) : (
+                    <></>
+                )
+            }
+            button={
+                <Button
+                    title={
+                        areBothAckd
+                            ? tokenAAllowed && tokenBAllowed
+                                ? bypassConfirmRange.isEnabled
+                                    ? isAdd
+                                        ? `Add ${
+                                              isAmbient ? 'Ambient' : ''
+                                          } Liquidity`
+                                        : `Submit ${
+                                              isAmbient ? 'Ambient' : ''
+                                          } Liquidity`
+                                    : 'Confirm'
+                                : rangeButtonErrorMessage
+                            : 'Acknowledge'
+                    }
+                    action={
+                        areBothAckd
+                            ? bypassConfirmRange.isEnabled
+                                ? sendTransaction
+                                : handleModalOpen
+                            : ackAsNeeded
+                    }
+                    disabled={
+                        (!isPoolInitialized ||
+                            !(tokenAAllowed && tokenBAllowed) ||
+                            isInvalidRange) &&
+                        areBothAckd
+                    }
+                    flat={true}
+                />
+            }
+            bypassConfirm={
+                showConfirmation && bypassConfirmRange.isEnabled ? (
+                    <SubmitTransaction
+                        type='Range'
+                        newTransactionHash={newRangeTransactionHash}
+                        txErrorCode={txErrorCode}
+                        resetConfirmation={resetConfirmation}
+                        sendTransaction={sendTransaction}
+                        transactionPendingDisplayString={`Minting a Position with ${
+                            tokenAInputQty ?? '0'
+                        } ${tokenA.symbol} and ${tokenBInputQty ?? '0'} ${
+                            tokenB.symbol
+                        }.`}
+                    />
+                ) : undefined
+            }
+            approveButton={
+                poolPriceNonDisplay !== 0 &&
+                parseFloat(tokenAInputQty) > 0 &&
+                !isTokenAAllowanceSufficient ? (
+                    <Button
+                        title={
+                            !isApprovalPending
+                                ? `Approve ${tokenA.symbol}`
+                                : `${tokenA.symbol} Approval Pending`
+                        }
+                        disabled={isApprovalPending}
+                        action={async () => {
+                            await approve(tokenA.address, tokenA.symbol);
+                        }}
+                        flat={true}
+                    />
+                ) : poolPriceNonDisplay !== 0 &&
+                  parseFloat(tokenBInputQty) > 0 &&
+                  !isTokenBAllowanceSufficient ? (
+                    <Button
+                        title={
+                            !isApprovalPending
+                                ? `Approve ${tokenB.symbol}`
+                                : `${tokenB.symbol} Approval Pending`
+                        }
+                        disabled={isApprovalPending}
+                        action={async () => {
+                            await approve(tokenB.address, tokenB.symbol);
+                        }}
+                        flat={true}
+                    />
+                ) : undefined
+            }
+            tutorialSteps={rangeTutorialSteps}
+        />
     );
 }
 

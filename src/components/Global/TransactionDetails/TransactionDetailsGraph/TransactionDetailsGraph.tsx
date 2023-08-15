@@ -12,13 +12,13 @@ import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
-import {
-    renderCanvasArray,
-    setCanvasResolution,
-} from '../../../../pages/Chart/Chart';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { fetchCandleSeriesCroc } from '../../../../App/functions/fetchCandleSeries';
 import moment from 'moment';
+import {
+    renderCanvasArray,
+    setCanvasResolution,
+} from '../../../../pages/Chart/ChartUtils/chartUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -76,8 +76,8 @@ export default function TransactionDetailsGraph(
     const [graphData, setGraphData] = useState<any>();
 
     const d3PlotGraph = useRef(null);
-    const d3Yaxis = useRef<HTMLInputElement | null>(null);
-    const d3Xaxis = useRef<HTMLInputElement | null>(null);
+    const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
+    const d3Xaxis = useRef<HTMLCanvasElement | null>(null);
     const graphMainDiv = useRef(null);
 
     const [scaleData, setScaleData] = useState<any>();

@@ -1,4 +1,3 @@
-import styles from '../SidebarTable.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
 import { PositionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
@@ -11,6 +10,13 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
+import {
+    SidebarPoolsListContainer,
+    SidebarPoolsListHeader,
+    SidebarPoolsListHeaderContainer,
+    SidebarPoolsListItemsContainer,
+    SidebarPoolsListViewMoreContainer,
+} from '../../../../styled/Sidebar';
 
 interface propsIF {
     userPositions?: PositionIF[];
@@ -71,13 +77,14 @@ export default function SidebarRangePositions(props: propsIF) {
     };
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <div>Pool</div>
-                <div>Range</div>
-                <div>Value</div>
-            </header>
-            <div className={styles.content}>
+        <SidebarPoolsListContainer>
+            <SidebarPoolsListHeaderContainer range>
+                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>Range</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader>Value</SidebarPoolsListHeader>
+                <SidebarPoolsListHeader></SidebarPoolsListHeader>
+            </SidebarPoolsListHeaderContainer>
+            <SidebarPoolsListItemsContainer>
                 {userPositions &&
                     userPositions.map((position, idx) => (
                         <SidebarRangePositionsCard
@@ -87,14 +94,13 @@ export default function SidebarRangePositions(props: propsIF) {
                         />
                     ))}
                 {isUserConnected && (
-                    <div
-                        className={styles.view_more}
+                    <SidebarPoolsListViewMoreContainer
                         onClick={handleViewMoreClick}
                     >
                         View More
-                    </div>
+                    </SidebarPoolsListViewMoreContainer>
                 )}
-            </div>
-        </div>
+            </SidebarPoolsListItemsContainer>
+        </SidebarPoolsListContainer>
     );
 }

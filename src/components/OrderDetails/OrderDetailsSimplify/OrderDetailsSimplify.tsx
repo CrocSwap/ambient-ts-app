@@ -296,17 +296,9 @@ export default function OrderDetailsSimplify(
         },
         {
             title: 'Value ',
-            content: '$' + usdValue,
+            content: usdValue,
             explanation: 'The appoximate US dollar value of the limit order',
         },
-
-        // {
-        //     title: 'Rebate Rate ',
-        //     content: 'rebate rate',
-        //     explanation: 'this is explanation',
-        // },
-
-        // { title: 'Network Fee ', content: 'network fee', explanation: 'this is explanation' },
     ];
 
     function InfoRow(props: ItemRowPropsIF) {

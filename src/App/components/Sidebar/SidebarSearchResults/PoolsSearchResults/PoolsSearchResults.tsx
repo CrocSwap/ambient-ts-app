@@ -1,7 +1,7 @@
 import styles from '../SidebarSearchResults.module.css';
 import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
-import PoolLI from './PoolLI';
+import PoolSearchResult from './PoolSearchResult';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
@@ -21,7 +21,7 @@ interface propsIF {
 export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, cachedPoolStatsFetch, cachedFetchTokenPrice } =
         props;
-    const { tokenA } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
     const {
         crocEnv,
         chainData: { chainId },
@@ -33,10 +33,16 @@ export default function PoolsSearchResults(props: propsIF) {
     // fn to handle user clicks on `<PoolLI />` instances
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
         // reorganize base and quote tokens as tokenA and tokenB
+
         const [addrTokenA, addrTokenB] =
-            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
+            tokenA.address.toLowerCase() === baseAddr.toLowerCase()
                 ? [baseAddr, quoteAddr]
-                : [quoteAddr, baseAddr];
+                : tokenA.address.toLowerCase() === quoteAddr.toLowerCase()
+                ? [quoteAddr, baseAddr]
+                : tokenB.address.toLowerCase() === baseAddr.toLowerCase()
+                ? [quoteAddr, baseAddr]
+                : [baseAddr, quoteAddr];
+
         // navigate user to the new appropriate URL path
         linkGenMarket.navigate({
             chain: chainId,
@@ -64,7 +70,7 @@ export default function PoolsSearchResults(props: propsIF) {
                             // max five elements before content overflows container
                             .slice(0, 5)
                             .map((pool: PoolIF) => (
-                                <PoolLI
+                                <PoolSearchResult
                                     key={`sidebar_searched_pool_${JSON.stringify(
                                         pool,
                                     )}`}

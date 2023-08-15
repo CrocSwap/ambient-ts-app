@@ -9,7 +9,7 @@
 
     border-radius: var(--border-radius);
 
-    background:  linear-gradient(180deg, var(--dark1) 0%, var(--dark1) 0%, rgba(0, 0, 0, 0) 0%, var(--dark1) 100%), url('../../../assets/images/home/home_wallpaper.png') no-repeat
+    background:  linear-gradient(180deg, var(--body-bg) 0%, var(--body-bg) 0%, rgba(0, 0, 0, 0) 0%, var(--body-bg) 100%), url('../../../assets/images/home/home_wallpaper.png') no-repeat
         center center;
 
     -webkit-background-size: cover;
@@ -88,7 +88,7 @@
 .faster_section h1 {
     font-family: var(--font-logo);
     color: var(--text1);
-    font-weight: 200;
+    font-weight: 300;
     font-size: 34px;
     line-height: 50px;
     text-align: center;
@@ -120,13 +120,13 @@
 .row_container h2 {
     font-family: var(--font-logo);
     color: var(--text1);
-    font-weight: 200;
+    font-weight: 300;
     font-size: 30px;
     line-height: 38px;
 }
 
 .row_container p {
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
     color: var(--text1);
@@ -175,4 +175,16 @@ height: 500px;
     }
 }
 
+@media only screen and (max-width: 600px){
 
+    .slide_container h2{
+        font-size: 20px;
+    }
+    .slide_container a{
+        display: none;
+    }
+
+    .bg1, .bg2, .bg3{
+        display: none;
+    }
+}
