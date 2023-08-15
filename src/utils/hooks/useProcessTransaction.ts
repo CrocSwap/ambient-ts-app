@@ -320,28 +320,25 @@ export const useProcessTransaction = (
         : quoteTokenCharacter;
 
     // -----------------------------------------------
-    const valueArrows = tx.entityType !== 'liqchange';
 
     const positiveArrow = '↑';
     const negativeArrow = '↓';
 
-    const isSellQtyZero =
-        (isBuy && tx.baseFlow === 0) || (!isBuy && tx.quoteFlow === 0);
-    const isBuyQtyZero =
-        (!isBuy && tx.baseFlow === 0) || (isBuy && tx.quoteFlow === 0);
-    const isOrderRemove =
+    const isLimitRemove =
         tx.entityType === 'limitOrder' && sideType === 'remove';
 
+    const valueArrows = tx.entityType !== 'liqchange' && !isLimitRemove;
+
     const positiveDisplayStyle =
-        baseQuantityDisplay === '0' ||
+        (!isBuy ? baseQuantityDisplay === '0' : quoteQuantityDisplay === '0') ||
         !valueArrows ||
-        (isOrderRemove ? isSellQtyZero : isBuyQtyZero)
+        isLimitRemove
             ? styles.light_grey
             : styles.positive_value;
     const negativeDisplayStyle =
-        quoteQuantityDisplay === '0' ||
+        (isBuy ? baseQuantityDisplay === '0' : quoteQuantityDisplay === '0') ||
         !valueArrows ||
-        (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
+        isLimitRemove
             ? styles.light_grey
             : styles.negative_value;
 
