@@ -501,7 +501,7 @@ export const txRowConstants = (props: Props) => {
             onMouseEnter={handleRowMouseDown}
             onMouseLeave={handleRowMouseOut}
             data-label='price'
-            className={'gradient_text'}
+            className={'primary_color'}
             style={{
                 textAlign: 'right',
                 textTransform: 'lowercase',

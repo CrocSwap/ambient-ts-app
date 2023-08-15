@@ -98,7 +98,7 @@ function OrderRow(props: propsIF) {
         isOwnerActiveAccount && showAllData
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
-            ? 'gradient_text'
+            ? 'primary_color'
             : 'username_base_color';
     // eslint-disable-next-line
     const userPositionStyle =
@@ -286,15 +286,16 @@ function OrderRow(props: propsIF) {
                     />
                 </li>
             </ul>
-            <OrderDetailsModal
-                limitOrder={limitOrder}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-                isOpen={isDetailsModalOpen}
-                onClose={closeDetailsModal}
-            />
+            {isDetailsModalOpen && (
+                <OrderDetailsModal
+                    limitOrder={limitOrder}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    onClose={closeDetailsModal}
+                />
+            )}
         </>
     );
 }

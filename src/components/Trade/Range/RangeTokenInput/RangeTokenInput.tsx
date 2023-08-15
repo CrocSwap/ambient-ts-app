@@ -111,7 +111,7 @@ function RangeTokenInput(props: propsIF) {
         if (isPoolInitialized) {
             updateTokenQty();
         }
-    }, [depositSkew, tokenA.address]);
+    }, [isPoolInitialized, depositSkew, tokenA.address]);
 
     useEffect(() => {
         handleTokenAButtonMessage(tokenAInputQty);

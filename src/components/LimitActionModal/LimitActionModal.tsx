@@ -1,6 +1,5 @@
 import { BigNumber } from 'ethers';
 import { useState, useEffect, useContext } from 'react';
-import styles from './LimitActionModal.module.css';
 import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
@@ -17,11 +16,6 @@ import {
     isTransactionReplacedError,
     isTransactionFailedError,
 } from '../../utils/TransactionError';
-import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../Global/TransactionException/TransactionException';
-import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
-import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
-import LimitActionButton from './LimitActionButton/LimitActionButton';
 import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
@@ -31,6 +25,9 @@ import { CrocPositionView } from '@crocswap-libs/sdk';
 import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import Modal from '../Global/Modal/Modal';
+import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import Button from '../Global/Button/Button';
+import styles from './LimitActionModal.module.css';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -292,48 +289,6 @@ export default function LimitActionModal(props: propsIF) {
         }
     };
 
-    // ----------------------------CONFIRMATION JSX------------------------------
-
-    const transactionSuccess = (
-        <TxSubmittedSimplify
-            hash={newTxHash}
-            content={
-                type === 'Remove'
-                    ? 'Removal Transaction Successfully Submitted'
-                    : 'Claim Transaction Successfully Submitted'
-            }
-        />
-    );
-
-    const transactionPending = (
-        <WaitingConfirmation content='Please check your wallet for notifications' />
-    );
-
-    const [currentConfirmationData, setCurrentConfirmationData] =
-        useState(transactionPending);
-
-    const transactionApproved = newTxHash !== '';
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
-
-    const transactionException = (
-        <TransactionException resetConfirmation={resetConfirmation} />
-    );
-
-    function handleConfirmationChange() {
-        setCurrentConfirmationData(transactionPending);
-
-        if (transactionApproved) {
-            setCurrentConfirmationData(transactionSuccess);
-        } else if (isTransactionDenied) {
-            setCurrentConfirmationData(
-                <TransactionDenied resetConfirmation={resetConfirmation} />,
-            );
-        } else if (isTransactionException) {
-            setCurrentConfirmationData(transactionException);
-        }
-    }
-
     const limitInfoProps =
         type === 'Remove'
             ? {
@@ -375,44 +330,16 @@ export default function LimitActionModal(props: propsIF) {
                   networkFee,
               };
 
-    useEffect(() => {
-        handleConfirmationChange();
-    }, [
-        transactionApproved,
-        newTxHash,
-        txErrorCode,
-        showConfirmation,
-        isTransactionDenied,
-    ]);
-
-    const confirmationModal = (
-        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
-            <ModalHeader
-                title={`${type} Limit Order Confirmation`}
-                onClose={onClose}
-            />
-            <div className={styles.confirmation_container}>
-                <div className={styles.confirmation_content}>
-                    {currentConfirmationData}
-                </div>
-            </div>
-        </Modal>
-    );
-    // ----------------------------END OF CONFIRMATION JSX------------------------------
-
-    const showSettingsOrMainContent = showSettings ? (
+    return showSettings ? (
         <LimitActionSettings
             showSettings={showSettings}
             setShowSettings={setShowSettings}
             onBackClick={resetConfirmation}
         />
     ) : (
-        <>
-            <ModalHeader
-                title={showConfirmation ? '' : `${type} Limit Order`}
-                onClose={onClose}
-            />
-            <div style={{ padding: '1rem ' }}>
+        <Modal usingCustomHeader onClose={onClose}>
+            <ModalHeader title={`${type} Limit Order`} onClose={onClose} />
+            <div className={styles.main_content_container}>
                 <LimitActionTokenHeader
                     isDenomBase={isDenomBase}
                     isOrderFilled={isOrderFilled}
@@ -421,29 +348,38 @@ export default function LimitActionModal(props: propsIF) {
                     baseTokenLogoURI={baseTokenLogo}
                     quoteTokenLogoURI={quoteTokenLogo}
                 />
-                <div style={{ padding: '0 8px' }}>
+                <div className={styles.info_container}>
                     <LimitActionInfo {...limitInfoProps} />
-                    <LimitActionButton
-                        onClick={type === 'Remove' ? removeFn : claimFn}
-                        disabled={currentLiquidity === undefined}
-                        title={
-                            type === 'Remove'
-                                ? 'Remove Limit Order'
-                                : 'Claim Limit Order'
-                        }
-                    />
+                    {showConfirmation ? (
+                        <SubmitTransaction
+                            type='Limit'
+                            newTransactionHash={newTxHash}
+                            txErrorCode={txErrorCode}
+                            resetConfirmation={resetConfirmation}
+                            sendTransaction={
+                                type === 'Remove' ? removeFn : claimFn
+                            }
+                            transactionPendingDisplayString={
+                                'Submitting transaction...'
+                            }
+                            disableSubmitAgain
+                        />
+                    ) : (
+                        <Button
+                            title={
+                                !currentLiquidity
+                                    ? '...'
+                                    : type === 'Remove'
+                                    ? 'Remove Limit Order'
+                                    : 'Claim Limit Order'
+                            }
+                            disabled={!currentLiquidity}
+                            action={type === 'Remove' ? removeFn : claimFn}
+                            flat={true}
+                        />
+                    )}
                 </div>
             </div>
-        </>
-    );
-
-    // --------------------------------------------------------------------------------------
-
-    if (showConfirmation) return confirmationModal;
-
-    return (
-        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
-            {showSettingsOrMainContent}
         </Modal>
     );
 }

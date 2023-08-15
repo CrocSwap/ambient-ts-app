@@ -22,8 +22,11 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { handleWETH } from '../../../utils/data/handleWETH';
-import { ZERO_ADDRESS } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import Modal from '../Modal/Modal';
+import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
+import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -31,13 +34,11 @@ interface propsIF {
     isSingleToken: boolean;
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
-    isOpen: boolean;
     onClose: () => void;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
     const {
-        isOpen,
         onClose,
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
@@ -54,6 +55,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const {
         tokens,
         outputTokens,
+        rawInput,
         validatedInput,
         setInput,
         searchType,
@@ -235,31 +237,31 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         onClose();
     };
 
+    const deviceHasKeyboard = 'ontouchstart' in document.documentElement;
+
     useEffect(() => {
+        if (deviceHasKeyboard) return;
+
         const input = document.getElementById(
             'token_select_input_field',
         ) as HTMLInputElement;
         if (input) input.focus();
-    }, []);
+    }, [deviceHasKeyboard]);
 
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
     return (
-        <Modal
-            title='Select Token'
-            isOpen={isOpen}
-            onClose={clearInputFieldAndCloseModal}
-        >
+        <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>
             <section className={styles.container}>
                 <div className={styles.input_control_container}>
                     <input
                         id='token_select_input_field'
                         spellCheck='false'
                         type='text'
-                        value={validatedInput}
+                        value={rawInput}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder=' Search name or enter an Address'
+                        placeholder=' Search name or paste address'
                         style={{
                             color: showSoloSelectTokenButtons
                                 ? 'var(--text2)'
@@ -277,9 +279,36 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         </button>
                     )}
                 </div>
-                {handleWETH.check(validatedInput) && (
-                    <p className={styles.weth_text}>{handleWETH.message}</p>
-                )}
+                <div style={{ padding: '1rem' }}>
+                    {handleWETH.check(validatedInput) && (
+                        <WarningBox
+                            title=''
+                            details={handleWETH.message}
+                            noBackground
+                            button={
+                                <button
+                                    onClick={() => {
+                                        try {
+                                            chooseToken(
+                                                tokens.getTokenByAddress(
+                                                    wrappedNatives.get(
+                                                        chainId,
+                                                    ) as string,
+                                                ) as TokenIF,
+                                                false,
+                                            );
+                                        } catch (err) {
+                                            IS_LOCAL_ENV && console.warn(err);
+                                            onClose();
+                                        }
+                                    }}
+                                >
+                                    I understand, use WETH
+                                </button>
+                            }
+                        />
+                    )}
+                </div>
                 {handleWETH.check(validatedInput) &&
                     [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
                         (token: TokenIF) => (
@@ -293,8 +322,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                 {showSoloSelectTokenButtons ? (
                     <div className={styles.scrollable_container}>
-                        {' '}
-                        {outputTokens
+                        {removeWrappedNative(chainId, outputTokens)
                             .slice(0, MAX_TOKEN_COUNT)
                             .map((token: TokenIF) => (
                                 <TokenSelect
