@@ -175,6 +175,22 @@ export const useProcessOrder = (
         zeroDisplay: '0',
     });
 
+    const originalPositionLiqBase = getFormattedNumber({
+        value: limitOrder.originalPositionLiqBaseDecimalCorrected,
+    });
+
+    const originalPositionLiqQuote = getFormattedNumber({
+        value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
+    });
+
+    const expectedPositionLiqBase = getFormattedNumber({
+        value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
+    });
+
+    const expectedPositionLiqQuote = getFormattedNumber({
+        value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
+    });
+
     const quoteQty = getFormattedNumber({
         value: liqQuoteNum,
         zeroDisplay: '0',
@@ -414,6 +430,10 @@ export const useProcessOrder = (
         baseTokenLogo,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
         baseDisplay,
         quoteDisplay,
         baseTokenSymbol,

@@ -22,6 +22,10 @@ interface Props {
     quoteTokenSymbol: string;
     baseDisplay: string;
     quoteDisplay: string;
+    originalPositionLiqBase: string;
+    originalPositionLiqQuote: string;
+    expectedPositionLiqBase: string;
+    expectedPositionLiqQuote: string;
     priceStyle: string;
     elapsedTimeString: string;
     sideType: string;
@@ -63,8 +67,6 @@ export const orderRowConstants = (props: Props) => {
         isOwnerActiveAccount,
         baseTokenSymbol,
         quoteTokenSymbol,
-        baseDisplay,
-        quoteDisplay,
         elapsedTimeString,
         isAccountView,
         priceCharacter,
@@ -74,7 +76,10 @@ export const orderRowConstants = (props: Props) => {
         sideType,
         sideCharacter,
         isOrderFilled,
-
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
         handleRowMouseDown,
         handleRowMouseOut,
     } = props;
@@ -240,7 +245,9 @@ export const orderRowConstants = (props: Props) => {
                     textAlign: 'right',
                 }}
             >
-                {baseDisplay}
+                {limitOrder.isBid
+                    ? originalPositionLiqBase
+                    : expectedPositionLiqBase}
                 {baseTokenLogoComponent}
             </div>
         </li>
@@ -263,7 +270,9 @@ export const orderRowConstants = (props: Props) => {
                     textAlign: 'right',
                 }}
             >
-                {quoteDisplay}
+                {limitOrder.isBid
+                    ? expectedPositionLiqQuote
+                    : originalPositionLiqQuote}
                 {quoteTokenLogoComponent}
             </div>
         </li>
@@ -378,8 +387,10 @@ export const orderRowConstants = (props: Props) => {
                     whiteSpace: 'nowrap',
                 }}
             >
-                {' '}
-                {baseDisplay} {baseTokenLogoComponent}
+                {limitOrder.isBid
+                    ? originalPositionLiqBase
+                    : expectedPositionLiqBase}
+                {baseTokenLogoComponent}
             </div>
 
             <div
@@ -389,7 +400,9 @@ export const orderRowConstants = (props: Props) => {
                 }}
             >
                 {' '}
-                {quoteDisplay}
+                {limitOrder.isBid
+                    ? expectedPositionLiqQuote
+                    : originalPositionLiqQuote}
                 {quoteTokenLogoComponent}
             </div>
         </li>

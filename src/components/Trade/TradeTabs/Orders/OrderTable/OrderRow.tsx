@@ -63,6 +63,10 @@ function OrderRow(props: propsIF) {
         quoteTokenCharacter,
         isDenomBase,
         elapsedTimeString,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
@@ -210,6 +214,10 @@ function OrderRow(props: propsIF) {
         sideType,
         sideCharacter,
         isOrderFilled,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
     };
 
     const {

@@ -4,6 +4,7 @@ import { LimitOrderIF } from '../../../utils/interfaces/exports';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 type ItemIF = {
     slug: string;
@@ -39,11 +40,8 @@ interface propsIF {
 
 export default function PriceInfo(props: propsIF) {
     const {
+        limitOrder,
         isBid,
-        approximateSellQtyTruncated,
-        approximateBuyQtyTruncated,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         isOrderFilled,
         quoteTokenLogo,
         baseTokenLogo,
@@ -63,15 +61,19 @@ export default function PriceInfo(props: propsIF) {
 
     const sellContent = (
         <div className={styles.sell_content}>
-            <p>{isLimitOrderPartiallyFilled ? 'Sell (remaining):' : 'Sell:'}</p>
+            <p>{'Sell:'}</p>
             <p>
                 {isBid
-                    ? isOrderFilled
-                        ? approximateSellQtyTruncated + ' ' + baseTokenSymbol
-                        : baseDisplayFrontend + ' ' + baseTokenSymbol
-                    : isOrderFilled
-                    ? approximateSellQtyTruncated + ' ' + quoteTokenSymbol
-                    : quoteDisplayFrontend + ' ' + quoteTokenSymbol}
+                    ? getFormattedNumber({
+                          value: limitOrder.originalPositionLiqBaseDecimalCorrected,
+                      }) +
+                      ' ' +
+                      baseTokenSymbol
+                    : getFormattedNumber({
+                          value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
+                      }) +
+                      ' ' +
+                      quoteTokenSymbol}
 
                 <TokenIcon
                     src={!isBid ? quoteTokenLogo : baseTokenLogo}
@@ -84,15 +86,19 @@ export default function PriceInfo(props: propsIF) {
 
     const buyContent = (
         <div className={styles.buy_content}>
-            <p>{isLimitOrderPartiallyFilled ? 'Buy (completed):' : 'Buy:'}</p>
+            <p>{'Buy:'}</p>
             <p>
                 {isBid
-                    ? isLimitOrderPartiallyFilled
-                        ? quoteDisplayFrontend + ' ' + quoteTokenSymbol
-                        : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
-                    : isOrderFilled
-                    ? baseDisplayFrontend + ' ' + baseTokenSymbol
-                    : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol}
+                    ? getFormattedNumber({
+                          value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
+                      }) +
+                      ' ' +
+                      quoteTokenSymbol
+                    : getFormattedNumber({
+                          value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
+                      }) +
+                      ' ' +
+                      baseTokenSymbol}
 
                 <TokenIcon
                     src={isBid ? quoteTokenLogo : baseTokenLogo}

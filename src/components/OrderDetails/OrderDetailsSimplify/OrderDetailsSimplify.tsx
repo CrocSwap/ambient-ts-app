@@ -6,11 +6,12 @@ import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import moment from 'moment';
 import { FiCopy } from 'react-icons/fi';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface ItemRowPropsIF {
     title: string;
@@ -48,10 +49,6 @@ export default function OrderDetailsSimplify(
 ) {
     const {
         isBid,
-        approximateSellQtyTruncated,
-        approximateBuyQtyTruncated,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         isOrderFilled,
         baseTokenSymbol,
         quoteTokenSymbol,
@@ -89,6 +86,10 @@ export default function OrderDetailsSimplify(
         isLimitOrderPartiallyFilled,
         isBaseTokenMoneynessGreaterOrEqual,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
+
+    useEffect(() => {
+        console.log({ limitOrder });
+    }, [limitOrder]);
 
     const {
         snackbar: { open: openSnackbar },
@@ -223,23 +224,19 @@ export default function OrderDetailsSimplify(
         {
             title: 'From Qty ',
             content: isBid
-                ? isOrderFilled
-                    ? approximateSellQtyTruncated + ' ' + baseTokenSymbol
-                    : baseDisplayFrontend + ' ' + baseTokenSymbol
-                : isOrderFilled
-                ? approximateSellQtyTruncated + ' ' + quoteTokenSymbol
-                : quoteDisplayFrontend + ' ' + quoteTokenSymbol,
-            explanation: isLimitOrderPartiallyFilled
-                ? `The remaining quantity of ${
-                      isBid ? baseTokenSymbol : quoteTokenSymbol
-                  }`
-                : isOrderFilled
-                ? `The approximate input quantity of ${
-                      isBid ? baseTokenSymbol : quoteTokenSymbol
-                  }`
-                : `The input quantity of ${
-                      isBid ? baseTokenSymbol : quoteTokenSymbol
-                  }`,
+                ? getFormattedNumber({
+                      value: limitOrder.originalPositionLiqBaseDecimalCorrected,
+                  }) +
+                  ' ' +
+                  baseTokenSymbol
+                : getFormattedNumber({
+                      value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
+                  }) +
+                  ' ' +
+                  quoteTokenSymbol,
+            explanation: `The approximate input quantity of ${
+                isBid ? baseTokenSymbol : quoteTokenSymbol
+            }`,
         },
         {
             title: 'To Token ',
@@ -258,23 +255,19 @@ export default function OrderDetailsSimplify(
         {
             title: 'To Qty ',
             content: isBid
-                ? isLimitOrderPartiallyFilled
-                    ? quoteDisplayFrontend + ' ' + quoteTokenSymbol
-                    : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
-                : isOrderFilled
-                ? baseDisplayFrontend + ' ' + baseTokenSymbol
-                : approximateBuyQtyTruncated + ' ' + baseTokenSymbol,
-            explanation: isLimitOrderPartiallyFilled
-                ? `The currently filled quantity of ${
-                      isBid ? quoteTokenSymbol : baseTokenSymbol
-                  }`
-                : isOrderFilled
-                ? `The output quantity of ${
-                      isBid ? quoteTokenSymbol : baseTokenSymbol
-                  } `
-                : `The expected output quantity of ${
-                      isBid ? quoteTokenSymbol : baseTokenSymbol
-                  } `,
+                ? getFormattedNumber({
+                      value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
+                  }) +
+                  ' ' +
+                  quoteTokenSymbol
+                : getFormattedNumber({
+                      value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
+                  }) +
+                  ' ' +
+                  baseTokenSymbol,
+            explanation: `The approximate output quantity of ${
+                isBid ? quoteTokenSymbol : baseTokenSymbol
+            } `,
         },
 
         {
