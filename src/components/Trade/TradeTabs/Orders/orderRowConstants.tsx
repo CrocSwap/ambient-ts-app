@@ -37,6 +37,7 @@ interface Props {
     isOwnerActiveAccount: boolean;
     isAccountView: boolean;
     isOrderFilled: boolean;
+    isLimitOrderPartiallyFilled: boolean;
     handleCopyPosHash: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
@@ -76,6 +77,7 @@ export const orderRowConstants = (props: Props) => {
         sideType,
         sideCharacter,
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         originalPositionLiqBase,
         originalPositionLiqQuote,
         expectedPositionLiqBase,
@@ -421,7 +423,10 @@ export const orderRowConstants = (props: Props) => {
                     alignItems: 'center',
                 }}
             >
-                <OpenOrderStatus isFilled={isOrderFilled} />
+                <OpenOrderStatus
+                    isFilled={isOrderFilled}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
+                />
             </div>
         </li>
     );

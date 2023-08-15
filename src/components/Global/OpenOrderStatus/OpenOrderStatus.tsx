@@ -3,6 +3,7 @@ import { AiOutlineCheck } from 'react-icons/ai';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 interface OpenOrderStatusProps {
     isFilled: boolean;
+    isLimitOrderPartiallyFilled: boolean;
 }
 
 export default function OpenOrderStatus(props: OpenOrderStatusProps) {
@@ -23,7 +24,11 @@ export default function OpenOrderStatus(props: OpenOrderStatusProps) {
 
     const nonFilledWithTooltip = (
         <DefaultTooltip
-            title={'Not Filled'}
+            title={
+                props.isLimitOrderPartiallyFilled
+                    ? 'Partially Filled'
+                    : 'Not Yet Filled'
+            }
             placement={'right'}
             arrow
             enterDelay={400}

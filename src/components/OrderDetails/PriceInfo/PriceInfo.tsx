@@ -133,11 +133,7 @@ export default function PriceInfo(props: propsIF) {
     const orderType = (
         <div className={styles.order_type}>
             <p>Order Type:</p>
-            <p>
-                {isLimitOrderPartiallyFilled
-                    ? 'Partially Filled Limit'
-                    : 'Limit'}
-            </p>
+            <p>{'Limit'}</p>
         </div>
     );
     const totalValue = (
@@ -160,7 +156,10 @@ export default function PriceInfo(props: propsIF) {
 
             <section>
                 <p>Status:</p>
-                <OpenOrderStatus isFilled={isOrderFilled} />
+                <OpenOrderStatus
+                    isFilled={isOrderFilled}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
+                />
             </section>
         </div>
     );

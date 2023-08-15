@@ -45,6 +45,7 @@ export default function LimitActionModal(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
@@ -343,6 +344,7 @@ export default function LimitActionModal(props: propsIF) {
                 <LimitActionTokenHeader
                     isDenomBase={isDenomBase}
                     isOrderFilled={isOrderFilled}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogo}

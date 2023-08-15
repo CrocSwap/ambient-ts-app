@@ -49,6 +49,7 @@ function OrderRow(props: propsIF) {
         quoteDisplay,
 
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         truncatedDisplayPrice,
         sideType,
         usdValue,
@@ -214,6 +215,7 @@ function OrderRow(props: propsIF) {
         sideType,
         sideCharacter,
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         originalPositionLiqBase,
         originalPositionLiqQuote,
         expectedPositionLiqBase,
