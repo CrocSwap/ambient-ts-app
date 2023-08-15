@@ -18,6 +18,7 @@ interface RangeWidthPropsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    inputId: string;
 }
 
 // React functional component
@@ -26,13 +27,12 @@ function RangeWidth(props: RangeWidthPropsIF) {
         rangeWidthPercentage,
         setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider,
+        inputId,
     } = props;
     const {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
-
-    const inputId = 'input-slider-range';
 
     const PercentageOptionContent = (
         <>

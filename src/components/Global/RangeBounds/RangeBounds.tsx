@@ -9,11 +9,12 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 
 interface RangeBoundsProps {
-    disableAdvancedMode: boolean;
+    isRangeBoundsDisabled: boolean;
     // Props for Range Width
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
+    inputId: string;
 
     // Props for Range Price Info
     spotPriceDisplay: string;
@@ -60,6 +61,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         rangeWidthPercentage,
         setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider,
+        inputId,
         //
         poolPriceCharacter,
         aprPercentage,
@@ -85,12 +87,13 @@ export default function RangeBounds(props: RangeBoundsProps) {
         setMaxPrice,
         setMinPrice,
 
-        disableAdvancedMode,
+        isRangeBoundsDisabled,
     } = props;
     const rangeWidthProps = {
         rangeWidthPercentage,
         setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider,
+        inputId,
     };
 
     const rangePriceInfoProps = {
@@ -126,7 +129,6 @@ export default function RangeBounds(props: RangeBoundsProps) {
 
     const {
         tradeData: { advancedMode },
-        graphData,
     } = useAppSelector((state) => state);
 
     const baseModeContent = (
@@ -155,7 +157,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         </>
     );
     return (
-        <section className={disableAdvancedMode && styles.advanced_disabled}>
+        <section className={isRangeBoundsDisabled && styles.advanced_disabled}>
             {
                 <div className={styles.denomination_switch_container}>
                     <AdvancedModeToggle advancedMode={advancedMode} />

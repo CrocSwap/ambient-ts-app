@@ -42,6 +42,7 @@ import RangeWidth from '../../components/Trade/Range/RangeWidth/RangeWidth';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangePriceInfo from '../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
+import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 
 // react functional component
 export default function InitPool() {
@@ -553,12 +554,6 @@ export default function InitPool() {
     ] = useState(false);
     // const tokenA = localPair.tokens[0]
     // const tokenB = localPair.tokens[1]
-    const rangeWidthProps = {
-        rangeWidthPercentage: rangeWidthPercentage,
-        setRangeWidthPercentage: setRangeWidthPercentage,
-        setRescaleRangeBoundariesWithSlider:
-            setRescaleRangeBoundariesWithSlider,
-    };
 
     const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
         | {
@@ -600,6 +595,28 @@ export default function InitPool() {
         ? getUnicodeCharacter(tokenB.symbol)
         : getUnicodeCharacter(tokenA.symbol);
 
+    // Min Max Price
+    const [minPriceInputString, setMinPriceInputString] = useState<string>('');
+    const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
+    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
+        useState(-10);
+    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
+        useState(10);
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
+        useState(false);
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
+        useState(false);
+    const [minPrice, setMinPrice] = useState(10);
+    const [maxPrice, setMaxPrice] = useState(100);
+
+    const rangeWidthProps = {
+        rangeWidthPercentage: rangeWidthPercentage,
+        setRangeWidthPercentage: setRangeWidthPercentage,
+        setRescaleRangeBoundariesWithSlider:
+            setRescaleRangeBoundariesWithSlider,
+        inputId: 'init_pool_slider',
+    };
+
     const rangePriceInfoProps = {
         pinnedDisplayPrices: pinnedDisplayPrices,
         spotPriceDisplay: getFormattedNumber({
@@ -612,6 +629,25 @@ export default function InitPool() {
         isTokenABase: false,
         poolPriceCharacter: poolPriceCharacter,
         isAmbient: isAmbient,
+    };
+
+    const minMaxPriceProps = {
+        minPricePercentage: minPriceDifferencePercentage,
+        maxPricePercentage: maxPriceDifferencePercentage,
+        minPriceInputString: minPriceInputString,
+        maxPriceInputString: maxPriceInputString,
+        setMinPriceInputString: setMinPriceInputString,
+        setMaxPriceInputString: setMaxPriceInputString,
+        isDenomBase: isDenomBase,
+        highBoundOnBlur: () => setRangeHighBoundFieldBlurred(true),
+        lowBoundOnBlur: () => setRangeLowBoundFieldBlurred(true),
+        rangeLowTick: 0,
+        rangeHighTick: 10,
+        disable: false,
+        maxPrice: maxPrice,
+        minPrice: minPrice,
+        setMaxPrice: setMaxPrice,
+        setMinPrice: setMinPrice,
     };
 
     const simpleTokenSelect = (
@@ -706,7 +742,12 @@ export default function InitPool() {
                             </div>
 
                             <div className={styles.right_container}>
-                                {baseModeContent}
+                                <RangeBounds
+                                    isRangeBoundsDisabled={false}
+                                    {...rangeWidthProps}
+                                    {...rangePriceInfoProps}
+                                    {...minMaxPriceProps}
+                                />
 
                                 <ButtonToRender />
                             </div>

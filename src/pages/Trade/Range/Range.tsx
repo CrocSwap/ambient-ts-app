@@ -57,6 +57,7 @@ import {
     getPinnedPriceValuesFromDisplayPrices,
 } from './rangeFunctions';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import RangeBounds from '../../../components/Global/RangeBounds/RangeBounds';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -1222,6 +1223,7 @@ function Range() {
         setRangeWidthPercentage: setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
+        inputId: 'input-slider-range',
     };
 
     const rangePriceInfoProps = {
@@ -1236,6 +1238,25 @@ function Range() {
         isTokenABase: isTokenABase,
         poolPriceCharacter: poolPriceCharacter,
         isAmbient: isAmbient,
+    };
+
+    const minMaxPriceProps = {
+        minPricePercentage: minPriceDifferencePercentage,
+        maxPricePercentage: maxPriceDifferencePercentage,
+        minPriceInputString: minPriceInputString,
+        maxPriceInputString: maxPriceInputString,
+        setMinPriceInputString: setMinPriceInputString,
+        setMaxPriceInputString: setMaxPriceInputString,
+        isDenomBase: isDenomBase,
+        highBoundOnBlur: () => setRangeHighBoundFieldBlurred(true),
+        lowBoundOnBlur: () => setRangeLowBoundFieldBlurred(true),
+        rangeLowTick: defaultLowTick,
+        rangeHighTick: defaultHighTick,
+        disable: isInvalidRange || !isPoolInitialized,
+        maxPrice: maxPrice,
+        minPrice: minPrice,
+        setMaxPrice: setMaxPrice,
+        setMinPrice: setMinPrice,
     };
 
     const rangeExtraInfoProps = {
@@ -1253,53 +1274,6 @@ function Range() {
         aprPercentage: aprPercentage,
         daysInRange: daysInRange,
     };
-
-    const baseModeContent = (
-        <div className={styles.info_container}>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-            >
-                <RangeWidth {...rangeWidthProps} />
-            </motion.div>
-            <RangePriceInfo {...rangePriceInfoProps} />
-        </div>
-    );
-    const advancedModeContent = (
-        <>
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-            >
-                <div className={styles.advanced_info_container}>
-                    <MinMaxPrice
-                        minPricePercentage={minPriceDifferencePercentage}
-                        maxPricePercentage={maxPriceDifferencePercentage}
-                        minPriceInputString={minPriceInputString}
-                        maxPriceInputString={maxPriceInputString}
-                        setMinPriceInputString={setMinPriceInputString}
-                        setMaxPriceInputString={setMaxPriceInputString}
-                        isDenomBase={isDenomBase}
-                        highBoundOnBlur={() =>
-                            setRangeHighBoundFieldBlurred(true)
-                        }
-                        lowBoundOnBlur={() =>
-                            setRangeLowBoundFieldBlurred(true)
-                        }
-                        rangeLowTick={defaultLowTick}
-                        rangeHighTick={defaultHighTick}
-                        disable={isInvalidRange || !isPoolInitialized}
-                        maxPrice={maxPrice}
-                        minPrice={minPrice}
-                        setMaxPrice={setMaxPrice}
-                        setMinPrice={setMinPrice}
-                    />
-                </div>
-            </motion.div>
-        </>
-    );
 
     return (
         <TradeModuleSkeleton
@@ -1341,16 +1315,12 @@ function Range() {
                 </>
             }
             inputOptions={
-                <section
-                    className={!isPoolInitialized && styles.advanced_disabled}
-                >
-                    {
-                        <div className={styles.denomination_switch_container}>
-                            <AdvancedModeToggle advancedMode={advancedMode} />
-                        </div>
-                    }
-                    {advancedMode ? advancedModeContent : baseModeContent}
-                </section>
+                <RangeBounds
+                    isRangeBoundsDisabled={!isPoolInitialized}
+                    {...rangeWidthProps}
+                    {...rangePriceInfoProps}
+                    {...minMaxPriceProps}
+                />
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
