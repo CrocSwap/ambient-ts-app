@@ -6,7 +6,7 @@ import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import moment from 'moment';
 import { FiCopy } from 'react-icons/fi';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -84,12 +84,9 @@ export default function OrderDetailsSimplify(
         startPriceDisplayDenomByMoneyness,
         middlePriceDisplayDenomByMoneyness,
         isLimitOrderPartiallyFilled,
+        fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
-
-    useEffect(() => {
-        console.log({ limitOrder });
-    }, [limitOrder]);
 
     const {
         snackbar: { open: openSnackbar },
@@ -205,6 +202,17 @@ export default function OrderDetailsSimplify(
             title: 'Status ',
             content: status,
             explanation: 'The current fill status of the order',
+        },
+        {
+            title: 'Fill Completion ',
+            content:
+                getFormattedNumber({
+                    value: fillPercentage,
+                    minFracDigits: 0,
+                    maxFracDigits: 0,
+                }) + '%',
+
+            explanation: 'The current fill percentage of the order',
         },
 
         {

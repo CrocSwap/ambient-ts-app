@@ -175,6 +175,12 @@ export const useProcessOrder = (
         zeroDisplay: '0',
     });
 
+    const fillPercentage =
+        100 *
+        (limitOrder.isBid
+            ? liqQuoteNum / limitOrder.expectedPositionLiqQuoteDecimalCorrected
+            : liqBaseNum / limitOrder.expectedPositionLiqBaseDecimalCorrected);
+
     const originalPositionLiqBase = getFormattedNumber({
         value: limitOrder.originalPositionLiqBaseDecimalCorrected,
     });
@@ -449,6 +455,7 @@ export const useProcessOrder = (
         // open order status
         isOrderFilled,
         isLimitOrderPartiallyFilled,
+        fillPercentage,
 
         // price
         startPriceDisplay,
