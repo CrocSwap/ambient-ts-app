@@ -31,7 +31,7 @@ import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
-import { PoolNotInitalized } from '../../components/PoolNotInitialized/PoolNotInitialized';
+import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 
@@ -44,6 +44,7 @@ function Trade() {
     } = useContext(CrocEnvContext);
     const { candleData, setIsCandleSelected, isCandleDataNull } =
         useContext(CandleContext);
+
     const {
         isFullScreen: isChartFullScreen,
         chartSettings,
@@ -347,7 +348,7 @@ function Trade() {
             }
             bounds={'parent'}
         >
-            <PoolNotInitalized
+            <NoChartData
                 chainId={chainId}
                 tokenA={
                     isDenomBase ? tradeData.baseToken : tradeData.quoteToken
@@ -355,9 +356,12 @@ function Trade() {
                 tokenB={
                     isDenomBase ? tradeData.quoteToken : tradeData.baseToken
                 }
+                isCandleDataNull
             />
         </Resizable>
     );
+
+    const showNoChartData = !isPoolInitialized || isCandleDataNull;
 
     return (
         <section className={`${styles.main_layout}`}>
@@ -369,7 +373,7 @@ function Trade() {
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                 <div className={styles.resizableParent}>
-                    {!isPoolInitialized && poolNotInitContent}
+                    {showNoChartData && poolNotInitContent}
 
                     {isPoolInitialized && (
                         <Resizable
