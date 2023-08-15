@@ -2806,6 +2806,14 @@ export default function Chart(props: propsIF) {
                 setMainCanvasBoundingClientRect(canvas.getBoundingClientRect());
 
                 const height = result[0].contentRect.height;
+                // height given here doesn't account for constant 113 px of header elements in chart
+                // add it here so when we set the height of the whole chart via it's default
+                // it will be correct
+                const heightToSave = height + 113;
+                localStorage.setItem(
+                    'chartDefaultHeight',
+                    heightToSave.toString(),
+                );
 
                 setChartHeights(height);
                 render();

@@ -27,7 +27,15 @@ export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
 export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     // 2:1 ratio of the window height subtracted by main header and token info header
     const CHART_MAX_HEIGHT = window.innerHeight - 98;
-    const CHART_DEFAULT_HEIGHT = Math.floor((CHART_MAX_HEIGHT * 2) / 3);
+    let CHART_DEFAULT_HEIGHT = Math.floor((CHART_MAX_HEIGHT * 2) / 3);
+
+    // Fetch alternative default height from local storage if it exists
+    const CHART_DEFAULT_HEIGHT_LOCAL_STORAGE =
+        localStorage.getItem('chartDefaultHeight');
+
+    if (CHART_DEFAULT_HEIGHT_LOCAL_STORAGE) {
+        CHART_DEFAULT_HEIGHT = parseInt(CHART_DEFAULT_HEIGHT_LOCAL_STORAGE);
+    }
 
     const [chartHeights, setChartHeights] = useState<{
         current: number;
