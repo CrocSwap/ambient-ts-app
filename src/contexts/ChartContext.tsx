@@ -59,6 +59,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const chartCanvasRef = useRef(null);
 
     const [fullScreenChart, setFullScreenChart] = useState(false);
+
     const setChartHeight = (val: number) =>
         setChartHeights({
             ...chartHeights,

@@ -1,20 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    memo,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-    useContext,
-} from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import '../Chart.css';
 import { setCanvasResolution } from '../ChartUtils/chartUtils';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
-import { Zoom } from '../ChartUtils/zoom';
-import { CandleContext } from '../../../contexts/CandleContext';
 
 interface FreeRateData {
     feeData: Array<CandleData>;
@@ -32,6 +23,7 @@ interface FreeRateData {
     lastCrDate: number | undefined;
     isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
+    zoomBase: any;
 }
 
 function FeeRateChart(props: FreeRateData) {
@@ -49,6 +41,7 @@ function FeeRateChart(props: FreeRateData) {
         lastCrDate,
         isCrDataIndActive,
         xAxisActiveTooltip,
+        zoomBase,
     } = props;
 
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
@@ -66,9 +59,6 @@ function FeeRateChart(props: FreeRateData) {
         useState<any>();
     const [feeRateHorizontalyValue, setFeeRateHorizontalyValue] =
         useState<any>();
-
-    const { setCandleDomains } = useContext(CandleContext);
-    const zoomBase = new Zoom(setCandleDomains, period);
 
     useEffect(() => {
         const domain = [-0.002, 0.0125];

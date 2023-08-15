@@ -8,7 +8,6 @@ const maxNumCandlesForZoom = 2000;
 export class Zoom {
     setCandleDomains: Dispatch<SetStateAction<candleDomain>>;
     period: number;
-
     constructor(
         setCandleDomains: Dispatch<SetStateAction<candleDomain>>,
         period: number,
@@ -192,15 +191,22 @@ export class Zoom {
         let lastDomainDate =
             scaleData?.xScale.domain()[1] + this.period * 1000 * 200;
         const nowDate = Date.now();
+        const snapDiff = nowDate % (this.period * 1000);
+
+        const snappedTime = nowDate + (this.period * 1000 - snapDiff);
         if (lastDomainDate > nowDate) {
             lastDomainDate = nowDate;
         }
-        const candleDomain = {
-            lastCandleDate: lastDomainDate,
-            domainBoundry: lastCandleTime,
-        };
 
-        this.setCandleDomains(candleDomain);
+        // update candle domainif dont have last data
+        if (lastCandleTime < snappedTime) {
+            const candleDomain = {
+                lastCandleDate: lastDomainDate,
+                domainBoundry: lastCandleTime,
+            };
+
+            this.setCandleDomains(candleDomain);
+        }
     }
 
     public getNewCandleDataLeft(newBoundary: number, firstCandleTime: number) {
@@ -300,8 +306,8 @@ export class Zoom {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         event: any,
         scaleData: scaleData,
-        lastCandleDate: number,
         firstCandleDate: number,
+        lastCandleDate: number,
     ) {
         const domainX = scaleData?.xScale.domain();
 
@@ -346,7 +352,7 @@ export class Zoom {
         const previousTouchPageX = previousTouch.pageX;
         const movement = currentPageX - previousTouchPageX;
         // calculate panning speed based on bandwidth
-        const deltaX = linearX(movement) * (1 + Math.sqrt(bandwidth));
+        const deltaX = linearX(movement) * Math.sqrt(bandwidth);
         const lastTime = domainX[1];
 
         const firstTime = domainX[0];
