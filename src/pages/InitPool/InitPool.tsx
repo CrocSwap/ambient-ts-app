@@ -38,6 +38,10 @@ import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
 import { LocalPairDataIF } from '../../utils/state/localPairDataSlice';
 import TokenInputQuantity from '../../components/Global/TokenInput/TokenInputQuantity';
+import RangeWidth from '../../components/Trade/Range/RangeWidth/RangeWidth';
+import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import { PoolContext } from '../../contexts/PoolContext';
+import RangePriceInfo from '../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 
 // react functional component
 export default function InitPool() {
@@ -51,6 +55,8 @@ export default function InitPool() {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
+    const { poolPriceDisplay } = useContext(PoolContext);
+
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -538,8 +544,75 @@ export default function InitPool() {
     const localPair: LocalPairDataIF = useAppSelector(
         (state) => state.localPairData,
     );
+    // See Range.tsx line 81
+    const [rangeWidthPercentage, setRangeWidthPercentage] =
+        useState<number>(23);
+    const [
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+    ] = useState(false);
     // const tokenA = localPair.tokens[0]
     // const tokenB = localPair.tokens[1]
+    const rangeWidthProps = {
+        rangeWidthPercentage: rangeWidthPercentage,
+        setRangeWidthPercentage: setRangeWidthPercentage,
+        setRescaleRangeBoundariesWithSlider:
+            setRescaleRangeBoundariesWithSlider,
+    };
+
+    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined
+    >();
+    const [isAmbient, setIsAmbient] = useState(false);
+
+    const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] =
+        useState('');
+    const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] =
+        useState('');
+    const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
+    const maxPriceDisplay = isAmbient
+        ? 'Infinity'
+        : pinnedMaxPriceDisplayTruncated;
+
+    const isTokenABase = false;
+
+    const displayPriceWithDenom =
+        isDenomBase && poolPriceDisplay
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay ?? 0;
+    const poolPriceCharacter = isDenomBase
+        ? isTokenABase
+            ? getUnicodeCharacter(tokenB.symbol)
+            : getUnicodeCharacter(tokenA.symbol)
+        : !isTokenABase
+        ? getUnicodeCharacter(tokenB.symbol)
+        : getUnicodeCharacter(tokenA.symbol);
+
+    const rangePriceInfoProps = {
+        pinnedDisplayPrices: pinnedDisplayPrices,
+        spotPriceDisplay: getFormattedNumber({
+            value: displayPriceWithDenom,
+        }),
+        maxPriceDisplay: maxPriceDisplay,
+        minPriceDisplay: minPriceDisplay,
+        aprPercentage: 10,
+        daysInRange: 10,
+        isTokenABase: false,
+        poolPriceCharacter: poolPriceCharacter,
+        isAmbient: isAmbient,
+    };
 
     const simpleTokenSelect = (
         <div className={styles.local_token_container}>
@@ -604,6 +677,16 @@ export default function InitPool() {
         </div>
     );
 
+    const baseModeContent = (
+        <div className={styles.range_width_container}>
+            <p className={styles.label_title}>Initial Range</p>
+
+            <RangeWidth {...rangeWidthProps} />
+
+            <RangePriceInfo {...rangePriceInfoProps} />
+        </div>
+    );
+
     const newContent = (
         <section className={styles.main}>
             <div className={styles.outer_container}>
@@ -623,7 +706,9 @@ export default function InitPool() {
                             </div>
 
                             <div className={styles.right_container}>
-                                right side
+                                {baseModeContent}
+
+                                <ButtonToRender />
                             </div>
                         </div>
                     </div>

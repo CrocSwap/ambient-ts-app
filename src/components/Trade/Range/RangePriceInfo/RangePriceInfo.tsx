@@ -62,42 +62,6 @@ function RangePriceInfo(props: propsIF) {
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
         useAppSelector((state) => state.tradeData);
 
-    // const dispatch = useAppDispatch();
-
-    // const aprPercentageString = aprPercentage
-    //     ? `${aprPercentage.toLocaleString('en-US', {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 2,
-    //       })}%`
-    //     : '…';
-    // JSX frag for estimated APR of position
-
-    // const aprDisplay = (
-    //     <div className={styles.price_display}>
-    //         <h4 className={styles.price_title}>Est. APR</h4>
-    //         <span
-    //             className={styles.apr_price}
-    //             onClick={() => {
-    //                 dispatch(toggleDidUserFlipDenom());
-    //                 setUserFlippedMaxMinDisplay(false);
-    //             }}
-    //         >
-    //             {aprPercentageString}
-    //             {/* <AiOutlineQuestionCircle
-    //             size={14}
-    //             onClick={() =>
-    //                 openGlobalPopup(
-    //                     <AprExplanation />,
-
-    //                     'Estimated APR',
-    //                     'right',
-    //                 )
-    //             }
-    //         /> */}
-    //         </span>
-    //     </div>
-    // );
-
     const [tokenAMainnetPrice, setTokenAMainnetPrice] = useState<
         number | undefined
     >();
