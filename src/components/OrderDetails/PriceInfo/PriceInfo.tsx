@@ -23,8 +23,6 @@ interface propsIF {
     isOrderFilled: boolean;
     isBid: boolean;
     controlItems: ItemIF[];
-    approximateSellQtyTruncated: string;
-    approximateBuyQtyTruncated: string;
     baseDisplayFrontend: string;
     quoteDisplayFrontend: string;
     quoteTokenLogo: string;
@@ -66,14 +64,10 @@ export default function PriceInfo(props: propsIF) {
                 {isBid
                     ? getFormattedNumber({
                           value: limitOrder.originalPositionLiqBaseDecimalCorrected,
-                      }) +
-                      ' ' +
-                      baseTokenSymbol
+                      })
                     : getFormattedNumber({
                           value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
-                      }) +
-                      ' ' +
-                      quoteTokenSymbol}
+                      })}
 
                 <TokenIcon
                     src={!isBid ? quoteTokenLogo : baseTokenLogo}
@@ -91,14 +85,10 @@ export default function PriceInfo(props: propsIF) {
                 {isBid
                     ? getFormattedNumber({
                           value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
-                      }) +
-                      ' ' +
-                      quoteTokenSymbol
+                      })
                     : getFormattedNumber({
                           value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
-                      }) +
-                      ' ' +
-                      baseTokenSymbol}
+                      })}
 
                 <TokenIcon
                     src={isBid ? quoteTokenLogo : baseTokenLogo}

@@ -99,53 +99,7 @@ export default function OrderDetailsModal(props: propsIF) {
 
     const isBid = limitOrder.isBid;
 
-    const limitPriceString = truncatedDisplayPrice
-        ? truncatedDisplayPrice
-        : '0';
-
-    const parsedLimitPriceNum = parseFloat(limitPriceString.replace(/,/, ''));
-    const baseDisplayFrontendNum = parseFloat(
-        baseDisplayFrontend.replace(/,/, ''),
-    );
-    const quoteDisplayFrontendNum = parseFloat(
-        quoteDisplayFrontend.replace(/,/, ''),
-    );
-
     const isFillStarted = isLimitOrderPartiallyFilled || isOrderFilled;
-
-    const approximateSellQty = isBid
-        ? isDenomBase
-            ? quoteDisplayFrontendNum / parsedLimitPriceNum
-            : quoteDisplayFrontendNum * parsedLimitPriceNum
-        : isDenomBase
-        ? baseDisplayFrontendNum * parsedLimitPriceNum
-        : baseDisplayFrontendNum / parsedLimitPriceNum;
-
-    const approximateSellQtyTruncated = getFormattedNumber({
-        value: approximateSellQty,
-        zeroDisplay: '0',
-    });
-
-    const approximateBuyQty = isFillStarted
-        ? isBid
-            ? isDenomBase
-                ? approximateSellQty * parsedLimitPriceNum
-                : approximateSellQty / parsedLimitPriceNum
-            : isDenomBase
-            ? approximateSellQty / parsedLimitPriceNum
-            : approximateSellQty * parsedLimitPriceNum
-        : isBid
-        ? isDenomBase
-            ? baseDisplayFrontendNum * parsedLimitPriceNum
-            : baseDisplayFrontendNum / parsedLimitPriceNum
-        : isDenomBase
-        ? quoteDisplayFrontendNum / parsedLimitPriceNum
-        : quoteDisplayFrontendNum * parsedLimitPriceNum;
-
-    const approximateBuyQtyTruncated = getFormattedNumber({
-        value: approximateBuyQty,
-        zeroDisplay: '0',
-    });
 
     useEffect(() => {
         const positionStatsCacheEndpoint =
@@ -272,10 +226,6 @@ export default function OrderDetailsModal(props: propsIF) {
                         baseCollateralDisplay={baseCollateralDisplay}
                         quoteCollateralDisplay={quoteCollateralDisplay}
                         isOrderFilled={isClaimable}
-                        approximateSellQtyTruncated={
-                            approximateSellQtyTruncated
-                        }
-                        approximateBuyQtyTruncated={approximateBuyQtyTruncated}
                         baseDisplayFrontend={baseDisplayFrontend}
                         quoteDisplayFrontend={quoteDisplayFrontend}
                         quoteTokenLogo={quoteTokenLogo}
@@ -327,10 +277,6 @@ export default function OrderDetailsModal(props: propsIF) {
                         baseCollateralDisplay={baseCollateralDisplay}
                         quoteCollateralDisplay={quoteCollateralDisplay}
                         isOrderFilled={isClaimable}
-                        approximateSellQtyTruncated={
-                            approximateSellQtyTruncated
-                        }
-                        approximateBuyQtyTruncated={approximateBuyQtyTruncated}
                         baseDisplayFrontend={baseDisplayFrontend}
                         quoteDisplayFrontend={quoteDisplayFrontend}
                         quoteTokenLogo={quoteTokenLogo}

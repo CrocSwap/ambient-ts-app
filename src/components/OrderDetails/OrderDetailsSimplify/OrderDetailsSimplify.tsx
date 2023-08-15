@@ -30,8 +30,6 @@ interface OrderDetailsSimplifyPropsIF {
     isDenomBase: boolean;
     isOrderFilled: boolean;
     isBid: boolean;
-    approximateSellQtyTruncated: string;
-    approximateBuyQtyTruncated: string;
     baseDisplayFrontend: string;
     quoteDisplayFrontend: string;
     quoteTokenLogo: string;

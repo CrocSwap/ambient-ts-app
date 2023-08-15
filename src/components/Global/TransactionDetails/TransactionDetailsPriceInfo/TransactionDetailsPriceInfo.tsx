@@ -39,6 +39,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         quoteTokenLogo,
         baseQuantityDisplay,
         quoteQuantityDisplay,
+        estimatedBaseFlowDisplay,
+        estimatedQuoteFlowDisplay,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
@@ -110,7 +112,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             ? tx.changeType === 'mint'
                 ? 'Add to Range'
                 : 'Remove from Range'
-            : 'Limit Order'
+            : 'Limit'
         : '...';
 
     const txTypeContent = (
@@ -152,7 +154,9 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             </p>
 
             <div>
-                {quoteQuantityDisplay.replace(/[()]/g, '')}
+                {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
+                    ? quoteQuantityDisplay
+                    : estimatedQuoteFlowDisplay || '0.00'}
                 {quoteToken}
             </div>
         </Row>
@@ -165,7 +169,11 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     : 'Sell: '}
             </p>
             <div>
-                {baseQuantityDisplay.replace(/[()]/g, '')}
+                {tx.entityType !== 'limitOrder' ||
+                tx.changeType === 'burn' ||
+                tx.changeType === 'mint'
+                    ? baseQuantityDisplay
+                    : estimatedBaseFlowDisplay || '0.00'}
                 {baseToken}
             </div>
         </Row>
@@ -186,7 +194,9 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
             </p>
 
             <div>
-                {baseQuantityDisplay.replace(/[()]/g, '')}
+                {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
+                    ? baseQuantityDisplay
+                    : estimatedBaseFlowDisplay || '0.00'}
                 {baseToken}
             </div>
         </Row>
@@ -200,7 +210,11 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     : 'Sell: '}
             </p>
             <div>
-                {quoteQuantityDisplay.replace(/[()]/g, '')}
+                {tx.entityType !== 'limitOrder' ||
+                tx.changeType === 'burn' ||
+                tx.changeType === 'mint'
+                    ? quoteQuantityDisplay
+                    : estimatedQuoteFlowDisplay || '0.00'}
                 {quoteToken}
             </div>
         </Row>
