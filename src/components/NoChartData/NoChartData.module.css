@@ -16,7 +16,7 @@
 }
 
 .pool_not_initialialized_content {
-    padding-top: 8px;
+   
     border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;

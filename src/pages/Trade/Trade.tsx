@@ -44,6 +44,7 @@ function Trade() {
     } = useContext(CrocEnvContext);
     const { candleData, setIsCandleSelected, isCandleDataNull } =
         useContext(CandleContext);
+
     const {
         isFullScreen: isChartFullScreen,
         chartSettings,
