@@ -5,7 +5,7 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import styles from './NoChartData.module.css';
 import { FiRefreshCcw } from 'react-icons/fi';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { CandleContext } from '../../contexts/CandleContext';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 
@@ -24,10 +24,25 @@ export const NoChartData = (props: PropsIF) => {
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
+    const [isFetching, setIsFetching] = useState(false); // Initialize state for rotation
+
+    const startFetching = () => {
+        setIsFetching(true);
+        setTimeout(() => {
+            setIsFetching(false);
+        }, 1000);
+    };
+
     const refreshCandleButton = (
         <button
-            className={styles.initialize_link}
-            onClick={() => setIsManualCandleFetchRequested(true)}
+            disabled={isFetching}
+            className={`${styles.initialize_link} ${
+                isFetching && styles.isFetching
+            } ${isFetching && styles.disabled_button}`}
+            onClick={() => {
+                setIsManualCandleFetchRequested(true);
+                startFetching();
+            }}
         >
             Re-fetch data
             <FiRefreshCcw size={22} color='var(--text1)' />

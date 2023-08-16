@@ -42,8 +42,12 @@ function Trade() {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { candleData, setIsCandleSelected, isCandleDataNull } =
-        useContext(CandleContext);
+    const {
+        candleData,
+        setIsCandleSelected,
+        // isCandleDataNull
+    } = useContext(CandleContext);
+    const isCandleDataNull = true;
     const {
         isFullScreen: isChartFullScreen,
         chartSettings,
