@@ -39,7 +39,7 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
         }
     };
 
-    handleTokenLogo();
+    handleTokenLogo('');
 
     // bool to trigger fallback error handling
     const [fetchError, setFetchError] = useState<boolean>(false);
@@ -72,7 +72,7 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
                 <img
                     className={styles.token_icon}
                     style={{ width: getIconWidth(size) }}
-                    src={handleTokenLogo()}
+                    src={src}
                     alt={alt}
                     onError={handleFetchError}
                 />
