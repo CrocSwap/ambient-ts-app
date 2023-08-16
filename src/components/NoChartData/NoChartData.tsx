@@ -44,7 +44,7 @@ export const NoChartData = (props: PropsIF) => {
                 startFetching();
             }}
         >
-            Re-fetch data
+            {isFetching ? 'Fetching…' : 'Try Again'}
             <FiRefreshCcw size={22} color='var(--text1)' />
         </button>
     );
