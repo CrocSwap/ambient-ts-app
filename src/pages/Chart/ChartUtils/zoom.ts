@@ -69,22 +69,15 @@ export class Zoom {
             isPressAltOrShiftKey ||
             !(isZoomingInWithCandleCount && isZoomingOutCandleCount)
         ) {
-            return this.wheelWithPressAltKey(
-                deltaX,
-                scaleData,
-                firstTime,
-                firstCandleDate,
-                lastCandleDate,
-                lastTime,
-                mouseX,
-            );
-        } else {
-            if (isPressCtrlOrMetaKey) {
-                return this.wheelWithPressCtrlKey(
+            if (isTouchPad) {
+                this.wheelWithPressAltKey(
                     deltaX,
                     scaleData,
-                    mouseX,
                     firstTime,
+                    firstCandleDate,
+                    lastCandleDate,
+                    lastTime,
+                    mouseX,
                 );
             } else {
                 this.wheelWithoutPressKey(
@@ -95,6 +88,36 @@ export class Zoom {
                     lastCandleDate,
                     lastTime,
                 );
+            }
+        } else {
+            if (isPressCtrlOrMetaKey) {
+                this.wheelWithPressCtrlKey(
+                    deltaX,
+                    scaleData,
+                    mouseX,
+                    firstTime,
+                );
+            } else {
+                if (isTouchPad) {
+                    this.wheelWithoutPressKey(
+                        deltaX,
+                        scaleData,
+                        firstTime,
+                        firstCandleDate,
+                        lastCandleDate,
+                        lastTime,
+                    );
+                } else {
+                    this.wheelWithPressAltKey(
+                        deltaX,
+                        scaleData,
+                        firstTime,
+                        firstCandleDate,
+                        lastCandleDate,
+                        lastTime,
+                        mouseX,
+                    );
+                }
             }
         }
     }
