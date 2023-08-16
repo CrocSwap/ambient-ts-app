@@ -3,10 +3,12 @@ import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { IS_LOCAL_ENV } from '../../../constants';
 import handleTokenLogo from '../../../utils/functions/handleTokenLogo';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
 interface propsIF {
+    token?: TokenIF;
     src?: string;
     alt?: string;
     size?: TokenIconSize;
@@ -70,7 +72,7 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
                 <img
                     className={styles.token_icon}
                     style={{ width: getIconWidth(size) }}
-                    src={src}
+                    src={handleTokenLogo()}
                     alt={alt}
                     onError={handleFetchError}
                 />

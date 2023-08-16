@@ -76,6 +76,7 @@ export default function PoolCard(props: propsIF) {
                                     ? pool.base.logoURI
                                     : pool.quote.logoURI,
                             )}
+                            token={pool.base}
                             alt={
                                 shouldInvertDisplay === undefined
                                     ? pool.base.symbol
