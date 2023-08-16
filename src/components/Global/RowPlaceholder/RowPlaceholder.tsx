@@ -3,14 +3,13 @@ import styles from './RowPlaceholder.module.css';
 
 interface RowPlaceholderPropsIF {
     id: string;
-    showPair?: boolean;
     showColumns?: boolean;
     showTimestamp?: boolean;
     extraStyle: string;
 }
 
 const RowPlaceholder = (props: RowPlaceholderPropsIF) => {
-    const { id, showColumns,showPair, showTimestamp, extraStyle } = props;
+    const { id, showColumns, showTimestamp, extraStyle } = props;
 
     const timeElement = <p className='base_color'>Now</p>;
 
