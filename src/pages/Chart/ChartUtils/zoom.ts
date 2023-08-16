@@ -41,10 +41,12 @@ export class Zoom {
     ) {
         const isTouchPad = this.isTouchPad(event);
 
+        const zoomSpeedFactor = 0.5; // smaller number is faster
+
         const dx =
             Math.abs(event.sourceEvent.deltaX) != 0
-                ? -event.sourceEvent.deltaX / (isTouchPad ? 0.3 : 3)
-                : event.sourceEvent.deltaY / (isTouchPad ? 0.3 : 3);
+                ? -event.sourceEvent.deltaX / zoomSpeedFactor
+                : event.sourceEvent.deltaY / zoomSpeedFactor;
 
         const domainX = scaleData?.xScale.domain();
         const linearX = d3
