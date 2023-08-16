@@ -9,29 +9,28 @@ import {
 } from '../../ChartUtils/chartUtils';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
+import { createLinearLineSeries } from './LinearLineSeries';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
 }
-type lineData = { x: number; y: number };
+export type lineData = { x: number; y: number };
+
+type lines = { lineSeries: any; data: lineData };
 function DrawCanvas(props: DrawCanvasProps) {
     const d3DrawCanvas = useRef<HTMLCanvasElement | null>(null);
     const [lineData, setLineData] = useState<lineData[]>([]);
+    const [lineDataHistory, setLineDataHistory] = useState<lineData[][]>([]);
+
     const [lineSeries, setLineSeries] = useState<any>();
     const { isDrawActive } = useContext(ChartContext);
 
     const { scaleData } = props;
     useEffect(() => {
-        const lineSeries = d3fc
-            .seriesCanvasLine()
-            .mainValue((d: lineData) => d.y)
-            .crossValue((d: lineData) => d.x)
-            .curve(d3.curveBundle)
-            .xScale(scaleData?.xScale)
-            .yScale(scaleData?.yScale)
-            .decorate((context: CanvasRenderingContext2D) => {
-                context.strokeStyle = 'blue';
-            });
+        const lineSeries = createLinearLineSeries(
+            scaleData?.xScale,
+            scaleData?.yScale,
+        );
 
         setLineSeries(() => lineSeries);
     }, [scaleData]);
@@ -45,15 +44,24 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         let isDrawing = false;
 
+        console.log({ lineData });
+
         const rectCanvas = canvas.getBoundingClientRect();
 
-        const tempLineData: lineData[] = [];
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', stopDrawing);
         canvas.addEventListener('mouseout', stopDrawing);
         function startDrawing(event: any) {
             isDrawing = true;
+            const { offsetX, offsetY } = event;
+
+            setLineData([
+                {
+                    x: scaleData.xScale.invert(offsetX),
+                    y: scaleData.yScale.invert(offsetY),
+                },
+            ]);
             // setLineData([]);
             // const { offsetX, offsetY } = event;
             // ctx.strokeStyle = 'blue';
@@ -65,20 +73,51 @@ function DrawCanvas(props: DrawCanvasProps) {
         function draw(event: any) {
             if (!isDrawing) return;
             const { offsetX, offsetY } = event;
-            console.log('draw');
 
-            lineData.push({
-                x: scaleData.xScale.invert(offsetX),
-                y: scaleData.yScale.invert(offsetY),
-            });
+            if (lineData.length === 1) {
+                lineData.push({
+                    x: scaleData.xScale.invert(offsetX),
+                    y: scaleData.yScale.invert(offsetY),
+                });
+            } else {
+                lineData[1] = {
+                    x: scaleData.xScale.invert(offsetX),
+                    y: scaleData.yScale.invert(offsetY),
+                };
+            }
 
-            // lin(tempLineData);
+            renderCanvasArray([d3DrawCanvas]);
         }
 
         function stopDrawing() {
             isDrawing = false;
         }
-    }, []);
+    }, [lineData]);
+
+    useEffect(() => {
+        //      if (lineData && lineData.length>0){
+        console.log({ lineData });
+        if (lineData.length > 0) {
+            (async () => {
+                setLineDataHistory((item: any) => {
+                    if (item) {
+                        return [...item, lineData];
+                    } else if (lineData.length > 1) {
+                        item[item.length - 1] = lineData;
+                        return item;
+                    } else {
+                        return lineData;
+                    }
+                });
+            })().then(() => {
+                setLineData([]);
+            });
+        }
+
+        renderCanvasArray([d3DrawCanvas]);
+
+        //   }
+    }, [diffHashSig(lineData)]);
 
     // Draw
     useEffect(() => {
@@ -87,21 +126,22 @@ function DrawCanvas(props: DrawCanvasProps) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
-        if (lineSeries && scaleData && lineData) {
+        if (lineSeries && scaleData) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
+                    console.log(lineDataHistory);
 
-                    console.log(lineData);
-
-                    lineSeries(lineData);
+                    lineDataHistory.forEach((item) => {
+                        lineSeries(item);
+                    });
                 })
                 .on('measure', (event: CustomEvent) => {
                     lineSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [diffHashSig(lineData), lineSeries]);
+    }, [diffHashSig(lineDataHistory), lineSeries]);
 
     useEffect(() => {
         renderCanvasArray([d3DrawCanvas]);

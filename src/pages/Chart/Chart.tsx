@@ -689,6 +689,8 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('zoom', (event: any) => {
+                        console.log({ event });
+
                         async function newDomains() {
                             if (
                                 event.sourceEvent &&
@@ -3229,9 +3231,8 @@ export default function Chart(props: propsIF) {
                         ></d3fc-canvas>
 
                         <YAxisCanvas {...yAxisCanvasProps} />
-                        {isDrawActive && scaleData && (
-                            <DrawCanvas scaleData={scaleData} />
-                        )}
+                        {/* {isDrawActive && */}
+                        {scaleData && <DrawCanvas scaleData={scaleData} />}
                     </div>
                     {showFeeRate && (
                         <>
