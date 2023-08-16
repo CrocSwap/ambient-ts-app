@@ -16,6 +16,22 @@ export class Zoom {
         this.period = period;
     }
 
+    private isNegativeZero(value: number) {
+        return value === 0 && 1 / value === -Infinity;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private isTouchPad(event: any) {
+        const wheelDelta =
+            event.sourceEvent.wheelDelta || -event.sourceEvent.deltaY;
+        if (
+            Math.abs(wheelDelta) >= 120 &&
+            this.isNegativeZero(event.sourceEvent.deltaX)
+        ) {
+            return false;
+        }
+        return true;
+    }
     public zoomWithWheel(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         event: any,
@@ -23,9 +39,7 @@ export class Zoom {
         firstCandleDate: number,
         lastCandleDate: number,
     ) {
-        const isTouchPad = event.sourceEvent.wheelDeltaY
-            ? event.sourceEvent.wheelDeltaY === -3 * event.sourceEvent.deltaY
-            : event.sourceEvent.deltaMode === 0;
+        const isTouchPad = this.isTouchPad(event);
 
         const dx =
             Math.abs(event.sourceEvent.deltaX) != 0
