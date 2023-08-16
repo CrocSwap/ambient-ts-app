@@ -231,6 +231,7 @@ export default function Chart(props: propsIF) {
 
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [isChartZoom, setIsChartZoom] = useState(false);
+    const [isTouchToDrag, setIsTouchToDrag] = useState(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState<crosshair[]>([
@@ -611,6 +612,7 @@ export default function Chart(props: propsIF) {
             });
         }
     }, [diffHashSigScaleData(scaleData, 'x'), lastCandleData, period]);
+
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined && unparsedCandleData !== undefined) {
@@ -829,10 +831,41 @@ export default function Chart(props: propsIF) {
                         if (location.pathname.includes('/market')) {
                             return true;
                         } else {
-                            return (
-                                (!canUserDragRange && !canUserDragLimit) ||
-                                isWheel
-                            );
+                            if (event.type.includes('touch')) {
+                                const canvas = d3
+                                    .select(d3CanvasMain.current)
+                                    .select('canvas')
+                                    .node() as HTMLCanvasElement;
+
+                                const rectCanvas =
+                                    canvas.getBoundingClientRect();
+
+                                const lineBuffer =
+                                    (scaleData?.yScale.domain()[1] -
+                                        scaleData?.yScale.domain()[0]) /
+                                    15;
+
+                                const eventPoint =
+                                    event.targetTouches[0].clientY -
+                                    rectCanvas?.top;
+
+                                const mousePlacement =
+                                    scaleData?.yScale.invert(eventPoint);
+                                const limitLineValue = limit;
+
+                                const shouldDrag =
+                                    mousePlacement <
+                                        limitLineValue + lineBuffer &&
+                                    mousePlacement >
+                                        limitLineValue - lineBuffer;
+
+                                return !shouldDrag || isWheel;
+                            } else {
+                                return (
+                                    (!canUserDragRange && !canUserDragLimit) ||
+                                    isWheel
+                                );
+                            }
                         }
                     });
 
@@ -1128,6 +1161,59 @@ export default function Chart(props: propsIF) {
             }
         }
         return newLimitValue;
+    }
+
+    function calculateLimit(newLimitValue: number) {
+        if (newLimitValue < 0) newLimitValue = 0;
+
+        newLimitValue = setLimitForNoGoZone(newLimitValue);
+        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
+
+        const limitNonDisplay = denomInBase
+            ? pool?.fromDisplayPrice(newLimitValue)
+            : pool?.fromDisplayPrice(1 / newLimitValue);
+        const isNoGoneZoneMax = newLimitValue === noGoZoneMax;
+        const isNoGoneZoneMin = newLimitValue === noGoZoneMin;
+
+        limitNonDisplay?.then((limit) => {
+            limit = limit !== 0 ? limit : 1;
+            let pinnedTick: number = isTokenABase
+                ? pinTickLower(limit, chainData.gridSize)
+                : pinTickUpper(limit, chainData.gridSize);
+
+            if (isNoGoneZoneMin) {
+                pinnedTick = isDenomBase
+                    ? pinTickUpper(limit, chainData.gridSize)
+                    : pinTickLower(limit, chainData.gridSize);
+            }
+            if (isNoGoneZoneMax) {
+                pinnedTick = isDenomBase
+                    ? pinTickLower(limit, chainData.gridSize)
+                    : pinTickUpper(limit, chainData.gridSize);
+            }
+
+            const tickPrice = tickToPrice(pinnedTick);
+
+            const tickDispPrice = pool?.toDisplayPrice(tickPrice);
+
+            if (tickDispPrice) {
+                tickDispPrice.then((tp) => {
+                    const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
+
+                    newLimitValue = displayPriceWithDenom;
+                    if (
+                        !(
+                            newLimitValue >= noGoZoneMin &&
+                            newLimitValue <= noGoZoneMax
+                        )
+                    ) {
+                        setLimit(() => {
+                            return newLimitValue;
+                        });
+                    }
+                });
+            }
+        });
     }
 
     // create drag events
@@ -1557,72 +1643,27 @@ export default function Chart(props: propsIF) {
                     oldLimitValue = limit;
                 })
                 .on('drag', function (event) {
-                    if (!cancelDrag) {
-                        setCrosshairActive('none');
-                        setIsLineDrag(true);
+                    if (!event.sourceEvent.type.includes('touch')) {
+                        if (!cancelDrag) {
+                            setCrosshairActive('none');
+                            setIsLineDrag(true);
+                            const eventPoint =
+                                event.sourceEvent.type === 'mousemove'
+                                    ? event.sourceEvent.clientY
+                                    : event.sourceEvent.targetTouches[0]
+                                          .clientY;
 
-                        newLimitValue = scaleData?.yScale.invert(
-                            event.sourceEvent.clientY - rectCanvas.top,
-                        );
+                            newLimitValue = scaleData?.yScale.invert(
+                                eventPoint - rectCanvas.top,
+                            );
 
-                        if (newLimitValue < 0) newLimitValue = 0;
-
-                        newLimitValue = setLimitForNoGoZone(newLimitValue);
-                        const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
-
-                        const limitNonDisplay = denomInBase
-                            ? pool?.fromDisplayPrice(newLimitValue)
-                            : pool?.fromDisplayPrice(1 / newLimitValue);
-                        const isNoGoneZoneMax = newLimitValue === noGoZoneMax;
-                        const isNoGoneZoneMin = newLimitValue === noGoZoneMin;
-
-                        limitNonDisplay?.then((limit) => {
-                            limit = limit !== 0 ? limit : 1;
-                            let pinnedTick: number = isTokenABase
-                                ? pinTickLower(limit, chainData.gridSize)
-                                : pinTickUpper(limit, chainData.gridSize);
-
-                            if (isNoGoneZoneMin) {
-                                pinnedTick = isDenomBase
-                                    ? pinTickUpper(limit, chainData.gridSize)
-                                    : pinTickLower(limit, chainData.gridSize);
-                            }
-                            if (isNoGoneZoneMax) {
-                                pinnedTick = isDenomBase
-                                    ? pinTickLower(limit, chainData.gridSize)
-                                    : pinTickUpper(limit, chainData.gridSize);
-                            }
-
-                            const tickPrice = tickToPrice(pinnedTick);
-
-                            const tickDispPrice =
-                                pool?.toDisplayPrice(tickPrice);
-
-                            if (tickDispPrice) {
-                                tickDispPrice.then((tp) => {
-                                    const displayPriceWithDenom = denomInBase
-                                        ? tp
-                                        : 1 / tp;
-
-                                    newLimitValue = displayPriceWithDenom;
-                                    if (
-                                        !(
-                                            newLimitValue >= noGoZoneMin &&
-                                            newLimitValue <= noGoZoneMax
-                                        )
-                                    ) {
-                                        setLimit(() => {
-                                            return newLimitValue;
-                                        });
-                                    }
+                            calculateLimit(newLimitValue);
+                        } else {
+                            if (oldLimitValue !== undefined) {
+                                setLimit(() => {
+                                    return oldLimitValue as number;
                                 });
                             }
-                        });
-                    } else {
-                        if (oldLimitValue !== undefined) {
-                            setLimit(() => {
-                                return oldLimitValue as number;
-                            });
                         }
                     }
                 })
@@ -2429,12 +2470,70 @@ export default function Chart(props: propsIF) {
 
     // mousemove
     useEffect(() => {
-        d3.select(d3CanvasMain.current).on(
-            'mousemove',
-            function (event: MouseEvent<HTMLDivElement>) {
-                mousemove(event);
-            },
-        );
+        if (!isLineDrag) {
+            d3.select(d3CanvasMain.current).on(
+                'mousemove',
+                function (event: MouseEvent<HTMLDivElement>) {
+                    mousemove(event);
+                },
+            );
+
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
+
+            const rectCanvas = canvas.getBoundingClientRect();
+
+            d3.select(d3CanvasMain.current).on(
+                'touchstart',
+                function (event: TouchEvent) {
+                    if (scaleData !== undefined) {
+                        const lineBuffer =
+                            (scaleData?.yScale.domain()[1] -
+                                scaleData?.yScale.domain()[0]) /
+                            15;
+
+                        const eventPoint =
+                            event.targetTouches[0].clientY - rectCanvas?.top;
+
+                        const mousePlacement =
+                            scaleData?.yScale.invert(eventPoint);
+                        const limitLineValue = limit;
+
+                        if (
+                            mousePlacement < limitLineValue + lineBuffer &&
+                            mousePlacement > limitLineValue - lineBuffer
+                        ) {
+                            setIsTouchToDrag(true);
+                        }
+                    }
+                },
+            );
+
+            d3.select(d3CanvasMain.current).on(
+                'touchmove',
+                function (event: TouchEvent) {
+                    if (scaleData !== undefined) {
+                        const eventPoint =
+                            event.targetTouches[0].clientY - rectCanvas?.top;
+
+                        if (isTouchToDrag) {
+                            const newLimitValue =
+                                scaleData?.yScale.invert(eventPoint);
+
+                            if (newLimitValue !== undefined) {
+                                calculateLimit(newLimitValue);
+                            }
+                        }
+                    }
+                },
+            );
+
+            d3.select(d3CanvasMain.current).on('touchend', function () {
+                setIsTouchToDrag(false);
+            });
+        }
     }, [
         diffHashSigScaleData(scaleData),
         diffHashSigChart(visibleCandleData),
@@ -2442,6 +2541,7 @@ export default function Chart(props: propsIF) {
         mainCanvasBoundingClientRect,
         selectedDate,
         bandwidth,
+        isTouchToDrag,
     ]);
 
     // mouseleave
