@@ -19,6 +19,7 @@ import {
     renderCanvasArray,
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -594,7 +595,7 @@ export default function TransactionDetailsGraph(
 
     const drawXaxis = (context: any, xScale: any, Y: any) => {
         if (period) {
-            const _width = 30; // magic number of pixels to surrounding price
+            const _width = 15; // magic number of pixels to surrounding price
             const minDomainLocation = scaleData?.xScale.range()[0];
             const maxDomainLocation = scaleData?.xScale.range()[1];
 
@@ -731,7 +732,15 @@ export default function TransactionDetailsGraph(
                         .toString()
                         .replace('.', '');
 
-                    const factor = Math.pow(10, 3 - precision.length);
+                    const scientificValue = getFormattedNumber({
+                        value: d,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    });
+
+                    const textScientificArray = scientificValue.split('0.0');
+                    const textScientific = textScientificArray[1].slice(1, 4);
+
+                    const factor = Math.pow(10, 3 - textScientific.length);
 
                     const textHeight =
                         context.measureText('0.0').actualBoundingBoxAscent +
@@ -745,11 +754,12 @@ export default function TransactionDetailsGraph(
                             context.measureText(subString).width / 2,
                         yScale(d),
                     );
+
                     context.fillText(subString, X, yScale(d) + textHeight / 3);
                     context.fillText(
-                        factor * Number(precision),
+                        factor * Number(textScientific),
                         X +
-                            context.measureText(factor * Number(precision))
+                            context.measureText(factor * Number(textScientific))
                                 .width /
                                 2 +
                             context.measureText(subString).width / 2,
