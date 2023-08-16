@@ -23,6 +23,11 @@ export class Zoom {
         firstCandleDate: number,
         lastCandleDate: number,
     ) {
+        const isTouchPad = event.wheelDeltaY
+            ? event.wheelDeltaY === -3 * event.deltaY
+            : event.deltaMode === 0;
+        console.log('wheel', isTouchPad);
+
         const dx =
             Math.abs(event.sourceEvent.deltaX) != 0
                 ? -event.sourceEvent.deltaX / 3
