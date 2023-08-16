@@ -2,6 +2,7 @@ import { Suspense, memo, useEffect, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { IS_LOCAL_ENV } from '../../../constants';
+import handleTokenLogo from '../../../utils/functions/handleTokenLogo';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
@@ -35,6 +36,8 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
                 return '20px';
         }
     };
+
+    handleTokenLogo();
 
     // bool to trigger fallback error handling
     const [fetchError, setFetchError] = useState<boolean>(false);
