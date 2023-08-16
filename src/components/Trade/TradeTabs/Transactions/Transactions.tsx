@@ -160,9 +160,7 @@ function Transactions(props: propsIF) {
     const ipadView = useMediaQuery('(max-width: 600px)');
     const showTimestamp = useMediaQuery('(min-width: 1200px)');
 
-    const showColumns = isAccountView
-        ? useMediaQuery('(max-width: 1850px)')
-        : useMediaQuery('(max-width: 1599px)');
+    const showColumns = useMediaQuery('(max-width: 1599px)');
 
     // const showColumns = false;
 
