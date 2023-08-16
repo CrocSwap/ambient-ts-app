@@ -389,25 +389,28 @@ export class Zoom {
 
         let movement = Math.abs(touch1.pageX - touch2.pageX);
 
-        if (previousDeltaTouch > deltaTouch) {
-            // zoom out
-            movement = movement / 10;
-        }
-        if (previousDeltaTouch < deltaTouch) {
-            // zoom in
-            movement = -movement / 10;
-        }
-        const deltaX = linearX(movement);
+        if (previousDeltaTouch !== deltaTouch) {
+            if (previousDeltaTouch > deltaTouch) {
+                // zoom out
+                movement = movement / 10;
+            }
+            if (previousDeltaTouch < deltaTouch) {
+                // zoom in
+                movement = -movement / 10;
+            }
+            const deltaX = linearX(movement);
 
-        const mouseX = scaleData?.xScale.invert(touch1.pageX);
+            const mouseX = scaleData?.xScale.invert(touch1.pageX);
 
-        const domain = this.changeCandleSize(
-            domainX,
-            deltaX,
-            mouseX,
-            scaleData?.xScale.invert(previousDeltaTouchLocation),
-        );
-        scaleData?.xScale.domain(domain);
+            const domain = this.changeCandleSize(
+                domainX,
+                deltaX,
+                mouseX,
+                scaleData?.xScale.invert(previousDeltaTouchLocation),
+            );
+
+            scaleData?.xScale.domain(domain);
+        }
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
