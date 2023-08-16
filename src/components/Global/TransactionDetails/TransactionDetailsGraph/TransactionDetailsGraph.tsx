@@ -728,10 +728,6 @@ export default function TransactionDetailsGraph(
                         Math.abs(Number(splitNumber[1])) -
                         (splitNumber.includes('.') ? 2 : 1);
 
-                    const precision = splitNumber[0]
-                        .toString()
-                        .replace('.', '');
-
                     const scientificValue = getFormattedNumber({
                         value: d,
                         abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
