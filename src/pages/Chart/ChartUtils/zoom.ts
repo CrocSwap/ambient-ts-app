@@ -16,6 +16,22 @@ export class Zoom {
         this.period = period;
     }
 
+    private isNegativeZero(value: number) {
+        return value === 0 && 1 / value === -Infinity;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private isTouchPad(event: any) {
+        const wheelDelta =
+            event.sourceEvent.wheelDelta || -event.sourceEvent.deltaY;
+        if (
+            Math.abs(wheelDelta) >= 120 &&
+            this.isNegativeZero(event.sourceEvent.deltaX)
+        ) {
+            return false;
+        }
+        return true;
+    }
     public zoomWithWheel(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         event: any,
@@ -23,10 +39,12 @@ export class Zoom {
         firstCandleDate: number,
         lastCandleDate: number,
     ) {
+        const isTouchPad = this.isTouchPad(event);
+
         const dx =
             Math.abs(event.sourceEvent.deltaX) != 0
-                ? -event.sourceEvent.deltaX / 3
-                : event.sourceEvent.deltaY / 3;
+                ? -event.sourceEvent.deltaX / (isTouchPad ? 0.3 : 3)
+                : event.sourceEvent.deltaY / (isTouchPad ? 0.3 : 3);
 
         const domainX = scaleData?.xScale.domain();
         const linearX = d3
@@ -52,37 +70,18 @@ export class Zoom {
             (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
         );
 
-        const isZoomingIn = deltaX > 0;
-        const isZoomingOut = deltaX < 0;
-        const isZoomingInWithCandleCount =
+        /*   const isZoomingIn = deltaX > 0;
+        const isZoomingOut = deltaX < 0; */
+        /*   const isZoomingInWithCandleCount =
             isZoomingIn ||
             Math.abs(lastTime - firstTime) >= this.period * 1000 * 2;
         const isZoomingOutCandleCount =
             isZoomingOut ||
             Math.abs(lastTime - firstTime) <=
-                this.period * 1000 * maxNumCandlesForZoom;
-        if (
-            isPressAltOrShiftKey ||
-            !(isZoomingInWithCandleCount && isZoomingOutCandleCount)
-        ) {
-            this.wheelWithPressAltKey(
-                deltaX,
-                scaleData,
-                firstTime,
-                firstCandleDate,
-                lastCandleDate,
-                lastTime,
-            );
-        } else {
-            if (isPressCtrlOrMetaKey) {
-                return this.wheelWithPressCtrlKey(
-                    deltaX,
-                    scaleData,
-                    mouseX,
-                    firstTime,
-                );
-            } else {
-                return this.wheelWithoutPressKey(
+                this.period * 1000 * maxNumCandlesForZoom; */
+        if (isPressAltOrShiftKey) {
+            if (isTouchPad) {
+                this.wheelWithPressAltKey(
                     deltaX,
                     scaleData,
                     firstTime,
@@ -91,6 +90,45 @@ export class Zoom {
                     lastTime,
                     mouseX,
                 );
+            } else {
+                this.wheelWithoutPressKey(
+                    deltaX,
+                    scaleData,
+                    firstTime,
+                    firstCandleDate,
+                    lastCandleDate,
+                    lastTime,
+                );
+            }
+        } else {
+            if (isPressCtrlOrMetaKey) {
+                this.wheelWithPressCtrlKey(
+                    deltaX,
+                    scaleData,
+                    mouseX,
+                    firstTime,
+                );
+            } else {
+                if (isTouchPad) {
+                    this.wheelWithoutPressKey(
+                        deltaX,
+                        scaleData,
+                        firstTime,
+                        firstCandleDate,
+                        lastCandleDate,
+                        lastTime,
+                    );
+                } else {
+                    this.wheelWithPressAltKey(
+                        deltaX,
+                        scaleData,
+                        firstTime,
+                        firstCandleDate,
+                        lastCandleDate,
+                        lastTime,
+                        mouseX,
+                    );
+                }
             }
         }
     }
@@ -111,7 +149,7 @@ export class Zoom {
         this.getNewCandleDataLeftWithRight(scaleData, firstCandleDate);
     }
 
-    private wheelWithoutPressKey(
+    private wheelWithPressAltKey(
         deltaX: number,
         scaleData: scaleData,
         firstTime: number,
@@ -168,7 +206,7 @@ export class Zoom {
         }
     }
 
-    private wheelWithPressAltKey(
+    private wheelWithoutPressKey(
         deltaX: number,
         scaleData: scaleData,
         firstTime: number,
@@ -321,7 +359,7 @@ export class Zoom {
 
         const deltaX = linearX(event.sourceEvent.movementX);
 
-        this.wheelWithPressAltKey(
+        this.wheelWithoutPressKey(
             deltaX,
             scaleData,
             firstTime,
@@ -357,7 +395,7 @@ export class Zoom {
         const lastTime = domainX[1];
 
         const firstTime = domainX[0];
-        this.wheelWithPressAltKey(
+        this.wheelWithoutPressKey(
             deltaX,
             scaleData,
             firstTime,
