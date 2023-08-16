@@ -71,6 +71,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         setChartHeights({
             ...chartHeights,
             current: val,
+            default: val,
         });
 
     const isChartEnabled =
