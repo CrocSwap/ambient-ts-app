@@ -544,9 +544,11 @@ function Transactions(props: propsIF) {
 
     return (
         <div
-            className={`${styles.main_list_container} ${
-                isTradeTableExpanded && styles.main_list_expanded
-            }`}
+            className={`${
+                isAccountView
+                    ? styles.acc_list_container
+                    : styles.main_list_container
+            } ${isTradeTableExpanded && styles.main_list_expanded}`}
         >
             <div>{headerColumnsDisplay}</div>
 
