@@ -23,15 +23,14 @@ export class Zoom {
         firstCandleDate: number,
         lastCandleDate: number,
     ) {
-        const isTouchPad = event.wheelDeltaY
-            ? event.wheelDeltaY === -3 * event.deltaY
-            : event.deltaMode === 0;
-        console.log('wheel', isTouchPad);
+        const isTouchPad = event.sourceEvent.wheelDeltaY
+            ? event.sourceEvent.wheelDeltaY === -3 * event.sourceEvent.deltaY
+            : event.sourceEvent.deltaMode === 0;
 
         const dx =
             Math.abs(event.sourceEvent.deltaX) != 0
-                ? -event.sourceEvent.deltaX / 3
-                : event.sourceEvent.deltaY / 3;
+                ? -event.sourceEvent.deltaX / (isTouchPad ? 0.8 : 3)
+                : event.sourceEvent.deltaY / (isTouchPad ? 0.8 : 3);
 
         const domainX = scaleData?.xScale.domain();
         const linearX = d3
