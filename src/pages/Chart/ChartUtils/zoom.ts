@@ -43,8 +43,8 @@ export class Zoom {
 
         const dx =
             Math.abs(event.sourceEvent.deltaX) != 0
-                ? -event.sourceEvent.deltaX / (isTouchPad ? 1 : 3)
-                : event.sourceEvent.deltaY / (isTouchPad ? 1 : 3);
+                ? -event.sourceEvent.deltaX / (isTouchPad ? 0.3 : 3)
+                : event.sourceEvent.deltaY / (isTouchPad ? 0.3 : 3);
 
         const domainX = scaleData?.xScale.domain();
         const linearX = d3
