@@ -50,7 +50,7 @@ const useChatSocket = (
             method: 'GET',
         });
         const data = await response.json();
-        setMessages((prevMessages) => [...data.reverse(), ...prevMessages]);
+        setMessages((prevMessages) => [...data, ...prevMessages]);
         setLastMessage(data);
         setLastMessageText(data.message);
         setMessageUser(data.sender);

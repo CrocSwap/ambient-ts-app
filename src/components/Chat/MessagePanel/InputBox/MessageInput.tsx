@@ -114,12 +114,10 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     function messageInputText() {
-        if (isConnected && address && props.room !== 'Admins') {
+        if (isConnected && address) {
             return 'Type to chat. Enter to submit.';
         } else {
-            if (props.room === 'Admins') {
-                return 'You can read all messages';
-            } else return 'Please log in to chat.';
+            return 'Please log in to chat.';
         }
     }
 
@@ -254,12 +252,13 @@ export default function MessageInput(props: MessageInputProps) {
     });
 
     const handleSendMsg = async (msg: string, roomId: string) => {
-        console.log(msg);
-        console.log(mentUser);
+        // console.log(msg);
+        // console.log(mentUser);
         if (msg !== '' && address) {
             if (
-                (isRoomAdmins && props.replyMessageContent === undefined) ||
-                props.replyMessageContent?.roomInfo !== 'Admins'
+                (isRoomAdmins && props.replyMessageContent !== undefined) ||
+                (props.replyMessageContent?.roomInfo !== 'Admins' &&
+                    props.replyMessageContent?.roomInfo !== undefined)
             ) {
                 console.log(
                     'evet',
@@ -280,7 +279,13 @@ export default function MessageInput(props: MessageInputProps) {
                         : undefined,
                 );
             } else {
-                console.log('bu mu');
+                console.log(
+                    'burada',
+                    isRoomAdmins,
+                    props.replyMessageContent,
+                    props.replyMessageContent?.roomInfo,
+                    roomId,
+                );
                 props.sendMsg(
                     props.currentUser,
                     message,
@@ -340,7 +345,7 @@ export default function MessageInput(props: MessageInputProps) {
             {!props.disabled && (
                 <div
                     className={
-                        !isConnected || props.room === 'Admins'
+                        !isConnected
                             ? styles.input_box_not_allowed
                             : styles.input_box
                     }
@@ -375,7 +380,7 @@ export default function MessageInput(props: MessageInputProps) {
 
                     <div
                         className={
-                            !isConnected || props.room === 'Admins'
+                            !isConnected
                                 ? styles.input_not_allowed
                                 : styles.input
                         }
@@ -384,13 +389,9 @@ export default function MessageInput(props: MessageInputProps) {
                             type='text'
                             id='box'
                             placeholder={messageInputText()}
-                            disabled={
-                                !isConnected ||
-                                props.disabled ||
-                                props.room === 'Admins'
-                            }
+                            disabled={!isConnected || props.disabled}
                             className={
-                                !isConnected || props.room === 'Admins'
+                                !isConnected
                                     ? styles.input_text_not_allowed
                                     : styles.input_text
                             }
@@ -405,7 +406,7 @@ export default function MessageInput(props: MessageInputProps) {
 
                         <BsEmojiSmile
                             className={
-                                isUserLoggedIn || props.room !== 'Admins'
+                                isUserLoggedIn
                                     ? styles.svgButton
                                     : styles.not_LoggedIn_svgButton
                             }
@@ -414,7 +415,7 @@ export default function MessageInput(props: MessageInputProps) {
                         {}
                         <div
                             className={
-                                isUserLoggedIn || props.room !== 'Admins'
+                                isUserLoggedIn
                                     ? styles.send_message_button
                                     : styles.not_LoggedIn_send_message_button
                             }
@@ -434,8 +435,7 @@ export default function MessageInput(props: MessageInputProps) {
                                     strokeLinecap='round'
                                     strokeLinejoin='round'
                                     className={
-                                        isUserLoggedIn ||
-                                        props.room !== 'Admins'
+                                        isUserLoggedIn
                                             ? styles.svgButton
                                             : styles.not_LoggedIn_svgButton
                                     }

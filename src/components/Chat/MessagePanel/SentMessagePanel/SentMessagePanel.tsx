@@ -101,10 +101,10 @@ function SentMessagePanel(props: SentMessageProps) {
             (e) => e === props.currentUser,
         );
 
-        console.log('..........................');
-        console.log(liked);
-        console.log(disliked);
-        console.log('..........................');
+        // console.log('..........................');
+        // console.log(liked);
+        // console.log(disliked);
+        // console.log('..........................');
 
         if (liked && disliked) {
             retVal = liked?.length > 0 ? 1 : disliked?.length > 0 ? -1 : 0;
