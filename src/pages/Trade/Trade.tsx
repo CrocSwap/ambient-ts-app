@@ -42,12 +42,8 @@ function Trade() {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const {
-        candleData,
-        setIsCandleSelected,
-        // isCandleDataNull
-    } = useContext(CandleContext);
-    const isCandleDataNull = true;
+    const { candleData, setIsCandleSelected, isCandleDataNull } =
+        useContext(CandleContext);
     const {
         isFullScreen: isChartFullScreen,
         chartSettings,
@@ -315,7 +311,9 @@ function Trade() {
     const poolNotInitContent = (
         <Resizable
             className={styles.chartBox}
-            enable={{ bottom: true }}
+            enable={{
+                bottom: !isChartFullScreen,
+            }}
             size={{ width: '100%', height: chartHeights.current }}
             minHeight={4}
             onResizeStart={() => {
