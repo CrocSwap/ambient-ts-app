@@ -152,7 +152,7 @@ function TradeCandleStickChart(props: propsIF) {
                         ? liq.upperBoundInvPriceDecimalCorrected <
                               barThreshold &&
                               liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
-                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
+                        : liq.upperBoundPriceDecimalCorrected > barThreshold &&
                               liq.upperBoundPriceDecimalCorrected !== '+inf';
                 },
             );
@@ -161,7 +161,7 @@ function TradeCandleStickChart(props: propsIF) {
                 liqBoundaryData !== undefined
                     ? denominationsInBase
                         ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
-                        : liqBoundaryData.upperBoundPriceDecimalCorrected
+                        : liqBoundaryData.lowerBoundPriceDecimalCorrected
                     : barThreshold;
             const liqBoundary =
                 typeof liqBoundaryArg === 'number'
