@@ -44,7 +44,6 @@ function Trade() {
     } = useContext(CrocEnvContext);
     const { candleData, setIsCandleSelected, isCandleDataNull } =
         useContext(CandleContext);
-
     const {
         isFullScreen: isChartFullScreen,
         chartSettings,
@@ -375,7 +374,7 @@ function Trade() {
                 <div className={styles.resizableParent}>
                     {showNoChartData && poolNotInitContent}
 
-                    {isPoolInitialized && (
+                    {!showNoChartData && isPoolInitialized && (
                         <Resizable
                             className={styles.chartBox}
                             enable={{
