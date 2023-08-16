@@ -314,7 +314,7 @@ export default function Chart(props: propsIF) {
         period: number,
         mobileView: boolean,
     ) => {
-        const numberOfCandlesToDisplay = mobileView ? 100 : 50;
+        const numberOfCandlesToDisplay = mobileView ? 300 : 100;
 
         if (scaleData) {
             const xmin =
