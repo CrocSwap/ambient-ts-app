@@ -315,6 +315,7 @@ function Trade() {
             enable={{
                 bottom: !isChartFullScreen,
             }}
+            style={{ opacity: tradeTableState === 'Expanded' ? '0' : '1' }}
             size={{ width: '100%', height: chartHeights.current }}
             minHeight={4}
             onResizeStart={() => {
