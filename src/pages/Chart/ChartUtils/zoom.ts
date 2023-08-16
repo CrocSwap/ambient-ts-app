@@ -43,8 +43,8 @@ export class Zoom {
 
         const dx =
             Math.abs(event.sourceEvent.deltaX) != 0
-                ? -event.sourceEvent.deltaX / (isTouchPad ? 0.8 : 3)
-                : event.sourceEvent.deltaY / (isTouchPad ? 0.8 : 3);
+                ? -event.sourceEvent.deltaX / (isTouchPad ? 1 : 3)
+                : event.sourceEvent.deltaY / (isTouchPad ? 1 : 3);
 
         const domainX = scaleData?.xScale.domain();
         const linearX = d3
@@ -70,19 +70,16 @@ export class Zoom {
             (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
         );
 
-        const isZoomingIn = deltaX > 0;
-        const isZoomingOut = deltaX < 0;
-        const isZoomingInWithCandleCount =
+        /*   const isZoomingIn = deltaX > 0;
+        const isZoomingOut = deltaX < 0; */
+        /*   const isZoomingInWithCandleCount =
             isZoomingIn ||
             Math.abs(lastTime - firstTime) >= this.period * 1000 * 2;
         const isZoomingOutCandleCount =
             isZoomingOut ||
             Math.abs(lastTime - firstTime) <=
-                this.period * 1000 * maxNumCandlesForZoom;
-        if (
-            isPressAltOrShiftKey ||
-            !(isZoomingInWithCandleCount && isZoomingOutCandleCount)
-        ) {
+                this.period * 1000 * maxNumCandlesForZoom; */
+        if (isPressAltOrShiftKey) {
             if (isTouchPad) {
                 this.wheelWithPressAltKey(
                     deltaX,
