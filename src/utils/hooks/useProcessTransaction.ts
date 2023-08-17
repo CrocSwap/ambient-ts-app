@@ -8,6 +8,7 @@ import moment from 'moment';
 import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.module.css';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { getAddress } from 'ethers/lib/utils.js';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -20,7 +21,8 @@ export const useProcessTransaction = (
     const isDenomBase = tradeData.isDenomBase;
 
     const txHash = tx.txHash;
-    const ownerId = tx.user;
+    const ownerId = tx.user ? getAddress(tx.user) : '';
+
     const ensName = tx.ensResolution ? tx.ensResolution : null;
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();
@@ -284,12 +286,12 @@ export const useProcessTransaction = (
     // --------------------------------------------------------
 
     const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 13
-            ? trimString(ensName, 8, 4, '…')
+        ? ensName.length > 25
+            ? trimString(ensName, 20, 4, '…')
             : ensName
-        : trimString(ownerId, 8, 4, '…');
+        : trimString(ownerId, 5, 4, '…');
 
-    const txHashTruncated = trimString(txHash, 6, 4, '…');
+    const txHashTruncated = trimString(txHash, 9, 0, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'

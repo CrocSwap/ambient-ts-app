@@ -19,6 +19,7 @@ import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { diffHashSig } from '../functions/diffHashSig';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import uriToHttp from '../functions/uriToHttp';
+import { getAddress } from 'ethers/lib/utils.js';
 
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
@@ -46,7 +47,10 @@ export const useProcessOrder = (
 
     const ownerId = limitOrder.ensResolution
         ? limitOrder.ensResolution
-        : limitOrder.user;
+        : limitOrder.user
+        ? getAddress(limitOrder.user)
+        : '';
+
     const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
@@ -213,10 +217,10 @@ export const useProcessOrder = (
     // ----------------------------------------------------------------------
 
     const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 15
-            ? trimString(ensName, 9, 3, '…')
+        ? ensName.length > 25
+            ? trimString(ensName, 20, 4, '…')
             : ensName
-        : trimString(ownerId, 7, 4, '…');
+        : trimString(ownerId, 5, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'

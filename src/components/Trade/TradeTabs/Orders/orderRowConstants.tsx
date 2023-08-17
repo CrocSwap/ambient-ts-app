@@ -32,6 +32,7 @@ interface Props {
     truncatedDisplayPrice: string | undefined;
     isOwnerActiveAccount: boolean;
     isAccountView: boolean;
+    ensName: string | null;
     isOrderFilled: boolean;
     handleCopyPosHash: () => void;
     handleRowMouseDown: () => void;
@@ -48,7 +49,7 @@ interface Props {
 export const orderRowConstants = (props: Props) => {
     const {
         posHashTruncated,
-
+        ensName,
         posHash,
         handleCopyPosHash,
         sellOrderStyle,
@@ -168,7 +169,7 @@ export const orderRowConstants = (props: Props) => {
             <p
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.mono_font}`}
-                style={{ textTransform: 'lowercase' }}
+                style={ensName ? { textTransform: 'lowercase' } : undefined}
             >
                 {userNameToDisplay}
             </p>
