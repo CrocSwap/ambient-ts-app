@@ -12,7 +12,7 @@ export default function OpenOrderStatus(props: OpenOrderStatusProps) {
     const filledWithTooltip = (
         <DefaultTooltip
             interactive
-            title={'Filled'}
+            title={'100% Filled'}
             placement={'right'}
             arrow
             enterDelay={400}
@@ -27,7 +27,7 @@ export default function OpenOrderStatus(props: OpenOrderStatusProps) {
     const nonFilledWithTooltip = (
         <>
             <DefaultTooltip
-                title={'Not Yet Filled'}
+                title={'0% Filled'}
                 placement={'right'}
                 arrow
                 enterDelay={400}

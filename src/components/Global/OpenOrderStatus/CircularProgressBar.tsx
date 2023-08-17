@@ -12,7 +12,7 @@ export default function CircularProgressBar(props: CircularProgressBarProps) {
 
     return (
         <DefaultTooltip
-            title={`partially filled at ${props.fillPercentage}%`}
+            title={`${props.fillPercentage}% Filled`}
             placement={'right'}
             arrow
             enterDelay={400}
