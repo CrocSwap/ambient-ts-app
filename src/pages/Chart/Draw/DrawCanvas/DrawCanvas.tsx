@@ -36,8 +36,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         canvas.addEventListener('click', startDrawing);
         canvas.addEventListener('mousemove', draw);
-        // canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('mouseout', stopDrawing);
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function startDrawing(event: any) {
             isDrawing = true;
@@ -89,10 +88,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                 };
             }
             renderCanvasArray([d3DrawCanvas]);
-        }
-
-        function stopDrawing() {
-            isDrawing = false;
         }
     }, []);
 

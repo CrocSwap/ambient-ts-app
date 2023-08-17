@@ -16,3 +16,11 @@
     font-size: 14px;
   }
   
+
+.icon_active {
+  color: #00aaff; 
+}
+
+.icon_inactive {
+  color: #ccc; 
+}

@@ -29,11 +29,17 @@ function Toolbar() {
                 <div key={index} className={styles.icon_card}>
                     <div
                         className={
-                            isDrawActive ? styles.icon : styles.active_icon
+                            isDrawActive
+                                ? styles.icon_active
+                                : styles.icon_inactive
                         }
                         onClick={() => handleDrawModeChange()}
                     >
-                        {item.icon}
+                        {React.cloneElement(item.icon, {
+                            style: {
+                                fill: isDrawActive ? '#7371fc' : '#ccc',
+                            },
+                        })}
                     </div>
                 </div>
             ))}
