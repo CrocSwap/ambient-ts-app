@@ -27,6 +27,8 @@ interface CandleContextIF {
     >;
     isCandleDataNull: boolean;
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
+    isManualCandleFetchRequested: boolean;
+    setIsManualCandleFetchRequested: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     isFetchingCandle: boolean;
@@ -90,6 +92,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         return chartSettings.candleTime.global.time;
     }, [chartSettings.candleTime.global.time, location.pathname]);
 
+    const [isManualCandleFetchRequested, setIsManualCandleFetchRequested] =
+        useState(false);
+
     const candleContext = {
         candleData,
         setCandleData,
@@ -97,6 +102,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setIsCandleDataNull,
         isCandleSelected,
         setIsCandleSelected,
+        isManualCandleFetchRequested,
+        setIsManualCandleFetchRequested,
         isFetchingCandle,
         setIsFetchingCandle,
         candleDomains,
@@ -113,7 +120,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         isChartEnabled && isUserOnline && fetchCandles();
+        if (isManualCandleFetchRequested)
+            setIsManualCandleFetchRequested(false);
     }, [
+        isManualCandleFetchRequested,
         isChartEnabled,
         isUserOnline,
         baseTokenAddress + quoteTokenAddress,
