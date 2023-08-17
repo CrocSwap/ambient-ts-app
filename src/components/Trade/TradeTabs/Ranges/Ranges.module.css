@@ -171,13 +171,7 @@
 
     .main_list_container .row_container,
     .main_list_container .header {
-        grid-template-columns: minmax(87px, 1fr) minmax(100px, 1fr) minmax(
-                72px,
-                1fr
-            ) minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
-                38px,
-                1fr
-            ) minmax(74px, 25%);
+        grid-template-columns: minmax(75px, 1fr) minmax(94px, 1fr) minmax( 72px, 1fr ) minmax(76px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax( 38px, 1fr ) minmax(74px, 25%);
     }
     .leaderboard .row_container,
     .leaderboard .header {
