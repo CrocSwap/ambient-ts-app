@@ -22,7 +22,6 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../constants';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
-import { PoolContext } from '../../contexts/PoolContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import {
     TRADE_TABLE_HEADER_HEIGHT,
@@ -32,8 +31,9 @@ import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
-import { PoolNotInitalized } from '../../components/PoolNotInitialized/PoolNotInitialized';
+import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
+import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -44,6 +44,7 @@ function Trade() {
     } = useContext(CrocEnvContext);
     const { candleData, setIsCandleSelected, isCandleDataNull } =
         useContext(CandleContext);
+
     const {
         isFullScreen: isChartFullScreen,
         chartSettings,
@@ -51,7 +52,9 @@ function Trade() {
         setChartHeight,
         canvasRef,
     } = useContext(ChartContext);
-    const { isPoolInitialized } = useContext(PoolContext);
+
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
+
     const { tokens } = useContext(TokenContext);
     const {
         tradeTableState,
@@ -194,6 +197,7 @@ function Trade() {
                         )}
 
                         {!isCandleDataNull &&
+                            isPoolInitialized &&
                             activeMobileComponent !== 'chart' && (
                                 <button
                                     onClick={() =>
@@ -234,10 +238,14 @@ function Trade() {
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
+    const [isChartLoading, setIsChartLoading] = useState<boolean>(true);
+
     const tradeChartsProps = {
         changeState: changeState,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
+        isChartLoading,
+        setIsChartLoading,
     };
 
     const tradeTabsProps = {
@@ -266,19 +274,8 @@ function Trade() {
                 padding: '0 8px',
             }}
         >
-            {!isPoolInitialized && (
-                <PoolNotInitalized
-                    chainId={chainId}
-                    tokenA={
-                        isDenomBase ? tradeData.baseToken : tradeData.quoteToken
-                    }
-                    tokenB={
-                        isDenomBase ? tradeData.quoteToken : tradeData.baseToken
-                    }
-                />
-            )}
             {mobileTradeDropdown}
-            {activeMobileComponent === 'chart' && (
+            {activeMobileComponent === 'chart' && isPoolInitialized && (
                 <div
                     className={` ${fullScreenStyle}`}
                     style={{ marginLeft: '2rem' }}
@@ -309,21 +306,68 @@ function Trade() {
             )}
         </section>
     );
+
     if (showActiveMobileComponent) return mobileTrade;
+
+    const poolNotInitContent = (
+        <Resizable
+            className={styles.chartBox}
+            enable={{
+                bottom: !isChartFullScreen,
+            }}
+            style={{ opacity: tradeTableState === 'Expanded' ? '0' : '1' }}
+            size={{ width: '100%', height: chartHeights.current }}
+            minHeight={4}
+            onResizeStart={() => {
+                // may be useful later
+            }}
+            onResizeStop={(e, direction, ref, d) => {
+                // the resizable bar is 4px in height
+                if (chartHeights.current + d.height <= 4) {
+                    setTradeTableState('Expanded');
+                }
+                if (
+                    tradeTableRef?.current &&
+                    tradeTableRef.current.offsetHeight ===
+                        TRADE_TABLE_HEADER_HEIGHT
+                ) {
+                    setTradeTableState('Collapsed');
+                }
+                if (chartHeights.current + d.height < TRADE_CHART_MIN_HEIGHT) {
+                    if (tradeTableState == 'Expanded') {
+                        setChartHeight(chartHeights.default);
+                        setTradeTableState(undefined);
+                    } else {
+                        setChartHeight(4);
+                        setTradeTableState('Expanded');
+                    }
+                } else {
+                    setChartHeight(chartHeights.current + d.height);
+                    setTradeTableState(undefined);
+                }
+            }}
+            handleClasses={
+                isChartFullScreen ? undefined : { bottom: styles.resizableBox }
+            }
+            bounds={'parent'}
+        >
+            <NoChartData
+                chainId={chainId}
+                tokenA={
+                    isDenomBase ? tradeData.baseToken : tradeData.quoteToken
+                }
+                tokenB={
+                    isDenomBase ? tradeData.quoteToken : tradeData.baseToken
+                }
+                isCandleDataNull
+            />
+        </Resizable>
+    );
+
+    const showNoChartData = !isPoolInitialized || isCandleDataNull;
 
     return (
         <section className={`${styles.main_layout}`}>
-            {isPoolInitialized === false && (
-                <PoolNotInitalized
-                    chainId={chainId}
-                    tokenA={
-                        isDenomBase ? tradeData.baseToken : tradeData.quoteToken
-                    }
-                    tokenB={
-                        isDenomBase ? tradeData.quoteToken : tradeData.baseToken
-                    }
-                />
-            )}
             <div
                 className={`${styles.middle_col}
                 ${tradeTableState === 'Expanded' ? styles.flex_column : ''}`}
@@ -332,65 +376,74 @@ function Trade() {
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
                 <div className={styles.resizableParent}>
-                    <Resizable
-                        className={styles.chartBox}
-                        enable={{
-                            bottom: !isChartFullScreen && !isCandleDataNull,
-                        }}
-                        size={{ width: '100%', height: chartHeights.current }}
-                        minHeight={4}
-                        onResizeStart={() => {
-                            // may be useful later
-                        }}
-                        onResizeStop={(e, direction, ref, d) => {
-                            // the resizable bar is 4px in height
-                            if (chartHeights.current + d.height <= 4) {
-                                setTradeTableState('Expanded');
-                            }
-                            if (
-                                tradeTableRef?.current &&
-                                tradeTableRef.current.offsetHeight ===
-                                    TRADE_TABLE_HEADER_HEIGHT
-                            ) {
-                                setTradeTableState('Collapsed');
-                            }
-                            if (
-                                chartHeights.current + d.height <
-                                TRADE_CHART_MIN_HEIGHT
-                            ) {
-                                if (tradeTableState == 'Expanded') {
-                                    setChartHeight(chartHeights.default);
-                                    setTradeTableState(undefined);
-                                } else {
-                                    setChartHeight(4);
+                    {showNoChartData && poolNotInitContent}
+
+                    {!showNoChartData && isPoolInitialized && (
+                        <Resizable
+                            className={styles.chartBox}
+                            enable={{
+                                bottom: !isChartFullScreen && !isCandleDataNull,
+                            }}
+                            size={{
+                                width: '100%',
+                                height: chartHeights.current,
+                            }}
+                            minHeight={4}
+                            onResizeStart={() => {
+                                // may be useful later
+                            }}
+                            onResizeStop={(e, direction, ref, d) => {
+                                // the resizable bar is 4px in height
+                                if (chartHeights.current + d.height <= 4) {
                                     setTradeTableState('Expanded');
                                 }
-                            } else {
-                                setChartHeight(chartHeights.current + d.height);
-                                setTradeTableState(undefined);
+                                if (
+                                    tradeTableRef?.current &&
+                                    tradeTableRef.current.offsetHeight ===
+                                        TRADE_TABLE_HEADER_HEIGHT
+                                ) {
+                                    setTradeTableState('Collapsed');
+                                }
+                                if (
+                                    chartHeights.current + d.height <
+                                    TRADE_CHART_MIN_HEIGHT
+                                ) {
+                                    if (tradeTableState == 'Expanded') {
+                                        setChartHeight(chartHeights.default);
+                                        setTradeTableState(undefined);
+                                    } else {
+                                        setChartHeight(4);
+                                        setTradeTableState('Expanded');
+                                    }
+                                } else {
+                                    setChartHeight(
+                                        chartHeights.current + d.height,
+                                    );
+                                    setTradeTableState(undefined);
+                                }
+                            }}
+                            handleClasses={
+                                isChartFullScreen || isCandleDataNull
+                                    ? undefined
+                                    : { bottom: styles.resizableBox }
                             }
-                        }}
-                        handleClasses={
-                            isChartFullScreen || isCandleDataNull
-                                ? undefined
-                                : { bottom: styles.resizableBox }
-                        }
-                        bounds={'parent'}
-                    >
-                        <div
-                            className={`${
-                                activeMobileComponent !== 'chart'
-                                    ? styles.hide
-                                    : ''
-                            } ${fullScreenStyle}`}
+                            bounds={'parent'}
                         >
-                            <div className={styles.main__chart_container}>
-                                {!isCandleDataNull && (
-                                    <TradeCharts {...tradeChartsProps} />
-                                )}
+                            <div
+                                className={`${
+                                    activeMobileComponent !== 'chart'
+                                        ? styles.hide
+                                        : ''
+                                } ${fullScreenStyle}`}
+                            >
+                                <div className={styles.main__chart_container}>
+                                    {!isCandleDataNull && (
+                                        <TradeCharts {...tradeChartsProps} />
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    </Resizable>
+                        </Resizable>
+                    )}
                     <div className={styles.tableBox} ref={tradeTableRef}>
                         <TradeTabs2 {...tradeTabsProps} />
                     </div>

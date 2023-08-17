@@ -1,0 +1,82 @@
+.warning_box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    margin-top: 1rem;
+    border: solid 1px var(--other-red);
+    border-radius: 4px;
+    background: radial-gradient(
+        50% 50% at 50% 50%,
+        rgba(231, 86, 112, 0.1) 0%,
+        rgba(231, 86, 112, 0.1) 100%
+    );
+    color: var(--other-red);
+
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
+    letter-spacing: -0.02em;
+}
+
+.warning_box div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.warning_box p {
+    color: var(--text2);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding-top: 6px;
+}
+
+.text_only {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    vertical-align: middle;
+}
+.text_only p {
+    color: var(--other-red);
+    font-size: var(--header-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    cursor: default;
+}
+
+.warning_box button,
+.text_only button {
+    cursor: pointer;
+    background: var(--other-red);
+    color: var(--dark1);
+    outline: none;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+
+    
+    
+}
+
+.warning_box button:hover, .text_only button:hover{
+    background-color: transparent;
+    border: 1px solid var(--other-red);
+    transition: all var(--animation-speed) ease-in-out;
+    color: var(--text1);
+
+}
+
+.warning_box svg,
+.text_only svg {
+    pointer-events: none !important;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

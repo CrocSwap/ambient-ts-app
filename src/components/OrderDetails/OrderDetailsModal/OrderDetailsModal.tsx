@@ -27,7 +27,6 @@ interface propsIF {
     limitOrder: LimitOrderIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
-    isOpen: boolean;
     onClose: () => void;
 }
 
@@ -36,7 +35,6 @@ export default function OrderDetailsModal(props: propsIF) {
         limitOrder,
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
-        isOpen,
         onClose,
     } = props;
 
@@ -310,7 +308,7 @@ export default function OrderDetailsModal(props: propsIF) {
     );
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+        <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
                 <OrderDetailsHeader
                     copyOrderDetailsToClipboard={copyOrderDetailsToClipboard}

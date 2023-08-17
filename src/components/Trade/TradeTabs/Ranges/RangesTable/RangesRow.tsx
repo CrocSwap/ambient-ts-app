@@ -170,7 +170,7 @@ function RangesRow(props: propsIF) {
         isOwnerActiveAccount && (showAllData || isLeaderboard)
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
-            ? 'gradient_text'
+            ? 'primary_color'
             : 'username_base_color';
 
     const activePositionStyle =
@@ -306,19 +306,21 @@ function RangesRow(props: propsIF) {
                         {...rangeMenuProps}
                         isEmpty={position.totalValueUSD === 0}
                         handleAccountClick={handleAccountClick}
+                        isAccountView={isAccountView}
                     />
                 </li>
             </ul>
-            <RangeDetailsModal
-                position={position}
-                {...rangeDetailsProps}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-                isOpen={isDetailsModalOpen}
-                onClose={closeDetailsModal}
-            />
+            {isDetailsModalOpen && (
+                <RangeDetailsModal
+                    position={position}
+                    {...rangeDetailsProps}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    onClose={closeDetailsModal}
+                />
+            )}
         </>
     );
 }

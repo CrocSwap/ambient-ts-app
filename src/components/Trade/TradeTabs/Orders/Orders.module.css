@@ -141,12 +141,8 @@
 .mono_font {
     font-family: var(--roboto);
 }
-.gradient_text {
-    background: var(--title-gradient);
-    font-family: var(--font-logo);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+.primary_color {
+    color: var(--accent1);
 }
 .owned_tx_contrast {
     color: var(--accent2);

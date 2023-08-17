@@ -92,7 +92,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
     };
 
     return (
-        <SidebarPoolsListContainer>
+        <SidebarPoolsListContainer fontSize={'body'}>
             <SidebarPoolsListHeaderContainer>
                 <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Type</SidebarPoolsListHeader>

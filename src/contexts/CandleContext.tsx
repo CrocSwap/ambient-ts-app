@@ -27,6 +27,8 @@ interface CandleContextIF {
     >;
     isCandleDataNull: boolean;
     setIsCandleDataNull: Dispatch<SetStateAction<boolean>>;
+    isManualCandleFetchRequested: boolean;
+    setIsManualCandleFetchRequested: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     isFetchingCandle: boolean;
@@ -45,7 +47,7 @@ export const CandleContext = createContext<CandleContextIF>(
 
 export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const {
-        server: { isEnabled: isServerEnabled },
+        server: { isEnabled: isServerEnabled, isUserOnline: isUserOnline },
     } = useContext(AppStateContext);
     const { chartSettings, isEnabled: isChartEnabled } =
         useContext(ChartContext);
@@ -90,6 +92,9 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         return chartSettings.candleTime.global.time;
     }, [chartSettings.candleTime.global.time, location.pathname]);
 
+    const [isManualCandleFetchRequested, setIsManualCandleFetchRequested] =
+        useState(false);
+
     const candleContext = {
         candleData,
         setCandleData,
@@ -97,6 +102,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         setIsCandleDataNull,
         isCandleSelected,
         setIsCandleSelected,
+        isManualCandleFetchRequested,
+        setIsManualCandleFetchRequested,
         isFetchingCandle,
         setIsFetchingCandle,
         candleDomains,
@@ -112,15 +119,19 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [baseTokenAddress + quoteTokenAddress]);
 
     useEffect(() => {
-        isChartEnabled && fetchCandles();
+        isChartEnabled && isUserOnline && fetchCandles();
+        if (isManualCandleFetchRequested)
+            setIsManualCandleFetchRequested(false);
     }, [
+        isManualCandleFetchRequested,
         isChartEnabled,
+        isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
     ]);
 
     useEffect(() => {
-        if (isChartEnabled && candleScale.isShowLatestCandle) {
+        if (isChartEnabled && isUserOnline && candleScale.isShowLatestCandle) {
             const interval = setInterval(() => {
                 fetchCandles(true);
             }, 60000);
@@ -128,6 +139,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         }
     }, [
         isChartEnabled,
+        isUserOnline,
         baseTokenAddress + quoteTokenAddress,
         candleScale?.isFetchForTimeframe,
         candleScale.nCandles,
@@ -137,6 +149,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const fetchCandles = (bypassSpinner = false) => {
         if (
             isServerEnabled &&
+            isUserOnline &&
             baseTokenAddress &&
             quoteTokenAddress &&
             candleTimeLocal &&
@@ -165,7 +178,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 cachedFetchTokenPrice,
             ).then((candles) => {
                 setCandleData(candles);
-                setIsCandleDataNull(false);
 
                 const candleSeries = candles?.candles;
                 if (candleSeries && candleSeries.length > 0) {
@@ -176,7 +188,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 setIsFetchingCandle(false);
             });
         } else {
-            setIsCandleDataNull(true);
+            setIsFetchingCandle(true);
         }
     };
 

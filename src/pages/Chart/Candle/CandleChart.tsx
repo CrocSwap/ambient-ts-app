@@ -1,6 +1,7 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState, useMemo } from 'react';
 import {
     chartItemStates,
+    defaultCandleBandwith,
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
@@ -54,6 +55,15 @@ export default function CandleChart(props: candlePropsIF) {
     const uniswapCandleBorderLightColor = '#4a5a76';
     const uniswapCandleDarkColor = '#252f40';
     const uniswapCandleBorderDarkColor = '#5e6b81';
+
+    const bandwidth = useMemo(() => {
+        if (candlestick) {
+            const bandwidthFunction = candlestick?.bandwidth();
+
+            return parseInt(bandwidthFunction());
+        }
+        return defaultCandleBandwith;
+    }, [candlestick?.bandwidth()]);
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
@@ -203,10 +213,8 @@ export default function CandleChart(props: candlePropsIF) {
     }, [data, candlestick]);
 
     useEffect(() => {
-        if (candlestick) {
-            setBandwidth(candlestick?.bandwidth());
-        }
-    }, [candlestick?.bandwidth()]);
+        setBandwidth(bandwidth);
+    }, [bandwidth]);
 
     return (
         <d3fc-canvas

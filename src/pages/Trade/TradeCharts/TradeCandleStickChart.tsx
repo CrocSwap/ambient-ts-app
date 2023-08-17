@@ -53,16 +53,20 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
+
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    isLoading: boolean;
 }
 
 function TradeCandleStickChart(props: propsIF) {
-    const { selectedDate, setSelectedDate } = props;
+    const { selectedDate, setSelectedDate, isLoading, setIsLoading } = props;
 
     const { candleData, isFetchingCandle, isCandleDataNull, setCandleScale } =
         useContext(CandleContext);
     const { chartSettings } = useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
-    const { poolPriceDisplay: poolPriceWithoutDenom } = useContext(PoolContext);
+    const { poolPriceDisplay: poolPriceWithoutDenom, isPoolInitialized } =
+        useContext(PoolContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -85,7 +89,6 @@ function TradeCandleStickChart(props: propsIF) {
     const [prevPeriod, setPrevPeriod] = useState<any>();
     const [prevFirsCandle, setPrevFirsCandle] = useState<any>();
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
 
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
@@ -149,7 +152,7 @@ function TradeCandleStickChart(props: propsIF) {
                         ? liq.upperBoundInvPriceDecimalCorrected <
                               barThreshold &&
                               liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
-                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
+                        : liq.upperBoundPriceDecimalCorrected > barThreshold &&
                               liq.upperBoundPriceDecimalCorrected !== '+inf';
                 },
             );
@@ -158,7 +161,7 @@ function TradeCandleStickChart(props: propsIF) {
                 liqBoundaryData !== undefined
                     ? denominationsInBase
                         ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
-                        : liqBoundaryData.upperBoundPriceDecimalCorrected
+                        : liqBoundaryData.lowerBoundPriceDecimalCorrected
                     : barThreshold;
             const liqBoundary =
                 typeof liqBoundaryArg === 'number'
@@ -787,6 +790,7 @@ function TradeCandleStickChart(props: propsIF) {
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading &&
                 candleData !== undefined &&
+                isPoolInitialized !== undefined &&
                 prevPeriod === period &&
                 !isFetchingCandle ? (
                     <Chart

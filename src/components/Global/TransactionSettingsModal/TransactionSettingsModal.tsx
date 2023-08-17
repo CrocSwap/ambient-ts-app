@@ -1,20 +1,15 @@
-// START: Import React and Dongles
 import { useContext, useState } from 'react';
-
-// START: Import JSX Components
-import Button from '../Button/Button';
-import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
-import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
-
-// START: Import Local Files
-import styles from './TransactionSettingsModal.module.css';
-import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { FiAlertTriangle } from 'react-icons/fi';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
+import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { FiAlertTriangle } from 'react-icons/fi';
+import Button from '../Button/Button';
+import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import Modal from '../Modal/Modal';
+import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
+import styles from './TransactionSettingsModal.module.css';
 
 export type TransactionModuleType =
     | 'Swap'
@@ -28,11 +23,10 @@ interface propsIF {
     slippage: SlippageMethodsIF;
     bypassConfirm: skipConfirmIF;
     onClose: () => void;
-    isOpen: boolean;
 }
 
 export default function TransactionSettingsModal(props: propsIF) {
-    const { module, slippage, onClose, bypassConfirm, isOpen } = props;
+    const { module, slippage, onClose, bypassConfirm } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -68,7 +62,7 @@ export default function TransactionSettingsModal(props: propsIF) {
     } ${module} confirmation modal`;
 
     return (
-        <Modal title={`${module} Settings`} isOpen={isOpen} onClose={onClose}>
+        <Modal title={`${module} Settings`} onClose={onClose}>
             <div className={styles.settings_container}>
                 <section>
                     {module !== 'Limit Order' && (

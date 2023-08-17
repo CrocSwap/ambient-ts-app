@@ -22,18 +22,12 @@ interface propsIF {
     tx: TransactionIF;
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     isAccountView: boolean;
-    isOpen: boolean;
     onClose: () => void;
 }
 
 export default function TransactionDetailsModal(props: propsIF) {
-    const {
-        tx,
-        isBaseTokenMoneynessGreaterOrEqual,
-        isAccountView,
-        isOpen,
-        onClose,
-    } = props;
+    const { tx, isBaseTokenMoneynessGreaterOrEqual, isAccountView, onClose } =
+        props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -77,11 +71,6 @@ export default function TransactionDetailsModal(props: propsIF) {
             .then((response) => response?.json())
             .then(async (json) => {
                 if (!crocEnv || !json?.data) {
-                    // setBaseCollateralDisplay(undefined);
-                    // setQuoteCollateralDisplay(undefined);
-                    // setUsdValue(undefined);
-                    // setBaseFeesDisplay(undefined);
-                    // setQuoteFeesDisplay(undefined);
                     return;
                 }
 
@@ -175,7 +164,7 @@ export default function TransactionDetailsModal(props: propsIF) {
     };
 
     return (
-        <Modal usingCustomHeader isOpen={isOpen} onClose={onClose}>
+        <Modal usingCustomHeader onClose={onClose}>
             <div className={styles.outer_container}>
                 <TransactionDetailsHeader {...transactionDetailsHeaderProps} />
                 {showShareComponent ? (

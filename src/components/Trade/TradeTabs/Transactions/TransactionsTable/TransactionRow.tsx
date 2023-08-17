@@ -115,7 +115,7 @@ function TransactionRow(props: propsIF) {
         isOwnerActiveAccount && showAllData
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
-            ? 'gradient_text'
+            ? 'primary_color'
             : 'username_base_color';
 
     const txDomId =
@@ -307,15 +307,16 @@ function TransactionRow(props: propsIF) {
                     />
                 </li>
             </ul>
-            <TransactionDetailsModal
-                tx={tx}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-                isOpen={isDetailsModalOpen}
-                onClose={closeDetailsModal}
-            />
+            {isDetailsModalOpen && (
+                <TransactionDetailsModal
+                    tx={tx}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    onClose={closeDetailsModal}
+                />
+            )}
         </>
     );
 }
