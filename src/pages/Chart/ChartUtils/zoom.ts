@@ -284,6 +284,7 @@ export class Zoom {
         const maxGap = Math.max(gapTop, gapBot);
         let baseMovement = deltaX / (maxGap / minGap + 1);
         baseMovement = baseMovement === 0 ? deltaX : baseMovement;
+
         if (gapBot < gapTop) {
             return [
                 domainX[0] - baseMovement,
@@ -441,13 +442,19 @@ export class Zoom {
             }
             const deltaX = linearX(movement);
 
-            const mouseX = scaleData?.xScale.invert(touch1.pageX);
+            const firstTouch = scaleData?.xScale.invert(
+                previousDeltaTouchLocation,
+            );
+
+            const secondTouch = scaleData?.xScale.invert(touch1.pageX);
+
+            const point = firstTouch - (firstTouch - secondTouch) / 2;
 
             const domain = this.changeCandleSize(
                 domainX,
                 deltaX,
-                mouseX,
-                scaleData?.xScale.invert(previousDeltaTouchLocation),
+                firstTouch,
+                point,
             );
 
             scaleData?.xScale.domain(domain);
