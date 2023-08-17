@@ -215,7 +215,7 @@ width: 30%;
 @media only screen and (min-width: 1180px) {
 .logo_container, .right_side, .primary_navigation{
     /* background: blue; */
-    width: calc(100%/3);
+
     vertical-align: middle;
 }
 
