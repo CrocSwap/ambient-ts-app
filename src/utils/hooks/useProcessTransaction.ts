@@ -27,8 +27,6 @@ export const useProcessTransaction = (
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
-    // const baseAddress = tradeData.baseToken.address;
-    // const quoteAddress = tradeData.quoteToken.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();

@@ -290,6 +290,8 @@ export default function OrderDetailsModal(props: propsIF) {
                         truncatedDisplayPriceDenomByMoneyness={
                             truncatedDisplayPriceDenomByMoneyness
                         }
+                        baseTokenAddress={baseTokenAddress}
+                        quoteTokenAddress={quoteTokenAddress}
                     />
                 </div>
                 <div className={styles.right_container}>

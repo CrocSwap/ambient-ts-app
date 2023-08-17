@@ -1,9 +1,11 @@
 import styles from './PriceInfo.module.css';
 
-import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../contexts/TokenContext';
 
 type ItemIF = {
     slug: string;
@@ -13,10 +15,8 @@ type ItemIF = {
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-
     baseCollateralDisplay: string | undefined;
     quoteCollateralDisplay: string | undefined;
-
     usdValue: string | undefined;
     isDenomBase: boolean;
     isOrderFilled: boolean;
@@ -35,6 +35,8 @@ interface propsIF {
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -54,9 +56,16 @@ export default function PriceInfo(props: propsIF) {
         isDenomBase,
         usdValue,
         truncatedDisplayPriceDenomByMoneyness,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = props;
-    const { pathname } = useLocation();
 
+    const { pathname } = useLocation();
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
     const isOnTradeRoute = pathname.includes('trade');
 
     const buyContent = (
@@ -70,6 +79,7 @@ export default function PriceInfo(props: propsIF) {
                     : approximateBuyQtyTruncated}
 
                 <TokenIcon
+                    token={isBid ? quoteToken : baseToken}
                     src={isBid ? quoteTokenLogo : baseTokenLogo}
                     alt={isBid ? quoteTokenSymbol : baseTokenSymbol}
                     size='xl'
@@ -88,6 +98,7 @@ export default function PriceInfo(props: propsIF) {
                     : quoteDisplayFrontend}
 
                 <TokenIcon
+                    token={!isBid ? quoteToken : baseToken}
                     src={!isBid ? quoteTokenLogo : baseTokenLogo}
                     alt={!isBid ? quoteTokenSymbol : baseTokenSymbol}
                     size='xl'
@@ -100,11 +111,13 @@ export default function PriceInfo(props: propsIF) {
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
                 <TokenIcon
+                    token={baseToken}
                     src={baseTokenLogo}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
+                    token={quoteToken}
                     src={quoteTokenLogo}
                     alt={quoteTokenSymbol}
                     size='2xl'

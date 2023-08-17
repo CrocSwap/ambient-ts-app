@@ -9,7 +9,7 @@ import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
-interface Props {
+interface propsIF {
     posHashTruncated: string;
     posHash: string;
     sellOrderStyle: string;
@@ -45,7 +45,7 @@ interface Props {
 // * By extracting the constants into a separate file, we can keep the main component file clean and easier to read/maintain.
 
 // * To use these constants in a component, simply import them from this file and reference them as needed.
-export const orderRowConstants = (props: Props) => {
+export const orderRowConstants = (props: propsIF) => {
     const {
         posHashTruncated,
 

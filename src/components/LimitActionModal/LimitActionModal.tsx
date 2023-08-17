@@ -53,6 +53,8 @@ export default function LimitActionModal(props: propsIF) {
         quoteDisplay,
         truncatedDisplayPrice,
         initialTokenQty,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = useProcessOrder(limitOrder, userAddress);
 
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
@@ -343,6 +345,8 @@ export default function LimitActionModal(props: propsIF) {
                 <LimitActionTokenHeader
                     isDenomBase={isDenomBase}
                     isOrderFilled={isOrderFilled}
+                    baseTokenAddress={baseTokenAddress}
+                    quoteTokenAddress={quoteTokenAddress}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogo}

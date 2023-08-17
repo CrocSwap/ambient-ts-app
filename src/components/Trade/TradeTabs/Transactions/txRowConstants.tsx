@@ -13,7 +13,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 
-interface Props {
+interface propsIF {
     txHashTruncated: string;
     sideTypeStyle: string;
     usdValue: string;
@@ -65,7 +65,7 @@ interface Props {
 // * By extracting the constants into a separate file, we can keep the main component file clean and easier to read/maintain.
 
 // * To use these constants in a component, simply import them from this file and reference them as needed.
-export const txRowConstants = (props: Props) => {
+export const txRowConstants = (props: propsIF) => {
     const {
         handleCopyTxHash,
         handleOpenExplorer,

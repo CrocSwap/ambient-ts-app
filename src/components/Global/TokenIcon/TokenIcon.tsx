@@ -14,7 +14,12 @@ interface propsIF {
     size?: TokenIconSize;
 }
 
-function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
+function TokenIcon({
+    token,
+    src = '',
+    alt = 'Token Icon',
+    size = 'm',
+}: propsIF) {
     // translate human-readable icon width to CSS value
     const getIconWidth = (size: TokenIconSize): string => {
         switch (size) {
@@ -38,8 +43,6 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
                 return '20px';
         }
     };
-
-    handleTokenLogo('');
 
     // bool to trigger fallback error handling
     const [fetchError, setFetchError] = useState<boolean>(false);
@@ -68,11 +71,11 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
 
     return (
         <Suspense fallback={noTokenIcon}>
-            {src && !fetchError ? (
+            {!fetchError ? (
                 <img
                     className={styles.token_icon}
                     style={{ width: getIconWidth(size) }}
-                    src={src}
+                    src={handleTokenLogo(token)}
                     alt={alt}
                     onError={handleFetchError}
                 />

@@ -12,7 +12,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-interface Props {
+interface propsIF {
     posHashTruncated: string;
     usdValue: string;
     usernameStyle: string;
@@ -47,7 +47,7 @@ interface Props {
     position: PositionIF;
 }
 
-export default function rangeRowConstants(props: Props) {
+export default function rangeRowConstants(props: propsIF) {
     const {
         handleCopyPosHash,
         posHash,
