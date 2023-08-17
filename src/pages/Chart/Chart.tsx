@@ -1443,8 +1443,8 @@ export default function Chart(props: propsIF) {
                     );
                 }
 
-                let returnMaxValue = 0;
-                let returnMinValue = 0;
+                let returnMaxValue = high;
+                let returnMinValue = low;
 
                 // to:do fix when advanced is fixed AdvancedPepe
                 if (draggingLine === 'Max') {
@@ -2797,6 +2797,7 @@ export default function Chart(props: propsIF) {
                 const rectCanvas = canvas.getBoundingClientRect();
 
                 let isTouchToDrag = false;
+                let isMaxDragged = false;
 
                 d3.select(d3CanvasMain.current).on(
                     'touchstart',
@@ -2807,12 +2808,17 @@ export default function Chart(props: propsIF) {
                                 rectCanvas,
                             );
 
-                            if (
-                                isTouchOnLineValues?.isOnLimit ||
-                                isTouchOnLineValues?.isOnRangeMax ||
-                                isTouchOnLineValues?.isOnRangeMin
-                            ) {
-                                isTouchToDrag = true;
+                            if (isTouchOnLineValues) {
+                                isMaxDragged =
+                                    isTouchOnLineValues?.isOnRangeMax;
+
+                                if (
+                                    isTouchOnLineValues?.isOnLimit ||
+                                    isTouchOnLineValues?.isOnRangeMax ||
+                                    isTouchOnLineValues?.isOnRangeMin
+                                ) {
+                                    isTouchToDrag = true;
+                                }
                             }
                         }
                     },
@@ -2840,15 +2846,10 @@ export default function Chart(props: propsIF) {
                                         scaleData?.yScale.invert(eventPoint);
 
                                     if (newRangeValue !== undefined) {
-                                        const isTouchOnLineValues =
-                                            isTouchOnLine(event, rectCanvas);
-
                                         const calculatedRangeValues =
                                             calculateRangeWhenDragged(
                                                 newRangeValue,
-                                                isTouchOnLineValues?.isOnRangeMax
-                                                    ? 'Max'
-                                                    : 'Min',
+                                                isMaxDragged ? 'Max' : 'Min',
                                             );
 
                                         if (calculatedRangeValues) {
