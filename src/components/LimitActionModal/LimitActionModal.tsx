@@ -10,6 +10,7 @@ import {
     addTransactionByType,
     removePendingTx,
     addReceipt,
+    updateTransactionHash,
 } from '../../utils/state/receiptDataSlice';
 import {
     TransactionError,
@@ -195,6 +196,12 @@ export default function LimitActionModal(props: propsIF) {
                     dispatch(removePendingTx(error.hash));
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
@@ -281,6 +288,12 @@ export default function LimitActionModal(props: propsIF) {
                     dispatch(removePendingTx(error.hash));
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;

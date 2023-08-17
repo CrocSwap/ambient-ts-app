@@ -32,6 +32,7 @@ import {
     addTransactionByType,
     removePendingTx,
     addReceipt,
+    updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
 import {
     TransactionError,
@@ -331,6 +332,12 @@ function Swap(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
 
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 setNewSwapTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
@@ -385,6 +392,12 @@ function Swap(props: propsIF) {
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {

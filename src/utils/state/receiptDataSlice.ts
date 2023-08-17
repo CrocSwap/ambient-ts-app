@@ -40,6 +40,20 @@ export const receiptDataSlice = createSlice({
         ) => {
             state.transactionsByType.push(action.payload);
         },
+        updateTransactionHash: (
+            state,
+            action: PayloadAction<{ oldHash: string; newHash: string }>,
+        ) => {
+            const txIndex = state.transactionsByType.findIndex(
+                (tx) => tx.txHash === action.payload.oldHash,
+            );
+            if (txIndex !== -1) {
+                state.transactionsByType[txIndex] = {
+                    ...state.transactionsByType[txIndex],
+                    txHash: action.payload.newHash,
+                };
+            }
+        },
         addReceipt: (state, action: PayloadAction<string>) => {
             state.sessionReceipts.unshift(action.payload);
         },
@@ -91,6 +105,7 @@ export const {
     addReceipt,
     addPendingTx,
     addPositionPendingUpdate,
+    updateTransactionHash,
     removePendingTx,
     removeReceipt,
     removePositionPendingUpdate,

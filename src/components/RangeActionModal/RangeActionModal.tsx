@@ -21,6 +21,7 @@ import {
     addTransactionByType,
     removePendingTx,
     removePositionPendingUpdate,
+    updateTransactionHash,
 } from '../../utils/state/receiptDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
@@ -451,6 +452,12 @@ export default function RangeActionModal(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
@@ -527,6 +534,12 @@ export default function RangeActionModal(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }

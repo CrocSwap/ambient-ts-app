@@ -21,6 +21,7 @@ import {
     addReceipt,
     addTransactionByType,
     removePendingTx,
+    updateTransactionHash,
 } from '../../../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
@@ -220,6 +221,12 @@ export default function Withdraw(props: propsIF) {
                         const newTransactionHash = error.replacement.hash;
                         dispatch(addPendingTx(newTransactionHash));
 
+                        dispatch(
+                            updateTransactionHash({
+                                oldHash: error.hash,
+                                newHash: error.replacement.hash,
+                            }),
+                        );
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
                     } else if (isTransactionFailedError(error)) {

@@ -27,6 +27,7 @@ import {
     addReceipt,
     addTransactionByType,
     removePendingTx,
+    updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
@@ -322,6 +323,12 @@ function Reposition() {
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 setNewRepositionTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;

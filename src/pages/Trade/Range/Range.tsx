@@ -36,6 +36,7 @@ import {
     addTransactionByType,
     removePendingTx,
     addReceipt,
+    updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
 import {
     setAdvancedLowTick,
@@ -1058,6 +1059,12 @@ function Range() {
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 setNewRangeTransactionHash(newTransactionHash);
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
@@ -1193,6 +1200,12 @@ function Range() {
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
