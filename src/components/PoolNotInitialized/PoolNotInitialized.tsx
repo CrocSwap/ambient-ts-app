@@ -14,6 +14,8 @@ interface PropsIF {
 export const PoolNotInitalized = (props: PropsIF) => {
     const { chainId, tokenA, tokenB } = props;
 
+    console.log(tokenA, tokenB);
+
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
     return (
