@@ -62,8 +62,8 @@ export default function TransactionsMenu(props: propsIF) {
 
     const showAbbreviatedCopyTradeButton = isAccountView
         ? isSidebarOpen
-            ? useMediaQuery('(max-width: 1400px)')
-            : useMediaQuery('(max-width: 1150px)')
+            ? useMediaQuery('(max-width: 1700px)')
+            : useMediaQuery('(max-width: 1400px)')
         : isSidebarOpen
         ? useMediaQuery('(max-width: 1500px)')
         : useMediaQuery('(max-width: 1250px)');
@@ -267,6 +267,8 @@ export default function TransactionsMenu(props: propsIF) {
     // eslint-disable-next-line
     const view1NoSidebar =
         useMediaQuery('(min-width: 1280px)') && !isSidebarOpen;
+    const showCopyButtonOutsideDropdownMenu =
+        useMediaQuery('(min-width: 400px)');
 
     // --------------------------------
     const transactionsMenu = (
@@ -277,7 +279,7 @@ export default function TransactionsMenu(props: propsIF) {
         <div className={styles.menu_column}>
             {detailsButton}
             {explorerButton}
-            {copyButton}
+            {!showCopyButtonOutsideDropdownMenu && copyButton}
             {walletButton}
         </div>
     );
@@ -326,7 +328,7 @@ export default function TransactionsMenu(props: propsIF) {
     return (
         <div onClick={(event) => event.stopPropagation()}>
             <div className={styles.main_container}>
-                {transactionsMenu}
+                {showCopyButtonOutsideDropdownMenu && transactionsMenu}
                 {dropdownTransactionsMenu}
             </div>
             {isDetailsModalOpen && (

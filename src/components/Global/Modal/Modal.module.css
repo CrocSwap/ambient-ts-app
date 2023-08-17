@@ -52,7 +52,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-weight: 200;
+    font-weight: 300;
     text-transform: capitalize;
     font-size: 14px;
     color: var(--text1);
@@ -62,7 +62,7 @@
 .modal_header h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
-    font-weight: 200;
+    font-weight: 300;
     color: var(--text1);
     padding-left: 27px;
 }

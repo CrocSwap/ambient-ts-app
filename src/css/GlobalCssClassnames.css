@@ -24,6 +24,9 @@
     font-family: var(--roboto);
 }
 
+.primary_color {
+    color: var(--accent1);
+}
 
 .order_sell {
     color: var(--accent1);
@@ -103,7 +106,7 @@
     .introjs-tooltip-header {
         color: var(--text1);
         /* color: black; */
-        font-weight: 200;
+        font-weight: 300;
         font-size: 18px;
         line-height: 22px;
     }

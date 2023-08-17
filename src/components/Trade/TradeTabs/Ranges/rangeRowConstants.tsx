@@ -387,7 +387,7 @@ export default function rangeRowConstants(props: Props) {
         >
             <p>
                 <span
-                    className='gradient_text'
+                    className='primary_color'
                     style={{ textTransform: 'lowercase' }}
                 >
                     {'ambient'}

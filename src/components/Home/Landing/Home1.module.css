@@ -20,7 +20,7 @@
 .faster_section h1 {
     font-family: var(--font-logo);
     color: var(--text1);
-    font-weight: 200;
+    font-weight: 300;
     font-size: 34px;
     line-height: 50px;
     text-align: center;
@@ -51,12 +51,12 @@
 .row_container h2 {
     font-family: var(--font-logo);
     color: var(--text1);
-    font-weight: 200;
+    font-weight: 300;
 
 }
 
 .row_container p {
-    font-weight: 200;
+    font-weight: 300;
     font-size: 14px;
     line-height: 20px;
     color: var(--text1);

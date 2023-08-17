@@ -33,13 +33,50 @@
     padding-top: 6px;
 }
 
-.warning_box button {
+.text_only {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    vertical-align: middle;
+}
+.text_only p {
+    color: var(--other-red);
+    font-size: var(--header-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    cursor: default;
+}
+
+.warning_box button,
+.text_only button {
     cursor: pointer;
     background: var(--other-red);
     color: var(--dark1);
     outline: none;
     border: none;
     border-radius: var(--border-radius);
-
     padding: 6px 8px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+
+    
+    
+}
+
+.warning_box button:hover, .text_only button:hover{
+    background-color: transparent;
+    border: 1px solid var(--other-red);
+    transition: all var(--animation-speed) ease-in-out;
+    color: var(--text1);
+
+}
+
+.warning_box svg,
+.text_only svg {
+    pointer-events: none !important;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

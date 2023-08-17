@@ -438,7 +438,7 @@ function Orders(props: propsIF) {
                                 key={tx.txHash}
                                 id={trimString(tx.txHash.toString(), 6, 4, '…')}
                                 showColumns={showColumns}
-                                showPair={showPair}
+                                showTimestamp={!showColumns}
                             />
                         ))}
                 {currentRowItemContent}

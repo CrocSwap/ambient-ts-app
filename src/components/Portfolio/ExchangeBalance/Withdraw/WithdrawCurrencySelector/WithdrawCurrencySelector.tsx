@@ -59,6 +59,7 @@ export default function WithdrawCurrencySelector(props: propsIF) {
             disable={disable}
             token={selectedToken}
             setTokenModalOpen={setTokenModalOpen}
+            fieldId='exchangeBalance'
         />
     );
 }

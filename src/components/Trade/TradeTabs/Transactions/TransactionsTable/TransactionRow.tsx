@@ -30,13 +30,7 @@ interface propsIF {
     isAccountView: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const {
-        showColumns,
-        showTimestamp,
-        ipadView,
-        tx,
-        isAccountView,
-    } = props;
+    const { showColumns, showTimestamp, ipadView, tx, isAccountView } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -112,7 +106,7 @@ function TransactionRow(props: propsIF) {
         isOwnerActiveAccount && showAllData
             ? 'owned_tx_contrast'
             : ensName || userNameToDisplay === 'You'
-            ? 'gradient_text'
+            ? 'primary_color'
             : 'username_base_color';
 
     const txDomId =

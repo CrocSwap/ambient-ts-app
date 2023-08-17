@@ -18,7 +18,7 @@
 .reposition_button {
     cursor: pointer;
     height: 23px;
-    width: 100%;
+    /* width: 100%; */
 
     line-height: var(--body-lh);
     font-size: var(--body-size);
@@ -30,12 +30,12 @@
     align-items: center;
 
     color: var(--accent1);
-    background: linear-gradient(
+    /* background: linear-gradient(
         90deg,
         rgba(115, 113, 252, 0) 0%,
         rgba(115, 113, 252, 0) 71.21%,
         var(--accent1) 100%
-    );
+    ); */
     border: 1px solid var(--accent1);
     border-radius: 50px;
 

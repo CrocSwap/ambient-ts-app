@@ -1,4 +1,4 @@
-import styles from './ConnectWalletButton.module.css';
+import styles from './Button.module.css';
 
 export const ConnectWalletButton = (props: {
     onClick: () => void;
@@ -7,7 +7,7 @@ export const ConnectWalletButton = (props: {
 }) => {
     return (
         <button
-            className={styles.connect_wallet_button}
+            className={`${styles.btn_flat} ${styles.btn}`}
             style={
                 props.thin
                     ? { height: '28px', width: '156px', padding: 0 }
