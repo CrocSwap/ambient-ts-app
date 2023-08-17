@@ -2739,6 +2739,7 @@ export default function Chart(props: propsIF) {
         setXaxisActiveTooltip('');
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const isTouchOnLine = (event: any, rectCanvas: any) => {
         if (scaleData !== undefined) {
             const lineBuffer =
