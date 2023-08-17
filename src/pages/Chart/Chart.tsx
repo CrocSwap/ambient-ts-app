@@ -34,6 +34,7 @@ import useHandleSwipeBack from '../../utils/hooks/useHandleSwipeBack';
 import { candleTimeIF } from '../../App/hooks/useChartSettings';
 import { IS_LOCAL_ENV } from '../../constants';
 import {
+    diffHashSig,
     diffHashSigChart,
     diffHashSigScaleData,
 } from '../../utils/functions/diffHashSig';
@@ -74,9 +75,10 @@ import { Zoom } from './ChartUtils/zoom';
 import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useDebounce from '../../App/hooks/useDebounce';
-import Toolbar from './Draw/Toolbar/Toolbar';
-import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
+import DrawCanvas, { lineData } from './Draw/DrawCanvas/DrawCanvas';
+import { createLinearLineSeries } from './Draw/DrawCanvas/LinearLineSeries';
 import { ChartContext } from '../../contexts/ChartContext';
+// import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -251,6 +253,11 @@ export default function Chart(props: propsIF) {
     const [crosshairData, setCrosshairData] = useState<crosshair[]>([
         { x: 0, y: 0 },
     ]);
+
+    // Draw
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [lineSeries, setLineSeries] = useState<any>();
+    const [lineDataHistory, setLineDataHistory] = useState<lineData[][]>([]);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
@@ -689,8 +696,6 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('zoom', (event: any) => {
-                        console.log({ event });
-
                         async function newDomains() {
                             if (
                                 event.sourceEvent &&
@@ -2224,6 +2229,28 @@ export default function Chart(props: propsIF) {
 
     useEffect(() => {
         const canvas = d3
+            .select(d3CanvasMain.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+        if (lineSeries && scaleData) {
+            d3.select(d3CanvasMain.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    lineDataHistory.forEach((item) => {
+                        lineSeries(item);
+                    });
+                })
+                .on('measure', () => {
+                    lineSeries.context(ctx);
+                });
+
+            render();
+        }
+    }, [diffHashSig(lineDataHistory), lineSeries]);
+
+    useEffect(() => {
+        const canvas = d3
             .select(d3CanvasCrIndicator.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
@@ -3076,6 +3103,17 @@ export default function Chart(props: propsIF) {
         });
     };
 
+    useEffect(() => {
+        if (scaleData) {
+            const lineSeries = createLinearLineSeries(
+                scaleData?.xScale,
+                scaleData?.yScale,
+            );
+
+            setLineSeries(() => lineSeries);
+        }
+    }, [scaleData]);
+
     const rangeCanvasProps = {
         scaleData: scaleData,
         tokenA: tokenA,
@@ -3230,9 +3268,14 @@ export default function Chart(props: propsIF) {
                             className='main-canvas'
                         ></d3fc-canvas>
 
+                        {isDrawActive && scaleData && (
+                            <DrawCanvas
+                                scaleData={scaleData}
+                                setLineDataHistory={setLineDataHistory}
+                                lineSeries={lineSeries}
+                            />
+                        )}
                         <YAxisCanvas {...yAxisCanvasProps} />
-                        {/* {isDrawActive && */}
-                        {scaleData && <DrawCanvas scaleData={scaleData} />}
                     </div>
                     {showFeeRate && (
                         <>

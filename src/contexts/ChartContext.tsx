@@ -30,7 +30,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     // 2:1 ratio of the window height subtracted by main header and token info header
     const CHART_MAX_HEIGHT = window.innerHeight - 98;
     const CHART_DEFAULT_HEIGHT = Math.floor((CHART_MAX_HEIGHT * 2) / 3);
-    const [isDrawActive, setIsDrawActive] = useState(true);
+    const [isDrawActive, setIsDrawActive] = useState(false);
 
     const [chartHeights, setChartHeights] = useState<{
         current: number;

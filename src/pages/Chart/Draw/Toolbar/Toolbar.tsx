@@ -8,18 +8,16 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 // }
 
 function Toolbar() {
-    const { setIsDrawActive } = useContext(ChartContext);
+    const { isDrawActive, setIsDrawActive } = useContext(ChartContext);
 
     function handleDrawModeChange() {
         setIsDrawActive((prev: boolean) => !prev);
     }
 
     const iconList = [
-        // { icon: <FaBrush />, label: 'Star' },
-        // { icon: <FaPen />, label: 'Heart' },
         {
             icon: <FaPaintBrush />,
-            label: 'Smile',
+            label: 'Brush',
         },
 
         // Add more icons here
@@ -30,7 +28,9 @@ function Toolbar() {
             {iconList.map((item, index) => (
                 <div key={index} className={styles.icon_card}>
                     <div
-                        className={styles.icon}
+                        className={
+                            isDrawActive ? styles.icon : styles.active_icon
+                        }
                         onClick={() => handleDrawModeChange()}
                     >
                         {item.icon}

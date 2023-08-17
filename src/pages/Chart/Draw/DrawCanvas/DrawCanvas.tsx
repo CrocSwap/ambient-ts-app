@@ -1,123 +1,100 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
-import { createLineSeries } from '../../Liquidity/LiquiditySeries/LineSeries';
 import {
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { createLinearLineSeries } from './LinearLineSeries';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
+    setLineDataHistory: React.Dispatch<React.SetStateAction<lineData[][]>>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    lineSeries: any;
 }
 export type lineData = { x: number; y: number };
 
-type lines = { lineSeries: any; data: lineData };
 function DrawCanvas(props: DrawCanvasProps) {
     const d3DrawCanvas = useRef<HTMLCanvasElement | null>(null);
     const [lineData, setLineData] = useState<lineData[]>([]);
-    const [lineDataHistory, setLineDataHistory] = useState<lineData[][]>([]);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-    const [lineSeries, setLineSeries] = useState<any>();
-    const { isDrawActive } = useContext(ChartContext);
-
-    const { scaleData } = props;
-    useEffect(() => {
-        const lineSeries = createLinearLineSeries(
-            scaleData?.xScale,
-            scaleData?.yScale,
-        );
-
-        setLineSeries(() => lineSeries);
-    }, [scaleData]);
+    const { scaleData, setLineDataHistory, lineSeries } = props;
+    const { setIsDrawActive } = useContext(ChartContext);
 
     useEffect(() => {
         const canvas = d3
             .select(d3DrawCanvas.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
+        let clickCount = 0;
         let isDrawing = false;
+        let tempLineData: lineData[] = [];
 
-        console.log({ lineData });
-
-        const rectCanvas = canvas.getBoundingClientRect();
-
-        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('click', startDrawing);
         canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
+        // canvas.addEventListener('mouseup', stopDrawing);
         canvas.addEventListener('mouseout', stopDrawing);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function startDrawing(event: any) {
             isDrawing = true;
+            clickCount = clickCount + 1;
             const { offsetX, offsetY } = event;
 
-            setLineData([
-                {
+            if (clickCount > 2) {
+                clickCount = 0;
+                tempLineData = [];
+            }
+            if (tempLineData.length > 1) {
+                tempLineData[1] = {
                     x: scaleData.xScale.invert(offsetX),
                     y: scaleData.yScale.invert(offsetY),
-                },
-            ]);
-            // setLineData([]);
-            // const { offsetX, offsetY } = event;
-            // ctx.strokeStyle = 'blue';
-            // ctx.lineWidth = 2;
-            // ctx.beginPath();
-            // ctx.moveTo(offsetX, offsetY);
+                };
+                isDrawing = false;
+                setIsDrawActive(false);
+                setLineDataHistory((item: lineData[][]) => {
+                    if (tempLineData.length > 0) {
+                        return [...item, tempLineData];
+                    }
+                    return item;
+                });
+            } else {
+                tempLineData.push({
+                    x: scaleData.xScale.invert(offsetX),
+                    y: scaleData.yScale.invert(offsetY),
+                });
+            }
+
+            setLineData(tempLineData);
+            renderCanvasArray([d3DrawCanvas]);
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function draw(event: any) {
             if (!isDrawing) return;
             const { offsetX, offsetY } = event;
 
-            if (lineData.length === 1) {
-                lineData.push({
+            if (tempLineData.length === 1) {
+                tempLineData.push({
                     x: scaleData.xScale.invert(offsetX),
                     y: scaleData.yScale.invert(offsetY),
                 });
             } else {
-                lineData[1] = {
+                tempLineData[1] = {
                     x: scaleData.xScale.invert(offsetX),
                     y: scaleData.yScale.invert(offsetY),
                 };
             }
-
             renderCanvasArray([d3DrawCanvas]);
         }
 
         function stopDrawing() {
             isDrawing = false;
         }
-    }, [lineData]);
-
-    useEffect(() => {
-        //      if (lineData && lineData.length>0){
-        console.log({ lineData });
-        if (lineData.length > 0) {
-            (async () => {
-                setLineDataHistory((item: any) => {
-                    if (item) {
-                        return [...item, lineData];
-                    } else if (lineData.length > 1) {
-                        item[item.length - 1] = lineData;
-                        return item;
-                    } else {
-                        return lineData;
-                    }
-                });
-            })().then(() => {
-                setLineData([]);
-            });
-        }
-
-        renderCanvasArray([d3DrawCanvas]);
-
-        //   }
-    }, [diffHashSig(lineData)]);
+    }, []);
 
     // Draw
     useEffect(() => {
@@ -130,22 +107,14 @@ function DrawCanvas(props: DrawCanvasProps) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    console.log(lineDataHistory);
-
-                    lineDataHistory.forEach((item) => {
-                        lineSeries(item);
-                    });
+                    lineSeries(lineData);
                 })
                 .on('measure', (event: CustomEvent) => {
                     lineSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [diffHashSig(lineDataHistory), lineSeries]);
-
-    useEffect(() => {
-        renderCanvasArray([d3DrawCanvas]);
-    }, [diffHashSig(lineData)]);
+    }, [diffHashSig(lineData), lineSeries]);
 
     return <d3fc-canvas ref={d3DrawCanvas} />;
 }

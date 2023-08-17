@@ -14,6 +14,7 @@ export function createLinearLineSeries(
         .xScale(xScale)
         .yScale(yScale)
         .decorate((context: CanvasRenderingContext2D) => {
-            context.strokeStyle = 'blue';
+            context.strokeStyle = '#7371fc';
+            context.lineWidth = 2;
         });
 }
