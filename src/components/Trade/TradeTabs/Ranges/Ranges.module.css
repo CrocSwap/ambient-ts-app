@@ -123,6 +123,8 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .row_container li:not(:last-child) {
     cursor: pointer;
@@ -143,7 +145,7 @@
 
     .main_list_container .row_container,
     .main_list_container .header {
-        grid-template-columns: minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr) minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 25%);
+        grid-template-columns: minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr) minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 20%);
     }
     .leaderboard .row_container,
     .leaderboard .header {
@@ -156,7 +158,7 @@
 
     .main_list_container .row_container,
     .main_list_container .header {
-        grid-template-columns: minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(74px, 25%);
+        grid-template-columns: minmax(140px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(73px, 25%);
     }
     .leaderboard .row_container,
     .leaderboard .header {

@@ -127,6 +127,8 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .row_container li:not(:last-child) {
     cursor: pointer;
@@ -148,7 +150,7 @@
     .main_list_container .header {
         /* measured against smallest screen size for sub-iPad view (410px)*/
         grid-template-columns:
-            minmax(108px, 1.9fr) minmax(79px, 1.4fr) minmax(90px, 1.6fr)
+            minmax(142px, 1.9fr) minmax(79px, 1.4fr) minmax(90px, 1.6fr)
             minmax(28px, 25%);
     }
     /* Account has diffrent styling */
@@ -156,18 +158,17 @@
     .acc_list_container .header {
         /* measured against smallest screen size for sub-iPad view (410px)*/
         grid-template-columns:
-            minmax(72px, 1fr) minmax(72px, 1fr) minmax(72px, 1fr) minmax(90px, 1fr)
-            minmax(28px, 25%);
+            minmax(72px, 1fr) minmax(72px, 1fr) minmax(72px, 1fr)
+            minmax(90px,1fr) minmax(28px, 25%);
     }
 }
 
 @media only screen and (max-width: 1199px) and (min-width: 601px) {
     .main_list_container .row_container,
     .main_list_container .header {
-        /* measured against smallest screen size for iPad view (580px)*/
-        grid-template-columns:
-            minmax(108px, 1.9fr) minmax(72px, 1.3fr) minmax(60px, 1.2fr)
-            minmax(79px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%);
+        /* measured against smallest screen size for iPad view (601px)*/
+        grid-template-columns: minmax(142px, 1.9fr) minmax(70px, 1.3fr) 
+            minmax(60px, 1.2fr) minmax(78px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%);
     }
     /* Account has diffrent styling */
     .acc_list_container .row_container,
@@ -184,16 +185,20 @@
     .main_list_container .header {
         /* measured against smallest screen size for merged view (1280px) with sidebar expanded*/
         grid-template-columns:
-            minmax(75px, 1.3fr) minmax(108px, 1.9fr) minmax(72px, 1.3fr)
-            minmax(60px, 1.2fr) minmax(79px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%);
+            minmax(76px, 1.1fr) minmax(174px, 2.6fr) minmax(72px, 1.3fr)
+            minmax(60px, 1.2fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%);
     }
     /* Account has diffrent styling */
     .acc_list_container .row_container,
     .acc_list_container .header {
         /* measured against smallest screen size for merged view (1280px) with sidebar expanded*/
-       grid-template-columns:
+        grid-template-columns:
             minmax(76px, 1.3fr) minmax(90px, 1.9fr) minmax(94px, 1.3fr)
-            minmax(70px, 1.2fr) minmax(70px, 1.4fr) minmax(90px, 1.6fr) minmax(90px, 1.6fr) minmax(78px, 25%);
+            minmax(70px, 1.2fr) minmax(70px, 1.4fr) minmax(90px, 1.6fr) minmax(
+                90px,
+                1.6fr
+            )
+            minmax(78px, 25%);
     }
 }
 
@@ -201,7 +206,7 @@
     .main_list_container .row_container,
     .main_list_container .header {
         /* measured against smallest screen size for full view (1600px) with sidebar expanded */
-        grid-template-columns: minmax(75px, 1.3fr) 2.3fr 2.8fr 1.8fr 1.5fr 1.3fr 1.9fr 2.2fr 2.2fr 19%;
+        grid-template-columns: minmax(75px, 1.3fr) 2.3fr 3.3fr 1.8fr 1.5fr 1.3fr 1.9fr 2.2fr 2.2fr 20%;
     }
     /* Account has diffrent styling */
     .acc_list_container .row_container,

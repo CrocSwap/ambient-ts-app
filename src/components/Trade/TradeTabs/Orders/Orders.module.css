@@ -101,6 +101,8 @@
     line-height: 13px;
 
     color: var(--text2);
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .row_container {
     width: 100%;
@@ -129,7 +131,7 @@
     .main_list_container .row_container,
     .main_list_container .header {
         /* measured against smallest screen size for sub-iPad view (410px)*/
-        grid-template-columns:  2.2fr 1fr 1.8fr 34%
+        grid-template-columns:  minmax(160px,2.2fr) 1fr 1.8fr 34%
     }
 }
 
@@ -137,7 +139,7 @@
     .main_list_container .row_container,
     .main_list_container .header {
         /* measured against smallest screen size for iPad view (580px)*/
-        grid-template-columns:  2fr 1.2fr 1.1fr 1.4fr 1.6fr 1fr 21%;
+        grid-template-columns:  minmax(160px,2fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr 21%;
     }
 }
 
