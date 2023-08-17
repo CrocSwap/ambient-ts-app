@@ -479,7 +479,7 @@ function XAxisCanvas(props: xAxisIF) {
             });
         }
     }, [
-        diffHashSigScaleData(scaleData, 'x'),
+        diffHashSigScaleData(scaleData),
         firstCandleData,
         lastCandleData,
         isChartZoom,
