@@ -57,6 +57,7 @@ function OrderRow(props: propsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
+        fillPercentage,
 
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
@@ -220,6 +221,7 @@ function OrderRow(props: propsIF) {
         originalPositionLiqQuote,
         expectedPositionLiqBase,
         expectedPositionLiqQuote,
+        fillPercentage,
     };
 
     const {

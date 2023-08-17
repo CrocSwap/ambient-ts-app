@@ -71,6 +71,7 @@ export default function OrderDetailsModal(props: propsIF) {
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         posHash,
+        fillPercentage,
     } = useProcessOrder(limitOrder, userAddress);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
@@ -239,6 +240,7 @@ export default function OrderDetailsModal(props: propsIF) {
                         truncatedDisplayPriceDenomByMoneyness={
                             truncatedDisplayPriceDenomByMoneyness
                         }
+                        fillPercentage={fillPercentage}
                     />
                 </div>
                 <div className={styles.right_container}>

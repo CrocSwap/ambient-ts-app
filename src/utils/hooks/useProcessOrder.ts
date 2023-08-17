@@ -181,6 +181,8 @@ export const useProcessOrder = (
             ? liqQuoteNum / limitOrder.expectedPositionLiqQuoteDecimalCorrected
             : liqBaseNum / limitOrder.expectedPositionLiqBaseDecimalCorrected);
 
+    console.log(fillPercentage);
+
     const originalPositionLiqBase = getFormattedNumber({
         value: limitOrder.originalPositionLiqBaseDecimalCorrected,
     });

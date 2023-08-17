@@ -54,6 +54,7 @@ export default function LimitActionModal(props: propsIF) {
         quoteDisplay,
         truncatedDisplayPrice,
         initialTokenQty,
+        fillPercentage,
     } = useProcessOrder(limitOrder, userAddress);
 
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
@@ -349,6 +350,7 @@ export default function LimitActionModal(props: propsIF) {
                     quoteTokenSymbol={quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogo}
                     quoteTokenLogoURI={quoteTokenLogo}
+                    fillPercentage={fillPercentage}
                 />
                 <div className={styles.info_container}>
                     <LimitActionInfo {...limitInfoProps} />

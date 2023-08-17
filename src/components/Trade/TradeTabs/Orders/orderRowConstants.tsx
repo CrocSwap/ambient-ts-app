@@ -38,6 +38,7 @@ interface Props {
     isAccountView: boolean;
     isOrderFilled: boolean;
     isLimitOrderPartiallyFilled: boolean;
+    fillPercentage: number;
     handleCopyPosHash: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
@@ -84,10 +85,13 @@ export const orderRowConstants = (props: Props) => {
         expectedPositionLiqQuote,
         handleRowMouseDown,
         handleRowMouseOut,
+        fillPercentage,
     } = props;
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
+
+    console.log(fillPercentage);
 
     const tradeLinkPath =
         '/trade/limit/' +
@@ -426,6 +430,7 @@ export const orderRowConstants = (props: Props) => {
                 <OpenOrderStatus
                     isFilled={isOrderFilled}
                     isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
+                    fillPercentage={fillPercentage}
                 />
             </div>
         </li>

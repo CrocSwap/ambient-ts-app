@@ -34,6 +34,7 @@ interface propsIF {
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
+    fillPercentage: number;
 }
 
 export default function PriceInfo(props: propsIF) {
@@ -50,6 +51,7 @@ export default function PriceInfo(props: propsIF) {
         isDenomBase,
         usdValue,
         truncatedDisplayPriceDenomByMoneyness,
+        fillPercentage,
     } = props;
     const { pathname } = useLocation();
 
@@ -149,6 +151,7 @@ export default function PriceInfo(props: propsIF) {
                 <OpenOrderStatus
                     isFilled={isOrderFilled}
                     isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
+                    fillPercentage={fillPercentage}
                 />
             </section>
         </div>

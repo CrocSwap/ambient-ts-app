@@ -7,6 +7,7 @@ import styles from './LimitActionTokenHeader.module.css';
 interface ILimitActionTokenHeaderProps {
     isOrderFilled: boolean;
     isLimitOrderPartiallyFilled: boolean;
+    fillPercentage: number;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
@@ -58,6 +59,7 @@ export default function LimitActionTokenHeader(
             <OpenOrderStatus
                 isFilled={props.isOrderFilled}
                 isLimitOrderPartiallyFilled={props.isLimitOrderPartiallyFilled}
+                fillPercentage={props.fillPercentage}
             />
         </div>
     );
