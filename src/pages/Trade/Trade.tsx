@@ -90,6 +90,8 @@ function Trade() {
 
     const tradeTableRef = useRef<HTMLDivElement>(null);
 
+    const CHART_MIN_HEIGHT = 4;
+
     useEffect(() => {
         if (
             isCandleDataNull &&
@@ -334,7 +336,7 @@ function Trade() {
                         setChartHeight(chartHeights.default);
                         setTradeTableState(undefined);
                     } else {
-                        setChartHeight(4);
+                        setChartHeight(CHART_MIN_HEIGHT);
                         setTradeTableState('Expanded');
                     }
                 } else {

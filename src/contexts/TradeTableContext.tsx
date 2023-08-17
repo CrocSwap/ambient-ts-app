@@ -58,6 +58,8 @@ export const TradeTableContextProvider = (props: {
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
 
+    const CHART_MIN_HEIGHT = 4;
+
     const tradeTableContext = {
         showAllData,
         setShowAllData,
@@ -70,27 +72,19 @@ export const TradeTableContextProvider = (props: {
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
         toggleTradeTable: () => {
             if (!tradeTableState) {
-                if (chartHeights.current > chartHeights.default) {
-                    setChartHeight(chartHeights.default);
-                } else {
-                    setChartHeight(4);
-                    setTradeTableState('Expanded');
-                }
+                setChartHeight(CHART_MIN_HEIGHT);
+                setTradeTableState('Expanded');
             } else {
-                setChartHeight(chartHeights.default);
+                setChartHeight(chartHeights.saved);
                 setTradeTableState(undefined);
             }
         },
         toggleTradeTableCollapse: () => {
             if (!tradeTableState) {
-                if (chartHeights.current < chartHeights.default) {
-                    setChartHeight(chartHeights.default);
-                } else {
-                    setChartHeight(chartHeights.max);
-                    setTradeTableState('Collapsed');
-                }
+                setChartHeight(chartHeights.max);
+                setTradeTableState('Collapsed');
             } else {
-                setChartHeight(chartHeights.default);
+                setChartHeight(chartHeights.saved);
                 setTradeTableState(undefined);
             }
         },
@@ -160,13 +154,18 @@ export const TradeTableContextProvider = (props: {
 
     useEffect(() => {
         if (isCandleDataNull && isPoolInitialized) {
-            setChartHeight(4);
+            setChartHeight(CHART_MIN_HEIGHT);
             setTradeTableState('Expanded');
         } else {
-            setChartHeight(chartHeights.default);
-            setTradeTableState(undefined);
+            if (
+                chartHeights.current > CHART_MIN_HEIGHT &&
+                chartHeights.current < chartHeights.max
+            ) {
+                setChartHeight(chartHeights.saved);
+                setTradeTableState(undefined);
+            }
         }
-    }, [isCandleDataNull, isPoolInitialized]);
+    }, [isCandleDataNull, isPoolInitialized, JSON.stringify(chartHeights)]);
 
     return (
         <TradeTableContext.Provider value={tradeTableContext}>
