@@ -2421,7 +2421,7 @@ export default function Chart(props: propsIF) {
                 .yScale(scaleData?.yScale);
 
             marketLine.decorate((context: CanvasRenderingContext2D) => {
-                context.strokeStyle = 'rgba(235, 235, 255, 0.4)';
+                context.strokeStyle = 'var(--text2)';
                 context.lineWidth = 0.5;
                 context.fillStyle = 'transparent';
             });
