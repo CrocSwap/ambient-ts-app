@@ -2,8 +2,8 @@ import { Suspense, memo, useEffect, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { IS_LOCAL_ENV } from '../../../constants';
-import handleTokenLogo from '../../../utils/functions/handleTokenLogo';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import processLogoSrc from './processLogoSrc';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
@@ -75,7 +75,7 @@ function TokenIcon({
                 <img
                     className={styles.token_icon}
                     style={{ width: getIconWidth(size) }}
-                    src={handleTokenLogo(token)}
+                    src={processLogoSrc(token)}
                     alt={alt}
                     onError={handleFetchError}
                 />

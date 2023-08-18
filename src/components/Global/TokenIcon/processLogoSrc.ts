@@ -1,7 +1,7 @@
-import * as localLogos from '../../assets/images/tokens/exports';
-import { TokenIF } from '../interfaces/exports';
-import * as addresses from '../tokens/exports';
-import uriToHttp from './uriToHttp';
+import * as localLogos from '../../../assets/images/tokens/exports';
+import * as addresses from '../../../utils/tokens/exports';
+import uriToHttp from '../../../utils/functions/uriToHttp';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 const idToken = (chn: string, addr: string): string | undefined => {
     const logoURIMap = new Map<string, string>();
@@ -21,7 +21,7 @@ const idToken = (chn: string, addr: string): string | undefined => {
     return logoURIMap.get(requestedLogoKey);
 };
 
-export default function handleTokenLogo(token?: TokenIF): string {
+export default function processLogoSrc(token?: TokenIF): string {
     if (!token) return '';
     const verifiedSymbol: string | undefined = idToken(
         '0x' + token.chainId.toString(16),
