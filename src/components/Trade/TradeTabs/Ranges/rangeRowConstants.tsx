@@ -12,6 +12,9 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 interface propsIF {
     posHashTruncated: string;
     usdValue: string;
@@ -45,6 +48,8 @@ interface propsIF {
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
     position: PositionIF;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
 export default function rangeRowConstants(props: propsIF) {
@@ -81,7 +86,15 @@ export default function rangeRowConstants(props: propsIF) {
         isPositionInRange,
         handleRowMouseDown,
         handleRowMouseOut,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = props;
+
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
@@ -193,6 +206,7 @@ export default function rangeRowConstants(props: propsIF) {
 
     const baseTokenLogoComponent = (
         <TokenIcon
+            token={baseToken}
             src={baseTokenLogo}
             alt={baseTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
@@ -201,6 +215,7 @@ export default function rangeRowConstants(props: propsIF) {
 
     const quoteTokenLogoComponent = (
         <TokenIcon
+            token={quoteToken}
             src={quoteTokenLogo}
             alt={quoteTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}

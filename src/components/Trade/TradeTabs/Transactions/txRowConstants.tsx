@@ -6,12 +6,14 @@ import {
     TextOnlyTooltip,
 } from '../../../Global/StyledTooltip/StyledTooltip';
 import styles from './Transactions.module.css';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../../contexts/TokenContext';
 
 interface propsIF {
     txHashTruncated: string;
@@ -27,13 +29,11 @@ interface propsIF {
     sideType: string;
     sideCharacter: string;
     ensName: string | null;
-
     ownerId: string;
     positiveArrow: string;
     positiveDisplayStyle: string;
     negativeDisplayStyle: string;
     negativeArrow: string;
-
     type: string;
     truncatedLowDisplayPrice: string | undefined;
     truncatedHighDisplayPrice: string | undefined;
@@ -42,13 +42,11 @@ interface propsIF {
     truncatedHighDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPrice: string | undefined;
-
     isOwnerActiveAccount: boolean;
     isAccountView: boolean;
     isBuy: boolean;
     isOrderRemove: boolean;
     valueArrows: boolean;
-
     handleCopyTxHash: () => void;
     handleOpenExplorer: () => void;
     openDetailsModal: () => void;
@@ -56,7 +54,6 @@ interface propsIF {
     handleRowMouseOut: () => void;
     handleWalletClick: () => void;
     handleWalletCopy: () => void;
-
     tx: TransactionIF;
 }
 
@@ -84,13 +81,10 @@ export const txRowConstants = (props: propsIF) => {
         elapsedTimeString,
         baseQuantityDisplay,
         quoteQuantityDisplay,
-
         isOwnerActiveAccount,
         ownerId,
-
         sideType,
         sideCharacter,
-
         isBuy,
         isOrderRemove,
         valueArrows,
@@ -99,7 +93,6 @@ export const txRowConstants = (props: propsIF) => {
         negativeDisplayStyle,
         negativeArrow,
         type,
-
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         priceCharacter,
@@ -107,10 +100,13 @@ export const txRowConstants = (props: propsIF) => {
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         truncatedDisplayPrice,
-
         handleWalletClick,
         handleWalletCopy,
     } = props;
+
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
+    const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
@@ -247,6 +243,7 @@ export const txRowConstants = (props: propsIF) => {
             leaveDelay={0}
         >
             <TokenIcon
+                token={baseToken}
                 src={baseTokenLogo}
                 alt={tx.baseSymbol}
                 size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
@@ -269,6 +266,7 @@ export const txRowConstants = (props: propsIF) => {
             leaveDelay={0}
         >
             <TokenIcon
+                token={quoteToken}
                 src={quoteTokenLogo}
                 alt={tx.quoteSymbol}
                 size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
