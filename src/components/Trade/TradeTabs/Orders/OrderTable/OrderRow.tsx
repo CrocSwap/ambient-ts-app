@@ -11,6 +11,7 @@ import { orderRowConstants } from '../orderRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../../Global/Modal/useModal';
+import RowPlaceholder from '../../../../Global/RowPlaceholder/RowPlaceholder';
 
 interface propsIF {
     showColumns: boolean;
@@ -18,10 +19,17 @@ interface propsIF {
     limitOrder: LimitOrderIF;
     showPair: boolean;
     isAccountView: boolean;
+    isPlaceholder?: boolean;
 }
 function OrderRow(props: propsIF) {
-    const { showColumns, ipadView, showPair, limitOrder, isAccountView } =
-        props;
+    const {
+        showColumns,
+        ipadView,
+        showPair,
+        limitOrder,
+        isAccountView,
+        isPlaceholder,
+    } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -247,6 +255,19 @@ function OrderRow(props: propsIF) {
         }
     };
 
+    if (isPlaceholder)
+        return (
+            <RowPlaceholder
+                rowStyle={styles.row_container}
+                time={!showColumns && OrderTimeWithTooltip}
+                id={!showColumns ? IDWithTooltip : txIdColumnComponent}
+                wallet={!showColumns && !isAccountView && walletWithTooltip}
+                price={!ipadView && priceDisplay}
+                side={!showColumns ? sideDisplay : !ipadView && sideTypeColumn}
+                type={!showColumns && typeDisplay}
+                value={ValueWithTooltip}
+            />
+        );
     return (
         <>
             <ul

@@ -190,6 +190,7 @@ export default function InitPool() {
                         txAction: 'New',
                         txType: 'Approve',
                         txTypeDetails: `Approval of ${token.symbol}`,
+                        tx,
                     }),
                 );
             let receipt;
@@ -258,6 +259,7 @@ export default function InitPool() {
                                 txAction: 'New',
                                 txType: 'Init',
                                 txTypeDetails: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                                tx,
                             }),
                         );
                     let receipt;

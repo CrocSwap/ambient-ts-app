@@ -18,8 +18,6 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import Spinner from '../../../Global/Spinner/Spinner';
 import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
-import trimString from '../../../../utils/functions/trimString';
-import RowPlaceholder from '../../../Global/RowPlaceholder/RowPlaceholder';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -414,13 +412,16 @@ function Ranges(props: propsIF) {
                                 tx.txType === 'Range' &&
                                 pendingTransactions.includes(tx.txHash),
                         )
-                        .map((tx) => (
-                            <RowPlaceholder
-                                extraStyle={styles.row_container}
-                                key={tx.txHash}
-                                id={trimString(tx.txHash.toString(), 6, 4, '…')}
+                        .map((tx, idx) => (
+                            <RangesRow
+                                key={idx}
+                                position={tx.tx}
+                                ipadView={ipadView}
                                 showColumns={showColumns}
+                                isAccountView={isAccountView}
                                 showTimestamp={showTimestamp}
+                                showPair={showPair}
+                                isPlaceholder
                             />
                         ))}
                 {currentRowItemContent}

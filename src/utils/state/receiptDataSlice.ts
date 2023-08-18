@@ -14,6 +14,8 @@ interface TransactionByType {
         | 'Init'
         | 'Approve';
     txTypeDetails: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tx: any;
 }
 export interface receiptData {
     sessionReceipts: Array<string>;

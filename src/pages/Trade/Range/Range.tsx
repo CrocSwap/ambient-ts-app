@@ -1036,6 +1036,7 @@ function Range() {
                         txTypeDetails: isAdd
                             ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
+                        tx,
                     }),
                 );
         } catch (error) {
@@ -1183,6 +1184,7 @@ function Range() {
                         txAction: 'New',
                         txType: 'Approve',
                         txTypeDetails: `Approval of ${tokenSymbol}`,
+                        tx,
                     }),
                 );
             let receipt;

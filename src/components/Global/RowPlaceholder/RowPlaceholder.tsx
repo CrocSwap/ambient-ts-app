@@ -1,43 +1,32 @@
-import { memo } from 'react';
+import { memo, useContext } from 'react';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import styles from './RowPlaceholder.module.css';
 
 interface RowPlaceholderPropsIF {
-    id: string;
-    showColumns?: boolean;
-    showTimestamp?: boolean;
-    extraStyle: string;
+    rowStyle: string;
+    time: React.ReactNode;
+    id: React.ReactNode;
+    wallet: React.ReactNode;
+    price?: React.ReactNode;
+    side?: React.ReactNode;
+    type?: React.ReactNode;
+    value?: React.ReactNode;
+    min?: React.ReactNode;
+    max?: React.ReactNode;
 }
 
 const RowPlaceholder = (props: RowPlaceholderPropsIF) => {
-    const { id, showColumns, showTimestamp, extraStyle } = props;
-
-    const timeElement = <p className='base_color'>Now</p>;
-
-    const idElement = (
-        <p
-            className={`${styles.base_color} ${styles.mono_font} ${styles.hover_style}`}
-        >
-            {id}
-        </p>
-    );
-
-    const walletElement = (
-        <p className={`primary_color ${styles.hover_style} ${styles.id_style}`}>
-            you
-        </p>
-    );
+    const { rowStyle, time, id, wallet, price, side, type, value, min, max } =
+        props;
+    const { showAllData } = useContext(TradeTableContext);
 
     return (
         <>
-            <ul className={`${extraStyle} ${styles.border_left}`} id={id}>
-                {showTimestamp && <li>{timeElement}</li>}
-                {!showColumns && <li>{idElement}</li>}
-                {!showColumns && <li>{walletElement}</li>}
-                {showColumns && (
-                    <li>
-                        {idElement}
-                        {walletElement}
-                    </li>
+            <ul className={`${rowStyle} ${showAllData && styles.border_left}`}>
+                {[time, id, wallet, price, side, type, value, min, max].map(
+                    (item, idx) => (
+                        <>{item && <li key={idx}>{item}</li>}</>
+                    ),
                 )}
             </ul>
         </>

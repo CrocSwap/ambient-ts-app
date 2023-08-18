@@ -203,6 +203,7 @@ export default function Withdraw(props: propsIF) {
                             txAction: 'New',
                             txType: 'Withdraw',
                             txTypeDetails: `Withdrawal of ${selectedToken.symbol}`,
+                            tx,
                         }),
                     );
 

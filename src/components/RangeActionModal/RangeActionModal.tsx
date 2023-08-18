@@ -419,6 +419,7 @@ export default function RangeActionModal(props: propsIF) {
                             txAction: 'Edit',
                             txType: 'Range',
                             txTypeDetails: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
+                            tx,
                         }),
                     );
             } catch (error) {
@@ -502,6 +503,7 @@ export default function RangeActionModal(props: propsIF) {
                             txAction: 'Edit',
                             txType: 'Range',
                             txTypeDetails: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
+                            tx,
                         }),
                     );
             } catch (error) {

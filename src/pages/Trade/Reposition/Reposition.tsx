@@ -298,6 +298,7 @@ function Reposition() {
                         txAction: 'Edit',
                         txType: 'Range',
                         txTypeDetails: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
+                        tx,
                     }),
                 );
             // We want the user to exit themselves

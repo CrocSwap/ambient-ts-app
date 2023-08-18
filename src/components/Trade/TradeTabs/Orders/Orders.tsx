@@ -19,8 +19,6 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
-import trimString from '../../../../utils/functions/trimString';
-import RowPlaceholder from '../../../Global/RowPlaceholder/RowPlaceholder';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -432,13 +430,15 @@ function Orders(props: propsIF) {
                                 tx.txType === 'Limit' &&
                                 pendingTransactions.includes(tx.txHash),
                         )
-                        .map((tx) => (
-                            <RowPlaceholder
-                                extraStyle={styles.row_container}
-                                key={tx.txHash}
-                                id={trimString(tx.txHash.toString(), 6, 4, '…')}
+                        .map((tx, idx) => (
+                            <OrderRow
+                                key={idx}
+                                limitOrder={tx.tx}
+                                showPair={showPair}
                                 showColumns={showColumns}
-                                showTimestamp={!showColumns}
+                                ipadView={ipadView}
+                                isAccountView={isAccountView}
+                                isPlaceholder
                             />
                         ))}
                 {currentRowItemContent}

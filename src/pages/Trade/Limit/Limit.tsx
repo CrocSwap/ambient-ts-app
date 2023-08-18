@@ -461,6 +461,7 @@ export default function Limit() {
                         txAction: 'New',
                         txType: 'Limit',
                         txTypeDetails: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
+                        tx,
                     }),
                 );
         } catch (error) {
@@ -576,6 +577,7 @@ export default function Limit() {
                         txAction: 'New',
                         txType: 'Approve',
                         txTypeDetails: `Approval of ${tokenSymbol}`,
+                        tx,
                     }),
                 );
             let receipt;

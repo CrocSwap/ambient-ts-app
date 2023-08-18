@@ -227,6 +227,7 @@ export default function Deposit(props: propsIF) {
                             txAction: 'New',
                             txType: 'Deposit',
                             txTypeDetails: `Deposit ${selectedToken.symbol}`,
+                            tx,
                         }),
                     );
 
@@ -298,6 +299,7 @@ export default function Deposit(props: propsIF) {
                         txAction: 'New',
                         txType: 'Approve',
                         txTypeDetails: `Approval of ${selectedToken.symbol}`,
+                        tx,
                     }),
                 );
             let receipt;

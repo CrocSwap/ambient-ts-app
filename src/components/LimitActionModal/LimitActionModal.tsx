@@ -153,6 +153,7 @@ export default function LimitActionModal(props: propsIF) {
                                 txAction: 'Edit',
                                 txType: 'Limit',
                                 txTypeDetails: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
+                                tx,
                             }),
                         );
                 } else {
@@ -169,6 +170,7 @@ export default function LimitActionModal(props: propsIF) {
                                 txAction: 'Edit',
                                 txType: 'Limit',
                                 txTypeDetails: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
+                                tx,
                             }),
                         );
                 }
@@ -246,6 +248,7 @@ export default function LimitActionModal(props: propsIF) {
                                 txAction: 'Edit',
                                 txType: 'Limit',
                                 txTypeDetails: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
+                                tx,
                             }),
                         );
                 } else {
@@ -262,6 +265,7 @@ export default function LimitActionModal(props: propsIF) {
                                 txAction: 'Edit',
                                 txType: 'Limit',
                                 txTypeDetails: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
+                                tx,
                             }),
                         );
                 }

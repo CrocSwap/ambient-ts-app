@@ -193,6 +193,7 @@ export default function Transfer(props: propsIF) {
                             txAction: 'New',
                             txType: 'Transfer',
                             txTypeDetails: `Transfer ${selectedToken.symbol}`,
+                            tx,
                         }),
                     );
                 let receipt;

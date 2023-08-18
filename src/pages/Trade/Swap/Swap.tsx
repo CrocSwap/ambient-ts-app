@@ -307,6 +307,7 @@ function Swap(props: propsIF) {
                         txAction: 'New',
                         txType: 'Swap',
                         txTypeDetails: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                        tx,
                     }),
                 );
         } catch (error) {
@@ -375,6 +376,7 @@ function Swap(props: propsIF) {
                         txAction: 'New',
                         txType: 'Approve',
                         txTypeDetails: `Approval of ${tokenSymbol}`,
+                        tx,
                     }),
                 );
             let receipt;
