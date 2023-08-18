@@ -19,6 +19,7 @@ interface propsIF {
     showPair: boolean;
     isAccountView: boolean;
 }
+
 function OrderRow(props: propsIF) {
     const { showColumns, ipadView, showPair, limitOrder, isAccountView } =
         props;
@@ -47,7 +48,6 @@ function OrderRow(props: propsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
-
         isOrderFilled,
         truncatedDisplayPrice,
         sideType,
@@ -56,13 +56,14 @@ function OrderRow(props: propsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
-
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
         elapsedTimeString,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
@@ -210,6 +211,8 @@ function OrderRow(props: propsIF) {
         sideType,
         sideCharacter,
         isOrderFilled,
+        baseTokenAddress,
+        quoteTokenAddress,
     };
 
     const {

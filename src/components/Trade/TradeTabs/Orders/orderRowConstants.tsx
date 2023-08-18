@@ -2,12 +2,14 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import styles from './Orders.module.css';
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../../contexts/TokenContext';
 
 interface propsIF {
     posHashTruncated: string;
@@ -38,6 +40,8 @@ interface propsIF {
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
 // * This file contains constants used in the rendering of order rows in the order table.
@@ -48,7 +52,6 @@ interface propsIF {
 export const orderRowConstants = (props: propsIF) => {
     const {
         posHashTruncated,
-
         posHash,
         handleCopyPosHash,
         sellOrderStyle,
@@ -74,10 +77,17 @@ export const orderRowConstants = (props: propsIF) => {
         sideType,
         sideCharacter,
         isOrderFilled,
-
         handleRowMouseDown,
         handleRowMouseOut,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = props;
+
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
@@ -177,8 +187,6 @@ export const orderRowConstants = (props: propsIF) => {
 
     const walletWithoutTooltip = (
         <p
-            // onClick={handleWalletClick}
-
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
@@ -196,6 +204,7 @@ export const orderRowConstants = (props: propsIF) => {
 
     const baseTokenLogoComponent = (
         <TokenIcon
+            token={baseToken}
             src={baseTokenLogo}
             alt={baseTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
@@ -203,6 +212,7 @@ export const orderRowConstants = (props: propsIF) => {
     );
     const quoteTokenLogoComponent = (
         <TokenIcon
+            token={quoteToken}
             src={quoteTokenLogo}
             alt={quoteTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
