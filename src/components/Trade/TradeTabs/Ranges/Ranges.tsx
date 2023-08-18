@@ -411,9 +411,9 @@ function Ranges(props: propsIF) {
                                 key={idx}
                                 transaction={{
                                     hash: '...',
-                                    side: tx.txAction!,
+                                    side: tx.txAction,
                                     type: tx.txType,
-                                    details: tx.txDetails!,
+                                    details: tx.txDetails,
                                 }}
                                 showTimestamp={showTimestamp}
                                 showColumns={showColumns}

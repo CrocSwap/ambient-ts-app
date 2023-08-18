@@ -523,7 +523,7 @@ function Transactions(props: propsIF) {
                                         key={idx}
                                         transaction={{
                                             hash: tx.txHash,
-                                            side: tx.txAction!,
+                                            side: tx.txAction,
                                             type: tx.txType,
                                         }}
                                         showTimestamp={showTimestamp}

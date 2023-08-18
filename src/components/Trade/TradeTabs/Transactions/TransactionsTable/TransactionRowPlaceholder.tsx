@@ -8,7 +8,7 @@ import styles from '../Transactions.module.css';
 interface PropsIF {
     transaction: {
         hash: string;
-        side: string;
+        side?: string;
         type: string;
     };
     showTimestamp: boolean;

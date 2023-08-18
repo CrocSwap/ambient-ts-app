@@ -9,7 +9,7 @@ import styles from './Transactions.module.css';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 

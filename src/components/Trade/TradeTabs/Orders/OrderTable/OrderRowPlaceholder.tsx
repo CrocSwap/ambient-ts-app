@@ -9,7 +9,7 @@ import styles from '../Orders.module.css';
 interface PropsIF {
     transaction: {
         hash: string;
-        side: string;
+        side?: string;
         type: string;
     };
     showColumns: boolean;
@@ -87,7 +87,11 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                                 justifyContent: 'center',
                             }}
                         >
-                            <OpenOrderStatus isFilled={false} />
+                            <OpenOrderStatus
+                                isFilled={false}
+                                isLimitOrderPartiallyFilled={false}
+                                fillPercentage={0}
+                            />
                         </div>
                     </li>
                 )}

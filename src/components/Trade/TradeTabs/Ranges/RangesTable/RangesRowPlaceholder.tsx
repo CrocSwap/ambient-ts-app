@@ -9,9 +9,9 @@ import styles from '../Ranges.module.css';
 interface PropsIF {
     transaction: {
         hash: string;
-        side: string;
+        side?: string;
         type: string;
-        details: {
+        details?: {
             min?: string;
             max?: string;
         };
@@ -67,18 +67,18 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 )}
                 {!showColumns && (
                     <li className={styles.align_right}>
-                        {transaction.details.min}
+                        {transaction.details?.min}
                     </li>
                 )}
                 {!showColumns && (
                     <li className={styles.align_right}>
-                        {transaction.details.max}
+                        {transaction.details?.max}
                     </li>
                 )}
                 {showColumns && !ipadView && (
                     <li className={styles.align_right}>
-                        <p>{transaction.details.min}</p>
-                        <p>{transaction.details.max}</p>
+                        <p>{transaction.details?.min}</p>
+                        <p>{transaction.details?.max}</p>
                     </li>
                 )}
                 {<li className={styles.align_right}>...</li>}

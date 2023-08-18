@@ -23,7 +23,6 @@ interface propsIF {
     isAccountView: boolean;
     showTimestamp: boolean;
     isLeaderboard?: boolean;
-    isPlaceholder?: boolean;
 }
 
 function RangesRow(props: propsIF) {
@@ -35,7 +34,6 @@ function RangesRow(props: propsIF) {
         position,
         isAccountView,
         isLeaderboard,
-        isPlaceholder,
     } = props;
     const {
         snackbar: { open: openSnackbar },
@@ -126,7 +124,7 @@ function RangesRow(props: propsIF) {
             ? `position-${position.firstMintTx}`
             : '';
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
 
     const activePositionRef = useRef(null);
 

@@ -436,7 +436,7 @@ function Orders(props: propsIF) {
                                 key={idx}
                                 transaction={{
                                     hash: '...',
-                                    side: tx.txAction!,
+                                    side: tx.txAction,
                                     type: tx.txType,
                                 }}
                                 showColumns={showColumns}
