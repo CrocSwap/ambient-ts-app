@@ -4,8 +4,6 @@ import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 
-type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
-
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
 interface TradeTableContextIF {
@@ -16,8 +14,6 @@ interface TradeTableContextIF {
     setCurrentPositionActive: (val: string) => void;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: (val: string) => void;
-    tradeTableState: TradeTableState;
-    setTradeTableState: (val: TradeTableState) => void;
     toggleTradeTable: () => void;
     toggleTradeTableCollapse: () => void;
     showAllData: boolean;
@@ -47,8 +43,7 @@ export const TradeTableContextProvider = (props: {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
-    const [tradeTableState, setTradeTableState] =
-        useState<TradeTableState>(undefined);
+
     const [isTradeTableMinimized, setIsTradeTableMinimized] = useState(false);
 
     const [showSwapPulseAnimation, setShowSwapPulseAnimation] = useState(false);
@@ -66,8 +61,6 @@ export const TradeTableContextProvider = (props: {
         setCurrentTxActiveInTransactions,
         currentPositionActive,
         setCurrentPositionActive,
-        tradeTableState,
-        setTradeTableState,
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
         toggleTradeTable: () => {
             if (
@@ -75,10 +68,8 @@ export const TradeTableContextProvider = (props: {
                 chartHeights.current < chartHeights.max
             ) {
                 setChartHeight(chartHeights.min);
-                setTradeTableState('Expanded');
             } else {
                 setChartHeight(chartHeights.saved);
-                setTradeTableState(undefined);
             }
         },
         toggleTradeTableCollapse: () => {
@@ -87,10 +78,8 @@ export const TradeTableContextProvider = (props: {
                 chartHeights.current < chartHeights.max
             ) {
                 setChartHeight(chartHeights.max);
-                setTradeTableState('Collapsed');
             } else {
                 setChartHeight(chartHeights.saved);
-                setTradeTableState(undefined);
             }
         },
         isTradeTableMinimized,
@@ -163,13 +152,11 @@ export const TradeTableContextProvider = (props: {
             chartHeights.saved < chartHeights.max
         ) {
             setChartHeight(chartHeights.saved);
-            setTradeTableState(undefined);
         }
     };
     useEffect(() => {
         if (isCandleDataNull && isPoolInitialized) {
             setChartHeight(chartHeights.min);
-            setTradeTableState('Expanded');
         } else {
             resetTable();
         }

@@ -12,8 +12,8 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { ChartContext } from '../../../contexts/ChartContext';
 
 interface candlePropsIF {
     chartItemStates: chartItemStates;
@@ -41,7 +41,6 @@ export default function CandleChart(props: candlePropsIF) {
     } = props;
     const d3CanvasCandle = useRef<HTMLCanvasElement | null>(null);
     const [firstCandle, setFirstCandle] = useState<number>();
-    const { tradeTableState } = useContext(TradeTableContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
     const selectedCandleColor = '#E480FF';
@@ -54,6 +53,8 @@ export default function CandleChart(props: candlePropsIF) {
     const uniswapCandleBorderLightColor = '#4a5a76';
     const uniswapCandleDarkColor = '#252f40';
     const uniswapCandleBorderDarkColor = '#5e6b81';
+
+    const { tradeTableState } = useContext(ChartContext);
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');

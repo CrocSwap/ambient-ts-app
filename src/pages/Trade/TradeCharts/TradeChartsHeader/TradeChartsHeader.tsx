@@ -8,7 +8,6 @@ import printDomToImage from '../../../../utils/functions/printDomToImage';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 import styles from './TradeChartsHeader.module.css';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 
@@ -19,6 +18,7 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         canvasRef,
         chartCanvasRef,
         chartHeights,
+        tradeTableState,
     } = useContext(ChartContext);
     const { isCandleDataNull } = useContext(CandleContext);
 
@@ -27,7 +27,6 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { tradeTableState } = useContext(TradeTableContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const showNoChartData = !isPoolInitialized || isCandleDataNull;

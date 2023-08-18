@@ -12,13 +12,16 @@ import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 // react functional component
 function Leaderboard() {
-    const { tradeTableState, showAllData } = useContext(TradeTableContext);
+    const { showAllData } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+
+    const { tradeTableState } = useContext(ChartContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state?.userData,

@@ -5,6 +5,8 @@ import {
     useChartSettings,
 } from '../App/hooks/useChartSettings';
 
+type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
+
 interface ChartHeights {
     current: number;
     saved: number;
@@ -22,6 +24,7 @@ interface ChartContextIF {
     isEnabled: boolean;
     canvasRef: React.MutableRefObject<null>;
     chartCanvasRef: React.MutableRefObject<null>;
+    tradeTableState: TradeTableState;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -92,6 +95,13 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         });
     };
 
+    const tradeTableState: TradeTableState =
+        chartHeights.current === chartHeights.min
+            ? 'Expanded'
+            : chartHeights.current === chartHeights.max
+            ? 'Collapsed'
+            : undefined;
+
     const isChartEnabled =
         !!process.env.REACT_APP_CHART_IS_ENABLED &&
         process.env.REACT_APP_CHART_IS_ENABLED.toLowerCase() === 'false'
@@ -108,6 +118,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         isEnabled: isChartEnabled,
         canvasRef,
         chartCanvasRef,
+        tradeTableState,
     };
 
     useEffect(() => {

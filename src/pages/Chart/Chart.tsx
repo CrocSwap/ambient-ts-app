@@ -72,6 +72,7 @@ import {
     standardDeviation,
     zoomUtils,
 } from './ChartUtils/chartUtils';
+import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -138,6 +139,7 @@ export default function Chart(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+    const { tradeTableState } = useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
     const chainId = chainData.chainId;
     const { setCandleDomains, setCandleScale, timeOfEndCandle } =
@@ -155,8 +157,7 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth: rangeSimpleRangeWidth,
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
-    const { handlePulseAnimation, tradeTableState } =
-        useContext(TradeTableContext);
+    const { handlePulseAnimation } = useContext(TradeTableContext);
     const [chartHeights, setChartHeights] = useState(0);
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
