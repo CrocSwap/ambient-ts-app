@@ -127,6 +127,25 @@
     cursor: pointer;
 }
 
+.row_placeholder {
+    background-color: var(--dark2);
+    color: var(--text2);
+    -webkit-mask: linear-gradient(
+        -60deg,
+        black 30%,
+        rgba(119, 117, 117, 0.333),
+        black 70%
+    )
+    right/300% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+    100% {
+        -webkit-mask-position: left;
+    }
+}
+
 .main_list_container .row_container,
 .main_list_container .header {
     width: 100%;

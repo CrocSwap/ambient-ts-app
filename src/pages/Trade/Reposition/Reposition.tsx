@@ -295,10 +295,13 @@ function Reposition() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txAction: 'Edit',
+                        txAction: 'Reposition',
                         txType: 'Range',
-                        txTypeDetails: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
-                        tx,
+                        txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
+                        txDetails: {
+                            min: getFormattedNumber({ value: pinnedLowTick }),
+                            max: getFormattedNumber({ value: pinnedHighTick }),
+                        },
                     }),
                 );
             // We want the user to exit themselves

@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface TransactionByType {
     txHash: string;
-    txAction: 'New' | 'Edit';
+    txAction?: 'Sell' | 'Buy' | 'Add' | 'Remove' | 'Claim' | 'Reposition';
     txType:
         | 'Swap'
         | 'Limit'
@@ -13,9 +13,11 @@ interface TransactionByType {
         | 'Transfer'
         | 'Init'
         | 'Approve';
-    txTypeDetails: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    tx: any;
+    txDescription: string;
+    txDetails?: {
+        min?: string;
+        max?: string;
+    };
 }
 export interface receiptData {
     sessionReceipts: Array<string>;

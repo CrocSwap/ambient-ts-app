@@ -150,10 +150,9 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txAction: 'Edit',
+                                txAction: 'Remove',
                                 txType: 'Limit',
-                                txTypeDetails: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
-                                tx,
+                                txDescription: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
                             }),
                         );
                 } else {
@@ -167,10 +166,9 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txAction: 'Edit',
+                                txAction: 'Remove',
                                 txType: 'Limit',
-                                txTypeDetails: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
-                                tx,
+                                txDescription: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
                             }),
                         );
                 }
@@ -245,10 +243,9 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txAction: 'Edit',
+                                txAction: 'Claim',
                                 txType: 'Limit',
-                                txTypeDetails: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
-                                tx,
+                                txDescription: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
                             }),
                         );
                 } else {
@@ -262,10 +259,9 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txAction: 'Edit',
+                                txAction: 'Claim',
                                 txType: 'Limit',
-                                txTypeDetails: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
-                                tx,
+                                txDescription: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
                             }),
                         );
                 }

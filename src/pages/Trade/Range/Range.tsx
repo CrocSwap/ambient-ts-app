@@ -1031,12 +1031,15 @@ function Range() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txAction: !isAdd ? 'Edit' : 'New',
+                        txAction: 'Add',
                         txType: 'Range',
-                        txTypeDetails: isAdd
+                        txDescription: isAdd
                             ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
-                        tx,
+                        txDetails: {
+                            min: getFormattedNumber({ value: minPrice }),
+                            max: getFormattedNumber({ value: maxPrice }),
+                        },
                     }),
                 );
         } catch (error) {
@@ -1181,10 +1184,8 @@ function Range() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txAction: 'New',
                         txType: 'Approve',
-                        txTypeDetails: `Approval of ${tokenSymbol}`,
-                        tx,
+                        txDescription: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;

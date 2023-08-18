@@ -416,10 +416,9 @@ export default function RangeActionModal(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txAction: 'Edit',
+                            txAction: 'Remove',
                             txType: 'Range',
-                            txTypeDetails: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
-                            tx,
+                            txDescription: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
                         }),
                     );
             } catch (error) {
@@ -500,10 +499,9 @@ export default function RangeActionModal(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txAction: 'Edit',
+                            txAction: 'Add',
                             txType: 'Range',
-                            txTypeDetails: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
-                            tx,
+                            txDescription: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
                         }),
                     );
             } catch (error) {

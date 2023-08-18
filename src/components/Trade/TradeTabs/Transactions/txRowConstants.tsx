@@ -276,11 +276,6 @@ export const txRowConstants = (props: Props) => {
         </DefaultTooltip>
     );
 
-    const pair =
-        tx.base !== ZERO_ADDRESS
-            ? [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`]
-            : [`${tx.quoteSymbol}: ${tx.quote}`];
-
     const tradeLinkPath =
         (tx.entityType.toLowerCase() === 'limitorder'
             ? '/trade/limit/'
@@ -581,10 +576,6 @@ export const txRowConstants = (props: Props) => {
         IDWithTooltip,
         usdValueWithTooltip,
         walletWithTooltip,
-        baseTokenLogoComponent,
-        quoteTokenLogoComponent,
-        pair,
-        tradeLinkPath,
         tokenPair,
         TxTimeWithTooltip,
         baseQtyDisplayWithTooltip,

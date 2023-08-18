@@ -18,6 +18,7 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import Spinner from '../../../Global/Spinner/Spinner';
 import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -408,20 +409,24 @@ function Ranges(props: propsIF) {
                     transactionsByType
                         .filter(
                             (tx) =>
-                                tx.txAction === 'New' &&
+                                tx.txAction &&
+                                tx.txDetails &&
                                 tx.txType === 'Range' &&
                                 pendingTransactions.includes(tx.txHash),
                         )
                         .map((tx, idx) => (
-                            <RangesRow
+                            <RangesRowPlaceholder
                                 key={idx}
-                                position={tx.tx}
-                                ipadView={ipadView}
-                                showColumns={showColumns}
-                                isAccountView={isAccountView}
+                                transaction={{
+                                    hash: '...',
+                                    side: tx.txAction!,
+                                    type: tx.txType,
+                                    details: tx.txDetails!,
+                                }}
                                 showTimestamp={showTimestamp}
-                                showPair={showPair}
-                                isPlaceholder
+                                showColumns={showColumns}
+                                ipadView={ipadView}
+                                mobileView={mobileView}
                             />
                         ))}
                 {currentRowItemContent}

@@ -200,10 +200,8 @@ export default function Withdraw(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txAction: 'New',
                             txType: 'Withdraw',
-                            txTypeDetails: `Withdrawal of ${selectedToken.symbol}`,
-                            tx,
+                            txDescription: `Withdrawal of ${selectedToken.symbol}`,
                         }),
                     );
 

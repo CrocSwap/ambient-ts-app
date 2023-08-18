@@ -21,7 +21,6 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../../Global/Modal/useModal';
-import RowPlaceholder from '../../../../Global/RowPlaceholder/RowPlaceholder';
 
 interface propsIF {
     tx: TransactionIF;
@@ -29,17 +28,9 @@ interface propsIF {
     showColumns: boolean;
     showTimestamp: boolean;
     isAccountView: boolean;
-    isPlaceholder?: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const {
-        showColumns,
-        showTimestamp,
-        ipadView,
-        tx,
-        isAccountView,
-        isPlaceholder,
-    } = props;
+    const { showColumns, showTimestamp, ipadView, tx, isAccountView } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -265,28 +256,7 @@ function TransactionRow(props: propsIF) {
         setCurrentTxActiveInTransactions('');
         openDetailsModal();
     }
-    if (isPlaceholder)
-        return (
-            <RowPlaceholder
-                rowStyle={styles.row_container}
-                time={showTimestamp && TxTimeWithTooltip}
-                id={!showColumns ? IDWithTooltip : txIdColumnComponent}
-                wallet={!showColumns && !isAccountView && walletWithTooltip}
-                price={
-                    !ipadView &&
-                    (tx.entityType === 'liqchange'
-                        ? tx.positionType === 'ambient'
-                            ? ambientPriceDisplay
-                            : lowAndHighPriceDisplay
-                        : priceDisplay)
-                }
-                side={
-                    !showColumns ? sideDisplay : !ipadView && typeAndSideColumn
-                }
-                type={!showColumns && typeDisplay}
-                value={usdValueWithTooltip}
-            />
-        );
+    // TODO: use media queries and standardized styles
     // end of portfolio page li element ---------------
     return (
         <>

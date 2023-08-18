@@ -13,7 +13,6 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import { useModal } from '../../../../Global/Modal/useModal';
 import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
-import RowPlaceholder from '../../../../Global/RowPlaceholder/RowPlaceholder';
 
 interface propsIF {
     showPair: boolean;
@@ -281,17 +280,6 @@ function RangesRow(props: propsIF) {
         openDetailsModal();
     }
 
-    if (isPlaceholder)
-        return (
-            <RowPlaceholder
-                rowStyle={styles.row_container}
-                time={showTimestamp && rangeTimeWithTooltip}
-                id={idOrNull ?? txIdColumnComponent}
-                wallet={!showColumns && !isAccountView && walletWithTooltip}
-                min={!showColumns && fullScreenMinDisplay}
-                max={!showColumns && fullScreenMaxDisplay}
-            />
-        );
     return (
         <>
             <ul

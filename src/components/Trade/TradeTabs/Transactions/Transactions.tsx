@@ -25,6 +25,7 @@ import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -515,20 +516,62 @@ function Transactions(props: propsIF) {
                     transactionsByType
                         .filter(
                             (tx) =>
-                                tx.txAction === 'New' &&
+                                tx.txAction &&
                                 pendingTransactions.includes(tx.txHash),
                         )
-                        .map((tx, idx) => (
-                            <TransactionRow
-                                key={idx}
-                                tx={tx.tx}
-                                ipadView={ipadView}
-                                showColumns={showColumns}
-                                showTimestamp={showTimestamp}
-                                isAccountView={isAccountView}
-                                isPlaceholder
-                            />
-                        ))}
+                        .map((tx, idx) => {
+                            if (tx.txAction !== 'Reposition')
+                                return (
+                                    <TransactionRowPlaceholder
+                                        key={idx}
+                                        transaction={{
+                                            hash: tx.txHash,
+                                            side: tx.txAction!,
+                                            type: tx.txType,
+                                        }}
+                                        showTimestamp={showTimestamp}
+                                        showColumns={showColumns}
+                                        ipadView={ipadView}
+                                    />
+                                );
+                            return (
+                                <>
+                                    <TransactionRowPlaceholder
+                                        key={idx + 'sell'}
+                                        transaction={{
+                                            hash: tx.txHash,
+                                            side: 'Sell',
+                                            type: 'Market',
+                                        }}
+                                        showTimestamp={showTimestamp}
+                                        showColumns={showColumns}
+                                        ipadView={ipadView}
+                                    />
+                                    <TransactionRowPlaceholder
+                                        key={idx + 'add'}
+                                        transaction={{
+                                            hash: tx.txHash,
+                                            side: 'Add',
+                                            type: 'Range',
+                                        }}
+                                        showTimestamp={showTimestamp}
+                                        showColumns={showColumns}
+                                        ipadView={ipadView}
+                                    />
+                                    <TransactionRowPlaceholder
+                                        key={idx + 'remove'}
+                                        transaction={{
+                                            hash: tx.txHash,
+                                            side: 'Remove',
+                                            type: 'Range',
+                                        }}
+                                        showTimestamp={showTimestamp}
+                                        showColumns={showColumns}
+                                        ipadView={ipadView}
+                                    />
+                                </>
+                            );
+                        })}
                 {currentRowItemContent}
             </ul>
             {showViewMoreButton && (

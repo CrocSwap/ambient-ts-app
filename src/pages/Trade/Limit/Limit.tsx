@@ -458,10 +458,15 @@ export default function Limit() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txAction: 'New',
+                        txAction:
+                            (isDenomBase &&
+                                tokenB.address === quoteToken.address) ||
+                            (!isDenomBase &&
+                                tokenB.address !== quoteToken.address)
+                                ? 'Sell'
+                                : 'Buy',
                         txType: 'Limit',
-                        txTypeDetails: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
-                        tx,
+                        txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
                     }),
                 );
         } catch (error) {
@@ -574,10 +579,8 @@ export default function Limit() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txAction: 'New',
                         txType: 'Approve',
-                        txTypeDetails: `Approval of ${tokenSymbol}`,
-                        tx,
+                        txDescription: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;

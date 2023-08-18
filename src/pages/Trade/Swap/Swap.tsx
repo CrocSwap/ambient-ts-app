@@ -304,10 +304,15 @@ function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txAction: 'New',
+                        txAction:
+                            (isDenomBase &&
+                                tokenB.address === quoteToken.address) ||
+                            (!isDenomBase &&
+                                tokenB.address !== quoteToken.address)
+                                ? 'Sell'
+                                : 'Buy',
                         txType: 'Swap',
-                        txTypeDetails: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
-                        tx,
+                        txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
                     }),
                 );
         } catch (error) {
@@ -373,10 +378,8 @@ function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txAction: 'New',
                         txType: 'Approve',
-                        txTypeDetails: `Approval of ${tokenSymbol}`,
-                        tx,
+                        txDescription: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
