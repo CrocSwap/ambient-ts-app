@@ -8,6 +8,7 @@ import { FiRefreshCcw } from 'react-icons/fi';
 import { useContext, useState } from 'react';
 import { CandleContext } from '../../contexts/CandleContext';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
 
 interface PropsIF {
     chainId: string;
@@ -21,6 +22,7 @@ export const NoChartData = (props: PropsIF) => {
     const { chainId, tokenA, tokenB, isCandleDataNull } = props;
     const { setIsManualCandleFetchRequested } = useContext(CandleContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
+    const { toggleTradeTable } = useContext(TradeTableContext);
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
@@ -34,19 +36,29 @@ export const NoChartData = (props: PropsIF) => {
     };
 
     const refreshCandleButton = (
-        <button
-            disabled={isFetching}
-            className={`${styles.initialize_link} ${
-                isFetching && styles.isFetching
-            } ${isFetching && styles.disabled_button}`}
-            onClick={() => {
-                setIsManualCandleFetchRequested(true);
-                startFetching();
-            }}
-        >
-            {isFetching ? 'Fetching…' : 'Try Again'}
-            <FiRefreshCcw size={22} color='var(--text1)' />
-        </button>
+        <>
+            <button
+                disabled={isFetching}
+                className={`${styles.initialize_link} ${
+                    isFetching && styles.isFetching
+                } ${isFetching && styles.disabled_button}`}
+                onClick={() => {
+                    setIsManualCandleFetchRequested(true);
+                    startFetching();
+                }}
+            >
+                {isFetching ? 'Fetching…' : 'Try Again'}
+                <FiRefreshCcw size={22} color='var(--text1)' />
+            </button>
+            <span
+                className={`${styles.hide_chart}`}
+                onClick={() => {
+                    toggleTradeTable();
+                }}
+            >
+                Hide Chart
+            </span>
+        </>
     );
     let title = '';
     let subTitle = '';
