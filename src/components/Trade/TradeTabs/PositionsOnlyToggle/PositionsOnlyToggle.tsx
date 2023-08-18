@@ -48,7 +48,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setShowAllData,
     } = useContext(TradeTableContext);
 
-    const { chartHeights } = useContext(ChartContext);
+    const { tradeTableState } = useContext(ChartContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -140,8 +140,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 </p>
                 {toggleOrNull}
             </div>
-            {chartHeights.current !== chartHeights.max && collapseIcon}
-            {chartHeights.current !== chartHeights.min && expandIcon}
+            {tradeTableState !== 'Collapsed' && collapseIcon}
+            {tradeTableState !== 'Expanded' && expandIcon}
         </div>
     );
 }

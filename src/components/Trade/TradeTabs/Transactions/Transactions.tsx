@@ -161,9 +161,7 @@ function Transactions(props: propsIF) {
     const ipadView = useMediaQuery('(max-width: 600px)');
     const showTimestamp = useMediaQuery('(min-width: 1200px)');
 
-    const showColumns = isAccountView
-        ? useMediaQuery('(max-width: 1850px)')
-        : useMediaQuery('(max-width: 1599px)');
+    const showColumns = useMediaQuery('(max-width: 1599px)');
 
     // const showColumns = false;
 
@@ -597,9 +595,11 @@ function Transactions(props: propsIF) {
 
     return (
         <div
-            className={`${styles.main_list_container} ${
-                isTradeTableExpanded && styles.main_list_expanded
-            }`}
+            className={`${
+                isAccountView
+                    ? styles.acc_list_container
+                    : styles.main_list_container
+            } ${isTradeTableExpanded && styles.main_list_expanded}`}
         >
             <div>{headerColumnsDisplay}</div>
 

@@ -224,6 +224,7 @@ function RangesRow(props: propsIF) {
         handleWalletLinkClick,
         handleWalletCopy,
         ownerId,
+        ensName,
         userNameToDisplay,
         isOwnerActiveAccount,
         usernameStyle,
