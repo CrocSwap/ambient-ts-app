@@ -8,6 +8,7 @@ import {
 interface ChartHeights {
     current: number;
     saved: number;
+    min: number;
     max: number;
     default: number;
 }
@@ -43,11 +44,13 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const [chartHeights, setChartHeights] = useState<{
         current: number;
         saved: number;
+        min: number;
         max: number;
         default: number;
     }>({
         current: CHART_SAVED_HEIGHT,
         saved: CHART_SAVED_HEIGHT,
+        min: CHART_MIN_HEIGHT,
         max: CHART_MAX_HEIGHT,
         default: CHART_DEFAULT_HEIGHT,
     });
@@ -57,6 +60,7 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         const updateDimension = () => {
             setChartHeights({
                 ...chartHeights,
+                min: CHART_MIN_HEIGHT,
                 max: CHART_MAX_HEIGHT,
                 default: CHART_DEFAULT_HEIGHT,
             });

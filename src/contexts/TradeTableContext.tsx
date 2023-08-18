@@ -59,8 +59,6 @@ export const TradeTableContextProvider = (props: {
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
 
-    const CHART_MIN_HEIGHT = 4;
-
     const tradeTableContext = {
         showAllData,
         setShowAllData,
@@ -73,10 +71,10 @@ export const TradeTableContextProvider = (props: {
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
         toggleTradeTable: () => {
             if (
-                chartHeights.current > CHART_MIN_HEIGHT &&
+                chartHeights.current > chartHeights.min &&
                 chartHeights.current < chartHeights.max
             ) {
-                setChartHeight(CHART_MIN_HEIGHT);
+                setChartHeight(chartHeights.min);
                 setTradeTableState('Expanded');
             } else {
                 setChartHeight(chartHeights.saved);
@@ -85,7 +83,7 @@ export const TradeTableContextProvider = (props: {
         },
         toggleTradeTableCollapse: () => {
             if (
-                chartHeights.current > CHART_MIN_HEIGHT &&
+                chartHeights.current > chartHeights.min &&
                 chartHeights.current < chartHeights.max
             ) {
                 setChartHeight(chartHeights.max);
@@ -161,7 +159,7 @@ export const TradeTableContextProvider = (props: {
 
     const resetTable = () => {
         if (
-            chartHeights.saved > CHART_MIN_HEIGHT &&
+            chartHeights.saved > chartHeights.min &&
             chartHeights.saved < chartHeights.max
         ) {
             setChartHeight(chartHeights.saved);
@@ -170,7 +168,7 @@ export const TradeTableContextProvider = (props: {
     };
     useEffect(() => {
         if (isCandleDataNull && isPoolInitialized) {
-            setChartHeight(CHART_MIN_HEIGHT);
+            setChartHeight(chartHeights.min);
             setTradeTableState('Expanded');
         } else {
             resetTable();

@@ -6,6 +6,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 interface PositionsOnlyToggleProps {
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
@@ -41,12 +42,13 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setIsManualCandleFetchRequested,
     } = useContext(CandleContext);
     const {
-        tradeTableState,
         toggleTradeTable,
         toggleTradeTableCollapse,
         showAllData,
         setShowAllData,
     } = useContext(TradeTableContext);
+
+    const { chartHeights } = useContext(ChartContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
@@ -138,8 +140,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 </p>
                 {toggleOrNull}
             </div>
-            {tradeTableState != 'Collapsed' && collapseIcon}
-            {tradeTableState != 'Expanded' && expandIcon}
+            {chartHeights.current !== chartHeights.max && collapseIcon}
+            {chartHeights.current !== chartHeights.min && expandIcon}
         </div>
     );
 }
