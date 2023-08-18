@@ -384,7 +384,7 @@ function Trade() {
                                     if (tradeTableState == 'Expanded') {
                                         setChartHeight(chartHeights.default);
                                     } else {
-                                        setChartHeight(4);
+                                        setChartHeight(chartHeights.min);
                                     }
                                 } else {
                                     setChartHeight(

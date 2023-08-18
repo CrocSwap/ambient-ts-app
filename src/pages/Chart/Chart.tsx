@@ -72,7 +72,6 @@ import {
     standardDeviation,
     zoomUtils,
 } from './ChartUtils/chartUtils';
-import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -139,7 +138,6 @@ export default function Chart(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-    const { tradeTableState } = useContext(ChartContext);
     const { chainData } = useContext(CrocEnvContext);
     const chainId = chainData.chainId;
     const { setCandleDomains, setCandleScale, timeOfEndCandle } =
@@ -2817,7 +2815,7 @@ export default function Chart(props: propsIF) {
 
             return () => resizeObserver.unobserve(canvasDiv.node());
         }
-    }, [tradeTableState]);
+    }, []);
 
     useEffect(() => {
         const canvas = d3

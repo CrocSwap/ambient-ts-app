@@ -439,14 +439,6 @@ function Orders(props: propsIF) {
         </div>
     );
 
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    useEffect(() => {
-        if (mobileView) {
-            toggleTradeTable();
-        }
-    }, [mobileView]);
-
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
             setCurrentPage(1);
