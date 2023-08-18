@@ -3,8 +3,10 @@ import * as addresses from '../../../utils/tokens/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
-// fn to find a canonical token symbol locally by its address and chain
-const idToken = (chn: string, addr: string): string | undefined => {
+// return a preferred URI for a token logo, local if it exists, remote otherwise
+export default function processLogoSrc(token?: TokenIF): string {
+    // return empty string if `token` is undefined (app will use `<NoTokenIcon/>`)
+    if (!token) return '';
     // map to connect token addresses to a canonical symbol
     const logoURIMap = new Map<string, string>();
     // iterate over all data in the `/src/utils/tokens` directory
@@ -25,20 +27,11 @@ const idToken = (chn: string, addr: string): string | undefined => {
             );
         });
     // lookup a canonical symbol for a given token's address and chain ID
-    const requestedLogoKey: string =
-        chn.toLowerCase() + '_' + addr.toLowerCase();
-    // return canonical symbol or `undefined` if not found
-    return logoURIMap.get(requestedLogoKey);
-};
-
-// return a preferred URI for a token logo, local if it exists, remote otherwise
-export default function processLogoSrc(token?: TokenIF): string {
-    // return empty string if `token` is undefined (app will use `<NoTokenIcon/>`)
-    if (!token) return '';
-    // find a canonical symbol for a given token by its contract address
-    const verifiedSymbol: string | undefined = idToken(
-        '0x' + token.chainId.toString(16),
-        token.address,
+    const verifiedSymbol: string | undefined = logoURIMap.get(
+        '0x' +
+            token.chainId.toString(16).toLowerCase() +
+            '_' +
+            token.address.toLowerCase(),
     );
     // map to connect token symbol to a local logo URIs
     const logoMap = new Map<string, string>();
