@@ -383,18 +383,25 @@ const PageHeader = function () {
                 location.pathname === '/' && styles.fixed
             }`}
         >
-            <Link to='/' className={styles.logo_container} aria-label='Home'>
-                {desktopScreen ? (
-                    <img src={mainLogo} alt='' />
-                ) : (
-                    <img
-                        src={logo}
-                        alt='ambient'
-                        className={styles.logo}
-                        style={{ maxWidth: '70%', maxHeight: '70%' }}
-                    />
-                )}
-            </Link>
+            <div>
+                <Link
+                    to='/'
+                    className={styles.logo_container}
+                    aria-label='Home'
+                >
+                    {desktopScreen ? (
+                        <img src={mainLogo} alt='' />
+                    ) : (
+                        <img
+                            src={logo}
+                            alt='ambient'
+                            className={styles.logo}
+                            style={{ maxWidth: '70%', maxHeight: '70%' }}
+                        />
+                    )}
+                </Link>
+            </div>
+
             {routeDisplay}
             <div className={styles.right_side}>
                 {show ? (

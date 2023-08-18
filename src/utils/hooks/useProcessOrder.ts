@@ -172,9 +172,35 @@ export const useProcessOrder = (
             ? limitOrder.positionLiqQuoteDecimalCorrected
             : limitOrder.claimableLiqQuoteDecimalCorrected;
 
+    const isLimitOrderPartiallyFilled = liqBaseNum !== 0 && liqQuoteNum !== 0;
+
     const baseQty = getFormattedNumber({
         value: liqBaseNum,
         zeroDisplay: '0',
+    });
+
+    const fillPercentage =
+        100 *
+        (limitOrder.isBid
+            ? liqQuoteNum / limitOrder.expectedPositionLiqQuoteDecimalCorrected
+            : liqBaseNum / limitOrder.expectedPositionLiqBaseDecimalCorrected);
+
+    console.log(fillPercentage);
+
+    const originalPositionLiqBase = getFormattedNumber({
+        value: limitOrder.originalPositionLiqBaseDecimalCorrected,
+    });
+
+    const originalPositionLiqQuote = getFormattedNumber({
+        value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
+    });
+
+    const expectedPositionLiqBase = getFormattedNumber({
+        value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
+    });
+
+    const expectedPositionLiqQuote = getFormattedNumber({
+        value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
     });
 
     const quoteQty = getFormattedNumber({
@@ -416,6 +442,10 @@ export const useProcessOrder = (
         baseTokenLogo,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
         baseDisplay,
         quoteDisplay,
         baseTokenSymbol,
@@ -430,6 +460,8 @@ export const useProcessOrder = (
 
         // open order status
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
+        fillPercentage,
 
         // price
         startPriceDisplay,
