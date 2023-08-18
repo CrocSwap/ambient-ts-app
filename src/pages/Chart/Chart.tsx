@@ -2781,105 +2781,102 @@ export default function Chart(props: propsIF) {
 
     // mousemove
     useEffect(() => {
-        if (!isLineDrag) {
-            if (!isChartZoom) {
-                d3.select(d3CanvasMain.current).on(
-                    'mousemove',
-                    function (event: MouseEvent<HTMLDivElement>) {
-                        mousemove(event);
-                    },
-                );
+        if (!isChartZoom) {
+            d3.select(d3CanvasMain.current).on(
+                'mousemove',
+                function (event: MouseEvent<HTMLDivElement>) {
+                    mousemove(event);
+                },
+            );
 
-                const canvas = d3
-                    .select(d3CanvasMain.current)
-                    .select('canvas')
-                    .node() as HTMLCanvasElement;
+            const canvas = d3
+                .select(d3CanvasMain.current)
+                .select('canvas')
+                .node() as HTMLCanvasElement;
 
-                const rectCanvas = canvas.getBoundingClientRect();
+            const rectCanvas = canvas.getBoundingClientRect();
 
-                let isTouchToDrag = false;
-                let isMaxDragged = false;
+            let isTouchToDrag = isLineDrag;
+            let isMaxDragged = false;
 
-                d3.select(d3CanvasMain.current).on(
-                    'touchstart',
-                    function (event: TouchEvent) {
-                        if (scaleData !== undefined) {
-                            const isTouchOnLineValues = isTouchOnLine(
-                                event,
-                                rectCanvas,
-                            );
+            d3.select(d3CanvasMain.current).on(
+                'touchstart',
+                function (event: TouchEvent) {
+                    if (scaleData !== undefined) {
+                        const isTouchOnLineValues = isTouchOnLine(
+                            event,
+                            rectCanvas,
+                        );
 
-                            if (isTouchOnLineValues) {
-                                isMaxDragged =
-                                    isTouchOnLineValues?.isOnRangeMax;
-
-                                if (
-                                    isTouchOnLineValues?.isOnLimit ||
-                                    isTouchOnLineValues?.isOnRangeMax ||
-                                    isTouchOnLineValues?.isOnRangeMin
-                                ) {
-                                    isTouchToDrag = true;
-                                }
+                        if (isTouchOnLineValues) {
+                            isMaxDragged = isTouchOnLineValues?.isOnRangeMax;
+                            if (
+                                isTouchOnLineValues?.isOnLimit ||
+                                isTouchOnLineValues?.isOnRangeMax ||
+                                isTouchOnLineValues?.isOnRangeMin
+                            ) {
+                                isTouchToDrag = true;
+                                setIsLineDrag(true);
                             }
                         }
-                    },
-                );
+                    }
+                },
+            );
 
-                d3.select(d3CanvasMain.current).on(
-                    'touchmove',
-                    function (event: TouchEvent) {
-                        if (scaleData !== undefined) {
-                            const eventPoint =
-                                event.targetTouches[0].clientY -
-                                rectCanvas?.top;
+            d3.select(d3CanvasMain.current).on(
+                'touchmove',
+                function (event: TouchEvent) {
+                    if (scaleData !== undefined) {
+                        const eventPoint =
+                            event.targetTouches[0].clientY - rectCanvas?.top;
 
-                            if (isTouchToDrag && !isChartZoom) {
-                                if (location.pathname.includes('/limit')) {
-                                    const newLimitValue =
-                                        scaleData?.yScale.invert(eventPoint);
+                        if (isTouchToDrag && !isChartZoom) {
+                            if (location.pathname.includes('/limit')) {
+                                const newLimitValue =
+                                    scaleData?.yScale.invert(eventPoint);
 
-                                    if (newLimitValue !== undefined) {
-                                        calculateLimit(newLimitValue);
-                                    }
+                                if (newLimitValue !== undefined) {
+                                    calculateLimit(newLimitValue);
                                 }
-                                if (location.pathname.includes('/pool')) {
-                                    const newRangeValue =
-                                        scaleData?.yScale.invert(eventPoint);
+                            }
+                            if (location.pathname.includes('/pool')) {
+                                const newRangeValue =
+                                    scaleData?.yScale.invert(eventPoint);
 
-                                    if (newRangeValue !== undefined) {
-                                        const calculatedRangeValues =
-                                            calculateRangeWhenDragged(
-                                                newRangeValue,
-                                                isMaxDragged ? 'Max' : 'Min',
-                                            );
+                                if (newRangeValue !== undefined) {
+                                    const calculatedRangeValues =
+                                        calculateRangeWhenDragged(
+                                            newRangeValue,
+                                            isMaxDragged ? 'Max' : 'Min',
+                                        );
 
-                                        if (calculatedRangeValues) {
-                                            setRanges(() => {
-                                                const newTargets = [
-                                                    {
-                                                        name: 'Min',
-                                                        value: calculatedRangeValues[0],
-                                                    },
-                                                    {
-                                                        name: 'Max',
-                                                        value: calculatedRangeValues[1],
-                                                    },
-                                                ];
+                                    if (calculatedRangeValues) {
+                                        setRanges(() => {
+                                            const newTargets = [
+                                                {
+                                                    name: 'Min',
+                                                    value: calculatedRangeValues[0],
+                                                },
+                                                {
+                                                    name: 'Max',
+                                                    value: calculatedRangeValues[1],
+                                                },
+                                            ];
 
-                                                return newTargets;
-                                            });
-                                        }
+                                            return newTargets;
+                                        });
                                     }
                                 }
                             }
                         }
-                    },
-                );
+                    }
+                },
+            );
 
-                d3.select(d3CanvasMain.current).on('touchend', function () {
-                    isTouchToDrag = false;
-                });
-            }
+            d3.select(d3CanvasMain.current).on('touchend', function () {
+                isTouchToDrag = false;
+                setIsLineDrag(false);
+            });
         }
     }, [
         diffHashSigChart(visibleCandleData),
@@ -2888,6 +2885,7 @@ export default function Chart(props: propsIF) {
         selectedDate,
         bandwidth,
         isChartZoom,
+        isLineDrag,
     ]);
 
     // mouseleave
