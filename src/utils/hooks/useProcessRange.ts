@@ -199,10 +199,10 @@ export const useProcessRange = (
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
 
     const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 25
-            ? trimString(ensName, 20, 4, '…')
+        ? ensName.length > 16
+            ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 4, '…');
+        : trimString(ownerId, 5, 3, '…');
 
     const posHashTruncated = trimString(posHash.toString(), 9, 0, '…');
 
