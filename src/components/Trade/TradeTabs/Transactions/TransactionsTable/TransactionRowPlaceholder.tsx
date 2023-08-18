@@ -90,13 +90,13 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                         }}
                     >
                         <OptionButton
-                            ariaLabel='Explore'
+                            ariaLabel='Explorer'
                             onClick={() =>
                                 window.open(
                                     `${blockExplorer}tx/${transaction.hash}`,
                                 )
                             }
-                            content='Explore'
+                            content='Explorer'
                         />
                     </div>
                 </li>
