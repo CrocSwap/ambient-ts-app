@@ -75,10 +75,10 @@ function Leaderboard() {
         </div>
     );
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
+    const ipadView = useMediaQuery('(max-width: 600px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
-    const showColumns = useMediaQuery('(max-width: 1900px)');
+    const showColumns = useMediaQuery('(max-width: 1600px)');
     const phoneScreen = useMediaQuery('(max-width: 500px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
@@ -87,7 +87,7 @@ function Leaderboard() {
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const minMax = (
@@ -244,14 +244,13 @@ function Leaderboard() {
             showColumns={showColumns}
             isAccountView={false}
             isLeaderboard={true}
+            showTimestamp={true}
             showPair={showPair}
         />
     ));
 
     return (
-        <section
-            className={`${styles.leaderboard} ${styles.main_list_container}`}
-        >
+        <section className={`${styles.leaderboard}`}>
             <div>{headerColumnsDisplay}</div>
             <div className={styles.table_content}>{rowItemContent}</div>
             <div>{footerDisplay}</div>

@@ -192,6 +192,7 @@ function OrderRow(props: propsIF) {
         handleRowMouseDown,
         handleRowMouseOut,
         posHash,
+        ensName,
         handleCopyPosHash,
         sellOrderStyle,
         usdValue,
