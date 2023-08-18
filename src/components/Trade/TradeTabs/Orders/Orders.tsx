@@ -19,6 +19,7 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -36,14 +37,13 @@ function Orders(props: propsIF) {
         connectedAccountActive,
         isAccountView,
     } = props;
-    const {
-        showAllData: showAllDataSelection,
-        tradeTableState,
-        toggleTradeTable,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, toggleTradeTable } =
+        useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+
+    const { tradeTableState } = useContext(ChartContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -438,14 +438,6 @@ function Orders(props: propsIF) {
             }
         </div>
     );
-
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    useEffect(() => {
-        if (mobileView) {
-            toggleTradeTable();
-        }
-    }, [mobileView]);
 
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
