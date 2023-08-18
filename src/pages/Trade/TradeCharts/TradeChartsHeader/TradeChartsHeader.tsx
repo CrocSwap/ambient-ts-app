@@ -8,7 +8,8 @@ import printDomToImage from '../../../../utils/functions/printDomToImage';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 import styles from './TradeChartsHeader.module.css';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -17,14 +18,18 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
         canvasRef,
         chartCanvasRef,
         chartHeights,
+        tradeTableState,
     } = useContext(ChartContext);
+    const { isCandleDataNull } = useContext(CandleContext);
 
     const [, copy] = useCopyToClipboard();
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { tradeTableState } = useContext(TradeTableContext);
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
+
+    const showNoChartData = !isPoolInitialized || isCandleDataNull;
 
     const copyChartToClipboard = async () => {
         if (canvasRef.current && chartCanvasRef.current) {
@@ -87,7 +92,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             }`}
         >
             <TradeChartsTokenInfo />
-            {tradeTableState === 'Expanded' ? null : graphSettingsContent}
+            {tradeTableState === 'Expanded' || showNoChartData
+                ? null
+                : graphSettingsContent}
         </div>
     );
 };

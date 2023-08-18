@@ -56,16 +56,13 @@ function Transactions(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings, tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
-    const {
-        showAllData: showAllDataSelection,
-        tradeTableState,
-        toggleTradeTable,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, toggleTradeTable } =
+        useContext(TradeTableContext);
     const { setOutsideControl } = useContext(TradeTableContext);
     const { tokens } = useContext(TokenContext);
 
@@ -587,14 +584,6 @@ function Transactions(props: propsIF) {
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
         </div>
     );
-
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    useEffect(() => {
-        if (mobileView) {
-            toggleTradeTable();
-        }
-    }, [mobileView]);
 
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {

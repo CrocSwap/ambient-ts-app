@@ -28,7 +28,7 @@ export default function TopPools(props: propsIF) {
     const linkGenExplore = useLinkGen('explore');
 
     return (
-        <SidebarPoolsListContainer>
+        <SidebarPoolsListContainer fontSize={'body'}>
             <SidebarPoolsListHeaderContainer>
                 <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Volume</SidebarPoolsListHeader>
