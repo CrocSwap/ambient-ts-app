@@ -86,7 +86,6 @@
 }
 
 .message {
-    width: 80%;
     height: 80%;
 
     bottom: -100%;
@@ -553,8 +552,16 @@
 
   .roomInfo {
     position:absolute;
-    left: 9rem; 
+    left: 13rem; 
     color: pink;
+    font-size: 10px;
+  }
+  .roomInfo_with_mention{
+    position:absolute;
+    left: 13rem; 
+    color: pink;
+    font-size: 10px;
+    top: 1.5rem;
   }
   
   .msg_bubble_container:hover .options_button {

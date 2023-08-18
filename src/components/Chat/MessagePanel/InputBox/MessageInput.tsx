@@ -40,7 +40,7 @@ interface MessageInputProps {
     users: User[];
     isLinkInCrocodileLabsLinks(word: string): boolean;
     isLink(url: string): boolean;
-    disabled: boolean;
+    isInputDisabled: boolean;
     filterMessage(message: string): boolean;
     showPopUp: boolean;
     setShowPopUp: Dispatch<SetStateAction<boolean>>;
@@ -147,7 +147,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
-        if (props.disabled) {
+        if (props.isInputDisabled) {
             if (message !== '') {
                 setMessage('');
             }
@@ -337,12 +337,12 @@ export default function MessageInput(props: MessageInputProps) {
 
     return (
         <>
-            {props.disabled && (
+            {props.isInputDisabled && (
                 <div className={styles.disabled_text}>
                     Message limit per minute exceeded, please wait.
                 </div>
             )}
-            {!props.disabled && (
+            {!props.isInputDisabled && (
                 <div
                     className={
                         !isConnected
@@ -389,7 +389,7 @@ export default function MessageInput(props: MessageInputProps) {
                             type='text'
                             id='box'
                             placeholder={messageInputText()}
-                            disabled={!isConnected || props.disabled}
+                            disabled={!isConnected || props.isInputDisabled}
                             className={
                                 !isConnected
                                     ? styles.input_text_not_allowed

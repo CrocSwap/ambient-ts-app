@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { User, getUserLabel } from '../../../Model/UserModel';
 import styles from './MentionAutoComplete.module.css';
 
@@ -12,17 +11,17 @@ interface MentionAutoCompleteProps {
 export default function MentionAutoComplete(props: MentionAutoCompleteProps) {
     const usersDom = (
         <span>
-            {props.userList.map((u, index) => {
+            {props.userList.map((user) => {
                 return (
                     <div
-                        key={u._id}
+                        key={user._id}
                         className={`${styles.ment_autocomp_user_wrapper} ${
-                            props.selectedUser?._id === u._id
+                            props.selectedUser?._id === user._id
                                 ? styles.ment_autocomp_user_selected
                                 : ''
                         }`}
                     >
-                        {getUserLabel(u)}
+                        {getUserLabel(user)}
                     </div>
                 );
             })}
@@ -35,7 +34,6 @@ export default function MentionAutoComplete(props: MentionAutoCompleteProps) {
                 props.active ? styles.ment_autocomp_wrapper_active : ''
             }`}
         >
-            {/* <input ref={props.inputRef}  className={styles.ment_autocomp_input}></input> */}
             {usersDom}
         </div>
     );

@@ -7,7 +7,6 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import useChatApi from '../../Service/ChatApi';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import Toggle from '../../../Global/Button/Button';
 
 interface propsIF {
     selectedRoom: any;
@@ -22,14 +21,14 @@ interface propsIF {
     setUserCurrentPool: any;
     ensName: any;
     currentUser: any;
-    favoritePoolsArray: PoolIF[];
-    setFavoritePoolsArray: any;
-    focusMentions: boolean;
-    setFocusMentions: any;
-    notis?: Map<string, number>;
+    favoritePools: PoolIF[];
+    setFavoritePools: any;
+    isFocusMentions: boolean;
+    setIsFocusMentions: any;
+    notifications?: Map<string, number>;
     mentCount: number;
-    mentIndex: number;
-    moderator: boolean;
+    mentionIndex: number;
+    isModerator: boolean;
 }
 
 export default function Room(props: propsIF) {
@@ -39,8 +38,8 @@ export default function Room(props: propsIF) {
         setIsCurrentPool,
         showCurrentPoolButton,
         setShowCurrentPoolButton,
-        favoritePoolsArray,
-        setFavoritePoolsArray,
+        favoritePools,
+        setFavoritePools,
     } = props;
     const rooms: PoolIF[] = [];
     const { favePools } = useContext(UserPreferenceContext);
@@ -180,7 +179,7 @@ export default function Room(props: propsIF) {
 
     useEffect(() => {
         if (
-            props.moderator &&
+            props.isModerator &&
             defaultRooms.find((room) => room.name === 'Admins') === undefined
         ) {
             setDefaultRooms([
@@ -200,7 +199,7 @@ export default function Room(props: propsIF) {
             }
             defaultRooms.splice(index, 1);
         }
-    }, [props.moderator]);
+    }, [props.isModerator]);
 
     useEffect(() => {
         const fave:
@@ -281,11 +280,11 @@ export default function Room(props: propsIF) {
             }
             fave.push(favPool);
         });
-        setFavoritePoolsArray(() => {
+        setFavoritePools(() => {
             return fave;
         });
-        const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
-        favoritePoolsArray.splice(0, middleIndex);
+        const middleIndex = Math.ceil(favoritePools.length / 2);
+        favoritePools.splice(0, middleIndex);
         if (
             defaultRooms.find((room) => room.name === props.selectedRoom) ===
             undefined
@@ -295,8 +294,8 @@ export default function Room(props: propsIF) {
                 .indexOf(props.selectedRoom);
             roomArray.splice(index, 1);
 
-            const middleIndex = Math.ceil(favoritePoolsArray.length / 2);
-            favoritePoolsArray.splice(0, middleIndex);
+            const middleIndex = Math.ceil(favoritePools.length / 2);
+            favoritePools.splice(0, middleIndex);
         }
     }, [favePools, props.selectedRoom, rooms.length === 0]);
 
@@ -426,7 +425,7 @@ export default function Room(props: propsIF) {
     }
 
     function handleNotiDot(key: string) {
-        if (props.notis?.get(key)) {
+        if (props.notifications?.get(key)) {
             return <div className={styles.noti_dot}></div>;
         }
     }
@@ -496,7 +495,7 @@ export default function Room(props: propsIF) {
                                     )
                                 }
                             >
-                                {favoritePoolsArray.some(
+                                {favoritePools.some(
                                     ({ name }) => name === pool.name,
                                 ) ? (
                                     <svg
@@ -541,7 +540,7 @@ export default function Room(props: propsIF) {
                     <div className={styles.only_mentions_wrapper}>
                         <span
                             className={`${styles.only_mentions_text} ${
-                                props.focusMentions
+                                props.isFocusMentions
                                     ? styles.only_mentions_text_active
                                     : ''
                             }`}
@@ -563,10 +562,10 @@ export default function Room(props: propsIF) {
                         {props.mentCount > 0 && (
                             <div
                                 className={`${styles.ment_text_info_wrapper} ${
-                                    props.focusMentions ? styles.opa_full : ''
+                                    props.isFocusMentions ? styles.opa_full : ''
                                 }`}
                             >
-                                {props.mentIndex + 1}/ {props.mentCount}
+                                {props.mentionIndex + 1}/ {props.mentCount}
                             </div>
                         )}
                     </div>

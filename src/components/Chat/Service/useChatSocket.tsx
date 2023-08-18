@@ -1,9 +1,20 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { CHAT_BACKEND_WSS_URL, CHAT_BACKEND_URL } from '../../../constants';
+import {
+    CHAT_BACKEND_WSS_URL,
+    CHAT_BACKEND_URL,
+    getMessageWithRestEndpoint,
+    getAllMessagesEndpoint,
+    getMessageWithRestWithPaginationEndpoint,
+    updateLikesDislikesCountEndpoint,
+    getMentionsWithRestEndpoint,
+    getUserListWithRestEndpoint,
+    getUserIsVerified,
+    verifyUserEndpoint,
+    updateVerifiedDateEndpoint,
+} from '../../../constants';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
-import { check } from 'prettier';
 
 const useChatSocket = (
     room: string,
@@ -11,16 +22,15 @@ const useChatSocket = (
     isChatOpen = true,
     address?: string,
     ensName?: string | null,
-    // onlyMentions = false,
 ) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line
     const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
     const [users, setUsers] = useState<User[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
     const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
-    const [notis, setNotis] = useState<Map<string, number>>();
+    const [notifications, setNotifications] = useState<Map<string, number>>();
     const [isVerified, setIsVerified] = useState<boolean>(false);
     const [userMap, setUserMap] = useState<Map<string, User>>(
         new Map<string, User>(),
@@ -31,7 +41,7 @@ const useChatSocket = (
 
     async function getMsgWithRest(roomInfo: string) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
-        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getMsgWithoutWebSocket/${encodedRoomInfo}`;
+        const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
         const response = await fetch(url, {
             method: 'GET',
         });
@@ -45,7 +55,7 @@ const useChatSocket = (
 
     async function getAllMessages(p?: number) {
         const queryParams = 'p=' + p;
-        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getall/?${queryParams}`;
+        const url = `${CHAT_BACKEND_URL}${getAllMessagesEndpoint}?${queryParams}`;
         const response = await fetch(url, {
             method: 'GET',
         });
@@ -57,10 +67,10 @@ const useChatSocket = (
         return data;
     }
 
-    async function getMsgWithRest2(roomInfo: string, p?: number) {
+    async function getMsgWithRestWithPagination(roomInfo: string, p?: number) {
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const queryParams = 'p=' + p;
-        const url = `${CHAT_BACKEND_URL}/chat/api/messages/getMsgWithoutWebSocket/${encodedRoomInfo}?${queryParams}`;
+        const url = `${CHAT_BACKEND_URL}${getMessageWithRestWithPaginationEndpoint}${encodedRoomInfo}?${queryParams}`;
         const response = await fetch(url, {
             method: 'GET',
         });
@@ -82,7 +92,7 @@ const useChatSocket = (
         console.log(payload);
 
         const response = await fetch(
-            CHAT_BACKEND_URL + '/chat/api/messages/updateLikeDislike',
+            CHAT_BACKEND_URL + updateLikesDislikesCountEndpoint,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -111,7 +121,7 @@ const useChatSocket = (
         const encodedRoomInfo = encodeURIComponent(roomInfo);
         const response = await fetch(
             CHAT_BACKEND_URL +
-                '/chat/api/messages/getMentions/' +
+                getMentionsWithRestEndpoint +
                 encodedRoomInfo +
                 '/' +
                 address,
@@ -126,7 +136,7 @@ const useChatSocket = (
 
     async function getUserListWithRest() {
         const response = await fetch(
-            CHAT_BACKEND_URL + '/chat/api/auth/getUsersForMent',
+            CHAT_BACKEND_URL + getUserListWithRestEndpoint,
             {
                 method: 'GET',
             },
@@ -140,9 +150,7 @@ const useChatSocket = (
         if (address) {
             const encodedAddress = encodeURIComponent(address);
             const response = await fetch(
-                CHAT_BACKEND_URL +
-                    '/chat/api/auth/isUserVerified/' +
-                    encodedAddress,
+                CHAT_BACKEND_URL + getUserIsVerified + encodedAddress,
                 {
                     method: 'GET',
                 },
@@ -157,19 +165,16 @@ const useChatSocket = (
         verifySalt: number,
         verifyDate: Date,
     ) {
-        const response = await fetch(
-            CHAT_BACKEND_URL + '/chat/api/auth/verifyUser',
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    walletID: address,
-                    verifyToken: verifyToken,
-                    verifySalt: verifySalt,
-                    verifyDate: verifyDate,
-                }),
-            },
-        );
+        const response = await fetch(CHAT_BACKEND_URL + verifyUserEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                walletID: address,
+                verifyToken: verifyToken,
+                verifySalt: verifySalt,
+                verifyDate: verifyDate,
+            }),
+        });
         const data = await response.json();
         setIsVerified(data.isVerified);
 
@@ -178,7 +183,7 @@ const useChatSocket = (
 
     async function updateVerifyDate(verifyDate: Date) {
         const response = await fetch(
-            CHAT_BACKEND_URL + '/chat/api/auth/updateVerifyDate',
+            CHAT_BACKEND_URL + updateVerifiedDateEndpoint,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -281,17 +286,19 @@ const useChatSocket = (
                 console.log(data);
                 console.log('.....................');
 
-                if (notis) {
-                    const checkVal = notis.get(data.roomInfo);
+                if (notifications) {
+                    const checkVal = notifications.get(data.roomInfo);
                     if (checkVal != undefined) {
-                        setNotis(notis.set(data.roomInfo, checkVal + 1));
+                        setNotifications(
+                            notifications.set(data.roomInfo, checkVal + 1),
+                        );
                     } else {
-                        setNotis(notis.set(data.roomInfo, 1));
+                        setNotifications(notifications.set(data.roomInfo, 1));
                     }
                 } else {
-                    const nts = new Map<string, number>();
-                    nts.set(data.roomInfo, 1);
-                    setNotis(nts);
+                    const notificationsMap = new Map<string, number>();
+                    notificationsMap.set(data.roomInfo, 1);
+                    setNotifications(notificationsMap);
                 }
             });
         }
@@ -301,7 +308,7 @@ const useChatSocket = (
                 socketRef.current.disconnect();
             }
         };
-    }, [room, areSubscriptionsEnabled, isChatOpen, address, notis]);
+    }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
 
     async function getMsg() {
         if (!socketRef.current) return;
@@ -351,7 +358,7 @@ const useChatSocket = (
         lastMessageText,
         deleteMsgFromList,
         users,
-        notis,
+        notifications,
         updateLikeDislike,
         socketRef,
         isVerified,
@@ -359,7 +366,7 @@ const useChatSocket = (
         userMap,
         updateVerifyDate,
         updateUserCache,
-        getMsgWithRest2,
+        getMsgWithRestWithPagination,
         getAllMessages,
     };
 };

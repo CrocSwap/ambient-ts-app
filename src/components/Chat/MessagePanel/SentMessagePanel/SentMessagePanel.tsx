@@ -31,7 +31,7 @@ interface SentMessageProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectedAccountActive: any;
     isUserLoggedIn: boolean;
-    moderator: boolean;
+    isModerator: boolean;
     room: string;
     isMessageDeleted: boolean;
     setIsMessageDeleted: Dispatch<SetStateAction<boolean>>;
@@ -66,7 +66,7 @@ interface SentMessageProps {
 function SentMessagePanel(props: SentMessageProps) {
     const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
     const [hasSeparator, setHasSeparator] = useState(false);
-    const [clickOptions, setClickOptions] = useState(false);
+    const [isClickedOptions, setIsClickedOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
     const [showAvatar, setShowAvatar] = useState<boolean>(true);
     const [showName, setShowName] = useState<boolean>(true);
@@ -100,11 +100,6 @@ function SentMessagePanel(props: SentMessageProps) {
         const disliked = props.message.dislikes?.filter(
             (e) => e === props.currentUser,
         );
-
-        // console.log('..........................');
-        // console.log(liked);
-        // console.log(disliked);
-        // console.log('..........................');
 
         if (liked && disliked) {
             retVal = liked?.length > 0 ? 1 : disliked?.length > 0 ? -1 : 0;
@@ -376,7 +371,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                 {' ' + detectLinksFromMessage(word)}
                             </span>
                         ))}
-                        <div className={styles.roomInfo}>
+                        <div className={styles.roomInfo_with_mention}>
                             {' '}
                             {props.room === 'Admins'
                                 ? props.message.roomInfo
@@ -485,7 +480,7 @@ function SentMessagePanel(props: SentMessageProps) {
         return repliedMessageText;
     }
     function clickOptionButton() {
-        setClickOptions(!clickOptions);
+        setIsClickedOptions(!isClickedOptions);
     }
 
     function verificationDateCheck() {

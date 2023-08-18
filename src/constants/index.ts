@@ -75,3 +75,31 @@ export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';
 // Icon archive
 export const ETH_ICON_URL =
     'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png';
+
+// Allowed links
+export const CROCODILE_LABS_LINKS = [
+    'https://twitter.com/',
+    'https://docs.ambient.finance/',
+    'https://ambient.finance/',
+];
+
+export const getMessageWithRestEndpoint =
+    '/chat/api/messages/getMsgWithoutWebSocket/';
+
+export const getAllMessagesEndpoint = '/chat/api/messages/getall/';
+
+export const getMessageWithRestWithPaginationEndpoint =
+    '/chat/api/messages/getMsgWithoutWebSocket/';
+
+export const updateLikesDislikesCountEndpoint =
+    '/chat/api/messages/updateLikeDislike';
+
+export const getMentionsWithRestEndpoint = '/chat/api/messages/getMentions/';
+
+export const getUserListWithRestEndpoint = '/chat/api/auth/getUsersForMent';
+
+export const getUserIsVerified = '/chat/api/auth/isUserVerified/';
+
+export const verifyUserEndpoint = '/chat/api/auth/verifyUser';
+
+export const updateVerifiedDateEndpoint = '/chat/api/auth/updateVerifyDate';

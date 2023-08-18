@@ -33,16 +33,16 @@ interface FullChatPropsIF {
     showCurrentPoolButton: boolean;
     setShowCurrentPoolButton: Dispatch<SetStateAction<boolean>>;
     userCurrentPool: string;
-    favoritePoolsArray: PoolIF[];
+    favoritePools: PoolIF[];
     // eslint-disable-next-line
-    setFavoritePoolsArray: any;
+    setFavoritePools: any;
     setIsChatOpen: (val: boolean) => void;
 }
 
 interface ChannelDisplayPropsIF {
     pool: PoolIF;
     isDropdown: boolean;
-    favoritePoolsArray: PoolIF[];
+    favoritePools: PoolIF[];
     favePools: favePoolsMethodsIF;
 }
 export default function FullChat(props: FullChatPropsIF) {
@@ -315,11 +315,11 @@ export default function FullChat(props: FullChatPropsIF) {
             }
             fave.push(favPool);
         });
-        props.setFavoritePoolsArray(() => {
+        props.setFavoritePools(() => {
             return fave;
         });
-        const middleIndex = Math.ceil(props.favoritePoolsArray.length / 2);
-        props.favoritePoolsArray.splice(0, middleIndex);
+        const middleIndex = Math.ceil(props.favoritePools.length / 2);
+        props.favoritePools.splice(0, middleIndex);
     }, [favePools, rooms.length === 0]);
 
     function handleGlobalClick() {
@@ -512,7 +512,7 @@ export default function FullChat(props: FullChatPropsIF) {
                     pool={pool}
                     key={idx}
                     isDropdown={false}
-                    favoritePoolsArray={props.favoritePoolsArray}
+                    favoritePools={props.favoritePools}
                     favePools={favePools}
                 />
             ))}
@@ -540,7 +540,7 @@ export default function FullChat(props: FullChatPropsIF) {
                             pool={pool}
                             key={idx}
                             isDropdown={true}
-                            favoritePoolsArray={props.favoritePoolsArray}
+                            favoritePools={props.favoritePools}
                             favePools={favePools}
                         />
                     ))}

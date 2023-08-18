@@ -17,8 +17,8 @@ import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { Message } from './Model/MessageModel';
-import { ethers } from 'ethers';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
+import { CROCODILE_LABS_LINKS } from '../../constants';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -26,7 +26,7 @@ interface propsIF {
 }
 
 function ChatPanel(props: propsIF) {
-    const [focusMentions, setFocusMentions] = useState(true);
+    const [isFocusMentions, setIsFocusMentions] = useState(true);
     const { isFullScreen } = props;
     const {
         chat: {
@@ -43,16 +43,16 @@ function ChatPanel(props: propsIF) {
 
     // eslint-disable-next-line
     const messageEnd = useRef<any>(null);
-    const [favoritePoolsArray, setFavoritePoolsArray] = useState<PoolIF[]>([]);
+    const [favoritePools, setFavoritePools] = useState<PoolIF[]>([]);
     const [room, setRoom] = useState('Global');
-    const [moderator, setModerator] = useState(false);
+    const [isModerator, setIsModerator] = useState(false);
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [userCurrentPool, setUserCurrentPool] = useState(
         currentPool.baseToken.symbol + ' / ' + currentPool.quoteToken.symbol,
     );
     const [showPopUp, setShowPopUp] = useState(false);
-    const [popUpText, setPopUpText] = useState('false');
+    const [popUpText, setPopUpText] = useState('');
     const { address } = useAccount();
     const { data: ens } = useEnsName({ address });
     const [ensName, setEnsName] = useState('');
@@ -60,7 +60,7 @@ function ChatPanel(props: propsIF) {
         undefined,
     );
     const [scrollDirection, setScrollDirection] = useState(String);
-    const [notification, setNotification] = useState(0);
+    const [notificationCount, setNotificationCount] = useState(0);
     const [isMessageDeleted, setIsMessageDeleted] = useState(false);
     const [showPreviousMessagesButton, setShowPreviousMessagesButton] =
         useState(false);
@@ -73,10 +73,10 @@ function ChatPanel(props: propsIF) {
     >();
 
     const [page, setPage] = useState(0);
-    const [mentIndex, setMentIndex] = useState(-1);
-    const [hasNewMention, setHasNewMention] = useState(false);
+    const [mentionIndex, setMentionIndex] = useState(-1);
+    // eslint-disable-next-line
     const [messageCheckerInterval, setMessageCheckerInterval] = useState<any>();
-    const [inputDisabled, setInputDisabled] = useState<boolean>(false);
+    const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
 
     const {
         messages,
@@ -86,14 +86,13 @@ function ChatPanel(props: propsIF) {
         sendMsg,
         deleteMsgFromList,
         users,
-        getMsgWithRest2,
-        notis,
+        getMsgWithRestWithPagination,
+        notifications,
         updateLikeDislike,
         socketRef,
         isVerified,
         verifyUser,
         userMap,
-        updateVerifyDate,
         updateUserCache,
         getAllMessages,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
@@ -103,6 +102,8 @@ function ChatPanel(props: propsIF) {
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
+
+    const defaultEnsName = 'defaultValue';
 
     function isLink(url: string) {
         const urlPattern =
@@ -124,18 +125,12 @@ function ChatPanel(props: propsIF) {
         return url;
     }
 
-    const crocodileLabsLinks = [
-        'https://twitter.com/',
-        'https://docs.ambient.finance/',
-        'https://ambient.finance/',
-    ];
-
     function isLinkInCrocodileLabsLinks(word: string) {
-        return crocodileLabsLinks.some((link) => word.includes(link));
+        return CROCODILE_LABS_LINKS.some((link) => word.includes(link));
     }
 
     function isLinkInCrocodileLabsLinksForInput(word: string) {
-        return crocodileLabsLinks.some((link) => {
+        return CROCODILE_LABS_LINKS.some((link) => {
             try {
                 const url = new URL(link);
                 const domain = url.hostname;
@@ -163,15 +158,16 @@ function ChatPanel(props: propsIF) {
         setShowPopUp(false);
     }
 
-    const [mentPanelActive, setMentPanelActive] = useState(false);
-    const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
+    const [isMentionPanelActive, setIsMentionPanelActive] = useState(false);
+    // eslint-disable-next-line
+    const [mentionPanelQuery, setMentionPanelQuery] = useState('');
 
     const messageInputListener = (value: string) => {
         if (value.indexOf('@') !== -1) {
-            setMentPanelActive(true);
-            setMentPanelQueryStr(value.split('@')[1]);
+            setIsMentionPanelActive(true);
+            setMentionPanelQuery(value.split('@')[1]);
         } else {
-            if (mentPanelActive) setMentPanelActive(false);
+            if (isMentionPanelActive) setIsMentionPanelActive(false);
         }
     };
 
@@ -191,13 +187,15 @@ function ChatPanel(props: propsIF) {
                     (lastMessage?.mentionedName === address &&
                         address !== undefined)
                 ) {
-                    setNotification((notification) => notification + 1);
+                    setNotificationCount(
+                        (notificationCount) => notificationCount + 1,
+                    );
                 }
             } else if (messageUser === currentUser) {
                 setIsScrollToBottomButtonPressed(true);
                 scrollToBottomButton();
 
-                setNotification(0);
+                setNotificationCount(0);
             }
         } else {
             scrollToBottomButton();
@@ -208,7 +206,7 @@ function ChatPanel(props: propsIF) {
         setScrollDirection('Scroll Down');
         if (address) {
             if (ens === null || ens === undefined) {
-                setEnsName('defaultValue');
+                setEnsName(defaultEnsName);
             } else {
                 setEnsName(ens);
             }
@@ -223,8 +221,8 @@ function ChatPanel(props: propsIF) {
                     // });
                 } else {
                     result.userData.isModerator === true
-                        ? setModerator(true)
-                        : setModerator(false);
+                        ? setIsModerator(true)
+                        : setIsModerator(false);
                     setCurrentUser(result.userData._id);
                     setUserCurrentPool(result.userData.userCurrentPool);
                     if (result.userData.ensName !== ensName) {
@@ -260,7 +258,7 @@ function ChatPanel(props: propsIF) {
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
-        setNotification(0);
+        setNotificationCount(0);
         getMsg();
         setShowPreviousMessagesButton(false);
         setPage(0);
@@ -276,20 +274,16 @@ function ChatPanel(props: propsIF) {
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
         scrollToBottom();
-        setNotification(0);
+        setNotificationCount(0);
     }, [isChatOpen]);
 
     useEffect(() => {
-        const mentsInScp = messages.filter((item) => {
+        const mentionsInScope = messages.filter((item) => {
             return item.mentionedWalletID == address;
         });
 
-        if (mentIndex == -1) {
-            setMentIndex(mentsInScp.length - 1);
-        }
-
-        if (notis?.get(room)) {
-            console.log('i got new message');
+        if (mentionIndex == -1) {
+            setMentionIndex(mentionsInScope.length - 1);
         }
 
         if (messages.length == 0) return;
@@ -299,20 +293,16 @@ function ChatPanel(props: propsIF) {
         }
         const checkerInterval = setInterval(() => {
             const currentTS = new Date().getTime();
-            const lastMinMessages = messages.filter(
+            const messagesInLastMinute = messages.filter(
                 (item) =>
-                    //  (currentTS - Number(item.createdAt)) <= 1000 * 60 && item.sender == currentUser
                     currentTS - new Date(item.createdAt).getTime() <=
                         1000 * 60 && item.sender == currentUser,
             );
 
-            // console.log('......................................')
-            // console.log(lastMinMessages.length)
-
-            if (lastMinMessages.length > 4) {
-                setInputDisabled(true);
+            if (messagesInLastMinute.length > 4) {
+                setIsInputDisabled(true);
             } else {
-                setInputDisabled(false);
+                setIsInputDisabled(false);
             }
         }, 1000);
 
@@ -339,7 +329,7 @@ function ChatPanel(props: propsIF) {
         const data =
             room === 'Admins'
                 ? await getAllMessages(nextPage)
-                : await getMsgWithRest2(room, nextPage);
+                : await getMsgWithRestWithPagination(room, nextPage);
         if (data.length === 0 || data.length < 20) {
             setShowPreviousMessagesButton(false);
         } else {
@@ -362,7 +352,7 @@ function ChatPanel(props: propsIF) {
     };
 
     const getChatBubbleYPos = (bubbleEl?: Element, containerEl?: Element) => {
-        if (bubbleEl === undefined || containerEl === undefined) return 0;
+        if (bubbleEl === undefined || containerEl === undefined) return 0; // what is it?
         const elTop =
             bubbleEl?.getBoundingClientRect().top + containerEl?.scrollTop;
         return elTop - containerEl?.getBoundingClientRect().top;
@@ -376,81 +366,79 @@ function ChatPanel(props: propsIF) {
             e.target.scrollTop + e.target.clientHeight + tolerance >=
             e.target.scrollHeight
         ) {
-            setNotification(0);
+            setNotificationCount(0);
             setIsScrollToBottomButtonPressed(false);
             setScrollDirection('Scroll Down');
         } else {
+            if (
+                e.target.scrollTop === 0 &&
+                e.target.clientHeight !== e.target.scrollHeight &&
+                messages.length >= 20
+            ) {
+                setShowPreviousMessagesButton(true);
+            } else {
+                setShowPreviousMessagesButton(false);
+            }
             setScrollDirection('Scroll Up');
+            console.log(scrollDirection); // to do
         }
 
-        if (ments.length > 0) {
-            let currIndex = 0;
+        if (mentions.length > 0) {
+            let currentIndex = 0;
 
-            const mentElements = document.querySelectorAll('.mentionedMessage');
+            const mentionElements =
+                document.querySelectorAll('.mentionedMessage');
 
-            for (let i = 0; i < mentElements.length; i++) {
+            for (let i = 0; i < mentionElements.length; i++) {
                 if (
-                    mentElements[i].getBoundingClientRect().bottom <
+                    mentionElements[i].getBoundingClientRect().bottom <
                     messageEnd.current.getBoundingClientRect().bottom
                 ) {
-                    const attr =
-                        mentElements[i].getAttribute('data-ment-index');
-                    currIndex = parseInt(attr as string);
+                    const attribute =
+                        mentionElements[i].getAttribute('data-ment-index');
+                    currentIndex = parseInt(attribute as string);
                 } else {
                     break;
                 }
             }
-            setMentIndex(currIndex);
+            setMentionIndex(currentIndex);
         }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleWheel = (e: any) => {
-        if (
-            e.target.scrollTop === 0 &&
-            e.target.clientHeight !== e.target.scrollHeight &&
-            messages.length >= 20
-        ) {
-            setShowPreviousMessagesButton(true);
-        } else {
-            setShowPreviousMessagesButton(false);
-        }
-    };
-
-    const ments = messages.filter((item) => {
+    const mentions = messages.filter((item) => {
         return item.mentionedWalletID == address && address !== undefined;
     });
 
     const handleMentionSkipper = (way: number) => {
         let targetElement = null;
         // down
-        const mentElements = document.querySelectorAll('.mentionedMessage');
+        const mentionElements = document.querySelectorAll('.mentionedMessage');
         if (way == 1) {
-            for (let i = 0; i < mentElements.length; i++) {
+            for (let i = 0; i < mentionElements.length; i++) {
                 if (
-                    mentElements[i].getBoundingClientRect().bottom >
+                    mentionElements[i].getBoundingClientRect().bottom >
                     messageEnd.current.getBoundingClientRect().bottom
                 ) {
-                    targetElement = mentElements[i];
+                    targetElement = mentionElements[i];
                     break;
                 }
             }
         }
         // up
         else if (way === -1) {
-            for (let i = mentElements.length - 1; i >= 0; i--) {
+            for (let i = mentionElements.length - 1; i >= 0; i--) {
                 if (
-                    mentElements[i].getBoundingClientRect().top <
+                    mentionElements[i].getBoundingClientRect().top <
                     messageEnd.current.getBoundingClientRect().top
                 ) {
-                    targetElement = mentElements[i];
+                    targetElement = mentionElements[i];
                     break;
                 }
             }
         }
         // last
         else {
-            targetElement = mentElements.item(mentElements.length - 1);
+            targetElement = mentionElements.item(mentionElements.length - 1);
         }
 
         if (targetElement != null) {
@@ -462,6 +450,7 @@ function ChatPanel(props: propsIF) {
     const verifyWallet = (
         verificationType: number,
         verificationDate: Date,
+        // eslint-disable-next-line
         e?: any,
     ) => {
         if (e) e.stopPropagation();
@@ -491,8 +480,8 @@ function ChatPanel(props: propsIF) {
                 method: 'personal_sign',
                 params: [message, address],
             })
+            // eslint-disable-next-line
             .then((signedMessage: any) => {
-                // setIsVerified(true);
                 verifyUser(signedMessage, new Date().getMonth(), verifyDate);
                 localStorage.setItem('vrfTkn' + address, signedMessage);
                 setTimeout(() => {
@@ -501,6 +490,7 @@ function ChatPanel(props: propsIF) {
 
                 // The signed message is available here, which you can send to your server for verification
             })
+            // eslint-disable-next-line
             .catch((error: any) => {
                 // Handle error
             });
@@ -527,7 +517,6 @@ function ChatPanel(props: propsIF) {
                                 color='var(--other-green)'
                                 size={10}
                             />
-                            {/* <span> Verified</span> */}
                         </>
                     ) : (
                         <>
@@ -582,7 +571,7 @@ function ChatPanel(props: propsIF) {
         </div>
     );
 
-    let mentIndexPointer = 0;
+    let mentionIxdexPointer = 0;
     const messageList = (
         <div
             ref={messageEnd}
@@ -593,9 +582,8 @@ function ChatPanel(props: propsIF) {
             {messages &&
                 messages.map((item, i) => {
                     if (item.mentionedWalletID === address) {
-                        mentIndexPointer += 1;
+                        mentionIxdexPointer += 1;
                     }
-
                     return (
                         <SentMessagePanel
                             key={i}
@@ -607,7 +595,7 @@ function ChatPanel(props: propsIF) {
                             resolvedAddress={resolvedAddress}
                             connectedAccountActive={address}
                             room={room}
-                            moderator={moderator}
+                            isModerator={isModerator}
                             isMessageDeleted={isMessageDeleted}
                             setIsMessageDeleted={setIsMessageDeleted}
                             nextMessage={
@@ -622,7 +610,7 @@ function ChatPanel(props: propsIF) {
                             }
                             mentionIndex={
                                 item.mentionedWalletID === address
-                                    ? mentIndexPointer - 1
+                                    ? mentionIxdexPointer - 1
                                     : undefined
                             }
                             updateLikeDislike={updateLikeDislike}
@@ -650,7 +638,7 @@ function ChatPanel(props: propsIF) {
 
     const chatNotification = (
         <div className={styles.chat_notification}>
-            {notification > 0 &&
+            {notificationCount > 0 &&
             scrollDirection === 'Scroll Up' &&
             !isScrollToBottomButtonPressed ? (
                 isFullScreen ? (
@@ -664,7 +652,9 @@ function ChatPanel(props: propsIF) {
                                 color='#7371fc'
                                 style={{ cursor: 'pointer' }}
                             />
-                            <span className={styles.text}>{notification}</span>
+                            <span className={styles.text}>
+                                {notificationCount}
+                            </span>
                         </span>
                         <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
                             <RiArrowDownSLine
@@ -687,7 +677,9 @@ function ChatPanel(props: propsIF) {
                                 color='#7371fc'
                                 style={{ cursor: 'pointer' }}
                             />
-                            <span className={styles.text}>{notification}</span>
+                            <span className={styles.text}>
+                                {notificationCount}
+                            </span>
                         </span>
                         <span>
                             <RiArrowDownSLine
@@ -704,7 +696,7 @@ function ChatPanel(props: propsIF) {
                     </div>
                 )
             ) : scrollDirection === 'Scroll Up' &&
-              notification <= 0 &&
+              notificationCount <= 0 &&
               !isScrollToBottomButtonPressed ? (
                 isFullScreen ? (
                     <span style={{ marginTop: '-18px', cursor: 'pointer' }}>
@@ -785,7 +777,7 @@ function ChatPanel(props: propsIF) {
             setIsReplyButtonPressed={setIsReplyButtonPressed}
             replyMessageContent={replyMessageContent}
             setReplyMessageContent={setReplyMessageContent}
-            disabled={inputDisabled}
+            isInputDisabled={isInputDisabled}
         />
     );
 
@@ -807,8 +799,8 @@ function ChatPanel(props: propsIF) {
                 showCurrentPoolButton={showCurrentPoolButton}
                 setShowCurrentPoolButton={setShowCurrentPoolButton}
                 userCurrentPool={userCurrentPool}
-                favoritePoolsArray={favoritePoolsArray}
-                setFavoritePoolsArray={setFavoritePoolsArray}
+                favoritePools={favoritePools}
+                setFavoritePools={setFavoritePools}
             />
         );
 
@@ -839,14 +831,14 @@ function ChatPanel(props: propsIF) {
                         setUserCurrentPool={setUserCurrentPool}
                         currentUser={currentUser}
                         ensName={ensName}
-                        setFavoritePoolsArray={setFavoritePoolsArray}
-                        favoritePoolsArray={favoritePoolsArray}
-                        focusMentions={focusMentions}
-                        setFocusMentions={setFocusMentions}
-                        notis={notis}
-                        mentCount={ments.length}
-                        mentIndex={mentIndex}
-                        moderator={moderator}
+                        setFavoritePools={setFavoritePools}
+                        favoritePools={favoritePools}
+                        setIsFocusMentions={setIsFocusMentions}
+                        notifications={notifications}
+                        mentCount={mentions.length}
+                        mentionIndex={mentionIndex}
+                        isModerator={isModerator}
+                        isFocusMentions={isFocusMentions}
                     />
 
                     <DividerDark changeColor addMarginTop addMarginBottom />
@@ -876,9 +868,9 @@ function ChatPanel(props: propsIF) {
                 </div>
             </div>
 
-            {ments.length > 0 && isChatOpen && focusMentions && (
+            {mentions.length > 0 && isChatOpen && isFocusMentions && (
                 <>
-                    {mentIndex > 0 && (
+                    {mentionIndex > 0 && (
                         <div
                             className={styles.ment_skip_button}
                             onClick={() => {
@@ -888,7 +880,7 @@ function ChatPanel(props: propsIF) {
                             <IoIosArrowUp size={22} />
                         </div>
                     )}
-                    {mentIndex < ments.length - 1 && (
+                    {mentionIndex < mentions.length - 1 && (
                         <div
                             className={styles.ment_skip_button_down}
                             onClick={() => {
@@ -898,7 +890,7 @@ function ChatPanel(props: propsIF) {
                             <IoIosArrowDown size={22} />
                         </div>
                     )}
-                    {mentIndex < ments.length - 1 && (
+                    {mentionIndex < mentions.length - 1 && (
                         <div
                             className={styles.ment_skip_button_last}
                             onClick={() => {
