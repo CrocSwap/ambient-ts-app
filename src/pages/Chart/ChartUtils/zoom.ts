@@ -22,12 +22,8 @@ export class Zoom {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private isTouchPad(event: any) {
-        const wheelDelta =
-            event.sourceEvent.wheelDelta || -event.sourceEvent.deltaY;
-        if (
-            Math.abs(wheelDelta) >= 120 &&
-            this.isNegativeZero(event.sourceEvent.deltaX)
-        ) {
+        const wheelDelta = event.wheelDelta || -event.deltaY;
+        if (this.isNegativeZero(event.deltaX)) {
             return false;
         }
         return true;
@@ -44,9 +40,9 @@ export class Zoom {
         const zoomSpeedFactor = 0.5; // smaller number is faster
 
         const dx =
-            Math.abs(event.sourceEvent.deltaX) != 0
-                ? -event.sourceEvent.deltaX / zoomSpeedFactor
-                : event.sourceEvent.deltaY / zoomSpeedFactor;
+            Math.abs(event.deltaX) != 0
+                ? -event.deltaX / zoomSpeedFactor
+                : event.deltaY / zoomSpeedFactor;
 
         const domainX = scaleData?.xScale.domain();
         const linearX = d3
@@ -54,7 +50,7 @@ export class Zoom {
             .domain(scaleData?.xScale.range())
             .range([0, domainX[1] - domainX[0]]);
 
-        const mouseX = scaleData?.xScale.invert(event.sourceEvent.offsetX);
+        const mouseX = scaleData?.xScale.invert(event.offsetX);
 
         const lastTime = domainX[1];
 
@@ -63,13 +59,13 @@ export class Zoom {
         const deltaX = linearX(dx);
 
         const isPressAltOrShiftKey =
-            (event.sourceEvent.shiftKey || event.sourceEvent.altKey) &&
-            !event.sourceEvent.ctrlKey &&
-            !event.sourceEvent.metaKey;
+            (event.shiftKey || event.altKey) &&
+            !event.ctrlKey &&
+            !event.metaKey;
 
         const isPressCtrlOrMetaKey = !(
-            (!event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) &&
-            (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
+            (!event.ctrlKey || event.metaKey) &&
+            (event.ctrlKey || !event.metaKey)
         );
 
         /*   const isZoomingIn = deltaX > 0;
@@ -360,7 +356,7 @@ export class Zoom {
             .domain(scaleData?.xScale.range())
             .range([0, domainX[1] - domainX[0]]);
 
-        const deltaX = linearX(event.sourceEvent.movementX);
+        const deltaX = linearX(event.movementX);
 
         this.wheelWithoutPressKey(
             deltaX,
@@ -388,7 +384,7 @@ export class Zoom {
             .domain(scaleData?.xScale.range())
             .range([0, domainX[1] - domainX[0]]);
 
-        const touch = event.sourceEvent.changedTouches[0];
+        const touch = event.changedTouches[0];
         const currentPageX = touch.pageX;
         const previousTouchPageX = previousTouch.pageX;
         const movement = currentPageX - previousTouchPageX;
@@ -421,8 +417,8 @@ export class Zoom {
             .domain(scaleData?.xScale.range())
             .range([0, domainX[1] - domainX[0]]);
 
-        const touch1 = event.sourceEvent.touches[0];
-        const touch2 = event.sourceEvent.touches[1];
+        const touch1 = event.touches[0];
+        const touch2 = event.touches[1];
 
         const deltaTouch = Math.hypot(
             touch1.pageX - touch2.pageX,
@@ -469,7 +465,7 @@ export class Zoom {
             .domain(scaleData?.yScale.range())
             .range([domainY[1] - domainY[0], 0]);
 
-        const deltaY = linearY(event.sourceEvent.movementY);
+        const deltaY = linearY(event.movementY);
         const domain = [
             Math.min(domainY[1], domainY[0]) + deltaY,
             Math.max(domainY[1], domainY[0]) + deltaY,
@@ -489,7 +485,7 @@ export class Zoom {
         const domainX = scaleData?.xScale.domain();
 
         let deltaX;
-        if (event.sourceEvent.type === 'touchmove') {
+        if (event.type === 'touchmove') {
             deltaX = this.handlePanningXMobile(event, scaleData, previousTouch);
         } else {
             deltaX = this.handlePanningXDesktop(event, scaleData);
@@ -520,7 +516,7 @@ export class Zoom {
             .domain(scaleData?.xScale.range())
             .range([0, domainX[1] - domainX[0]]);
 
-        const deltaX = linearX(-event.sourceEvent.movementX);
+        const deltaX = linearX(-event.movementX);
         return deltaX;
     }
 
@@ -537,7 +533,7 @@ export class Zoom {
             .domain(scaleData?.xScale.range())
             .range([0, domainX[1] - domainX[0]]);
 
-        const touch = event.sourceEvent.changedTouches[0];
+        const touch = event.changedTouches[0];
         const currentPageX = touch.pageX;
         const previousTouchPageX = previousTouch.pageX;
         const movement = previousTouchPageX - currentPageX;
@@ -553,7 +549,7 @@ export class Zoom {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         previousTouch: any,
     ) {
-        if (event.sourceEvent.touches.length === 1) {
+        if (event.touches.length === 1) {
             const domainY = scaleData?.yScale.domain();
 
             const linearY = d3
@@ -561,7 +557,7 @@ export class Zoom {
                 .domain(scaleData?.yScale.range())
                 .range([domainY[1] - domainY[0], 0]);
 
-            const touch = event.sourceEvent.changedTouches[0];
+            const touch = event.changedTouches[0];
 
             const _currentPageY = touch.pageY;
             const previousTouchPageY = previousTouch.pageY;

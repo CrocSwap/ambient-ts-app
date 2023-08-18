@@ -445,14 +445,14 @@ function XAxisCanvas(props: xAxisIF) {
                         if (scaleData) {
                             if (event.sourceEvent.type === 'wheel') {
                                 zoomBase.zoomWithWheel(
-                                    event,
+                                    event.sourceEvent,
                                     scaleData,
                                     firstCandleDate,
                                     lastCandleDate,
                                 );
                             } else {
                                 zoomBase.handlePanningX(
-                                    event,
+                                    event.sourceEvent,
                                     scaleData,
                                     firstCandleDate,
                                     previousTouch,
