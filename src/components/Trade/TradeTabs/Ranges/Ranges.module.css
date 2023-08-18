@@ -145,11 +145,15 @@
 
     .main_list_container .row_container,
     .main_list_container .header {
-        grid-template-columns: minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr) minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 20%);
+        grid-template-columns:
+            minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
+            minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 20%);
     }
     .leaderboard .row_container,
     .leaderboard .header {
-        grid-template-columns: minmax(100px, 1fr) minmax(72px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr) minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 25%);
+        grid-template-columns:
+            minmax(100px, 1fr) minmax(72px, 1fr) minmax(72px, 1fr)
+            minmax(78px, 1fr) minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 25%);
     }
 }
 
@@ -158,11 +162,19 @@
 
     .main_list_container .row_container,
     .main_list_container .header {
-        grid-template-columns: minmax(140px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(73px, 25%);
+        grid-template-columns:
+            minmax(140px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
+            minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(73px, 25%);
     }
     .leaderboard .row_container,
     .leaderboard .header {
-        grid-template-columns: minmax(60px, 1fr) minmax(84px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(74px, 25%);
+        grid-template-columns:
+            minmax(60px, 1fr) minmax(84px, 1fr) minmax(72px, 1fr)
+            minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
+                38px,
+                1fr
+            )
+            minmax(74px, 25%);
     }
 }
 
@@ -171,17 +183,23 @@
 
     .main_list_container .row_container,
     .main_list_container .header {
-        grid-template-columns: minmax(75px, 1fr) minmax(94px, 1fr) minmax( 72px, 1fr ) minmax(76px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax( 38px, 1fr ) minmax(74px, 25%);
+        grid-template-columns:
+            minmax(75px, 1fr) minmax(200px, 1fr) minmax(72px, 1fr)
+            minmax(176px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
+                38px,
+                1fr
+            )
+            minmax(74px, 25%);
     }
     .leaderboard .row_container,
     .leaderboard .header {
-        grid-template-columns: minmax(87px, 1fr) minmax(100px, 1fr) minmax(
-                72px,
-                1fr
-            ) minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
+        grid-template-columns:
+            minmax(87px, 1fr) minmax(200px, 1fr) minmax(72px, 1fr)
+            minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
                 38px,
                 1fr
-            ) minmax(74px, 25%);
+            )
+            minmax(74px, 25%);
     }
 }
 
@@ -191,7 +209,7 @@
     .main_list_container .row_container,
     .main_list_container .header {
         grid-template-columns:
-            minmax(87px, 1fr) minmax(92px, 1fr) minmax(100px, 1fr)
+            minmax(87px, 1fr) minmax(92px, 1fr) minmax(200px, 1fr)
             minmax(72px, 1fr) minmax(68px, 1fr) minmax(78px, 1fr) minmax(
                 86px,
                 1fr
@@ -201,7 +219,7 @@
     .leaderboard .row_container,
     .leaderboard .header {
         grid-template-columns:
-            minmax(87px, 1fr) minmax(92px, 1fr) minmax(100px, 1fr)
+            minmax(87px, 1fr) minmax(92px, 1fr) minmax(200px, 1fr)
             minmax(72px, 1fr) minmax(68px, 1fr) minmax(78px, 1fr) minmax(
                 86px,
                 1fr
