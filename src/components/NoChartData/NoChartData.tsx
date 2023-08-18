@@ -78,7 +78,7 @@ export const NoChartData = (props: PropsIF) => {
             </Link>
         );
     } else if (isCandleDataNull) {
-        title = 'Candle data not available.';
+        title = 'Chart is unavailable for selected pair.';
         content = refreshCandleButton;
     }
 
