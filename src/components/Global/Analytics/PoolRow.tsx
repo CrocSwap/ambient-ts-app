@@ -10,6 +10,7 @@ import {
     FlexEnd,
     TradeButton,
 } from './Analytics.styles';
+import IconWithTooltip from '../IconWithTooltip/IconWithTooltip';
 
 interface propsIF {
     pool: PoolDataIF;
@@ -31,16 +32,37 @@ export default function PoolRow(props: propsIF) {
             <TableCell>
                 <FlexCenter>
                     <TokenWrapper>
-                        <TokenIcon
-                            src={uriToHttp(firstLogoURI)}
-                            alt={'logo for token'}
-                            size='2xl'
-                        />
-                        <TokenIcon
-                            src={uriToHttp(secondLogoURI)}
-                            alt={'logo for token'}
-                            size='2xl'
-                        />
+                        <IconWithTooltip
+                            title={
+                                pool.moneyness.base < pool.moneyness.quote
+                                    ? pool.base.name
+                                    : pool.quote.name
+                            }
+                            placement='left'
+                            style={{ paddingTop: '5px' }}
+                        >
+                            <TokenIcon
+                                src={uriToHttp(firstLogoURI)}
+                                alt={'logo for token'}
+                                size='2xl'
+                            />
+                        </IconWithTooltip>
+
+                        <IconWithTooltip
+                            title={
+                                pool.moneyness.base > pool.moneyness.quote
+                                    ? pool.base.name
+                                    : pool.quote.name
+                            }
+                            placement='right'
+                            style={{ paddingTop: '5px' }}
+                        >
+                            <TokenIcon
+                                src={uriToHttp(secondLogoURI)}
+                                alt={'logo for token'}
+                                size='2xl'
+                            />
+                        </IconWithTooltip>
                     </TokenWrapper>
                     <PoolNameWrapper>{pool.name}</PoolNameWrapper>
                 </FlexCenter>
