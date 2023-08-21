@@ -23,10 +23,7 @@ import { IS_LOCAL_ENV } from '../../constants';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChartContext } from '../../contexts/ChartContext';
-import {
-    TRADE_TABLE_HEADER_HEIGHT,
-    TradeTableContext,
-} from '../../contexts/TradeTableContext';
+import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -51,17 +48,14 @@ function Trade() {
         chartHeights,
         setChartHeight,
         canvasRef,
+        tradeTableState,
     } = useContext(ChartContext);
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { tokens } = useContext(TokenContext);
-    const {
-        tradeTableState,
-        setTradeTableState,
-        setOutsideControl,
-        setSelectedOutsideTab,
-    } = useContext(TradeTableContext);
+    const { setOutsideControl, setSelectedOutsideTab } =
+        useContext(TradeTableContext);
 
     const routes = [
         {
@@ -323,27 +317,15 @@ function Trade() {
             }}
             onResizeStop={(e, direction, ref, d) => {
                 // the resizable bar is 4px in height
-                if (chartHeights.current + d.height <= 4) {
-                    setTradeTableState('Expanded');
-                }
-                if (
-                    tradeTableRef?.current &&
-                    tradeTableRef.current.offsetHeight ===
-                        TRADE_TABLE_HEADER_HEIGHT
-                ) {
-                    setTradeTableState('Collapsed');
-                }
+
                 if (chartHeights.current + d.height < TRADE_CHART_MIN_HEIGHT) {
                     if (tradeTableState == 'Expanded') {
                         setChartHeight(chartHeights.default);
-                        setTradeTableState(undefined);
                     } else {
-                        setChartHeight(4);
-                        setTradeTableState('Expanded');
+                        setChartHeight(chartHeights.min);
                     }
                 } else {
                     setChartHeight(chartHeights.current + d.height);
-                    setTradeTableState(undefined);
                 }
             }}
             handleClasses={
@@ -382,7 +364,7 @@ function Trade() {
                         <Resizable
                             className={styles.chartBox}
                             enable={{
-                                bottom: !isChartFullScreen && !isCandleDataNull,
+                                bottom: !isChartFullScreen,
                             }}
                             size={{
                                 width: '100%',
@@ -394,32 +376,20 @@ function Trade() {
                             }}
                             onResizeStop={(e, direction, ref, d) => {
                                 // the resizable bar is 4px in height
-                                if (chartHeights.current + d.height <= 4) {
-                                    setTradeTableState('Expanded');
-                                }
-                                if (
-                                    tradeTableRef?.current &&
-                                    tradeTableRef.current.offsetHeight ===
-                                        TRADE_TABLE_HEADER_HEIGHT
-                                ) {
-                                    setTradeTableState('Collapsed');
-                                }
+
                                 if (
                                     chartHeights.current + d.height <
                                     TRADE_CHART_MIN_HEIGHT
                                 ) {
                                     if (tradeTableState == 'Expanded') {
                                         setChartHeight(chartHeights.default);
-                                        setTradeTableState(undefined);
                                     } else {
-                                        setChartHeight(4);
-                                        setTradeTableState('Expanded');
+                                        setChartHeight(chartHeights.min);
                                     }
                                 } else {
                                     setChartHeight(
                                         chartHeights.current + d.height,
                                     );
-                                    setTradeTableState(undefined);
                                 }
                             }}
                             handleClasses={

@@ -1,21 +1,34 @@
+import { SetStateAction, useContext } from 'react';
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './RangeActionTokenHeader.module.css';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
-interface RangeActionTokenHeaderIF {
+interface propsIF {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
-    setShowSettings: (value: React.SetStateAction<boolean>) => void;
+    setShowSettings: (value: SetStateAction<boolean>) => void;
     showSettings: boolean;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
-export default function RangeActionTokenHeader(
-    props: RangeActionTokenHeaderIF,
-) {
+export default function RangeActionTokenHeader(props: propsIF) {
+    const {
+        isPositionInRange,
+        baseTokenAddress,
+        quoteTokenAddress,
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        isAmbient,
+    } = props;
     const { showSettings, setShowSettings } = props;
     const settingsSvg = (
         <svg
@@ -46,21 +59,29 @@ export default function RangeActionTokenHeader(
         </svg>
     );
 
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
+
     return (
         <div className={styles.container}>
             <div className={styles.token_info}>
                 <TokenIcon
-                    src={props.baseTokenLogoURI}
-                    alt={props.baseTokenSymbol}
+                    token={baseToken}
+                    src={baseTokenLogoURI}
+                    alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
-                    src={props.quoteTokenLogoURI}
-                    alt={props.quoteTokenSymbol}
+                    token={quoteToken}
+                    src={quoteTokenLogoURI}
+                    alt={quoteTokenSymbol}
                     size='2xl'
                 />
                 <span>
-                    {props.baseTokenSymbol} /{props.quoteTokenSymbol}
+                    {baseTokenSymbol} /{quoteTokenSymbol}
                 </span>
             </div>
 
@@ -73,9 +94,9 @@ export default function RangeActionTokenHeader(
                 }}
             >
                 <RangeStatus
-                    isInRange={props.isPositionInRange}
+                    isInRange={isPositionInRange}
                     isEmpty={false}
-                    isAmbient={props.isAmbient}
+                    isAmbient={isAmbient}
                     size='s'
                 />
                 <div

@@ -465,6 +465,7 @@ export default function InitPool() {
         <div className={styles.pool_display}>
             <div>
                 <TokenIcon
+                    token={tokenA}
                     src={uriToHttp(tokenA.logoURI)}
                     alt={tokenA.symbol}
                     size='2xl'
@@ -479,6 +480,7 @@ export default function InitPool() {
         <div className={styles.pool_display}>
             <div>
                 <TokenIcon
+                    token={tokenB}
                     src={uriToHttp(tokenB.logoURI)}
                     alt={tokenB.symbol}
                     size='2xl'

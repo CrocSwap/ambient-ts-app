@@ -9,10 +9,14 @@
     align-items: center;
 }
 .pool_init_bg{
-    width: 430px;
+    width: 480px;
     height: 204px;
     border-radius: var(--border-radius);
     padding: 1px;
+}
+
+.hide_chart{
+  cursor: pointer;
 }
 
 .pool_not_initialialized_content {

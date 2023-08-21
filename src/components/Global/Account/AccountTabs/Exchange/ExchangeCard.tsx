@@ -2,7 +2,7 @@ import styles from './ExchangeCard.module.css';
 import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { useContext, useEffect, useState } from 'react';
-import { ETH_ICON_URL, ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -12,7 +12,7 @@ import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 
 interface propsIF {
-    token?: TokenIF;
+    token: TokenIF;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
@@ -90,23 +90,12 @@ export default function ExchangeCard(props: propsIF) {
         >
             <div className={styles.token_icon}>
                 <TokenIcon
-                    src={uriToHttp(
-                        tokenFromMap?.logoURI
-                            ? tokenFromMap?.logoURI
-                            : token?.logoURI
-                            ? token?.logoURI
-                            : ETH_ICON_URL,
-                    )}
+                    token={token}
+                    src={uriToHttp(token.logoURI)}
                     alt={token?.symbol}
                     size='2xl'
                 />
-                <p className={styles.token_key}>
-                    {tokenFromMap?.symbol
-                        ? tokenFromMap?.symbol
-                        : token?.symbol
-                        ? token?.symbol
-                        : '???'}
-                </p>
+                <p className={styles.token_key}>{token.symbol}</p>
             </div>
         </DefaultTooltip>
     );

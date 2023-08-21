@@ -14,6 +14,7 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import TokenIcon from '../../../../components/Global/TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 
 interface propsIF {
     simplifyVersion?: boolean;
@@ -36,19 +37,9 @@ function TradeChartsTokenInfo(props: propsIF) {
 
     const denomInBase = tradeData.isDenomBase;
 
-    const topTokenLogo = denomInBase
-        ? tradeData.baseToken.logoURI
-        : tradeData.quoteToken.logoURI;
-    const bottomTokenLogo = denomInBase
-        ? tradeData.quoteToken.logoURI
-        : tradeData.baseToken.logoURI;
-
-    const topTokenSymbol = denomInBase
-        ? tradeData.baseToken.symbol
-        : tradeData.quoteToken.symbol;
-    const bottomTokenSymbol = denomInBase
-        ? tradeData.quoteToken.symbol
-        : tradeData.baseToken.symbol;
+    const [topToken, bottomToken]: [TokenIF, TokenIF] = denomInBase
+        ? [tradeData.baseToken, tradeData.quoteToken]
+        : [tradeData.quoteToken, tradeData.baseToken];
 
     const currencyCharacter = denomInBase
         ? // denom in a, return token b character
@@ -203,13 +194,15 @@ function TradeChartsTokenInfo(props: propsIF) {
         >
             <div className={styles.tokens_images} id='trade_token_pair'>
                 <TokenIcon
-                    src={topTokenLogo}
-                    alt={topTokenSymbol}
+                    token={topToken}
+                    src={topToken.logoURI}
+                    alt={topToken.symbol}
                     size={smallScrenView ? 's' : 'l'}
                 />
                 <TokenIcon
-                    src={bottomTokenLogo}
-                    alt={bottomTokenSymbol}
+                    token={bottomToken}
+                    src={bottomToken.logoURI}
+                    alt={bottomToken.symbol}
                     size={smallScrenView ? 's' : 'l'}
                 />
             </div>
@@ -219,7 +212,7 @@ function TradeChartsTokenInfo(props: propsIF) {
                 aria-atomic='true'
                 aria-relevant='all'
             >
-                {topTokenSymbol} / {bottomTokenSymbol}
+                {topToken.symbol} / {bottomToken.symbol}
             </div>
         </button>
     );

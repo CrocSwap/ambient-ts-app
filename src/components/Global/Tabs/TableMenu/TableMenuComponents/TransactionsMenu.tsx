@@ -266,6 +266,9 @@ export default function TransactionsMenu(props: propsIF) {
 
     const showCopyButtonOutsideDropdownMenu =
         useMediaQuery('(min-width: 400px)');
+    // eslint-disable-next-line
+    const view1NoSidebar =
+        useMediaQuery('(min-width: 1280px)') && !isSidebarOpen;
 
     // --------------------------------
     const transactionsMenu = (

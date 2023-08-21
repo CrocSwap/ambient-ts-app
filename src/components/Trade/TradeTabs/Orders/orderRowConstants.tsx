@@ -2,14 +2,16 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import styles from './Orders.module.css';
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../../contexts/TokenContext';
 
-interface Props {
+interface propsIF {
     posHashTruncated: string;
     posHash: string;
     sellOrderStyle: string;
@@ -22,6 +24,10 @@ interface Props {
     quoteTokenSymbol: string;
     baseDisplay: string;
     quoteDisplay: string;
+    originalPositionLiqBase: string;
+    originalPositionLiqQuote: string;
+    expectedPositionLiqBase: string;
+    expectedPositionLiqQuote: string;
     priceStyle: string;
     elapsedTimeString: string;
     sideType: string;
@@ -32,12 +38,17 @@ interface Props {
     truncatedDisplayPrice: string | undefined;
     isOwnerActiveAccount: boolean;
     isAccountView: boolean;
+    ensName: string | null;
     isOrderFilled: boolean;
+    isLimitOrderPartiallyFilled: boolean;
+    fillPercentage: number;
     handleCopyPosHash: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
 // * This file contains constants used in the rendering of order rows in the order table.
@@ -45,10 +56,10 @@ interface Props {
 // * By extracting the constants into a separate file, we can keep the main component file clean and easier to read/maintain.
 
 // * To use these constants in a component, simply import them from this file and reference them as needed.
-export const orderRowConstants = (props: Props) => {
+export const orderRowConstants = (props: propsIF) => {
     const {
         posHashTruncated,
-
+        ensName,
         posHash,
         handleCopyPosHash,
         sellOrderStyle,
@@ -63,8 +74,6 @@ export const orderRowConstants = (props: Props) => {
         isOwnerActiveAccount,
         baseTokenSymbol,
         quoteTokenSymbol,
-        baseDisplay,
-        quoteDisplay,
         elapsedTimeString,
         isAccountView,
         priceCharacter,
@@ -74,12 +83,25 @@ export const orderRowConstants = (props: Props) => {
         sideType,
         sideCharacter,
         isOrderFilled,
-
         handleRowMouseDown,
         handleRowMouseOut,
+        baseTokenAddress,
+        quoteTokenAddress,
+        isLimitOrderPartiallyFilled,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
+        fillPercentage,
     } = props;
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
+
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const tradeLinkPath =
@@ -168,7 +190,7 @@ export const orderRowConstants = (props: Props) => {
             <p
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.mono_font}`}
-                style={{ textTransform: 'lowercase' }}
+                style={ensName ? { textTransform: 'lowercase' } : undefined}
             >
                 {userNameToDisplay}
             </p>
@@ -177,8 +199,6 @@ export const orderRowConstants = (props: Props) => {
 
     const walletWithoutTooltip = (
         <p
-            // onClick={handleWalletClick}
-
             data-label='wallet'
             className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
@@ -196,6 +216,7 @@ export const orderRowConstants = (props: Props) => {
 
     const baseTokenLogoComponent = (
         <TokenIcon
+            token={baseToken}
             src={baseTokenLogo}
             alt={baseTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
@@ -203,6 +224,7 @@ export const orderRowConstants = (props: Props) => {
     );
     const quoteTokenLogoComponent = (
         <TokenIcon
+            token={quoteToken}
             src={quoteTokenLogo}
             alt={quoteTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
@@ -240,7 +262,9 @@ export const orderRowConstants = (props: Props) => {
                     textAlign: 'right',
                 }}
             >
-                {baseDisplay}
+                {limitOrder.isBid
+                    ? originalPositionLiqBase
+                    : expectedPositionLiqBase}
                 {baseTokenLogoComponent}
             </div>
         </li>
@@ -263,7 +287,9 @@ export const orderRowConstants = (props: Props) => {
                     textAlign: 'right',
                 }}
             >
-                {quoteDisplay}
+                {limitOrder.isBid
+                    ? expectedPositionLiqQuote
+                    : originalPositionLiqQuote}
                 {quoteTokenLogoComponent}
             </div>
         </li>
@@ -378,8 +404,10 @@ export const orderRowConstants = (props: Props) => {
                     whiteSpace: 'nowrap',
                 }}
             >
-                {' '}
-                {baseDisplay} {baseTokenLogoComponent}
+                {limitOrder.isBid
+                    ? originalPositionLiqBase
+                    : expectedPositionLiqBase}
+                {baseTokenLogoComponent}
             </div>
 
             <div
@@ -389,7 +417,9 @@ export const orderRowConstants = (props: Props) => {
                 }}
             >
                 {' '}
-                {quoteDisplay}
+                {limitOrder.isBid
+                    ? expectedPositionLiqQuote
+                    : originalPositionLiqQuote}
                 {quoteTokenLogoComponent}
             </div>
         </li>
@@ -408,7 +438,11 @@ export const orderRowConstants = (props: Props) => {
                     alignItems: 'center',
                 }}
             >
-                <OpenOrderStatus isFilled={isOrderFilled} />
+                <OpenOrderStatus
+                    isFilled={isOrderFilled}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
+                    fillPercentage={fillPercentage}
+                />
             </div>
         </li>
     );

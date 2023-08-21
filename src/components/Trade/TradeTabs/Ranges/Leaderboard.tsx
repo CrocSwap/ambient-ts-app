@@ -12,13 +12,16 @@ import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 // react functional component
 function Leaderboard() {
-    const { tradeTableState, showAllData } = useContext(TradeTableContext);
+    const { showAllData } = useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+
+    const { tradeTableState } = useContext(ChartContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state?.userData,
@@ -72,11 +75,11 @@ function Leaderboard() {
         </div>
     );
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
+    const ipadView = useMediaQuery('(max-width: 600px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
-    const showColumns = useMediaQuery('(max-width: 1900px)');
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const showColumns = useMediaQuery('(max-width: 1600px)');
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -84,7 +87,7 @@ function Leaderboard() {
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const minMax = (
@@ -241,14 +244,13 @@ function Leaderboard() {
             showColumns={showColumns}
             isAccountView={false}
             isLeaderboard={true}
+            showTimestamp={true}
             showPair={showPair}
         />
     ));
 
     return (
-        <section
-            className={`${styles.leaderboard} ${styles.main_list_container}`}
-        >
+        <section className={`${styles.leaderboard}`}>
             <div>{headerColumnsDisplay}</div>
             <div className={styles.table_content}>{rowItemContent}</div>
             <div>{footerDisplay}</div>

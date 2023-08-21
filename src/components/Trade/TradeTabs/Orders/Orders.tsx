@@ -19,6 +19,7 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -36,14 +37,13 @@ function Orders(props: propsIF) {
         connectedAccountActive,
         isAccountView,
     } = props;
-    const {
-        showAllData: showAllDataSelection,
-        tradeTableState,
-        toggleTradeTable,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, toggleTradeTable } =
+        useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+
+    const { tradeTableState } = useContext(ChartContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -117,17 +117,18 @@ function Orders(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
+    const ipadView = useMediaQuery('(max-width: 600px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const showColumns = useMediaQuery('(max-width: 1800px)');
+    const showColumns = useMediaQuery('(max-width: 1599px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
+    // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const sideType = (
@@ -349,7 +350,11 @@ function Orders(props: propsIF) {
     // ----------------------
 
     const headerColumnsDisplay = (
-        <ul className={`${styles.header} ${headerStyle}`}>
+        <ul
+            className={`${isAccountView ? styles.account_header : undefined} ${
+                styles.header
+            } ${headerStyle}`}
+        >
             {headerColumns.map((header, idx) => (
                 <OrderHeader
                     key={idx}
@@ -438,14 +443,6 @@ function Orders(props: propsIF) {
             }
         </div>
     );
-
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    useEffect(() => {
-        if (mobileView) {
-            toggleTradeTable();
-        }
-    }, [mobileView]);
 
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
