@@ -198,7 +198,9 @@
     .main_list_container .row_container,
     .main_list_container .header {
         /* measured against smallest screen size for full view (1600px) with sidebar expanded */
-        grid-template-columns: 2.1fr 2.2fr 2.8fr 1.8fr 1.2fr 1.2fr 2fr 2fr 2fr 1.2fr 14%;
+        grid-template-columns:
+            minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+            1.8fr 1.2fr 1.2fr 2fr 2fr 2fr 1.2fr 14%;
     }
 }
 
