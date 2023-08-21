@@ -6,6 +6,7 @@ import { OptionButton } from '../../../../Global/Button/OptionButton';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import styles from '../Orders.module.css';
 import { FiExternalLink } from 'react-icons/fi';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface PropsIF {
     transaction: {
@@ -25,6 +26,8 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
+
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
     const id = (
         <p className={`${styles.mono_font}`}>
@@ -61,7 +64,12 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                 )}
                 {!ipadView && <li className={styles.align_right}>...</li>}
                 {!showColumns && (
-                    <li className={styles.align_center}>{transaction.side}</li>
+                    <li className={styles.align_center}>
+                        {(!isDenomBase && transaction.side === 'Buy') ||
+                        (isDenomBase && transaction.side === 'Sell')
+                            ? 'Buy'
+                            : 'Sell'}
+                    </li>
                 )}
                 {!showColumns && (
                     <li className={styles.align_center}>{transaction.type}</li>
@@ -72,7 +80,12 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                         style={{ padding: '6px 0' }}
                     >
                         <p>{transaction.type}</p>
-                        <p>{transaction.side}</p>
+                        <p>
+                            {(!isDenomBase && transaction.side === 'Buy') ||
+                            (isDenomBase && transaction.side === 'Sell')
+                                ? 'Buy'
+                                : 'Sell'}
+                        </p>
                     </li>
                 )}
                 {<li className={styles.align_right}>...</li>}

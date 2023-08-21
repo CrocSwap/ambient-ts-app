@@ -459,12 +459,10 @@ export default function Limit() {
                     addTransactionByType({
                         txHash: tx.hash,
                         txAction:
-                            (isDenomBase &&
-                                tokenB.address === quoteToken.address) ||
-                            (!isDenomBase &&
-                                tokenB.address !== quoteToken.address)
-                                ? 'Sell'
-                                : 'Buy',
+                            tokenB.address.toLowerCase() ===
+                            quoteToken.address.toLowerCase()
+                                ? 'Buy'
+                                : 'Sell',
                         txType: 'Limit',
                         txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
                     }),
