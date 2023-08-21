@@ -475,5 +475,7 @@ export const useProcessOrder = (
 
         elapsedTimeString,
         initialTokenQty,
+        baseTokenAddress: limitOrder.base,
+        quoteTokenAddress: limitOrder.quote,
     };
 };

@@ -1,9 +1,11 @@
 import styles from './PriceInfo.module.css';
 
-import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../contexts/TokenContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 type ItemIF = {
@@ -14,10 +16,8 @@ type ItemIF = {
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-
     baseCollateralDisplay: string | undefined;
     quoteCollateralDisplay: string | undefined;
-
     usdValue: string | undefined;
     isDenomBase: boolean;
     isOrderFilled: boolean;
@@ -34,6 +34,8 @@ interface propsIF {
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
     fillPercentage: number;
 }
 
@@ -51,10 +53,17 @@ export default function PriceInfo(props: propsIF) {
         isDenomBase,
         usdValue,
         truncatedDisplayPriceDenomByMoneyness,
+        baseTokenAddress,
+        quoteTokenAddress,
         fillPercentage,
     } = props;
-    const { pathname } = useLocation();
 
+    const { pathname } = useLocation();
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
     const isOnTradeRoute = pathname.includes('trade');
 
     const isLimitOrderPartiallyFilled = isFillStarted && !isOrderFilled;
@@ -70,8 +79,8 @@ export default function PriceInfo(props: propsIF) {
                     : getFormattedNumber({
                           value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
                       })}
-
                 <TokenIcon
+                    token={!isBid ? quoteToken : baseToken}
                     src={!isBid ? quoteTokenLogo : baseTokenLogo}
                     alt={!isBid ? quoteTokenSymbol : baseTokenSymbol}
                     size='xl'
@@ -91,8 +100,8 @@ export default function PriceInfo(props: propsIF) {
                     : getFormattedNumber({
                           value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
                       })}
-
                 <TokenIcon
+                    token={isBid ? quoteToken : baseToken}
                     src={isBid ? quoteTokenLogo : baseTokenLogo}
                     alt={isBid ? quoteTokenSymbol : baseTokenSymbol}
                     size='xl'
@@ -105,11 +114,13 @@ export default function PriceInfo(props: propsIF) {
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
                 <TokenIcon
+                    token={baseToken}
                     src={baseTokenLogo}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
+                    token={quoteToken}
                     src={quoteTokenLogo}
                     alt={quoteTokenSymbol}
                     size='2xl'

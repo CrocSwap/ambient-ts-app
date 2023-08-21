@@ -4,13 +4,15 @@ import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineLine } from 'react-icons/ai';
 
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { useLocation } from 'react-router-dom';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
 import Apy from '../../Tabs/Apy/Apy';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { useContext } from 'react';
 
 type ItemIF = {
     slug: string;
@@ -29,6 +31,8 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
+
+    const { tokens } = useContext(TokenContext);
 
     const {
         usdValue,
@@ -50,7 +54,14 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
         quoteTokenCharacter,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = useProcessTransaction(tx, userAddress);
+
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
 
     const { pathname } = useLocation();
 
@@ -62,11 +73,13 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
                 <TokenIcon
+                    token={baseToken}
                     src={uriToHttp(baseTokenLogo)}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
+                    token={quoteToken}
                     src={uriToHttp(quoteTokenLogo)}
                     alt={quoteTokenSymbol}
                     size='2xl'
@@ -130,21 +143,6 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         </motion.div>
     );
 
-    const baseToken = (
-        <TokenIcon
-            src={uriToHttp(baseTokenLogo)}
-            alt={baseTokenSymbol}
-            size='xs'
-        />
-    );
-    const quoteToken = (
-        <TokenIcon
-            src={uriToHttp(quoteTokenLogo)}
-            alt={quoteTokenSymbol}
-            size='xs'
-        />
-    );
-
     const buyQuoteRow = (
         <Row>
             <p>
@@ -152,12 +150,16 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                     ? tx.quoteSymbol + ': '
                     : 'Buy: '}
             </p>
-
             <div>
                 {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
                     ? quoteQuantityDisplay
                     : estimatedQuoteFlowDisplay || '0.00'}
-                {quoteToken}
+                <TokenIcon
+                    token={quoteToken}
+                    src={uriToHttp(quoteTokenLogo)}
+                    alt={quoteTokenSymbol}
+                    size='xs'
+                />
             </div>
         </Row>
     );
@@ -174,7 +176,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 tx.changeType === 'mint'
                     ? baseQuantityDisplay
                     : estimatedBaseFlowDisplay || '0.00'}
-                {baseToken}
+                <TokenIcon
+                    token={baseToken}
+                    src={uriToHttp(baseTokenLogo)}
+                    alt={baseTokenSymbol}
+                    size='xs'
+                />
             </div>
         </Row>
     );
@@ -197,7 +204,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 {tx.entityType !== 'limitOrder' || tx.changeType === 'recover'
                     ? baseQuantityDisplay
                     : estimatedBaseFlowDisplay || '0.00'}
-                {baseToken}
+                <TokenIcon
+                    token={baseToken}
+                    src={uriToHttp(baseTokenLogo)}
+                    alt={baseTokenSymbol}
+                    size='xs'
+                />
             </div>
         </Row>
     );
@@ -215,7 +227,12 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
                 tx.changeType === 'mint'
                     ? quoteQuantityDisplay
                     : estimatedQuoteFlowDisplay || '0.00'}
-                {quoteToken}
+                <TokenIcon
+                    token={quoteToken}
+                    src={uriToHttp(quoteTokenLogo)}
+                    alt={quoteTokenSymbol}
+                    size='xs'
+                />
             </div>
         </Row>
     );

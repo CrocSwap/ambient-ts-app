@@ -84,6 +84,8 @@ function RangesRow(props: propsIF) {
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         elapsedTimeString,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
@@ -250,6 +252,8 @@ function RangesRow(props: propsIF) {
         apyString,
         apyClassname,
         isPositionInRange,
+        baseTokenAddress,
+        quoteTokenAddress,
     };
 
     const {
