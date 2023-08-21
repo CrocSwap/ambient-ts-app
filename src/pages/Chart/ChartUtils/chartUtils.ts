@@ -24,6 +24,8 @@ declare global {
     }
 }
 
+export const defaultCandleBandwith = 5;
+
 export interface CandleDataChart extends CandleData {
     isFakeData: boolean;
 }

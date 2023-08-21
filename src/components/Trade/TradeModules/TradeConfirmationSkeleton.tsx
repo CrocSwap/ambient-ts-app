@@ -77,6 +77,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                 <h2>{formattedTokenAQuantity}</h2>
                 <div className={styles.logo_display}>
                     <TokenIcon
+                        token={tokenA}
                         src={uriToHttp(tokenA.logoURI)}
                         alt={tokenA.symbol}
                         size='2xl'
@@ -91,6 +92,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                 <h2>{formattedTokenBQuantity}</h2>
                 <div className={styles.logo_display}>
                     <TokenIcon
+                        token={tokenB}
                         src={uriToHttp(tokenB.logoURI)}
                         alt={tokenB.symbol}
                         size='2xl'

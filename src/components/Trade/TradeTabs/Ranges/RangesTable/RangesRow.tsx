@@ -84,6 +84,8 @@ function RangesRow(props: propsIF) {
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         elapsedTimeString,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
@@ -250,6 +252,8 @@ function RangesRow(props: propsIF) {
         apyString,
         apyClassname,
         isPositionInRange,
+        baseTokenAddress,
+        quoteTokenAddress,
     };
 
     const {
@@ -282,7 +286,11 @@ function RangesRow(props: propsIF) {
     return (
         <>
             <ul
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+                className={`${
+                    styles.row_container
+                } ${activePositionStyle} ${userPositionStyle} ${
+                    isAccountView ? styles.account_row_container : undefined
+                }`}
                 onClick={handleRowClick}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}

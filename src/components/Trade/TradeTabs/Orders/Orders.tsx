@@ -354,7 +354,11 @@ function Orders(props: propsIF) {
     // ----------------------
 
     const headerColumnsDisplay = (
-        <ul className={`${styles.header} ${headerStyle}`}>
+        <ul
+            className={`${isAccountView ? styles.account_header : undefined} ${
+                styles.header
+            } ${headerStyle}`}
+        >
             {headerColumns.map((header, idx) => (
                 <OrderHeader
                     key={idx}

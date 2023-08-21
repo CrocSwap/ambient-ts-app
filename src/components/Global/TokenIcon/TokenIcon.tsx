@@ -2,16 +2,24 @@ import { Suspense, memo, useEffect, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { TokenIF } from '../../../utils/interfaces/exports';
+import processLogoSrc from './processLogoSrc';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
 interface propsIF {
+    token?: TokenIF;
     src?: string;
     alt?: string;
     size?: TokenIconSize;
 }
 
-function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
+function TokenIcon({
+    token,
+    src = '',
+    alt = 'Token Icon',
+    size = 'm',
+}: propsIF) {
     // translate human-readable icon width to CSS value
     const getIconWidth = (size: TokenIconSize): string => {
         switch (size) {
@@ -63,11 +71,11 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
 
     return (
         <Suspense fallback={noTokenIcon}>
-            {src && !fetchError ? (
+            {!fetchError ? (
                 <img
                     className={styles.token_icon}
                     style={{ width: getIconWidth(size) }}
-                    src={src}
+                    src={processLogoSrc(token)}
                     alt={alt}
                     onError={handleFetchError}
                 />

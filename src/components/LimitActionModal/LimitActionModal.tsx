@@ -55,6 +55,8 @@ export default function LimitActionModal(props: propsIF) {
         quoteDisplay,
         truncatedDisplayPrice,
         initialTokenQty,
+        baseTokenAddress,
+        quoteTokenAddress,
         fillPercentage,
     } = useProcessOrder(limitOrder, userAddress);
 
@@ -366,6 +368,8 @@ export default function LimitActionModal(props: propsIF) {
                 <LimitActionTokenHeader
                     isDenomBase={isDenomBase}
                     isOrderFilled={isOrderFilled}
+                    baseTokenAddress={baseTokenAddress}
+                    quoteTokenAddress={quoteTokenAddress}
                     isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}

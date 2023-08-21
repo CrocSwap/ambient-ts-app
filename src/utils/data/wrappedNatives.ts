@@ -1,4 +1,4 @@
-import { WETH } from './WETH';
+import { WETH } from '../tokens/WETH';
 
 // map of wrapped native tokens on each chain
 export const wrappedNatives = new Map<string, string>([
