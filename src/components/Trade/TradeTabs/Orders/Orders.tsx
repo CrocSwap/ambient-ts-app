@@ -440,7 +440,11 @@ function Orders(props: propsIF) {
                             <OrderRowPlaceholder
                                 key={idx}
                                 transaction={{
-                                    hash: '...',
+                                    hash: tx.txHash,
+                                    baseSymbol:
+                                        tx.txDetails?.baseSymbol ?? '...',
+                                    quoteSymbol:
+                                        tx.txDetails?.quoteSymbol ?? '...',
                                     side: tx.txAction,
                                     type: tx.txType,
                                 }}

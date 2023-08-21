@@ -15,11 +15,14 @@ interface TransactionByType {
         | 'Approve';
     txDescription: string;
     txDetails?: {
-        baseTokenDecimals: number;
-        quoteTokenDecimals: number;
-        lowTick: number;
-        highTick: number;
-        gridSize: number;
+        baseSymbol?: string;
+        quoteSymbol?: string;
+        baseTokenDecimals?: number;
+        quoteTokenDecimals?: number;
+        isAmbient?: boolean;
+        lowTick?: number;
+        highTick?: number;
+        gridSize?: number;
     };
 }
 export interface receiptData {

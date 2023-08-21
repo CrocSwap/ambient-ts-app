@@ -311,6 +311,10 @@ function Swap(props: propsIF) {
                                 : 'Sell',
                         txType: 'Market',
                         txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                        txDetails: {
+                            baseSymbol: baseToken.symbol,
+                            quoteSymbol: quoteToken.symbol,
+                        },
                     }),
                 );
         } catch (error) {

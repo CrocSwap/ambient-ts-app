@@ -8,6 +8,7 @@ import styles from '../Ranges.module.css';
 import { FiExternalLink } from 'react-icons/fi';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 
 interface PropsIF {
     transaction: {
@@ -15,11 +16,14 @@ interface PropsIF {
         side?: string;
         type: string;
         details?: {
-            baseTokenDecimals: number;
-            quoteTokenDecimals: number;
-            lowTick: number;
-            highTick: number;
-            gridSize: number;
+            baseSymbol?: string;
+            quoteSymbol?: string;
+            baseTokenDecimals?: number;
+            quoteTokenDecimals?: number;
+            isAmbient?: boolean;
+            lowTick?: number;
+            highTick?: number;
+            gridSize?: number;
         };
     };
     showTimestamp: boolean;
@@ -40,6 +44,17 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
 
     const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
+    const baseTokenCharacter = transaction?.details?.baseSymbol
+        ? getUnicodeCharacter(transaction.details.baseSymbol)
+        : '';
+    const quoteTokenCharacter = transaction?.details?.quoteSymbol
+        ? getUnicodeCharacter(transaction.details.quoteSymbol)
+        : '';
+
+    const priceCharacter = !isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
+
     const id = (
         <p className={`${styles.mono_font}`}>
             {trimString(transaction.hash, 6, 4, '…')}
@@ -51,16 +66,21 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
         </p>
     );
 
-    const pinnedDisplayPrices = transaction.details
-        ? getPinnedPriceValuesFromTicks(
-              isDenomBase,
-              transaction.details.baseTokenDecimals,
-              transaction.details.quoteTokenDecimals,
-              transaction.details.lowTick,
-              transaction.details.highTick,
-              transaction.details.gridSize,
-          )
-        : undefined;
+    const pinnedDisplayPrices =
+        transaction.details?.baseTokenDecimals &&
+        transaction.details?.quoteTokenDecimals &&
+        transaction.details?.lowTick &&
+        transaction.details?.highTick &&
+        transaction.details?.gridSize
+            ? getPinnedPriceValuesFromTicks(
+                  isDenomBase,
+                  transaction.details.baseTokenDecimals,
+                  transaction.details.quoteTokenDecimals,
+                  transaction.details.lowTick,
+                  transaction.details.highTick,
+                  transaction.details.gridSize,
+              )
+            : undefined;
 
     // TODO: use media queries and standardized styles
     return (
@@ -86,31 +106,49 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 )}
                 {!showColumns && (
                     <li className={styles.align_right}>
-                        {pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
-                            '...'}
+                        {transaction.details?.isAmbient
+                            ? '0.00'
+                            : `${priceCharacter} + ${
+                                  pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
+                                  '...'
+                              }`}
                     </li>
                 )}
                 {!showColumns && (
                     <li className={styles.align_right}>
-                        {pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas ??
-                            '...'}
+                        {transaction.details?.isAmbient
+                            ? '∞'
+                            : `${priceCharacter} + ${
+                                  pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
+                                  '...'
+                              }`}
                     </li>
                 )}
                 {showColumns && !ipadView && (
                     <li className={styles.align_right}>
                         <p>
-                            {pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
-                                '...'}
+                            {transaction.details?.isAmbient
+                                ? '0.00'
+                                : `${priceCharacter} + ${
+                                      pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
+                                      '...'
+                                  }`}
                         </p>
                         <p>
-                            {pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas ??
-                                '...'}
+                            {transaction.details?.isAmbient
+                                ? '∞'
+                                : `${priceCharacter} + ${
+                                      pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
+                                      '...'
+                                  }`}
                         </p>
                     </li>
                 )}
                 {<li className={styles.align_right}>...</li>}
                 {<li className={styles.align_right}>...</li>}
-                {<li className={styles.align_right}>...</li>}
+                {!showColumns ? (
+                    <li className={styles.align_right}>...</li>
+                ) : undefined}
                 {!mobileView && <li className={styles.align_right}>...</li>}
                 {
                     <li className={styles.align_right}>

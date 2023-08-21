@@ -7,12 +7,15 @@ import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus'
 import styles from '../Orders.module.css';
 import { FiExternalLink } from 'react-icons/fi';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 
 interface PropsIF {
     transaction: {
         hash: string;
         side?: string;
         type: string;
+        baseSymbol: string;
+        quoteSymbol: string;
     };
     showColumns: boolean;
     ipadView: boolean;
@@ -39,6 +42,17 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
             you
         </p>
     );
+
+    const baseTokenCharacter = transaction.baseSymbol
+        ? getUnicodeCharacter(transaction.baseSymbol)
+        : '';
+    const quoteTokenCharacter = transaction.quoteSymbol
+        ? getUnicodeCharacter(transaction.quoteSymbol)
+        : '';
+
+    const sideCharacter = isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
 
     // TODO: use media queries and standardized styles
     return (
@@ -67,8 +81,8 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                     <li className={styles.align_center}>
                         {(!isDenomBase && transaction.side === 'Buy') ||
                         (isDenomBase && transaction.side === 'Sell')
-                            ? 'Buy'
-                            : 'Sell'}
+                            ? 'Buy' + ` ${sideCharacter}`
+                            : 'Sell' + ` ${sideCharacter}`}
                     </li>
                 )}
                 {!showColumns && (

@@ -299,6 +299,8 @@ function Reposition() {
                         txType: 'Range',
                         txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
                         txDetails: {
+                            baseSymbol: position.baseSymbol,
+                            quoteSymbol: position.quoteSymbol,
                             baseTokenDecimals: baseTokenDecimals,
                             quoteTokenDecimals: quoteTokenDecimals,
                             lowTick: pinnedLowTick,

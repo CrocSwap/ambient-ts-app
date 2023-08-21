@@ -524,6 +524,26 @@ function Transactions(props: propsIF) {
                                             hash: tx.txHash,
                                             side: tx.txAction,
                                             type: tx.txType,
+                                            action: tx.txAction,
+                                            details: {
+                                                baseSymbol:
+                                                    tx.txDetails?.baseSymbol ??
+                                                    '...',
+                                                quoteSymbol:
+                                                    tx.txDetails?.quoteSymbol ??
+                                                    '...',
+                                                baseTokenDecimals:
+                                                    tx.txDetails
+                                                        ?.baseTokenDecimals,
+                                                quoteTokenDecimals:
+                                                    tx.txDetails
+                                                        ?.quoteTokenDecimals,
+                                                lowTick: tx.txDetails?.lowTick,
+                                                highTick:
+                                                    tx.txDetails?.highTick,
+                                                gridSize:
+                                                    tx.txDetails?.gridSize,
+                                            },
                                         }}
                                         showTimestamp={showTimestamp}
                                         showColumns={showColumns}
@@ -538,6 +558,26 @@ function Transactions(props: propsIF) {
                                             hash: tx.txHash,
                                             side: 'Sell',
                                             type: 'Market',
+                                            action: tx.txAction,
+                                            details: {
+                                                baseSymbol:
+                                                    tx.txDetails?.baseSymbol ??
+                                                    '...',
+                                                quoteSymbol:
+                                                    tx.txDetails?.quoteSymbol ??
+                                                    '...',
+                                                baseTokenDecimals:
+                                                    tx.txDetails
+                                                        ?.baseTokenDecimals,
+                                                quoteTokenDecimals:
+                                                    tx.txDetails
+                                                        ?.quoteTokenDecimals,
+                                                lowTick: tx.txDetails?.lowTick,
+                                                highTick:
+                                                    tx.txDetails?.highTick,
+                                                gridSize:
+                                                    tx.txDetails?.gridSize,
+                                            },
                                         }}
                                         showTimestamp={showTimestamp}
                                         showColumns={showColumns}
@@ -549,6 +589,26 @@ function Transactions(props: propsIF) {
                                             hash: tx.txHash,
                                             side: 'Add',
                                             type: 'Range',
+                                            action: tx.txAction,
+                                            details: {
+                                                baseSymbol:
+                                                    tx.txDetails?.baseSymbol ??
+                                                    '...',
+                                                quoteSymbol:
+                                                    tx.txDetails?.quoteSymbol ??
+                                                    '...',
+                                                baseTokenDecimals:
+                                                    tx.txDetails
+                                                        ?.baseTokenDecimals,
+                                                quoteTokenDecimals:
+                                                    tx.txDetails
+                                                        ?.quoteTokenDecimals,
+                                                lowTick: tx.txDetails?.lowTick,
+                                                highTick:
+                                                    tx.txDetails?.highTick,
+                                                gridSize:
+                                                    tx.txDetails?.gridSize,
+                                            },
                                         }}
                                         showTimestamp={showTimestamp}
                                         showColumns={showColumns}
@@ -560,6 +620,26 @@ function Transactions(props: propsIF) {
                                             hash: tx.txHash,
                                             side: 'Remove',
                                             type: 'Range',
+                                            action: tx.txAction,
+                                            details: {
+                                                baseSymbol:
+                                                    tx.txDetails?.baseSymbol ??
+                                                    '...',
+                                                quoteSymbol:
+                                                    tx.txDetails?.quoteSymbol ??
+                                                    '...',
+                                                baseTokenDecimals:
+                                                    tx.txDetails
+                                                        ?.baseTokenDecimals,
+                                                quoteTokenDecimals:
+                                                    tx.txDetails
+                                                        ?.quoteTokenDecimals,
+                                                lowTick: tx.txDetails?.lowTick,
+                                                highTick:
+                                                    tx.txDetails?.highTick,
+                                                gridSize:
+                                                    tx.txDetails?.gridSize,
+                                            },
                                         }}
                                         showTimestamp={showTimestamp}
                                         showColumns={showColumns}

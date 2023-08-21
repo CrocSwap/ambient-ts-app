@@ -1037,8 +1037,11 @@ function Range() {
                             ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
                         txDetails: {
+                            baseSymbol: baseToken.symbol,
+                            quoteSymbol: quoteToken.symbol,
                             baseTokenDecimals: baseTokenDecimals,
                             quoteTokenDecimals: quoteTokenDecimals,
+                            isAmbient: isAmbient,
                             lowTick: defaultLowTick,
                             highTick: defaultHighTick,
                             gridSize: gridSize,

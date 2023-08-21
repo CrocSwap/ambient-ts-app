@@ -465,6 +465,10 @@ export default function Limit() {
                                 : 'Sell',
                         txType: 'Limit',
                         txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
+                        txDetails: {
+                            baseSymbol: baseToken.symbol,
+                            quoteSymbol: quoteToken.symbol,
+                        },
                     }),
                 );
         } catch (error) {

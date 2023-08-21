@@ -415,7 +415,7 @@ function Ranges(props: propsIF) {
                             <RangesRowPlaceholder
                                 key={idx}
                                 transaction={{
-                                    hash: '...',
+                                    hash: tx.txHash,
                                     side: tx.txAction,
                                     type: tx.txType,
                                     details: tx.txDetails,
