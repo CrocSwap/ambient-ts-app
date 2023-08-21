@@ -27,6 +27,7 @@ import {
     liquidityChartData,
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -134,6 +135,8 @@ function TradeCandleStickChart(props: propsIF) {
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
+    const mobileView = useMediaQuery('(max-width: 600px)');
+
     useEffect(() => {
         setIsLoading(true);
     }, [period, denominationsInBase]);
@@ -149,7 +152,7 @@ function TradeCandleStickChart(props: propsIF) {
                         ? liq.upperBoundInvPriceDecimalCorrected <
                               barThreshold &&
                               liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
-                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
+                        : liq.upperBoundPriceDecimalCorrected > barThreshold &&
                               liq.upperBoundPriceDecimalCorrected !== '+inf';
                 },
             );
@@ -158,7 +161,7 @@ function TradeCandleStickChart(props: propsIF) {
                 liqBoundaryData !== undefined
                     ? denominationsInBase
                         ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
-                        : liqBoundaryData.upperBoundPriceDecimalCorrected
+                        : liqBoundaryData.lowerBoundPriceDecimalCorrected
                     : barThreshold;
             const liqBoundary =
                 typeof liqBoundaryArg === 'number'
@@ -526,7 +529,7 @@ function TradeCandleStickChart(props: propsIF) {
         if (unparsedCandleData) {
             setScaleForChart(unparsedCandleData);
         }
-    }, [unparsedCandleData === undefined]);
+    }, [unparsedCandleData === undefined, mobileView]);
 
     // Liq Scale
     useEffect(() => {
@@ -578,7 +581,7 @@ function TradeCandleStickChart(props: propsIF) {
             period
         ) {
             const temp = [...unparsedCandleData];
-            const boundaryCandles = temp.splice(0, 99);
+            const boundaryCandles = temp.splice(0, mobileView ? 30 : 99);
 
             const priceRange = d3fc
                 .extentLinear()
@@ -600,7 +603,10 @@ function TradeCandleStickChart(props: propsIF) {
                 .extentLinear()
                 .accessors([(d: any) => d.time * 1000])
                 .padUnit('domain')
-                .pad([period * 1000, (period / 2) * 80 * 1000]);
+                .pad([
+                    period * 1000,
+                    (period / 2) * (mobileView ? 30 : 80) * 1000,
+                ]);
 
             let xScale: any = undefined;
 
@@ -676,12 +682,28 @@ function TradeCandleStickChart(props: propsIF) {
 
                 const minDate = 1657868400; // 15 July 2022
 
-                const firstTime = Math.floor(fethcingCandles / 1000);
+                let firstTime = Math.floor(fethcingCandles / 1000);
 
                 if (firstTime > minDate && fethcingCandles > domainLeft) {
-                    const nCandles = Math.floor(
+                    let nCandles = Math.floor(
                         (fethcingCandles - domainLeft) / (period * 1000),
                     );
+
+                    if (nCandles < 139) {
+                        const nDiffFirstTime = Math.floor(
+                            (Date.now() - firstTime * 1000) / (period * 1000),
+                        );
+
+                        const tempFirstTime =
+                            firstTime + period * nDiffFirstTime;
+                        if (nDiffFirstTime < 139 && nCandles > 5) {
+                            firstTime = tempFirstTime;
+                            nCandles = nCandles + (nDiffFirstTime + 100);
+                        } else {
+                            firstTime = firstTime + period * 100;
+                            nCandles = 200;
+                        }
+                    }
 
                     setCandleScale((prev: candleScale) => {
                         return {

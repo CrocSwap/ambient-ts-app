@@ -3,7 +3,6 @@ import { useContext, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import {
-    lineValue,
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
@@ -20,7 +19,7 @@ interface propsIF {
     period: number;
     /* eslint-disable @typescript-eslint/no-explicit-any */
     setLimit: any;
-    limit: lineValue[];
+    limit: number;
     lineSellColor: string;
     lineBuyColor: string;
     isUserConnected: boolean | undefined;
@@ -61,7 +60,7 @@ export default function LimitLineChart(props: propsIF) {
         if (scaleData !== undefined) {
             const limitLine = d3fc
                 .annotationCanvasLine()
-                .value((d: any) => d.value)
+                .value((d: number) => d)
                 .xScale(scaleData?.xScale)
                 .yScale(scaleData?.yScale);
 
@@ -101,8 +100,8 @@ export default function LimitLineChart(props: propsIF) {
                         if (location.pathname.includes('/limit')) {
                             setCanvasResolution(canvas);
                             ctx.setLineDash([20, 18]);
-                            limitLine(limit);
-                            triangleLimit(limit);
+                            limitLine([limit]);
+                            triangleLimit([limit]);
                         }
                     })
                     .on('measure', () => {
@@ -118,8 +117,8 @@ export default function LimitLineChart(props: propsIF) {
         if (poolPriceDisplay) {
             setCheckLimitOrder(
                 sellOrderStyle === 'order_sell'
-                    ? limit[0].value > poolPriceDisplay
-                    : limit[0].value < poolPriceDisplay,
+                    ? limit > poolPriceDisplay
+                    : limit < poolPriceDisplay,
             );
         }
     }, [limit, sellOrderStyle, poolPriceDisplay]);
@@ -194,12 +193,9 @@ export default function LimitLineChart(props: propsIF) {
             tickToPrice(tradeData.limitTick),
         );
         limitDisplayPrice?.then((limit) => {
-            setLimit([
-                {
-                    name: 'Limit',
-                    value: isDenomBase ? limit : 1 / limit || 0,
-                },
-            ]);
+            setLimit(() => {
+                return isDenomBase ? limit : 1 / limit || 0;
+            });
         });
     };
 

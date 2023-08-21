@@ -30,13 +30,7 @@ interface propsIF {
     isAccountView: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const {
-        showColumns,
-        showTimestamp,
-        ipadView,
-        tx,
-        isAccountView,
-    } = props;
+    const { showColumns, showTimestamp, ipadView, tx, isAccountView } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
