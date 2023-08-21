@@ -18,6 +18,7 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import Spinner from '../../../Global/Spinner/Spinner';
 import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -34,15 +35,13 @@ function Ranges(props: propsIF) {
     const { activeAccountPositionData, connectedAccountActive, isAccountView } =
         props;
 
-    const {
-        showAllData: showAllDataSelection,
-        tradeTableState,
-        toggleTradeTable,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, toggleTradeTable } =
+        useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
+    const { tradeTableState } = useContext(ChartContext);
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
     const isTradeTableExpanded =
@@ -119,9 +118,9 @@ function Ranges(props: propsIF) {
 
     // ---------------------
     // transactions per page media queries
-    const showColumns = useMediaQuery('(max-width: 1900px)');
+    const showColumns = useMediaQuery('(max-width: 1599px)');
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
 
     useEffect(() => {
         setCurrentPage(1);
@@ -195,16 +194,18 @@ function Ranges(props: propsIF) {
             </div>
         );
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
+    const ipadView = useMediaQuery('(max-width: 600px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
+    const showTimestamp = useMediaQuery('(min-width: 1200px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
+    // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const minMax = (
@@ -225,7 +226,7 @@ function Ranges(props: propsIF) {
         {
             name: 'Last Updated',
             className: '',
-            show: showPair,
+            show: showPair && showTimestamp,
             slug: 'time',
             sortable: true,
         },
@@ -362,6 +363,7 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
+            showTimestamp={showTimestamp}
             showPair={showPair}
         />
     ));
@@ -373,16 +375,10 @@ function Ranges(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             isAccountView={isAccountView}
+            showTimestamp={showTimestamp}
             showPair={showPair}
         />
     ));
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    useEffect(() => {
-        if (mobileView) {
-            toggleTradeTable();
-        }
-    }, [mobileView]);
 
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
