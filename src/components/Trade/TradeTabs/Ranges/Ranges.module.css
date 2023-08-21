@@ -224,6 +224,7 @@
                 86px,
                 1fr
             )
+            minmax(80px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr)
             minmax(107px, 25%);
     }
 }
