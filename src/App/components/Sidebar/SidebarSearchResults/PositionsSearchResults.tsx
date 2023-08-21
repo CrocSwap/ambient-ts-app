@@ -3,13 +3,17 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
-import styles from './SidebarSearchResults.module.css';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../../functions/getFormattedNumber';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
+import {
+    Results,
+    ResultsContainer,
+} from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     searchedPositions: PositionIF[];
@@ -50,8 +54,13 @@ function PositionLI(props: PositionLiPropsIF) {
     });
 
     return (
-        <li
-            className={styles.card_container}
+        <Results
+            numCols={3}
+            fullWidth
+            fontWeight='300'
+            fontSize='body'
+            color='text2'
+            padding='4px'
             onClick={() => handleClick(position)}
         >
             <p>
@@ -61,7 +70,7 @@ function PositionLI(props: PositionLiPropsIF) {
             </p>
             <p style={{ textAlign: 'center' }}>{rangeDisplay}</p>
             <p style={{ textAlign: 'center' }}>{'$' + positionValue}</p>
-        </li>
+        </Results>
     );
 }
 
@@ -94,16 +103,52 @@ export default function PositionsSearchResults(props: propsIF) {
     };
 
     return (
-        <div>
-            <div className={styles.card_title}>My Range Positions</div>
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='flex-start'
+            gap={8}
+        >
+            <Text fontWeight='500' fontSize='body' color='accent5'>
+                My Range Positions
+            </Text>
             {searchedPositions.length ? (
-                <>
-                    <header className={styles.header}>
-                        <div>Pool</div>
-                        <div>Range</div>
-                        <div>Value</div>
-                    </header>
-                    <ol className={styles.main_result_container}>
+                <FlexContainer flexDirection='column' fullWidth>
+                    <GridContainer
+                        numCols={3}
+                        fullWidth
+                        fontWeight='300'
+                        fontSize='body'
+                        color='text2'
+                        style={{ borderBottom: '1px solid var(--dark3)' }}
+                        padding='0 0 4px 0'
+                    >
+                        <Text
+                            fontWeight='300'
+                            fontSize='body'
+                            color='text2'
+                            align='center'
+                        >
+                            Pool
+                        </Text>
+                        <Text
+                            fontWeight='300'
+                            fontSize='body'
+                            color='text2'
+                            align='center'
+                        >
+                            Range
+                        </Text>
+                        <Text
+                            fontWeight='300'
+                            fontSize='body'
+                            color='text2'
+                            align='center'
+                        >
+                            Value
+                        </Text>
+                    </GridContainer>
+                    <ResultsContainer flexDirection='column'>
                         {searchedPositions
                             .slice(0, 4)
                             .map((position: PositionIF) => (
@@ -115,11 +160,17 @@ export default function PositionsSearchResults(props: propsIF) {
                                     handleClick={handleClick}
                                 />
                             ))}
-                    </ol>
-                </>
+                    </ResultsContainer>
+                </FlexContainer>
             ) : (
-                <h5 className={styles.not_found_text}>No Ranges Found</h5>
+                <FlexContainer
+                    margin='0 8px 96px 8px'
+                    fontSize='body'
+                    color='text2'
+                >
+                    No Ranges Found
+                </FlexContainer>
             )}
-        </div>
+        </FlexContainer>
     );
 }

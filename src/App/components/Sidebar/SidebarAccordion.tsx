@@ -3,13 +3,14 @@ import { useState, ReactNode, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 // START: Import Local Files
-import styles from './Sidebar.module.css';
 import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ConnectWalletButton } from '../../../components/Global/Button/ConnectWalletButton';
+import { FlexContainer, Text } from '../../../styled/Common';
+import { AccordionHeader } from '../../../styled/Components/Sidebar';
 
 // interface for React functional component props
 interface propsIF {
@@ -52,7 +53,6 @@ export default function SidebarAccordion(props: propsIF) {
 
     const openStateContent = (
         <motion.div
-            className={styles.accordion_content}
             key='content'
             initial='collapsed'
             animate='open'
@@ -62,6 +62,7 @@ export default function SidebarAccordion(props: propsIF) {
                 collapsed: { opacity: 0, height: 0 },
             }}
             transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 1] }}
+            style={{ overflow: 'hidden' }}
             onClick={overflowSidebarMQ ? () => sidebar.close() : undefined}
         >
             {item.data}
@@ -70,8 +71,6 @@ export default function SidebarAccordion(props: propsIF) {
 
     // prevent sidebar items from rendering their contents when the sidebar is closed
     const showOpenContentOrNull = sidebar.isOpen ? openStateContent : '';
-
-    const sidebarIconStyle = isOpen ? styles.open_link : null;
 
     function handleAccordionClick() {
         if (sidebar.isOpen) {
@@ -97,44 +96,41 @@ export default function SidebarAccordion(props: propsIF) {
         !isConnected &&
         !shouldDisplayContentWhenUserNotLoggedIn &&
         sidebar.isOpen ? (
-            <div className={styles.connect_button}>
+            <FlexContainer
+                flexDirection='column'
+                alignItems='center'
+                justifyContent='center'
+                fontSize='body'
+                gap={8}
+                padding='8px'
+                color='text2'
+            >
                 <p>Your recent {item.name.toLowerCase()} will display here.</p>
                 <ConnectWalletButton onClick={openWagmiModal} thin />
-            </div>
+            </FlexContainer>
         ) : (
             showOpenContentOrNull
         );
 
     return (
-        <div className={styles.accordion_container}>
-            <motion.li
-                key={idx}
-                className={styles.sidebar_item}
-                onClick={() => handleAccordionClick()}
-            >
-                <div>
-                    <div
-                        className={styles.sidebar_link}
-                        style={{
-                            justifyContent: !sidebar.isOpen
-                                ? 'center'
-                                : 'flex-start',
-                        }}
-                    >
-                        {sidebar.isOpen && (
-                            <MdPlayArrow
-                                size={12}
-                                className={`${sidebarIconStyle} ${styles.arrow}`}
-                            />
-                        )}
-                        {item.icon}
-                        <span className={styles.link_text}>{item.name}</span>
-                    </div>
-                </div>
-            </motion.li>
+        <FlexContainer flexDirection='column'>
+            <AccordionHeader key={idx} onClick={() => handleAccordionClick()}>
+                <FlexContainer
+                    flexDirection='row'
+                    alignItems='center'
+                    justifyContent={!sidebar.isOpen ? 'center' : 'flex-start'}
+                    gap={8}
+                >
+                    {sidebar.isOpen && <MdPlayArrow size={12} />}
+                    {item.icon}
+                    <Text fontSize='body' fontWeight='500'>
+                        {item.name}
+                    </Text>
+                </FlexContainer>
+            </AccordionHeader>
             <AnimatePresence>
                 {isOpen && accordionContentToShow}
             </AnimatePresence>
-        </div>
+        </FlexContainer>
     );
 }

@@ -3,20 +3,27 @@ import styled, { css } from 'styled-components';
 interface FontProps {
     font?: 'font-logo' | 'font-family' | 'roboto' | 'mono';
 }
-const Font = css<FontProps>`
+export const Font = css<FontProps>`
     ${({ font }) => font && `font-family: var(--${font})`}
 `;
 
 interface FontSizeProps {
     fontSize?: 'header1' | 'header2' | 'header' | 'body';
 }
-const FontSize = css<FontSizeProps>`
+export const FontSize = css<FontSizeProps>`
     ${({ fontSize }) =>
         fontSize &&
         `
     font-size: var(--${fontSize}-size);
     line-height: var(--${fontSize}-lh);
   `}
+`;
+
+interface FontWeightProps {
+    fontWeight?: string;
+}
+export const FontWeight = css<FontWeightProps>`
+    ${({ fontWeight }) => fontWeight && `font-weight: ${fontWeight}`};
 `;
 
 interface ColorProps {
@@ -35,7 +42,7 @@ interface ColorProps {
         | 'other-red';
     background?: 'dark1' | 'dark2' | 'dark3' | 'dark4';
 }
-const Color = css<ColorProps>`
+export const Color = css<ColorProps>`
     ${({ color }) => color && `color: var(--${color})`};
     ${({ background }) =>
         background && `background-color: var(--${background})`};
@@ -44,14 +51,14 @@ const Color = css<ColorProps>`
 interface PaddingProps {
     padding?: string;
 }
-const Padding = css<PaddingProps>`
+export const Padding = css<PaddingProps>`
     ${({ padding }) => padding && `padding: ${padding}`};
 `;
 
 interface MarginProps {
     margin?: string;
 }
-const Margin = css<MarginProps>`
+export const Margin = css<MarginProps>`
     ${({ margin }) => margin && `margin: ${margin}`};
 `;
 
@@ -63,6 +70,7 @@ interface GridProps {
     numRows?: number;
     gapSize?: number;
     fullHeight?: boolean;
+    fullWidth?: boolean;
 }
 const Grid = css<GridProps>`
     display: grid;
@@ -72,11 +80,13 @@ const Grid = css<GridProps>`
         numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
     gap: ${({ gapSize }) => (gapSize ? `${gapSize}px` : '0')};
     ${({ fullHeight }) => (fullHeight ? 'height: 100%;' : '')}
+    ${({ fullWidth }) => (fullWidth ? 'width: 100%;' : '')}
 `;
 export const GridContainer = styled.div<
     GridProps &
         FontProps &
         FontSizeProps &
+        FontWeightProps &
         ColorProps &
         PaddingProps &
         MarginProps
@@ -84,6 +94,7 @@ export const GridContainer = styled.div<
     ${Grid}
     ${Font}
     ${FontSize}
+    ${FontWeight}
     ${Color}
     ${Padding}
     ${Margin}
@@ -93,6 +104,7 @@ export const GridContainer = styled.div<
 interface FlexProps {
     gap?: number;
     fullHeight?: boolean;
+    fullWidth?: boolean;
     flexDirection?: 'row' | 'column';
     justifyContent?: string;
     alignItems?: string;
@@ -101,6 +113,7 @@ interface FlexProps {
 const Flex = css<FlexProps>`
     display: flex;
     ${({ gap }) => gap && `gap: ${gap}px`};
+    ${({ fullWidth }) => (fullWidth ? 'width: 100%;' : '')}
     ${({ fullHeight }) => fullHeight && 'height: 100%;'};
     flex-direction: ${({ flexDirection }) =>
         flexDirection ? flexDirection : 'row'};
@@ -113,6 +126,7 @@ export const FlexContainer = styled.div<
     FlexProps &
         FontProps &
         FontSizeProps &
+        FontWeightProps &
         ColorProps &
         PaddingProps &
         MarginProps
@@ -120,9 +134,21 @@ export const FlexContainer = styled.div<
     ${Flex}
     ${Font}
     ${FontSize}
+    ${FontWeight}
     ${Color}
     ${Padding}
     ${Margin}
 `;
 
-export { Font, FontSize, Color };
+export const Text = styled.p<
+    FontProps &
+        FontSizeProps &
+        ColorProps &
+        FontWeightProps & { align?: string }
+>`
+    ${Font}
+    ${FontSize}
+    ${FontWeight}
+    ${Color}
+    ${({ align }) => align && `text-align: ${align};`}
+`;
