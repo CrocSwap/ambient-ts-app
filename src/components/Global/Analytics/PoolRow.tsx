@@ -11,7 +11,6 @@ import {
     TradeButton,
 } from './Analytics.styles';
 import { TokenIF } from '../../../utils/interfaces/exports';
-import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 
 interface propsIF {
     pool: PoolDataIF;
@@ -33,22 +32,18 @@ export default function PoolRow(props: propsIF) {
             <TableCell>
                 <FlexCenter>
                     <TokenWrapper>
-                        <DefaultTooltip title={`Name: ${firstToken.name}`}>
-                            <TokenIcon
-                                token={firstToken}
-                                src={uriToHttp(firstToken.logoURI)}
-                                alt={'logo for token'}
-                                size='2xl'
-                            />
-                        </DefaultTooltip>
-                        <DefaultTooltip title={`Name: ${secondToken.name}`}>
-                            <TokenIcon
-                                token={secondToken}
-                                src={uriToHttp(secondToken.logoURI)}
-                                alt={'logo for token'}
-                                size='2xl'
-                            />
-                        </DefaultTooltip>
+                        <TokenIcon
+                            token={firstToken}
+                            src={uriToHttp(firstToken.logoURI)}
+                            alt={'logo for token'}
+                            size='2xl'
+                        />
+                        <TokenIcon
+                            token={secondToken}
+                            src={uriToHttp(secondToken.logoURI)}
+                            alt={'logo for token'}
+                            size='2xl'
+                        />
                     </TokenWrapper>
                     <PoolNameWrapper>{pool.name}</PoolNameWrapper>
                 </FlexCenter>

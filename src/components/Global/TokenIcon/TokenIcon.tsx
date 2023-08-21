@@ -71,19 +71,24 @@ function TokenIcon({
     // TODO: ... best practice we should change this up in the future
 
     return (
-        <Suspense fallback={noTokenIcon}>
-            {!fetchError ? (
-                <img
-                    className={styles.token_icon}
-                    style={{ width: getIconWidth(size) }}
-                    src={processLogoSrc(token)}
-                    alt={alt}
-                    onError={handleFetchError}
-                />
-            ) : (
-                noTokenIcon
-            )}
-        </Suspense>
+        <DefaultTooltip title={`Name: ${token?.name ?? 'unknown'}`}>
+            {/* without this wrapper below the tooltip breaks */}
+            <div className={styles.token_logo_wrapper}>
+                <Suspense fallback={noTokenIcon}>
+                    {!fetchError ? (
+                        <img
+                            className={styles.token_icon}
+                            style={{ width: getIconWidth(size) }}
+                            src={processLogoSrc(token)}
+                            alt={alt}
+                            onError={handleFetchError}
+                        />
+                    ) : (
+                        noTokenIcon
+                    )}
+                </Suspense>
+            </div>
+        </DefaultTooltip>
     );
 }
 
