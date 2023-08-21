@@ -101,7 +101,7 @@ export const orderRowConstants = (props: propsIF) => {
     const quoteToken: TokenIF | undefined =
         tokens.getTokenByAddress(quoteTokenAddress);
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const tradeLinkPath =

@@ -21,7 +21,7 @@ export default function ExchangeCard(props: propsIF) {
     const {
         tokens: { getTokenByAddress },
     } = useContext(TokenContext);
-    console.log(token);
+
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);

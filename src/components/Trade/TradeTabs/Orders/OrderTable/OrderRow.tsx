@@ -266,7 +266,11 @@ function OrderRow(props: propsIF) {
     return (
         <>
             <ul
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle} row_container_global`}
+                className={`${
+                    isAccountView ? styles.account_row_container : undefined
+                } ${
+                    styles.row_container
+                } ${activePositionStyle} ${userPositionStyle} row_container_global`}
                 id={orderDomId}
                 style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
