@@ -336,7 +336,7 @@ input:-webkit-autofill:active {
     gap: 4px;
 }
 
-@media only screen and (max-width: 1280px) {
+@media only screen and (max-width: 1279px) {
     .sidebar_active {
         box-shadow: 20px 20px 65px #0b0e13, -20px -20px 65px #0f141b;
     }

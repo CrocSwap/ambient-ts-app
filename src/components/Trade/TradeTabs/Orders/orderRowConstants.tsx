@@ -24,6 +24,10 @@ interface propsIF {
     quoteTokenSymbol: string;
     baseDisplay: string;
     quoteDisplay: string;
+    originalPositionLiqBase: string;
+    originalPositionLiqQuote: string;
+    expectedPositionLiqBase: string;
+    expectedPositionLiqQuote: string;
     priceStyle: string;
     elapsedTimeString: string;
     sideType: string;
@@ -34,7 +38,10 @@ interface propsIF {
     truncatedDisplayPrice: string | undefined;
     isOwnerActiveAccount: boolean;
     isAccountView: boolean;
+    ensName: string | null;
     isOrderFilled: boolean;
+    isLimitOrderPartiallyFilled: boolean;
+    fillPercentage: number;
     handleCopyPosHash: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
@@ -52,6 +59,7 @@ interface propsIF {
 export const orderRowConstants = (props: propsIF) => {
     const {
         posHashTruncated,
+        ensName,
         posHash,
         handleCopyPosHash,
         sellOrderStyle,
@@ -66,8 +74,6 @@ export const orderRowConstants = (props: propsIF) => {
         isOwnerActiveAccount,
         baseTokenSymbol,
         quoteTokenSymbol,
-        baseDisplay,
-        quoteDisplay,
         elapsedTimeString,
         isAccountView,
         priceCharacter,
@@ -81,6 +87,12 @@ export const orderRowConstants = (props: propsIF) => {
         handleRowMouseOut,
         baseTokenAddress,
         quoteTokenAddress,
+        isLimitOrderPartiallyFilled,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
+        fillPercentage,
     } = props;
 
     const { tokens } = useContext(TokenContext);
@@ -91,6 +103,8 @@ export const orderRowConstants = (props: propsIF) => {
 
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
+
+    console.log(fillPercentage);
 
     const tradeLinkPath =
         '/trade/limit/' +
@@ -178,7 +192,7 @@ export const orderRowConstants = (props: propsIF) => {
             <p
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.mono_font}`}
-                style={{ textTransform: 'lowercase' }}
+                style={ensName ? { textTransform: 'lowercase' } : undefined}
             >
                 {userNameToDisplay}
             </p>
@@ -250,7 +264,9 @@ export const orderRowConstants = (props: propsIF) => {
                     textAlign: 'right',
                 }}
             >
-                {baseDisplay}
+                {limitOrder.isBid
+                    ? originalPositionLiqBase
+                    : expectedPositionLiqBase}
                 {baseTokenLogoComponent}
             </div>
         </li>
@@ -273,7 +289,9 @@ export const orderRowConstants = (props: propsIF) => {
                     textAlign: 'right',
                 }}
             >
-                {quoteDisplay}
+                {limitOrder.isBid
+                    ? expectedPositionLiqQuote
+                    : originalPositionLiqQuote}
                 {quoteTokenLogoComponent}
             </div>
         </li>
@@ -388,8 +406,10 @@ export const orderRowConstants = (props: propsIF) => {
                     whiteSpace: 'nowrap',
                 }}
             >
-                {' '}
-                {baseDisplay} {baseTokenLogoComponent}
+                {limitOrder.isBid
+                    ? originalPositionLiqBase
+                    : expectedPositionLiqBase}
+                {baseTokenLogoComponent}
             </div>
 
             <div
@@ -399,7 +419,9 @@ export const orderRowConstants = (props: propsIF) => {
                 }}
             >
                 {' '}
-                {quoteDisplay}
+                {limitOrder.isBid
+                    ? expectedPositionLiqQuote
+                    : originalPositionLiqQuote}
                 {quoteTokenLogoComponent}
             </div>
         </li>
@@ -418,7 +440,11 @@ export const orderRowConstants = (props: propsIF) => {
                     alignItems: 'center',
                 }}
             >
-                <OpenOrderStatus isFilled={isOrderFilled} />
+                <OpenOrderStatus
+                    isFilled={isOrderFilled}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
+                    fillPercentage={fillPercentage}
+                />
             </div>
         </li>
     );

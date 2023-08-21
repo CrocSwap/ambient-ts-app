@@ -9,6 +9,8 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
     isOrderFilled: boolean;
+    isLimitOrderPartiallyFilled: boolean;
+    fillPercentage: number;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
@@ -28,7 +30,10 @@ export default function LimitActionTokenHeader(props: propsIF) {
         isDenomBase,
         baseTokenAddress,
         quoteTokenAddress,
+        isLimitOrderPartiallyFilled,
+        fillPercentage,
     } = props;
+
     const dispatch = useAppDispatch();
     const { tokens } = useContext(TokenContext);
     const baseToken: TokenIF | undefined =
@@ -61,7 +66,11 @@ export default function LimitActionTokenHeader(props: propsIF) {
                     {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
                 </span>
             </div>
-            <OpenOrderStatus isFilled={isOrderFilled} />
+            <OpenOrderStatus
+                isFilled={isOrderFilled}
+                isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
+                fillPercentage={fillPercentage}
+            />
         </div>
     );
 }

@@ -42,6 +42,7 @@ interface propsIF {
     isLeaderboard: boolean | undefined;
     showColumns: boolean;
     rank: number | undefined;
+    ensName: string | null;
     handleCopyPosHash: () => void;
     handleRowMouseDown: () => void;
     handleRowMouseOut: () => void;
@@ -56,6 +57,7 @@ export default function rangeRowConstants(props: propsIF) {
     const {
         handleCopyPosHash,
         posHash,
+        ensName,
         posHashTruncated,
         usdValue,
         handleWalletLinkClick,
@@ -178,7 +180,7 @@ export default function rangeRowConstants(props: propsIF) {
             <p
                 data-label='wallet'
                 className={`${usernameStyle} ${styles.mono_font}`}
-                style={{ textTransform: 'lowercase' }}
+                style={ensName ? { textTransform: 'lowercase' } : undefined}
                 onMouseEnter={handleRowMouseDown}
                 onMouseLeave={handleRowMouseOut}
             >

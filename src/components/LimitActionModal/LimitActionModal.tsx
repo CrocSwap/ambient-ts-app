@@ -45,6 +45,7 @@ export default function LimitActionModal(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
@@ -55,6 +56,7 @@ export default function LimitActionModal(props: propsIF) {
         initialTokenQty,
         baseTokenAddress,
         quoteTokenAddress,
+        fillPercentage,
     } = useProcessOrder(limitOrder, userAddress);
 
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
@@ -347,10 +349,12 @@ export default function LimitActionModal(props: propsIF) {
                     isOrderFilled={isOrderFilled}
                     baseTokenAddress={baseTokenAddress}
                     quoteTokenAddress={quoteTokenAddress}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogo}
                     quoteTokenLogoURI={quoteTokenLogo}
+                    fillPercentage={fillPercentage}
                 />
                 <div className={styles.info_container}>
                     <LimitActionInfo {...limitInfoProps} />

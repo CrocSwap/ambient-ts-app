@@ -72,6 +72,7 @@ export const txRowConstants = (props: propsIF) => {
         handleRowMouseOut,
         sideTypeStyle,
         usdValue,
+        ensName,
         usernameStyle,
         userNameToDisplay,
         baseTokenLogo,
@@ -205,7 +206,7 @@ export const txRowConstants = (props: propsIF) => {
             <p
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase' }}
+                style={ensName ? { textTransform: 'lowercase' } : undefined}
             >
                 {userNameToDisplay}
             </p>

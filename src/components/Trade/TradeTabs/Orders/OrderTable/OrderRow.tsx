@@ -49,6 +49,7 @@ function OrderRow(props: propsIF) {
         baseDisplay,
         quoteDisplay,
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         truncatedDisplayPrice,
         sideType,
         usdValue,
@@ -56,6 +57,7 @@ function OrderRow(props: propsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
+        fillPercentage,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
@@ -64,6 +66,10 @@ function OrderRow(props: propsIF) {
         elapsedTimeString,
         baseTokenAddress,
         quoteTokenAddress,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
@@ -187,6 +193,7 @@ function OrderRow(props: propsIF) {
         handleRowMouseDown,
         handleRowMouseOut,
         posHash,
+        ensName,
         handleCopyPosHash,
         sellOrderStyle,
         usdValue,
@@ -213,6 +220,12 @@ function OrderRow(props: propsIF) {
         isOrderFilled,
         baseTokenAddress,
         quoteTokenAddress,
+        isLimitOrderPartiallyFilled,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
+        fillPercentage,
     };
 
     const {

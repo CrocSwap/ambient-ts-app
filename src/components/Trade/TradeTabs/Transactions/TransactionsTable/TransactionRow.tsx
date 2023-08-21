@@ -25,21 +25,12 @@ import { useModal } from '../../../../Global/Modal/useModal';
 interface propsIF {
     tx: TransactionIF;
     ipadView: boolean;
-    showPair: boolean;
     showColumns: boolean;
     showTimestamp: boolean;
-
     isAccountView: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const {
-        showColumns,
-        showTimestamp,
-        ipadView,
-        tx,
-        isAccountView,
-        showPair,
-    } = props;
+    const { showColumns, showTimestamp, ipadView, tx, isAccountView } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -278,7 +269,7 @@ function TransactionRow(props: propsIF) {
                 onKeyDown={handleKeyPress}
             >
                 {showTimestamp && TxTimeWithTooltip}
-                {isAccountView && showPair && tokenPair}
+                {isAccountView && tokenPair}
                 {!showColumns && <li>{IDWithTooltip}</li>}
                 {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
                 {showColumns && txIdColumnComponent}
