@@ -280,7 +280,7 @@ function Transactions(props: propsIF) {
             show: !ipadView,
             slug: 'price',
             sortable: false,
-            alignRight: true,
+            alignCenter: true,
         },
         {
             name: 'Side',

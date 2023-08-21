@@ -124,7 +124,7 @@ function RangesRow(props: propsIF) {
             ? `position-${position.firstMintTx}`
             : '';
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
 
     const activePositionRef = useRef(null);
 
@@ -282,7 +282,11 @@ function RangesRow(props: propsIF) {
     return (
         <>
             <ul
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+                className={`${
+                    styles.row_container
+                } ${activePositionStyle} ${userPositionStyle} ${
+                    isAccountView ? styles.account_row_container : undefined
+                }`}
                 onClick={handleRowClick}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}

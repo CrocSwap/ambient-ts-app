@@ -343,7 +343,11 @@ function Ranges(props: propsIF) {
         : styles.trade_header;
 
     const headerColumnsDisplay = (
-        <ul className={`${styles.header} ${headerStyle}`}>
+        <ul
+            className={`${styles.header} ${
+                isAccountView ? styles.account_header : undefined
+            } ${headerStyle}`}
+        >
             {headerColumns.map((header, idx) => (
                 <RangeHeader
                     key={idx}
