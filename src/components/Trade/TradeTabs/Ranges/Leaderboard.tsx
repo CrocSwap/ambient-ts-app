@@ -79,7 +79,7 @@ function Leaderboard() {
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
     const showColumns = useMediaQuery('(max-width: 1600px)');
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
