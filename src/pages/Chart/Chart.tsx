@@ -1968,10 +1968,6 @@ export default function Chart(props: propsIF) {
                             'cursor',
                             'row-resize',
                         );
-
-                        if (rescale) {
-                            changeScale();
-                        }
                         if (oldLimitValue !== undefined) {
                             onBlurLimitRate(oldLimitValue, newLimitValue);
                         }
@@ -2738,6 +2734,7 @@ export default function Chart(props: propsIF) {
         minTickForLimit,
         prevPeriod === period,
         candleTimeInSeconds === period,
+        isLineDrag,
     ]);
 
     function setYaxisDomain(minDomain: number, maxDomain: number) {
