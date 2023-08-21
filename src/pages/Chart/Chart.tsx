@@ -62,6 +62,7 @@ import {
     chartItemStates,
     crosshair,
     defaultCandleBandwith,
+    drawDataHistory,
     fillLiqAdvanced,
     lineValue,
     liquidityChartData,
@@ -75,7 +76,7 @@ import { Zoom } from './ChartUtils/zoom';
 import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useDebounce from '../../App/hooks/useDebounce';
-import DrawCanvas, { lineData } from './Draw/DrawCanvas/DrawCanvas';
+import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
 import { createLinearLineSeries } from './Draw/DrawCanvas/LinearLineSeries';
 import { ChartContext } from '../../contexts/ChartContext';
 // import { ChartContext } from '../../contexts/ChartContext';
@@ -257,7 +258,9 @@ export default function Chart(props: propsIF) {
     // Draw
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineSeries, setLineSeries] = useState<any>();
-    const [lineDataHistory, setLineDataHistory] = useState<lineData[][]>([]);
+    const [lineDataHistory, setLineDataHistory] = useState<drawDataHistory[]>(
+        [],
+    );
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
@@ -2237,8 +2240,8 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    lineDataHistory.forEach((item) => {
-                        lineSeries(item);
+                    lineDataHistory?.forEach((item) => {
+                        lineSeries(item.data);
                     });
                 })
                 .on('measure', () => {

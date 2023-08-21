@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState, useContext } from 'react';
 import * as d3 from 'd3';
 import {
+    drawDataHistory,
+    lineData,
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
@@ -10,11 +12,10 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
-    setLineDataHistory: React.Dispatch<React.SetStateAction<lineData[][]>>;
+    setLineDataHistory: React.Dispatch<React.SetStateAction<drawDataHistory[]>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     lineSeries: any;
 }
-export type lineData = { x: number; y: number };
 
 function DrawCanvas(props: DrawCanvasProps) {
     const d3DrawCanvas = useRef<HTMLCanvasElement | null>(null);
@@ -54,11 +55,14 @@ function DrawCanvas(props: DrawCanvasProps) {
                 };
                 isDrawing = false;
                 setIsDrawActive(false);
-                setLineDataHistory((item: lineData[][]) => {
+                setLineDataHistory((prevData: drawDataHistory[]) => {
                     if (tempLineData.length > 0) {
-                        return [...item, tempLineData];
+                        return [
+                            ...prevData,
+                            { data: tempLineData, time: Date.now() },
+                        ];
                     }
-                    return item;
+                    return prevData;
                 });
             } else {
                 tempLineData.push({
