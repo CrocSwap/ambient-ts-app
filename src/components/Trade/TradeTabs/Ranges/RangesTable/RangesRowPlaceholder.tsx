@@ -5,6 +5,7 @@ import trimString from '../../../../../utils/functions/trimString';
 import { OptionButton } from '../../../../Global/Button/OptionButton';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import styles from '../Ranges.module.css';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface PropsIF {
     transaction: {
@@ -115,7 +116,16 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                                     `${blockExplorer}tx/${transaction.hash}`,
                                 )
                             }
-                            content='Explorer'
+                            content={
+                                <>
+                                    Explorer
+                                    <FiExternalLink
+                                        size={15}
+                                        color='white'
+                                        style={{ marginLeft: '.5rem' }}
+                                    />
+                                </>
+                            }
                         />
                     </div>
                 </li>

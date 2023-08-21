@@ -5,6 +5,7 @@ import trimString from '../../../../../utils/functions/trimString';
 import { OptionButton } from '../../../../Global/Button/OptionButton';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import styles from '../Orders.module.css';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface PropsIF {
     transaction: {
@@ -114,7 +115,16 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                                     `${blockExplorer}tx/${transaction.hash}`,
                                 )
                             }
-                            content='Explorer'
+                            content={
+                                <>
+                                    Explorer
+                                    <FiExternalLink
+                                        size={15}
+                                        color='white'
+                                        style={{ marginLeft: '.5rem' }}
+                                    />
+                                </>
+                            }
                         />
                     </div>
                 </li>

@@ -311,7 +311,7 @@ function Swap(props: propsIF) {
                                 tokenB.address !== quoteToken.address)
                                 ? 'Sell'
                                 : 'Buy',
-                        txType: 'Swap',
+                        txType: 'Market',
                         txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
                     }),
                 );

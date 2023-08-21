@@ -5,7 +5,7 @@ interface TransactionByType {
     txHash: string;
     txAction?: 'Sell' | 'Buy' | 'Add' | 'Remove' | 'Claim' | 'Reposition';
     txType:
-        | 'Swap'
+        | 'Market'
         | 'Limit'
         | 'Range'
         | 'Deposit'

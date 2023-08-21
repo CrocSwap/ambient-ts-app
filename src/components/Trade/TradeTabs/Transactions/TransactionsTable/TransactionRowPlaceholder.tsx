@@ -4,6 +4,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import trimString from '../../../../../utils/functions/trimString';
 import { OptionButton } from '../../../../Global/Button/OptionButton';
 import styles from '../Transactions.module.css';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface PropsIF {
     transaction: {
@@ -96,7 +97,16 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                     `${blockExplorer}tx/${transaction.hash}`,
                                 )
                             }
-                            content='Explorer'
+                            content={
+                                <>
+                                    Explorer
+                                    <FiExternalLink
+                                        size={15}
+                                        color='white'
+                                        style={{ marginLeft: '.5rem' }}
+                                    />
+                                </>
+                            }
                         />
                     </div>
                 </li>
