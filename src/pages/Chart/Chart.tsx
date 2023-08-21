@@ -62,7 +62,6 @@ import {
     chartItemStates,
     crosshair,
     defaultCandleBandwith,
-    drawDataHistory,
     fillLiqAdvanced,
     lineValue,
     liquidityChartData,
@@ -79,6 +78,7 @@ import useDebounce from '../../App/hooks/useDebounce';
 import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
 import { createLinearLineSeries } from './Draw/DrawCanvas/LinearLineSeries';
 import { ChartContext } from '../../contexts/ChartContext';
+import { useUndoRedo } from './ChartUtils/useUndoRedo';
 // import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
@@ -152,7 +152,7 @@ export default function Chart(props: propsIF) {
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
-    const { isDrawActive } = useContext(ChartContext);
+    const { isDrawActive, lineDataHistory } = useContext(ChartContext);
 
     const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
@@ -258,9 +258,8 @@ export default function Chart(props: propsIF) {
     // Draw
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineSeries, setLineSeries] = useState<any>();
-    const [lineDataHistory, setLineDataHistory] = useState<drawDataHistory[]>(
-        [],
-    );
+
+    const { undo, redo } = useUndoRedo();
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
@@ -2241,7 +2240,7 @@ export default function Chart(props: propsIF) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     lineDataHistory?.forEach((item) => {
-                        lineSeries(item.data);
+                        lineSeries(item?.data);
                     });
                 })
                 .on('measure', () => {
@@ -2251,6 +2250,26 @@ export default function Chart(props: propsIF) {
             render();
         }
     }, [diffHashSig(lineDataHistory), lineSeries]);
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const handleKeyDown = function (event: any) {
+            if (event.ctrlKey && event.key === 'z') {
+                event.preventDefault();
+
+                undo();
+            } else if (event.ctrlKey && event.key === 'y') {
+                event.preventDefault();
+                redo();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [undo, redo]);
 
     useEffect(() => {
         const canvas = d3
@@ -3274,7 +3293,6 @@ export default function Chart(props: propsIF) {
                         {isDrawActive && scaleData && (
                             <DrawCanvas
                                 scaleData={scaleData}
-                                setLineDataHistory={setLineDataHistory}
                                 lineSeries={lineSeries}
                             />
                         )}

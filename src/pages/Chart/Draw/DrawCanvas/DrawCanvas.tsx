@@ -12,7 +12,6 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
-    setLineDataHistory: React.Dispatch<React.SetStateAction<drawDataHistory[]>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     lineSeries: any;
 }
@@ -22,8 +21,9 @@ function DrawCanvas(props: DrawCanvasProps) {
     const [lineData, setLineData] = useState<lineData[]>([]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-    const { scaleData, setLineDataHistory, lineSeries } = props;
-    const { setIsDrawActive } = useContext(ChartContext);
+    const { scaleData, lineSeries } = props;
+
+    const { setIsDrawActive, setLineDataHistory } = useContext(ChartContext);
 
     useEffect(() => {
         const canvas = d3
@@ -35,7 +35,10 @@ function DrawCanvas(props: DrawCanvasProps) {
         let isDrawing = false;
         let tempLineData: lineData[] = [];
 
-        canvas.addEventListener('click', startDrawing);
+        d3.select(d3DrawCanvas.current).on('click', (event: PointerEvent) => {
+            startDrawing(event);
+        });
+
         canvas.addEventListener('mousemove', draw);
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -48,7 +51,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                 clickCount = 0;
                 tempLineData = [];
             }
-            if (tempLineData.length > 1) {
+            if (clickCount === 2) {
                 tempLineData[1] = {
                     x: scaleData.xScale.invert(offsetX),
                     y: scaleData.yScale.invert(offsetY),
