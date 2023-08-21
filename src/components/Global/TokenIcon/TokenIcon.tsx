@@ -4,6 +4,7 @@ import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import processLogoSrc from './processLogoSrc';
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
