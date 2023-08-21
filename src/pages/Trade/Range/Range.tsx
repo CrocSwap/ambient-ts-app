@@ -1037,8 +1037,11 @@ function Range() {
                             ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
                         txDetails: {
-                            min: getFormattedNumber({ value: minPrice }),
-                            max: getFormattedNumber({ value: maxPrice }),
+                            baseTokenDecimals: baseTokenDecimals,
+                            quoteTokenDecimals: quoteTokenDecimals,
+                            lowTick: defaultLowTick,
+                            highTick: defaultHighTick,
+                            gridSize: gridSize,
                         },
                     }),
                 );

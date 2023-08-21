@@ -6,6 +6,8 @@ import { OptionButton } from '../../../../Global/Button/OptionButton';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import styles from '../Ranges.module.css';
 import { FiExternalLink } from 'react-icons/fi';
+import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 interface PropsIF {
     transaction: {
@@ -13,8 +15,11 @@ interface PropsIF {
         side?: string;
         type: string;
         details?: {
-            min?: string;
-            max?: string;
+            baseTokenDecimals: number;
+            quoteTokenDecimals: number;
+            lowTick: number;
+            highTick: number;
+            gridSize: number;
         };
     };
     showTimestamp: boolean;
@@ -33,6 +38,8 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
+    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+
     const id = (
         <p className={`${styles.mono_font}`}>
             {trimString(transaction.hash, 6, 4, '…')}
@@ -43,6 +50,17 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
             you
         </p>
     );
+
+    const pinnedDisplayPrices = transaction.details
+        ? getPinnedPriceValuesFromTicks(
+              isDenomBase,
+              transaction.details.baseTokenDecimals,
+              transaction.details.quoteTokenDecimals,
+              transaction.details.lowTick,
+              transaction.details.highTick,
+              transaction.details.gridSize,
+          )
+        : undefined;
 
     // TODO: use media queries and standardized styles
     return (
@@ -68,18 +86,26 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 )}
                 {!showColumns && (
                     <li className={styles.align_right}>
-                        {transaction.details?.min}
+                        {pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
+                            '...'}
                     </li>
                 )}
                 {!showColumns && (
                     <li className={styles.align_right}>
-                        {transaction.details?.max}
+                        {pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas ??
+                            '...'}
                     </li>
                 )}
                 {showColumns && !ipadView && (
                     <li className={styles.align_right}>
-                        <p>{transaction.details?.min}</p>
-                        <p>{transaction.details?.max}</p>
+                        <p>
+                            {pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
+                                '...'}
+                        </p>
+                        <p>
+                            {pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas ??
+                                '...'}
+                        </p>
                     </li>
                 )}
                 {<li className={styles.align_right}>...</li>}

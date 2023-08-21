@@ -15,8 +15,11 @@ interface TransactionByType {
         | 'Approve';
     txDescription: string;
     txDetails?: {
-        min?: string;
-        max?: string;
+        baseTokenDecimals: number;
+        quoteTokenDecimals: number;
+        lowTick: number;
+        highTick: number;
+        gridSize: number;
     };
 }
 export interface receiptData {

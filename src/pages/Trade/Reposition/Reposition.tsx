@@ -299,8 +299,11 @@ function Reposition() {
                         txType: 'Range',
                         txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
                         txDetails: {
-                            min: getFormattedNumber({ value: pinnedLowTick }),
-                            max: getFormattedNumber({ value: pinnedHighTick }),
+                            baseTokenDecimals: baseTokenDecimals,
+                            quoteTokenDecimals: quoteTokenDecimals,
+                            lowTick: pinnedLowTick,
+                            highTick: pinnedHighTick,
+                            gridSize: lookupChain(position.chainId).gridSize,
                         },
                     }),
                 );
