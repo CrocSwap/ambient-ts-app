@@ -23,7 +23,7 @@ export class Zoom {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private isTouchPad(event: any) {
         const wheelDelta = event.wheelDelta || -event.deltaY;
-        if (this.isNegativeZero(event.deltaX)) {
+        if (Math.abs(wheelDelta) >= 120 && this.isNegativeZero(event.deltaX)) {
             return false;
         }
         return true;

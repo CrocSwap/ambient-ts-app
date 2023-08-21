@@ -653,11 +653,16 @@ export default function Chart(props: propsIF) {
             let previousDeltaTouchLocation: number | undefined = undefined;
             const lastCandleDate = lastCandleData?.time * 1000;
             const firstCandleDate = firstCandleData?.time * 1000;
+
+            let scrollTimeout: NodeJS.Timeout | null = null; // Declare scrollTimeout
+
             if (lastCandleDate && firstCandleDate) {
                 d3.select(d3CanvasMain.current).on(
                     'wheel',
                     function (event) {
-                        setIsChartZoom(true);
+                        if (scrollTimeout === null) {
+                            setIsChartZoom(true);
+                        }
 
                         zoomBase.zoomWithWheel(
                             event,
@@ -670,6 +675,14 @@ export default function Chart(props: propsIF) {
                         if (rescale) {
                             changeScale();
                         }
+
+                        if (scrollTimeout) {
+                            clearTimeout(scrollTimeout);
+                        }
+                        // check wheel end
+                        scrollTimeout = setTimeout(() => {
+                            setIsChartZoom(false);
+                        }, 200);
                     },
                     { passive: true },
                 );
@@ -678,31 +691,29 @@ export default function Chart(props: propsIF) {
                     .zoom()
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('start', (event: any) => {
-                        if (event.sourceEvent.type !== 'wheel') {
-                            setIsChartZoom(true);
-                            if (event.sourceEvent.type.includes('touch')) {
-                                // mobile
-                                previousTouch = event.sourceEvent.touches[0];
+                        setIsChartZoom(true);
+                        if (event.sourceEvent.type.includes('touch')) {
+                            // mobile
+                            previousTouch = event.sourceEvent.touches[0];
 
-                                if (event.sourceEvent.touches.length > 1) {
-                                    previousDeltaTouch = Math.hypot(
-                                        event.sourceEvent.touches[0].pageX -
-                                            event.sourceEvent.touches[1].pageX,
-                                        event.sourceEvent.touches[0].pageY -
-                                            event.sourceEvent.touches[1].pageY,
-                                    );
-                                    previousDeltaTouchLocation =
-                                        event.sourceEvent.touches[0].pageX;
-                                }
+                            if (event.sourceEvent.touches.length > 1) {
+                                previousDeltaTouch = Math.hypot(
+                                    event.sourceEvent.touches[0].pageX -
+                                        event.sourceEvent.touches[1].pageX,
+                                    event.sourceEvent.touches[0].pageY -
+                                        event.sourceEvent.touches[1].pageY,
+                                );
+                                previousDeltaTouchLocation =
+                                    event.sourceEvent.touches[0].pageX;
                             }
-                            zoomTimeout = event.sourceEvent.timeStamp;
-                            if (
-                                event.sourceEvent &&
-                                event.sourceEvent.type !== 'dblclick'
-                            ) {
-                                clickedForLine = false;
-                                setChartZoomEvent(event.sourceEvent.type);
-                            }
+                        }
+                        zoomTimeout = event.sourceEvent.timeStamp;
+                        if (
+                            event.sourceEvent &&
+                            event.sourceEvent.type !== 'dblclick'
+                        ) {
+                            clickedForLine = false;
+                            setChartZoomEvent(event.sourceEvent.type);
                         }
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -818,25 +829,21 @@ export default function Chart(props: propsIF) {
                             }
                         }
 
-                        if (event.sourceEvent.type !== 'wheel') {
-                            newDomains().then(() => {
-                                // mobile
-                                if (event.sourceEvent.type.includes('touch')) {
-                                    previousTouch =
-                                        event.sourceEvent.changedTouches[0];
-                                    if (event.sourceEvent.touches.length > 1) {
-                                        previousDeltaTouch = Math.hypot(
-                                            event.sourceEvent.touches[0].pageX -
-                                                event.sourceEvent.touches[1]
-                                                    .pageX,
-                                            event.sourceEvent.touches[0].pageY -
-                                                event.sourceEvent.touches[1]
-                                                    .pageY,
-                                        );
-                                    }
+                        newDomains().then(() => {
+                            // mobile
+                            if (event.sourceEvent.type.includes('touch')) {
+                                previousTouch =
+                                    event.sourceEvent.changedTouches[0];
+                                if (event.sourceEvent.touches.length > 1) {
+                                    previousDeltaTouch = Math.hypot(
+                                        event.sourceEvent.touches[0].pageX -
+                                            event.sourceEvent.touches[1].pageX,
+                                        event.sourceEvent.touches[0].pageY -
+                                            event.sourceEvent.touches[1].pageY,
+                                    );
                                 }
-                            });
-                        }
+                            }
+                        });
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('end', (event: any) => {
@@ -856,7 +863,6 @@ export default function Chart(props: propsIF) {
                                 // fires click event when zoom takes too short
                                 if (
                                     zoomTimeout &&
-                                    event.sourceEvent.type !== 'wheel' &&
                                     event.sourceEvent.timeStamp - zoomTimeout <
                                         1
                                 ) {
@@ -879,16 +885,11 @@ export default function Chart(props: propsIF) {
                             props.setShowTooltip(true);
                         }
                     })
-                    .filter((event) => {
-                        const isWheel = event.type === 'wheel';
-
+                    .filter(() => {
                         if (location.pathname.includes('/market')) {
                             return true;
                         } else {
-                            return (
-                                (!canUserDragRange && !canUserDragLimit) ||
-                                isWheel
-                            );
+                            return !canUserDragRange && !canUserDragLimit;
                         }
                     });
 
@@ -1765,7 +1766,9 @@ export default function Chart(props: propsIF) {
     // create x axis
     useEffect(() => {
         if (mainZoom && d3CanvasMain.current) {
-            d3.select<Element, unknown>(d3CanvasMain.current).call(mainZoom);
+            d3.select<Element, unknown>(d3CanvasMain.current)
+                .call(mainZoom)
+                .on('wheel.zoom', null);
             if (location.pathname.includes('market')) {
                 d3.select(d3CanvasMain.current).on('.drag', null);
             }
