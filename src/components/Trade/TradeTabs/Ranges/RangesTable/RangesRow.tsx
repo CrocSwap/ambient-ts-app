@@ -21,6 +21,7 @@ interface propsIF {
     position: PositionIF;
     rank?: number;
     isAccountView: boolean;
+    showTimestamp: boolean;
     isLeaderboard?: boolean;
 }
 
@@ -28,6 +29,7 @@ function RangesRow(props: propsIF) {
     const {
         ipadView,
         showColumns,
+        showTimestamp,
         showPair,
         position,
         isAccountView,
@@ -222,6 +224,7 @@ function RangesRow(props: propsIF) {
         handleWalletLinkClick,
         handleWalletCopy,
         ownerId,
+        ensName,
         userNameToDisplay,
         isOwnerActiveAccount,
         usernameStyle,
@@ -286,7 +289,7 @@ function RangesRow(props: propsIF) {
                 style={{ backgroundColor: highlightStyle }}
             >
                 {rankingOrNull}
-                {showPair && rangeTimeWithTooltip}
+                {showPair && showTimestamp && rangeTimeWithTooltip}
                 {isAccountView && showPair && tokenPair}
                 {idOrNull}
                 {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
