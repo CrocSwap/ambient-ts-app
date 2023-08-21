@@ -14,7 +14,6 @@ interface PropsIF {
     chainId: string;
     tokenA: TokenIF;
     tokenB: TokenIF;
-
     isCandleDataNull: boolean;
 }
 
@@ -78,11 +77,13 @@ export const NoChartData = (props: PropsIF) => {
             >
                 Initialize Pool
                 <TokenIcon
+                    token={tokenA}
                     src={uriToHttp(tokenA.logoURI)}
                     alt={tokenA.symbol}
                     size='m'
                 />
                 <TokenIcon
+                    token={tokenB}
                     src={uriToHttp(tokenB.logoURI)}
                     alt={tokenB.symbol}
                     size='m'

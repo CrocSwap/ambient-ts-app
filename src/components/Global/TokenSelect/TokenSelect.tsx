@@ -1,7 +1,6 @@
 // START: Import Local Files
 import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
-import uriToHttp from '../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../TokenIcon/TokenIcon';
 
@@ -50,7 +49,8 @@ export default function TokenSelect(props: propsIF) {
                 <div className={styles.modal_content}>
                     <div className={styles.modal_tokens_info}>
                         <TokenIcon
-                            src={token.logoURI ? uriToHttp(token.logoURI) : ''}
+                            token={token}
+                            src={token.logoURI}
                             alt={token.symbol}
                             size='xl'
                         />

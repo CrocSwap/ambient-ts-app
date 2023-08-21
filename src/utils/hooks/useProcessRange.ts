@@ -291,5 +291,7 @@ export const useProcessRange = (
         width,
         blockExplorer,
         elapsedTimeString,
+        baseTokenAddress: position.base,
+        quoteTokenAddress: position.quote,
     };
 };

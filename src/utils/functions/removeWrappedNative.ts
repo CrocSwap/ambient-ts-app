@@ -1,5 +1,5 @@
 import { TokenIF } from '../interfaces/exports';
-import { wrappedNatives } from '../tokens/wrappedNatives';
+import { wrappedNatives } from '../data/wrappedNatives';
 
 // fn to remove the wrapped native token of the current chain from a token array
 export default function removeWrappedNative(

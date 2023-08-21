@@ -10,6 +10,7 @@ import {
     FlexEnd,
     TradeButton,
 } from './Analytics.styles';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
     pool: PoolDataIF;
@@ -19,10 +20,10 @@ interface propsIF {
 export default function PoolRow(props: propsIF) {
     const { pool, goToMarket } = props;
 
-    const [firstLogoURI, secondLogoURI]: [string, string] =
+    const [firstToken, secondToken]: [TokenIF, TokenIF] =
         pool.moneyness.base < pool.moneyness.quote
-            ? [pool.base.logoURI, pool.quote.logoURI]
-            : [pool.quote.logoURI, pool.base.logoURI];
+            ? [pool.base, pool.quote]
+            : [pool.quote, pool.base];
 
     return (
         <TableRow
@@ -32,12 +33,14 @@ export default function PoolRow(props: propsIF) {
                 <FlexCenter>
                     <TokenWrapper>
                         <TokenIcon
-                            src={uriToHttp(firstLogoURI)}
+                            token={firstToken}
+                            src={uriToHttp(firstToken.logoURI)}
                             alt={'logo for token'}
                             size='2xl'
                         />
                         <TokenIcon
-                            src={uriToHttp(secondLogoURI)}
+                            token={secondToken}
+                            src={uriToHttp(secondToken.logoURI)}
                             alt={'logo for token'}
                             size='2xl'
                         />
