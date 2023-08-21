@@ -90,9 +90,15 @@ export default function InitPool() {
 
     const [isDenomBase, setIsDenomBase] = useState(true);
 
-    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
-        (state) => state.tradeData,
+    // const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
+    //     (state) => state.tradeData,
+    // );
+    const localPair: LocalPairDataIF = useAppSelector(
+        (state) => state.localPairData,
     );
+    const [tokenA, tokenB] = localPair.tokens;
+    const baseToken = tokenA;
+    const quoteToken = tokenB;
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
 
     useEffect(() => {
@@ -542,9 +548,7 @@ export default function InitPool() {
 
     // Newwwwww
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
-    const localPair: LocalPairDataIF = useAppSelector(
-        (state) => state.localPairData,
-    );
+
     // See Range.tsx line 81
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(23);
@@ -706,12 +710,13 @@ export default function InitPool() {
                 value={'0'}
                 handleTokenInputEvent={() => console.log('yes')}
                 disable={false}
-                token={tokenA}
+                token={tokenB}
                 setTokenModalOpen={setTokenModalOpen}
                 fieldId='select'
             />
         </div>
     );
+    console.log({ tokenA, tokenB });
 
     const baseModeContent = (
         <div className={styles.range_width_container}>

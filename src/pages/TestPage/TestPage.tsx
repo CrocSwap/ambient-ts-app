@@ -18,8 +18,8 @@ export default function TestPage() {
     const localPair: LocalPairDataIF = useAppSelector(
         (state) => state.localPairData,
     );
-    const tokenA = localPair.tokens[0];
-    const tokenB = localPair.tokens[1];
+    const [tokenA, tokenB] = localPair.tokens;
+
     console.log({ localPair });
 
     console.log({ tokenA });

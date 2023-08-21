@@ -81,7 +81,10 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const location = useLocation();
     const currentLocation = location.pathname;
 
-    const isLocalPair = currentLocation.includes('testpage');
+    // We can pass a prop later. This is just for an easy workflow.
+    const isLocalPair =
+        currentLocation.includes('testpage') ||
+        currentLocation.includes('init');
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
