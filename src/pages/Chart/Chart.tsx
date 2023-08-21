@@ -654,7 +654,40 @@ export default function Chart(props: propsIF) {
             let previousDeltaTouchLocation: number | undefined = undefined;
             const lastCandleDate = lastCandleData?.time * 1000;
             const firstCandleDate = firstCandleData?.time * 1000;
+
+            let scrollTimeout: NodeJS.Timeout | null = null; // Declare scrollTimeout
+
             if (lastCandleDate && firstCandleDate) {
+                d3.select(d3CanvasMain.current).on(
+                    'wheel',
+                    function (event) {
+                        if (scrollTimeout === null) {
+                            setIsChartZoom(true);
+                        }
+
+                        zoomBase.zoomWithWheel(
+                            event,
+                            scaleData,
+                            firstCandleDate,
+                            lastCandleDate,
+                        );
+                        render();
+
+                        if (rescale) {
+                            changeScale();
+                        }
+
+                        if (scrollTimeout) {
+                            clearTimeout(scrollTimeout);
+                        }
+                        // check wheel end
+                        scrollTimeout = setTimeout(() => {
+                            setIsChartZoom(false);
+                        }, 200);
+                    },
+                    { passive: true },
+                );
+
                 const zoom = d3
                     .zoom()
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -692,16 +725,7 @@ export default function Chart(props: propsIF) {
                                 event.sourceEvent.type !== 'dblclick' &&
                                 scaleData?.xScale
                             ) {
-                                if (event.sourceEvent.type === 'wheel') {
-                                    zoomBase.zoomWithWheel(
-                                        event,
-                                        scaleData,
-                                        firstCandleDate,
-                                        lastCandleDate,
-                                    );
-                                } else if (
-                                    event.sourceEvent.type === 'touchmove'
-                                ) {
+                                if (event.sourceEvent.type === 'touchmove') {
                                     if (event.sourceEvent.touches.length > 1) {
                                         // if a second finger touches after one finger touches it
                                         if (
@@ -729,7 +753,7 @@ export default function Chart(props: propsIF) {
                                             previousDeltaTouchLocation
                                         ) {
                                             zoomBase.handlePanningMultiTouch(
-                                                event,
+                                                event.sourceEvent,
                                                 scaleData,
                                                 previousDeltaTouch,
                                                 previousDeltaTouchLocation,
@@ -737,7 +761,7 @@ export default function Chart(props: propsIF) {
                                         }
                                     } else {
                                         zoomBase.handlePanningOneTouch(
-                                            event,
+                                            event.sourceEvent,
                                             scaleData,
                                             previousTouch,
                                             bandwidth,
@@ -747,7 +771,7 @@ export default function Chart(props: propsIF) {
                                     }
                                 } else {
                                     zoomBase.handlePanning(
-                                        event,
+                                        event.sourceEvent,
                                         scaleData,
                                         firstCandleDate,
                                         lastCandleDate,
@@ -764,13 +788,13 @@ export default function Chart(props: propsIF) {
                                         event.sourceEvent.type === 'touchmove'
                                     ) {
                                         domain = zoomBase.handlePanningYMobile(
-                                            event,
+                                            event.sourceEvent,
                                             scaleData,
                                             previousTouch,
                                         );
                                     } else {
                                         domain = zoomBase.handlePanningY(
-                                            event,
+                                            event.sourceEvent,
                                             scaleData,
                                         );
                                     }
@@ -824,43 +848,45 @@ export default function Chart(props: propsIF) {
                     })
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     .on('end', (event: any) => {
-                        setIsChartZoom(false);
-                        setChartZoomEvent('');
-                        if (
-                            event.sourceEvent &&
-                            event.sourceEvent.type != 'wheel'
-                        ) {
-                            d3.select(d3Container.current).style(
-                                'cursor',
-                                'default',
-                            );
-                        }
-                        if (clickedForLine) {
-                            // fires click event when zoom takes too short
+                        if (event.sourceEvent.type !== 'wheel') {
+                            setIsChartZoom(false);
+                            setChartZoomEvent('');
                             if (
-                                zoomTimeout &&
-                                event.sourceEvent.type !== 'wheel' &&
-                                event.sourceEvent.timeStamp - zoomTimeout < 1
+                                event.sourceEvent &&
+                                event.sourceEvent.type != 'wheel'
                             ) {
-                                const { isHoverCandleOrVolumeData, nearest } =
-                                    candleOrVolumeDataHoverStatus(
+                                d3.select(d3Container.current).style(
+                                    'cursor',
+                                    'default',
+                                );
+                            }
+                            if (clickedForLine) {
+                                // fires click event when zoom takes too short
+                                if (
+                                    zoomTimeout &&
+                                    event.sourceEvent.timeStamp - zoomTimeout <
+                                        1
+                                ) {
+                                    const {
+                                        isHoverCandleOrVolumeData,
+                                        nearest,
+                                    } = candleOrVolumeDataHoverStatus(
                                         event.sourceEvent.offsetX,
                                         event.sourceEvent.offsetY,
                                     );
-                                selectedDateEvent(
-                                    isHoverCandleOrVolumeData,
-                                    nearest,
-                                );
+                                    selectedDateEvent(
+                                        isHoverCandleOrVolumeData,
+                                        nearest,
+                                    );
+                                }
                             }
+
+                            showLatestActive();
+
+                            props.setShowTooltip(true);
                         }
-
-                        showLatestActive();
-
-                        props.setShowTooltip(true);
                     })
                     .filter((event) => {
-                        const isWheel = event.type === 'wheel';
-
                         if (location.pathname.includes('/market')) {
                             return true;
                         } else {
@@ -916,16 +942,10 @@ export default function Chart(props: propsIF) {
                                     mousePlacement > maxRangeValue - lineBuffer;
 
                                 return (
-                                    (!isOnLimit &&
-                                        !isOnRangeMin &&
-                                        !isOnRangeMax) ||
-                                    isWheel
+                                    !isOnLimit && !isOnRangeMin && !isOnRangeMax
                                 );
                             } else {
-                                return (
-                                    (!canUserDragRange && !canUserDragLimit) ||
-                                    isWheel
-                                );
+                                return !canUserDragRange && !canUserDragLimit;
                             }
                         }
                     });
@@ -2018,7 +2038,9 @@ export default function Chart(props: propsIF) {
     // create x axis
     useEffect(() => {
         if (mainZoom && d3CanvasMain.current) {
-            d3.select<Element, unknown>(d3CanvasMain.current).call(mainZoom);
+            d3.select<Element, unknown>(d3CanvasMain.current)
+                .call(mainZoom)
+                .on('wheel.zoom', null);
             if (location.pathname.includes('market')) {
                 d3.select(d3CanvasMain.current).on('.drag', null);
             }
@@ -2691,7 +2713,7 @@ export default function Chart(props: propsIF) {
                     }
                 }
             }
-            // render();
+            render();
         }
     }
 
