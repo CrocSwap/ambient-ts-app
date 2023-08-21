@@ -202,7 +202,7 @@ export const useProcessRange = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 3, '…');
+        : trimString(ownerId, 5, 4, '…');
 
     const posHashTruncated = trimString(posHash.toString(), 9, 0, '…');
 

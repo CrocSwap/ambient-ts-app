@@ -330,7 +330,7 @@ export const useProcessTransaction = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 3, '…');
+        : trimString(ownerId, 5, 4, '…');
 
     const txHashTruncated = trimString(txHash, 9, 0, '…');
 
