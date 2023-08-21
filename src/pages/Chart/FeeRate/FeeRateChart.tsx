@@ -9,12 +9,11 @@ import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 
 interface FreeRateData {
     feeData: Array<CandleData>;
-    period: number | undefined;
+    period: number;
     subChartValues: any;
     crosshairForSubChart: any;
     xScale: any;
     render: any;
-    getNewCandleData: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
@@ -24,6 +23,7 @@ interface FreeRateData {
     lastCrDate: number | undefined;
     isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
+    zoomBase: any;
 }
 
 function FeeRateChart(props: FreeRateData) {
@@ -32,7 +32,6 @@ function FeeRateChart(props: FreeRateData) {
         period,
         xScale,
         crosshairForSubChart,
-        getNewCandleData,
         subChartValues,
         yAxisWidth,
         setCrossHairLocation,
@@ -42,6 +41,7 @@ function FeeRateChart(props: FreeRateData) {
         lastCrDate,
         isCrDataIndActive,
         xAxisActiveTooltip,
+        zoomBase,
     } = props;
 
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
@@ -107,7 +107,7 @@ function FeeRateChart(props: FreeRateData) {
     }, [feeRateyScale]);
 
     useEffect(() => {
-        if (feeData !== undefined) {
+        if (feeData !== undefined && period) {
             let date: any | undefined = undefined;
 
             const zoom = d3
@@ -126,7 +126,7 @@ function FeeRateChart(props: FreeRateData) {
                         .range([0, domainX[1] - domainX[0]]);
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
-                    getNewCandleData(domainX[0] + deltaX, date);
+                    zoomBase.getNewCandleDataLeft(domainX[0] + deltaX, date);
                     xScale.domain([domainX[0] + deltaX, domainX[1] + deltaX]);
 
                     props.render();
@@ -136,7 +136,7 @@ function FeeRateChart(props: FreeRateData) {
                 return zoom;
             });
         }
-    }, [feeData]);
+    }, [feeData, period]);
 
     useEffect(() => {
         if (feeRateyScale !== undefined && xScale !== undefined) {
@@ -305,8 +305,6 @@ function FeeRateChart(props: FreeRateData) {
             lineSeries !== undefined
         ) {
             drawChart(feeData, feeRateyScale);
-
-            // props.render();
         }
     }, [period, feeData, feeRateyScale, lineSeries]);
 

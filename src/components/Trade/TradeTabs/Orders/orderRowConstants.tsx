@@ -104,8 +104,6 @@ export const orderRowConstants = (props: propsIF) => {
     const phoneScreen = useMediaQuery('(max-width: 500px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
-    console.log(fillPercentage);
-
     const tradeLinkPath =
         '/trade/limit/' +
         formSlugForPairParams(
