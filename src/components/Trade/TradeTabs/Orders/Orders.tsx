@@ -427,7 +427,8 @@ function Orders(props: propsIF) {
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
             <ul ref={listRef}>
-                {pendingTransactions.length > 0 &&
+                {!isAccountView &&
+                    pendingTransactions.length > 0 &&
                     transactionsByType
                         .filter(
                             (tx) =>

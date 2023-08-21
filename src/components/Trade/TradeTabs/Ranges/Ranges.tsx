@@ -401,7 +401,8 @@ function Ranges(props: propsIF) {
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef}>
-                {pendingTransactions.length > 0 &&
+                {!isAccountView &&
+                    pendingTransactions.length > 0 &&
                     transactionsByType
                         .filter(
                             (tx) =>

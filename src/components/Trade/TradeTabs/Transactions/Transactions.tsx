@@ -507,7 +507,8 @@ function Transactions(props: propsIF) {
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction} className={gridTxStyle}>
             <ul ref={listRef} id='current_row_scroll'>
-                {pendingTransactions.length > 0 &&
+                {!isAccountView &&
+                    pendingTransactions.length > 0 &&
                     transactionsByType
                         .filter(
                             (tx) =>
