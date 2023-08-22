@@ -704,6 +704,7 @@ export default function InitPool() {
                 token={tokenA}
                 setTokenModalOpen={setTokenModalOpen}
                 fieldId='select'
+                onInitPage
             />
             <TokenInputQuantity
                 tokenAorB={'A'}
@@ -713,6 +714,7 @@ export default function InitPool() {
                 token={tokenB}
                 setTokenModalOpen={setTokenModalOpen}
                 fieldId='select'
+                onInitPage
             />
         </div>
     );

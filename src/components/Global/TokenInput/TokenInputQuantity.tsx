@@ -38,6 +38,7 @@ interface propsIF {
     disable?: boolean;
     disabledContent?: React.ReactNode;
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
+    onInitPage?: boolean;
 }
 
 function TokenInputQuantity(props: propsIF) {
@@ -56,6 +57,7 @@ function TokenInputQuantity(props: propsIF) {
         reverseTokens,
         parseInput,
         setTokenModalOpen = () => null,
+        onInitPage = false,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const { tradeData } = useAppSelector((state) => state);
@@ -159,7 +161,9 @@ function TokenInputQuantity(props: propsIF) {
     );
     const inputContent = (() => {
         switch (true) {
-            case !isPoolInitialized && fieldId !== 'exchangeBalance':
+            case !isPoolInitialized &&
+                fieldId !== 'exchangeBalance' &&
+                !onInitPage:
                 return poolNotInitializedContent;
             case disabledContent:
                 return disabledContent;
