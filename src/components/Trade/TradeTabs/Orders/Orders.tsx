@@ -436,6 +436,7 @@ function Orders(props: propsIF) {
                                 tx.txType === 'Limit' &&
                                 pendingTransactions.includes(tx.txHash),
                         )
+                        .reverse()
                         .map((tx, idx) => (
                             <OrderRowPlaceholder
                                 key={idx}

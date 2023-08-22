@@ -411,6 +411,7 @@ function Ranges(props: propsIF) {
                                 tx.txType === 'Range' &&
                                 pendingTransactions.includes(tx.txHash),
                         )
+                        .reverse()
                         .map((tx, idx) => (
                             <RangesRowPlaceholder
                                 key={idx}

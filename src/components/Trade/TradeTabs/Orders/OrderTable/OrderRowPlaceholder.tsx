@@ -34,7 +34,7 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
 
     const id = (
         <p className={`${styles.mono_font}`}>
-            {trimString(transaction.hash, 6, 4, '…')}
+            {trimString(transaction.hash, 9, 0, '…')}
         </p>
     );
     const wallet = (

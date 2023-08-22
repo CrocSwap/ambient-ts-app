@@ -515,6 +515,7 @@ function Transactions(props: propsIF) {
                                 tx.txAction &&
                                 pendingTransactions.includes(tx.txHash),
                         )
+                        .reverse()
                         .map((tx, idx) => {
                             if (tx.txAction !== 'Reposition')
                                 return (
