@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import trimString from '../../../../../utils/functions/trimString';
 import { OptionButton } from '../../../../Global/Button/OptionButton';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import styles from '../Orders.module.css';
@@ -32,11 +31,7 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
 
     const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
-    const id = (
-        <p className={`${styles.mono_font}`}>
-            {trimString(transaction.hash, 9, 0, '…')}
-        </p>
-    );
+    const id = <p className={`${styles.mono_font}`}>…</p>;
     const wallet = (
         <p className={`${styles.id_style}`} style={{ textTransform: 'none' }}>
             you

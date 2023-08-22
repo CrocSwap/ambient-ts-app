@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import trimString from '../../../../../utils/functions/trimString';
 import { OptionButton } from '../../../../Global/Button/OptionButton';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import styles from '../Ranges.module.css';
@@ -55,11 +54,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const id = (
-        <p className={`${styles.mono_font}`}>
-            {trimString(transaction.hash, 9, 0, '…')}
-        </p>
-    );
+    const id = <p className={`${styles.mono_font}`}>…</p>;
     const wallet = (
         <p className={`${styles.id_style}`} style={{ textTransform: 'none' }}>
             you
