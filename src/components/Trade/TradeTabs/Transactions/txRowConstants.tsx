@@ -9,7 +9,7 @@ import styles from './Transactions.module.css';
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import { IS_LOCAL_ENV } from '../../../../constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
@@ -274,11 +274,6 @@ export const txRowConstants = (props: propsIF) => {
             />
         </DefaultTooltip>
     );
-
-    const pair =
-        tx.base !== ZERO_ADDRESS
-            ? [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`]
-            : [`${tx.quoteSymbol}: ${tx.quote}`];
 
     const tradeLinkPath =
         (tx.entityType.toLowerCase() === 'limitorder'
@@ -580,10 +575,6 @@ export const txRowConstants = (props: propsIF) => {
         IDWithTooltip,
         usdValueWithTooltip,
         walletWithTooltip,
-        baseTokenLogoComponent,
-        quoteTokenLogoComponent,
-        pair,
-        tradeLinkPath,
         tokenPair,
         TxTimeWithTooltip,
         baseQtyDisplayWithTooltip,

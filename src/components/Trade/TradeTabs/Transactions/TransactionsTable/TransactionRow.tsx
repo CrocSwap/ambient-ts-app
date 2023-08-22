@@ -256,6 +256,7 @@ function TransactionRow(props: propsIF) {
         setCurrentTxActiveInTransactions('');
         openDetailsModal();
     }
+    // TODO: use media queries and standardized styles
     // end of portfolio page li element ---------------
     return (
         <>
