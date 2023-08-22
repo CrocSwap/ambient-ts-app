@@ -79,8 +79,12 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                 {!ipadView && <li className={styles.align_right}>...</li>}
                 {!showColumns && (
                     <li className={styles.align_center}>
-                        {(!isDenomBase && transaction.side === 'Buy') ||
-                        (isDenomBase && transaction.side === 'Sell')
+                        {transaction.side === 'Claim'
+                            ? 'Claim'
+                            : transaction.side === 'Remove'
+                            ? 'Remove'
+                            : (!isDenomBase && transaction.side === 'Buy') ||
+                              (isDenomBase && transaction.side === 'Sell')
                             ? 'Buy' + ` ${sideCharacter}`
                             : 'Sell' + ` ${sideCharacter}`}
                     </li>
@@ -95,10 +99,15 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                     >
                         <p>{transaction.type}</p>
                         <p>
-                            {(!isDenomBase && transaction.side === 'Buy') ||
-                            (isDenomBase && transaction.side === 'Sell')
-                                ? 'Buy'
-                                : 'Sell'}
+                            {transaction.side === 'Claim'
+                                ? 'Claim'
+                                : transaction.side === 'Remove'
+                                ? 'Remove'
+                                : (!isDenomBase &&
+                                      transaction.side === 'Buy') ||
+                                  (isDenomBase && transaction.side === 'Sell')
+                                ? 'Buy' + ` ${sideCharacter}`
+                                : 'Sell' + ` ${sideCharacter}`}
                         </p>
                     </li>
                 )}

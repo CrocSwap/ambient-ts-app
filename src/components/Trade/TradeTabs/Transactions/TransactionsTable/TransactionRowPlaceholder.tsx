@@ -135,8 +135,13 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                     <li className={styles.align_center}>
                         {transaction.type === 'Market' ||
                         transaction.type === 'Limit'
-                            ? (!isDenomBase && transaction.side === 'Buy') ||
-                              (isDenomBase && transaction.side === 'Sell')
+                            ? transaction.side === 'Claim'
+                                ? 'Claim'
+                                : transaction.side === 'Remove'
+                                ? 'Remove'
+                                : (!isDenomBase &&
+                                      transaction.side === 'Buy') ||
+                                  (isDenomBase && transaction.side === 'Sell')
                                 ? 'Buy' + ` ${sideCharacter}`
                                 : 'Sell' + ` ${sideCharacter}`
                             : transaction.action ?? '...'}
@@ -154,9 +159,14 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                         <p>
                             {transaction.type === 'Market' ||
                             transaction.type === 'Limit'
-                                ? (!isDenomBase &&
-                                      transaction.side === 'Buy') ||
-                                  (isDenomBase && transaction.side === 'Sell')
+                                ? transaction.side === 'Claim'
+                                    ? 'Claim'
+                                    : transaction.side === 'Remove'
+                                    ? 'Remove'
+                                    : (!isDenomBase &&
+                                          transaction.side === 'Buy') ||
+                                      (isDenomBase &&
+                                          transaction.side === 'Sell')
                                     ? 'Buy' + ` ${sideCharacter}`
                                     : 'Sell' + ` ${sideCharacter}`
                                 : transaction.action ?? '...'}
