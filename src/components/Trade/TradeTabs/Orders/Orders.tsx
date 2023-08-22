@@ -121,7 +121,23 @@ function Orders(props: propsIF) {
         graphData?.dataLoadingStatus.isPoolOrderDataLoading,
     ]);
 
-    const shouldDisplayNoTableData = !isLoading && !limitOrderData.length;
+    const relevantTransactionsByType = transactionsByType.filter(
+        (tx) =>
+            tx.txAction &&
+            tx.txType === 'Limit' &&
+            pendingTransactions.includes(tx.txHash) &&
+            tx.txDetails?.baseAddress.toLowerCase() ===
+                tradeData.baseToken.address.toLowerCase() &&
+            tx.txDetails?.quoteAddress.toLowerCase() ===
+                tradeData.quoteToken.address.toLowerCase() &&
+            tx.txDetails?.poolIdx === poolIndex,
+    );
+
+    const shouldDisplayNoTableData =
+        !isLoading &&
+        !limitOrderData.length &&
+        (relevantTransactionsByType.length === 0 ||
+            pendingTransactions.length === 0);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
@@ -434,35 +450,20 @@ function Orders(props: propsIF) {
             <ul ref={listRef}>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
-                    transactionsByType
-                        .filter(
-                            (tx) =>
-                                tx.txAction &&
-                                tx.txType === 'Limit' &&
-                                pendingTransactions.includes(tx.txHash) &&
-                                tx.txDetails?.baseAddress.toLowerCase() ===
-                                    tradeData.baseToken.address.toLowerCase() &&
-                                tx.txDetails?.quoteAddress.toLowerCase() ===
-                                    tradeData.quoteToken.address.toLowerCase() &&
-                                tx.txDetails?.poolIdx === poolIndex,
-                        )
-                        .reverse()
-                        .map((tx, idx) => (
-                            <OrderRowPlaceholder
-                                key={idx}
-                                transaction={{
-                                    hash: tx.txHash,
-                                    baseSymbol:
-                                        tx.txDetails?.baseSymbol ?? '...',
-                                    quoteSymbol:
-                                        tx.txDetails?.quoteSymbol ?? '...',
-                                    side: tx.txAction,
-                                    type: tx.txType,
-                                }}
-                                showColumns={showColumns}
-                                ipadView={ipadView}
-                            />
-                        ))}
+                    relevantTransactionsByType.reverse().map((tx, idx) => (
+                        <OrderRowPlaceholder
+                            key={idx}
+                            transaction={{
+                                hash: tx.txHash,
+                                baseSymbol: tx.txDetails?.baseSymbol ?? '...',
+                                quoteSymbol: tx.txDetails?.quoteSymbol ?? '...',
+                                side: tx.txAction,
+                                type: tx.txType,
+                            }}
+                            showColumns={showColumns}
+                            ipadView={ipadView}
+                        />
+                    ))}
                 {currentRowItemContent}
             </ul>
             {

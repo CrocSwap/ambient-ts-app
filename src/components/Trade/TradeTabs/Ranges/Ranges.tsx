@@ -400,42 +400,45 @@ function Ranges(props: propsIF) {
         }
     }, [isTradeTableExpanded]);
 
-    const shouldDisplayNoTableData = !isLoading && !rangeData.length;
+    const relevantTransactionsByType = transactionsByType.filter(
+        (tx) =>
+            tx.txAction &&
+            tx.txDetails &&
+            tx.txType === 'Range' &&
+            pendingTransactions.includes(tx.txHash) &&
+            tx.txDetails?.baseAddress.toLowerCase() ===
+                tradeData.baseToken.address.toLowerCase() &&
+            tx.txDetails?.quoteAddress.toLowerCase() ===
+                tradeData.quoteToken.address.toLowerCase() &&
+            tx.txDetails?.poolIdx === poolIndex,
+    );
+
+    const shouldDisplayNoTableData =
+        !isLoading &&
+        !rangeData.length &&
+        (relevantTransactionsByType.length === 0 ||
+            pendingTransactions.length === 0);
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
             <ul ref={listRef}>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
-                    transactionsByType
-                        .filter(
-                            (tx) =>
-                                tx.txAction &&
-                                tx.txDetails &&
-                                tx.txType === 'Range' &&
-                                pendingTransactions.includes(tx.txHash) &&
-                                tx.txDetails?.baseAddress.toLowerCase() ===
-                                    tradeData.baseToken.address.toLowerCase() &&
-                                tx.txDetails?.quoteAddress.toLowerCase() ===
-                                    tradeData.quoteToken.address.toLowerCase() &&
-                                tx.txDetails?.poolIdx === poolIndex,
-                        )
-                        .reverse()
-                        .map((tx, idx) => (
-                            <RangesRowPlaceholder
-                                key={idx}
-                                transaction={{
-                                    hash: tx.txHash,
-                                    side: tx.txAction,
-                                    type: tx.txType,
-                                    details: tx.txDetails,
-                                }}
-                                showTimestamp={showTimestamp}
-                                showColumns={showColumns}
-                                ipadView={ipadView}
-                                mobileView={phoneScreen}
-                            />
-                        ))}
+                    relevantTransactionsByType.reverse().map((tx, idx) => (
+                        <RangesRowPlaceholder
+                            key={idx}
+                            transaction={{
+                                hash: tx.txHash,
+                                side: tx.txAction,
+                                type: tx.txType,
+                                details: tx.txDetails,
+                            }}
+                            showTimestamp={showTimestamp}
+                            showColumns={showColumns}
+                            ipadView={ipadView}
+                            mobileView={phoneScreen}
+                        />
+                    ))}
                 {currentRowItemContent}
             </ul>
             {
