@@ -63,6 +63,7 @@ import {
     crosshair,
     defaultCandleBandwith,
     fillLiqAdvanced,
+    lineData,
     lineValue,
     liquidityChartData,
     renderCanvasArray,
@@ -76,9 +77,13 @@ import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useDebounce from '../../App/hooks/useDebounce';
 import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
-import { createLinearLineSeries } from './Draw/DrawCanvas/LinearLineSeries';
+import {
+    createLinearLineSeries,
+    distanceToLine,
+} from './Draw/DrawCanvas/LinearLineSeries';
 import { ChartContext } from '../../contexts/ChartContext';
 import { useUndoRedo } from './ChartUtils/useUndoRedo';
+import { createCircle } from './ChartUtils/circle';
 // import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
@@ -259,6 +264,9 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineSeries, setLineSeries] = useState<any>();
 
+    const [selectedDrawnShape, setSelectedDrawnShape] =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        useState<any>(undefined);
     const { undo, redo } = useUndoRedo();
 
     const mobileView = useMediaQuery('(max-width: 600px)');
@@ -2229,6 +2237,13 @@ export default function Chart(props: propsIF) {
         crosshairVerticalCanvas,
     ]);
 
+    const circleSeries = createCircle(
+        scaleData?.xScale,
+        scaleData?.yScale,
+        60,
+        0.5,
+    );
+
     useEffect(() => {
         const canvas = d3
             .select(d3CanvasMain.current)
@@ -2241,15 +2256,22 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
                     lineDataHistory?.forEach((item) => {
                         lineSeries(item?.data);
+                        if (
+                            selectedDrawnShape &&
+                            selectedDrawnShape.time === item.time
+                        ) {
+                            circleSeries(item?.data);
+                        }
                     });
                 })
                 .on('measure', () => {
                     lineSeries.context(ctx);
+                    circleSeries.context(ctx);
                 });
 
             render();
         }
-    }, [diffHashSig(lineDataHistory), lineSeries]);
+    }, [diffHashSig(lineDataHistory), lineSeries, selectedDrawnShape]);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2536,6 +2558,7 @@ export default function Chart(props: propsIF) {
         selectedDate,
         bandwidth,
         isChartZoom,
+        diffHashSig(lineDataHistory),
     ]);
 
     // mouseleave
@@ -2682,6 +2705,40 @@ export default function Chart(props: propsIF) {
         liquidityData,
     ]);
 
+    function checkLineLocation(
+        element: lineData[],
+        mouseX: number,
+        mouseY: number,
+    ) {
+        if (scaleData) {
+            const threshold = 10;
+            const distance = distanceToLine(
+                mouseX,
+                mouseY,
+                scaleData?.xScale(element[0].x),
+                scaleData?.yScale(element[0].y),
+                scaleData?.xScale(element[1].x),
+                scaleData?.yScale(element[1].y),
+            );
+
+            return distance < threshold;
+        }
+
+        return false;
+    }
+    const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
+        let resElement = undefined;
+
+        lineDataHistory.forEach((element) => {
+            if (element.type === 'line') {
+                if (checkLineLocation(element.data, mouseX, mouseY)) {
+                    resElement = element;
+                }
+            }
+        });
+
+        setSelectedDrawnShape(resElement);
+    };
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
         const lastDate = scaleData?.xScale.invert(
             mouseX + bandwidth / 2,
@@ -2970,6 +3027,8 @@ export default function Chart(props: propsIF) {
                 const { isHoverCandleOrVolumeData } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
                 setIsOnCandleOrVolumeMouseLocation(isHoverCandleOrVolumeData);
+
+                drawnShapesHoverStatus(offsetX, offsetY);
             }
         }
     };

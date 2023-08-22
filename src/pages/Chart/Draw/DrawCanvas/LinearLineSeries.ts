@@ -18,3 +18,41 @@ export function createLinearLineSeries(
             context.lineWidth = 2;
         });
 }
+
+export function distanceToLine(
+    x: number,
+    y: number,
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+) {
+    const A = x - startX;
+    const B = y - startY;
+    const C = endX - startX;
+    const D = endY - startY;
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    let param = -1;
+
+    if (lenSq !== 0) {
+        param = dot / lenSq;
+    }
+
+    let xx, yy;
+
+    if (param < 0) {
+        xx = startX;
+        yy = startY;
+    } else if (param > 1) {
+        xx = endX;
+        yy = endY;
+    } else {
+        xx = startX + param * C;
+        yy = startY + param * D;
+    }
+
+    const dx = x - xx;
+    const dy = y - yy;
+    return Math.sqrt(dx * dx + dy * dy);
+}

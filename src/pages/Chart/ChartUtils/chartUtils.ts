@@ -27,7 +27,7 @@ declare global {
 export const defaultCandleBandwith = 5;
 
 export type lineData = { x: number; y: number };
-export type drawDataHistory = { data: lineData[]; time: number };
+export type drawDataHistory = { data: lineData[]; type: string; time: number };
 export interface CandleDataChart extends CandleData {
     isFakeData: boolean;
 }

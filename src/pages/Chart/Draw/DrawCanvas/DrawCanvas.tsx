@@ -23,7 +23,12 @@ function DrawCanvas(props: DrawCanvasProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     const { scaleData, lineSeries } = props;
-    const circleSeries = createCircle(scaleData?.xScale, scaleData?.yScale);
+    const circleSeries = createCircle(
+        scaleData?.xScale,
+        scaleData?.yScale,
+        50,
+        1,
+    );
 
     const { setIsDrawActive, setLineDataHistory } = useContext(ChartContext);
 
@@ -64,7 +69,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                     if (tempLineData.length > 0) {
                         return [
                             ...prevData,
-                            { data: tempLineData, time: Date.now() },
+                            {
+                                data: tempLineData,
+                                type: 'line',
+                                time: Date.now(),
+                            },
                         ];
                     }
                     return prevData;
