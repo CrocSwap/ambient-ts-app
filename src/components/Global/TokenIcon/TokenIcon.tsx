@@ -76,9 +76,7 @@ function TokenIcon({
     // logic to create a tooltip text based on pathway
     // if supplied an empty string tooltip will not render
     const makeTooltipText = (): string =>
-        pathname.startsWith('/explore')
-            ? `Name: ${token?.name ?? '[unknown]'}`
-            : '';
+        pathname.startsWith('/explore') ? `${token?.name ?? '[unknown]'}` : '';
 
     return (
         <DefaultTooltip title={makeTooltipText()}>
