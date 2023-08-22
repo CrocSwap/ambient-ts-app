@@ -50,7 +50,7 @@ function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
     const {
         crocEnv,
-        chainData: { chainId },
+        chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -312,6 +312,9 @@ function Swap(props: propsIF) {
                         txType: 'Market',
                         txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
                         txDetails: {
+                            baseAddress: baseToken.address,
+                            quoteAddress: quoteToken.address,
+                            poolIdx: poolIndex,
                             baseSymbol: baseToken.symbol,
                             quoteSymbol: quoteToken.symbol,
                         },

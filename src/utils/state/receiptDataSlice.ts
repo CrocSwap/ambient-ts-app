@@ -22,6 +22,9 @@ interface TransactionByType {
         | 'Approve';
     txDescription: string;
     txDetails?: {
+        baseAddress: string;
+        quoteAddress: string;
+        poolIdx: number;
         baseSymbol?: string;
         quoteSymbol?: string;
         baseTokenDecimals?: number;

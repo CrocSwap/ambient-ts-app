@@ -51,7 +51,7 @@ export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
-        chainData: { chainId, gridSize },
+        chainData: { chainId, gridSize, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
@@ -466,6 +466,9 @@ export default function Limit() {
                         txType: 'Limit',
                         txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
                         txDetails: {
+                            baseAddress: baseToken.address,
+                            quoteAddress: quoteToken.address,
+                            poolIdx: poolIndex,
                             baseSymbol: baseToken.symbol,
                             quoteSymbol: quoteToken.symbol,
                         },

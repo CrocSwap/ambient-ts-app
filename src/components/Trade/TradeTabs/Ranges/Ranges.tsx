@@ -20,6 +20,7 @@ import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -43,6 +44,9 @@ function Ranges(props: propsIF) {
     } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
     const { tradeTableState } = useContext(ChartContext);
+    const {
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
     const isTradeTableExpanded =
@@ -409,7 +413,12 @@ function Ranges(props: propsIF) {
                                 tx.txAction &&
                                 tx.txDetails &&
                                 tx.txType === 'Range' &&
-                                pendingTransactions.includes(tx.txHash),
+                                pendingTransactions.includes(tx.txHash) &&
+                                tx.txDetails?.baseAddress ===
+                                    tradeData.baseToken.address &&
+                                tx.txDetails?.quoteAddress ===
+                                    tradeData.quoteToken.address &&
+                                tx.txDetails?.poolIdx === poolIndex,
                         )
                         .reverse()
                         .map((tx, idx) => (

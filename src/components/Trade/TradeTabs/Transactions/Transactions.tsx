@@ -513,7 +513,12 @@ function Transactions(props: propsIF) {
                         .filter(
                             (tx) =>
                                 tx.txAction &&
-                                pendingTransactions.includes(tx.txHash),
+                                pendingTransactions.includes(tx.txHash) &&
+                                tx.txDetails?.baseAddress ===
+                                    tradeData.baseToken.address &&
+                                tx.txDetails?.quoteAddress ===
+                                    tradeData.quoteToken.address &&
+                                tx.txDetails?.poolIdx === poolIndex,
                         )
                         .reverse()
                         .map((tx, idx) => {

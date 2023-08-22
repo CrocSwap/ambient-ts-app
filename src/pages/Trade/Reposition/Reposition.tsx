@@ -299,6 +299,9 @@ function Reposition() {
                         txType: 'Range',
                         txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
                         txDetails: {
+                            baseAddress: position.base,
+                            quoteAddress: position.quote,
+                            poolIdx: poolIndex,
                             baseSymbol: position.baseSymbol,
                             quoteSymbol: position.quoteSymbol,
                             baseTokenDecimals: baseTokenDecimals,

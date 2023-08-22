@@ -65,7 +65,7 @@ const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 function Range() {
     const {
         crocEnv,
-        chainData: { chainId, gridSize },
+        chainData: { chainId, gridSize, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -1037,6 +1037,9 @@ function Range() {
                             ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
                         txDetails: {
+                            baseAddress: baseToken.address,
+                            quoteAddress: quoteToken.address,
+                            poolIdx: poolIndex,
                             baseSymbol: baseToken.symbol,
                             quoteSymbol: quoteToken.symbol,
                             baseTokenDecimals: baseTokenDecimals,

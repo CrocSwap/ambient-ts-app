@@ -438,6 +438,9 @@ export default function RangeActionModal(props: propsIF) {
                     txType: 'Range',
                     txDescription: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
                     txDetails: {
+                        baseAddress: position.base,
+                        quoteAddress: position.quote,
+                        poolIdx: poolIndex,
                         baseSymbol: position.baseSymbol,
                         quoteSymbol: position.quoteSymbol,
                         baseTokenDecimals: position.baseDecimals,
@@ -516,6 +519,9 @@ export default function RangeActionModal(props: propsIF) {
                             txType: 'Range',
                             txDescription: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
                             txDetails: {
+                                baseAddress: position.base,
+                                quoteAddress: position.quote,
+                                poolIdx: poolIndex,
                                 baseSymbol: position.baseSymbol,
                                 quoteSymbol: position.quoteSymbol,
                                 baseTokenDecimals: position.baseDecimals,

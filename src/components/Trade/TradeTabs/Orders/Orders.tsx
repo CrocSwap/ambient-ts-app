@@ -21,6 +21,7 @@ import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -43,6 +44,10 @@ function Orders(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+
+    const {
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
 
     const { tradeTableState } = useContext(ChartContext);
 
@@ -434,7 +439,12 @@ function Orders(props: propsIF) {
                             (tx) =>
                                 tx.txAction &&
                                 tx.txType === 'Limit' &&
-                                pendingTransactions.includes(tx.txHash),
+                                pendingTransactions.includes(tx.txHash) &&
+                                tx.txDetails?.baseAddress ===
+                                    tradeData.baseToken.address &&
+                                tx.txDetails?.quoteAddress ===
+                                    tradeData.quoteToken.address &&
+                                tx.txDetails?.poolIdx === poolIndex,
                         )
                         .reverse()
                         .map((tx, idx) => (
