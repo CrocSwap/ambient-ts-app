@@ -20,6 +20,7 @@ interface PropsIF {
             quoteSymbol?: string;
             baseTokenDecimals?: number;
             quoteTokenDecimals?: number;
+            isAmbient?: boolean;
             lowTick?: number;
             highTick?: number;
             gridSize?: number;
@@ -82,8 +83,9 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
             : undefined;
 
     const isAmbient =
-        transaction.details?.lowTick === 0 &&
-        transaction.details?.highTick === 0;
+        transaction.details?.isAmbient ||
+        (transaction.details?.lowTick === 0 &&
+            transaction.details?.highTick === 0);
 
     // TODO: use media queries and standardized styles
     return (
