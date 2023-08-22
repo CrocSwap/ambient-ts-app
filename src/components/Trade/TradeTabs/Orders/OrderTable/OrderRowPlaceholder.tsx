@@ -8,8 +8,9 @@ import { FiExternalLink } from 'react-icons/fi';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import trimString from '../../../../../utils/functions/trimString';
-import { concPosSlot } from '@crocswap-libs/sdk';
+import { concPosSlot, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAccount } from 'wagmi';
+import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 
 interface PropsIF {
     transaction: {
@@ -29,6 +30,7 @@ interface PropsIF {
             isAmbient?: boolean;
             lowTick?: number;
             highTick?: number;
+            isBid?: boolean;
             gridSize?: number;
         };
     };
@@ -65,6 +67,10 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
+    const priceCharacter = isDenomBase
+        ? quoteTokenCharacter
+        : baseTokenCharacter;
+
     const posHash = concPosSlot(
         userAddress ?? '',
         transaction.details?.baseAddress ?? '',
@@ -77,6 +83,31 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
     const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
 
     const id = <p className={`${styles.mono_font}`}>{posHashTruncated}</p>;
+
+    const limitPrice =
+        transaction.details &&
+        transaction.details.lowTick &&
+        transaction.details.highTick
+            ? transaction.details.isBid === true
+                ? tickToPrice(transaction.details.lowTick)
+                : tickToPrice(transaction.details.highTick)
+            : 0;
+
+    const limitPriceDecimalCorrected = toDisplayPrice(
+        limitPrice,
+        transaction.details?.baseTokenDecimals ?? 18,
+        transaction.details?.quoteTokenDecimals ?? 18,
+    );
+
+    const invLimitPriceDecimalCorrected = 1 / limitPriceDecimalCorrected;
+
+    const limitPriceDecimalCorrectedTruncated = getFormattedNumber({
+        value: limitPriceDecimalCorrected,
+    });
+
+    const invLimitPriceDecimalCorrectedTruncated = getFormattedNumber({
+        value: invLimitPriceDecimalCorrected,
+    });
 
     // TODO: use media queries and standardized styles
     return (
@@ -100,15 +131,23 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                         {wallet}
                     </li>
                 )}
-                {!ipadView && <li className={styles.align_right}>...</li>}
+                {!ipadView && (
+                    <li className={styles.align_right}>
+                        {isDenomBase
+                            ? `${priceCharacter}${invLimitPriceDecimalCorrectedTruncated}`
+                            : `${priceCharacter}${limitPriceDecimalCorrectedTruncated}`}
+                    </li>
+                )}
                 {!showColumns && (
                     <li className={styles.align_center}>
                         {transaction.side === 'Claim'
                             ? 'Claim'
                             : transaction.side === 'Remove'
                             ? 'Remove'
-                            : (!isDenomBase && transaction.side === 'Buy') ||
-                              (isDenomBase && transaction.side === 'Sell')
+                            : (!isDenomBase &&
+                                  transaction.details?.isBid === true) ||
+                              (isDenomBase &&
+                                  transaction.details?.isBid === false)
                             ? 'Buy' + ` ${sideCharacter}`
                             : 'Sell' + ` ${sideCharacter}`}
                     </li>
@@ -128,8 +167,9 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                                 : transaction.side === 'Remove'
                                 ? 'Remove'
                                 : (!isDenomBase &&
-                                      transaction.side === 'Buy') ||
-                                  (isDenomBase && transaction.side === 'Sell')
+                                      transaction.details?.isBid === true) ||
+                                  (isDenomBase &&
+                                      transaction.details?.isBid === false)
                                 ? 'Buy' + ` ${sideCharacter}`
                                 : 'Sell' + ` ${sideCharacter}`}
                         </p>

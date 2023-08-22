@@ -8,6 +8,8 @@ import { FiExternalLink } from 'react-icons/fi';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
+import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 
 interface PropsIF {
     transaction: {
@@ -23,6 +25,7 @@ interface PropsIF {
             isAmbient?: boolean;
             lowTick?: number;
             highTick?: number;
+            isBid?: boolean;
             gridSize?: number;
         };
     };
@@ -85,6 +88,31 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
               )
             : undefined;
 
+    const limitPrice =
+        transaction.details &&
+        transaction.details.lowTick &&
+        transaction.details.highTick
+            ? transaction.side === 'Buy'
+                ? tickToPrice(transaction.details.lowTick)
+                : tickToPrice(transaction.details.highTick)
+            : 0;
+
+    const limitPriceDecimalCorrected = toDisplayPrice(
+        limitPrice,
+        transaction.details?.baseTokenDecimals ?? 18,
+        transaction.details?.quoteTokenDecimals ?? 18,
+    );
+
+    const invLimitPriceDecimalCorrected = 1 / limitPriceDecimalCorrected;
+
+    const limitPriceDecimalCorrectedTruncated = getFormattedNumber({
+        value: limitPriceDecimalCorrected,
+    });
+
+    const invLimitPriceDecimalCorrectedTruncated = getFormattedNumber({
+        value: invLimitPriceDecimalCorrected,
+    });
+
     // TODO: use media queries and standardized styles
     return (
         <>
@@ -127,6 +155,12 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                       }`}
                             </p>
                         </li>
+                    ) : transaction.type === 'Limit' ? (
+                        <li className={styles.align_right}>
+                            {isDenomBase
+                                ? `${priceCharacter}${invLimitPriceDecimalCorrectedTruncated}`
+                                : `${priceCharacter}${limitPriceDecimalCorrectedTruncated}`}
+                        </li>
                     ) : (
                         <li className={styles.align_right}>...</li>
                     )
@@ -140,8 +174,9 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                 : transaction.side === 'Remove'
                                 ? 'Remove'
                                 : (!isDenomBase &&
-                                      transaction.side === 'Buy') ||
-                                  (isDenomBase && transaction.side === 'Sell')
+                                      transaction.details?.isBid === true) ||
+                                  (isDenomBase &&
+                                      transaction.details?.isBid === false)
                                 ? 'Buy' + ` ${sideCharacter}`
                                 : 'Sell' + ` ${sideCharacter}`
                             : transaction.action ?? '...'}
@@ -164,9 +199,10 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                     : transaction.side === 'Remove'
                                     ? 'Remove'
                                     : (!isDenomBase &&
-                                          transaction.side === 'Buy') ||
+                                          transaction.details?.isBid ===
+                                              true) ||
                                       (isDenomBase &&
-                                          transaction.side === 'Sell')
+                                          transaction.details?.isBid === false)
                                     ? 'Buy' + ` ${sideCharacter}`
                                     : 'Sell' + ` ${sideCharacter}`
                                 : transaction.action ?? '...'}

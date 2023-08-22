@@ -468,6 +468,8 @@ export default function Limit() {
                         txDetails: {
                             baseAddress: baseToken.address,
                             quoteAddress: quoteToken.address,
+                            baseTokenDecimals: baseToken.decimals,
+                            quoteTokenDecimals: quoteToken.decimals,
                             poolIdx: poolIndex,
                             baseSymbol: baseToken.symbol,
                             quoteSymbol: quoteToken.symbol,
@@ -477,6 +479,7 @@ export default function Limit() {
                             highTick: isSellTokenBase
                                 ? limitTick + gridSize
                                 : limitTick,
+                            isBid: isSellTokenBase,
                         },
                     }),
                 );

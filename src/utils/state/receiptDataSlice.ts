@@ -32,6 +32,7 @@ interface TransactionByType {
         isAmbient?: boolean;
         lowTick?: number;
         highTick?: number;
+        isBid?: boolean;
         gridSize?: number;
     };
 }

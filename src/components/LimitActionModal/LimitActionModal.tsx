@@ -171,6 +171,7 @@ export default function LimitActionModal(props: propsIF) {
                                         limitOrder.quoteDecimals,
                                     lowTick: limitOrder.bidTick,
                                     highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
                                 },
                             }),
                         );
@@ -199,6 +200,7 @@ export default function LimitActionModal(props: propsIF) {
                                         limitOrder.quoteDecimals,
                                     lowTick: limitOrder.bidTick,
                                     highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
                                 },
                             }),
                         );
@@ -288,6 +290,7 @@ export default function LimitActionModal(props: propsIF) {
                                         limitOrder.quoteDecimals,
                                     lowTick: limitOrder.bidTick,
                                     highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
                                 },
                             }),
                         );
@@ -316,6 +319,7 @@ export default function LimitActionModal(props: propsIF) {
                                         limitOrder.quoteDecimals,
                                     lowTick: limitOrder.bidTick,
                                     highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
                                 },
                             }),
                         );

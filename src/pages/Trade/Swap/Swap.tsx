@@ -317,6 +317,7 @@ function Swap(props: propsIF) {
                             poolIdx: poolIndex,
                             baseSymbol: baseToken.symbol,
                             quoteSymbol: quoteToken.symbol,
+                            isBid: isSellTokenBase,
                         },
                     }),
                 );
