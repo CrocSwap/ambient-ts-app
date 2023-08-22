@@ -84,6 +84,7 @@ import {
 import { ChartContext } from '../../contexts/ChartContext';
 import { useUndoRedo } from './ChartUtils/useUndoRedo';
 import { createCircle } from './ChartUtils/circle';
+import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 // import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
@@ -157,8 +158,9 @@ export default function Chart(props: propsIF) {
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
-    const { isDrawActive, lineDataHistory } = useContext(ChartContext);
+    const { isDrawActive, drawnShapeHistory } = useContext(ChartContext);
 
+    const [isDragActive, setIsDragActive] = useState(false);
     const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
@@ -574,6 +576,19 @@ export default function Chart(props: propsIF) {
         location.pathname,
     ]);
 
+    const canUserDragDrawnShape = useMemo<boolean>(() => {
+        if (
+            chartMousemoveEvent &&
+            mainCanvasBoundingClientRect &&
+            scaleData &&
+            selectedDrawnShape
+        ) {
+            return true;
+        }
+
+        return false;
+    }, [selectedDrawnShape, chartMousemoveEvent, mainCanvasBoundingClientRect]);
+
     useEffect(() => {
         if (isLineDrag) {
             d3.select(d3CanvasMain.current).style('cursor', 'none');
@@ -582,10 +597,13 @@ export default function Chart(props: propsIF) {
         } else {
             d3.select(d3CanvasMain.current).style(
                 'cursor',
-                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
+                isOnCandleOrVolumeMouseLocation || canUserDragDrawnShape
+                    ? 'pointer'
+                    : 'default',
             );
         }
     }, [
+        canUserDragDrawnShape,
         canUserDragLimit,
         canUserDragRange,
         isLineDrag,
@@ -882,10 +900,12 @@ export default function Chart(props: propsIF) {
                         const isWheel = event.type === 'wheel';
 
                         if (location.pathname.includes('/market')) {
-                            return true;
+                            return !canUserDragDrawnShape;
                         } else {
                             return (
-                                (!canUserDragRange && !canUserDragLimit) ||
+                                (!canUserDragRange &&
+                                    !canUserDragLimit &&
+                                    !canUserDragDrawnShape) ||
                                 isWheel
                             );
                         }
@@ -910,6 +930,7 @@ export default function Chart(props: propsIF) {
         maxTickForLimit,
         canUserDragRange,
         canUserDragLimit,
+        canUserDragDrawnShape,
         unparsedCandleData,
         period,
         tradeData.advancedMode,
@@ -2254,7 +2275,7 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    lineDataHistory?.forEach((item) => {
+                    drawnShapeHistory?.forEach((item) => {
                         lineSeries(item?.data);
                         if (
                             selectedDrawnShape &&
@@ -2271,7 +2292,7 @@ export default function Chart(props: propsIF) {
 
             render();
         }
-    }, [diffHashSig(lineDataHistory), lineSeries, selectedDrawnShape]);
+    }, [diffHashSig(drawnShapeHistory), lineSeries, selectedDrawnShape]);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2558,7 +2579,7 @@ export default function Chart(props: propsIF) {
         selectedDate,
         bandwidth,
         isChartZoom,
-        diffHashSig(lineDataHistory),
+        diffHashSig(drawnShapeHistory),
     ]);
 
     // mouseleave
@@ -2703,6 +2724,7 @@ export default function Chart(props: propsIF) {
         bandwidth,
         diffHashSigChart(unparsedCandleData),
         liquidityData,
+        selectedDrawnShape,
     ]);
 
     function checkLineLocation(
@@ -2715,10 +2737,10 @@ export default function Chart(props: propsIF) {
             const distance = distanceToLine(
                 mouseX,
                 mouseY,
-                scaleData?.xScale(element[0].x),
-                scaleData?.yScale(element[0].y),
-                scaleData?.xScale(element[1].x),
-                scaleData?.yScale(element[1].y),
+                element[0].x,
+                element[0].y,
+                element[1].x,
+                element[1].y,
             );
 
             return distance < threshold;
@@ -2729,13 +2751,17 @@ export default function Chart(props: propsIF) {
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
-        lineDataHistory.forEach((element) => {
+        drawnShapeHistory.forEach((element) => {
             if (element.type === 'line') {
                 if (checkLineLocation(element.data, mouseX, mouseY)) {
                     resElement = element;
                 }
             }
         });
+
+        if (resElement) {
+            setIsDragActive(true);
+        }
 
         setSelectedDrawnShape(resElement);
     };
@@ -3350,9 +3376,17 @@ export default function Chart(props: propsIF) {
                         ></d3fc-canvas>
 
                         {isDrawActive && scaleData && (
-                            <DrawCanvas
+                            <DrawCanvas scaleData={scaleData} />
+                        )}
+
+                        {isDragActive && scaleData && (
+                            <DragCanvas
                                 scaleData={scaleData}
-                                lineSeries={lineSeries}
+                                selectedDrawnShape={selectedDrawnShape}
+                                drawnShapeHistory={drawnShapeHistory}
+                                render={render}
+                                setIsDragActive={setIsDragActive}
+                                mousemove={mousemove}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />

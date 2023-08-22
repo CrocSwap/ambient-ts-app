@@ -13,8 +13,8 @@ export function createCircle(
         .seriesCanvasPoint()
         .xScale(xScale)
         .yScale(yScale)
-        .crossValue((d: lineData) => d.x)
-        .mainValue((d: lineData) => d.y)
+        .crossValue((d: lineData) => xScale.invert(d.x))
+        .mainValue((d: lineData) => yScale.invert(d.y))
         .size(size)
         .type(d3.symbolCircle)
         .decorate((context: any) => {

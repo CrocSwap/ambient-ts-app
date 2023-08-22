@@ -23,8 +23,10 @@ interface ChartContextIF {
     chartCanvasRef: React.MutableRefObject<null>;
     isDrawActive: boolean;
     setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
-    lineDataHistory: drawDataHistory[];
-    setLineDataHistory: React.Dispatch<React.SetStateAction<drawDataHistory[]>>;
+    drawnShapeHistory: drawDataHistory[];
+    setDrawnShapeHistory: React.Dispatch<
+        React.SetStateAction<drawDataHistory[]>
+    >;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -34,9 +36,9 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     const CHART_MAX_HEIGHT = window.innerHeight - 98;
     const CHART_DEFAULT_HEIGHT = Math.floor((CHART_MAX_HEIGHT * 2) / 3);
     const [isDrawActive, setIsDrawActive] = useState(false);
-    const [lineDataHistory, setLineDataHistory] = useState<drawDataHistory[]>(
-        [],
-    );
+    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
+        drawDataHistory[]
+    >([]);
     const [chartHeights, setChartHeights] = useState<{
         current: number;
         max: number;
@@ -92,8 +94,8 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         chartCanvasRef,
         isDrawActive,
         setIsDrawActive,
-        lineDataHistory,
-        setLineDataHistory,
+        drawnShapeHistory,
+        setDrawnShapeHistory,
     };
 
     useEffect(() => {

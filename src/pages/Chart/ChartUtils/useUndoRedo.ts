@@ -2,16 +2,17 @@ import { useContext, useState } from 'react';
 import { ChartContext } from '../../../contexts/ChartContext';
 
 export function useUndoRedo() {
-    const { lineDataHistory, setLineDataHistory } = useContext(ChartContext);
+    const { drawnShapeHistory, setDrawnShapeHistory } =
+        useContext(ChartContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [redoHistory, setRedoHistory] = useState<any>([]);
 
     function undo() {
-        if (lineDataHistory.length > 0) {
-            const lastAction = lineDataHistory[lineDataHistory.length - 1];
+        if (drawnShapeHistory.length > 0) {
+            const lastAction = drawnShapeHistory[drawnShapeHistory.length - 1];
             setRedoHistory([...redoHistory, lastAction]);
 
-            setLineDataHistory((prev) => prev.slice(0, -1));
+            setDrawnShapeHistory((prev) => prev.slice(0, -1));
         }
     }
 
@@ -20,7 +21,7 @@ export function useUndoRedo() {
             const nextAction = redoHistory[redoHistory.length - 1];
 
             setRedoHistory(redoHistory.slice(0, -1));
-            setLineDataHistory((prev) => [...prev, nextAction]);
+            setDrawnShapeHistory((prev) => [...prev, nextAction]);
         }
     }
 

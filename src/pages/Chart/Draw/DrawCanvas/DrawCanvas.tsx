@@ -10,19 +10,18 @@ import {
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { createCircle } from '../../ChartUtils/circle';
+import { createLinearLineSeries } from './LinearLineSeries';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    lineSeries: any;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
-    const d3DrawCanvas = useRef<HTMLCanvasElement | null>(null);
+    const d3DrawCanvas = useRef<HTMLDivElement | null>(null);
     const [lineData, setLineData] = useState<lineData[]>([]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-    const { scaleData, lineSeries } = props;
+    const { scaleData } = props;
     const circleSeries = createCircle(
         scaleData?.xScale,
         scaleData?.yScale,
@@ -30,7 +29,12 @@ function DrawCanvas(props: DrawCanvasProps) {
         1,
     );
 
-    const { setIsDrawActive, setLineDataHistory } = useContext(ChartContext);
+    const lineSeries = createLinearLineSeries(
+        scaleData?.xScale,
+        scaleData?.yScale,
+    );
+
+    const { setIsDrawActive, setDrawnShapeHistory } = useContext(ChartContext);
 
     useEffect(() => {
         const canvas = d3
@@ -60,12 +64,12 @@ function DrawCanvas(props: DrawCanvasProps) {
             }
             if (clickCount === 2) {
                 tempLineData[1] = {
-                    x: scaleData.xScale.invert(offsetX),
-                    y: scaleData.yScale.invert(offsetY),
+                    x: offsetX,
+                    y: offsetY,
                 };
                 isDrawing = false;
                 setIsDrawActive(false);
-                setLineDataHistory((prevData: drawDataHistory[]) => {
+                setDrawnShapeHistory((prevData: drawDataHistory[]) => {
                     if (tempLineData.length > 0) {
                         return [
                             ...prevData,
@@ -80,8 +84,8 @@ function DrawCanvas(props: DrawCanvasProps) {
                 });
             } else {
                 tempLineData.push({
-                    x: scaleData.xScale.invert(offsetX),
-                    y: scaleData.yScale.invert(offsetY),
+                    x: offsetX,
+                    y: offsetY,
                 });
             }
 
@@ -96,13 +100,13 @@ function DrawCanvas(props: DrawCanvasProps) {
 
             if (tempLineData.length === 1) {
                 tempLineData.push({
-                    x: scaleData.xScale.invert(offsetX),
-                    y: scaleData.yScale.invert(offsetY),
+                    x: offsetX,
+                    y: offsetY,
                 });
             } else {
                 tempLineData[1] = {
-                    x: scaleData.xScale.invert(offsetX),
-                    y: scaleData.yScale.invert(offsetY),
+                    x: offsetX,
+                    y: offsetY,
                 };
             }
             renderCanvasArray([d3DrawCanvas]);
@@ -121,6 +125,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
+
                     lineSeries(lineData);
                     circleSeries(lineData);
                 })
