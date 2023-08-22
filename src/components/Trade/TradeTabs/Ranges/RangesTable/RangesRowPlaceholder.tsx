@@ -20,7 +20,6 @@ interface PropsIF {
             quoteSymbol?: string;
             baseTokenDecimals?: number;
             quoteTokenDecimals?: number;
-            isAmbient?: boolean;
             lowTick?: number;
             highTick?: number;
             gridSize?: number;
@@ -82,6 +81,10 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
               )
             : undefined;
 
+    const isAmbient =
+        transaction.details?.lowTick === 0 &&
+        transaction.details?.highTick === 0;
+
     // TODO: use media queries and standardized styles
     return (
         <>
@@ -106,9 +109,9 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 )}
                 {!showColumns && (
                     <li className={styles.align_right}>
-                        {transaction.details?.isAmbient
+                        {isAmbient
                             ? '0.00'
-                            : `${priceCharacter} + ${
+                            : `${priceCharacter}${
                                   pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
                                   '...'
                               }`}
@@ -116,10 +119,10 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 )}
                 {!showColumns && (
                     <li className={styles.align_right}>
-                        {transaction.details?.isAmbient
+                        {isAmbient
                             ? '∞'
-                            : `${priceCharacter} + ${
-                                  pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
+                            : `${priceCharacter}${
+                                  pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas ??
                                   '...'
                               }`}
                     </li>
@@ -127,18 +130,18 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 {showColumns && !ipadView && (
                     <li className={styles.align_right}>
                         <p>
-                            {transaction.details?.isAmbient
+                            {isAmbient
                                 ? '0.00'
-                                : `${priceCharacter} + ${
+                                : `${priceCharacter}${
                                       pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
                                       '...'
                                   }`}
                         </p>
                         <p>
-                            {transaction.details?.isAmbient
+                            {isAmbient
                                 ? '∞'
-                                : `${priceCharacter} + ${
-                                      pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
+                                : `${priceCharacter}${
+                                      pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas ??
                                       '...'
                                   }`}
                         </p>

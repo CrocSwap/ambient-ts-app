@@ -248,6 +248,8 @@ export const useProcessTransaction = (
         tx.entityType === 'liqchange'
             ? tx.changeType === 'burn'
                 ? 'remove'
+                : tx.changeType === 'harvest'
+                ? 'harvest'
                 : 'add'
             : tx.entityType === 'limitOrder'
             ? tx.changeType === 'mint'

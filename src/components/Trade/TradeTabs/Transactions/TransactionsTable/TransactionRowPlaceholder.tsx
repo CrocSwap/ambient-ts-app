@@ -16,10 +16,11 @@ interface PropsIF {
         action?: string;
         type: string;
         details?: {
-            baseSymbol: string;
-            quoteSymbol: string;
+            baseSymbol?: string;
+            quoteSymbol?: string;
             baseTokenDecimals?: number;
             quoteTokenDecimals?: number;
+            isAmbient?: boolean;
             lowTick?: number;
             highTick?: number;
             gridSize?: number;
@@ -110,18 +111,24 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                     transaction.type === 'Range' ? (
                         <li className={styles.align_right}>
                             <p>
-                                {`${priceCharacter}` +
-                                    pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
-                                    '...'}
+                                {transaction.details?.isAmbient
+                                    ? '0.00'
+                                    : `${priceCharacter}${
+                                          pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
+                                          '...'
+                                      }`}
                             </p>
                             <p>
-                                {`${priceCharacter}` +
-                                    pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas ??
-                                    '...'}
+                                {transaction.details?.isAmbient
+                                    ? '∞'
+                                    : `${priceCharacter}${
+                                          pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas ??
+                                          '...'
+                                      }`}
                             </p>
                         </li>
                     ) : (
-                        '...'
+                        <li className={styles.align_right}>...</li>
                     )
                 ) : undefined}
                 {!showColumns && (

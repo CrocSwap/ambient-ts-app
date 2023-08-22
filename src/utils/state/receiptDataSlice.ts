@@ -3,7 +3,14 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface TransactionByType {
     txHash: string;
-    txAction?: 'Sell' | 'Buy' | 'Add' | 'Remove' | 'Claim' | 'Reposition';
+    txAction?:
+        | 'Sell'
+        | 'Buy'
+        | 'Add'
+        | 'Remove'
+        | 'Harvest'
+        | 'Claim'
+        | 'Reposition';
     txType:
         | 'Market'
         | 'Limit'

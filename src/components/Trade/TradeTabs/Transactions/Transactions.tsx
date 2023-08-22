@@ -525,25 +525,7 @@ function Transactions(props: propsIF) {
                                             side: tx.txAction,
                                             type: tx.txType,
                                             action: tx.txAction,
-                                            details: {
-                                                baseSymbol:
-                                                    tx.txDetails?.baseSymbol ??
-                                                    '...',
-                                                quoteSymbol:
-                                                    tx.txDetails?.quoteSymbol ??
-                                                    '...',
-                                                baseTokenDecimals:
-                                                    tx.txDetails
-                                                        ?.baseTokenDecimals,
-                                                quoteTokenDecimals:
-                                                    tx.txDetails
-                                                        ?.quoteTokenDecimals,
-                                                lowTick: tx.txDetails?.lowTick,
-                                                highTick:
-                                                    tx.txDetails?.highTick,
-                                                gridSize:
-                                                    tx.txDetails?.gridSize,
-                                            },
+                                            details: tx.txDetails,
                                         }}
                                         showTimestamp={showTimestamp}
                                         showColumns={showColumns}
