@@ -2254,11 +2254,11 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleKeyDown = function (event: any) {
-            if (event.ctrlKey && event.key === 'z') {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
                 event.preventDefault();
 
                 undo();
-            } else if (event.ctrlKey && event.key === 'y') {
+            } else if ((event.ctrlKey || event.metaKey) && event.key === 'y') {
                 event.preventDefault();
                 redo();
             }

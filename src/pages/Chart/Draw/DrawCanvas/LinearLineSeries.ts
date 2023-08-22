@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { lineData } from './DrawCanvas';
+import { lineData } from '../../ChartUtils/chartUtils';
 
 export function createLinearLineSeries(
     xScale: d3.ScaleLinear<number, number>,
