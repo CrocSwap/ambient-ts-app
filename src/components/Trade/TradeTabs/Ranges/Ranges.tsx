@@ -414,10 +414,10 @@ function Ranges(props: propsIF) {
                                 tx.txDetails &&
                                 tx.txType === 'Range' &&
                                 pendingTransactions.includes(tx.txHash) &&
-                                tx.txDetails?.baseAddress ===
-                                    tradeData.baseToken.address &&
-                                tx.txDetails?.quoteAddress ===
-                                    tradeData.quoteToken.address &&
+                                tx.txDetails?.baseAddress.toLowerCase() ===
+                                    tradeData.baseToken.address.toLowerCase() &&
+                                tx.txDetails?.quoteAddress.toLowerCase() ===
+                                    tradeData.quoteToken.address.toLowerCase() &&
                                 tx.txDetails?.poolIdx === poolIndex,
                         )
                         .reverse()
