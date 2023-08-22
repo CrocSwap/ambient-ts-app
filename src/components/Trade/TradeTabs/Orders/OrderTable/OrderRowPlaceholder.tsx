@@ -7,6 +7,9 @@ import styles from '../Orders.module.css';
 import { FiExternalLink } from 'react-icons/fi';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
+import trimString from '../../../../../utils/functions/trimString';
+import { concPosSlot } from '@crocswap-libs/sdk';
+import { useAccount } from 'wagmi';
 
 interface PropsIF {
     transaction: {
@@ -15,6 +18,19 @@ interface PropsIF {
         type: string;
         baseSymbol: string;
         quoteSymbol: string;
+        details?: {
+            baseAddress?: string;
+            quoteAddress?: string;
+            poolIdx?: number;
+            baseSymbol?: string;
+            quoteSymbol?: string;
+            baseTokenDecimals?: number;
+            quoteTokenDecimals?: number;
+            isAmbient?: boolean;
+            lowTick?: number;
+            highTick?: number;
+            gridSize?: number;
+        };
     };
     showColumns: boolean;
     ipadView: boolean;
@@ -25,13 +41,13 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
     const { transaction, showColumns, ipadView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
+    const { address: userAddress } = useAccount();
     const {
         chainData: { blockExplorer },
     } = useContext(CrocEnvContext);
 
     const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
-    const id = <p className={`${styles.mono_font}`}>…</p>;
     const wallet = (
         <p className={`${styles.id_style}`} style={{ textTransform: 'none' }}>
             you
@@ -48,6 +64,19 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
     const sideCharacter = isDenomBase
         ? baseTokenCharacter
         : quoteTokenCharacter;
+
+    const posHash = concPosSlot(
+        userAddress ?? '',
+        transaction.details?.baseAddress ?? '',
+        transaction.details?.quoteAddress ?? '',
+        transaction.details?.lowTick ?? 0,
+        transaction.details?.highTick ?? 0,
+        transaction.details?.poolIdx ?? 0,
+    ).toString();
+
+    const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
+
+    const id = <p className={`${styles.mono_font}`}>{posHashTruncated}</p>;
 
     // TODO: use media queries and standardized styles
     return (

@@ -459,6 +459,7 @@ function Orders(props: propsIF) {
                                 quoteSymbol: tx.txDetails?.quoteSymbol ?? '...',
                                 side: tx.txAction,
                                 type: tx.txType,
+                                details: tx.txDetails,
                             }}
                             showColumns={showColumns}
                             ipadView={ipadView}

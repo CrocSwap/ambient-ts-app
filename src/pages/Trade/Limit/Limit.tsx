@@ -471,6 +471,12 @@ export default function Limit() {
                             poolIdx: poolIndex,
                             baseSymbol: baseToken.symbol,
                             quoteSymbol: quoteToken.symbol,
+                            lowTick: isSellTokenBase
+                                ? limitTick
+                                : limitTick - gridSize,
+                            highTick: isSellTokenBase
+                                ? limitTick + gridSize
+                                : limitTick,
                         },
                     }),
                 );

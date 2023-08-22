@@ -169,6 +169,8 @@ export default function LimitActionModal(props: propsIF) {
                                     baseTokenDecimals: limitOrder.baseDecimals,
                                     quoteTokenDecimals:
                                         limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
                                 },
                             }),
                         );
@@ -195,6 +197,8 @@ export default function LimitActionModal(props: propsIF) {
                                     baseTokenDecimals: limitOrder.baseDecimals,
                                     quoteTokenDecimals:
                                         limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
                                 },
                             }),
                         );
@@ -282,6 +286,8 @@ export default function LimitActionModal(props: propsIF) {
                                     baseTokenDecimals: limitOrder.baseDecimals,
                                     quoteTokenDecimals:
                                         limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
                                 },
                             }),
                         );
@@ -308,6 +314,8 @@ export default function LimitActionModal(props: propsIF) {
                                     baseTokenDecimals: limitOrder.baseDecimals,
                                     quoteTokenDecimals:
                                         limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
                                 },
                             }),
                         );

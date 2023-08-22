@@ -8,6 +8,9 @@ import { FiExternalLink } from 'react-icons/fi';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
+import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { useAccount } from 'wagmi';
+import trimString from '../../../../../utils/functions/trimString';
 
 interface PropsIF {
     transaction: {
@@ -15,6 +18,9 @@ interface PropsIF {
         side?: string;
         type: string;
         details?: {
+            baseAddress?: string;
+            quoteAddress?: string;
+            poolIdx?: number;
             baseSymbol?: string;
             quoteSymbol?: string;
             baseTokenDecimals?: number;
@@ -54,13 +60,6 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
         ? baseTokenCharacter
         : quoteTokenCharacter;
 
-    const id = <p className={`${styles.mono_font}`}>…</p>;
-    const wallet = (
-        <p className={`${styles.id_style}`} style={{ textTransform: 'none' }}>
-            you
-        </p>
-    );
-
     const pinnedDisplayPrices =
         transaction.details?.baseTokenDecimals &&
         transaction.details?.quoteTokenDecimals &&
@@ -82,6 +81,41 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
         (transaction.details?.lowTick === 0 &&
             transaction.details?.highTick === 0);
 
+    // -------------------------------POSITION HASH------------------------
+
+    const { address: userAddress } = useAccount();
+
+    let posHash;
+    if (isAmbient) {
+        posHash = ambientPosSlot(
+            userAddress ?? '',
+            transaction.details?.baseAddress ?? '',
+            transaction.details?.quoteAddress ?? '',
+            transaction.details?.poolIdx ?? 0,
+        );
+    } else {
+        posHash = transaction.details
+            ? concPosSlot(
+                  userAddress ?? '',
+                  transaction.details?.baseAddress ?? '',
+                  transaction.details?.quoteAddress ?? '',
+                  transaction.details?.lowTick ?? 0,
+                  transaction.details?.highTick ?? 0,
+                  transaction.details?.poolIdx ?? 0,
+              ).toString()
+            : '…';
+    }
+
+    const id = (
+        <p className={`${styles.mono_font}`}>
+            {trimString(posHash.toString(), 9, 0, '…')}
+        </p>
+    );
+    const wallet = (
+        <p className={`${styles.id_style}`} style={{ textTransform: 'none' }}>
+            you
+        </p>
+    );
     // TODO: use media queries and standardized styles
     return (
         <>
