@@ -69,9 +69,6 @@ export default function SidebarAccordion(props: propsIF) {
         </motion.div>
     );
 
-    // prevent sidebar items from rendering their contents when the sidebar is closed
-    const showOpenContentOrNull = sidebar.isOpen ? openStateContent : '';
-
     function handleAccordionClick() {
         if (sidebar.isOpen) {
             setIsOpen(!isOpen);
@@ -96,25 +93,44 @@ export default function SidebarAccordion(props: propsIF) {
         !isConnected &&
         !shouldDisplayContentWhenUserNotLoggedIn &&
         sidebar.isOpen ? (
-            <FlexContainer
-                flexDirection='column'
-                alignItems='center'
-                justifyContent='center'
-                fontSize='body'
-                gap={8}
-                padding='8px'
-                color='text2'
+            <motion.div
+                key='content'
+                initial='collapsed'
+                animate='open'
+                exit='collapsed'
+                variants={{
+                    open: { opacity: 1, height: 'auto' },
+                    collapsed: { opacity: 0, height: 0 },
+                }}
+                transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 1] }}
+                style={{ overflow: 'hidden' }}
             >
-                <p>Your recent {item.name.toLowerCase()} will display here.</p>
-                <ConnectWalletButton onClick={openWagmiModal} thin />
-            </FlexContainer>
+                <FlexContainer
+                    flexDirection='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    fontSize='body'
+                    gap={8}
+                    padding='8px'
+                    color='text2'
+                >
+                    <p>
+                        Your recent {item.name.toLowerCase()} will display here.
+                    </p>
+                    <ConnectWalletButton onClick={openWagmiModal} thin />
+                </FlexContainer>
+            </motion.div>
         ) : (
-            showOpenContentOrNull
+            sidebar.isOpen && openStateContent
         );
 
     return (
         <FlexContainer flexDirection='column'>
-            <AccordionHeader key={idx} onClick={() => handleAccordionClick()}>
+            <AccordionHeader
+                key={idx}
+                onClick={() => handleAccordionClick()}
+                open={sidebar.isOpen}
+            >
                 <FlexContainer
                     flexDirection='row'
                     alignItems='center'
@@ -123,9 +139,11 @@ export default function SidebarAccordion(props: propsIF) {
                 >
                     {sidebar.isOpen && <MdPlayArrow size={12} />}
                     {item.icon}
-                    <Text fontSize='body' fontWeight='500'>
-                        {item.name}
-                    </Text>
+                    {sidebar.isOpen && (
+                        <Text fontSize='body' fontWeight='500'>
+                            {item.name}
+                        </Text>
+                    )}
                 </FlexContainer>
             </AccordionHeader>
             <AnimatePresence>

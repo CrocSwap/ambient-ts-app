@@ -88,9 +88,9 @@ export default function PoolsListItem(props: propsIF) {
             color='text2'
         >
             {[`${pool.base.symbol} / ${pool.quote.symbol}`, volume, tvl].map(
-                (item) => (
+                (item, idx) => (
                     <FlexContainer
-                        key={item}
+                        key={idx}
                         justifyContent='center'
                         alignItems='center'
                         padding='4px'

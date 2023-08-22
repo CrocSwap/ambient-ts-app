@@ -52,9 +52,6 @@ function Sidebar() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [exploreSearchInput, setExploreSearchInput] = useState('');
-
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainData.chainId;
 
@@ -242,59 +239,66 @@ function Sidebar() {
             justifyContent='center'
             gap={4}
         >
-            {searchContainer}
             {sidebar.isOpen ? (
-                <FlexContainer
-                    flexDirection='row'
-                    alignItems='center'
-                    justifyContent='center'
-                >
-                    <DefaultTooltip
-                        title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
+                <>
+                    {searchContainer}
+                    <FlexContainer
+                        flexDirection='row'
+                        alignItems='center'
+                        justifyContent='center'
                     >
-                        {isLocked ? (
-                            <AiFillLock size={24} onClick={toggleLockSidebar} />
-                        ) : (
-                            <AiFillUnlock
-                                size={24}
-                                onClick={toggleLockSidebar}
+                        <DefaultTooltip
+                            title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
+                        >
+                            {isLocked ? (
+                                <AiFillLock
+                                    size={24}
+                                    onClick={toggleLockSidebar}
+                                />
+                            ) : (
+                                <AiFillUnlock
+                                    size={24}
+                                    onClick={toggleLockSidebar}
+                                />
+                            )}
+                        </DefaultTooltip>
+                        <DefaultTooltip
+                            title={
+                                openAllDefault ? 'Collapse All' : 'Expand All'
+                            }
+                        >
+                            {openAllDefault ? (
+                                <BsChevronContract
+                                    size={24}
+                                    onClick={toggleExpandCollapseAll}
+                                />
+                            ) : (
+                                <BsChevronExpand
+                                    size={24}
+                                    onClick={toggleExpandCollapseAll}
+                                />
+                            )}
+                        </DefaultTooltip>
+                        <DefaultTooltip
+                            title={
+                                isLocked
+                                    ? 'Sidebar locked'
+                                    : sidebar.isOpen
+                                    ? 'Close Sidebar'
+                                    : 'Open Sidebar'
+                            }
+                        >
+                            <input
+                                type='image'
+                                src={closeSidebarImage}
+                                alt='close sidebar'
+                                onClick={() => sidebar.close(true)}
+                                disabled={isLocked}
+                                style={{ opacity: isLocked ? 0.5 : 1 }}
                             />
-                        )}
-                    </DefaultTooltip>
-                    <DefaultTooltip
-                        title={openAllDefault ? 'Collapse All' : 'Expand All'}
-                    >
-                        {openAllDefault ? (
-                            <BsChevronContract
-                                size={24}
-                                onClick={toggleExpandCollapseAll}
-                            />
-                        ) : (
-                            <BsChevronExpand
-                                size={24}
-                                onClick={toggleExpandCollapseAll}
-                            />
-                        )}
-                    </DefaultTooltip>
-                    <DefaultTooltip
-                        title={
-                            isLocked
-                                ? 'Sidebar locked'
-                                : sidebar.isOpen
-                                ? 'Close Sidebar'
-                                : 'Open Sidebar'
-                        }
-                    >
-                        <input
-                            type='image'
-                            src={closeSidebarImage}
-                            alt='close sidebar'
-                            onClick={() => sidebar.close(true)}
-                            disabled={isLocked}
-                            style={{ opacity: isLocked ? 0.5 : 1 }}
-                        />
-                    </DefaultTooltip>
-                </FlexContainer>
+                        </DefaultTooltip>
+                    </FlexContainer>
+                </>
             ) : (
                 <SearchIcon
                     open={sidebar.isOpen}
