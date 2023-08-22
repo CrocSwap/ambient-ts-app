@@ -9,6 +9,7 @@ import {
 } from '../../ChartUtils/chartUtils';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { ChartContext } from '../../../../contexts/ChartContext';
+import { createCircle } from '../../ChartUtils/circle';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -22,6 +23,7 @@ function DrawCanvas(props: DrawCanvasProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     const { scaleData, lineSeries } = props;
+    const circleSeries = createCircle(scaleData?.xScale, scaleData?.yScale);
 
     const { setIsDrawActive, setLineDataHistory } = useContext(ChartContext);
 
@@ -105,14 +107,17 @@ function DrawCanvas(props: DrawCanvasProps) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
+
         if (lineSeries && scaleData) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     lineSeries(lineData);
+                    circleSeries(lineData);
                 })
                 .on('measure', (event: CustomEvent) => {
                     lineSeries.context(ctx);
+                    circleSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
