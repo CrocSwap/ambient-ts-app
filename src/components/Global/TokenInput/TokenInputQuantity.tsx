@@ -22,6 +22,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { useModal } from '../Modal/useModal';
+import { LocalPairDataIF } from '../../../utils/state/localPairDataSlice';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;

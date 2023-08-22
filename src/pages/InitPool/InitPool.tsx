@@ -718,17 +718,7 @@ export default function InitPool() {
             />
         </div>
     );
-    console.log({ tokenA, tokenB });
-
-    const baseModeContent = (
-        <div className={styles.range_width_container}>
-            <p className={styles.label_title}>Initial Range</p>
-
-            <RangeWidth {...rangeWidthProps} />
-
-            <RangePriceInfo {...rangePriceInfoProps} />
-        </div>
-    );
+    console.log({ poolExists });
 
     const newContent = (
         <section className={styles.main}>
