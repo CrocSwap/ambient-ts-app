@@ -1,9 +1,12 @@
-import { useContext, useState } from 'react';
-import { ChartContext } from '../../../contexts/ChartContext';
+import { useState } from 'react';
+import { drawDataHistory } from './chartUtils';
 
-export function useUndoRedo() {
-    const { drawnShapeHistory, setDrawnShapeHistory } =
-        useContext(ChartContext);
+export function useUndoRedo(
+    drawnShapeHistory: drawDataHistory[],
+    setDrawnShapeHistory: React.Dispatch<
+        React.SetStateAction<drawDataHistory[]>
+    >,
+) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [redoHistory, setRedoHistory] = useState<any>([]);
 

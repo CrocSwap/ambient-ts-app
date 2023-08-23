@@ -62,6 +62,7 @@ import {
     chartItemStates,
     crosshair,
     defaultCandleBandwith,
+    drawDataHistory,
     fillLiqAdvanced,
     lineData,
     lineValue,
@@ -158,8 +159,11 @@ export default function Chart(props: propsIF) {
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
-    const { isDrawActive, drawnShapeHistory } = useContext(ChartContext);
+    const { isDrawActive } = useContext(ChartContext);
 
+    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
+        drawDataHistory[]
+    >([]);
     const [isDragActive, setIsDragActive] = useState(false);
     const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
@@ -269,7 +273,7 @@ export default function Chart(props: propsIF) {
     const [selectedDrawnShape, setSelectedDrawnShape] =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         useState<any>(undefined);
-    const { undo, redo } = useUndoRedo();
+    const { undo, redo } = useUndoRedo(drawnShapeHistory, setDrawnShapeHistory);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
@@ -2737,10 +2741,10 @@ export default function Chart(props: propsIF) {
             const distance = distanceToLine(
                 mouseX,
                 mouseY,
-                element[0].x,
-                element[0].y,
-                element[1].x,
-                element[1].y,
+                scaleData.xScale(element[0].x),
+                scaleData.yScale(element[0].y),
+                scaleData.xScale(element[1].x),
+                scaleData.yScale(element[1].y),
             );
 
             return distance < threshold;
@@ -2761,6 +2765,8 @@ export default function Chart(props: propsIF) {
 
         if (resElement) {
             setIsDragActive(true);
+        } else {
+            setIsDragActive(false);
         }
 
         setSelectedDrawnShape(resElement);
@@ -3376,7 +3382,10 @@ export default function Chart(props: propsIF) {
                         ></d3fc-canvas>
 
                         {isDrawActive && scaleData && (
-                            <DrawCanvas scaleData={scaleData} />
+                            <DrawCanvas
+                                scaleData={scaleData}
+                                setDrawnShapeHistory={setDrawnShapeHistory}
+                            />
                         )}
 
                         {isDragActive && scaleData && (

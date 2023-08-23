@@ -8,8 +8,8 @@ export function createLinearLineSeries(
 ) {
     return d3fc
         .seriesCanvasLine()
-        .mainValue((d: lineData) => yScale.invert(d.y))
-        .crossValue((d: lineData) => xScale.invert(d.x))
+        .mainValue((d: lineData) => d.y)
+        .crossValue((d: lineData) => d.x)
         .curve(d3.curveBundle)
         .xScale(xScale)
         .yScale(yScale)

@@ -14,6 +14,9 @@ import { createLinearLineSeries } from './LinearLineSeries';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
+    setDrawnShapeHistory: React.Dispatch<
+        React.SetStateAction<drawDataHistory[]>
+    >;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -21,7 +24,7 @@ function DrawCanvas(props: DrawCanvasProps) {
     const [lineData, setLineData] = useState<lineData[]>([]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-    const { scaleData } = props;
+    const { scaleData, setDrawnShapeHistory } = props;
     const circleSeries = createCircle(
         scaleData?.xScale,
         scaleData?.yScale,
@@ -34,7 +37,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         scaleData?.yScale,
     );
 
-    const { setIsDrawActive, setDrawnShapeHistory } = useContext(ChartContext);
+    const { setIsDrawActive } = useContext(ChartContext);
 
     useEffect(() => {
         const canvas = d3
@@ -42,12 +45,19 @@ function DrawCanvas(props: DrawCanvasProps) {
             .select('canvas')
             .node() as HTMLCanvasElement;
 
-        let clickCount = 0;
+        // let clickCount = 0;
         let isDrawing = false;
-        let tempLineData: lineData[] = [];
+        const tempLineData: lineData[] = [];
 
-        d3.select(d3DrawCanvas.current).on('click', (event: PointerEvent) => {
-            startDrawing(event);
+        d3.select(d3DrawCanvas.current).on(
+            'mousedown',
+            (event: PointerEvent) => {
+                startDrawing(event);
+            },
+        );
+
+        d3.select(d3DrawCanvas.current).on('mouseup', (event: PointerEvent) => {
+            endDrawing(event);
         });
 
         canvas.addEventListener('mousemove', draw);
@@ -55,58 +65,60 @@ function DrawCanvas(props: DrawCanvasProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function startDrawing(event: any) {
             isDrawing = true;
-            clickCount = clickCount + 1;
             const { offsetX, offsetY } = event;
+            const valueX = scaleData?.xScale.invert(offsetX);
+            const valueY = scaleData?.yScale.invert(offsetY);
 
-            if (clickCount > 2) {
-                clickCount = 0;
-                tempLineData = [];
-            }
-            if (clickCount === 2) {
-                tempLineData[1] = {
-                    x: offsetX,
-                    y: offsetY,
-                };
-                isDrawing = false;
-                setIsDrawActive(false);
-                setDrawnShapeHistory((prevData: drawDataHistory[]) => {
-                    if (tempLineData.length > 0) {
-                        return [
-                            ...prevData,
-                            {
-                                data: tempLineData,
-                                type: 'line',
-                                time: Date.now(),
-                            },
-                        ];
-                    }
-                    return prevData;
-                });
-            } else {
-                tempLineData.push({
-                    x: offsetX,
-                    y: offsetY,
-                });
-            }
+            tempLineData.push({
+                x: valueX,
+                y: valueY,
+            });
 
             setLineData(tempLineData);
             renderCanvasArray([d3DrawCanvas]);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        function endDrawing(event: any) {
+            const { offsetX, offsetY } = event;
+            const valueX = scaleData?.xScale.invert(offsetX);
+            const valueY = scaleData?.yScale.invert(offsetY);
+
+            tempLineData[1] = {
+                x: valueX,
+                y: valueY,
+            };
+            isDrawing = false;
+            setIsDrawActive(false);
+            setDrawnShapeHistory((prevData: drawDataHistory[]) => {
+                if (tempLineData.length > 0) {
+                    return [
+                        ...prevData,
+                        {
+                            data: tempLineData,
+                            type: 'line',
+                            time: Date.now(),
+                        },
+                    ];
+                }
+                return prevData;
+            });
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function draw(event: any) {
             if (!isDrawing) return;
             const { offsetX, offsetY } = event;
-
+            const valueX = scaleData?.xScale.invert(offsetX);
+            const valueY = scaleData?.yScale.invert(offsetY);
             if (tempLineData.length === 1) {
                 tempLineData.push({
-                    x: offsetX,
-                    y: offsetY,
+                    x: valueX,
+                    y: valueY,
                 });
             } else {
                 tempLineData[1] = {
-                    x: offsetX,
-                    y: offsetY,
+                    x: valueX,
+                    y: valueY,
                 };
             }
             renderCanvasArray([d3DrawCanvas]);

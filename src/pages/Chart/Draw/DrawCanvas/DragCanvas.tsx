@@ -1,11 +1,6 @@
 import { MouseEvent, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import {
-    drawDataHistory,
-    lineData,
-    scaleData,
-} from '../../ChartUtils/chartUtils';
-import { distanceToLine } from './LinearLineSeries';
+import { drawDataHistory, scaleData } from '../../ChartUtils/chartUtils';
 
 interface DragCanvasProps {
     scaleData: scaleData;
@@ -27,6 +22,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         render,
         setIsDragActive,
         mousemove,
+        scaleData,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,39 +32,34 @@ export default function DragCanvas(props: DragCanvasProps) {
         const index = drawnShapeHistory.findIndex(
             (item) => item === selectedDrawnShape,
         );
-        drawnShapeHistory[index].data = [
+
+        const lastData = [
             {
-                x: selectedDrawnShape.data[0].x + movemementX,
-                y: selectedDrawnShape.data[0].y + movemementY,
+                x: scaleData.xScale.invert(
+                    scaleData.xScale(selectedDrawnShape.data[0].x) +
+                        movemementX,
+                ),
+                y: scaleData.yScale.invert(
+                    scaleData.yScale(selectedDrawnShape.data[0].y) +
+                        movemementY,
+                ),
             },
             {
-                x: selectedDrawnShape.data[1].x + movemementX,
-                y: selectedDrawnShape.data[1].y + movemementY,
+                x: scaleData.xScale.invert(
+                    scaleData.xScale(selectedDrawnShape.data[1].x) +
+                        movemementX,
+                ),
+                y: scaleData.yScale.invert(
+                    scaleData.yScale(selectedDrawnShape.data[1].y) +
+                        movemementY,
+                ),
             },
         ];
+        drawnShapeHistory[index].data = lastData;
+        selectedDrawnShape.data = lastData;
 
         render();
     };
-
-    function checkLineLocation(
-        element: lineData[],
-        mouseX: number,
-        mouseY: number,
-    ) {
-        const threshold = 10;
-        const distance = distanceToLine(
-            mouseX,
-            mouseY,
-            element[0].x,
-            element[0].y,
-            element[1].x,
-            element[1].y,
-        );
-
-        return distance < threshold;
-
-        return false;
-    }
 
     // mousemove
     useEffect(() => {
@@ -88,7 +79,7 @@ export default function DragCanvas(props: DragCanvasProps) {
             //     console.log('start');
             // })
             .on('drag', function (event) {
-                if (selectedDrawnShape.type === 'line') {
+                if (selectedDrawnShape && selectedDrawnShape.type === 'line') {
                     dragLine(event);
                 }
             })
