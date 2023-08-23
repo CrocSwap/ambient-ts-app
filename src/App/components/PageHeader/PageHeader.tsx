@@ -32,6 +32,17 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
+import {
+    AccountDiv,
+    BranchDiv,
+    BranchNameDiv,
+    LogoContainer,
+    LogoText,
+    PrimaryHeader,
+    RightSide,
+    TradeNowDiv,
+    UnderlinedMotionDiv,
+} from '../../../styled/Components/Header';
 
 const PageHeader = function () {
     const {
@@ -342,12 +353,7 @@ const PageHeader = function () {
                             {isUnderlined(
                                 link.destination,
                                 location.pathname,
-                            ) && (
-                                <motion.div
-                                    className={styles.underline}
-                                    layoutId='underline'
-                                />
-                            )}
+                            ) && <UnderlinedMotionDiv layoutId='underline' />}
                         </Link>
                     ) : null,
                 )}
@@ -377,66 +383,44 @@ const PageHeader = function () {
     }, []);
 
     return (
-        <header
+        <PrimaryHeader
             data-testid={'page-header'}
-            className={`${styles.primary_header} ${
-                location.pathname === '/' && styles.fixed
-            }`}
+            fixed={location.pathname === '/'}
         >
-            <div>
-                <Link
-                    to='/'
-                    className={styles.logo_container}
-                    aria-label='Home'
-                >
-                    {desktopScreen ? (
-                        <img src={mainLogo} alt='' />
-                    ) : (
-                        <img
-                            src={logo}
-                            alt='ambient'
-                            className={styles.logo}
-                            style={{ maxWidth: '70%', maxHeight: '70%' }}
-                        />
-                    )}
-                </Link>
-            </div>
-
+            <LogoContainer to='/' aria-label='Home'>
+                {desktopScreen ? (
+                    <img src={mainLogo} alt='ambient' />
+                ) : (
+                    <LogoText src={logo} alt='ambient' />
+                )}
+            </LogoContainer>
             {routeDisplay}
-            <div className={styles.right_side}>
+            <RightSide>
                 {show ? (
-                    <div
-                        style={{
-                            width: '380px',
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            alignItems: 'center',
-                            padding: '0 1rem',
-                        }}
-                    >
+                    <TradeNowDiv>
                         <TradeNowButton inNav />{' '}
-                    </div>
+                    </TradeNowDiv>
                 ) : (
                     <div>
-                        <div className={styles.account}>
-                            <div className={styles.branch_name}>
+                        <AccountDiv>
+                            <BranchNameDiv>
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
-                                    <div className={styles.branch}>
+                                    <BranchDiv>
                                         {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
-                                    </div>
+                                    </BranchDiv>
                                 ) : null}
-                            </div>
+                            </BranchNameDiv>
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />
-                        </div>
+                        </AccountDiv>
                     </div>
                 )}
-            </div>
-        </header>
+            </RightSide>
+        </PrimaryHeader>
     );
 };
 
