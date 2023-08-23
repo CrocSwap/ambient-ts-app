@@ -45,6 +45,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             .select('canvas')
             .node() as HTMLCanvasElement;
 
+        const threshold = 15;
         // let clickCount = 0;
         let isDrawing = false;
         const tempLineData: lineData[] = [];
@@ -69,10 +70,14 @@ function DrawCanvas(props: DrawCanvasProps) {
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
 
-            tempLineData.push({
-                x: valueX,
-                y: valueY,
-            });
+            if (tempLineData.length > 0) {
+                endDrawing(event);
+            } else {
+                tempLineData.push({
+                    x: valueX,
+                    y: valueY,
+                });
+            }
 
             setLineData(tempLineData);
             renderCanvasArray([d3DrawCanvas]);
@@ -83,26 +88,34 @@ function DrawCanvas(props: DrawCanvasProps) {
             const { offsetX, offsetY } = event;
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
+            const firstValueX = scaleData?.xScale(tempLineData[0].x);
+            const firstValueY = scaleData?.yScale(tempLineData[0].y);
+            const checkThreshold = Math.hypot(
+                offsetX - firstValueX,
+                offsetY - firstValueY,
+            );
 
-            tempLineData[1] = {
-                x: valueX,
-                y: valueY,
-            };
-            isDrawing = false;
-            setIsDrawActive(false);
-            setDrawnShapeHistory((prevData: drawDataHistory[]) => {
-                if (tempLineData.length > 0) {
-                    return [
-                        ...prevData,
-                        {
-                            data: tempLineData,
-                            type: 'line',
-                            time: Date.now(),
-                        },
-                    ];
-                }
-                return prevData;
-            });
+            if (checkThreshold > threshold) {
+                tempLineData[1] = {
+                    x: valueX,
+                    y: valueY,
+                };
+                isDrawing = false;
+                setIsDrawActive(false);
+                setDrawnShapeHistory((prevData: drawDataHistory[]) => {
+                    if (tempLineData.length > 0) {
+                        return [
+                            ...prevData,
+                            {
+                                data: tempLineData,
+                                type: 'line',
+                                time: Date.now(),
+                            },
+                        ];
+                    }
+                    return prevData;
+                });
+            }
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function draw(event: any) {
