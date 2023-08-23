@@ -206,7 +206,16 @@ function Portfolio(props: propsIF) {
                         crocEnv,
                     );
 
-                    erc20Results.map((newToken: TokenIF) => {
+                    const erc20TokensWithLogos = erc20Results.map((token) => {
+                        const oldToken: TokenIF | undefined =
+                            tokens.getTokenByAddress(token.address);
+                        const newToken = { ...token };
+                        newToken.name = oldToken ? oldToken.name : '';
+                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
+                        return newToken;
+                    });
+
+                    erc20TokensWithLogos.map((newToken: TokenIF) => {
                         const indexOfExistingToken =
                             resolvedAddressErc20Tokens.findIndex(
                                 (existingToken) =>
