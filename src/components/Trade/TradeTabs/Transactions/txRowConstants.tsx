@@ -6,14 +6,16 @@ import {
     TextOnlyTooltip,
 } from '../../../Global/StyledTooltip/StyledTooltip';
 import styles from './Transactions.module.css';
-import { TransactionIF } from '../../../../utils/interfaces/exports';
+import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../../contexts/TokenContext';
 
-interface Props {
+interface propsIF {
     txHashTruncated: string;
     sideTypeStyle: string;
     usdValue: string;
@@ -27,13 +29,11 @@ interface Props {
     sideType: string;
     sideCharacter: string;
     ensName: string | null;
-
     ownerId: string;
     positiveArrow: string;
     positiveDisplayStyle: string;
     negativeDisplayStyle: string;
     negativeArrow: string;
-
     type: string;
     truncatedLowDisplayPrice: string | undefined;
     truncatedHighDisplayPrice: string | undefined;
@@ -42,13 +42,11 @@ interface Props {
     truncatedHighDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
     truncatedDisplayPrice: string | undefined;
-
     isOwnerActiveAccount: boolean;
     isAccountView: boolean;
     isBuy: boolean;
     isOrderRemove: boolean;
     valueArrows: boolean;
-
     handleCopyTxHash: () => void;
     handleOpenExplorer: () => void;
     openDetailsModal: () => void;
@@ -56,7 +54,6 @@ interface Props {
     handleRowMouseOut: () => void;
     handleWalletClick: () => void;
     handleWalletCopy: () => void;
-
     tx: TransactionIF;
 }
 
@@ -65,7 +62,7 @@ interface Props {
 // * By extracting the constants into a separate file, we can keep the main component file clean and easier to read/maintain.
 
 // * To use these constants in a component, simply import them from this file and reference them as needed.
-export const txRowConstants = (props: Props) => {
+export const txRowConstants = (props: propsIF) => {
     const {
         handleCopyTxHash,
         handleOpenExplorer,
@@ -85,13 +82,10 @@ export const txRowConstants = (props: Props) => {
         elapsedTimeString,
         baseQuantityDisplay,
         quoteQuantityDisplay,
-
         isOwnerActiveAccount,
         ownerId,
-
         sideType,
         sideCharacter,
-
         isBuy,
         isOrderRemove,
         valueArrows,
@@ -100,7 +94,6 @@ export const txRowConstants = (props: Props) => {
         negativeDisplayStyle,
         negativeArrow,
         type,
-
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         priceCharacter,
@@ -108,12 +101,15 @@ export const txRowConstants = (props: Props) => {
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         truncatedDisplayPrice,
-
         handleWalletClick,
         handleWalletCopy,
     } = props;
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined = tokens.getTokenByAddress(tx.base);
+    const quoteToken: TokenIF | undefined = tokens.getTokenByAddress(tx.quote);
+
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const IDWithTooltip = (
@@ -248,6 +244,7 @@ export const txRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <TokenIcon
+                token={baseToken}
                 src={baseTokenLogo}
                 alt={tx.baseSymbol}
                 size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
@@ -270,6 +267,7 @@ export const txRowConstants = (props: Props) => {
             leaveDelay={0}
         >
             <TokenIcon
+                token={quoteToken}
                 src={quoteTokenLogo}
                 alt={tx.quoteSymbol}
                 size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}

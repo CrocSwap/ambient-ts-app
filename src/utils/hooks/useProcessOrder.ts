@@ -71,7 +71,7 @@ export const useProcessOrder = (
               ).toString()
             : '…';
 
-    const posHashTruncated = trimString(posHash ?? '', 6, 4, '…');
+    const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
         string | undefined
@@ -185,8 +185,6 @@ export const useProcessOrder = (
             ? liqQuoteNum / limitOrder.expectedPositionLiqQuoteDecimalCorrected
             : liqBaseNum / limitOrder.expectedPositionLiqBaseDecimalCorrected);
 
-    console.log(fillPercentage);
-
     const originalPositionLiqBase = getFormattedNumber({
         value: limitOrder.originalPositionLiqBaseDecimalCorrected,
     });
@@ -246,7 +244,7 @@ export const useProcessOrder = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 3, '…');
+        : trimString(ownerId, 5, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'
@@ -477,5 +475,7 @@ export const useProcessOrder = (
 
         elapsedTimeString,
         initialTokenQty,
+        baseTokenAddress: limitOrder.base,
+        quoteTokenAddress: limitOrder.quote,
     };
 };

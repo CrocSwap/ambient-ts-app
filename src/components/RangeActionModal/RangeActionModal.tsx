@@ -642,6 +642,8 @@ export default function RangeActionModal(props: propsIF) {
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
+                    baseTokenAddress={baseTokenAddress}
+                    quoteTokenAddress={quoteTokenAddress}
                 />
             </div>
             <div>

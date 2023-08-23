@@ -35,8 +35,6 @@ export const useProcessTransaction = (
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
-    // const baseAddress = tradeData.baseToken.address;
-    // const quoteAddress = tradeData.quoteToken.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
@@ -330,7 +328,7 @@ export const useProcessTransaction = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 3, '…');
+        : trimString(ownerId, 5, 4, '…');
 
     const txHashTruncated = trimString(txHash, 9, 0, '…');
 

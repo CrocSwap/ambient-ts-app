@@ -2,16 +2,26 @@ import { Suspense, memo, useEffect, useState } from 'react';
 import styles from './TokenIcon.module.css';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { IS_LOCAL_ENV } from '../../../constants';
+import { TokenIF } from '../../../utils/interfaces/exports';
+import processLogoSrc from './processLogoSrc';
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
+import { useLocation } from 'react-router-dom';
 
 type TokenIconSize = 'xxs' | 'xs' | 's' | 'm' | 'l' | 'xl' | '2xl' | '3xl';
 
 interface propsIF {
+    token?: TokenIF;
     src?: string;
     alt?: string;
     size?: TokenIconSize;
 }
 
-function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
+function TokenIcon({
+    token,
+    src = '',
+    alt = 'Token Icon',
+    size = 'm',
+}: propsIF) {
     // translate human-readable icon width to CSS value
     const getIconWidth = (size: TokenIconSize): string => {
         switch (size) {
@@ -35,6 +45,8 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
                 return '20px';
         }
     };
+
+    const { pathname } = useLocation();
 
     // bool to trigger fallback error handling
     const [fetchError, setFetchError] = useState<boolean>(false);
@@ -61,20 +73,30 @@ function TokenIcon({ src = '', alt = 'Token Icon', size = 'm' }: propsIF) {
     // TODO: ... makes it difficult to tell where the error is when seeing the fallback
     // TODO: ... best practice we should change this up in the future
 
+    // logic to create a tooltip text based on pathway
+    // if supplied an empty string tooltip will not render
+    const makeTooltipText = (): string =>
+        pathname.startsWith('/explore') ? `${token?.name ?? '[unknown]'}` : '';
+
     return (
-        <Suspense fallback={noTokenIcon}>
-            {src && !fetchError ? (
-                <img
-                    className={styles.token_icon}
-                    style={{ width: getIconWidth(size) }}
-                    src={src}
-                    alt={alt}
-                    onError={handleFetchError}
-                />
-            ) : (
-                noTokenIcon
-            )}
-        </Suspense>
+        <DefaultTooltip title={makeTooltipText()}>
+            {/* without this wrapper below the tooltip breaks */}
+            <div className={styles.token_logo_wrapper}>
+                <Suspense fallback={noTokenIcon}>
+                    {!fetchError ? (
+                        <img
+                            className={styles.token_icon}
+                            style={{ width: getIconWidth(size) }}
+                            src={processLogoSrc(token)}
+                            alt={alt}
+                            onError={handleFetchError}
+                        />
+                    ) : (
+                        noTokenIcon
+                    )}
+                </Suspense>
+            </div>
+        </DefaultTooltip>
     );
 }
 

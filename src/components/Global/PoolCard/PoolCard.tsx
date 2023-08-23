@@ -68,6 +68,13 @@ export default function PoolCard(props: propsIF) {
                 <div className={styles.row} style={{ padding: '4px' }}>
                     <div className={styles.token_images}>
                         <TokenIcon
+                            token={
+                                shouldInvertDisplay === undefined
+                                    ? pool.base
+                                    : shouldInvertDisplay
+                                    ? pool.base
+                                    : pool.quote
+                            }
                             size='2xl'
                             src={uriToHttp(
                                 shouldInvertDisplay === undefined
@@ -85,6 +92,13 @@ export default function PoolCard(props: propsIF) {
                             }
                         />
                         <TokenIcon
+                            token={
+                                shouldInvertDisplay === undefined
+                                    ? pool.quote
+                                    : shouldInvertDisplay
+                                    ? pool.quote
+                                    : pool.base
+                            }
                             size='2xl'
                             src={uriToHttp(
                                 shouldInvertDisplay === undefined

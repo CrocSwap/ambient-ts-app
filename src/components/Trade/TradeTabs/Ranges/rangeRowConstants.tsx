@@ -12,7 +12,10 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-interface Props {
+import { useContext } from 'react';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+interface propsIF {
     posHashTruncated: string;
     usdValue: string;
     usernameStyle: string;
@@ -46,9 +49,11 @@ interface Props {
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
     position: PositionIF;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
-export default function rangeRowConstants(props: Props) {
+export default function rangeRowConstants(props: propsIF) {
     const {
         handleCopyPosHash,
         posHash,
@@ -83,9 +88,17 @@ export default function rangeRowConstants(props: Props) {
         isPositionInRange,
         handleRowMouseDown,
         handleRowMouseOut,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = props;
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
+
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const IDWithTooltip = (
@@ -195,6 +208,7 @@ export default function rangeRowConstants(props: Props) {
 
     const baseTokenLogoComponent = (
         <TokenIcon
+            token={baseToken}
             src={baseTokenLogo}
             alt={baseTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
@@ -203,6 +217,7 @@ export default function rangeRowConstants(props: Props) {
 
     const quoteTokenLogoComponent = (
         <TokenIcon
+            token={quoteToken}
             src={quoteTokenLogo}
             alt={quoteTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
