@@ -149,8 +149,6 @@ function Sidebar() {
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
 
-    const searchInputRef = useRef(null);
-
     const handleInputClear = () => {
         setSearchInput('');
         setSearchMode(false);
@@ -194,12 +192,13 @@ function Sidebar() {
             <SearchInput
                 type='text'
                 id='search_input'
-                ref={searchInputRef}
+                value={searchInput}
                 placeholder='Search...'
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     handleSearchInput(e)
                 }
                 spellCheck='false'
+                autoComplete='off'
                 tabIndex={1}
             />
             {searchInput && (

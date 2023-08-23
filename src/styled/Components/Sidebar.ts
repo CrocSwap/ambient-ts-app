@@ -3,7 +3,7 @@ import { AiOutlineHeart } from 'react-icons/ai';
 import { BiSearch } from 'react-icons/bi';
 import { GiBackwardTime, GiSaveArrow } from 'react-icons/gi';
 import { LuDroplets, LuFileClock } from 'react-icons/lu';
-import { MdOutlineExpand } from 'react-icons/md';
+import { MdOutlineExpand, MdPlayArrow } from 'react-icons/md';
 import styled, { css } from 'styled-components';
 import { FlexContainer, GridContainer } from '../Common';
 
@@ -126,6 +126,8 @@ const Icon = css<{ open: boolean }>`
 `;
 export const SearchIcon = styled(BiSearch)<{ open: boolean }>`
     ${Icon}
+    margin: 8px 0;
+    border-bottom: 1px solid var(--dark3);
 `;
 export const RecentPoolsIcon = styled(GiBackwardTime)<{ open: boolean }>`
     ${Icon}
@@ -144,6 +146,15 @@ export const LimitsIcon = styled(GiSaveArrow)<{ open: boolean }>`
 `;
 export const RangesIcon = styled(MdOutlineExpand)<{ open: boolean }>`
     ${Icon}
+`;
+
+export const ArrowIcon = styled(MdPlayArrow)<{ open: boolean }>`
+    ${({ open }) =>
+        open &&
+        `
+        transform: rotate(90deg);
+        transition: var(--animation-speed);
+    `}
 `;
 
 export const AccordionHeader = styled(motion.div)<{ open: boolean }>`

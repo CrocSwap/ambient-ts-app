@@ -175,18 +175,18 @@ function TransactionRow(props: propsIF) {
         }
     };
 
-    const enterFunction = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            openDetailsModal();
-        }
-    }, []);
+    // const enterFunction = useCallback((event: KeyboardEvent) => {
+    //     if (event.key === 'Enter') {
+    //         openDetailsModal();
+    //     }
+    // }, []);
 
-    useEffect(() => {
-        document.addEventListener('keydown', enterFunction, false);
-        return () => {
-            document.removeEventListener('keydown', enterFunction, false);
-        };
-    }, []);
+    // useEffect(() => {
+    //     document.addEventListener('keydown', enterFunction, false);
+    //     return () => {
+    //         document.removeEventListener('keydown', enterFunction, false);
+    //     };
+    // }, []);
 
     const txRowConstantsProps = {
         handleCopyTxHash,

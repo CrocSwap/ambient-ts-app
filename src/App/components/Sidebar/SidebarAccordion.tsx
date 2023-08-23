@@ -10,7 +10,7 @@ import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ConnectWalletButton } from '../../../components/Global/Button/ConnectWalletButton';
 import { FlexContainer, Text } from '../../../styled/Common';
-import { AccordionHeader } from '../../../styled/Components/Sidebar';
+import { AccordionHeader, ArrowIcon } from '../../../styled/Components/Sidebar';
 
 // interface for React functional component props
 interface propsIF {
@@ -137,7 +137,7 @@ export default function SidebarAccordion(props: propsIF) {
                     justifyContent={!sidebar.isOpen ? 'center' : 'flex-start'}
                     gap={8}
                 >
-                    {sidebar.isOpen && <MdPlayArrow size={12} />}
+                    {sidebar.isOpen && <ArrowIcon size={12} open={isOpen} />}
                     {item.icon}
                     {sidebar.isOpen && (
                         <Text fontSize='body' fontWeight='500'>
