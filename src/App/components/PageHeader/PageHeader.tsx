@@ -1,9 +1,8 @@
 import { useEffect, useState, memo, useContext, useCallback } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { motion, AnimateSharedLayout } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
+import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
@@ -34,6 +33,7 @@ import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
 import {
     AccountDiv,
+    AuthenticateButton,
     BranchDiv,
     BranchNameDiv,
     HeaderClasses,
@@ -157,13 +157,12 @@ const PageHeader = function () {
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
     const connectWagmiButton = (
-        <button
-            className={styles.authenticate_button}
-            style={!desktopScreen ? { width: '140px' } : undefined}
+        <AuthenticateButton
+            desktopScreen={desktopScreen}
             onClick={openWagmiModal}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}
-        </button>
+        </AuthenticateButton>
     );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
