@@ -740,7 +740,7 @@ export default function InitPool() {
 
                             <div className={styles.right_container}>
                                 <RangeBounds
-                                    isRangeBoundsDisabled={false}
+                                    isRangeBoundsDisabled={poolExists === true}
                                     {...rangeWidthProps}
                                     {...rangePriceInfoProps}
                                     {...minMaxPriceProps}
