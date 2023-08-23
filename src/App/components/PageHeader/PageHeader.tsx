@@ -36,9 +36,12 @@ import {
     AccountDiv,
     BranchDiv,
     BranchNameDiv,
+    HeaderClasses,
     LogoContainer,
     LogoText,
+    NavigationLink,
     PrimaryHeader,
+    PrimaryNavigation,
     RightSide,
     TradeNowDiv,
     UnderlinedMotionDiv,
@@ -301,21 +304,21 @@ const PageHeader = function () {
         if (linkDestination.includes('/trade')) {
             if (linkDestination.includes('/pool')) {
                 return locationPathname.includes('/trade/pool')
-                    ? styles.active
-                    : styles.inactive;
+                    ? HeaderClasses.active
+                    : HeaderClasses.inactive;
             } else {
                 return locationPathname.includes(tradeDestination)
-                    ? styles.active
-                    : styles.inactive;
+                    ? HeaderClasses.active
+                    : HeaderClasses.inactive;
             }
         } else if (linkDestination.includes('/swap')) {
             return locationPathname.includes('/swap')
-                ? styles.active
-                : styles.inactive;
+                ? HeaderClasses.active
+                : HeaderClasses.inactive;
         } else {
             return locationPathname === linkDestination
-                ? styles.active
-                : styles.inactive;
+                ? HeaderClasses.active
+                : HeaderClasses.inactive;
         }
     }
 
@@ -332,14 +335,13 @@ const PageHeader = function () {
     }
     const routeDisplay = (
         <AnimateSharedLayout>
-            <nav
-                className={styles.primary_navigation}
+            <PrimaryNavigation
                 id='primary_navigation'
-                data-visible={mobileNavToggle}
+                dataVisible={mobileNavToggle}
             >
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
-                        <Link
+                        <NavigationLink
                             tabIndex={0}
                             className={isActive(
                                 link.destination,
@@ -354,10 +356,10 @@ const PageHeader = function () {
                                 link.destination,
                                 location.pathname,
                             ) && <UnderlinedMotionDiv layoutId='underline' />}
-                        </Link>
+                        </NavigationLink>
                     ) : null,
                 )}
-            </nav>
+            </PrimaryNavigation>
         </AnimateSharedLayout>
     );
 
@@ -387,13 +389,16 @@ const PageHeader = function () {
             data-testid={'page-header'}
             fixed={location.pathname === '/'}
         >
-            <LogoContainer to='/' aria-label='Home'>
-                {desktopScreen ? (
-                    <img src={mainLogo} alt='ambient' />
-                ) : (
-                    <LogoText src={logo} alt='ambient' />
-                )}
-            </LogoContainer>
+            <div>
+                <LogoContainer to='/' aria-label='Home'>
+                    {desktopScreen ? (
+                        <img src={mainLogo} alt='ambient' />
+                    ) : (
+                        <LogoText src={logo} alt='ambient' />
+                    )}
+                </LogoContainer>
+            </div>
+
             {routeDisplay}
             <RightSide>
                 {show ? (

@@ -68,7 +68,8 @@ export const LogoContainer = styled(Link)`
 
 // Define the styles for LogoText
 export const LogoText = styled.img`
-    width: 30%;
+    max-width: 70%;
+    max-height: 70%;
 `;
 
 // Define the styles for RightSide
@@ -110,7 +111,10 @@ export const BranchDiv = styled.div`
     gap: 4px;
 `;
 
-export const PrimaryNavigation = styled.nav`
+interface PrimaryNavigationProps {
+    dataVisible: boolean;
+}
+export const PrimaryNavigation = styled.nav<PrimaryNavigationProps>`
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -133,10 +137,7 @@ export const PrimaryNavigation = styled.nav`
         border-radius: 10px;
         font-size: calc(var(--header2-size) + 0.5rem);
         line-height: calc(var(--header2-lh) + 0.5rem);
-
-        &[data-visible='true'] {
-            transform: translateX(0%);
-        }
+        ${({ dataVisible }) => dataVisible && 'transform: translateX(0%);'}
     }
 
     @media only screen and (min-width: 1180px) {
