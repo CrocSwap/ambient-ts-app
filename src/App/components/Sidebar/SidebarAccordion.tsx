@@ -1,7 +1,6 @@
 // START: Import React and Dongles
 import { useState, ReactNode, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MdPlayArrow } from 'react-icons/md';
 // START: Import Local Files
 import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
