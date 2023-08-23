@@ -6,12 +6,14 @@ interface DragCanvasProps {
     scaleData: scaleData;
     selectedDrawnShape: drawDataHistory;
     drawnShapeHistory: drawDataHistory[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render: any;
+    canUserDragDrawnShape: boolean;
     setIsDragActive: React.Dispatch<React.SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setCrossHairDataFunc: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    render: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mousemove: any;
-    canUserDragDrawnShape: boolean;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -25,6 +27,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         mousemove,
         scaleData,
         canUserDragDrawnShape,
+        setCrossHairDataFunc,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -82,12 +85,21 @@ export default function DragCanvas(props: DragCanvasProps) {
     }, [canUserDragDrawnShape]);
 
     useEffect(() => {
+        const canvas = d3
+            .select(d3DragCanvas.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const canvasRect = canvas.getBoundingClientRect();
+
         const dragDrawnShape = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
             // .on('start', (event) => {
             //     console.log('start');
             // })
             .on('drag', function (event) {
+                const offsetY = event.sourceEvent.clientY - canvasRect?.top;
+                const offsetX = event.sourceEvent.clientX - canvasRect?.left;
+                setCrossHairDataFunc(offsetX, offsetY);
                 if (selectedDrawnShape && selectedDrawnShape.type === 'line') {
                     dragLine(event);
                 }

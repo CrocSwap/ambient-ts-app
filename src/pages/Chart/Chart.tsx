@@ -3028,31 +3028,34 @@ export default function Chart(props: propsIF) {
         renderSubchartCrCanvas();
     }, [crosshairActive]);
 
+    const setCrossHairDataFunc = (offsetX: number, offsetY: number) => {
+        if (scaleData) {
+            const snapDiff =
+                scaleData?.xScale.invert(offsetX) % (period * 1000);
+
+            const snappedTime =
+                scaleData?.xScale.invert(offsetX) -
+                (snapDiff > period * 1000 - snapDiff
+                    ? -1 * (period * 1000 - snapDiff)
+                    : snapDiff);
+
+            setCrosshairActive('chart');
+
+            setCrosshairData([
+                {
+                    x: snappedTime,
+                    y: scaleData?.yScale.invert(offsetY),
+                },
+            ]);
+        }
+    };
     const mousemove = (event: MouseEvent<HTMLDivElement>) => {
         if (scaleData && mainCanvasBoundingClientRect) {
             const offsetY = event.clientY - mainCanvasBoundingClientRect?.top;
             const offsetX = event.clientX - mainCanvasBoundingClientRect?.left;
             if (!isLineDrag) {
-                const snapDiff =
-                    scaleData?.xScale.invert(offsetX) % (period * 1000);
-
-                const snappedTime =
-                    scaleData?.xScale.invert(offsetX) -
-                    (snapDiff > period * 1000 - snapDiff
-                        ? -1 * (period * 1000 - snapDiff)
-                        : snapDiff);
-
-                setCrosshairActive('chart');
-
-                setCrosshairData([
-                    {
-                        x: snappedTime,
-                        y: scaleData?.yScale.invert(offsetY),
-                    },
-                ]);
-
                 setChartMousemoveEvent(event);
-
+                setCrossHairDataFunc(offsetX, offsetY);
                 const { isHoverCandleOrVolumeData } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
                 setIsOnCandleOrVolumeMouseLocation(isHoverCandleOrVolumeData);
@@ -3382,6 +3385,7 @@ export default function Chart(props: propsIF) {
                             <DrawCanvas
                                 scaleData={scaleData}
                                 setDrawnShapeHistory={setDrawnShapeHistory}
+                                setCrossHairDataFunc={setCrossHairDataFunc}
                             />
                         )}
 
@@ -3394,6 +3398,7 @@ export default function Chart(props: propsIF) {
                                 render={render}
                                 setIsDragActive={setIsDragActive}
                                 mousemove={mousemove}
+                                setCrossHairDataFunc={setCrossHairDataFunc}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />

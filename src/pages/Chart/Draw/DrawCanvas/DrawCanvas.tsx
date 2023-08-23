@@ -17,6 +17,8 @@ interface DrawCanvasProps {
     setDrawnShapeHistory: React.Dispatch<
         React.SetStateAction<drawDataHistory[]>
     >;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setCrossHairDataFunc: any;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -24,7 +26,7 @@ function DrawCanvas(props: DrawCanvasProps) {
     const [lineData, setLineData] = useState<lineData[]>([]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-    const { scaleData, setDrawnShapeHistory } = props;
+    const { scaleData, setDrawnShapeHistory, setCrossHairDataFunc } = props;
     const circleSeries = createCircle(
         scaleData?.xScale,
         scaleData?.yScale,
@@ -44,6 +46,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             .select(d3DrawCanvas.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
+        const canvasRect = canvas.getBoundingClientRect();
 
         const threshold = 15;
         // let clickCount = 0;
@@ -66,7 +69,9 @@ function DrawCanvas(props: DrawCanvasProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function startDrawing(event: any) {
             isDrawing = true;
-            const { offsetX, offsetY } = event;
+            const offsetY = event.clientY - canvasRect?.top;
+            const offsetX = event.clientX - canvasRect?.left;
+
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
 
@@ -85,7 +90,8 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function endDrawing(event: any) {
-            const { offsetX, offsetY } = event;
+            const offsetY = event.clientY - canvasRect?.top;
+            const offsetX = event.clientX - canvasRect?.left;
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
             const firstValueX = scaleData?.xScale(tempLineData[0].x);
@@ -120,7 +126,10 @@ function DrawCanvas(props: DrawCanvasProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function draw(event: any) {
             if (!isDrawing) return;
-            const { offsetX, offsetY } = event;
+            const offsetY = event.clientY - canvasRect?.top;
+            const offsetX = event.clientX - canvasRect?.left;
+            setCrossHairDataFunc(offsetX, offsetY);
+
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
             if (tempLineData.length === 1) {
