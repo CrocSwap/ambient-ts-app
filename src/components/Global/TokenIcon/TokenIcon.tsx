@@ -86,7 +86,10 @@ function TokenIcon({
                     {!fetchError ? (
                         <img
                             className={styles.token_icon}
-                            style={{ width: getIconWidth(size) }}
+                            style={{
+                                width: getIconWidth(size),
+                                height: getIconWidth(size),
+                            }}
                             src={processLogoSrc(token)}
                             alt={alt}
                             onError={handleFetchError}
