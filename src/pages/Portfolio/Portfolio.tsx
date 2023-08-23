@@ -350,7 +350,7 @@ function Portfolio() {
             <div
                 className={
                     !connectedAccountActive
-                        ? styles.full_table
+                        ? styles.full_layout_container
                         : fullLayoutActive
                         ? styles.full_layout_container
                         : styles.tabs_exchange_balance_container
