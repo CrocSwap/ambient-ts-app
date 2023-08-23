@@ -202,6 +202,7 @@ color: var(--text1);
 
 .right_container{
     justify-content: space-between;
+    padding-bottom: 8px;
 }
 .local_token_container, .range_width_container{
     display: flex;
@@ -252,7 +253,11 @@ color: var(--text1);
 }
 
 
-
+.content_disabled{
+    pointer-events: none;
+    opacity: 0.2;
+    filter: blur(2px);
+}
 @media only screen and (min-width: 768px) {
 .inner_container{
   

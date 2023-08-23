@@ -43,6 +43,7 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangePriceInfo from '../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
+import ButtonSwitch from '../../components/Global/Toggle/ButtonSwitch';
 
 // react functional component
 export default function InitPool() {
@@ -671,7 +672,11 @@ export default function InitPool() {
     );
 
     const initPriceContainer = (
-        <div className={styles.pool_price_container}>
+        <div
+            className={`${styles.pool_price_container} ${
+                poolExists === true && styles.content_disabled
+            }`}
+        >
             <p className={styles.label_title}>Initial Price</p>
             <section style={{ width: '100%' }}>
                 <input
@@ -694,8 +699,13 @@ export default function InitPool() {
     );
 
     const collateralContent = (
-        <div className={styles.collateral_container}>
+        <div
+            className={`${styles.collateral_container} ${
+                poolExists === true && styles.content_disabled
+            }`}
+        >
             <p className={styles.label_title}>Collateral</p>
+
             <TokenInputQuantity
                 tokenAorB={'A'}
                 value={'0'}
@@ -739,6 +749,7 @@ export default function InitPool() {
                             </div>
 
                             <div className={styles.right_container}>
+                                <ButtonSwitch />
                                 <RangeBounds
                                     isRangeBoundsDisabled={poolExists === true}
                                     {...rangeWidthProps}
