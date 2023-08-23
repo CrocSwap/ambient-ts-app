@@ -23,11 +23,15 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { useSimulatedIsUserConnected } from '../../App/hooks/useSimulatedIsUserConnected';
 
 function Portfolio() {
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const { data: ensName } = useEnsName({ address: userAddress });
+
+    const isUserConnected = useSimulatedIsUserConnected();
 
     const {
         wagmiModal: { open: openModalWallet },
