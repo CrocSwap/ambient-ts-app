@@ -11,6 +11,7 @@ interface DragCanvasProps {
     setIsDragActive: React.Dispatch<React.SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mousemove: any;
+    canUserDragDrawnShape: boolean;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -23,6 +24,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         setIsDragActive,
         mousemove,
         scaleData,
+        canUserDragDrawnShape,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,6 +73,13 @@ export default function DragCanvas(props: DragCanvasProps) {
             },
         );
     }, []);
+
+    useEffect(() => {
+        d3.select(d3DragCanvas.current).style(
+            'cursor',
+            canUserDragDrawnShape ? 'pointer' : 'default',
+        );
+    }, [canUserDragDrawnShape]);
 
     useEffect(() => {
         const dragDrawnShape = d3

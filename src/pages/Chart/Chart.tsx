@@ -601,13 +601,10 @@ export default function Chart(props: propsIF) {
         } else {
             d3.select(d3CanvasMain.current).style(
                 'cursor',
-                isOnCandleOrVolumeMouseLocation || canUserDragDrawnShape
-                    ? 'pointer'
-                    : 'default',
+                isOnCandleOrVolumeMouseLocation ? 'pointer' : 'default',
             );
         }
     }, [
-        canUserDragDrawnShape,
         canUserDragLimit,
         canUserDragRange,
         isLineDrag,
@@ -3391,6 +3388,7 @@ export default function Chart(props: propsIF) {
                         {isDragActive && scaleData && (
                             <DragCanvas
                                 scaleData={scaleData}
+                                canUserDragDrawnShape={canUserDragDrawnShape}
                                 selectedDrawnShape={selectedDrawnShape}
                                 drawnShapeHistory={drawnShapeHistory}
                                 render={render}
