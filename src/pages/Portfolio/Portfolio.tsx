@@ -360,13 +360,15 @@ function Portfolio() {
                         : styles.tabs_exchange_balance_container
                 }
             >
-                {!isUserConnected ? (
-                    notConnectedContent
-                ) : (
+                {isUserConnected || addressFromParams ? (
                     <PortfolioTabs {...portfolioTabsProps} />
-                )}
+                ) : undefined}
 
-                {connectedAccountActive && exchangeBalanceComponent}
+                {connectedAccountActive
+                    ? exchangeBalanceComponent
+                    : !isUserConnected && !addressFromParams
+                    ? notConnectedContent
+                    : undefined}
             </div>
         </main>
     );
