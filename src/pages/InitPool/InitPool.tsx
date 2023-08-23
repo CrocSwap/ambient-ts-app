@@ -749,7 +749,11 @@ export default function InitPool() {
                             </div>
 
                             <div className={styles.right_container}>
-                                <ButtonSwitch />
+                                <ButtonSwitch
+                                    onLabel='beginner'
+                                    offLabel='advanced'
+                                    fullSwitch
+                                />
                                 <RangeBounds
                                     isRangeBoundsDisabled={poolExists === true}
                                     {...rangeWidthProps}

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 const colors = {
     black: '#1E1E1E',
     grey: '#CCCCCC',
-    white: '#FFFFFF',
+    white: '#FFFFCE',
     accent: '#yourAccentColorHere',
 };
 
@@ -29,10 +29,12 @@ const switchOffAnimation = keyframes`
 `;
 interface SwitchContainerProps {
     switcherType: 'switcher-1' | 'switcher-2'; // Define the type here
+    onLabel: string; // Prop for the ON label
+    offLabel: string; // Prop for the OFF label
 }
 const SwitchContainer = styled.span<SwitchContainerProps>`
     position: relative;
-    width: 200px;
+    width: 100%;
     height: 50px;
     border-radius: 25px;
     margin: 20px 0;
@@ -40,7 +42,7 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
     input {
         appearance: none;
         position: relative;
-        width: 200px;
+        width: 100%;
         height: 50px;
         border-radius: 25px;
         background-color: ${colors.black};
@@ -56,11 +58,11 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
             color: ${colors.white};
         }
         &:before {
-            content: 'ON';
+            content: '${(props) => props.onLabel}';
             left: 20px;
         }
         &:after {
-            content: 'OFF';
+            content: ${(props) => props.offLabel};
             right: 20px;
         }
     }
@@ -152,13 +154,19 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
 
 interface ButtonSwitchProps {
     fullSwitch?: boolean;
+    onLabel: string; // Prop for the ON label
+    offLabel: string; // Prop for the OFF label
 }
 const ButtonSwitch = (props: ButtonSwitchProps) => {
-    const { fullSwitch } = props;
+    const { fullSwitch, onLabel, offLabel } = props;
     const switchToShow = fullSwitch ? 'switcher-2' : 'switcher-1';
 
     return (
-        <SwitchContainer switcherType={switchToShow}>
+        <SwitchContainer
+            switcherType={switchToShow}
+            onLabel={onLabel}
+            offLabel={offLabel}
+        >
             <input type='checkbox' id={switchToShow} />
             <label htmlFor={switchToShow}></label>
         </SwitchContainer>
