@@ -105,6 +105,7 @@
     overflow: hidden;
 }
 .row_container {
+    position: relative;
     width: 100%;
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
