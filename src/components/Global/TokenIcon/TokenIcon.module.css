@@ -1,3 +1,8 @@
 .token_icon {
   clip-path: circle();
 }
+
+.token_logo_wrapper {
+  display: flex;
+  align-items: center;
+}

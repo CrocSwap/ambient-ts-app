@@ -19,6 +19,8 @@ import Spinner from '../../../Global/Spinner/Spinner';
 import { useLocation } from 'react-router-dom';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
+import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -42,6 +44,9 @@ function Ranges(props: propsIF) {
     } = useContext(SidebarContext);
     const { setCurrentRangeInReposition } = useContext(RangeContext);
     const { tradeTableState } = useContext(ChartContext);
+    const {
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
     const isTradeTableExpanded =
@@ -52,6 +57,9 @@ function Ranges(props: propsIF) {
     );
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { transactionsByType, pendingTransactions } = useAppSelector(
+        (state) => state.receiptData,
+    );
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -392,11 +400,47 @@ function Ranges(props: propsIF) {
         }
     }, [isTradeTableExpanded]);
 
-    const shouldDisplayNoTableData = !isLoading && !rangeData.length;
+    const relevantTransactionsByType = transactionsByType.filter(
+        (tx) =>
+            tx.txAction &&
+            tx.txDetails &&
+            tx.txType === 'Range' &&
+            pendingTransactions.includes(tx.txHash) &&
+            tx.txDetails?.baseAddress.toLowerCase() ===
+                tradeData.baseToken.address.toLowerCase() &&
+            tx.txDetails?.quoteAddress.toLowerCase() ===
+                tradeData.quoteToken.address.toLowerCase() &&
+            tx.txDetails?.poolIdx === poolIndex,
+    );
+
+    const shouldDisplayNoTableData =
+        !isLoading &&
+        !rangeData.length &&
+        (relevantTransactionsByType.length === 0 ||
+            pendingTransactions.length === 0);
 
     const rangeDataOrNull = !shouldDisplayNoTableData ? (
         <div>
-            <ul ref={listRef}>{currentRowItemContent}</ul>
+            <ul ref={listRef}>
+                {!isAccountView &&
+                    pendingTransactions.length > 0 &&
+                    relevantTransactionsByType.reverse().map((tx, idx) => (
+                        <RangesRowPlaceholder
+                            key={idx}
+                            transaction={{
+                                hash: tx.txHash,
+                                side: tx.txAction,
+                                type: tx.txType,
+                                details: tx.txDetails,
+                            }}
+                            showTimestamp={showTimestamp}
+                            showColumns={showColumns}
+                            ipadView={ipadView}
+                            mobileView={phoneScreen}
+                        />
+                    ))}
+                {currentRowItemContent}
+            </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK

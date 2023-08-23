@@ -78,9 +78,6 @@ function uriToHttp(uri: string, retry?: string): string | string[] {
                 );
                 break;
             default:
-                console.debug(
-                    `Failed to transform URI ${uri} into a queryable URL. The URI likely did not include a prefix denoting a recognized protocol. URIs must conform to one of the following standards: https, http, ipfs, ipns. If the URI properly follows one of these prefixes, please refer to uriToHttp.ts for debugging. This function will return an empty string to satisfy type protections.`,
-                );
                 outputURLs.push('');
                 break;
         }

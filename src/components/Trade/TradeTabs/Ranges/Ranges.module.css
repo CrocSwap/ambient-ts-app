@@ -123,6 +123,26 @@
 .row_container li:not(:last-child) {
     cursor: pointer;
 }
+
+.row_placeholder {
+    background-color: var(--dark2);
+    color: var(--text2);
+    -webkit-mask: linear-gradient(
+            -60deg,
+            black 30%,
+            rgba(119, 117, 117, 0.333),
+            black 70%
+        )
+        right/300% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+    100% {
+        -webkit-mask-position: left;
+    }
+}
+
 .main_list_container .row_container,
 .main_list_container .header,
 .leaderboard .row_container,
@@ -235,10 +255,10 @@
         grid-template-columns:
             minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
             minmax(62px, 1fr) minmax(62px, 1fr) minmax(78px, 1fr) minmax(
-                80px,
+                100px,
                 1fr
             )
-            minmax(80px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(107px, 25%);
+            minmax(100px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(107px, 25%);
     }
     .leaderboard .row_container,
     .leaderboard .header {
@@ -472,7 +492,7 @@
 
 .base_display_div {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: flex-end;
     gap: 4px;
     text-align: center;

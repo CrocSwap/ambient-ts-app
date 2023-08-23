@@ -32,6 +32,7 @@ import {
     addTransactionByType,
     removePendingTx,
     addReceipt,
+    updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
 import {
     TransactionError,
@@ -49,7 +50,7 @@ function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
     const {
         crocEnv,
-        chainData: { chainId },
+        chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -303,7 +304,21 @@ function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                        txAction:
+                            buyTokenAddress.toLowerCase() ===
+                            quoteToken.address.toLowerCase()
+                                ? 'Buy'
+                                : 'Sell',
+                        txType: 'Market',
+                        txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                        txDetails: {
+                            baseAddress: baseToken.address,
+                            quoteAddress: quoteToken.address,
+                            poolIdx: poolIndex,
+                            baseSymbol: baseToken.symbol,
+                            quoteSymbol: quoteToken.symbol,
+                            isBid: isSellTokenBase,
+                        },
                     }),
                 );
         } catch (error) {
@@ -329,6 +344,12 @@ function Swap(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
 
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 setNewSwapTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
@@ -363,7 +384,8 @@ function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${tokenSymbol}`,
+                        txType: 'Approve',
+                        txDescription: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
@@ -381,6 +403,12 @@ function Swap(props: propsIF) {
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {

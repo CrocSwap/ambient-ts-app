@@ -47,7 +47,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                 txType={
                     transactionsByType.find(
                         (e) => e.txHash === tx?.transactionHash,
-                    )?.txType
+                    )?.txDescription
                 }
             />
         ),
@@ -60,7 +60,7 @@ const NotificationTable = (props: NotificationTableProps) => {
             txBlockNumber={tx.blockNumber}
             txType={
                 transactionsByType.find((e) => e.txHash === tx?.transactionHash)
-                    ?.txType
+                    ?.txDescription
             }
         />
     ));
@@ -69,7 +69,9 @@ const NotificationTable = (props: NotificationTableProps) => {
             key={idx}
             status='pending'
             hash={tx}
-            txType={transactionsByType.find((e) => e.txHash === tx)?.txType}
+            txType={
+                transactionsByType.find((e) => e.txHash === tx)?.txDescription
+            }
         />
     ));
 
