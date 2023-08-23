@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState, useContext, memo } from 'react';
+import { useEffect, useState, useContext, memo, useMemo } from 'react';
 import { useEnsName } from 'wagmi';
 
 // START: Import JSX Components
@@ -24,13 +24,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 
-interface propsIF {
-    userAccount?: boolean;
-}
-
-function Portfolio(props: propsIF) {
-    const { userAccount } = props;
-
+function Portfolio() {
     const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
         useAppSelector((state) => state.userData);
     const { data: ensName } = useEnsName({ address: userAddress });
@@ -67,9 +61,18 @@ function Portfolio(props: propsIF) {
         undefined,
     );
 
-    const connectedAccountActive =
-        !addressFromParams ||
-        resolvedAddress?.toLowerCase() === userAddress?.toLowerCase();
+    const connectedAccountActive = useMemo(
+        () =>
+            userAddress
+                ? addressFromParams
+                    ? resolvedAddress?.toLowerCase() ===
+                      userAddress.toLowerCase()
+                        ? true
+                        : false
+                    : true
+                : false,
+        [addressFromParams, resolvedAddress, userAddress],
+    );
 
     useEffect(() => {
         (async () => {
@@ -241,7 +244,6 @@ function Portfolio(props: propsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    const showLoggedInButton = userAccount && !isUserConnected;
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
@@ -323,12 +325,12 @@ function Portfolio(props: propsIF) {
         >
             {connectedAccountActive && mobileDataToggle}
             {!showTabsAndNotExchange ? (
-                showLoggedInButton ? (
+                !isUserConnected ? (
                     notConnectedContent
                 ) : (
                     <PortfolioTabs {...portfolioTabsProps} />
                 )
-            ) : showLoggedInButton ? (
+            ) : !isUserConnected ? (
                 notConnectedContent
             ) : (
                 connectedAccountActive && exchangeBalanceComponent
@@ -340,29 +342,27 @@ function Portfolio(props: propsIF) {
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
-            {userAccount && showProfileSettings && (
+            {connectedAccountActive && showProfileSettings && (
                 <ProfileSettings {...profileSettingsProps} />
             )}
             <PortfolioBanner {...portfolioBannerProps} />
 
             <div
                 className={
-                    !userAccount
+                    !connectedAccountActive
                         ? styles.full_table
                         : fullLayoutActive
                         ? styles.full_layout_container
                         : styles.tabs_exchange_balance_container
                 }
             >
-                {!showLoggedInButton ? (
-                    <PortfolioTabs {...portfolioTabsProps} />
-                ) : (
+                {!isUserConnected ? (
                     notConnectedContent
+                ) : (
+                    <PortfolioTabs {...portfolioTabsProps} />
                 )}
 
-                {showLoggedInButton
-                    ? notConnectedContent
-                    : connectedAccountActive && exchangeBalanceComponent}
+                {connectedAccountActive && exchangeBalanceComponent}
             </div>
         </main>
     );
