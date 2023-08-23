@@ -291,17 +291,17 @@ export default function TransactionsMenu(props: propsIF) {
         setShowDropdownMenu(false);
     };
 
-    // useEffect(() => {
-    //     if (
-    //         showDropdownMenu &&
-    //         document.activeElement !== menuItemRef.current
-    //     ) {
-    //         const interval = setTimeout(() => {
-    //             setShowDropdownMenu(false);
-    //         }, 5000);
-    //         return () => clearTimeout(interval);
-    //     } else return;
-    // }, [showDropdownMenu]);
+    useEffect(() => {
+        if (
+            showDropdownMenu &&
+            document.activeElement !== menuItemRef.current
+        ) {
+            const interval = setTimeout(() => {
+                setShowDropdownMenu(false);
+            }, 5000);
+            return () => clearTimeout(interval);
+        } else return;
+    }, [showDropdownMenu]);
 
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
 
