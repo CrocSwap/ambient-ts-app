@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState, useContext, memo } from 'react';
+import { useEffect, useState, useContext, memo, useMemo } from 'react';
 import { useEnsName } from 'wagmi';
 
 // START: Import JSX Components
@@ -23,17 +23,15 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { useSimulatedIsUserConnected } from '../../App/hooks/useSimulatedIsUserConnected';
 
-interface propsIF {
-    userAccount?: boolean;
-}
-
-function Portfolio(props: propsIF) {
-    const { userAccount } = props;
-
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+function Portfolio() {
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const { data: ensName } = useEnsName({ address: userAddress });
+
+    const isUserConnected = useSimulatedIsUserConnected();
 
     const {
         wagmiModal: { open: openModalWallet },
@@ -67,9 +65,18 @@ function Portfolio(props: propsIF) {
         undefined,
     );
 
-    const connectedAccountActive =
-        !addressFromParams ||
-        resolvedAddress?.toLowerCase() === userAddress?.toLowerCase();
+    const connectedAccountActive = useMemo(
+        () =>
+            userAddress
+                ? addressFromParams
+                    ? resolvedAddress?.toLowerCase() ===
+                      userAddress.toLowerCase()
+                        ? true
+                        : false
+                    : true
+                : false,
+        [addressFromParams, resolvedAddress, userAddress],
+    );
 
     useEffect(() => {
         (async () => {
@@ -250,7 +257,6 @@ function Portfolio(props: propsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    const showLoggedInButton = userAccount && !isUserConnected;
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
@@ -332,12 +338,12 @@ function Portfolio(props: propsIF) {
         >
             {connectedAccountActive && mobileDataToggle}
             {!showTabsAndNotExchange ? (
-                showLoggedInButton ? (
+                !isUserConnected ? (
                     notConnectedContent
                 ) : (
                     <PortfolioTabs {...portfolioTabsProps} />
                 )
-            ) : showLoggedInButton ? (
+            ) : !isUserConnected ? (
                 notConnectedContent
             ) : (
                 connectedAccountActive && exchangeBalanceComponent
@@ -349,29 +355,29 @@ function Portfolio(props: propsIF) {
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
-            {userAccount && showProfileSettings && (
+            {connectedAccountActive && showProfileSettings && (
                 <ProfileSettings {...profileSettingsProps} />
             )}
             <PortfolioBanner {...portfolioBannerProps} />
 
             <div
                 className={
-                    !userAccount
-                        ? styles.full_table
+                    !connectedAccountActive
+                        ? styles.full_layout_container
                         : fullLayoutActive
                         ? styles.full_layout_container
                         : styles.tabs_exchange_balance_container
                 }
             >
-                {!showLoggedInButton ? (
+                {isUserConnected || addressFromParams ? (
                     <PortfolioTabs {...portfolioTabsProps} />
-                ) : (
-                    notConnectedContent
-                )}
+                ) : undefined}
 
-                {showLoggedInButton
+                {connectedAccountActive
+                    ? exchangeBalanceComponent
+                    : !isUserConnected && !addressFromParams
                     ? notConnectedContent
-                    : connectedAccountActive && exchangeBalanceComponent}
+                    : undefined}
             </div>
         </main>
     );
