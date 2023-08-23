@@ -227,9 +227,6 @@ function Sidebar() {
                 onChange={(e) => handleSearchInput(e)}
                 spellCheck='false'
                 tabIndex={1}
-                onSubmit={(e) => {
-                    e.preventDefault();
-                }}
             />
             {searchInput && (
                 <div onClick={handleInputClear} className={styles.close_icon}>

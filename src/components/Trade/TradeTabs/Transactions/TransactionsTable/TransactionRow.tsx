@@ -1,12 +1,5 @@
 import styles from '../Transactions.module.css';
-import {
-    memo,
-    useCallback,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
@@ -174,19 +167,6 @@ function TransactionRow(props: propsIF) {
             // These will be shortcuts for the row menu. I will implement these at another time. -JR
         }
     };
-
-    const enterFunction = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            openDetailsModal();
-        }
-    }, []);
-
-    useEffect(() => {
-        document.addEventListener('keydown', enterFunction, false);
-        return () => {
-            document.removeEventListener('keydown', enterFunction, false);
-        };
-    }, []);
 
     const txRowConstantsProps = {
         handleCopyTxHash,
