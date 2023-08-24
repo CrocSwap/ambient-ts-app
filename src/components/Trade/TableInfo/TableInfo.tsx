@@ -52,8 +52,8 @@ export default function TableInfo() {
         { label: 'Market Cap:', value: '$69m' },
         { label: 'FDV:', value: '$690m' },
         { label: '24h Volume:', value: '$6.93k' },
-        { label: 'Total Fees:', value: '$6.93k' },
         { label: 'TVL:', value: '$2.27m' },
+        { label: 'Total Fees:', value: '$6.93k' },
         { label: 'Tick Liquidity:', value: '$500k' },
         { label: 'Out of Range Liq:', value: '20%' },
         { label: 'Pool Created:', value: '15/07/2022' },
@@ -138,6 +138,44 @@ export default function TableInfo() {
             </BoxContainer>
         );
     }
+
+    const temp = true;
+    if (temp)
+        return (
+            <MainSection>
+                <ScrollContainer>
+                    <GridContainer numCols={2} gapSize={8} height={200}>
+                        <GridContainer numCols={2} gapSize={8}>
+                            {featuredData.map((data, idx) => (
+                                <FeaturedBox
+                                    key={idx}
+                                    tokenLogo={data.tokenLogo}
+                                    tokenSymbol={data.tokenSymbol}
+                                    tokenName={data.tokenName}
+                                    tokenAddress={data.tokenAddress}
+                                    balance={data.balance}
+                                    value={data.value}
+                                />
+                            ))}
+                        </GridContainer>
+
+                        <GridContainer gapSize={28} customRows='46px 46px auto'>
+                            <GridContainer numCols={4} gapSize={8}>
+                                {/* first 4 row items go here */}
+                                <DetailedBox label='TVL' value='$2.8m' />
+                            </GridContainer>
+                            {/* second 4 row items go here */}
+                            <GridContainer
+                                numCols={4}
+                                gapSize={8}
+                            ></GridContainer>
+                        </GridContainer>
+                    </GridContainer>
+                </ScrollContainer>
+            </MainSection>
+        );
+
+    // Leave this as it is. This is the completed UI
     return (
         <MainSection>
             <ScrollContainer>
@@ -161,7 +199,7 @@ export default function TableInfo() {
                             {detailedData.slice(0, 4).map((data, idx) => (
                                 <DetailedBox
                                     label={data.label}
-                                    value={data.value}
+                                    value={data.label}
                                     key={idx}
                                 />
                             ))}
@@ -172,7 +210,7 @@ export default function TableInfo() {
                                 .map((data, idx) => (
                                     <DetailedBox
                                         label={data.label}
-                                        value={data.value}
+                                        value={data.label}
                                         key={idx}
                                     />
                                 ))}
