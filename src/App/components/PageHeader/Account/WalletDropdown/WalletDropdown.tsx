@@ -26,6 +26,7 @@ import {
     TokenAmount,
     ActionsContainer,
     NameDisplayContainer,
+    WalletContent,
 } from './WalletDropdown.styles';
 
 interface WalletDropdownPropsIF {
@@ -194,7 +195,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     </NameDisplayContent>
                 </div>
             </NameDisplayContainer>
-            <WalletDisplay>
+            <WalletContent>
                 {tokensData.map((tokenData) => (
                     <TokenAmountDisplay
                         amount={tokenData.amount}
@@ -204,7 +205,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         key={JSON.stringify(tokenData)}
                     />
                 ))}
-            </WalletDisplay>
+            </WalletContent>
             <ActionsContainer>
                 <NavLink
                     to={'/account'}
