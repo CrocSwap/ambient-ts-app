@@ -1,8 +1,8 @@
 .icon_grid {
     display: flex;
-    gap: 20px;
-    margin: 0 auto;
-    margin-right: 10px;
+    width: 5%;
+    grid-column: 2;
+    grid-row: 3;
   }
   
   .icon_card {
@@ -16,11 +16,3 @@
     font-size: 14px;
   }
   
-
-.icon_active {
-  color: #00aaff; 
-}
-
-.icon_inactive {
-  color: #ccc; 
-}

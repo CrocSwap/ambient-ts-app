@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
     bandLineData,
@@ -9,7 +9,6 @@ import {
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';
@@ -21,6 +20,8 @@ interface DrawCanvasProps {
     >;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCrossHairDataFunc: any;
+    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
+    activeDrawingType: string;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -28,7 +29,14 @@ function DrawCanvas(props: DrawCanvasProps) {
     const [lineData, setLineData] = useState<lineData[]>([]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-    const { scaleData, setDrawnShapeHistory, setCrossHairDataFunc } = props;
+    const {
+        scaleData,
+        setDrawnShapeHistory,
+        setCrossHairDataFunc,
+        setIsDrawActive,
+        activeDrawingType,
+    } = props;
+
     const circleSeries = createCircle(
         scaleData?.xScale,
         scaleData?.yScale,
@@ -40,8 +48,6 @@ function DrawCanvas(props: DrawCanvasProps) {
         scaleData?.xScale,
         scaleData?.yScale,
     );
-
-    const { setIsDrawActive, activeDrawingType } = useContext(ChartContext);
 
     function createScaleForBandArea(x: number, x2: number) {
         const newXScale = scaleData?.xScale.copy();

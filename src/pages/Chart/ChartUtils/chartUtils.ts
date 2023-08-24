@@ -30,6 +30,11 @@ export const defaultCandleBandwith = 5;
 export type lineData = { x: number; y: number; ctx: any };
 export type drawDataHistory = { data: lineData[]; type: string; time: number };
 export type bandLineData = { fromValue: number; toValue: number };
+export type selectedDrawnData = {
+    data: drawDataHistory;
+    selectedCircle: lineData | undefined;
+};
+
 export interface CandleDataChart extends CandleData {
     isFakeData: boolean;
 }

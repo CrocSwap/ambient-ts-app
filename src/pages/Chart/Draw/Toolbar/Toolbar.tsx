@@ -1,19 +1,21 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { FaPaintBrush, FaSquare } from 'react-icons/fa';
 import styles from './Toolbar.module.css';
-import { ChartContext } from '../../../../contexts/ChartContext';
-// interface ToolbarProps {
-//     isDrawActive: boolean;
-//     setIsDrawActive: any;
-// }
+import Divider from '../../../../components/Global/Divider/Divider';
+interface ToolbarProps {
+    isDrawActive: boolean;
+    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
+    activeDrawingType: string;
+    setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
+}
 
-function Toolbar() {
+function Toolbar(props: ToolbarProps) {
     const {
         isDrawActive,
         setIsDrawActive,
         activeDrawingType,
         setActiveDrawingType,
-    } = useContext(ChartContext);
+    } = props;
 
     function handleDrawModeChange(item: any) {
         setIsDrawActive((prev: boolean) => !prev);
