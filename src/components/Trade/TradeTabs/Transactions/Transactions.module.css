@@ -16,7 +16,8 @@
     border-left: 2px solid var(--text1);
 }
 
-.main_list_container {
+.main_list_container,
+.acc_list_container {
     width: 100%;
     height: 100%;
     overflow-y: scroll;
@@ -24,7 +25,9 @@
     position: relative;
 }
 
-.main_list_container {
+.main_list_container,
+.acc_list_container {
+    display: grid;
     display: grid;
     overflow-y: hidden;
     grid-template-rows: auto 1fr;
@@ -39,17 +42,15 @@
 
 .header {
     position: sticky;
-    top: 0; 
+    top: 0;
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
 .table_content {
     min-height: 100px;
     flex-grow: 1;
-    overflow: auto; 
-    
+    overflow: auto;
 }
-
 
 .footer {
     background: var(--dark1);
@@ -74,23 +75,27 @@
     width: 60%;
 }
 /* width */
-.main_list_container::-webkit-scrollbar {
+.main_list_container::-webkit-scrollbar,
+.acc_list_container::-webkit-scrollbar {
     width: 4px;
     height: 4px;
 }
 
 /* Track */
-.main_list_container::-webkit-scrollbar-track {
+.main_list_container::-webkit-scrollbar-track,
+.acc_list_container::-webkit-scrollbar-track {
     border-radius: 100vh;
 }
 
 /* Handle */
-.main_list_container::-webkit-scrollbar-thumb {
+.main_list_container::-webkit-scrollbar-thumb,
+.acc_list_container::-webkit-scrollbar-thumb {
     background: var(--title-gradient);
 }
 
 @-moz-document url-prefix() {
-    .main_list_container::-webkit-scrollbar-thumb {
+    .main_list_container::-webkit-scrollbar-thumb,
+    .acc_list_container::-webkit-scrollbar-thumb {
         background: blue;
     }
 }
@@ -112,6 +117,7 @@
     color: var(--text2);
 }
 .row_container {
+    position: relative;
     width: 100%;
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
@@ -122,22 +128,125 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .row_container li:not(:last-child) {
     cursor: pointer;
 }
 
+.row_placeholder {
+    background-color: var(--dark2);
+    color: var(--text2);
+    -webkit-mask: linear-gradient(
+            -60deg,
+            black 30%,
+            rgba(119, 117, 117, 0.333),
+            black 70%
+        )
+        right/300% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+    100% {
+        -webkit-mask-position: left;
+    }
+}
+
 .main_list_container .row_container,
-.main_list_container .header {
+.main_list_container .header,
+.acc_list_container .row_container,
+.acc_list_container .header {
     width: 100%;
-    /* table row was living space at end so I changed it to table and added a fixed table layout*/
-    display: table-row;
-    table-layout: fixed;
-    display: table;
+    display: grid;
+    align-items: center;
+}
+
+/* The reason we use % for the last column is it allows slight overlap.
+ which helps with how the claimable column has a bigger header than the actual icon below. */
+@media only screen and (max-width: 600px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for sub-iPad view (410px)*/
+        grid-template-columns:
+            minmax(142px, 1.9fr) minmax(79px, 1.4fr) minmax(90px, 1.6fr)
+            minmax(28px, 25%);
+    }
+    /* Account has diffrent styling */
+    .acc_list_container .row_container,
+    .acc_list_container .header {
+        /* measured against smallest screen size for sub-iPad view (410px)*/
+        grid-template-columns:
+            minmax(72px, 1fr) minmax(72px, 1fr) minmax(72px, 1fr)
+            minmax(90px, 1fr) minmax(28px, 25%);
+    }
+}
+
+@media only screen and (max-width: 1199px) and (min-width: 601px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for iPad view (601px)*/
+        grid-template-columns:
+            minmax(142px, 1.9fr) minmax(70px, 1.3fr)
+            minmax(90px, 1.2fr) minmax(70px, 1fr) minmax(90px, 1.6fr) minmax(78px, 25%);
+    }
+    /* Account has diffrent styling */
+    .acc_list_container .row_container,
+    .acc_list_container .header {
+        /* measured against smallest screen size for iPad view (580px)*/
+        grid-template-columns:
+            minmax(72px, 1fr) minmax(80px, 1fr) minmax(60px, 1fr)
+            minmax(80px, 1fr) minmax(72px, 1fr) minmax(90px, 1fr) minmax(78px, 25%);
+    }
+}
+
+@media only screen and (max-width: 1599px) and (min-width: 1200px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for merged view (1280px) with sidebar expanded*/
+        grid-template-columns:
+            minmax(76px, 1.1fr) minmax(115px, 2.6fr) minmax(80px, 1.3fr)
+            minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%);
+    }
+    /* Account has diffrent styling */
+    .acc_list_container .row_container,
+    .acc_list_container .header {
+        /* measured against smallest screen size for merged view (1280px) with sidebar expanded*/
+        grid-template-columns:
+            minmax(76px, 1.3fr) minmax(90px, 1.9fr) minmax(94px, 1.3fr)
+            minmax(80px, 1.2fr) minmax(70px, 1.4fr) minmax(90px, 1.6fr) minmax(
+                90px,
+                1.6fr
+            )
+            minmax(78px, 25%);
+    }
+}
+
+@media only screen and (min-width: 1600px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for full view (1600px) with sidebar expanded */
+        grid-template-columns:
+            minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+            minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(72px, 1.3fr) minmax(
+                80px,
+                1.7fr
+            )
+            minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(114px, 20%);
+    }
+    /* Account has diffrent styling */
+    .acc_list_container .row_container,
+    .acc_list_container .header {
+        /* measured against smallest screen size for full view (1600px) with sidebar expanded */
+        grid-template-columns: minmax(75px, 1.3fr) 2fr 1.9fr 1.5fr 1.3fr 1.3fr 1.9fr 2.2fr 2.2fr 25%;
+    }
 }
 
 .main_list_container .row_container > li,
-.main_list_container .header > li {
+.main_list_container .header > li,
+.acc_list_container .row_container > li,
+.acc_list_container .header > li {
     display: table-cell;
 
     /* I commented this out to make the header align center with arrow */
@@ -166,7 +275,8 @@
     }
 }
 
-.main_list_container > ul:nth-child(1) {
+.main_list_container > ul:nth-child(1),
+.acc_list_container > ul:nth-child(1) {
     z-index: 2;
 }
 
@@ -281,7 +391,6 @@
     padding: 10px;
     display: flex;
     justify-content: center;
-
 }
 
 .view_more_button {
@@ -300,7 +409,7 @@
     color: var(--text2);
 }
 
-.show_more_grid{
+.show_more_grid {
     display: grid;
     grid-template-rows: auto 70px;
 }

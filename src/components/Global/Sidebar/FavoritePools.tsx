@@ -35,7 +35,7 @@ export default function FavoritePools(props: propsIF) {
     );
 
     return (
-        <SidebarPoolsListContainer>
+        <SidebarPoolsListContainer fontSize={'body'}>
             <SidebarPoolsListHeaderContainer>
                 <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Volume</SidebarPoolsListHeader>
