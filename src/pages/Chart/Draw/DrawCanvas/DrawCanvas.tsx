@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
     drawDataHistory,
@@ -8,7 +8,6 @@ import {
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
-import { ChartContext } from '../../../../contexts/ChartContext';
 import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 
@@ -19,6 +18,7 @@ interface DrawCanvasProps {
     >;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCrossHairDataFunc: any;
+    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -26,7 +26,12 @@ function DrawCanvas(props: DrawCanvasProps) {
     const [lineData, setLineData] = useState<lineData[]>([]);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-    const { scaleData, setDrawnShapeHistory, setCrossHairDataFunc } = props;
+    const {
+        scaleData,
+        setDrawnShapeHistory,
+        setCrossHairDataFunc,
+        setIsDrawActive,
+    } = props;
     const circleSeries = createCircle(
         scaleData?.xScale,
         scaleData?.yScale,
@@ -38,8 +43,6 @@ function DrawCanvas(props: DrawCanvasProps) {
         scaleData?.xScale,
         scaleData?.yScale,
     );
-
-    const { setIsDrawActive } = useContext(ChartContext);
 
     useEffect(() => {
         const canvas = d3

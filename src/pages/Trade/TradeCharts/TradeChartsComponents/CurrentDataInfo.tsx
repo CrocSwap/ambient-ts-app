@@ -74,10 +74,6 @@ function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
             )}
 
             <div className={styles.chart_overlay_container}>
-                <div className={styles.settings_container}>
-                    <Toolbar />
-                </div>
-
                 {showLatest && (
                     <div className={styles.settings_container}>
                         <button

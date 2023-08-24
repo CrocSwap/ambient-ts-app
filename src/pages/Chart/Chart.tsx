@@ -70,6 +70,7 @@ import {
     renderCanvasArray,
     renderSubchartCrCanvas,
     scaleData,
+    selectedDrawnData,
     setCanvasResolution,
     standardDeviation,
 } from './ChartUtils/chartUtils';
@@ -82,10 +83,14 @@ import {
     createLinearLineSeries,
     distanceToLine,
 } from './Draw/DrawCanvas/LinearLineSeries';
-import { ChartContext } from '../../contexts/ChartContext';
 import { useUndoRedo } from './ChartUtils/useUndoRedo';
-import { createCircle } from './ChartUtils/circle';
+import {
+    checkCricleLocation,
+    circleSize,
+    createCircle,
+} from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
+import Toolbar from './Draw/Toolbar/Toolbar';
 // import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
@@ -159,12 +164,13 @@ export default function Chart(props: propsIF) {
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
-    const { isDrawActive } = useContext(ChartContext);
 
     const [drawnShapeHistory, setDrawnShapeHistory] = useState<
         drawDataHistory[]
     >([]);
     const [isDragActive, setIsDragActive] = useState(false);
+    const [isDrawActive, setIsDrawActive] = useState(false);
+
     const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
@@ -270,9 +276,9 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineSeries, setLineSeries] = useState<any>();
 
-    const [selectedDrawnShape, setSelectedDrawnShape] =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        useState<any>(undefined);
+    const [selectedDrawnShape, setSelectedDrawnShape] = useState<
+        selectedDrawnData | undefined
+    >(undefined);
     const { undo, redo } = useUndoRedo(drawnShapeHistory, setDrawnShapeHistory);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
@@ -2262,7 +2268,7 @@ export default function Chart(props: propsIF) {
     const circleSeries = createCircle(
         scaleData?.xScale,
         scaleData?.yScale,
-        60,
+        circleSize,
         0.5,
     );
 
@@ -2280,7 +2286,7 @@ export default function Chart(props: propsIF) {
                         lineSeries(item?.data);
                         if (
                             selectedDrawnShape &&
-                            selectedDrawnShape.time === item.time
+                            selectedDrawnShape.data.time === item.time
                         ) {
                             circleSeries(item?.data);
                         }
@@ -2749,6 +2755,7 @@ export default function Chart(props: propsIF) {
 
         return false;
     }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
@@ -2760,13 +2767,24 @@ export default function Chart(props: propsIF) {
             }
         });
 
-        if (resElement) {
+        if (resElement && scaleData) {
+            const selectedCircle = checkCricleLocation(
+                resElement,
+                mouseX,
+                mouseY,
+                scaleData,
+            );
+
+            setSelectedDrawnShape({
+                data: resElement,
+                selectedCircle: selectedCircle,
+            });
+
             setIsDragActive(true);
         } else {
             setIsDragActive(false);
+            setSelectedDrawnShape(undefined);
         }
-
-        setSelectedDrawnShape(resElement);
     };
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
         const lastDate = scaleData?.xScale.invert(
@@ -3320,6 +3338,12 @@ export default function Chart(props: propsIF) {
                         height: '100%',
                     }}
                 >
+                    <div>
+                        <Toolbar
+                            isDrawActive={isDrawActive}
+                            setIsDrawActive={setIsDrawActive}
+                        />
+                    </div>
                     <div className='chart_grid'>
                         <CandleChart
                             chartItemStates={props.chartItemStates}
@@ -3386,6 +3410,7 @@ export default function Chart(props: propsIF) {
                                 scaleData={scaleData}
                                 setDrawnShapeHistory={setDrawnShapeHistory}
                                 setCrossHairDataFunc={setCrossHairDataFunc}
+                                setIsDrawActive={setIsDrawActive}
                             />
                         )}
 

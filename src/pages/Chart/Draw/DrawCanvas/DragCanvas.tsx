@@ -1,10 +1,14 @@
 import { MouseEvent, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import { drawDataHistory, scaleData } from '../../ChartUtils/chartUtils';
+import {
+    drawDataHistory,
+    scaleData,
+    selectedDrawnData,
+} from '../../ChartUtils/chartUtils';
 
 interface DragCanvasProps {
     scaleData: scaleData;
-    selectedDrawnShape: drawDataHistory;
+    selectedDrawnShape: selectedDrawnData | undefined;
     drawnShapeHistory: drawDataHistory[];
     canUserDragDrawnShape: boolean;
     setIsDragActive: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,39 +36,56 @@ export default function DragCanvas(props: DragCanvasProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dragLine = (event: any) => {
-        const movemementX = event.sourceEvent.movementX;
-        const movemementY = event.sourceEvent.movementY;
+        if (selectedDrawnShape) {
+            const movemementX = event.sourceEvent.movementX;
+            const movemementY = event.sourceEvent.movementY;
+            const index = drawnShapeHistory.findIndex(
+                (item) => item === selectedDrawnShape?.data,
+            );
+
+            const lastData = [
+                {
+                    x: scaleData.xScale.invert(
+                        scaleData.xScale(selectedDrawnShape?.data?.data[0].x) +
+                            movemementX,
+                    ),
+                    y: scaleData.yScale.invert(
+                        scaleData.yScale(selectedDrawnShape.data?.data[0].y) +
+                            movemementY,
+                    ),
+                },
+                {
+                    x: scaleData.xScale.invert(
+                        scaleData.xScale(selectedDrawnShape.data.data[1].x) +
+                            movemementX,
+                    ),
+                    y: scaleData.yScale.invert(
+                        scaleData.yScale(selectedDrawnShape.data.data[1].y) +
+                            movemementY,
+                    ),
+                },
+            ];
+            drawnShapeHistory[index].data = lastData;
+            selectedDrawnShape.data.data = lastData;
+
+            render();
+        }
+    };
+
+    function updateDrawLine(offsetX: number, offsetY: number) {
         const index = drawnShapeHistory.findIndex(
-            (item) => item === selectedDrawnShape,
+            (item) => item === selectedDrawnShape?.data,
         );
 
-        const lastData = [
-            {
-                x: scaleData.xScale.invert(
-                    scaleData.xScale(selectedDrawnShape.data[0].x) +
-                        movemementX,
-                ),
-                y: scaleData.yScale.invert(
-                    scaleData.yScale(selectedDrawnShape.data[0].y) +
-                        movemementY,
-                ),
-            },
-            {
-                x: scaleData.xScale.invert(
-                    scaleData.xScale(selectedDrawnShape.data[1].x) +
-                        movemementX,
-                ),
-                y: scaleData.yScale.invert(
-                    scaleData.yScale(selectedDrawnShape.data[1].y) +
-                        movemementY,
-                ),
-            },
-        ];
-        drawnShapeHistory[index].data = lastData;
-        selectedDrawnShape.data = lastData;
+        const previosData = drawnShapeHistory[index].data;
 
-        render();
-    };
+        const lastDataIndex = previosData.findIndex(
+            (item) => item === selectedDrawnShape?.selectedCircle,
+        );
+        previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
+        previosData[lastDataIndex].y = scaleData.yScale.invert(offsetY);
+        drawnShapeHistory[index].data = previosData;
+    }
 
     // mousemove
     useEffect(() => {
@@ -100,8 +121,15 @@ export default function DragCanvas(props: DragCanvasProps) {
                 const offsetY = event.sourceEvent.clientY - canvasRect?.top;
                 const offsetX = event.sourceEvent.clientX - canvasRect?.left;
                 setCrossHairDataFunc(offsetX, offsetY);
-                if (selectedDrawnShape && selectedDrawnShape.type === 'line') {
-                    dragLine(event);
+                if (
+                    selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'line'
+                ) {
+                    if (!selectedDrawnShape.selectedCircle) {
+                        dragLine(event);
+                    } else {
+                        updateDrawLine(offsetX, offsetY);
+                    }
                 }
             })
             .on('end', () => {

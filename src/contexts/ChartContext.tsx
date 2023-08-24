@@ -19,8 +19,6 @@ interface ChartContextIF {
     isEnabled: boolean;
     canvasRef: React.MutableRefObject<null>;
     chartCanvasRef: React.MutableRefObject<null>;
-    isDrawActive: boolean;
-    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const ChartContext = createContext<ChartContextIF>({} as ChartContextIF);
@@ -29,7 +27,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
     // 2:1 ratio of the window height subtracted by main header and token info header
     const CHART_MAX_HEIGHT = window.innerHeight - 98;
     const CHART_DEFAULT_HEIGHT = Math.floor((CHART_MAX_HEIGHT * 2) / 3);
-    const [isDrawActive, setIsDrawActive] = useState(false);
 
     const [chartHeights, setChartHeights] = useState<{
         current: number;
@@ -84,8 +81,6 @@ export const ChartContextProvider = (props: { children: React.ReactNode }) => {
         isEnabled: isChartEnabled,
         canvasRef,
         chartCanvasRef,
-        isDrawActive,
-        setIsDrawActive,
     };
 
     useEffect(() => {

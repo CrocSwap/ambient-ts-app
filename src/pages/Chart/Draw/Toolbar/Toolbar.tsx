@@ -1,15 +1,14 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { FaPaintBrush } from 'react-icons/fa';
 import styles from './Toolbar.module.css';
-import { ChartContext } from '../../../../contexts/ChartContext';
-// interface ToolbarProps {
-//     isDrawActive: boolean;
-//     setIsDrawActive: any;
-// }
+import Divider from '../../../../components/Global/Divider/Divider';
+interface ToolbarProps {
+    isDrawActive: boolean;
+    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-function Toolbar() {
-    const { isDrawActive, setIsDrawActive } = useContext(ChartContext);
-
+function Toolbar(props: ToolbarProps) {
+    const { isDrawActive, setIsDrawActive } = props;
     function handleDrawModeChange() {
         setIsDrawActive((prev: boolean) => !prev);
     }
@@ -26,21 +25,17 @@ function Toolbar() {
     return (
         <div className={styles.icon_grid}>
             {iconList.map((item, index) => (
-                <div key={index} className={styles.icon_card}>
-                    <div
-                        className={
-                            isDrawActive
-                                ? styles.icon_active
-                                : styles.icon_inactive
-                        }
-                        onClick={() => handleDrawModeChange()}
-                    >
-                        {React.cloneElement(item.icon, {
-                            style: {
-                                fill: isDrawActive ? '#7371fc' : '#ccc',
-                            },
-                        })}
-                    </div>
+                <div
+                    key={index}
+                    className={styles.icon_card}
+                    onClick={() => handleDrawModeChange()}
+                >
+                    {React.cloneElement(item.icon, {
+                        style: {
+                            fill: isDrawActive ? '#7371fc' : '#ccc',
+                        },
+                    })}
+                    <hr style={{ marginTop: 3 }} />
                 </div>
             ))}
         </div>
