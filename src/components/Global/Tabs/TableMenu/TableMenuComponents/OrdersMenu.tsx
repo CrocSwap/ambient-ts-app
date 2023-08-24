@@ -1,14 +1,12 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef, useEffect, useContext } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
 // START: Import JSX Functional Components
-import Modal from '../../../../Global/Modal/Modal';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
-import { useModal } from '../../../../Global/Modal/useModal';
-import OrderDetails from '../../../../OrderDetails/OrderDetails';
+import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
 import LimitActionModal from '../../../../LimitActionModal/LimitActionModal';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
@@ -22,7 +20,6 @@ import {
     setLimitTickCopied,
     setShouldLimitDirectionReverse,
 } from '../../../../../utils/state/tradeDataSlice';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
     useLinkGen,
@@ -30,6 +27,7 @@ import {
 } from '../../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useModal } from '../../../Modal/useModal';
 import { OptionButton } from '../../../Button/OptionButton';
 
 // interface for React functional component props
@@ -41,6 +39,8 @@ interface propsIF {
     isBaseTokenMoneynessGreaterOrEqual: boolean;
     handleAccountClick: () => void;
 }
+
+export type LimitActionType = 'Remove' | 'Claim';
 
 // React functional component
 export default function OrdersMenu(props: propsIF) {
@@ -55,9 +55,6 @@ export default function OrdersMenu(props: propsIF) {
 
     const menuItemRef = useRef<HTMLDivElement>(null);
 
-    const {
-        globalModal: { open: openGlobalModal },
-    } = useContext(AppStateContext);
     const { chainData } = useContext(CrocEnvContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
@@ -66,14 +63,8 @@ export default function OrdersMenu(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const [isModalOpen, closeModal] = useModal();
-
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-
-    // ---------------------MODAL FUNCTIONALITY----------------
-    let modalContent: ReactNode;
-    let modalTitle;
 
     const dispatch = useAppDispatch();
 
@@ -105,33 +96,31 @@ export default function OrdersMenu(props: propsIF) {
 
     // -----------------END OF SNACKBAR----------------
 
-    const openRemoveModal = () =>
-        openGlobalModal(
-            <LimitActionModal limitOrder={limitOrder} type='Remove' />,
-        );
-    const openClaimModal = () =>
-        openGlobalModal(
-            <LimitActionModal limitOrder={limitOrder} type='Claim' />,
-        );
+    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+        useModal();
 
-    const openDetailsModal = () =>
-        openGlobalModal(
-            <OrderDetails
-                limitOrder={limitOrder}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-            />,
-        );
+    const [isActionModalOpen, openActionModal, closeActionModal] = useModal();
+    const [limitModalAction, setLimitModalAction] =
+        useState<LimitActionType>('Remove');
 
-    const mainModal = (
-        <Modal onClose={closeModal} title={modalTitle}>
-            {modalContent}
-        </Modal>
-    );
+    const openLimitDetailsModal = () => {
+        setShowDropdownMenu(false);
+        openDetailsModal();
+    };
 
-    const modalOrNull = isModalOpen ? mainModal : null;
+    const openLimitActionModal = (type: LimitActionType) => {
+        setShowDropdownMenu(false);
+        setLimitModalAction(type);
+        openActionModal();
+    };
+
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? isSidebarOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
+        : isSidebarOpen
+        ? useMediaQuery('(max-width: 1500px)')
+        : useMediaQuery('(max-width: 1250px)');
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
@@ -140,20 +129,6 @@ export default function OrdersMenu(props: propsIF) {
 
     const view2WithNoSidebar =
         useMediaQuery('(min-width: 1680px)') && !isSidebarOpen;
-
-    const removeButtonOnClick = () => {
-        setShowDropdownMenu(false);
-        openRemoveModal();
-    };
-    const claimButtonOnClick = () => {
-        setShowDropdownMenu(false);
-        openClaimModal();
-    };
-
-    const detailsButtonOnClick = () => {
-        setShowDropdownMenu(false);
-        openDetailsModal();
-    };
 
     const walletButton = (
         <OptionButton
@@ -173,11 +148,17 @@ export default function OrdersMenu(props: propsIF) {
     );
     const removeButton =
         limitOrder && isOwnerActiveAccount && !isOrderFilled ? (
-            <OptionButton onClick={removeButtonOnClick} content='Remove' />
+            <OptionButton
+                onClick={() => openLimitActionModal('Remove')}
+                content='Remove'
+            />
         ) : null;
     const claimButton =
         limitOrder && isOwnerActiveAccount && isOrderFilled ? (
-            <OptionButton onClick={claimButtonOnClick} content='Claim' />
+            <OptionButton
+                onClick={() => openLimitActionModal('Claim')}
+                content='Claim'
+            />
         ) : null;
     const copyButton = limitOrder ? (
         <OptionButton
@@ -200,11 +181,11 @@ export default function OrdersMenu(props: propsIF) {
                 );
                 handleCopyOrder();
             }}
-            content='Copy Trade'
+            content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
         />
     ) : null;
     const detailsButton = (
-        <OptionButton onClick={detailsButtonOnClick} content='Details' />
+        <OptionButton onClick={openLimitDetailsModal} content='Details' />
     );
 
     const ordersMenu = (
@@ -257,13 +238,29 @@ export default function OrdersMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
     return (
-        <div
-            className={styles.main_container}
-            onClick={(event) => event.stopPropagation()}
-        >
-            {ordersMenu}
-            {dropdownOrdersMenu}
-            {modalOrNull}
+        <div onClick={(event) => event.stopPropagation()}>
+            <div className={styles.main_container}>
+                {ordersMenu}
+                {dropdownOrdersMenu}
+            </div>
+            {isDetailsModalOpen && (
+                <OrderDetailsModal
+                    limitOrder={limitOrder}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    onClose={closeDetailsModal}
+                />
+            )}
+            {isActionModalOpen && (
+                <LimitActionModal
+                    limitOrder={limitOrder}
+                    type={limitModalAction}
+                    isOpen={isActionModalOpen}
+                    onClose={closeActionModal}
+                />
+            )}
         </div>
     );
 }

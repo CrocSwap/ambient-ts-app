@@ -1,12 +1,20 @@
 .dropdown_menu_container {
-    min-width: 100px;
     z-index: 99999;
     background-color: var(--dark2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 4px;
    
     border-radius: 4px;
     grid-gap: 4px;
     gap: 4px;
     height: 31px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 4px;
 }
 
 .selector_select {

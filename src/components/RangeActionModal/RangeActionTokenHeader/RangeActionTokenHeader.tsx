@@ -1,39 +1,87 @@
+import { SetStateAction, useContext } from 'react';
 import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './RangeActionTokenHeader.module.css';
-import { RiListSettingsLine } from 'react-icons/ri';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
-interface RangeActionTokenHeaderIF {
+interface propsIF {
     isPositionInRange: boolean;
     isAmbient: boolean;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
-    setShowSettings: (value: React.SetStateAction<boolean>) => void;
+    setShowSettings: (value: SetStateAction<boolean>) => void;
     showSettings: boolean;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
-export default function RangeActionTokenHeader(
-    props: RangeActionTokenHeaderIF,
-) {
+export default function RangeActionTokenHeader(props: propsIF) {
+    const {
+        isPositionInRange,
+        baseTokenAddress,
+        quoteTokenAddress,
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        isAmbient,
+    } = props;
     const { showSettings, setShowSettings } = props;
+    const settingsSvg = (
+        <svg
+            width='16'
+            height='16'
+            viewBox='0 0 14 14'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+            className={styles.hoverable_icon}
+        >
+            <rect
+                y='9.625'
+                width='8.75'
+                height='1.75'
+                rx='0.875'
+                fill=''
+            ></rect>
+            <rect
+                x='5.25'
+                y='2.625'
+                width='8.75'
+                height='1.75'
+                rx='0.875'
+                fill=''
+            ></rect>
+            <circle cx='12.25' cy='10.5' r='1.75' fill=''></circle>
+            <circle cx='1.75' cy='3.5' r='1.75' fill=''></circle>
+        </svg>
+    );
+
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
 
     return (
         <div className={styles.container}>
             <div className={styles.token_info}>
                 <TokenIcon
-                    src={props.baseTokenLogoURI}
-                    alt={props.baseTokenSymbol}
+                    token={baseToken}
+                    src={baseTokenLogoURI}
+                    alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
-                    src={props.quoteTokenLogoURI}
-                    alt={props.quoteTokenSymbol}
+                    token={quoteToken}
+                    src={quoteTokenLogoURI}
+                    alt={quoteTokenSymbol}
                     size='2xl'
                 />
                 <span>
-                    {props.baseTokenSymbol} /{props.quoteTokenSymbol}
+                    {baseTokenSymbol} /{quoteTokenSymbol}
                 </span>
             </div>
 
@@ -46,16 +94,16 @@ export default function RangeActionTokenHeader(
                 }}
             >
                 <RangeStatus
-                    isInRange={props.isPositionInRange}
+                    isInRange={isPositionInRange}
                     isEmpty={false}
-                    isAmbient={props.isAmbient}
+                    isAmbient={isAmbient}
                     size='s'
                 />
                 <div
                     onClick={() => setShowSettings(!showSettings)}
                     className={styles.settings_icon}
                 >
-                    {showSettings ? null : <RiListSettingsLine size={20} />}
+                    {showSettings ? null : settingsSvg}
                 </div>
             </section>
         </div>

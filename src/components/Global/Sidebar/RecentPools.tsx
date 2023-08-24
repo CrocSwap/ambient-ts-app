@@ -22,7 +22,7 @@ function RecentPools(props: propsIF) {
     const { recentPools } = useContext(SidebarContext);
 
     return (
-        <SidebarPoolsListContainer>
+        <SidebarPoolsListContainer fontSize={'body'}>
             <SidebarPoolsListHeaderContainer>
                 <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Volume</SidebarPoolsListHeader>

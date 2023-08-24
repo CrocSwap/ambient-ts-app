@@ -81,6 +81,10 @@ const ScrollContainer = styled.div<ScrollContainerProps>`
 
 // FONT
 
+const Font = css<{ font?: 'font-logo' | 'font-family' | 'roboto' | 'mono' }>`
+    ${({ font }) => font && `font-family: var(--${font})`}
+`;
+
 const FontSize = css<{ fontSize?: 'header1' | 'header2' | 'header' | 'body' }>`
     ${({ fontSize }) =>
         fontSize &&
@@ -89,4 +93,25 @@ const FontSize = css<{ fontSize?: 'header1' | 'header2' | 'header' | 'body' }>`
     line-height: var(--${fontSize}-lh);
   `}
 `;
-export { FlexContainer, GridContainer, FontSize, ScrollContainer };
+
+const Color = css<{
+    color?:
+        | 'text1'
+        | 'text2'
+        | 'text3'
+        | 'accent1'
+        | 'accent2'
+        | 'accent3'
+        | 'accent4'
+        | 'accent5'
+        | 'positive'
+        | 'negative'
+        | 'other-green'
+        | 'other-red';
+    background: 'dark1' | 'dark2' | 'dark3' | 'dark4';
+}>`
+    ${({ color }) => color && `color: var(--${color})`};
+    ${({ background }) =>
+        background && `background-color: var(--${background})`};
+`;
+export { FlexContainer, GridContainer, Font, FontSize, Color, ScrollContainer };

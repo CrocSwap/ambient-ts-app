@@ -1,27 +1,20 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction, useContext, memo } from 'react';
+import { memo } from 'react';
 
 // START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
-import Button from '../../../Global/Button/Button';
-import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
-import TransactionSubmitted from '../../../Global/TransactionSubmitted/TransactionSubmitted';
-import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
-import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import SelectedRange from './SelectedRange/SelectedRange';
-import TransactionException from '../../../Global/TransactionException/TransactionException';
 
 // START: Import Local Files
 import styles from './ConfirmRangeModal.module.css';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
+import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
 
 interface propsIF {
-    sendTransaction: () => void;
+    sendTransaction: () => Promise<void>;
     newRangeTransactionHash: string;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
@@ -34,12 +27,12 @@ interface propsIF {
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
     showConfirmation: boolean;
-    setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     txErrorCode: string;
     resetConfirmation: () => void;
     isAdd: boolean;
-    tokenAQtyLocal: number;
-    tokenBQtyLocal: number;
+    tokenAQty: string;
+    tokenBQty: string;
+    onClose: () => void;
 }
 
 function ConfirmRangeModal(props: propsIF) {
@@ -55,70 +48,31 @@ function ConfirmRangeModal(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
         txErrorCode,
         showConfirmation,
-        setShowConfirmation,
         resetConfirmation,
         isAdd,
-        tokenAQtyLocal,
-        tokenBQtyLocal,
+        tokenAQty,
+        tokenBQty,
+        onClose = () => null,
     } = props;
 
-    const {
-        bypassConfirmLimit,
-        bypassConfirmRange,
-        bypassConfirmRepo,
-        bypassConfirmSwap,
-    } = useContext(UserPreferenceContext);
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
-
-    const txApproved = newRangeTransactionHash !== '';
-    const isTxDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTxException = txErrorCode !== '' && !isTxDenied;
-
-    const localeTokenAString = getFormattedNumber({
-        value: tokenAQtyLocal,
-    });
-    const localeTokenBString = getFormattedNumber({
-        value: tokenBQtyLocal,
-    });
-
-    const txDenied = (
-        <TransactionDenied resetConfirmation={resetConfirmation} />
-    );
-    const txException = (
-        <TransactionException resetConfirmation={resetConfirmation} />
-    );
-
-    const txSubmitted = (
-        <TransactionSubmitted
-            hash={newRangeTransactionHash}
-            tokenBSymbol={tokenB.symbol}
-            tokenBAddress={tokenB.address}
-            tokenBDecimals={tokenB.decimals}
-            tokenBImage={uriToHttp(tokenB.logoURI)}
-            chainId={tokenB.chainId}
-            range
-        />
-    );
 
     const tokenACharacter: string = getUnicodeCharacter(tokenA.symbol);
     const tokenBCharacter: string = getUnicodeCharacter(tokenB.symbol);
 
-    // this is the starting state for the bypass confirmation toggle switch
-    // if this modal is being shown, we can assume bypass is disabled
-    const [currentSkipConfirm, setCurrentSkipConfirm] =
-        useState<boolean>(false);
-
-    const fullTxDetails = (
+    const poolTokenDisplay = (
         <>
             <section className={styles.position_display}>
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
                         <TokenIcon
+                            token={tokenA}
                             src={uriToHttp(tokenA.logoURI)}
                             alt={tokenA.symbol}
                             size='2xl'
                         />
                         <TokenIcon
+                            token={tokenB}
                             src={uriToHttp(tokenB.logoURI)}
                             alt={tokenB.symbol}
                             size='2xl'
@@ -139,6 +93,7 @@ function ConfirmRangeModal(props: propsIF) {
                     <div className={styles.detail_line}>
                         <div>
                             <TokenIcon
+                                token={tokenA}
                                 src={uriToHttp(tokenA.logoURI)}
                                 alt={tokenA.symbol}
                                 size='m'
@@ -146,14 +101,15 @@ function ConfirmRangeModal(props: propsIF) {
                             <span>{tokenA.symbol}</span>
                         </div>
                         <span>
-                            {localeTokenAString !== ''
-                                ? tokenACharacter + localeTokenAString
+                            {tokenAQty !== ''
+                                ? tokenACharacter + tokenAQty
                                 : '0'}
                         </span>
                     </div>
                     <div className={styles.detail_line}>
                         <div>
                             <TokenIcon
+                                token={tokenB}
                                 src={uriToHttp(tokenB.logoURI)}
                                 alt={tokenB.symbol}
                                 size='m'
@@ -161,9 +117,7 @@ function ConfirmRangeModal(props: propsIF) {
                             <span>{tokenB.symbol}</span>
                         </div>
                         <span>
-                            {localeTokenBString
-                                ? tokenBCharacter + localeTokenBString
-                                : '0'}
+                            {tokenBQty ? tokenBCharacter + tokenBQty : '0'}
                         </span>
                     </div>
                 </div>
@@ -186,63 +140,31 @@ function ConfirmRangeModal(props: propsIF) {
                     }
                 />
             )}
-            <ConfirmationModalControl
-                tempBypassConfirm={currentSkipConfirm}
-                setTempBypassConfirm={setCurrentSkipConfirm}
-            />
         </>
     );
 
-    // CONFIRMATION LOGIC STARTS HERE
-    const confirmSendMessage = (
-        <WaitingConfirmation
-            content={`Minting a Position with ${
-                localeTokenAString ? localeTokenAString : '0'
-            } ${tokenA.symbol} and ${
-                localeTokenBString ? localeTokenBString : '0'
-            } ${tokenB.symbol} `}
-        />
-    );
-
-    const confirmationDisplay: JSX.Element = isTxException
-        ? txException
-        : isTxDenied
-        ? txDenied
-        : txApproved
-        ? txSubmitted
-        : confirmSendMessage;
-
     return (
-        <div className={styles.confirm_range_modal_container}>
-            <div>{showConfirmation ? fullTxDetails : confirmationDisplay}</div>
-            <footer className={styles.modal_footer}>
-                {showConfirmation && (
-                    <Button
-                        title={
-                            isAdd
-                                ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
-                                : `Submit ${
-                                      isAmbient ? 'Ambient' : ''
-                                  } Liquidity`
-                        }
-                        action={() => {
-                            // if this modal is launched we can infer user wants confirmation
-                            // if user enables bypass, update all settings in parallel
-                            // otherwise do not not make any change to persisted preferences
-                            if (currentSkipConfirm) {
-                                bypassConfirmSwap.enable();
-                                bypassConfirmLimit.enable();
-                                bypassConfirmRange.enable();
-                                bypassConfirmRepo.enable();
-                            }
-                            sendTransaction();
-                            setShowConfirmation(false);
-                        }}
-                        flat
-                    />
-                )}
-            </footer>
-        </div>
+        <TradeConfirmationSkeleton
+            type='Range'
+            tokenA={{ token: tokenA, quantity: tokenAQty }}
+            tokenB={{ token: tokenB, quantity: tokenBQty }}
+            transactionHash={newRangeTransactionHash}
+            txErrorCode={txErrorCode}
+            showConfirmation={showConfirmation}
+            poolTokenDisplay={poolTokenDisplay}
+            statusText={
+                !showConfirmation
+                    ? isAdd
+                        ? `Add ${isAmbient ? 'Ambient' : ''} Liquidity`
+                        : `Submit ${isAmbient ? 'Ambient' : ''} Liquidity`
+                    : `Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${
+                          tokenA.symbol
+                      } and ${tokenBQty ? tokenBQty : '0'} ${tokenB.symbol}`
+            }
+            initiate={sendTransaction}
+            resetConfirmation={resetConfirmation}
+            onClose={onClose}
+        />
     );
 }
 

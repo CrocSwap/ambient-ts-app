@@ -14,9 +14,8 @@
     height: 56px;
     background: var(--dark1);
     display: flex;
-    /* justify-content: space-between; */
+    justify-content: space-between;
     align-items: center;
-    padding: 1rem 0;
     border-bottom: 1px solid var(--navbar-border);
 }
 .fixed {
@@ -89,22 +88,16 @@
 }
 
 .logo_container {
-    height: 60px;
+    width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+  gap: 8px;
     align-items: center;
-    padding: 14px;
 }
 
-.logo {
-    height: 100%;
-    margin-left: 18px;
-}
 
 .logo_text {
-    height: 80%;
-    margin-left: 10px;
+width: 30%;
 }
 
 .logo_container:focus-visible img {
@@ -122,18 +115,16 @@
 .account {
     display: flex;
     align-items: center;
-    padding: 0 1rem;
     gap: 8px;
   
 }
-
 .authenticate_button {
     cursor: pointer;
-    background: var(--title-gradient);
+    background: var(--accent1);
     border: none;
     outline: none;
     color: var(--dark2);
-    font-weight: 200;
+    font-weight: 300;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 4px;
 
@@ -200,11 +191,10 @@
     }
 }
 
-@media only screen and (min-width: 400px) {
+@media only screen and (min-width: 800px) {
     .primary_header {
-        justify-content: space-between;
-
-       
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
     }
     .logo_container img:nth-of-type(1) {
         margin: 0 4px;
@@ -221,7 +211,7 @@
 @media only screen and (min-width: 1180px) {
 .logo_container, .right_side, .primary_navigation{
     /* background: blue; */
-    width: calc(100%/3);
+
     vertical-align: middle;
 }
 

@@ -17,6 +17,7 @@ import '../../../App/App.css';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
+import { ChartContext } from '../../../contexts/ChartContext';
 
 type tabData = {
     label: string;
@@ -51,9 +52,10 @@ export default function TabComponent(props: TabPropsIF) {
         outsideControl,
         setOutsideControl,
         selectedOutsideTab,
-        tradeTableState,
         toggleTradeTable,
     } = useContext(TradeTableContext);
+
+    const { tradeTableState } = useContext(ChartContext);
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
 

@@ -87,9 +87,8 @@ export async function fetchCandleSeriesHybrid(
     }
 
     try {
-        const stitchTime = Math.min(
-            endTime,
-            ...candles.candles.map((c) => c.time),
+        const stitchTime = Math.floor(
+            Math.min(endTime, ...candles.candles.map((c) => c.time)),
         );
         const stitchN = nCandles - candles.candles.length;
 

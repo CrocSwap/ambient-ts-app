@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState, useContext, memo } from 'react';
+import { useEffect, useState, useContext, memo, useMemo } from 'react';
 import { useEnsName } from 'wagmi';
 
 // START: Import JSX Components
@@ -14,7 +14,6 @@ import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { fetchEnsAddress } from '../../App/functions/fetchAddress';
 import { Navigate, useParams } from 'react-router-dom';
-import { useModal } from '../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { setResolvedAddressRedux } from '../../utils/state/userDataSlice';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
@@ -24,17 +23,15 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { useSimulatedIsUserConnected } from '../../App/hooks/useSimulatedIsUserConnected';
 
-interface propsIF {
-    userAccount?: boolean;
-}
-
-function Portfolio(props: propsIF) {
-    const { userAccount } = props;
-
-    const { addressCurrent: userAddress, isLoggedIn: isUserConnected } =
-        useAppSelector((state) => state.userData);
+function Portfolio() {
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const { data: ensName } = useEnsName({ address: userAddress });
+
+    const isUserConnected = useSimulatedIsUserConnected();
 
     const {
         wagmiModal: { open: openModalWallet },
@@ -49,7 +46,7 @@ function Portfolio(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const { tokens, setInput } = useContext(TokenContext);
+    const { tokens } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
 
@@ -68,9 +65,18 @@ function Portfolio(props: propsIF) {
         undefined,
     );
 
-    const connectedAccountActive =
-        !addressFromParams ||
-        resolvedAddress?.toLowerCase() === userAddress?.toLowerCase();
+    const connectedAccountActive = useMemo(
+        () =>
+            userAddress
+                ? addressFromParams
+                    ? resolvedAddress?.toLowerCase() ===
+                      userAddress.toLowerCase()
+                        ? true
+                        : false
+                    : true
+                : false,
+        [addressFromParams, resolvedAddress, userAddress],
+    );
 
     useEffect(() => {
         (async () => {
@@ -116,10 +122,6 @@ function Portfolio(props: propsIF) {
             }
         })();
     }, [addressFromParams, isAddressEns, mainnetProvider]);
-
-    const modalCloseCustom = (): void => setInput('');
-
-    const [, openTokenModal] = useModal(modalCloseCustom);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -211,7 +213,16 @@ function Portfolio(props: propsIF) {
                         crocEnv,
                     );
 
-                    erc20Results.map((newToken: TokenIF) => {
+                    const erc20TokensWithLogos = erc20Results.map((token) => {
+                        const oldToken: TokenIF | undefined =
+                            tokens.getTokenByAddress(token.address);
+                        const newToken = { ...token };
+                        newToken.name = oldToken ? oldToken.name : '';
+                        newToken.logoURI = oldToken ? oldToken.logoURI : '';
+                        return newToken;
+                    });
+
+                    erc20TokensWithLogos.map((newToken: TokenIF) => {
                         const indexOfExistingToken =
                             resolvedAddressErc20Tokens.findIndex(
                                 (existingToken) =>
@@ -246,7 +257,6 @@ function Portfolio(props: propsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-    const showLoggedInButton = userAccount && !isUserConnected;
     const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
@@ -294,7 +304,6 @@ function Portfolio(props: propsIF) {
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,
-        openTokenModal: openTokenModal,
         fullLayoutToggle: fullLayerToggle,
         tokens: tokens,
     };
@@ -329,12 +338,12 @@ function Portfolio(props: propsIF) {
         >
             {connectedAccountActive && mobileDataToggle}
             {!showTabsAndNotExchange ? (
-                showLoggedInButton ? (
+                !isUserConnected ? (
                     notConnectedContent
                 ) : (
                     <PortfolioTabs {...portfolioTabsProps} />
                 )
-            ) : showLoggedInButton ? (
+            ) : !isUserConnected ? (
                 notConnectedContent
             ) : (
                 connectedAccountActive && exchangeBalanceComponent
@@ -346,27 +355,29 @@ function Portfolio(props: propsIF) {
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
-            {userAccount && showProfileSettings && (
+            {connectedAccountActive && showProfileSettings && (
                 <ProfileSettings {...profileSettingsProps} />
             )}
             <PortfolioBanner {...portfolioBannerProps} />
 
             <div
                 className={
-                    fullLayoutActive
+                    !connectedAccountActive
+                        ? styles.full_layout_container
+                        : fullLayoutActive
                         ? styles.full_layout_container
                         : styles.tabs_exchange_balance_container
                 }
             >
-                {!showLoggedInButton ? (
+                {isUserConnected || addressFromParams ? (
                     <PortfolioTabs {...portfolioTabsProps} />
-                ) : (
-                    notConnectedContent
-                )}
+                ) : undefined}
 
-                {showLoggedInButton
+                {connectedAccountActive
+                    ? exchangeBalanceComponent
+                    : !isUserConnected && !addressFromParams
                     ? notConnectedContent
-                    : connectedAccountActive && exchangeBalanceComponent}
+                    : undefined}
             </div>
         </main>
     );

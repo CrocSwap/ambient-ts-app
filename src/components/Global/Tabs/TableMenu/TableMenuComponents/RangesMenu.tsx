@@ -3,10 +3,6 @@ import { useState, useRef, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { FiExternalLink } from 'react-icons/fi';
 import { CiCircleMore } from 'react-icons/ci';
-// START: Import JSX Functional Components
-import RangeDetails from '../../../../RangeDetails/RangeDetails';
-
-// START: Import Local Files
 import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -21,10 +17,7 @@ import {
     setAdvancedMode,
     setRangeTicksCopied,
 } from '../../../../../utils/state/tradeDataSlice';
-import { useModal } from '../../../Modal/useModal';
-import Modal from '../../../Modal/Modal';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
@@ -34,7 +27,10 @@ import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import RangeActionModal from '../../../../RangeActionModal/RangeActionModal';
+import { useModal } from '../../../Modal/useModal';
+import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
 import { OptionButton } from '../../../Button/OptionButton';
+
 // interface for React functional component props
 interface propsIF {
     userMatchesConnectedAccount: boolean | undefined;
@@ -46,7 +42,10 @@ interface propsIF {
     isEmpty: boolean;
     isPositionInRange: boolean;
     handleAccountClick: () => void;
+    isAccountView: boolean;
 }
+
+export type RangeModalActionType = 'Harvest' | 'Remove';
 
 // React functional component
 export default function RangesMenu(props: propsIF) {
@@ -59,11 +58,9 @@ export default function RangesMenu(props: propsIF) {
         rangeDetailsProps,
         position,
         isPositionInRange,
+        isAccountView,
     } = props;
 
-    const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal },
-    } = useContext(AppStateContext);
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -80,33 +77,56 @@ export default function RangesMenu(props: propsIF) {
     const dispatch = useAppDispatch();
 
     // ---------------------MODAL FUNCTIONALITY----------------
-    const [
-        isRemoveRangeModalOpen,
-        openRemoveRangeModal,
-        closeRemoveRangeModal,
-    ] = useModal();
-    const [isHarvestModalOpen, openHarvestModal, closeHarvestModal] =
-        useModal();
 
-    const handleModalClose = () => {
-        IS_LOCAL_ENV && console.debug('CLOSING THE MODAL!!!!');
-        closeHarvestModal();
-        closeRemoveRangeModal();
-        setShowDropdownMenu(false);
-    };
+    const [
+        isRangeDetailsModalOpen,
+        openRangeDetailsModal,
+        closeRangeDetailsModal,
+    ] = useModal();
+
+    const [
+        isRangeActionModalOpen,
+        openRangeActionModal,
+        closeRangeActionModal,
+    ] = useModal();
+    const [rangeModalAction, setRangeModalAction] =
+        useState<RangeModalActionType>('Harvest');
 
     const openDetailsModal = () => {
         setShowDropdownMenu(false);
-        openGlobalModal(
-            <RangeDetails
-                position={position}
-                closeGlobalModal={closeGlobalModal}
-                {...rangeDetailsProps}
-            />,
-        );
+        openRangeDetailsModal();
+    };
+
+    const openActionModal = (type: RangeModalActionType) => {
+        setShowDropdownMenu(false);
+        setRangeModalAction(type);
+        openRangeActionModal();
+    };
+    const handleActionModalClose = () => {
+        setShowDropdownMenu(false);
+        closeRangeActionModal();
     };
 
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const rtkTokenA = tradeData.tokenA.address;
+    const rtkTokenB = tradeData.tokenB.address;
+
+    // ----------------------
+
+    const view1 = useMediaQuery('(max-width: 800px)');
+    const view3 = sidebar.isOpen
+        ? useMediaQuery('(min-width: 1700px)')
+        : useMediaQuery('(min-width: 1600px)');
+
+    const showRepositionButton =
+        !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
+
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? sidebar.isOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
+        : view1;
 
     const positionMatchesLoggedInUser =
         userMatchesConnectedAccount && isUserLoggedIn;
@@ -136,8 +156,14 @@ export default function RangesMenu(props: propsIF) {
             className={styles.reposition_button}
             to={linkGenRepo.getFullURL({
                 chain: chainId,
-                tokenA: position.base,
-                tokenB: position.quote,
+                tokenA:
+                    rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        ? position.quote
+                        : position.base,
+                tokenB:
+                    rtkTokenB.toLowerCase() === position.base.toLowerCase()
+                        ? position.base
+                        : position.quote,
                 lowTick: position.bidTick.toString(),
                 highTick: position.askTick.toString(),
             })}
@@ -153,7 +179,10 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <OptionButton onClick={openRemoveRangeModal} content='Remove' />
+        <OptionButton
+            onClick={() => openActionModal('Remove')}
+            content='Remove'
+        />
     ) : null;
 
     const copyButton = position ? (
@@ -161,14 +190,20 @@ export default function RangesMenu(props: propsIF) {
             onClick={() => {
                 linkGenPool.navigate({
                     chain: chainId,
-                    tokenA: position.base,
-                    tokenB: position.quote,
+                    tokenA:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.quote
+                            : position.base,
+                    tokenB:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.base
+                            : position.quote,
                     lowTick: position.bidTick.toString(),
                     highTick: position.askTick.toString(),
                 });
                 handleCopyClick();
             }}
-            content='Copy Trade'
+            content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
         />
     ) : null;
 
@@ -177,8 +212,14 @@ export default function RangesMenu(props: propsIF) {
             onClick={() => {
                 linkGenPool.navigate({
                     chain: chainId,
-                    tokenA: position.base,
-                    tokenB: position.quote,
+                    tokenA:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.quote
+                            : position.base,
+                    tokenB:
+                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                            ? position.base
+                            : position.quote,
                     lowTick: position.bidTick.toString(),
                     highTick: position.askTick.toString(),
                 });
@@ -194,36 +235,13 @@ export default function RangesMenu(props: propsIF) {
     );
     const harvestButton =
         !isAmbient && positionMatchesLoggedInUser ? (
-            <OptionButton onClick={openHarvestModal} content='Harvest' />
+            <OptionButton
+                onClick={() => openActionModal('Harvest')}
+                content='Harvest'
+            />
         ) : null;
 
     // ----------------------
-
-    const view1 = useMediaQuery('(min-width: 720px)');
-    const view2 = sidebar.isOpen
-        ? useMediaQuery('(min-width: 1750px)')
-        : useMediaQuery('(min-width: 1550px)');
-    const view3 = useMediaQuery('(min-width: 2300px)');
-
-    const showRepositionButton =
-        !isPositionInRange &&
-        !isPositionEmpty &&
-        userMatchesConnectedAccount &&
-        view1;
-    // ----------------------
-
-    const rangesMenu = (
-        <div className={styles.actions_menu}>
-            {showRepositionButton && repositionButton}
-            {view1 &&
-                !showRepositionButton &&
-                userMatchesConnectedAccount &&
-                addButton}
-            {view2 && !isEmpty && removeButton}
-            {view3 && !isEmpty && harvestButton}
-            {!userMatchesConnectedAccount && copyButton}
-        </div>
-    );
 
     const walletButton = (
         <OptionButton
@@ -242,15 +260,33 @@ export default function RangesMenu(props: propsIF) {
         />
     );
 
+    const rangesMenu = (
+        <div className={styles.actions_menu}>
+            {showRepositionButton && repositionButton}
+            {/* {!view1 && showRepositionButton && repositionButton} */}
+            {!view1 &&
+                !showRepositionButton &&
+                userMatchesConnectedAccount &&
+                addButton}
+            {view3 && !isEmpty && removeButton}
+            {view3 && !isEmpty && harvestButton}
+            {!userMatchesConnectedAccount && copyButton}
+        </div>
+    );
+
     null;
 
-    const menuContent = (
+    const dropdownMenuContent = (
         <div className={styles.menu_column}>
+            {view1 && showRepositionButton && repositionButton}
+            {view1 &&
+                !showRepositionButton &&
+                userMatchesConnectedAccount &&
+                addButton}
             {!view3 && !isEmpty && harvestButton}
-            {!view2 && !isEmpty && removeButton}
+            {view1 && !isEmpty && removeButton}
             {detailsButton}
-            {userMatchesConnectedAccount && copyButton}
-            {walletButton}
+            {!userMatchesConnectedAccount && walletButton}
         </div>
     );
 
@@ -273,7 +309,7 @@ export default function RangesMenu(props: propsIF) {
             >
                 <CiCircleMore size={25} color='var(--text1)' />
             </div>
-            <div className={wrapperStyle}>{menuContent}</div>
+            <div className={wrapperStyle}>{dropdownMenuContent}</div>
         </div>
     );
 
@@ -287,35 +323,26 @@ export default function RangesMenu(props: propsIF) {
     }, [showDropdownMenu]);
 
     return (
-        <div
-            className={styles.main_container}
-            onClick={(event) => event.stopPropagation()}
-        >
-            {rangesMenu}
-            {dropdownRangesMenu}
-            {isHarvestModalOpen && (
-                <Modal onClose={handleModalClose} title='Harvest Fees' noHeader>
-                    <RangeActionModal
-                        type='Harvest'
-                        handleModalClose={handleModalClose}
-                        position={position}
-                        {...rangeDetailsProps}
-                    />
-                </Modal>
+        <div onClick={(event) => event.stopPropagation()}>
+            <div className={styles.main_container}>
+                {rangesMenu}
+                {dropdownRangesMenu}
+            </div>
+            {isRangeDetailsModalOpen && (
+                <RangeDetailsModal
+                    position={position}
+                    onClose={closeRangeDetailsModal}
+                    {...rangeDetailsProps}
+                />
             )}
-            {isRemoveRangeModalOpen && (
-                <Modal
-                    onClose={handleModalClose}
-                    title='Remove Position'
-                    noHeader
-                >
-                    <RangeActionModal
-                        type='Remove'
-                        position={position}
-                        handleModalClose={handleModalClose}
-                        {...rangeDetailsProps}
-                    />
-                </Modal>
+            {isRangeActionModalOpen && (
+                <RangeActionModal
+                    type={rangeModalAction}
+                    isOpen={isRangeActionModalOpen}
+                    onClose={handleActionModalClose}
+                    position={position}
+                    {...rangeDetailsProps}
+                />
             )}
         </div>
     );

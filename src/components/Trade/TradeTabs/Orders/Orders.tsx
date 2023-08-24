@@ -19,6 +19,9 @@ import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropd
 import usePagination from '../../../Global/Pagination/usePagination';
 import { Pagination } from '@mui/material';
 import Spinner from '../../../Global/Spinner/Spinner';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -36,14 +39,17 @@ function Orders(props: propsIF) {
         connectedAccountActive,
         isAccountView,
     } = props;
-    const {
-        showAllData: showAllDataSelection,
-        tradeTableState,
-        toggleTradeTable,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, toggleTradeTable } =
+        useContext(TradeTableContext);
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
+
+    const {
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
+
+    const { tradeTableState } = useContext(ChartContext);
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -56,6 +62,9 @@ function Orders(props: propsIF) {
     );
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { transactionsByType, pendingTransactions } = useAppSelector(
+        (state) => state.receiptData,
+    );
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -112,22 +121,39 @@ function Orders(props: propsIF) {
         graphData?.dataLoadingStatus.isPoolOrderDataLoading,
     ]);
 
-    const shouldDisplayNoTableData = !isLoading && !limitOrderData.length;
+    const relevantTransactionsByType = transactionsByType.filter(
+        (tx) =>
+            tx.txAction &&
+            tx.txType === 'Limit' &&
+            pendingTransactions.includes(tx.txHash) &&
+            tx.txDetails?.baseAddress.toLowerCase() ===
+                tradeData.baseToken.address.toLowerCase() &&
+            tx.txDetails?.quoteAddress.toLowerCase() ===
+                tradeData.quoteToken.address.toLowerCase() &&
+            tx.txDetails?.poolIdx === poolIndex,
+    );
+
+    const shouldDisplayNoTableData =
+        !isLoading &&
+        !limitOrderData.length &&
+        (relevantTransactionsByType.length === 0 ||
+            pendingTransactions.length === 0);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
+    const ipadView = useMediaQuery('(max-width: 600px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const showColumns = useMediaQuery('(max-width: 1800px)');
+    const showColumns = useMediaQuery('(max-width: 1599px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
+    // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const sideType = (
@@ -349,7 +375,11 @@ function Orders(props: propsIF) {
     // ----------------------
 
     const headerColumnsDisplay = (
-        <ul className={`${styles.header} ${headerStyle}`}>
+        <ul
+            className={`${isAccountView ? styles.account_header : undefined} ${
+                styles.header
+            } ${headerStyle}`}
+        >
             {headerColumns.map((header, idx) => (
                 <OrderHeader
                     key={idx}
@@ -417,7 +447,26 @@ function Orders(props: propsIF) {
         <NoTableData type='orders' isAccountView={isAccountView} />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
-            <ul ref={listRef}>{currentRowItemContent}</ul>
+            <ul ref={listRef}>
+                {!isAccountView &&
+                    pendingTransactions.length > 0 &&
+                    relevantTransactionsByType.reverse().map((tx, idx) => (
+                        <OrderRowPlaceholder
+                            key={idx}
+                            transaction={{
+                                hash: tx.txHash,
+                                baseSymbol: tx.txDetails?.baseSymbol ?? '...',
+                                quoteSymbol: tx.txDetails?.quoteSymbol ?? '...',
+                                side: tx.txAction,
+                                type: tx.txType,
+                                details: tx.txDetails,
+                            }}
+                            showColumns={showColumns}
+                            ipadView={ipadView}
+                        />
+                    ))}
+                {currentRowItemContent}
+            </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
@@ -438,14 +487,6 @@ function Orders(props: propsIF) {
             }
         </div>
     );
-
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    useEffect(() => {
-        if (mobileView) {
-            toggleTradeTable();
-        }
-    }, [mobileView]);
 
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {

@@ -69,11 +69,19 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.txId);
-        linkGenMarket.navigate({
-            chain: chainId,
-            tokenA: tx.base,
-            tokenB: tx.quote,
-        });
+        linkGenMarket.navigate(
+            tx.isBuy
+                ? {
+                      chain: chainId,
+                      tokenA: tx.base,
+                      tokenB: tx.quote,
+                  }
+                : {
+                      chain: chainId,
+                      tokenA: tx.quote,
+                      tokenB: tx.base,
+                  },
+        );
     };
 
     const handleViewMoreClick = (): void => {
@@ -84,7 +92,7 @@ export default function SidebarRecentTransactions(props: propsIF) {
     };
 
     return (
-        <SidebarPoolsListContainer>
+        <SidebarPoolsListContainer fontSize={'body'}>
             <SidebarPoolsListHeaderContainer>
                 <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Type</SidebarPoolsListHeader>

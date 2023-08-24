@@ -12,13 +12,14 @@ import {
     formatAmountChartData,
     formatPoolPriceAxis,
 } from '../../../../utils/numbers';
-import {
-    renderCanvasArray,
-    setCanvasResolution,
-} from '../../../../pages/Chart/Chart';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { fetchCandleSeriesCroc } from '../../../../App/functions/fetchCandleSeries';
 import moment from 'moment';
+import {
+    renderCanvasArray,
+    setCanvasResolution,
+} from '../../../../pages/Chart/ChartUtils/chartUtils';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -76,8 +77,8 @@ export default function TransactionDetailsGraph(
     const [graphData, setGraphData] = useState<any>();
 
     const d3PlotGraph = useRef(null);
-    const d3Yaxis = useRef<HTMLInputElement | null>(null);
-    const d3Xaxis = useRef<HTMLInputElement | null>(null);
+    const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
+    const d3Xaxis = useRef<HTMLCanvasElement | null>(null);
     const graphMainDiv = useRef(null);
 
     const [scaleData, setScaleData] = useState<any>();
@@ -594,7 +595,7 @@ export default function TransactionDetailsGraph(
 
     const drawXaxis = (context: any, xScale: any, Y: any) => {
         if (period) {
-            const _width = 30; // magic number of pixels to surrounding price
+            const _width = 15; // magic number of pixels to surrounding price
             const minDomainLocation = scaleData?.xScale.range()[0];
             const maxDomainLocation = scaleData?.xScale.range()[1];
 
@@ -727,11 +728,15 @@ export default function TransactionDetailsGraph(
                         Math.abs(Number(splitNumber[1])) -
                         (splitNumber.includes('.') ? 2 : 1);
 
-                    const precision = splitNumber[0]
-                        .toString()
-                        .replace('.', '');
+                    const scientificValue = getFormattedNumber({
+                        value: d,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    });
 
-                    const factor = Math.pow(10, 3 - precision.length);
+                    const textScientificArray = scientificValue.split('0.0');
+                    const textScientific = textScientificArray[1].slice(1, 4);
+
+                    const factor = Math.pow(10, 3 - textScientific.length);
 
                     const textHeight =
                         context.measureText('0.0').actualBoundingBoxAscent +
@@ -745,11 +750,12 @@ export default function TransactionDetailsGraph(
                             context.measureText(subString).width / 2,
                         yScale(d),
                     );
+
                     context.fillText(subString, X, yScale(d) + textHeight / 3);
                     context.fillText(
-                        factor * Number(precision),
+                        factor * Number(textScientific),
                         X +
-                            context.measureText(factor * Number(precision))
+                            context.measureText(factor * Number(textScientific))
                                 .width /
                                 2 +
                             context.measureText(subString).width / 2,

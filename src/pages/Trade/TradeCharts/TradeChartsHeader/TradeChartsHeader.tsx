@@ -8,25 +8,39 @@ import printDomToImage from '../../../../utils/functions/printDomToImage';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
 import styles from './TradeChartsHeader.module.css';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { CandleContext } from '../../../../contexts/CandleContext';
+import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
         isFullScreen: isChartFullScreen,
         setIsFullScreen: setIsChartFullScreen,
         canvasRef,
+        chartCanvasRef,
+        chartHeights,
+        tradeTableState,
     } = useContext(ChartContext);
+    const { isCandleDataNull } = useContext(CandleContext);
 
     const [, copy] = useCopyToClipboard();
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
 
-    const { tradeTableState } = useContext(TradeTableContext);
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
+
+    const showNoChartData = !isPoolInitialized || isCandleDataNull;
 
     const copyChartToClipboard = async () => {
-        if (canvasRef.current) {
-            const blob = await printDomToImage(canvasRef.current, '#171d27');
+        if (canvasRef.current && chartCanvasRef.current) {
+            const blob = isChartFullScreen
+                ? await printDomToImage(chartCanvasRef.current, '#171d27')
+                : await printDomToImage(
+                      canvasRef.current,
+                      '#171d27',
+                      undefined,
+                      chartHeights.max - chartHeights.current - 4,
+                  );
             if (blob) {
                 copy(blob);
                 openSnackbar('Chart image copied to clipboard', 'info');
@@ -78,7 +92,9 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
             }`}
         >
             <TradeChartsTokenInfo />
-            {tradeTableState === 'Expanded' ? null : graphSettingsContent}
+            {tradeTableState === 'Expanded' || showNoChartData
+                ? null
+                : graphSettingsContent}
         </div>
     );
 };

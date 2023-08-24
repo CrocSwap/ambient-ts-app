@@ -16,7 +16,6 @@
 .container {
     z-index: 10;
     width: 100%;
-    /* padding: 1rem; */
 
     height: 400px;
     position: absolute;
@@ -25,7 +24,6 @@
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     right: 0;
-    /* top: 60px; */
 
     display: flex;
     flex-direction: column;
@@ -75,12 +73,12 @@
     text-align: center;
 
     background: transparent;
-    text-transform: uppercase;
+    text-transform: capitalize;
 
     color: var(--accent5);
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
-    background: var(--title-gradient);
+    background: var(--accent1);
     background-position: 1% 50%;
     background-size: 300% 300%;
     text-decoration: none;
@@ -89,7 +87,6 @@
 
 .footer button:hover,
 .footer button:focus-visible {
-    color: var(--dark1);
-    border: 1px solid rgba(223, 190, 106, 0);
-    background-position: 99% 50%;
+    color: var(--accent1);
+    background: var(--dark2);
 }

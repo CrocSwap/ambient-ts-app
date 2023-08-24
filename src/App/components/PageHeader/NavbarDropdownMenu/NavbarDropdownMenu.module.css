@@ -38,7 +38,7 @@
 
     color: var(--text1);
     font-family: var(--font-deca);
-    font-weight: 200;
+    font-weight: 300;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 
@@ -48,12 +48,16 @@
 }
 
 .navbar_logout_container {
+    margin-top: 8px;
     display: flex;
-    height: 50px;
     align-items: center;
 }
 
-.navbar_logout {
+.navbar_logout_container:focus-visible {
+    outline: none;
+}
+
+.connect_button {
     cursor: pointer;
     width: 100%;
     font-size: var(--header2-size);
@@ -61,18 +65,16 @@
     color: var(--text1);
     border: none;
     outline: none;
-    transition: all var(--animation-speed) ease-in-out;
     background: var(--accent1);
     padding: 6px 8px;
     gap: 4px;
     border-radius: var(--border-radius);
 }
 
-.navbar_logout:hover, .navbar_logout:focus-visible {
+.connect_button:hover, .connect_button:focus-visible {
     color: var(--accent1);
     background: var(--dark2);
-    border: solid;
-    border-color: var(--accent1);
+    border: solid 1px var(--accent1);
 }
 
 .topLevelContainer {
@@ -134,29 +136,4 @@
     justify-content: flex-start;
     align-items: center;
     padding: 0 10px;
-}
-.authenticate_button {
-    font-weight: 200;
-    font-size: 14px;
-    cursor: pointer;
-
-    border-radius: var(--border-radius);
-    width: 100%;
-    height: 30px;
-    color: var(--accent5);
-    border-radius: 0;
-    transition: all var(--animation-speed) ease-out;
-    background: var(--title-gradient);
-    background-position: 1% 50%;
-    background-size: 300% 300%;
-    text-decoration: none;
-    border: 1px solid var(--accent1);
-}
-
-.authenticate_button:hover,
-.authenticate_button:focus-visible {
-    color: var(--text1);
-    border: 1px solid rgba(223, 190, 106, 0);
-    color: white;
-    background-position: 99% 50%;
 }

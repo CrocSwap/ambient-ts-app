@@ -1,6 +1,4 @@
 import numbro from 'numbro';
-import { precisionOfInput } from './getPrecisionOfInput';
-import truncateDecimals from '../../utils/data/truncateDecimals';
 
 type FormatParams = {
     value?: number;
@@ -50,10 +48,9 @@ export function getFormattedNumber({
     } else if (isToken) {
         if (isNaN(value)) {
             valueString = '';
-        } else if (precisionOfInput(value.toString()) <= maxFracDigits) {
-            valueString = value.toString();
         } else {
-            valueString = truncateDecimals(value, maxFracDigits);
+            // handle scientific notation
+            valueString = (+value).toString();
         }
     } else if (isInput) {
         removeCommas = true;

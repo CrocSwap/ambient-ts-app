@@ -46,12 +46,6 @@
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
-@media (max-width: 1900px) {
-    .header {
-        height: 50px;
-    }
-}
-
 .table_content {
     min-height: 100px;
     flex-grow: 1; /* Allow the content to grow and occupy remaining space */
@@ -123,19 +117,160 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-transform: capitalize;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .row_container li:not(:last-child) {
     cursor: pointer;
 }
+
+.row_placeholder {
+    background-color: var(--dark2);
+    color: var(--text2);
+    -webkit-mask: linear-gradient(
+            -60deg,
+            black 30%,
+            rgba(119, 117, 117, 0.333),
+            black 70%
+        )
+        right/300% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+    100% {
+        -webkit-mask-position: left;
+    }
+}
+
 .main_list_container .row_container,
 .main_list_container .header,
 .leaderboard .row_container,
 .leaderboard .header {
     width: 100%;
-    /* table row was living space at end so I changed it to table and added a fixed table layout*/
-    display: table-row;
-    table-layout: fixed;
-    display: table;
+    display: grid;
+    align-items: center;
+}
+
+/* The reason we use % for the last column is it allows slight overlap.
+ which helps with how the claimable column has a bigger header than the actual icon below. */
+@media only screen and (max-width: 600px) {
+    /* measured against smallest screen size for sub-iPad view (410px)*/
+
+    .main_list_container .row_container,
+    .main_list_container .header {
+        grid-template-columns:
+            minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
+            minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 20%);
+    }
+    .main_list_container .account_row_container,
+    .main_list_container .account_header {
+        grid-template-columns:
+            minmax(100px, 1fr) minmax(100px, 1fr) minmax(72px, 1fr) minmax(
+                78px,
+                1fr
+            )
+            minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 20%);
+    }
+    .leaderboard .row_container,
+    .leaderboard .header {
+        grid-template-columns:
+            minmax(100px, 1fr) minmax(72px, 1fr) minmax(72px, 1fr)
+            minmax(78px, 1fr) minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 25%);
+    }
+}
+
+@media only screen and (max-width: 1199px) and (min-width: 601px) {
+    /* measured against smallest screen size for iPad view (580px)*/
+
+    .main_list_container .row_container,
+    .main_list_container .header {
+        grid-template-columns:
+            minmax(140px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
+            minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(73px, 25%);
+    }
+    .main_list_container .account_row_container,
+    .main_list_container .account_header {
+        grid-template-columns:
+            minmax(86px, 1fr) minmax(140px, 1fr) minmax(72px, 1fr) minmax(
+                78px,
+                1fr
+            )
+            minmax(86px, 1fr) minmax(44px, 1fr) minmax(44px, 1fr)
+            minmax(74px, 25%);
+    }
+    .leaderboard .row_container,
+    .leaderboard .header {
+        grid-template-columns:
+            minmax(60px, 1fr) minmax(84px, 1fr) minmax(72px, 1fr)
+            minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
+                38px,
+                1fr
+            )
+            minmax(74px, 25%);
+    }
+}
+
+@media only screen and (max-width: 1599px) and (min-width: 1200px) {
+    /* measured against smallest screen size for merged view (1280px) with sidebar expanded*/
+
+    .main_list_container .row_container,
+    .main_list_container .header {
+        grid-template-columns:
+            minmax(65px, 1fr) minmax(125px, 1fr) minmax(72px, 1fr)
+            minmax(70px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
+                38px,
+                1fr
+            )
+            minmax(74px, 25%);
+    }
+    .main_list_container .account_row_container,
+    .main_list_container .account_header {
+        grid-template-columns:
+            minmax(65px, 1fr) minmax(125px, 1fr) minmax(72px, 1fr)
+            minmax(70px, 1fr) minmax(86px, 1fr) minmax(100px, 1fr) minmax(
+                38px,
+                1fr
+            )
+            minmax(38px, 1fr)
+            minmax(74px, 20%);
+    }
+    .leaderboard .row_container,
+    .leaderboard .header {
+        grid-template-columns:
+            minmax(87px, 1fr) minmax(125px, 1fr) minmax(72px, 1fr)
+            minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
+                38px,
+                1fr
+            )
+            minmax(74px, 25%);
+    }
+}
+
+@media only screen and (min-width: 1600px) {
+    /* measured against smallest screen size for full view (1600px) with sidebar expanded */
+
+    .main_list_container .row_container,
+    .main_list_container .header {
+        grid-template-columns:
+            minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+            minmax(62px, 1fr) minmax(62px, 1fr) minmax(78px, 1fr) minmax(
+                100px,
+                1fr
+            )
+            minmax(100px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(107px, 25%);
+    }
+    .leaderboard .row_container,
+    .leaderboard .header {
+        grid-template-columns:
+            minmax(88px, 1fr) minmax(125px, 1fr) minmax(125px, 1fr)
+            minmax(72px, 1fr) minmax(100px, 1fr) minmax(60px, 1fr) minmax(
+                86px,
+                1fr
+            )
+            minmax(80px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr)
+            minmax(107px, 25%);
+    }
 }
 
 .main_list_container .row_container > li,
@@ -357,7 +492,7 @@
 
 .base_display_div {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: flex-end;
     gap: 4px;
     text-align: center;

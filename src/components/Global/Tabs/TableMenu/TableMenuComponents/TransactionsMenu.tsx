@@ -8,7 +8,7 @@ import { CiCircleMore } from 'react-icons/ci';
 import styles from './TableMenus.module.css';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
+import TransactionDetailsModal from '../../../TransactionDetails/TransactionDetailsModal';
 import {
     useAppDispatch,
     useAppSelector,
@@ -17,7 +17,6 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setIsTokenAPrimary,
     setLimitTick,
     setLimitTickCopied,
     setShouldSwapDirectionReverse,
@@ -27,7 +26,6 @@ import {
     setRangeTicksCopied,
 } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
@@ -36,6 +34,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
+import { useModal } from '../../../Modal/useModal';
 import { OptionButton } from '../../../Button/OptionButton';
 
 // interface for React functional component props
@@ -50,9 +49,6 @@ interface propsIF {
 export default function TransactionsMenu(props: propsIF) {
     const { isBaseTokenMoneynessGreaterOrEqual, tx, isAccountView } = props;
     const {
-        globalModal: { open: openGlobalModal },
-    } = useContext(AppStateContext);
-    const {
         chainData: { blockExplorer, chainId },
     } = useContext(CrocEnvContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
@@ -61,10 +57,13 @@ export default function TransactionsMenu(props: propsIF) {
     } = useContext(SidebarContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
 
+    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+        useModal();
+
     const showAbbreviatedCopyTradeButton = isAccountView
         ? isSidebarOpen
-            ? useMediaQuery('(max-width: 1400px)')
-            : useMediaQuery('(max-width: 1150px)')
+            ? useMediaQuery('(max-width: 1700px)')
+            : useMediaQuery('(max-width: 1400px)')
         : isSidebarOpen
         ? useMediaQuery('(max-width: 1500px)')
         : useMediaQuery('(max-width: 1250px)');
@@ -115,11 +114,6 @@ export default function TransactionsMenu(props: propsIF) {
                 }
             }, 1000);
         } else if (tx.entityType === 'swap') {
-            dispatch(
-                setIsTokenAPrimary(
-                    (tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty),
-                ),
-            );
             const shouldReverse =
                 tradeData.tokenA.address.toLowerCase() ===
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
@@ -162,18 +156,6 @@ export default function TransactionsMenu(props: propsIF) {
             window.open(explorerUrl);
         }
     }
-
-    const openDetailsModal = () => {
-        openGlobalModal(
-            <TransactionDetails
-                tx={tx}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-            />,
-        );
-    };
 
     const isTxCopiable = true;
 
@@ -276,16 +258,14 @@ export default function TransactionsMenu(props: propsIF) {
     );
     const detailsButton = (
         <OptionButton
-            onClick={() => openDetailsModal()}
+            onClick={openDetailsModal}
             ariaLabel='Open details modal.'
             content='Details'
         />
     );
 
-    // eslint-disable-next-line
-    const view1NoSidebar =
-        useMediaQuery('(min-width: 1280px)') && !isSidebarOpen;
-    const desktopView = useMediaQuery('(min-width: 768px)');
+    const showCopyButtonOutsideDropdownMenu =
+        useMediaQuery('(min-width: 400px)');
 
     // --------------------------------
     const transactionsMenu = (
@@ -296,7 +276,7 @@ export default function TransactionsMenu(props: propsIF) {
         <div className={styles.menu_column}>
             {detailsButton}
             {explorerButton}
-            {!desktopView && copyButton}
+            {!showCopyButtonOutsideDropdownMenu && copyButton}
             {walletButton}
         </div>
     );
@@ -324,6 +304,7 @@ export default function TransactionsMenu(props: propsIF) {
     }, [showDropdownMenu]);
 
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
+
     const dropdownTransactionsMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
             <button
@@ -336,13 +317,27 @@ export default function TransactionsMenu(props: propsIF) {
         </div>
     );
 
+    const handleCloseModal = () => {
+        clickOutsideHandler();
+        closeDetailsModal();
+    };
+
     return (
-        <div
-            className={styles.main_container}
-            onClick={(event) => event.stopPropagation()}
-        >
-            {desktopView && transactionsMenu}
-            {dropdownTransactionsMenu}
+        <div onClick={(event) => event.stopPropagation()}>
+            <div className={styles.main_container}>
+                {showCopyButtonOutsideDropdownMenu && transactionsMenu}
+                {dropdownTransactionsMenu}
+            </div>
+            {isDetailsModalOpen && (
+                <TransactionDetailsModal
+                    tx={tx}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    onClose={handleCloseModal}
+                />
+            )}
         </div>
     );
 }
