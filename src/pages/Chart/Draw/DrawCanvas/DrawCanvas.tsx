@@ -125,10 +125,10 @@ function DrawCanvas(props: DrawCanvasProps) {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function draw(event: any) {
-            if (!isDrawing) return;
             const offsetY = event.clientY - canvasRect?.top;
             const offsetX = event.clientX - canvasRect?.left;
             setCrossHairDataFunc(offsetX, offsetY);
+            if (!isDrawing) return;
 
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
