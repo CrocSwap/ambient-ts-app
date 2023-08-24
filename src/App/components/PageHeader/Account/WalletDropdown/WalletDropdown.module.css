@@ -1,3 +1,20 @@
+.account_button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    padding: 6px 8px;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    border-radius: var(--border-radius);
+
+    background: var(--dark3);
+    text-decoration: none;
+    color: var(--text2);
+}
+
 .wallet_content {
     background: var(--dark3);
     padding: 8px 1rem;
@@ -73,27 +90,10 @@
     bottom: 0;
     z-index: 9;
 }
-.account_button {
-    cursor: pointer;
-    border: none;
-    outline: none;
-    padding: 6px 8px;
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-    border-radius: var(--border-radius);
-
-    background: var(--dark3);
-    text-decoration: none;
-    color: var(--text2);
-}
 
 .actions_container a:hover,
 .actions_container a:focus-visible {
     color: var(--text-grey-white);
-
 }
 
 .copy_button:focus-visible {

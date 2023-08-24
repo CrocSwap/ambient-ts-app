@@ -1,7 +1,6 @@
 // START: Import React and Dongles
 import { ReactNode, useRef, useEffect, memo, useContext } from 'react';
 
-import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { IoDocumentTextSharp } from 'react-icons/io5';
@@ -9,7 +8,6 @@ import { BsBook, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
 
 import '../../../App.css';
-import styles from './NavbarDropdownMenu.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { openInNewTab } from '../../../../utils/functions/openInNewTab';
 import {
@@ -21,6 +19,14 @@ import {
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import {
+    ConnectButton,
+    Dropdown,
+    IconRight,
+    Menu,
+    MenuItem,
+    NavbarLogoutContainer,
+} from './NavbarDropdownMenu.styles';
 
 interface NavbarDropdownItemPropsIF {
     onClick: () => void;
@@ -57,25 +63,32 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     }, [isEscapePressed]);
 
     function NavbarDropdownItem(props: NavbarDropdownItemPropsIF) {
-        const topLevelItemStyle = styles.topLevelContainer;
-
-        const connectStyle = `${styles.connect_button}`;
-        const menuItemStyles = `${styles.menu_item} ${topLevelItemStyle}`;
-
-        const buttonStyle = props.connectButton ? connectStyle : menuItemStyles;
+        const innerHtml = (
+            <>
+                <span>{props.children}</span>
+                <IconRight>{props.rightIcon}</IconRight>
+            </>
+        );
+        if (props.connectButton) {
+            return (
+                <ConnectButton
+                    onClick={() => props.onClick()}
+                    tabIndex={0}
+                    role='button'
+                >
+                    {innerHtml}
+                </ConnectButton>
+            );
+        }
 
         return (
-            <button
-                className={buttonStyle}
+            <MenuItem
                 onClick={() => props.onClick()}
                 tabIndex={0}
                 role='button'
             >
-                <span>{props.children}</span>
-                <span className={`${styles.icon_right}`}>
-                    {props.rightIcon}
-                </span>
-            </button>
+                {innerHtml}
+            </MenuItem>
         );
     }
 
@@ -115,11 +128,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     };
 
     return (
-        <div
-            className={styles.dropdown}
-            ref={dropdownRef}
-            aria-label={ariaLabel}
-        >
+        <Dropdown ref={dropdownRef} aria-label={ariaLabel}>
             <CSSTransition
                 in={true}
                 unmountOnExit
@@ -127,11 +136,10 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                 classNames='menu-primary'
             >
                 {/* Menu with each drop down item */}
-                <motion.div
+                <Menu
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
-                    className={styles.menu}
                     tabIndex={0}
                 >
                     <NavbarDropdownItem
@@ -171,27 +179,27 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                         Terms of Service
                     </NavbarDropdownItem>
                     {isUserLoggedIn ? (
-                        <div className={`${styles.navbar_logout_container}`}>
+                        <NavbarLogoutContainer>
                             <LogoutButton
                                 onClick={() => {
                                     clickLogout();
                                     closeMenu && closeMenu();
                                 }}
                             />
-                        </div>
+                        </NavbarLogoutContainer>
                     ) : (
-                        <div className={`${styles.navbar_logout_container}`}>
+                        <NavbarLogoutContainer>
                             <NavbarDropdownItem
                                 connectButton
                                 onClick={openWagmiModal}
                             >
                                 Connect Wallet
                             </NavbarDropdownItem>
-                        </div>
+                        </NavbarLogoutContainer>
                     )}
-                </motion.div>
+                </Menu>
             </CSSTransition>
-        </div>
+        </Dropdown>
     );
 }
 

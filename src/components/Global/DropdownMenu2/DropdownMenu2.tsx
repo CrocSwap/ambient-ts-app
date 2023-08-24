@@ -1,15 +1,12 @@
-// START: Import React and Dongles
 import { useState, useRef, ReactNode } from 'react';
 import { FaAngleDown } from 'react-icons/fa';
-import { AnimatePresence, motion } from 'framer-motion';
-
-// START: Import Local Files
-import styles from './DropdownMenu2.module.css';
+import { AnimatePresence } from 'framer-motion';
 import { dropdownAnimation } from '../../../utils/others/FramerMotionAnimations';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { MenuContainer, Menu, MenuItem, Icon } from './DropdownMenu2.styles';
 
-// interface for React functional components
+// Interface for React functional components
 interface DropdownMenuPropsIF {
     title: string;
     children: ReactNode;
@@ -18,7 +15,6 @@ interface DropdownMenuPropsIF {
     logo?: string;
 }
 
-// react functional component
 export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     const { title, children, marginTop, titleWidth, logo } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -32,29 +28,25 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     const dropdownMenuContent = (
         <AnimatePresence>
             {isMenuOpen && (
-                <motion.div
+                <MenuContainer
                     onClick={() => setIsMenuOpen(false)}
                     variants={dropdownAnimation}
                     initial='hidden'
                     animate='show'
                     exit='hidden'
-                    className={styles.menu_container}
                     style={{ top: marginTop ? marginTop : '30px' }}
                 >
                     {children}
-                </motion.div>
+                </MenuContainer>
             )}
         </AnimatePresence>
     );
-
-    // TODO:   @Junior do we need the wrapper below?  See `menu_item`  -Emily
 
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
     return (
         <div ref={dropdownRefItem}>
-            <div
-                className={styles.menu}
+            <Menu
                 onClick={toggleMenu}
                 style={{
                     minWidth: !desktopScreen
@@ -64,9 +56,9 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                         : '100px',
                 }}
             >
-                <div className={styles.menu_item}>
+                <MenuItem>
                     {desktopScreen && (
-                        <div className={styles.icon}>
+                        <Icon>
                             <img
                                 src={logo}
                                 alt={title}
@@ -75,7 +67,7 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                                 style={{ borderRadius: '50%' }}
                             />
                             {title}
-                        </div>
+                        </Icon>
                     )}
                     {!desktopScreen && (
                         <img
@@ -86,9 +78,9 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                             style={{ borderRadius: '50%' }}
                         />
                     )}
-                </div>
+                </MenuItem>
                 <FaAngleDown />
-            </div>
+            </Menu>
             {dropdownMenuContent}
         </div>
     );
