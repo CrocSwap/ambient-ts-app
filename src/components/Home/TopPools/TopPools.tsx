@@ -1,9 +1,9 @@
 import PoolCard from '../../Global/PoolCard/PoolCard';
-import styles from './TopPools.module.css';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { Container, Title, Content, ViewMore } from './TopPools.styles';
 
 interface TopPoolsPropsIF {
     noTitle?: boolean;
@@ -21,18 +21,18 @@ export default function TopPools(props: TopPoolsPropsIF) {
         : topPools;
 
     return (
-        <div className={styles.container}>
-            <div className={styles.title} tabIndex={0} aria-label='Top Pools'>
+        <Container>
+            <Title tabIndex={0} aria-label='Top Pools'>
                 Top Pools
-            </div>
-            <div className={styles.content}>
+            </Title>
+            <Content>
                 {poolData.map((pool, idx) => (
                     <PoolCard key={idx} pool={pool} />
                 ))}
-            </div>
-            <div className={`${styles.content} ${styles.view_more}`}>
+            </Content>
+            <Content as={ViewMore}>
                 <Link to='/explore'>View More</Link>
-            </div>
-        </div>
+            </Content>
+        </Container>
     );
 }

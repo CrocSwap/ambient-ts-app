@@ -6,9 +6,15 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import styles from './Stats.module.css';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { Fade } from 'react-reveal';
+import {
+    Container,
+    StatCardContainer,
+    Title,
+    StatValue,
+    Content,
+} from './Stats.styles';
 
 interface StatCardProps {
     title: string;
@@ -19,16 +25,10 @@ function StatCard(props: StatCardProps) {
     const { title, value } = props;
     const ariaDescription = `${title} is ${value}`;
     return (
-        <li
-            className={styles.stat_card_container}
-            aria-label={ariaDescription}
-            tabIndex={0}
-        >
-            <div className={styles.title} style={{ fontWeight: '100' }}>
-                {title}
-            </div>
-            <div className={styles.value}>{value}</div>
-        </li>
+        <StatCardContainer aria-label={ariaDescription} tabIndex={0}>
+            <Title style={{ fontWeight: '100' }}>{title}</Title>
+            <StatValue>{value}</StatValue>
+        </StatCardContainer>
     );
 }
 
@@ -104,35 +104,27 @@ export default function Stats() {
 
     const mobileWrapper = (
         <Fade up>
-            <div
-                className={styles.title}
-                aria-label='Ambient Finance Stats'
-                tabIndex={0}
-            >
+            <Title aria-label='Ambient Finance Stats' tabIndex={0}>
                 Ambient Finance Stats
-            </div>
-            <ul className={styles.content}>
+            </Title>
+            <Content>
                 {statCardData.map((card, idx) => (
                     <StatCard key={idx} title={card.title} value={card.value} />
                 ))}
-            </ul>
+            </Content>
         </Fade>
     );
 
     return (
-        <div className={styles.container}>
+        <Container>
             {showMobileVersion ? (
                 mobileWrapper
             ) : (
                 <>
-                    <div
-                        className={styles.title}
-                        aria-label='Ambient Finance Stats'
-                        tabIndex={0}
-                    >
+                    <Title aria-label='Ambient Finance Stats' tabIndex={0}>
                         Ambient Finance Stats
-                    </div>
-                    <ul className={styles.content}>
+                    </Title>
+                    <Content>
                         {statCardData.map((card, idx) => (
                             <StatCard
                                 key={idx}
@@ -140,9 +132,9 @@ export default function Stats() {
                                 value={card.value}
                             />
                         ))}
-                    </ul>
+                    </Content>
                 </>
             )}
-        </div>
+        </Container>
     );
 }

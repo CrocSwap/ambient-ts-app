@@ -1,14 +1,14 @@
-import styles from './Hero.module.css';
 import logoText from '../../../assets/images/logos/logo_text.png';
 import TradeNowButton from './TradeNowButton/TradeNowButton';
+import { HeroContainer } from './Hero.styles';
 
 export default function Hero() {
     return (
-        <div className={styles.hero_container}>
-            <div className={styles.hero_container}>
+        <HeroContainer id='hero'>
+            <div>
                 <img src={logoText} alt='ambient' />
                 <TradeNowButton />
             </div>
-        </div>
+        </HeroContainer>
     );
 }
