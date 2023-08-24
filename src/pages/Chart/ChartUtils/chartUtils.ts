@@ -28,7 +28,7 @@ export const defaultCandleBandwith = 5;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type lineData = { x: number; y: number; ctx: any };
-export type drawDataHistory = { data: lineData[]; time: number };
+export type drawDataHistory = { data: lineData[]; type: string; time: number };
 export type bandLineData = { fromValue: number; toValue: number };
 export interface CandleDataChart extends CandleData {
     isFakeData: boolean;

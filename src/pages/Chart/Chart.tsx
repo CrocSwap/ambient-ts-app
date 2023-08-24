@@ -63,7 +63,9 @@ import {
     chartItemStates,
     crosshair,
     defaultCandleBandwith,
+    drawDataHistory,
     fillLiqAdvanced,
+    lineData,
     lineValue,
     liquidityChartData,
     renderCanvasArray,
@@ -77,10 +79,15 @@ import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useDebounce from '../../App/hooks/useDebounce';
 import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
-import { createLinearLineSeries } from './Draw/DrawCanvas/LinearLineSeries';
+import {
+    createLinearLineSeries,
+    distanceToLine,
+} from './Draw/DrawCanvas/LinearLineSeries';
 import { ChartContext } from '../../contexts/ChartContext';
 import { useUndoRedo } from './ChartUtils/useUndoRedo';
 import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
+import { createCircle } from './ChartUtils/circle';
+import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 // import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
@@ -154,8 +161,12 @@ export default function Chart(props: propsIF) {
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
-    const { isDrawActive, lineDataHistory } = useContext(ChartContext);
+    const { isDrawActive } = useContext(ChartContext);
 
+    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
+        drawDataHistory[]
+    >([]);
+    const [isDragActive, setIsDragActive] = useState(false);
     const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
         domainBoundry: undefined,
@@ -261,7 +272,10 @@ export default function Chart(props: propsIF) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineSeries, setLineSeries] = useState<any>();
 
-    const { undo, redo } = useUndoRedo();
+    const [selectedDrawnShape, setSelectedDrawnShape] =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        useState<any>(undefined);
+    const { undo, redo } = useUndoRedo(drawnShapeHistory, setDrawnShapeHistory);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
@@ -567,6 +581,19 @@ export default function Chart(props: propsIF) {
         mainCanvasBoundingClientRect,
         location.pathname,
     ]);
+
+    const canUserDragDrawnShape = useMemo<boolean>(() => {
+        if (
+            chartMousemoveEvent &&
+            mainCanvasBoundingClientRect &&
+            scaleData &&
+            selectedDrawnShape
+        ) {
+            return true;
+        }
+
+        return false;
+    }, [selectedDrawnShape, chartMousemoveEvent, mainCanvasBoundingClientRect]);
 
     useEffect(() => {
         if (isLineDrag) {
@@ -876,10 +903,12 @@ export default function Chart(props: propsIF) {
                         const isWheel = event.type === 'wheel';
 
                         if (location.pathname.includes('/market')) {
-                            return true;
+                            return !canUserDragDrawnShape;
                         } else {
                             return (
-                                (!canUserDragRange && !canUserDragLimit) ||
+                                (!canUserDragRange &&
+                                    !canUserDragLimit &&
+                                    !canUserDragDrawnShape) ||
                                 isWheel
                             );
                         }
@@ -904,6 +933,7 @@ export default function Chart(props: propsIF) {
         maxTickForLimit,
         canUserDragRange,
         canUserDragLimit,
+        canUserDragDrawnShape,
         unparsedCandleData,
         period,
         tradeData.advancedMode,
@@ -2231,27 +2261,40 @@ export default function Chart(props: propsIF) {
         crosshairVerticalCanvas,
     ]);
 
-    // useEffect(() => {
-    //     const canvas = d3
-    //         .select(d3CanvasMain.current)
-    //         .select('canvas')
-    //         .node() as HTMLCanvasElement;
-    //     const ctx = canvas.getContext('2d');
-    //     if (lineSeries && scaleData) {
-    //         d3.select(d3CanvasMain.current)
-    //             .on('draw', () => {
-    //                 setCanvasResolution(canvas);
-    //                 lineDataHistory?.forEach((item) => {
-    //                     lineSeries(item?.data);
-    //                 });
-    //             })
-    //             .on('measure', () => {
-    //                 lineSeries.context(ctx);
-    //             });
+    const circleSeries = createCircle(
+        scaleData?.xScale,
+        scaleData?.yScale,
+        60,
+        0.5,
+    );
 
-    //         render();
-    //     }
-    // }, [diffHashSig(lineDataHistory), lineSeries]);
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasMain.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+        if (lineSeries && scaleData) {
+            d3.select(d3CanvasMain.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+                    drawnShapeHistory?.forEach((item) => {
+                        lineSeries(item?.data);
+                        if (
+                            selectedDrawnShape &&
+                            selectedDrawnShape.time === item.time
+                        ) {
+                            circleSeries(item?.data);
+                        }
+                    });
+                })
+                .on('measure', () => {
+                    lineSeries.context(ctx);
+                });
+
+            render();
+        }
+    }, [diffHashSig(drawnShapeHistory), lineSeries]);
 
     useEffect(() => {
         const canvas = d3
@@ -2264,7 +2307,7 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-                    lineDataHistory?.forEach((item) => {
+                    drawnShapeHistory?.forEach((item) => {
                         item.data[1].ctx
                             .xScale()
                             .domain(scaleData.xScale.domain());
@@ -2291,15 +2334,16 @@ export default function Chart(props: propsIF) {
                     });
                 })
                 .on('measure', () => {
-                    lineDataHistory?.forEach((item) => {
+                    drawnShapeHistory?.forEach((item) => {
                         item.data[1].ctx.context(ctx);
                     });
                     lineSeries.context(ctx);
+                    circleSeries.context(ctx);
                 });
 
             render();
         }
-    }, [diffHashSig(lineDataHistory)]);
+    }, [diffHashSig(drawnShapeHistory), lineSeries, selectedDrawnShape]);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2586,6 +2630,7 @@ export default function Chart(props: propsIF) {
         selectedDate,
         bandwidth,
         isChartZoom,
+        diffHashSig(drawnShapeHistory),
     ]);
 
     // mouseleave
@@ -2730,8 +2775,49 @@ export default function Chart(props: propsIF) {
         bandwidth,
         diffHashSigChart(unparsedCandleData),
         liquidityData,
+        selectedDrawnShape,
     ]);
 
+    function checkLineLocation(
+        element: lineData[],
+        mouseX: number,
+        mouseY: number,
+    ) {
+        if (scaleData) {
+            const threshold = 10;
+            const distance = distanceToLine(
+                mouseX,
+                mouseY,
+                scaleData.xScale(element[0].x),
+                scaleData.yScale(element[0].y),
+                scaleData.xScale(element[1].x),
+                scaleData.yScale(element[1].y),
+            );
+
+            return distance < threshold;
+        }
+
+        return false;
+    }
+    const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
+        let resElement = undefined;
+
+        drawnShapeHistory.forEach((element) => {
+            if (element.type === 'line') {
+                if (checkLineLocation(element.data, mouseX, mouseY)) {
+                    resElement = element;
+                }
+            }
+        });
+
+        if (resElement) {
+            setIsDragActive(true);
+        } else {
+            setIsDragActive(false);
+        }
+
+        setSelectedDrawnShape(resElement);
+    };
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
         const lastDate = scaleData?.xScale.invert(
             mouseX + bandwidth / 2,
@@ -2992,34 +3078,39 @@ export default function Chart(props: propsIF) {
         renderSubchartCrCanvas();
     }, [crosshairActive]);
 
+    const setCrossHairDataFunc = (offsetX: number, offsetY: number) => {
+        if (scaleData) {
+            const snapDiff =
+                scaleData?.xScale.invert(offsetX) % (period * 1000);
+
+            const snappedTime =
+                scaleData?.xScale.invert(offsetX) -
+                (snapDiff > period * 1000 - snapDiff
+                    ? -1 * (period * 1000 - snapDiff)
+                    : snapDiff);
+
+            setCrosshairActive('chart');
+
+            setCrosshairData([
+                {
+                    x: snappedTime,
+                    y: scaleData?.yScale.invert(offsetY),
+                },
+            ]);
+        }
+    };
     const mousemove = (event: MouseEvent<HTMLDivElement>) => {
         if (scaleData && mainCanvasBoundingClientRect) {
             const offsetY = event.clientY - mainCanvasBoundingClientRect?.top;
             const offsetX = event.clientX - mainCanvasBoundingClientRect?.left;
             if (!isLineDrag) {
-                const snapDiff =
-                    scaleData?.xScale.invert(offsetX) % (period * 1000);
-
-                const snappedTime =
-                    scaleData?.xScale.invert(offsetX) -
-                    (snapDiff > period * 1000 - snapDiff
-                        ? -1 * (period * 1000 - snapDiff)
-                        : snapDiff);
-
-                setCrosshairActive('chart');
-
-                setCrosshairData([
-                    {
-                        x: snappedTime,
-                        y: scaleData?.yScale.invert(offsetY),
-                    },
-                ]);
-
                 setChartMousemoveEvent(event);
-
+                setCrossHairDataFunc(offsetX, offsetY);
                 const { isHoverCandleOrVolumeData } =
                     candleOrVolumeDataHoverStatus(offsetX, offsetY);
                 setIsOnCandleOrVolumeMouseLocation(isHoverCandleOrVolumeData);
+
+                drawnShapesHoverStatus(offsetX, offsetY);
             }
         }
     };
@@ -3343,7 +3434,21 @@ export default function Chart(props: propsIF) {
                         {isDrawActive && scaleData && (
                             <DrawCanvas
                                 scaleData={scaleData}
-                                lineSeries={lineSeries}
+                                setDrawnShapeHistory={setDrawnShapeHistory}
+                                setCrossHairDataFunc={setCrossHairDataFunc}
+                            />
+                        )}
+
+                        {isDragActive && scaleData && (
+                            <DragCanvas
+                                scaleData={scaleData}
+                                canUserDragDrawnShape={canUserDragDrawnShape}
+                                selectedDrawnShape={selectedDrawnShape}
+                                drawnShapeHistory={drawnShapeHistory}
+                                render={render}
+                                setIsDragActive={setIsDragActive}
+                                mousemove={mousemove}
+                                setCrossHairDataFunc={setCrossHairDataFunc}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
