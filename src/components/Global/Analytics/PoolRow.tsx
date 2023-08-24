@@ -35,13 +35,13 @@ export default function PoolRow(props: propsIF) {
                         <TokenIcon
                             token={firstToken}
                             src={uriToHttp(firstToken.logoURI)}
-                            alt={'logo for token'}
+                            alt={firstToken.symbol}
                             size='2xl'
                         />
                         <TokenIcon
                             token={secondToken}
                             src={uriToHttp(secondToken.logoURI)}
-                            alt={'logo for token'}
+                            alt={secondToken.symbol}
                             size='2xl'
                         />
                     </TokenWrapper>
