@@ -16,6 +16,17 @@ import { USDC } from '../../../../../utils/tokens/exports';
 import { tokenData } from '../../../../../utils/state/userDataSlice';
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
+import {
+    NameDisplayContent,
+    NameDisplay,
+    WalletDisplay,
+    CopyButton,
+    TokenContainer,
+    LogoName,
+    TokenAmount,
+    ActionsContainer,
+    NameDisplayContainer,
+} from './WalletDropdown.styles';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -80,20 +91,16 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         const { logo, symbol, amount, value } = props;
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
-            <section
-                className={styles.token_container}
-                tabIndex={0}
-                aria-label={ariaLabel}
-            >
-                <div className={styles.logo_name}>
+            <TokenContainer tabIndex={0} aria-label={ariaLabel}>
+                <LogoName>
                     <img src={logo} alt='' />
                     <h3>{symbol}</h3>
-                </div>
-                <div className={styles.token_amount}>
+                </LogoName>
+                <TokenAmount>
                     <h3>{amount}</h3>
                     <h6>{value !== undefined ? '$' + value : '...'}</h6>
-                </div>
-            </section>
+                </TokenAmount>
+            </TokenContainer>
         );
     }
 
@@ -155,37 +162,39 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             tabIndex={0}
             aria-label={`Wallet menu for ${ensName ? ensName : accountAddress}`}
         >
-            <div className={styles.name_display_container}>
+            <NameDisplayContainer>
                 <Jazzicon
                     diameter={50}
                     seed={jsNumberForAddress(accountAddressFull.toLowerCase())}
                 />
-                <div className={styles.name_display_content}>
-                    <div className={styles.name_display}>
-                        <h2>{ensName !== '' ? ensName : accountAddress}</h2>
-                        <a
-                            target='_blank'
-                            rel='noreferrer'
-                            href={`${blockExplorer}address/${accountAddressFull}`}
-                            aria-label='View address on Etherscan'
-                        >
-                            <FiExternalLink />
-                        </a>
-                        <button
-                            onClick={handleCopyAddress}
-                            className={styles.copy_button}
-                            aria-label='Copy address to clipboard'
-                        >
-                            <FiCopy />
-                        </button>
-                    </div>
-                    <div className={styles.wallet_display}>
-                        <p>{connectorName}</p>
-                        <p>{props.accountAddress}</p>
-                    </div>
+
+                <div>
+                    <NameDisplayContent>
+                        <NameDisplay>
+                            <h2>{ensName !== '' ? ensName : accountAddress}</h2>
+                            <a
+                                target='_blank'
+                                rel='noreferrer'
+                                href={`${blockExplorer}address/${accountAddressFull}`}
+                                aria-label='View address on Etherscan'
+                            >
+                                <FiExternalLink />
+                            </a>
+                            <CopyButton
+                                onClick={handleCopyAddress}
+                                aria-label='Copy address to clipboard'
+                            >
+                                <FiCopy />
+                            </CopyButton>
+                        </NameDisplay>
+                        <WalletDisplay>
+                            <p>{connectorName}</p>
+                            <p>{props.accountAddress}</p>
+                        </WalletDisplay>
+                    </NameDisplayContent>
                 </div>
-            </div>
-            <section className={styles.wallet_content}>
+            </NameDisplayContainer>
+            <WalletDisplay>
                 {tokensData.map((tokenData) => (
                     <TokenAmountDisplay
                         amount={tokenData.amount}
@@ -195,8 +204,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         key={JSON.stringify(tokenData)}
                     />
                 ))}
-            </section>
-            <div className={styles.actions_container}>
+            </WalletDisplay>
+            <ActionsContainer>
                 <NavLink
                     to={'/account'}
                     className={styles.account_button}
@@ -208,7 +217,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     My Account
                 </NavLink>
                 <LogoutButton onClick={clickLogout} />
-            </div>
+            </ActionsContainer>
         </div>
     );
 }
