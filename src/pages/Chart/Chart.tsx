@@ -59,6 +59,7 @@ import RangeLinesChart from './RangeLine/RangeLinesChart';
 import {
     CandleDataChart,
     SubChartValue,
+    bandLineData,
     chartItemStates,
     crosshair,
     defaultCandleBandwith,
@@ -79,6 +80,7 @@ import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
 import { createLinearLineSeries } from './Draw/DrawCanvas/LinearLineSeries';
 import { ChartContext } from '../../contexts/ChartContext';
 import { useUndoRedo } from './ChartUtils/useUndoRedo';
+import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
 // import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
@@ -2229,27 +2231,75 @@ export default function Chart(props: propsIF) {
         crosshairVerticalCanvas,
     ]);
 
+    // useEffect(() => {
+    //     const canvas = d3
+    //         .select(d3CanvasMain.current)
+    //         .select('canvas')
+    //         .node() as HTMLCanvasElement;
+    //     const ctx = canvas.getContext('2d');
+    //     if (lineSeries && scaleData) {
+    //         d3.select(d3CanvasMain.current)
+    //             .on('draw', () => {
+    //                 setCanvasResolution(canvas);
+    //                 lineDataHistory?.forEach((item) => {
+    //                     lineSeries(item?.data);
+    //                 });
+    //             })
+    //             .on('measure', () => {
+    //                 lineSeries.context(ctx);
+    //             });
+
+    //         render();
+    //     }
+    // }, [diffHashSig(lineDataHistory), lineSeries]);
+
     useEffect(() => {
         const canvas = d3
             .select(d3CanvasMain.current)
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
-        if (lineSeries && scaleData) {
+
+        if (scaleData && lineSeries) {
             d3.select(d3CanvasMain.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     lineDataHistory?.forEach((item) => {
-                        lineSeries(item?.data);
+                        item.data[1].ctx
+                            .xScale()
+                            .domain(scaleData.xScale.domain());
+
+                        const range = [
+                            scaleData?.xScale(item.data[0].x),
+                            scaleData.xScale(item.data[1].x),
+                        ];
+
+                        item.data[1].ctx.xScale().range(range);
+
+                        const bandData = {
+                            fromValue: item.data[0].y,
+                            toValue: item.data[1].y,
+                        } as bandLineData;
+
+                        item.data[1].ctx([bandData]);
+
+                        const lineOfBand = createPointsOfBandLine(item.data);
+
+                        lineOfBand?.forEach((line) => {
+                            lineSeries(line);
+                        });
                     });
                 })
                 .on('measure', () => {
+                    lineDataHistory?.forEach((item) => {
+                        item.data[1].ctx.context(ctx);
+                    });
                     lineSeries.context(ctx);
                 });
 
             render();
         }
-    }, [diffHashSig(lineDataHistory), lineSeries]);
+    }, [diffHashSig(lineDataHistory)]);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

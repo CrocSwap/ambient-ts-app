@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FaPaintBrush } from 'react-icons/fa';
+import { FaPaintBrush, FaSquare } from 'react-icons/fa';
 import styles from './Toolbar.module.css';
 import { ChartContext } from '../../../../contexts/ChartContext';
 // interface ToolbarProps {
@@ -18,6 +18,10 @@ function Toolbar() {
         {
             icon: <FaPaintBrush />,
             label: 'Brush',
+        },
+        {
+            icon: <FaSquare />,
+            label: 'Square',
         },
 
         // Add more icons here
