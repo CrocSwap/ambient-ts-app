@@ -21,6 +21,7 @@ interface propsIF {
     position: PositionIF;
     rank?: number;
     isAccountView: boolean;
+    showTimestamp: boolean;
     isLeaderboard?: boolean;
 }
 
@@ -28,6 +29,7 @@ function RangesRow(props: propsIF) {
     const {
         ipadView,
         showColumns,
+        showTimestamp,
         showPair,
         position,
         isAccountView,
@@ -82,6 +84,8 @@ function RangesRow(props: propsIF) {
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         elapsedTimeString,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
@@ -122,7 +126,7 @@ function RangesRow(props: propsIF) {
             ? `position-${position.firstMintTx}`
             : '';
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
 
     const activePositionRef = useRef(null);
 
@@ -222,6 +226,7 @@ function RangesRow(props: propsIF) {
         handleWalletLinkClick,
         handleWalletCopy,
         ownerId,
+        ensName,
         userNameToDisplay,
         isOwnerActiveAccount,
         usernameStyle,
@@ -247,6 +252,8 @@ function RangesRow(props: propsIF) {
         apyString,
         apyClassname,
         isPositionInRange,
+        baseTokenAddress,
+        quoteTokenAddress,
     };
 
     const {
@@ -279,14 +286,18 @@ function RangesRow(props: propsIF) {
     return (
         <>
             <ul
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+                className={`${
+                    styles.row_container
+                } ${activePositionStyle} ${userPositionStyle} ${
+                    isAccountView ? styles.account_row_container : undefined
+                }`}
                 onClick={handleRowClick}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
                 style={{ backgroundColor: highlightStyle }}
             >
                 {rankingOrNull}
-                {showPair && rangeTimeWithTooltip}
+                {showPair && showTimestamp && rangeTimeWithTooltip}
                 {isAccountView && showPair && tokenPair}
                 {idOrNull}
                 {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}

@@ -17,12 +17,11 @@ import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
 
 interface TvlData {
     tvlData: Array<CandleData>;
-    period: number | undefined;
+    period: number;
     subChartValues: any;
     crosshairForSubChart: any;
     scaleData: any;
     render: any;
-    getNewCandleData: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
     setCrosshairActive: React.Dispatch<React.SetStateAction<string>>;
@@ -32,6 +31,8 @@ interface TvlData {
     lastCrDate: number | undefined;
     isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
+    zoomBase: any;
+    isChartZoom: boolean;
 }
 
 function TvlChart(props: TvlData) {
@@ -40,7 +41,6 @@ function TvlChart(props: TvlData) {
         period,
         scaleData,
         crosshairForSubChart,
-        getNewCandleData,
         subChartValues,
         yAxisWidth,
         setCrossHairLocation,
@@ -50,6 +50,8 @@ function TvlChart(props: TvlData) {
         lastCrDate,
         isCrDataIndActive,
         xAxisActiveTooltip,
+        zoomBase,
+        isChartZoom,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -119,7 +121,7 @@ function TvlChart(props: TvlData) {
     }, [diffHashSig(tvlData)]);
 
     useEffect(() => {
-        if (tvlData !== undefined) {
+        if (tvlData !== undefined && period && !isChartZoom) {
             let date: any | undefined = undefined;
 
             const zoom = d3
@@ -138,7 +140,7 @@ function TvlChart(props: TvlData) {
 
                     const deltaX = linearX(-event.sourceEvent.movementX);
 
-                    getNewCandleData(domainX[0] + deltaX, date);
+                    zoomBase.getNewCandleDataLeft(domainX[0] + deltaX, date);
 
                     scaleData?.xScale.domain([
                         domainX[0] + deltaX,
@@ -152,26 +154,15 @@ function TvlChart(props: TvlData) {
                 return zoom;
             });
         }
-    }, [tvlData, diffHashSigScaleData(scaleData, 'x')]);
+    }, [tvlData, diffHashSigScaleData(scaleData, 'x'), isChartZoom]);
 
     useEffect(() => {
         if (tvlyScale !== undefined) {
-            const xmin = scaleData?.xScale.domain()[0];
-            const xmax = scaleData?.xScale.domain()[1];
-
-            const filtered = tvlData?.filter(
-                (data: any) =>
-                    data.time * 1000 >= xmin && data.time * 1000 <= xmax,
-            );
-
             const yAxis = d3fc.axisRight().scale(tvlyScale);
 
-            if (filtered !== undefined) {
+            if (tvlData !== undefined) {
                 const minYBoundary = 0;
-                const maxYBoundary = d3.max(
-                    filtered,
-                    (d: any) => d.tvlData.tvl,
-                );
+                const maxYBoundary = d3.max(tvlData, (d: any) => d.tvlData.tvl);
 
                 const buffer = Math.abs(maxYBoundary - minYBoundary) / 4;
 
@@ -224,7 +215,7 @@ function TvlChart(props: TvlData) {
                 tvlyScale.domain(domain);
             }
         }
-    }, [tvlyScale, diffHashSigScaleData(scaleData, 'x')]);
+    }, [tvlyScale]);
 
     useEffect(() => {
         if (d3CanvasArea && tvlyScale) {
@@ -345,7 +336,7 @@ function TvlChart(props: TvlData) {
 
             const crDataIndicator = createIndicatorLine(
                 scaleData?.xScale,
-                scaleData.yScale,
+                scaleData?.yScale,
             );
 
             setCrDataIndicator(() => {

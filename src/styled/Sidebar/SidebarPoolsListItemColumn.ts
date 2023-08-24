@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { BodyText } from '..';
 
 const SidebarPoolsListItemColumn = styled.div`
     width: 100%;
@@ -7,7 +6,6 @@ const SidebarPoolsListItemColumn = styled.div`
     grid-template-columns: repeat(1, 1fr);
     justify-items: center;
     font-weight: 300;
-    ${BodyText}
     color: var(--text2);
     padding: 5px;
     max-height: 25px;

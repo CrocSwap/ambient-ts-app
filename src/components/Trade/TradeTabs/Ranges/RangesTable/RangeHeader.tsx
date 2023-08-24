@@ -2,7 +2,6 @@ import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import styles from '../Ranges.module.css';
-import { useMediaQuery } from '@material-ui/core';
 import { RangeSortType } from '../../useSortedPositions';
 
 interface propsIF {
@@ -66,10 +65,6 @@ function RangeHeader(props: propsIF) {
     const activeSortStyle =
         sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
 
-    const fixedHeight = useMediaQuery('(max-width: 1900px)')
-        ? { height: 24 }
-        : {};
-
     return (
         <>
             {show && (
@@ -82,7 +77,7 @@ function RangeHeader(props: propsIF) {
                     ${alignCenter && styles.align_center}
                     `}
                 >
-                    <div style={fixedHeight}>
+                    <div>
                         {name} {arrow}
                     </div>
                 </li>

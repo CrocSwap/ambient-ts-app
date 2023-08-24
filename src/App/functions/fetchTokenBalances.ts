@@ -88,7 +88,8 @@ export const fetchNativeTokenBalance = async (
     const updatedNativeToken: TokenIF = {
         chainId: parseInt(chain),
         name: 'Native Ether',
-        logoURI: '',
+        logoURI:
+            'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         address: ZERO_ADDRESS,
         symbol: 'ETH',
         decimals: 18,
