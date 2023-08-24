@@ -1,7 +1,6 @@
 import React from 'react';
 import { FaPaintBrush } from 'react-icons/fa';
 import styles from './Toolbar.module.css';
-import Divider from '../../../../components/Global/Divider/Divider';
 interface ToolbarProps {
     isDrawActive: boolean;
     setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
