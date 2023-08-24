@@ -3,7 +3,38 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface TransactionByType {
     txHash: string;
-    txType: string;
+    txAction?:
+        | 'Sell'
+        | 'Buy'
+        | 'Add'
+        | 'Remove'
+        | 'Harvest'
+        | 'Claim'
+        | 'Reposition';
+    txType:
+        | 'Market'
+        | 'Limit'
+        | 'Range'
+        | 'Deposit'
+        | 'Withdraw'
+        | 'Transfer'
+        | 'Init'
+        | 'Approve';
+    txDescription: string;
+    txDetails?: {
+        baseAddress: string;
+        quoteAddress: string;
+        poolIdx: number;
+        baseSymbol?: string;
+        quoteSymbol?: string;
+        baseTokenDecimals?: number;
+        quoteTokenDecimals?: number;
+        isAmbient?: boolean;
+        lowTick?: number;
+        highTick?: number;
+        isBid?: boolean;
+        gridSize?: number;
+    };
 }
 export interface receiptData {
     sessionReceipts: Array<string>;
@@ -29,6 +60,20 @@ export const receiptDataSlice = createSlice({
             action: PayloadAction<TransactionByType>,
         ) => {
             state.transactionsByType.push(action.payload);
+        },
+        updateTransactionHash: (
+            state,
+            action: PayloadAction<{ oldHash: string; newHash: string }>,
+        ) => {
+            const txIndex = state.transactionsByType.findIndex(
+                (tx) => tx.txHash === action.payload.oldHash,
+            );
+            if (txIndex !== -1) {
+                state.transactionsByType[txIndex] = {
+                    ...state.transactionsByType[txIndex],
+                    txHash: action.payload.newHash,
+                };
+            }
         },
         addReceipt: (state, action: PayloadAction<string>) => {
             state.sessionReceipts.unshift(action.payload);
@@ -81,6 +126,7 @@ export const {
     addReceipt,
     addPendingTx,
     addPositionPendingUpdate,
+    updateTransactionHash,
     removePendingTx,
     removeReceipt,
     removePositionPendingUpdate,

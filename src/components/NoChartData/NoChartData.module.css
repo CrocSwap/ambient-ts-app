@@ -9,14 +9,18 @@
     align-items: center;
 }
 .pool_init_bg{
-    width: 430px;
+    width: 480px;
     height: 204px;
     border-radius: var(--border-radius);
     padding: 1px;
 }
 
+.hide_chart{
+  cursor: pointer;
+}
+
 .pool_not_initialialized_content {
-    padding-top: 8px;
+   
     border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
@@ -85,3 +89,44 @@
     background: linear-gradient(to left, var(--accent1) 34%, var(--accent5) 65%) right;
     background-size: 300% 100%;
 }
+.disabled_button{
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+
+@-webkit-keyframes rotating /* Safari and Chrome */ {
+    from {
+      -webkit-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes rotating {
+    from {
+      -ms-transform: rotate(0deg);
+      -moz-transform: rotate(0deg);
+      -webkit-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    to {
+      -ms-transform: rotate(360deg);
+      -moz-transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }
+  .isFetching svg {
+    -webkit-animation: rotating 1s linear infinite;
+    -moz-animation: rotating 1s linear infinite;
+    -ms-animation: rotating 1s linear infinite;
+    -o-animation: rotating 1s linear infinite;
+    animation: rotating 1s linear infinite;
+  }

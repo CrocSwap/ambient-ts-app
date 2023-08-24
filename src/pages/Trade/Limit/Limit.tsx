@@ -34,6 +34,7 @@ import {
     addTransactionByType,
     removePendingTx,
     addReceipt,
+    updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
 import {
     setLimitTick,
@@ -50,7 +51,7 @@ export default function Limit() {
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
-        chainData: { chainId, gridSize },
+        chainData: { chainId, gridSize, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
@@ -457,7 +458,29 @@ export default function Limit() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
+                        txAction:
+                            tokenB.address.toLowerCase() ===
+                            quoteToken.address.toLowerCase()
+                                ? 'Buy'
+                                : 'Sell',
+                        txType: 'Limit',
+                        txDescription: `Add Limit ${tokenA.symbol}→${tokenB.symbol}`,
+                        txDetails: {
+                            baseAddress: baseToken.address,
+                            quoteAddress: quoteToken.address,
+                            baseTokenDecimals: baseToken.decimals,
+                            quoteTokenDecimals: quoteToken.decimals,
+                            poolIdx: poolIndex,
+                            baseSymbol: baseToken.symbol,
+                            quoteSymbol: quoteToken.symbol,
+                            lowTick: isSellTokenBase
+                                ? limitTick
+                                : limitTick - gridSize,
+                            highTick: isSellTokenBase
+                                ? limitTick + gridSize
+                                : limitTick,
+                            isBid: isSellTokenBase,
+                        },
                     }),
                 );
         } catch (error) {
@@ -484,6 +507,12 @@ export default function Limit() {
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 setNewLimitOrderTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
@@ -564,7 +593,8 @@ export default function Limit() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${tokenSymbol}`,
+                        txType: 'Approve',
+                        txDescription: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
@@ -582,6 +612,12 @@ export default function Limit() {
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {

@@ -101,8 +101,11 @@
     line-height: 13px;
 
     color: var(--text2);
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 .row_container {
+    position: relative;
     width: 100%;
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
@@ -117,13 +120,93 @@
 .row_container li:not(:last-child) {
     cursor: pointer;
 }
+
+.row_placeholder {
+    background-color: var(--dark2);
+    color: var(--text2);
+    -webkit-mask: linear-gradient(
+            -60deg,
+            black 30%,
+            rgba(119, 117, 117, 0.333),
+            black 70%
+        )
+        right/300% 100%;
+    background-repeat: no-repeat;
+    animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+    100% {
+        -webkit-mask-position: left;
+    }
+}
+
 .main_list_container .row_container,
 .main_list_container .header {
     width: 100%;
-    /* table row was living space at end so I changed it to table and added a fixed table layout*/
-    display: table-row;
-    table-layout: fixed;
-    display: table;
+    display: grid;
+    align-items: center;
+}
+/* The reason we use % for the last column is it allows slight overlap.
+ which helps with how the claimable column has a bigger header than the actual icon below. */
+@media only screen and (max-width: 600px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for sub-iPad view (410px)*/
+        grid-template-columns: minmax(160px, 2.2fr) 1fr 1.8fr 34%;
+    }
+    .main_list_container .account_row_container,
+    .main_list_container .account_header {
+        /* measured against smallest screen size for sub-iPad view (410px)*/
+        grid-template-columns: minmax(100px, 2.2fr) minmax(100px, 2.2fr) 1fr 1.8fr 34%;
+    }
+}
+
+@media only screen and (max-width: 1199px) and (min-width: 601px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for iPad view (580px)*/
+        grid-template-columns: minmax(160px, 2fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr 21%;
+    }
+    .main_list_container .account_row_container,
+    .main_list_container .account_header {
+        /* measured against smallest screen size for iPad view (580px)*/
+        grid-template-columns: minmax(100px, 2fr) 1.2fr 1.1fr 1.4fr 1fr 1fr 1fr 21%;
+    }
+}
+
+@media only screen and (max-width: 1599px) and (min-width: 1200px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for merged view (1280px) with sidebar expanded */
+        grid-template-columns:
+            minmax(125px, 2.3fr) minmax(72px, 1.2fr) minmax(56px, 1.1fr)
+            minmax(78px, 1.4fr) minmax(86px, 1.6fr) minmax(52px, 1fr) minmax(103px, 25%);
+    }
+    .main_list_container .account_row_container,
+    .main_list_container .account_header {
+        /* measured against smallest screen size for merged view (1280px) with sidebar expanded */
+        grid-template-columns:
+            minmax(100px, 2.3fr) minmax(72px, 1.2fr) minmax(100px, 1.1fr)
+            minmax(38px, 1fr) minmax(78px, 1.4fr) minmax(86px, 1.6fr) minmax(
+                52px,
+                1fr
+            )
+            minmax(103px, 20%);
+    }
+}
+
+@media only screen and (min-width: 1600px) {
+    .main_list_container .row_container,
+    .main_list_container .header {
+        /* measured against smallest screen size for full view (1600px) with sidebar expanded */
+        grid-template-columns:
+            minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+            minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(72px, 1.3fr) minmax(
+                80px,
+                1.7fr
+            )
+            2fr 2fr 1.2fr 14%;
+    }
 }
 
 .main_list_container .row_container > li,

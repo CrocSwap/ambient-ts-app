@@ -4,8 +4,11 @@ import Apy from '../../Global/Tabs/Apy/Apy';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { TokenIF } from '../../../utils/interfaces/exports';
+import { useContext } from 'react';
+import { TokenContext } from '../../../contexts/TokenContext';
 
-interface IPriceInfoProps {
+interface propsIF {
     usdValue: string;
     lowRangeDisplay: string;
     highRangeDisplay: string;
@@ -22,9 +25,11 @@ interface IPriceInfoProps {
     positionApy: number | undefined;
     minRangeDenomByMoneyness: string;
     maxRangeDenomByMoneyness: string;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
-export default function PriceInfo(props: IPriceInfoProps) {
+export default function PriceInfo(props: propsIF) {
     const {
         usdValue,
         lowRangeDisplay,
@@ -42,17 +47,33 @@ export default function PriceInfo(props: IPriceInfoProps) {
         positionApy,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = props;
 
     const { pathname } = useLocation();
 
     const isOnTradeRoute = pathname.includes('trade');
-
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
     const baseTokenLogoDisplay = (
-        <TokenIcon src={baseTokenLogoURI} alt={baseTokenSymbol} size='xs' />
+        <TokenIcon
+            token={baseToken}
+            src={baseTokenLogoURI}
+            alt={baseTokenSymbol}
+            size='xs'
+        />
     );
     const quoteTokenLogoDisplay = (
-        <TokenIcon src={quoteTokenLogoURI} alt={quoteTokenSymbol} size='xs' />
+        <TokenIcon
+            token={quoteToken}
+            src={quoteTokenLogoURI}
+            alt={quoteTokenSymbol}
+            size='xs'
+        />
     );
 
     const totalValue = (
@@ -117,11 +138,13 @@ export default function PriceInfo(props: IPriceInfoProps) {
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
                 <TokenIcon
+                    token={baseToken}
                     src={baseTokenLogoURI}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
+                    token={quoteToken}
                     src={quoteTokenLogoURI}
                     alt={quoteTokenSymbol}
                     size='2xl'
