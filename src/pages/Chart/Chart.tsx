@@ -131,6 +131,10 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
     candleTimeInSeconds: number;
+    drawnShapeHistory: drawDataHistory[];
+    setDrawnShapeHistory: React.Dispatch<
+        React.SetStateAction<drawDataHistory[]>
+    >;
 }
 
 export default function Chart(props: propsIF) {
@@ -155,6 +159,8 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
+        drawnShapeHistory,
+        setDrawnShapeHistory,
     } = props;
 
     const {
@@ -167,9 +173,6 @@ export default function Chart(props: propsIF) {
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
-    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
-        drawDataHistory[]
-    >([]);
     const [isDragActive, setIsDragActive] = useState(false);
     const [isDrawActive, setIsDrawActive] = useState(false);
     const [activeDrawingType, setActiveDrawingType] = useState('');
