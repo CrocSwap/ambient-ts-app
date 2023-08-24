@@ -227,7 +227,7 @@
     .main_list_container .header {
         /* measured against smallest screen size for full view (1600px) with sidebar expanded */
         grid-template-columns:
-            minmax(76px, 1.3fr) minmax(80px, 2.3fr) minmax(172px, 2.3fr)
+            minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
             minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(72px, 1.3fr) minmax(
                 80px,
                 1.7fr

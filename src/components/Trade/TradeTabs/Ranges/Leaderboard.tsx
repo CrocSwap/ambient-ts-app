@@ -86,7 +86,7 @@ function Leaderboard() {
 
     const walID = (
         <>
-            <p>ID</p>
+            <p>Position ID</p>
             Wallet
         </>
     );
