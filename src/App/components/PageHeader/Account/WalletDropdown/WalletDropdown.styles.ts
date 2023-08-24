@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const WalletDisplay = styled.div`
+export const WalletDisplay = styled.section`
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -106,5 +106,18 @@ export const ActionsContainer = styled.div`
     a:hover,
     a:focus-visible {
         color: var(--text-grey-white);
+    }
+`;
+
+export const WalletContent = styled.section`
+    background: var(--dark3);
+    padding: 8px 1rem;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    height: 200px;
+    overflow-y: hidden;
+    &::-webkit-scrollbar {
+        display: none;
     }
 `;
