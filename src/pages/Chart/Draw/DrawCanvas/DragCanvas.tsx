@@ -48,6 +48,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                     scaleData.yScale(selectedDrawnShape.data[0].y) +
                         movemementY,
                 ),
+                ctx: undefined,
             },
             {
                 x: scaleData.xScale.invert(
@@ -58,6 +59,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                     scaleData.yScale(selectedDrawnShape.data[1].y) +
                         movemementY,
                 ),
+                ctx: undefined,
             },
         ];
         drawnShapeHistory[index].data = lastData;
@@ -100,7 +102,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 const offsetY = event.sourceEvent.clientY - canvasRect?.top;
                 const offsetX = event.sourceEvent.clientX - canvasRect?.left;
                 setCrossHairDataFunc(offsetX, offsetY);
-                if (selectedDrawnShape && selectedDrawnShape.type === 'line') {
+                if (selectedDrawnShape && selectedDrawnShape.type === 'Brush') {
                     dragLine(event);
                 }
             })

@@ -41,7 +41,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         scaleData?.yScale,
     );
 
-    const { setIsDrawActive } = useContext(ChartContext);
+    const { setIsDrawActive, activeDrawingType } = useContext(ChartContext);
 
     function createScaleForBandArea(x: number, x2: number) {
         const newXScale = scaleData?.xScale.copy();
@@ -84,23 +84,6 @@ function DrawCanvas(props: DrawCanvasProps) {
 
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
-
-            // const newBandScale = createScaleForBandArea(
-            //     tempLineData[0].x,
-            //     valueX,
-            // );
-
-            // const bandArea = createBandArea(
-            //     newBandScale,
-            //     scaleData?.yScale,
-            // );
-
-            // bandArea
-            //     .xScale()
-            //     .range([
-            //         scaleData?.xScale(tempLineData[0].x),
-            //         scaleData?.xScale(scaleData.xScale.invert(offsetX)),
-            //     ]);
 
             if (tempLineData.length > 0) {
                 endDrawing(event);
@@ -155,13 +138,14 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                 isDrawing = false;
                 setIsDrawActive(false);
+
                 setDrawnShapeHistory((prevData: drawDataHistory[]) => {
                     if (tempLineData.length > 0) {
                         return [
                             ...prevData,
                             {
                                 data: tempLineData,
-                                type: 'line',
+                                type: activeDrawingType,
                                 time: Date.now(),
                             },
                         ];
@@ -213,7 +197,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
-        if (lineSeries && scaleData) {
+        if (lineSeries && scaleData && activeDrawingType === 'Brush') {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
@@ -235,7 +219,11 @@ function DrawCanvas(props: DrawCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
-        if (scaleData && lineData.length > 1) {
+        if (
+            scaleData &&
+            lineData.length > 1 &&
+            activeDrawingType === 'Square'
+        ) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);

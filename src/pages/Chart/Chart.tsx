@@ -161,7 +161,7 @@ export default function Chart(props: propsIF) {
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
-    const { isDrawActive } = useContext(ChartContext);
+    const { isDrawActive, activeDrawingType } = useContext(ChartContext);
 
     const [drawnShapeHistory, setDrawnShapeHistory] = useState<
         drawDataHistory[]
@@ -2274,63 +2274,49 @@ export default function Chart(props: propsIF) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
-        if (lineSeries && scaleData) {
-            d3.select(d3CanvasMain.current)
-                .on('draw', () => {
-                    setCanvasResolution(canvas);
-                    drawnShapeHistory?.forEach((item) => {
-                        lineSeries(item?.data);
-                        if (
-                            selectedDrawnShape &&
-                            selectedDrawnShape.time === item.time
-                        ) {
-                            circleSeries(item?.data);
-                        }
-                    });
-                })
-                .on('measure', () => {
-                    lineSeries.context(ctx);
-                });
-
-            render();
-        }
-    }, [diffHashSig(drawnShapeHistory), lineSeries]);
-
-    useEffect(() => {
-        const canvas = d3
-            .select(d3CanvasMain.current)
-            .select('canvas')
-            .node() as HTMLCanvasElement;
-        const ctx = canvas.getContext('2d');
 
         if (scaleData && lineSeries) {
             d3.select(d3CanvasMain.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     drawnShapeHistory?.forEach((item) => {
-                        item.data[1].ctx
-                            .xScale()
-                            .domain(scaleData.xScale.domain());
+                        if (item.type === 'Brush') {
+                            lineSeries(item?.data);
+                            if (
+                                selectedDrawnShape &&
+                                selectedDrawnShape.time === item.time
+                            ) {
+                                circleSeries(item?.data);
+                            }
+                        }
 
-                        const range = [
-                            scaleData?.xScale(item.data[0].x),
-                            scaleData.xScale(item.data[1].x),
-                        ];
+                        if (item.type === 'Square') {
+                            item.data[1].ctx
+                                .xScale()
+                                .domain(scaleData.xScale.domain());
 
-                        item.data[1].ctx.xScale().range(range);
+                            const range = [
+                                scaleData?.xScale(item.data[0].x),
+                                scaleData.xScale(item.data[1].x),
+                            ];
 
-                        const bandData = {
-                            fromValue: item.data[0].y,
-                            toValue: item.data[1].y,
-                        } as bandLineData;
+                            item.data[1].ctx.xScale().range(range);
 
-                        item.data[1].ctx([bandData]);
+                            const bandData = {
+                                fromValue: item.data[0].y,
+                                toValue: item.data[1].y,
+                            } as bandLineData;
 
-                        const lineOfBand = createPointsOfBandLine(item.data);
+                            item.data[1].ctx([bandData]);
 
-                        lineOfBand?.forEach((line) => {
-                            lineSeries(line);
-                        });
+                            const lineOfBand = createPointsOfBandLine(
+                                item.data,
+                            );
+
+                            lineOfBand?.forEach((line) => {
+                                lineSeries(line);
+                            });
+                        }
                     });
                 })
                 .on('measure', () => {
@@ -2803,7 +2789,7 @@ export default function Chart(props: propsIF) {
         let resElement = undefined;
 
         drawnShapeHistory.forEach((element) => {
-            if (element.type === 'line') {
+            if (element.type === 'Brush') {
                 if (checkLineLocation(element.data, mouseX, mouseY)) {
                     resElement = element;
                 }

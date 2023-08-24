@@ -8,10 +8,16 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 // }
 
 function Toolbar() {
-    const { isDrawActive, setIsDrawActive } = useContext(ChartContext);
+    const {
+        isDrawActive,
+        setIsDrawActive,
+        activeDrawingType,
+        setActiveDrawingType,
+    } = useContext(ChartContext);
 
-    function handleDrawModeChange() {
+    function handleDrawModeChange(item: any) {
         setIsDrawActive((prev: boolean) => !prev);
+        setActiveDrawingType(item.label);
     }
 
     const iconList = [
@@ -37,11 +43,15 @@ function Toolbar() {
                                 ? styles.icon_active
                                 : styles.icon_inactive
                         }
-                        onClick={() => handleDrawModeChange()}
+                        onClick={() => handleDrawModeChange(item)}
                     >
                         {React.cloneElement(item.icon, {
                             style: {
-                                fill: isDrawActive ? '#7371fc' : '#ccc',
+                                fill:
+                                    isDrawActive &&
+                                    activeDrawingType === item.label
+                                        ? '#7371fc'
+                                        : '#ccc',
                             },
                         })}
                     </div>
