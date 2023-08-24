@@ -43,7 +43,6 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    position: relative;
 }
 
 .dropdown_menu button {

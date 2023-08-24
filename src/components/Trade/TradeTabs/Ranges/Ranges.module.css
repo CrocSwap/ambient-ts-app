@@ -147,6 +147,7 @@
 .main_list_container .header,
 .leaderboard .row_container,
 .leaderboard .header {
+    position: relative;
     width: 100%;
     display: grid;
     align-items: center;
