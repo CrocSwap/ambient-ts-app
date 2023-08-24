@@ -2328,7 +2328,9 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', () => {
                     drawnShapeHistory?.forEach((item) => {
-                        item.data[1].ctx.context(ctx);
+                        if (item.type === 'Square') {
+                            item.data[1].ctx.context(ctx);
+                        }
                     });
                     lineSeries.context(ctx);
                     circleSeries.context(ctx);
