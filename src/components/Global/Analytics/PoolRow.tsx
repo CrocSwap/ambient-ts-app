@@ -10,6 +10,7 @@ import {
     FlexEnd,
     TradeButton,
 } from './Analytics.styles';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
     pool: PoolDataIF;
@@ -19,10 +20,10 @@ interface propsIF {
 export default function PoolRow(props: propsIF) {
     const { pool, goToMarket } = props;
 
-    const [firstLogoURI, secondLogoURI]: [string, string] =
+    const [firstToken, secondToken]: [TokenIF, TokenIF] =
         pool.moneyness.base < pool.moneyness.quote
-            ? [pool.base.logoURI, pool.quote.logoURI]
-            : [pool.quote.logoURI, pool.base.logoURI];
+            ? [pool.base, pool.quote]
+            : [pool.quote, pool.base];
 
     return (
         <TableRow
@@ -32,13 +33,15 @@ export default function PoolRow(props: propsIF) {
                 <FlexCenter>
                     <TokenWrapper>
                         <TokenIcon
-                            src={uriToHttp(firstLogoURI)}
-                            alt={'logo for token'}
+                            token={firstToken}
+                            src={uriToHttp(firstToken.logoURI)}
+                            alt={firstToken.symbol}
                             size='2xl'
                         />
                         <TokenIcon
-                            src={uriToHttp(secondLogoURI)}
-                            alt={'logo for token'}
+                            token={secondToken}
+                            src={uriToHttp(secondToken.logoURI)}
+                            alt={secondToken.symbol}
                             size='2xl'
                         />
                     </TokenWrapper>
@@ -52,7 +55,7 @@ export default function PoolRow(props: propsIF) {
                 <p>{pool.displayPrice ?? '...'}</p>
             </TableCell>
             <TableCell>
-                <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
+                <p>{!pool.tvl || pool.tvl < 0 ? '...' : pool.tvlStr}</p>
             </TableCell>
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>

@@ -1,6 +1,7 @@
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState, useMemo } from 'react';
 import {
     chartItemStates,
+    defaultCandleBandwith,
     renderCanvasArray,
     scaleData,
     setCanvasResolution,
@@ -12,8 +13,8 @@ import {
 } from '../../../utils/functions/diffHashSig';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
+import { ChartContext } from '../../../contexts/ChartContext';
 
 interface candlePropsIF {
     chartItemStates: chartItemStates;
@@ -41,7 +42,6 @@ export default function CandleChart(props: candlePropsIF) {
     } = props;
     const d3CanvasCandle = useRef<HTMLCanvasElement | null>(null);
     const [firstCandle, setFirstCandle] = useState<number>();
-    const { tradeTableState } = useContext(TradeTableContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
     const selectedCandleColor = '#E480FF';
@@ -54,6 +54,16 @@ export default function CandleChart(props: candlePropsIF) {
     const uniswapCandleBorderLightColor = '#4a5a76';
     const uniswapCandleDarkColor = '#252f40';
     const uniswapCandleBorderDarkColor = '#5e6b81';
+
+    const bandwidth = useMemo(() => {
+        if (candlestick) {
+            const bandwidthFunction = candlestick?.bandwidth();
+
+            return parseInt(bandwidthFunction());
+        }
+        return defaultCandleBandwith;
+    }, [candlestick?.bandwidth()]);
+    const { tradeTableState } = useContext(ChartContext);
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
@@ -203,10 +213,8 @@ export default function CandleChart(props: candlePropsIF) {
     }, [data, candlestick]);
 
     useEffect(() => {
-        if (candlestick) {
-            setBandwidth(candlestick?.bandwidth());
-        }
-    }, [candlestick?.bandwidth()]);
+        setBandwidth(bandwidth);
+    }, [bandwidth]);
 
     return (
         <d3fc-canvas
