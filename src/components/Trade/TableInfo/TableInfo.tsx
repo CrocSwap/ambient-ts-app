@@ -1,4 +1,8 @@
+import { useContext } from 'react';
 import { GridContainer, ScrollContainer } from '../../../styled/Common';
+import trimString from '../../../utils/functions/trimString';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import {
     MainSection,
     BoxContainer,
@@ -14,6 +18,8 @@ import {
     DetailedBoxContainer,
 } from './TableInfo.styles';
 import TableInfoTabs from './TableInfoTabs';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { getChainExplorer } from '../../../utils/data/chains';
 interface FeaturedBoxPropsIF {
     tokenLogo: string;
     tokenSymbol: string;
@@ -28,6 +34,20 @@ interface DetailedBoxPropsIF {
 }
 
 export default function TableInfo() {
+    const { tradeData } = useAppSelector((state) => state);
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+    const blockExplorer = getChainExplorer(chainId);
+
+    const denomInBase = tradeData.isDenomBase;
+
+    const [topToken, bottomToken]: [TokenIF, TokenIF] = denomInBase
+        ? [tradeData.baseToken, tradeData.quoteToken]
+        : [tradeData.quoteToken, tradeData.baseToken];
+
+    console.log(topToken);
+
     const detailedData = [
         { label: 'Market Cap:', value: '$69m' },
         { label: 'FDV:', value: '$690m' },
@@ -40,20 +60,20 @@ export default function TableInfo() {
     ];
     const featuredData = [
         {
-            tokenLogo: 'https://via.placeholder.com/30',
-            tokenSymbol: 'ETH',
-            tokenName: 'Ethereum',
-            tokenAddress: 'ffhei23ifvhdfd',
-            balance: '169.00',
-            value: '420,000',
+            tokenLogo: topToken.logoURI,
+            tokenSymbol: topToken.symbol,
+            tokenName: topToken.name,
+            tokenAddress: topToken.address,
+            balance: topToken.combinedBalanceDisplay ?? '...',
+            value: '...',
         },
         {
-            tokenLogo: 'https://via.placeholder.com/30',
-            tokenSymbol: 'USDC',
-            tokenName: 'Usd coin',
-            tokenAddress: 'ffhei23ifvhdfd',
-            balance: '420,000.00',
-            value: '420,000',
+            tokenLogo: bottomToken.logoURI,
+            tokenSymbol: bottomToken.symbol,
+            tokenName: bottomToken.name,
+            tokenAddress: bottomToken.address,
+            balance: bottomToken.combinedBalanceDisplay ?? '...',
+            value: '...',
         },
     ];
     function FeaturedBox(props: FeaturedBoxPropsIF) {
@@ -82,8 +102,18 @@ export default function TableInfo() {
                         <TokenName>{tokenName}</TokenName>
                     </FlexCenter>
                     <FlexCenter>
-                        <InfoHeader>{tokenAddress}</InfoHeader>
-                        <LinkText>Link</LinkText>
+                        <InfoHeader>
+                            {trimString(tokenAddress, 9, 0, '…')}
+                        </InfoHeader>
+                        <LinkText>
+                            <a
+                                href={`${blockExplorer}token/${tokenAddress}`}
+                                target='_blank'
+                                rel='noreferrer'
+                            >
+                                Link
+                            </a>
+                        </LinkText>
                     </FlexCenter>
                     <FeaturedBoxInfoContainer>
                         <InfoHeader>Balance</InfoHeader>
