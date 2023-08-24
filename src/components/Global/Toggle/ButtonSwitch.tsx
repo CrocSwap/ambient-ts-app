@@ -45,9 +45,8 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
         width: 100%;
         height: 50px;
         border-radius: 25px;
-        background-color: ${colors.black};
+        background-color: var(--dark3);
         outline: none;
-        font-family: 'Oswald', sans-serif;
 
         &:before,
         &:after {
@@ -55,14 +54,16 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            color: ${colors.white};
+            color: red;
         }
         &:before {
             content: '${(props) => props.onLabel}';
+
             left: 20px;
         }
         &:after {
-            content: ${(props) => props.offLabel};
+            content: '${(props) => props.offLabel}';
+
             right: 20px;
         }
     }
@@ -79,37 +80,37 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
         props.switcherType === 'switcher-1' &&
         css`
             input:checked {
-                background-color: ${colors.white};
+                background-color: var(--dark3);
                 &:before {
-                    color: ${colors.white};
+                    color: var(--text3);
                     transition: color 0.5s 0.2s;
                 }
                 &:after {
-                    color: ${colors.grey};
+                    color: var(--text1);
                     transition: color 0.5s;
                 }
                 & + label {
                     left: 10px;
                     right: 100px;
-                    background: ${colors.black};
+                    background: var(--dark2);
                     transition: left 0.5s, right 0.4s 0.2s;
                 }
             }
             input:not(:checked) {
-                background: ${colors.black};
+                background: var(--dark3);
                 transition: background 0.5s -0.1s;
                 &:before {
-                    color: ${colors.grey};
+                    color: var(--text3);
                     transition: color 0.5s;
                 }
                 &:after {
-                    color: ${colors.black};
+                    color: var(--text1);
                     transition: color 0.5s 0.2s;
                 }
                 & + label {
                     left: 100px;
                     right: 10px;
-                    background: ${colors.white};
+                    background: var(--accent1);
                     transition: left 0.4s 0.2s, right 0.5s,
                         background 0.35s -0.1s;
                 }

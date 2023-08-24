@@ -750,9 +750,8 @@ export default function InitPool() {
 
                             <div className={styles.right_container}>
                                 <ButtonSwitch
-                                    onLabel='beginner'
-                                    offLabel='advanced'
-                                    fullSwitch
+                                    onLabel='Unbalanced'
+                                    offLabel='Balanced'
                                 />
                                 <RangeBounds
                                     isRangeBoundsDisabled={poolExists === true}
