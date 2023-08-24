@@ -21,7 +21,7 @@ export function createCircle(
         .type(d3.symbolCircle)
         .decorate((context: any) => {
             context.strokeStyle = '#7371fc';
-            context.fillStyle = '#0d1117';
+            context.fillStyle = '#8A8AFF';
             context.lineWidth = lineWidth;
         });
 }
