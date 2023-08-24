@@ -2325,6 +2325,12 @@ export default function Chart(props: propsIF) {
 
                             lineOfBand?.forEach((line) => {
                                 lineSeries(line);
+                                if (
+                                    selectedDrawnShape &&
+                                    selectedDrawnShape.data.time === item.time
+                                ) {
+                                    circleSeries(line);
+                                }
                             });
                         }
                     });
@@ -2798,12 +2804,49 @@ export default function Chart(props: propsIF) {
         return false;
     }
 
+    function checkRectLocation(
+        element: lineData[],
+        mouseX: number,
+        mouseY: number,
+    ) {
+        let isOverLine = false;
+
+        if (scaleData) {
+            const threshold = 10;
+
+            const allBandLines = createPointsOfBandLine(element);
+
+            allBandLines.forEach((item: { x: number; y: number }[]) => {
+                const distance = distanceToLine(
+                    mouseX,
+                    mouseY,
+                    scaleData.xScale(item[0].x),
+                    scaleData.yScale(item[0].y),
+                    scaleData.xScale(item[1].x),
+                    scaleData.yScale(item[1].y),
+                );
+
+                if (distance < threshold) {
+                    isOverLine = true;
+                }
+            });
+        }
+
+        return isOverLine;
+    }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
         drawnShapeHistory.forEach((element) => {
             if (element.type === 'Brush') {
                 if (checkLineLocation(element.data, mouseX, mouseY)) {
+                    resElement = element;
+                }
+            }
+
+            if (element.type === 'Square') {
+                if (checkRectLocation(element.data, mouseX, mouseY)) {
                     resElement = element;
                 }
             }

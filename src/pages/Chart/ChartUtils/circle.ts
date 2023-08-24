@@ -35,6 +35,7 @@ export function checkCricleLocation(
     const circleDiameter = Math.sqrt(circleSize / Math.PI);
     let result = undefined;
     const data = element.data;
+
     if (scaleData) {
         for (let i = 0; i < data.length; i++) {
             if (
