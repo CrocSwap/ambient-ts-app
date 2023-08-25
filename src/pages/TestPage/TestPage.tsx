@@ -1,57 +1,28 @@
-import { useEffect, useState } from 'react';
-import TokenInputQuantity from '../../components/Global/TokenInput/TokenInputQuantity';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { LocalPairDataIF } from '../../utils/state/localPairDataSlice';
-import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
-interface TokenSelectorProps {
-    index: number;
-    selectedTokens: (TokenIF | null)[];
-    onTokenSelect: (index: number, token: TokenIF) => void;
-}
+import { styled } from 'styled-components';
+import { FlexContainer, FontSize } from '../../styled/Common';
+
 export default function TestPage() {
-    const [tokenModalOpen, setTokenModalOpen] = useState(false);
-    const selectedToken: TokenIF = useAppSelector(
-        (state) => state.soloTokenData.token,
-    );
-
-    const localPair: LocalPairDataIF = useAppSelector(
-        (state) => state.localPairData,
-    );
-    const [tokenA, tokenB] = localPair.tokens;
-
-    console.log({ localPair });
-
-    console.log({ tokenA });
-
+    const CustomDiv = styled.div<{ fontSize?: string }>`
+        /* Other styles for your div go here */
+        ${FontSize}
+    `;
     return (
         <section>
-            <LocalTokenSelect
-                tokenAorB={'A'}
-                token={tokenA}
-                setTokenModalOpen={setTokenModalOpen}
-            />
-            <p>Test page</p>
-            <TokenInputQuantity
-                label='Select Token'
-                tokenAorB={'A'}
-                value={'0'}
-                handleTokenInputEvent={() => console.log('yes')}
-                disable={false}
-                token={tokenA}
-                setTokenModalOpen={setTokenModalOpen}
-                fieldId='select'
-            />
-            <TokenInputQuantity
-                label='Select Token'
-                tokenAorB={'B'}
-                value={'0'}
-                handleTokenInputEvent={() => console.log('yes')}
-                disable={false}
-                token={tokenB}
-                setTokenModalOpen={setTokenModalOpen}
-                fieldId='select'
-            />
+            <FlexContainer
+                gap={20}
+                fullHeight
+                flexDirection='row'
+                justifyContent='space-between'
+            >
+                {/* Your content goes here */}
+                <CustomDiv fontSize='body'>Hello</CustomDiv>
+                <div>Item 1</div>
+                <div>Item 2</div>
+                <div>Item 3</div>
+                <div>Item 4</div>
+                <div>Item 5</div>
+                <div>Item 6</div>
+            </FlexContainer>
         </section>
     );
 }

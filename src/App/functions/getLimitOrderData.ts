@@ -142,10 +142,51 @@ export const getLimitOrderData = async (
             tickToPrice(order.askTick),
         ),
     );
+
     newOrder.positionLiqQuote = bigNumToFloat(
         quoteTokenForConcLiq(
             await poolPriceNonDisplay,
             floatToBigNum(order.concLiq),
+            tickToPrice(order.bidTick),
+            tickToPrice(order.askTick),
+        ),
+    );
+    newOrder.originalPositionLiqBase = bigNumToFloat(
+        baseTokenForConcLiq(
+            !order.isBid
+                ? tickToPrice(order.bidTick - 1)
+                : tickToPrice(order.askTick + 1),
+            floatToBigNum(order.concLiq + order.claimableLiq),
+            tickToPrice(order.bidTick),
+            tickToPrice(order.askTick),
+        ),
+    );
+    newOrder.originalPositionLiqQuote = bigNumToFloat(
+        quoteTokenForConcLiq(
+            !order.isBid
+                ? tickToPrice(order.bidTick - 1)
+                : tickToPrice(order.askTick + 1),
+            floatToBigNum(order.concLiq + order.claimableLiq),
+            tickToPrice(order.bidTick),
+            tickToPrice(order.askTick),
+        ),
+    );
+    newOrder.expectedPositionLiqBase = bigNumToFloat(
+        baseTokenForConcLiq(
+            order.isBid
+                ? tickToPrice(order.bidTick - 1)
+                : tickToPrice(order.askTick + 1),
+            floatToBigNum(order.concLiq + order.claimableLiq),
+            tickToPrice(order.bidTick),
+            tickToPrice(order.askTick),
+        ),
+    );
+    newOrder.expectedPositionLiqQuote = bigNumToFloat(
+        quoteTokenForConcLiq(
+            order.isBid
+                ? tickToPrice(order.bidTick - 1)
+                : tickToPrice(order.askTick + 1),
+            floatToBigNum(order.concLiq + order.claimableLiq),
             tickToPrice(order.bidTick),
             tickToPrice(order.askTick),
         ),
@@ -183,6 +224,16 @@ export const getLimitOrderData = async (
         newOrder.positionLiqBase / Math.pow(10, baseTokenDecimals);
     newOrder.positionLiqQuoteDecimalCorrected =
         newOrder.positionLiqQuote / Math.pow(10, quoteTokenDecimals);
+
+    newOrder.originalPositionLiqBaseDecimalCorrected =
+        newOrder.originalPositionLiqBase / Math.pow(10, baseTokenDecimals);
+    newOrder.originalPositionLiqQuoteDecimalCorrected =
+        newOrder.originalPositionLiqQuote / Math.pow(10, quoteTokenDecimals);
+
+    newOrder.expectedPositionLiqBaseDecimalCorrected =
+        newOrder.expectedPositionLiqBase / Math.pow(10, baseTokenDecimals);
+    newOrder.expectedPositionLiqQuoteDecimalCorrected =
+        newOrder.expectedPositionLiqQuote / Math.pow(10, quoteTokenDecimals);
 
     newOrder.claimableLiqBaseDecimalCorrected =
         newOrder.claimableLiqBase / Math.pow(10, baseTokenDecimals);

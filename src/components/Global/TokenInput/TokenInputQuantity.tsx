@@ -166,7 +166,7 @@ function TokenInputQuantity(props: propsIF) {
                 fieldId !== 'exchangeBalance' &&
                 !onInitPage:
                 return poolNotInitializedContent;
-            case disabledContent:
+            case disabledContent !== undefined:
                 return disabledContent;
             case isPoolInitialized:
                 return input;
@@ -206,6 +206,7 @@ function TokenInputQuantity(props: propsIF) {
                     ref={tokenSelectRef}
                 >
                     <TokenIcon
+                        token={token}
                         src={uriToHttp(token.logoURI)}
                         alt={token.symbol}
                         size='2xl'

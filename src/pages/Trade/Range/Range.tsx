@@ -36,6 +36,7 @@ import {
     addTransactionByType,
     removePendingTx,
     addReceipt,
+    updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
 import {
     setAdvancedLowTick,
@@ -65,7 +66,7 @@ const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 function Range() {
     const {
         crocEnv,
-        chainData: { chainId, gridSize },
+        chainData: { chainId, gridSize, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -1031,9 +1032,24 @@ function Range() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: isAdd
+                        txAction: 'Add',
+                        txType: 'Range',
+                        txDescription: isAdd
                             ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
                             : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
+                        txDetails: {
+                            baseAddress: baseToken.address,
+                            quoteAddress: quoteToken.address,
+                            poolIdx: poolIndex,
+                            baseSymbol: baseToken.symbol,
+                            quoteSymbol: quoteToken.symbol,
+                            baseTokenDecimals: baseTokenDecimals,
+                            quoteTokenDecimals: quoteTokenDecimals,
+                            isAmbient: isAmbient,
+                            lowTick: defaultLowTick,
+                            highTick: defaultHighTick,
+                            gridSize: gridSize,
+                        },
                     }),
                 );
         } catch (error) {
@@ -1057,6 +1073,12 @@ function Range() {
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 setNewRangeTransactionHash(newTransactionHash);
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
@@ -1172,7 +1194,8 @@ function Range() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${tokenSymbol}`,
+                        txType: 'Approve',
+                        txDescription: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
@@ -1190,6 +1213,12 @@ function Range() {
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {

@@ -26,7 +26,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
+import { wrappedNatives } from '../../../utils/data/wrappedNatives';
 import { useLocation } from 'react-router-dom';
 import {
     setLocalTokenA,
@@ -262,12 +262,16 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         onClose();
     };
 
+    const deviceHasKeyboard = 'ontouchstart' in document.documentElement;
+
     useEffect(() => {
+        if (deviceHasKeyboard) return;
+
         const input = document.getElementById(
             'token_select_input_field',
         ) as HTMLInputElement;
         if (input) input.focus();
-    }, []);
+    }, [deviceHasKeyboard]);
 
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;

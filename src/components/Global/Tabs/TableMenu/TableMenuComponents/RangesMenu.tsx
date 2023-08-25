@@ -42,6 +42,7 @@ interface propsIF {
     isEmpty: boolean;
     isPositionInRange: boolean;
     handleAccountClick: () => void;
+    isAccountView: boolean;
 }
 
 export type RangeModalActionType = 'Harvest' | 'Remove';
@@ -57,6 +58,7 @@ export default function RangesMenu(props: propsIF) {
         rangeDetailsProps,
         position,
         isPositionInRange,
+        isAccountView,
     } = props;
 
     const {
@@ -109,6 +111,22 @@ export default function RangesMenu(props: propsIF) {
     const tradeData = useAppSelector((state) => state.tradeData);
     const rtkTokenA = tradeData.tokenA.address;
     const rtkTokenB = tradeData.tokenB.address;
+
+    // ----------------------
+
+    const view1 = useMediaQuery('(max-width: 800px)');
+    const view3 = sidebar.isOpen
+        ? useMediaQuery('(min-width: 1700px)')
+        : useMediaQuery('(min-width: 1600px)');
+
+    const showRepositionButton =
+        !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
+
+    const showAbbreviatedCopyTradeButton = isAccountView
+        ? sidebar.isOpen
+            ? useMediaQuery('(max-width: 1400px)')
+            : useMediaQuery('(max-width: 1150px)')
+        : view1;
 
     const positionMatchesLoggedInUser =
         userMatchesConnectedAccount && isUserLoggedIn;
@@ -185,7 +203,7 @@ export default function RangesMenu(props: propsIF) {
                 });
                 handleCopyClick();
             }}
-            content='Copy Trade'
+            content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
         />
     ) : null;
 
@@ -225,32 +243,6 @@ export default function RangesMenu(props: propsIF) {
 
     // ----------------------
 
-    const view1 = useMediaQuery('(min-width: 720px)');
-    const view2 = sidebar.isOpen
-        ? useMediaQuery('(min-width: 1750px)')
-        : useMediaQuery('(min-width: 1550px)');
-    const view3 = useMediaQuery('(min-width: 2300px)');
-
-    const showRepositionButton =
-        !isPositionInRange &&
-        !isPositionEmpty &&
-        userMatchesConnectedAccount &&
-        view1;
-    // ----------------------
-
-    const rangesMenu = (
-        <div className={styles.actions_menu}>
-            {showRepositionButton && repositionButton}
-            {view1 &&
-                !showRepositionButton &&
-                userMatchesConnectedAccount &&
-                addButton}
-            {view2 && !isEmpty && removeButton}
-            {view3 && !isEmpty && harvestButton}
-            {!userMatchesConnectedAccount && copyButton}
-        </div>
-    );
-
     const walletButton = (
         <OptionButton
             ariaLabel='View wallet.'
@@ -268,15 +260,33 @@ export default function RangesMenu(props: propsIF) {
         />
     );
 
+    const rangesMenu = (
+        <div className={styles.actions_menu}>
+            {showRepositionButton && repositionButton}
+            {/* {!view1 && showRepositionButton && repositionButton} */}
+            {!view1 &&
+                !showRepositionButton &&
+                userMatchesConnectedAccount &&
+                addButton}
+            {!view1 && !isEmpty && removeButton}
+            {view3 && !isEmpty && harvestButton}
+            {!userMatchesConnectedAccount && copyButton}
+        </div>
+    );
+
     null;
 
-    const menuContent = (
+    const dropdownMenuContent = (
         <div className={styles.menu_column}>
+            {view1 && showRepositionButton && repositionButton}
+            {view1 &&
+                !showRepositionButton &&
+                userMatchesConnectedAccount &&
+                addButton}
             {!view3 && !isEmpty && harvestButton}
-            {!view2 && !isEmpty && removeButton}
+            {view1 && !isEmpty && removeButton}
             {detailsButton}
-            {userMatchesConnectedAccount && copyButton}
-            {walletButton}
+            {!userMatchesConnectedAccount && walletButton}
         </div>
     );
 
@@ -299,7 +309,7 @@ export default function RangesMenu(props: propsIF) {
             >
                 <CiCircleMore size={25} color='var(--text1)' />
             </div>
-            <div className={wrapperStyle}>{menuContent}</div>
+            <div className={wrapperStyle}>{dropdownMenuContent}</div>
         </div>
     );
 

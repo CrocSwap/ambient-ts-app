@@ -1,9 +1,12 @@
 import styles from './PriceInfo.module.css';
 
-import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import { useLocation } from 'react-router-dom';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 type ItemIF = {
     slug: string;
@@ -13,17 +16,13 @@ type ItemIF = {
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-
     baseCollateralDisplay: string | undefined;
     quoteCollateralDisplay: string | undefined;
-
     usdValue: string | undefined;
     isDenomBase: boolean;
     isOrderFilled: boolean;
     isBid: boolean;
     controlItems: ItemIF[];
-    approximateSellQtyTruncated: string;
-    approximateBuyQtyTruncated: string;
     baseDisplayFrontend: string;
     quoteDisplayFrontend: string;
     quoteTokenLogo: string;
@@ -35,15 +34,15 @@ interface propsIF {
     isFillStarted: boolean;
     truncatedDisplayPrice: string | undefined;
     truncatedDisplayPriceDenomByMoneyness: string | undefined;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
+    fillPercentage: number;
 }
 
 export default function PriceInfo(props: propsIF) {
     const {
+        limitOrder,
         isBid,
-        approximateSellQtyTruncated,
-        approximateBuyQtyTruncated,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         isOrderFilled,
         quoteTokenLogo,
         baseTokenLogo,
@@ -54,42 +53,57 @@ export default function PriceInfo(props: propsIF) {
         isDenomBase,
         usdValue,
         truncatedDisplayPriceDenomByMoneyness,
+        baseTokenAddress,
+        quoteTokenAddress,
+        fillPercentage,
     } = props;
-    const { pathname } = useLocation();
 
+    const { pathname } = useLocation();
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
     const isOnTradeRoute = pathname.includes('trade');
 
-    const buyContent = (
-        <div className={styles.buy_content}>
-            <p>Buy:</p>
-            <p>
-                {isOrderFilled
-                    ? isBid
-                        ? quoteDisplayFrontend
-                        : baseDisplayFrontend
-                    : approximateBuyQtyTruncated}
+    const isLimitOrderPartiallyFilled = isFillStarted && !isOrderFilled;
 
+    const sellContent = (
+        <div className={styles.sell_content}>
+            <p>{'Sell:'}</p>
+            <p>
+                {isBid
+                    ? getFormattedNumber({
+                          value: limitOrder.originalPositionLiqBaseDecimalCorrected,
+                      })
+                    : getFormattedNumber({
+                          value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
+                      })}
                 <TokenIcon
-                    src={isBid ? quoteTokenLogo : baseTokenLogo}
-                    alt={isBid ? quoteTokenSymbol : baseTokenSymbol}
+                    token={!isBid ? quoteToken : baseToken}
+                    src={!isBid ? quoteTokenLogo : baseTokenLogo}
+                    alt={!isBid ? quoteTokenSymbol : baseTokenSymbol}
                     size='xl'
                 />
             </p>
         </div>
     );
-    const sellContent = (
-        <div className={styles.sell_content}>
-            <p>Sell:</p>
-            <p>
-                {isFillStarted
-                    ? approximateSellQtyTruncated
-                    : isBid
-                    ? baseDisplayFrontend
-                    : quoteDisplayFrontend}
 
+    const buyContent = (
+        <div className={styles.buy_content}>
+            <p>{'Buy:'}</p>
+            <p>
+                {isBid
+                    ? getFormattedNumber({
+                          value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
+                      })
+                    : getFormattedNumber({
+                          value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
+                      })}
                 <TokenIcon
-                    src={!isBid ? quoteTokenLogo : baseTokenLogo}
-                    alt={!isBid ? quoteTokenSymbol : baseTokenSymbol}
+                    token={isBid ? quoteToken : baseToken}
+                    src={isBid ? quoteTokenLogo : baseTokenLogo}
+                    alt={isBid ? quoteTokenSymbol : baseTokenSymbol}
                     size='xl'
                 />
             </p>
@@ -100,11 +114,13 @@ export default function PriceInfo(props: propsIF) {
         <div className={styles.token_pair_details}>
             <div className={styles.token_pair_images}>
                 <TokenIcon
+                    token={baseToken}
                     src={baseTokenLogo}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
+                    token={quoteToken}
                     src={quoteTokenLogo}
                     alt={quoteTokenSymbol}
                     size='2xl'
@@ -120,7 +136,7 @@ export default function PriceInfo(props: propsIF) {
     const orderType = (
         <div className={styles.order_type}>
             <p>Order Type:</p>
-            <p>Limit</p>
+            <p>{'Limit'}</p>
         </div>
     );
     const totalValue = (
@@ -143,7 +159,11 @@ export default function PriceInfo(props: propsIF) {
 
             <section>
                 <p>Status:</p>
-                <OpenOrderStatus isFilled={isOrderFilled} />
+                <OpenOrderStatus
+                    isFilled={isOrderFilled}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
+                    fillPercentage={fillPercentage}
+                />
             </section>
         </div>
     );
@@ -154,8 +174,12 @@ export default function PriceInfo(props: propsIF) {
                 {tokenPairDetails}
                 {orderType}
                 {totalValue}
-                {buyContent}
-                {sellContent}
+                {(isDenomBase && isBid) || (!isDenomBase && !isBid)
+                    ? sellContent
+                    : buyContent}
+                {(isDenomBase && isBid) || (!isDenomBase && !isBid)
+                    ? buyContent
+                    : sellContent}
                 {priceStatusContent}
             </div>
         </div>

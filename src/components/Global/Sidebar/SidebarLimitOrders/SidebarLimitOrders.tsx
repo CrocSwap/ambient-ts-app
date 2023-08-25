@@ -77,7 +77,7 @@ export default function SidebarLimitOrders(props: propsIF) {
     };
 
     return (
-        <SidebarPoolsListContainer>
+        <SidebarPoolsListContainer fontSize={'body'}>
             <SidebarPoolsListHeaderContainer>
                 <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
                 <SidebarPoolsListHeader>Price</SidebarPoolsListHeader>

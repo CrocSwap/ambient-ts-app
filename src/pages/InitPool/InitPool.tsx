@@ -15,6 +15,7 @@ import {
     addReceipt,
     addTransactionByType,
     removePendingTx,
+    updateTransactionHash,
 } from '../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
@@ -47,7 +48,7 @@ import ButtonSwitch from '../../components/Global/Toggle/ButtonSwitch';
 import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiRefreshCw } from 'react-icons/fi';
-import { FlexContainer } from '../../components/Global/Analytics/Analytics.styles';
+import { FlexContainer } from '../../styled/Common';
 
 // react functional component
 export default function InitPool() {
@@ -211,7 +212,8 @@ export default function InitPool() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${token.symbol}`,
+                        txType: 'Approve',
+                        txDescription: `Approval of ${token.symbol}`,
                     }),
                 );
             let receipt;
@@ -229,6 +231,12 @@ export default function InitPool() {
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
@@ -271,7 +279,8 @@ export default function InitPool() {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                                txType: 'Init',
+                                txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
                             }),
                         );
                     let receipt;
@@ -290,6 +299,12 @@ export default function InitPool() {
                             dispatch(addPendingTx(newTransactionHash));
 
                             //    setNewSwapTransactionHash(newTransactionHash);
+                            dispatch(
+                                updateTransactionHash({
+                                    oldHash: error.hash,
+                                    newHash: error.replacement.hash,
+                                }),
+                            );
                             IS_LOCAL_ENV &&
                                 console.debug({ newTransactionHash });
                             receipt = error.receipt;
@@ -490,6 +505,7 @@ export default function InitPool() {
         <div className={styles.pool_display}>
             <div>
                 <TokenIcon
+                    token={tokenA}
                     src={uriToHttp(tokenA.logoURI)}
                     alt={tokenA.symbol}
                     size='2xl'
@@ -504,6 +520,7 @@ export default function InitPool() {
         <div className={styles.pool_display}>
             <div>
                 <TokenIcon
+                    token={tokenB}
                     src={uriToHttp(tokenB.logoURI)}
                     alt={tokenB.symbol}
                     size='2xl'
@@ -557,6 +574,8 @@ export default function InitPool() {
 
     // Newwwwww
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
+    const [baseCollateral, setBaseCollateral] = useState<null | string>('');
+    const [quoteCollateral, setQuoteCollateral] = useState<null | string>('');
 
     // See Range.tsx line 81
     const [rangeWidthPercentage, setRangeWidthPercentage] =
@@ -705,6 +724,16 @@ export default function InitPool() {
             </section>
         </div>
     );
+    const handleBaseCollateralChange = (input: string) => {
+        setBaseCollateral(input);
+        // rest of code here
+    };
+    const handleQuoteCollateralChange = (input: string) => {
+        setQuoteCollateral(input);
+        // rest of code here
+    };
+
+    console.log(baseCollateral);
 
     const collateralContent = (
         <div
@@ -712,18 +741,19 @@ export default function InitPool() {
                 poolExists === true && styles.content_disabled
             }`}
         >
-            <div>
+            <FlexContainer flexDirection='row' justifyContent='space-between'>
                 <p className={styles.label_title}>Collateral</p>
-                <FlexContainer>
-                    <LuEdit2 />
-                    <FiRefreshCw />
+
+                <FlexContainer gap={8}>
+                    <LuEdit2 size={20} />
+                    <FiRefreshCw size={20} />
                 </FlexContainer>
-            </div>
+            </FlexContainer>
 
             <TokenInputQuantity
                 tokenAorB={'A'}
                 value={'0'}
-                handleTokenInputEvent={() => console.log('yes')}
+                handleTokenInputEvent={handleBaseCollateralChange}
                 disable={false}
                 token={tokenA}
                 setTokenModalOpen={setTokenModalOpen}
@@ -733,7 +763,7 @@ export default function InitPool() {
             <TokenInputQuantity
                 tokenAorB={'A'}
                 value={'0'}
-                handleTokenInputEvent={() => console.log('yes')}
+                handleTokenInputEvent={handleQuoteCollateralChange}
                 disable={false}
                 token={tokenB}
                 setTokenModalOpen={setTokenModalOpen}
