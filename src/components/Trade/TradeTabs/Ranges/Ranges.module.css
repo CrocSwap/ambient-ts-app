@@ -165,8 +165,8 @@
     .main_list_container .row_container,
     .main_list_container .header {
         grid-template-columns:
-            minmax(100px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
-            minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 20%);
+            minmax(90px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+            minmax(20px, 1fr) minmax(85px, 20%);
     }
     .main_list_container .account_row_container,
     .main_list_container .account_header {
@@ -180,8 +180,8 @@
     .leaderboard .row_container,
     .leaderboard .header {
         grid-template-columns:
-            minmax(100px, 1fr) minmax(72px, 1fr) minmax(72px, 1fr)
-            minmax(78px, 1fr) minmax(86px, 1fr) minmax(38px, 1fr) minmax(76px, 25%);
+            minmax(90px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+            minmax(20px, 1fr) minmax(85px, 20%);
     }
 }
 
@@ -207,12 +207,8 @@
     .leaderboard .row_container,
     .leaderboard .header {
         grid-template-columns:
-            minmax(60px, 1fr) minmax(84px, 1fr) minmax(72px, 1fr)
-            minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
-                38px,
-                1fr
-            )
-            minmax(74px, 25%);
+            minmax(140px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
+            minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(73px, 25%);
     }
 }
 
@@ -222,9 +218,9 @@
     .main_list_container .row_container,
     .main_list_container .header {
         grid-template-columns:
-            minmax(125px, 1fr) minmax(72px, 1fr)
-            minmax(70px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
-                38px,
+            minmax(100px, 1fr) minmax(70px, 1fr)
+            minmax(80px, 1fr) minmax(86px, 1fr) minmax(60px, 1fr) minmax(
+                60px,
                 1fr
             )
             minmax(74px, 25%);
@@ -243,9 +239,9 @@
     .leaderboard .row_container,
     .leaderboard .header {
         grid-template-columns:
-            minmax(125px, 1fr) minmax(72px, 1fr)
-            minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
-                38px,
+            minmax(115px, 1fr) minmax(70px, 1fr)
+            minmax(80px, 1fr) minmax(86px, 1fr) minmax(60px, 1fr) minmax(
+                60px,
                 1fr
             )
             minmax(74px, 25%);

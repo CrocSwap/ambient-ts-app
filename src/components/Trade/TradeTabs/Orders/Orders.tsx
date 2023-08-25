@@ -233,7 +233,7 @@ function Orders(props: propsIF) {
         {
             name: sideType,
             className: 'side_type',
-            show: showColumns && !ipadView,
+            show: showColumns,
             slug: 'sidetype',
             sortable: false,
             alignCenter: true,
@@ -266,7 +266,7 @@ function Orders(props: propsIF) {
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns,
+            show: showColumns && !ipadView,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
