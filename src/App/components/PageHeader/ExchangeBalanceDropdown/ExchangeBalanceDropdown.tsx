@@ -4,7 +4,7 @@ import coins from '../../../../assets/images/coins.svg';
 import NavItem from '../NavItem/NavItem';
 import useKeyPress from '../../../hooks/useKeyPress';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { Dropdown } from './ExchangeBalanceDropdown.styles';
+import { StyledExchangeBalanceDropdown } from '../../../../styled/Components/Header';
 
 export const ExchangeBalanceDropdown = () => {
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
@@ -27,14 +27,14 @@ export const ExchangeBalanceDropdown = () => {
             allowClicksOutside={tokenModalOpen}
             square={showMobileVersion}
         >
-            <Dropdown>
+            <StyledExchangeBalanceDropdown>
                 <ExchangeBalance
                     fullLayoutActive={fullLayoutActive}
                     setFullLayoutActive={setFullLayoutActive}
                     setTokenModalOpen={setTokenModalOpen}
                     isModalView
                 />
-            </Dropdown>
+            </StyledExchangeBalanceDropdown>
         </NavItem>
     );
 };

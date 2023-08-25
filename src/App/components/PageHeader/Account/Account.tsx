@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
-import styles from './Account.module.css';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
@@ -15,6 +14,11 @@ import trimString from '../../../../utils/functions/trimString';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ExchangeBalanceDropdown } from '../ExchangeBalanceDropdown/ExchangeBalanceDropdown';
 import { getFormattedNumber } from '../../../functions/getFormattedNumber';
+import {
+    TitleGradientButton,
+    WalletName,
+} from '../../../../styled/Components/Header';
+import { FlexContainer } from '../../../../styled/Common';
 
 interface propsIF {
     nativeBalance: string | undefined;
@@ -62,9 +66,6 @@ export default function Account(props: propsIF) {
         !isUserLoggedIn ? setShowWalletDropdown(false) : null;
     }, [isUserLoggedIn]);
 
-    const walletWrapperStyle = showWalletDropdown
-        ? styles.wallet_wrapper_active
-        : styles.wallet_wrapper;
     const walletDropdownItemRef = useRef<HTMLDivElement>(null);
     const clickOutsideHandler = () => {
         setShowWalletDropdown(false);
@@ -102,21 +103,20 @@ export default function Account(props: propsIF) {
     }, [isEscapePressed]);
     const walletDisplay = (
         <section
-            className={styles.wallet_display}
+            style={{ position: 'relative' }}
             ref={walletDropdownItemRef}
             aria-label={mainAriaLabel}
         >
-            <button
+            <TitleGradientButton
                 tabIndex={0}
-                className={`${styles.title_gradient} `}
                 onClick={() => setShowWalletDropdown(!showWalletDropdown)}
                 aria-label={ariaLabel}
             >
                 <MdAccountBalanceWallet color='var(--text1)' />
-                <p className={styles.wallet_name}>
+                <WalletName>
                     {connectedEnsOrAddressTruncated || '...'}
-                </p>
-            </button>
+                </WalletName>
+            </TitleGradientButton>
             {showWalletDropdown ? (
                 <WalletDropdown
                     ensName={ensName !== '' ? ensName : ''}
@@ -124,7 +124,6 @@ export default function Account(props: propsIF) {
                     handleCopyAddress={handleCopyAddress}
                     connectorName={connector?.name}
                     clickLogout={clickLogout}
-                    walletWrapperStyle={walletWrapperStyle}
                     ethAmount={
                         isUserLoggedIn
                             ? nativeBalance
@@ -146,7 +145,12 @@ export default function Account(props: propsIF) {
     );
 
     return (
-        <div className={styles.account_container}>
+        <FlexContainer
+            justifyContent='flex-end'
+            rounded={true}
+            gap={8}
+            overflow='visible'
+        >
             {isUserLoggedIn && walletDisplay}
             {isConnected && <ExchangeBalanceDropdown />}
             <NavItem
@@ -160,6 +164,6 @@ export default function Account(props: propsIF) {
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
                 />
             </NavItem>
-        </div>
+        </FlexContainer>
     );
 }

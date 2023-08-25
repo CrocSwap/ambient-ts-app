@@ -9,7 +9,10 @@ import React, {
     memo,
 } from 'react';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import { NavItemButton, IconButton } from './NavItem.styles';
+import {
+    NavItemButton,
+    NavItemIconButton,
+} from '../../../../styled/Components/Header';
 
 interface NavItemPropsIF {
     children: ReactNode;
@@ -52,9 +55,9 @@ function NavItem(props: NavItemPropsIF) {
             tabIndex={0}
             aria-label='Nav item'
         >
-            <IconButton square={square} onClick={() => setOpen(!open)}>
+            <NavItemIconButton square={square} onClick={() => setOpen(!open)}>
                 {icon}
-            </IconButton>
+            </NavItemIconButton>
             {open && childrenWithProps}
         </NavItemButton>
     );

@@ -8,9 +8,8 @@ import {
     MenuContent,
     ChainNameStatus,
     NetworkItem,
-    SelectorSelectContainer,
     DropdownMenuContainer,
-} from './NetworkSelector.styles';
+} from '../../../../styled/Components/Header';
 interface NetworkSelectorPropsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
@@ -57,7 +56,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
 
     return (
         <>
-            <SelectorSelectContainer>
+            <div style={{ position: 'relative' }}>
                 <DropdownMenuContainer>
                     <DropdownMenu2
                         marginTop={'50px'}
@@ -68,7 +67,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                         {networkMenuContent}
                     </DropdownMenu2>
                 </DropdownMenuContainer>
-            </SelectorSelectContainer>
+            </div>
         </>
     );
 }

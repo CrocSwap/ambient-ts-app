@@ -17,7 +17,6 @@ import { tokenData } from '../../../../../utils/state/userDataSlice';
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import {
-    NameDisplayContent,
     NameDisplay,
     WalletDisplay,
     CopyButton,
@@ -27,7 +26,9 @@ import {
     ActionsContainer,
     NameDisplayContainer,
     WalletContent,
-} from './WalletDropdown.styles';
+    WalletWrapper,
+} from '../../../../../styled/Components/Header';
+import { FlexContainer } from '../../../../../styled/Common';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -36,7 +37,6 @@ interface WalletDropdownPropsIF {
     clickOutsideHandler: () => void;
     connectorName: string | undefined;
     clickLogout: () => void;
-    walletWrapperStyle: string;
     accountAddressFull: string;
     ethAmount: string;
     ethValue: string | undefined;
@@ -65,7 +65,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         clickOutsideHandler,
         connectorName,
         clickLogout,
-        walletWrapperStyle,
         accountAddressFull,
         ethAmount,
         ethValue,
@@ -93,11 +92,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
             <TokenContainer tabIndex={0} aria-label={ariaLabel}>
-                <LogoName>
+                <LogoName alignItems='center' gap={4}>
                     <img src={logo} alt='' />
                     <h3>{symbol}</h3>
                 </LogoName>
-                <TokenAmount>
+                <TokenAmount gap={4} flexDirection={'column'}>
                     <h3>{amount}</h3>
                     <h6>{value !== undefined ? '$' + value : '...'}</h6>
                 </TokenAmount>
@@ -158,20 +157,23 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     ];
 
     return (
-        <div
-            className={walletWrapperStyle}
+        <WalletWrapper
+            flexDirection='column'
+            justifyContent='space-between'
+            gap={16}
+            rounded={true}
             tabIndex={0}
             aria-label={`Wallet menu for ${ensName ? ensName : accountAddress}`}
         >
-            <NameDisplayContainer>
+            <NameDisplayContainer gap={4} alignItems='center'>
                 <Jazzicon
                     diameter={50}
                     seed={jsNumberForAddress(accountAddressFull.toLowerCase())}
                 />
 
                 <div>
-                    <NameDisplayContent>
-                        <NameDisplay>
+                    <FlexContainer alignItems='center' flexDirection='column'>
+                        <NameDisplay gap={16} alignItems='center'>
                             <h2>{ensName !== '' ? ensName : accountAddress}</h2>
                             <a
                                 target='_blank'
@@ -188,11 +190,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                                 <FiCopy />
                             </CopyButton>
                         </NameDisplay>
-                        <WalletDisplay>
+                        <WalletDisplay gap={16} alignItems='center'>
                             <p>{connectorName}</p>
                             <p>{props.accountAddress}</p>
                         </WalletDisplay>
-                    </NameDisplayContent>
+                    </FlexContainer>
                 </div>
             </NameDisplayContainer>
             <WalletContent>
@@ -206,7 +208,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     />
                 ))}
             </WalletContent>
-            <ActionsContainer>
+            <ActionsContainer numCols={2} gapSize={16} fullWidth={true}>
                 <NavLink
                     to={'/account'}
                     className={styles.account_button}
@@ -219,6 +221,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 </NavLink>
                 <LogoutButton onClick={clickLogout} />
             </ActionsContainer>
-        </div>
+        </WalletWrapper>
     );
 }

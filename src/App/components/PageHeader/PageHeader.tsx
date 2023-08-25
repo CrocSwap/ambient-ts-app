@@ -32,10 +32,7 @@ import {
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
 import {
-    AccountDiv,
     AuthenticateButton,
-    BranchDiv,
-    BranchNameDiv,
     HeaderClasses,
     LogoContainer,
     LogoText,
@@ -46,6 +43,7 @@ import {
     TradeNowDiv,
     UnderlinedMotionDiv,
 } from '../../../styled/Components/Header';
+import { FlexContainer } from '../../../styled/Common';
 
 const PageHeader = function () {
     const {
@@ -406,21 +404,25 @@ const PageHeader = function () {
                     </TradeNowDiv>
                 ) : (
                     <div>
-                        <AccountDiv>
-                            <BranchNameDiv>
+                        <FlexContainer
+                            alignItems='center'
+                            gap={8}
+                            overflow='visible'
+                        >
+                            <FlexContainer fontSize='body' color={'orange'}>
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
-                                    <BranchDiv>
+                                    <FlexContainer alignItems='center' gap={4}>
                                         {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
-                                    </BranchDiv>
+                                    </FlexContainer>
                                 ) : null}
-                            </BranchNameDiv>
+                            </FlexContainer>
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />
-                        </AccountDiv>
+                        </FlexContainer>
                     </div>
                 )}
             </RightSide>

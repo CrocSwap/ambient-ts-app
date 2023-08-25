@@ -21,12 +21,12 @@ import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutB
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import {
     ConnectButton,
-    Dropdown,
+    NavbarDropdown,
     IconRight,
     Menu,
     MenuItem,
     NavbarLogoutContainer,
-} from './NavbarDropdownMenu.styles';
+} from '../../../../styled/Components/Header';
 
 interface NavbarDropdownItemPropsIF {
     onClick: () => void;
@@ -128,7 +128,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     };
 
     return (
-        <Dropdown ref={dropdownRef} aria-label={ariaLabel}>
+        <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel}>
             <CSSTransition
                 in={true}
                 unmountOnExit
@@ -199,7 +199,7 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                     )}
                 </Menu>
             </CSSTransition>
-        </Dropdown>
+        </NavbarDropdown>
     );
 }
 
