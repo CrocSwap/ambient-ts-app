@@ -14,7 +14,6 @@
     gap: 8px;
 }
 
-
 .reposition_button {
     cursor: pointer;
     height: 23px;
@@ -72,7 +71,7 @@
 }
 
 .menu_column button {
-    border: 1px solid transparent; 
+    border: 1px solid transparent;
 }
 
 .dropdown_button {
@@ -87,11 +86,11 @@
 .dropdown_button path {
     color: var(--dark3);
 }
-.dropdown_button:hover{
+.dropdown_button:hover {
     cursor: pointer;
 }
 
-.dropdown_button:hover path, 
+.dropdown_button:hover path,
 .dropdown_button:hover circle {
     color: var(--accent1);
     transition: all var(--animation-speed) ease-in-out;

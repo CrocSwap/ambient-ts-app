@@ -1,12 +1,5 @@
 import styles from '../Transactions.module.css';
-import {
-    memo,
-    useCallback,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
@@ -175,19 +168,6 @@ function TransactionRow(props: propsIF) {
         }
     };
 
-    const enterFunction = useCallback((event: KeyboardEvent) => {
-        if (event.key === 'Enter') {
-            openDetailsModal();
-        }
-    }, []);
-
-    useEffect(() => {
-        document.addEventListener('keydown', enterFunction, false);
-        return () => {
-            document.removeEventListener('keydown', enterFunction, false);
-        };
-    }, []);
-
     const txRowConstantsProps = {
         handleCopyTxHash,
         handleOpenExplorer,
@@ -256,6 +236,7 @@ function TransactionRow(props: propsIF) {
         setCurrentTxActiveInTransactions('');
         openDetailsModal();
     }
+    // TODO: use media queries and standardized styles
     // end of portfolio page li element ---------------
     return (
         <>

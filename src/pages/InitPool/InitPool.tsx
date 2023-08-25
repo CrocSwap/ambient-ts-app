@@ -15,6 +15,7 @@ import {
     addReceipt,
     addTransactionByType,
     removePendingTx,
+    updateTransactionHash,
 } from '../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
@@ -186,7 +187,8 @@ export default function InitPool() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${token.symbol}`,
+                        txType: 'Approve',
+                        txDescription: `Approval of ${token.symbol}`,
                     }),
                 );
             let receipt;
@@ -204,6 +206,12 @@ export default function InitPool() {
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
@@ -246,7 +254,8 @@ export default function InitPool() {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                                txType: 'Init',
+                                txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
                             }),
                         );
                     let receipt;
@@ -265,6 +274,12 @@ export default function InitPool() {
                             dispatch(addPendingTx(newTransactionHash));
 
                             //    setNewSwapTransactionHash(newTransactionHash);
+                            dispatch(
+                                updateTransactionHash({
+                                    oldHash: error.hash,
+                                    newHash: error.replacement.hash,
+                                }),
+                            );
                             IS_LOCAL_ENV &&
                                 console.debug({ newTransactionHash });
                             receipt = error.receipt;
