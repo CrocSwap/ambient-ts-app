@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import {
+    bandLineData,
     drawDataHistory,
     lineData,
     renderCanvasArray,
@@ -10,6 +11,7 @@ import {
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
+import { createBandArea, createPointsOfBandLine } from './BandArea';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -19,6 +21,7 @@ interface DrawCanvasProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCrossHairDataFunc: any;
     setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
+    activeDrawingType: string;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -31,7 +34,9 @@ function DrawCanvas(props: DrawCanvasProps) {
         setDrawnShapeHistory,
         setCrossHairDataFunc,
         setIsDrawActive,
+        activeDrawingType,
     } = props;
+
     const circleSeries = createCircle(
         scaleData?.xScale,
         scaleData?.yScale,
@@ -43,6 +48,14 @@ function DrawCanvas(props: DrawCanvasProps) {
         scaleData?.xScale,
         scaleData?.yScale,
     );
+
+    function createScaleForBandArea(x: number, x2: number) {
+        const newXScale = scaleData?.xScale.copy();
+
+        newXScale.range([scaleData?.xScale(x), scaleData?.xScale(x2)]);
+
+        return newXScale;
+    }
 
     useEffect(() => {
         const canvas = d3
@@ -84,6 +97,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                 tempLineData.push({
                     x: valueX,
                     y: valueY,
+                    ctx: undefined,
                 });
             }
 
@@ -95,29 +109,49 @@ function DrawCanvas(props: DrawCanvasProps) {
         function endDrawing(event: any) {
             const offsetY = event.clientY - canvasRect?.top;
             const offsetX = event.clientX - canvasRect?.left;
+
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
+
             const firstValueX = scaleData?.xScale(tempLineData[0].x);
             const firstValueY = scaleData?.yScale(tempLineData[0].y);
+
             const checkThreshold = Math.hypot(
                 offsetX - firstValueX,
                 offsetY - firstValueY,
             );
 
             if (checkThreshold > threshold) {
+                const newBandScale = createScaleForBandArea(
+                    tempLineData[0].x,
+                    valueX,
+                );
+
+                const bandArea = createBandArea(
+                    newBandScale,
+                    scaleData?.yScale,
+                );
+
+                bandArea
+                    .xScale()
+                    .range([firstValueX, scaleData?.xScale(valueX)]);
+
                 tempLineData[1] = {
                     x: valueX,
                     y: valueY,
+                    ctx: bandArea,
                 };
+
                 isDrawing = false;
                 setIsDrawActive(false);
+
                 setDrawnShapeHistory((prevData: drawDataHistory[]) => {
                     if (tempLineData.length > 0) {
                         return [
                             ...prevData,
                             {
                                 data: tempLineData,
-                                type: 'line',
+                                type: activeDrawingType,
                                 time: Date.now(),
                             },
                         ];
@@ -130,8 +164,17 @@ function DrawCanvas(props: DrawCanvasProps) {
         function draw(event: any) {
             const offsetY = event.clientY - canvasRect?.top;
             const offsetX = event.clientX - canvasRect?.left;
+
             setCrossHairDataFunc(offsetX, offsetY);
+
             if (!isDrawing) return;
+
+            const newBandScale = createScaleForBandArea(
+                tempLineData[0].x,
+                scaleData.xScale.invert(offsetX),
+            );
+
+            const bandArea = createBandArea(newBandScale, scaleData?.yScale);
 
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
@@ -139,11 +182,13 @@ function DrawCanvas(props: DrawCanvasProps) {
                 tempLineData.push({
                     x: valueX,
                     y: valueY,
+                    ctx: bandArea,
                 });
             } else {
                 tempLineData[1] = {
                     x: valueX,
                     y: valueY,
+                    ctx: bandArea,
                 };
             }
             renderCanvasArray([d3DrawCanvas]);
@@ -158,11 +203,10 @@ function DrawCanvas(props: DrawCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
-        if (lineSeries && scaleData) {
+        if (lineSeries && scaleData && activeDrawingType === 'Brush') {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
-
                     lineSeries(lineData);
                     circleSeries(lineData);
                 })
@@ -173,6 +217,45 @@ function DrawCanvas(props: DrawCanvasProps) {
                 });
         }
     }, [diffHashSig(lineData), lineSeries]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3DrawCanvas.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+
+        if (
+            scaleData &&
+            lineData.length > 1 &&
+            activeDrawingType === 'Square'
+        ) {
+            d3.select(d3DrawCanvas.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+
+                    const bandData = {
+                        fromValue: lineData[0].y,
+                        toValue: lineData[1].y,
+                    } as bandLineData;
+
+                    const lineOfBand = createPointsOfBandLine(lineData);
+
+                    lineData[1].ctx([bandData]);
+
+                    lineOfBand?.forEach((item) => {
+                        lineSeries(item);
+                        circleSeries(item);
+                    });
+                })
+                .on('measure', (event: CustomEvent) => {
+                    lineData[1].ctx.context(ctx);
+                    lineSeries.context(ctx);
+                    circleSeries.context(ctx);
+                    scaleData?.yScale.range([event.detail.height, 0]);
+                });
+        }
+    }, [diffHashSig(lineData)]);
 
     return <d3fc-canvas ref={d3DrawCanvas} />;
 }

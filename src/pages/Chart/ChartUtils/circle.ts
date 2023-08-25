@@ -21,7 +21,7 @@ export function createCircle(
         .type(d3.symbolCircle)
         .decorate((context: any) => {
             context.strokeStyle = '#7371fc';
-            context.fillStyle = '#0d1117';
+            context.fillStyle = '#8A8AFF';
             context.lineWidth = lineWidth;
         });
 }
@@ -35,6 +35,7 @@ export function checkCricleLocation(
     const circleDiameter = Math.sqrt(circleSize / Math.PI);
     let result = undefined;
     const data = element.data;
+
     if (scaleData) {
         for (let i = 0; i < data.length; i++) {
             if (

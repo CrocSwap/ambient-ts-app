@@ -53,6 +53,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                         scaleData.yScale(selectedDrawnShape.data?.data[0].y) +
                             movemementY,
                     ),
+                    ctx: selectedDrawnShape.data?.data[0].ctx,
                 },
                 {
                     x: scaleData.xScale.invert(
@@ -63,6 +64,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                         scaleData.yScale(selectedDrawnShape.data.data[1].y) +
                             movemementY,
                     ),
+                    ctx: selectedDrawnShape.data?.data[1].ctx,
                 },
             ];
             drawnShapeHistory[index].data = lastData;
@@ -123,7 +125,18 @@ export default function DragCanvas(props: DragCanvasProps) {
                 setCrossHairDataFunc(offsetX, offsetY);
                 if (
                     selectedDrawnShape &&
-                    selectedDrawnShape.data.type === 'line'
+                    selectedDrawnShape.data.type === 'Brush'
+                ) {
+                    if (!selectedDrawnShape.selectedCircle) {
+                        dragLine(event);
+                    } else {
+                        updateDrawLine(offsetX, offsetY);
+                    }
+                }
+
+                if (
+                    selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'Square'
                 ) {
                     if (!selectedDrawnShape.selectedCircle) {
                         dragLine(event);

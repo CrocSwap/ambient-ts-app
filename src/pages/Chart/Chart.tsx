@@ -59,6 +59,7 @@ import RangeLinesChart from './RangeLine/RangeLinesChart';
 import {
     CandleDataChart,
     SubChartValue,
+    bandLineData,
     chartItemStates,
     crosshair,
     defaultCandleBandwith,
@@ -84,6 +85,7 @@ import {
     distanceToLine,
 } from './Draw/DrawCanvas/LinearLineSeries';
 import { useUndoRedo } from './ChartUtils/useUndoRedo';
+import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
 import {
     checkCricleLocation,
     circleSize,
@@ -129,6 +131,10 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
     candleTimeInSeconds: number;
+    drawnShapeHistory: drawDataHistory[];
+    setDrawnShapeHistory: React.Dispatch<
+        React.SetStateAction<drawDataHistory[]>
+    >;
 }
 
 export default function Chart(props: propsIF) {
@@ -153,6 +159,8 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
+        drawnShapeHistory,
+        setDrawnShapeHistory,
     } = props;
 
     const {
@@ -165,11 +173,9 @@ export default function Chart(props: propsIF) {
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
-    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
-        drawDataHistory[]
-    >([]);
     const [isDragActive, setIsDragActive] = useState(false);
     const [isDrawActive, setIsDrawActive] = useState(false);
+    const [activeDrawingType, setActiveDrawingType] = useState('');
 
     const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
@@ -2278,21 +2284,63 @@ export default function Chart(props: propsIF) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
-        if (lineSeries && scaleData) {
+
+        if (scaleData && lineSeries) {
             d3.select(d3CanvasMain.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
                     drawnShapeHistory?.forEach((item) => {
-                        lineSeries(item?.data);
-                        if (
-                            selectedDrawnShape &&
-                            selectedDrawnShape.data.time === item.time
-                        ) {
-                            circleSeries(item?.data);
+                        if (item.type === 'Brush') {
+                            lineSeries(item?.data);
+                            if (
+                                selectedDrawnShape &&
+                                selectedDrawnShape.data.time === item.time
+                            ) {
+                                circleSeries(item?.data);
+                            }
+                        }
+
+                        if (item.type === 'Square') {
+                            item.data[1].ctx
+                                .xScale()
+                                .domain(scaleData.xScale.domain());
+
+                            const range = [
+                                scaleData?.xScale(item.data[0].x),
+                                scaleData.xScale(item.data[1].x),
+                            ];
+
+                            item.data[1].ctx.xScale().range(range);
+
+                            const bandData = {
+                                fromValue: item.data[0].y,
+                                toValue: item.data[1].y,
+                            } as bandLineData;
+
+                            item.data[1].ctx([bandData]);
+
+                            const lineOfBand = createPointsOfBandLine(
+                                item.data,
+                            );
+
+                            lineOfBand?.forEach((line) => {
+                                lineSeries(line);
+                                if (
+                                    selectedDrawnShape &&
+                                    selectedDrawnShape.data.time === item.time
+                                ) {
+                                    circleSeries(line);
+                                }
+                            });
                         }
                     });
                 })
                 .on('measure', () => {
+                    drawnShapeHistory?.forEach((item) => {
+                        if (item.type === 'Square') {
+                            item.data[1].ctx.context(ctx);
+                        }
+                    });
                     lineSeries.context(ctx);
                     circleSeries.context(ctx);
                 });
@@ -2756,12 +2804,49 @@ export default function Chart(props: propsIF) {
         return false;
     }
 
+    function checkRectLocation(
+        element: lineData[],
+        mouseX: number,
+        mouseY: number,
+    ) {
+        let isOverLine = false;
+
+        if (scaleData) {
+            const threshold = 10;
+
+            const allBandLines = createPointsOfBandLine(element);
+
+            allBandLines.forEach((item: { x: number; y: number }[]) => {
+                const distance = distanceToLine(
+                    mouseX,
+                    mouseY,
+                    scaleData.xScale(item[0].x),
+                    scaleData.yScale(item[0].y),
+                    scaleData.xScale(item[1].x),
+                    scaleData.yScale(item[1].y),
+                );
+
+                if (distance < threshold) {
+                    isOverLine = true;
+                }
+            });
+        }
+
+        return isOverLine;
+    }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
         drawnShapeHistory.forEach((element) => {
-            if (element.type === 'line') {
+            if (element.type === 'Brush') {
                 if (checkLineLocation(element.data, mouseX, mouseY)) {
+                    resElement = element;
+                }
+            }
+
+            if (element.type === 'Square') {
+                if (checkRectLocation(element.data, mouseX, mouseY)) {
                     resElement = element;
                 }
             }
@@ -3342,6 +3427,8 @@ export default function Chart(props: propsIF) {
                         <Toolbar
                             isDrawActive={isDrawActive}
                             setIsDrawActive={setIsDrawActive}
+                            activeDrawingType={activeDrawingType}
+                            setActiveDrawingType={setActiveDrawingType}
                         />
                     </div>
                     <div className='chart_grid'>
@@ -3411,6 +3498,7 @@ export default function Chart(props: propsIF) {
                                 setDrawnShapeHistory={setDrawnShapeHistory}
                                 setCrossHairDataFunc={setCrossHairDataFunc}
                                 setIsDrawActive={setIsDrawActive}
+                                activeDrawingType={activeDrawingType}
                             />
                         )}
 
