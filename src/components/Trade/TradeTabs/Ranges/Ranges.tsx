@@ -212,7 +212,7 @@ function Ranges(props: propsIF) {
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
-            <p>ID</p>
+            <p>Position ID</p>
             Wallet
         </>
     );
@@ -246,7 +246,7 @@ function Ranges(props: propsIF) {
             sortable: true,
         },
         {
-            name: 'ID',
+            name: 'Position ID',
             className: 'ID',
             show: !showColumns,
             slug: 'id',

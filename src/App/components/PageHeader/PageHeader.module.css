@@ -191,6 +191,7 @@
     .primary_header {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
+        padding: 0 1rem;
     }
     .logo_container img:nth-of-type(1) {
         margin: 0 4px;

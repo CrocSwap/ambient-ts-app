@@ -105,6 +105,7 @@
     overflow: hidden;
 }
 .row_container {
+    position: relative;
     width: 100%;
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
@@ -200,7 +201,11 @@
         /* measured against smallest screen size for full view (1600px) with sidebar expanded */
         grid-template-columns:
             minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
-            1.8fr 1.2fr 1.2fr 2fr 2fr 2fr 1.2fr 14%;
+            minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(72px, 1.3fr) minmax(
+                80px,
+                1.7fr
+            )
+            2fr 2fr 1.2fr 14%;
     }
 }
 

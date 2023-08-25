@@ -268,7 +268,7 @@ export default function RangesMenu(props: propsIF) {
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
                 addButton}
-            {view3 && !isEmpty && removeButton}
+            {!view1 && !isEmpty && removeButton}
             {view3 && !isEmpty && harvestButton}
             {!userMatchesConnectedAccount && copyButton}
         </div>
