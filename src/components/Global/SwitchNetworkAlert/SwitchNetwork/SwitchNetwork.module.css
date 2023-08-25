@@ -20,17 +20,14 @@
 .modal_container {
     padding: 1px;
     background: var(--title-gradient);
-  height: auto;
+    height: auto;
     min-width: 347px;
     border-radius: var(--border-radius);
 }
 .modal {
- 
-
     display: flex;
     flex-direction: column;
 
-   
     color: white;
 
     background-color: var(--dark1);

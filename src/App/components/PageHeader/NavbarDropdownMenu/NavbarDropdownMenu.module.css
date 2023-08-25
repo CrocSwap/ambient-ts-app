@@ -71,7 +71,8 @@
     border-radius: var(--border-radius);
 }
 
-.connect_button:hover, .connect_button:focus-visible {
+.connect_button:hover,
+.connect_button:focus-visible {
     color: var(--accent1);
     background: var(--dark2);
     border: solid 1px var(--accent1);
@@ -84,7 +85,8 @@
     text-decoration: none;
 }
 
-.menu_item:hover, .menu_item:focus-visible {
+.menu_item:hover,
+.menu_item:focus-visible {
     filter: drop-shadow(0 0 5px var(--text1));
 }
 

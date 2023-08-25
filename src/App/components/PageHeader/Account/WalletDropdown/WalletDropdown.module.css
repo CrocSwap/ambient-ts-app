@@ -93,7 +93,6 @@
 .actions_container a:hover,
 .actions_container a:focus-visible {
     color: var(--text-grey-white);
-
 }
 
 .copy_button:focus-visible {

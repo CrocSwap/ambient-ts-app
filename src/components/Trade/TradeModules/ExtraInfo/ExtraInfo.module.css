@@ -24,20 +24,19 @@
     background: transparent;
 }
 
-.extra_info_content_active:hover{
+.extra_info_content_active:hover {
     cursor: pointer !important;
     background: var(--dark2) !important;
-
 }
 .extra_info_content_active:focus-visible {
     border: 1px solid var(--text1);
 }
 
-.gas_pump{
+.gas_pump {
     pointer-events: none;
 }
-.non_hovered_arrow{
-    color: var(--text2) !important
+.non_hovered_arrow {
+    color: var(--text2) !important;
 }
 
 .gas_pump,
@@ -46,14 +45,14 @@
     flex-direction: row;
     align-items: center;
 }
-.gas_pump{
+.gas_pump {
     pointer-events: none;
     padding-left: 4px;
 }
 .gas_pump svg {
     margin-right: 5px;
 }
-.token_amount:hover{
+.token_amount:hover {
     color: var(--accent1);
     cursor: pointer;
 }
@@ -88,7 +87,7 @@
         gap: 5px;
         text-align: start;
     }
-  
+
     .data {
         text-align: end;
     }

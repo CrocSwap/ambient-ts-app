@@ -1,4 +1,4 @@
-.wallet_container{
+.wallet_container {
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -84,8 +84,8 @@
     cursor: pointer;
 }
 
-.refresh_button:hover > svg{
-    color: var(--accent1)
+.refresh_button:hover > svg {
+    color: var(--accent1);
 }
 
 .refresh_button:focus-visible {

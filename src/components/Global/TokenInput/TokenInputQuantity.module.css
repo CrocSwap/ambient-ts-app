@@ -74,8 +74,6 @@
     border: none;
     padding: 0 4px;
     border-radius: 4px;
-
-  
 }
 
 .token_select:hover {
@@ -121,7 +119,6 @@
 .bottom_padding {
     margin-bottom: 8px;
 }
-
 
 .disabled_text {
     font-size: 10px;

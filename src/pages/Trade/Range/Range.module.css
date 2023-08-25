@@ -40,7 +40,7 @@
     list-style: none;
 }
 
-.advanced_disabled{
+.advanced_disabled {
     pointer-events: none;
     opacity: 0.2;
     filter: blur(2px);

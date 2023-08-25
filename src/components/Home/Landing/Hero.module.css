@@ -8,8 +8,15 @@
 
     border-radius: var(--border-radius);
 
-    background:  linear-gradient(180deg, var(--dark1) 0%, var(--dark1) 0%, rgba(0, 0, 0, 0) 0%, var(--dark1) 100%), url('../../../assets/images/home/home_wallpaper.png') no-repeat
-        center center;
+    background: linear-gradient(
+            180deg,
+            var(--dark1) 0%,
+            var(--dark1) 0%,
+            rgba(0, 0, 0, 0) 0%,
+            var(--dark1) 100%
+        ),
+        url('../../../assets/images/home/home_wallpaper.png') no-repeat center
+            center;
 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -41,7 +48,6 @@
     font-size: clamp(3rem, 12vw + 1rem, 8rem);
     font-weight: 100;
 }
-
 
 @media only screen and (min-width: 768px) {
     .hero_container img {

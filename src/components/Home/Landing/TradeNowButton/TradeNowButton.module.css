@@ -6,9 +6,9 @@
     max-width: 16rem;
     max-height: 3rem;
     padding: 1px;
-   
+
     height: 54px;
-   
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -20,8 +20,6 @@
 
     text-decoration: none;
 
- 
-
     border-radius: var(--border-radius);
 }
 
@@ -30,10 +28,8 @@
     max-height: 2rem;
     /* width: 238px; */
     height: 54px;
-
-
 }
-.content_container{
+.content_container {
     width: 100%;
     height: 100%;
     background: var(--dark2);
@@ -58,7 +54,5 @@
 
 .action_button:hover,
 .action_button:focus-visible {
-
     box-shadow: var(--glow-box-shadow);
 }
-

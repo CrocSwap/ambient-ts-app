@@ -97,7 +97,7 @@
     height: 40px;
 }
 
-.button_control_disable{
+.button_control_disable {
     pointer-events: none;
     filter: blur(2px);
 }
@@ -115,8 +115,8 @@
     height: 20px;
 }
 
-.button_controls button:hover > svg{
-    color: var(--accent1)
+.button_controls button:hover > svg {
+    color: var(--accent1);
 }
 .button_controls button:focus-visible {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),

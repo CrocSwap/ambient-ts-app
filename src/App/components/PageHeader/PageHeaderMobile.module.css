@@ -9,13 +9,11 @@
     vertical-align: middle;
     z-index: 999;
 
-    
     top: 0;
     width: 100%;
 }
 
 .link {
- 
     height: 100%;
     display: flex;
     align-items: center;
@@ -27,14 +25,14 @@
     align-items: center;
     gap: 4px;
 }
-.authenticate_button{
+.authenticate_button {
     background: var(--dark2);
     outline: none;
     border: none;
     border-radius: 4px;
-   
+
     font-size: var(--body-size);
-    line-height:var(--line-height);
+    line-height: var(--line-height);
 
     display: flex;
     flex-direction: row;
@@ -42,17 +40,16 @@
     gap: 4px;
     padding: 5px 8px;
     border-radius: 4px;
-    color: var(--text1)
+    color: var(--text1);
 }
-.username{
+.username {
     font-family: var(--font-logo);
     font-weight: 100;
     font-size: var(--body-size);
-    line-height:var(--line-height);
+    line-height: var(--line-height);
     background: var(--title-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-fill-color: transparent;
-   
 }

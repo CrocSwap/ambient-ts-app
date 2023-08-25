@@ -1,7 +1,7 @@
 .price_info_container {
     transition: all var(--animation-speed) ease-in-out;
     /* background: var(--dark2); */
-  
+
     padding: 0 48px;
     border-radius: var(--border-radius);
     color: var(--text2);
@@ -20,7 +20,7 @@
 .apr_display_in_range {
     display: flex;
     justify-content: center;
-   
+
     font-size: var(--body-size);
     line-height: var(--body-lh);
 
@@ -30,23 +30,23 @@
 .apr_display_out_of_range {
     display: flex;
     justify-content: center;
-    
+
     font-size: var(--body-size);
     line-height: var(--body-lh);
 
     color: var(--other-green);
 }
 
-.row_label{
+.row_label {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    
+
     color: var(--text1);
 }
 
 .current_price {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    
+
     color: var(--text2);
 }

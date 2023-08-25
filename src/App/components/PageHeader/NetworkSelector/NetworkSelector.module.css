@@ -5,7 +5,7 @@
     justify-content: center;
     align-items: center;
     padding: 0 4px;
-   
+
     border-radius: 4px;
     grid-gap: 4px;
     gap: 4px;
@@ -116,7 +116,8 @@
     z-index: 9999;
 }
 
-.chain_name_status:hover, .chain_name_status:focus-visible {
+.chain_name_status:hover,
+.chain_name_status:focus-visible {
     filter: drop-shadow(0 0 5px var(--text1));
 }
 

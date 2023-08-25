@@ -50,7 +50,7 @@
     -o-transition: 0.7s;
 }
 
-.disabled, .disabled * {
+.disabled,
+.disabled * {
     cursor: wait !important;
 }
-
