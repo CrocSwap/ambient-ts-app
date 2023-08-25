@@ -7,9 +7,10 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import printDomToImage from '../../../../utils/functions/printDomToImage';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import TradeChartsTokenInfo from '../TradeChartsComponents/TradeChartsTokenInfo';
-import styles from './TradeChartsHeader.module.css';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
+import { FlexContainer } from '../../../../styled/Common';
+import { HeaderButtons } from '../../../../styled/Components/Chart';
 
 export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     const {
@@ -49,52 +50,48 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
     };
 
     const graphSettingsContent = (
-        <div className={styles.graph_settings_container}>
+        <FlexContainer justifyContent='flex-end' alignItems='center' gap={16}>
             <DefaultTooltip
                 interactive
                 title={'Toggle Full Screen Chart'}
                 enterDelay={500}
             >
-                <button
+                <HeaderButtons
+                    mobileHide
                     onClick={() => setIsChartFullScreen(!isChartFullScreen)}
-                    className={styles.fullscreen_button}
                 >
                     <AiOutlineFullscreen
                         size={20}
                         id='trade_chart_full_screen_button'
                         aria-label='Full screen chart button'
                     />
-                </button>
+                </HeaderButtons>
             </DefaultTooltip>
             <DefaultTooltip
                 interactive
                 title={'Copy to Clipboard'}
                 enterDelay={500}
             >
-                <button
-                    onClick={copyChartToClipboard}
-                    className={styles.fullscreen_button}
-                >
+                <HeaderButtons mobileHide onClick={copyChartToClipboard}>
                     <FiCopy
                         size={20}
                         id='trade_chart_save_image'
                         aria-label='Copy chart image button'
                     />
-                </button>
+                </HeaderButtons>
             </DefaultTooltip>
-        </div>
+        </FlexContainer>
     );
 
     return (
-        <div
-            className={`${styles.token_info_container} ${
-                props.tradePage && styles.trade_page_container_padding
-            }`}
+        <FlexContainer
+            justifyContent='space-between'
+            padding={props.tradePage ? '12px 12px 0px 12px' : '4px 4px 8px 4px'}
         >
             <TradeChartsTokenInfo />
             {tradeTableState === 'Expanded' || showNoChartData
                 ? null
                 : graphSettingsContent}
-        </div>
+        </FlexContainer>
     );
 };

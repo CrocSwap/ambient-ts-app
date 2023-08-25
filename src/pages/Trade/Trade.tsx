@@ -239,7 +239,7 @@ function Trade() {
         <MainSection>
             {mobileTradeDropdown}
             {activeMobileComponent === 'chart' && isPoolInitialized && (
-                <div style={{ marginLeft: '2rem' }}>
+                <div style={{ marginLeft: '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
                 </div>

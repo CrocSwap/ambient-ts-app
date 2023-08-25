@@ -3,12 +3,14 @@ import styled from 'styled-components';
 
 export const MainSection = styled.section`
     display: grid;
+    grid-template-columns: auto 380px;
     height: calc(100vh - 56px);
 
     border-top: 1px solid var(--dark2);
 
-    @media (min-width: 1200px) {
-        grid-template-columns: auto 380px;
+    @media (max-width: 1200px) {
+        display: flex;
+        flex-direction: column;
     }
 
     @media only screen and (max-width: 1279px) {
