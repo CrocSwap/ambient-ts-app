@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { useParams, Outlet, NavLink } from 'react-router-dom';
-import { NumberSize, Resizable } from 're-resizable';
+import { NumberSize } from 're-resizable';
 import {
     useEffect,
     useState,
@@ -16,7 +16,6 @@ import { BsCaretDownFill } from 'react-icons/bs';
 import TradeCharts from './TradeCharts/TradeCharts';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
-import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../constants';
@@ -31,7 +30,7 @@ import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
-import { FlexContainer, GridContainer } from '../../styled/Common';
+import { FlexContainer } from '../../styled/Common';
 import {
     ChartContainer,
     MainSection,
@@ -40,6 +39,10 @@ import {
     TradeDropdownButton,
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
+import {
+    SelectorWrapper,
+    SelectorContainer,
+} from '../../styled/Components/TradeModules';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -106,18 +109,15 @@ function Trade() {
     }, [candleData]);
 
     const navigationMenu = (
-        <div className={styles.navigation_menu}>
+        <SelectorContainer justifyContent='center' alignItems='center' gap={8}>
             {routes.map((route, idx) => (
-                <div
-                    className={`${styles.nav_container} trade_route`}
-                    key={idx}
-                >
+                <SelectorWrapper key={idx}>
                     <NavLink to={`/trade${route.path}/${params}`}>
                         {route.name}
                     </NavLink>
-                </div>
+                </SelectorWrapper>
             ))}
-        </div>
+        </SelectorContainer>
     );
 
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
