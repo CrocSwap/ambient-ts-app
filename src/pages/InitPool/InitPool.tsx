@@ -714,7 +714,7 @@ export default function InitPool() {
         >
             <div>
                 <p className={styles.label_title}>Collateral</p>
-                <FlexContainer flexDirection='row'>
+                <FlexContainer>
                     <LuEdit2 />
                     <FiRefreshCw />
                 </FlexContainer>
