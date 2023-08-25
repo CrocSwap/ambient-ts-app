@@ -52,6 +52,10 @@
     overflow: auto; /* Enable scrolling for the content */
 }
 
+.leaderboard .table_content {
+    overflow-y: hidden;
+}
+
 .footer {
     background: var(--dark1);
     width: 100%;
