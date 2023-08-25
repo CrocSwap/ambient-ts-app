@@ -10,7 +10,6 @@ import {
     useState,
 } from 'react';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import { FiDelete } from 'react-icons/fi';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { User } from '../../Model/UserModel';
@@ -21,6 +20,7 @@ import { IoReturnUpForwardSharp } from 'react-icons/io5';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import Options from '../Options/Options';
 import Menu from '../Options/Menu/Menu';
+import useChatSocket from '../../Service/useChatSocket';
 
 interface SentMessageProps {
     message: Message;
@@ -39,7 +39,6 @@ interface SentMessageProps {
     previousMessage: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     nextMessage: any;
-    deleteMsgFromList: (id: string) => void;
     isLinkInCrocodileLabsLinks(word: string): boolean;
     mentionIndex?: number;
     updateLikeDislike: (messageId: string, like: any) => void;
@@ -61,10 +60,27 @@ interface SentMessageProps {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     replyMessageContent: Message | undefined;
     setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
+    isSubscriptionsEnabled: boolean;
+    address: `0x${string}` | undefined;
+    isChatOpen: boolean;
+    isDeleted: boolean;
+    deletedMessageText: string;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
+    const { room, address, isChatOpen, ensName, isSubscriptionsEnabled } =
+        props;
+    const { deleteMsgFromList } = useChatSocket(
+        room,
+        isSubscriptionsEnabled,
+        isChatOpen,
+        address,
+        ensName,
+    );
     const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
+    const [aa, setaa] = useState('');
+    const [isDeleteMessageButtonPressed, setIsDeleteMessageButtonPressed] =
+        useState(false);
     const [hasSeparator, setHasSeparator] = useState(false);
     const [clickOptions, setClickOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
@@ -220,6 +236,13 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }, [props.message]);
 
+    useEffect(() => {
+        if (isDeleteMessageButtonPressed) {
+            props.setIsMessageDeleted(true);
+            deleteMessages(props.message._id);
+        }
+    }, [isDeleteMessageButtonPressed]);
+
     const formatAMPM = (str: string) => {
         const date = new Date(str);
         let hours = date.getHours();
@@ -300,56 +323,67 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function detectLinksFromMessage(url: string) {
-        if (url.includes(' ')) {
-            const words: string[] = url.split(' ');
-            return (
-                <>
-                    {words.map((word, index) => (
-                        <span
-                            onClick={() =>
-                                props.isLinkInCrocodileLabsLinks(word)
-                                    ? handleOpenExplorer(word)
-                                    : props.isLinkInCrocodileLabsLinksForInput(
-                                          word,
-                                      )
-                                    ? handleOpenExplorerAddHttp(word)
-                                    : ''
-                            }
-                            key={index}
-                            style={
-                                props.isLinkInCrocodileLabsLinks(word) ||
-                                props.isLinkInCrocodileLabsLinksForInput(word)
-                                    ? { color: '#ab7de7', cursor: 'pointer' }
-                                    : { color: 'white', cursor: 'default' }
-                            }
-                        >
-                            {' ' + returnDomain(word)}
-                            {}
-                        </span>
-                    ))}
-                </>
-            );
+        if (props.isDeleted) {
+            return props.message.deletedMessageText;
         } else {
-            if (
-                props.isLinkInCrocodileLabsLinks(url) ||
-                props.isLinkInCrocodileLabsLinksForInput(url)
-            ) {
+            if (url.includes(' ')) {
+                const words: string[] = url.split(' ');
                 return (
-                    <p
-                        style={{ color: '#ab7de7', cursor: 'pointer' }}
-                        onClick={() =>
-                            props.isLinkInCrocodileLabsLinks(url)
-                                ? handleOpenExplorer(url)
-                                : props.isLinkInCrocodileLabsLinksForInput(url)
-                                ? handleOpenExplorerAddHttp(url)
-                                : ''
-                        }
-                    >
-                        {returnDomain(url)}
-                    </p>
+                    <>
+                        {words.map((word, index) => (
+                            <span
+                                onClick={() =>
+                                    props.isLinkInCrocodileLabsLinks(word)
+                                        ? handleOpenExplorer(word)
+                                        : props.isLinkInCrocodileLabsLinksForInput(
+                                              word,
+                                          )
+                                        ? handleOpenExplorerAddHttp(word)
+                                        : ''
+                                }
+                                key={index}
+                                style={
+                                    props.isLinkInCrocodileLabsLinks(word) ||
+                                    props.isLinkInCrocodileLabsLinksForInput(
+                                        word,
+                                    )
+                                        ? {
+                                              color: '#ab7de7',
+                                              cursor: 'pointer',
+                                          }
+                                        : { color: 'white', cursor: 'default' }
+                                }
+                            >
+                                {' ' + returnDomain(word)}
+                                {}
+                            </span>
+                        ))}
+                    </>
                 );
             } else {
-                return url;
+                if (
+                    props.isLinkInCrocodileLabsLinks(url) ||
+                    props.isLinkInCrocodileLabsLinksForInput(url)
+                ) {
+                    return (
+                        <p
+                            style={{ color: '#ab7de7', cursor: 'pointer' }}
+                            onClick={() =>
+                                props.isLinkInCrocodileLabsLinks(url)
+                                    ? handleOpenExplorer(url)
+                                    : props.isLinkInCrocodileLabsLinksForInput(
+                                          url,
+                                      )
+                                    ? handleOpenExplorerAddHttp(url)
+                                    : ''
+                            }
+                        >
+                            {returnDomain(url)}
+                        </p>
+                    );
+                } else {
+                    return url;
+                }
             }
         }
     }
@@ -443,18 +477,7 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function deleteMessages(id: string) {
-        // eslint-disable-next-line
-        // props.setIsMessageDeleted(false);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        deleteMessage(id).then((result: any) => {
-            if (result.status === 'OK') {
-                props.setIsMessageDeleted(true);
-                props.deleteMsgFromList(id);
-                return result;
-            } else {
-                props.setIsMessageDeleted(false);
-            }
-        });
+        deleteMsgFromList(id);
     }
 
     const jazziconsSeed = props.message.walletID.toLowerCase();
@@ -739,43 +762,24 @@ function SentMessagePanel(props: SentMessageProps) {
                                 />
                                 {!isPosition && mentionedMessage()}
                                 {isMoreButtonPressed ? (
-                                    <Options
-                                        setIsReplyButtonPressed={
-                                            props.setIsReplyButtonPressed
-                                        }
-                                        message={props.message}
-                                        isReplyButtonPressed={
-                                            props.isReplyButtonPressed
-                                        }
-                                        replyMessageContent={
-                                            props.replyMessageContent
-                                        }
-                                        setReplyMessageContent={
-                                            props.setReplyMessageContent
-                                        }
-                                        isMoreButtonPressed={
-                                            isMoreButtonPressed
-                                        }
-                                        setIsMoreButtonPressed={
-                                            setIsMoreButtonPressed
-                                        }
-                                    />
+                                    <div className={styles.menu}>
+                                        <Menu
+                                            isDeleteMessageButtonPressed={
+                                                isDeleteMessageButtonPressed
+                                            }
+                                            setIsDeleteMessageButtonPressed={
+                                                setIsDeleteMessageButtonPressed
+                                            }
+                                            setIsMoreButtonPressed={
+                                                setIsMoreButtonPressed
+                                            }
+                                        />
+                                    </div>
                                 ) : (
                                     <></>
                                 )}
                             </div>
 
-                            {/* {props.moderator ? (
-                                <FiDelete
-                                    color='red'
-                                    onClick={() =>
-                                        deleteMessages(props.message._id)
-                                    }
-                                    style={{ cursor: 'pointer' }}
-                                />
-                            ) : (
-                                ''
-                            )} */}
                             <div className={styles.reply_message}>
                                 <p className={styles.message_date}>
                                     {formatAMPM(props.message.createdAt)}

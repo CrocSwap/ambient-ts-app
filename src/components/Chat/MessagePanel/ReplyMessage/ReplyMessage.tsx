@@ -16,6 +16,7 @@ interface propsIF {
 }
 
 export default function ReplyMessage(props: propsIF) {
+    const walletID = props.walletID?.slice(0, 6) + '...';
     return props.isReplyButtonPressed === true ? (
         <div style={{ marginTop: '10px' }}>
             <motion.div
@@ -34,7 +35,9 @@ export default function ReplyMessage(props: propsIF) {
                     <div className={styles.position_box}>
                         <div className={styles.stil}>
                             <div className={styles.position_info}>
-                                {props.ensName}
+                                {props.ensName === 'defaultValue'
+                                    ? walletID
+                                    : props.ensName}
                             </div>
 
                             <GrClose
@@ -62,7 +65,9 @@ export default function ReplyMessage(props: propsIF) {
                 </div>
 
                 <div className={styles.position_info}>
-                    {props.ensName}
+                    {props.ensName === 'defaultValue'
+                        ? walletID
+                        : props.ensName}
 
                     {props.message === undefined || props.message === '' ? (
                         <GrClose

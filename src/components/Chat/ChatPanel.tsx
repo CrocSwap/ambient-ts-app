@@ -84,7 +84,6 @@ function ChatPanel(props: propsIF) {
         lastMessage,
         messageUser,
         sendMsg,
-        deleteMsgFromList,
         users,
         getMsgWithRest2,
         notis,
@@ -96,6 +95,7 @@ function ChatPanel(props: propsIF) {
         updateVerifyDate,
         updateUserCache,
         getAllMessages,
+        setMessages,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -267,11 +267,8 @@ function ChatPanel(props: propsIF) {
     }, [room, isChatOpen === false]);
 
     useEffect(() => {
-        if (isMessageDeleted === true) {
-            getMsg();
-            window.scrollTo(0, 0);
-        }
-    }, [isMessageDeleted]);
+        getMsg();
+    }, [isMessageDeleted === false]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
@@ -315,9 +312,9 @@ function ChatPanel(props: propsIF) {
                 setInputDisabled(false);
             }
         }, 1000);
-
+        console.log('is tttt');
         setMessageCheckerInterval(checkerInterval);
-    }, [messages]);
+    }, [messages, setMessages]);
 
     function handleCloseChatPanel() {
         setIsChatOpen(false);
@@ -615,7 +612,6 @@ function ChatPanel(props: propsIF) {
                                     ? null
                                     : messages[i + 1]
                             }
-                            deleteMsgFromList={deleteMsgFromList}
                             previousMessage={i === 0 ? null : messages[i - 1]}
                             isLinkInCrocodileLabsLinks={
                                 isLinkInCrocodileLabsLinks
@@ -642,6 +638,11 @@ function ChatPanel(props: propsIF) {
                             setIsReplyButtonPressed={setIsReplyButtonPressed}
                             replyMessageContent={replyMessageContent}
                             setReplyMessageContent={setReplyMessageContent}
+                            isSubscriptionsEnabled={isSubscriptionsEnabled}
+                            isChatOpen={isChatOpen}
+                            address={address}
+                            isDeleted={item.isDeleted}
+                            deletedMessageText={item.deletedMessageText}
                         />
                     );
                 })}
