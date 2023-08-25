@@ -9,6 +9,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 
 interface RangeBoundsProps {
+    customSwitch?: boolean;
     isRangeBoundsDisabled: boolean;
     // Props for Range Width
     rangeWidthPercentage: number;
@@ -88,6 +89,7 @@ export default function RangeBounds(props: RangeBoundsProps) {
         setMinPrice,
 
         isRangeBoundsDisabled,
+        customSwitch = false,
     } = props;
     const rangeWidthProps = {
         rangeWidthPercentage,
@@ -158,11 +160,11 @@ export default function RangeBounds(props: RangeBoundsProps) {
     );
     return (
         <section className={isRangeBoundsDisabled && styles.advanced_disabled}>
-            {
+            {!customSwitch && (
                 <div className={styles.denomination_switch_container}>
                     <AdvancedModeToggle advancedMode={advancedMode} />
                 </div>
-            }
+            )}
             {advancedMode ? advancedModeContent : baseModeContent}
         </section>
     );

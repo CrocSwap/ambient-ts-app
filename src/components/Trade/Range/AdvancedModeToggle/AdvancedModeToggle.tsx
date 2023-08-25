@@ -3,6 +3,7 @@ import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
 import Toggle from '../../../Global/Toggle/Toggle';
 import { memo } from 'react';
+import ButtonSwitch from '../../../Global/Toggle/ButtonSwitch';
 
 interface advancedModePropsIF {
     advancedMode: boolean;
@@ -25,6 +26,7 @@ function AdvancedModeToggle(props: advancedModePropsIF) {
                 handleToggle={handleToggle}
                 id='advanced_reposition'
             />
+
             <h4 className={styles.advanced_toggle_title}>{'Balanced'}</h4>
         </div>
     );

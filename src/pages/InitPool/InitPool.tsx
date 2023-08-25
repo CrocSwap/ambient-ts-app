@@ -44,6 +44,10 @@ import { PoolContext } from '../../contexts/PoolContext';
 import RangePriceInfo from '../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 import ButtonSwitch from '../../components/Global/Toggle/ButtonSwitch';
+import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
+import { LuEdit2 } from 'react-icons/lu';
+import { FiRefreshCw } from 'react-icons/fi';
+import { FlexContainer } from '../../components/Global/Analytics/Analytics.styles';
 
 // react functional component
 export default function InitPool() {
@@ -67,6 +71,10 @@ export default function InitPool() {
     } = useContext(TradeTokenContext);
 
     const dispatch = useAppDispatch();
+    const handleToggle = () => dispatch(toggleAdvancedMode());
+    const {
+        tradeData: { advancedMode },
+    } = useAppSelector((state) => state);
 
     const { isConnected } = useAccount();
 
@@ -704,7 +712,13 @@ export default function InitPool() {
                 poolExists === true && styles.content_disabled
             }`}
         >
-            <p className={styles.label_title}>Collateral</p>
+            <div>
+                <p className={styles.label_title}>Collateral</p>
+                <FlexContainer flexDirection='row'>
+                    <LuEdit2 />
+                    <FiRefreshCw />
+                </FlexContainer>
+            </div>
 
             <TokenInputQuantity
                 tokenAorB={'A'}
@@ -728,7 +742,6 @@ export default function InitPool() {
             />
         </div>
     );
-    console.log({ poolExists });
 
     const newContent = (
         <section className={styles.main}>
@@ -749,7 +762,14 @@ export default function InitPool() {
                             </div>
 
                             <div className={styles.right_container}>
+                                <p className={styles.label_title}>
+                                    Initial Range
+                                </p>
+
                                 <ButtonSwitch
+                                    isOn={!advancedMode}
+                                    handleToggle={handleToggle}
+                                    id='advanced_reposition'
                                     onLabel='Unbalanced'
                                     offLabel='Balanced'
                                 />
@@ -758,6 +778,7 @@ export default function InitPool() {
                                     {...rangeWidthProps}
                                     {...rangePriceInfoProps}
                                     {...minMaxPriceProps}
+                                    customSwitch={true}
                                 />
 
                                 <ButtonToRender />

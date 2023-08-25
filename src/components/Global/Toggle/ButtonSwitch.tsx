@@ -1,14 +1,6 @@
-import React from 'react';
+import React, { KeyboardEventHandler, MouseEventHandler } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import PropTypes from 'prop-types';
-
-// Define your colors
-const colors = {
-    black: '#1E1E1E',
-    grey: '#CCCCCC',
-    white: '#FFFFCE',
-    accent: '#yourAccentColorHere',
-};
 
 const switchAnimation = keyframes`
   0% {
@@ -27,24 +19,33 @@ const switchOffAnimation = keyframes`
     right: 0%;
   }
 `;
+
+const borderRadius = '25px';
 interface SwitchContainerProps {
     switcherType: 'switcher-1' | 'switcher-2'; // Define the type here
     onLabel: string; // Prop for the ON label
     offLabel: string; // Prop for the OFF label
+    isOn: boolean;
+    handleToggle:
+        | MouseEventHandler<HTMLDivElement>
+        | KeyboardEventHandler<HTMLDivElement>
+        | undefined
+        // eslint-disable-next-line
+        | any;
+    id: string;
 }
 const SwitchContainer = styled.span<SwitchContainerProps>`
     position: relative;
     width: 100%;
-    height: 50px;
-    border-radius: 25px;
-    margin: 20px 0;
+    height: 100%;
+    border-radius: ${borderRadius};
 
     input {
         appearance: none;
         position: relative;
         width: 100%;
-        height: 50px;
-        border-radius: 25px;
+        height: 100%;
+        border-radius: ${borderRadius};
         background-color: var(--dark3);
         outline: none;
 
@@ -54,7 +55,6 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            color: red;
         }
         &:before {
             content: '${(props) => props.onLabel}';
@@ -73,7 +73,7 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
         position: absolute;
         top: 10px;
         bottom: 10px;
-        border-radius: 20px;
+        border-radius: ${borderRadius};
     }
 
     ${(props) =>
@@ -81,17 +81,19 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
         css`
             input:checked {
                 background-color: var(--dark3);
+
                 &:before {
-                    color: var(--text3);
+                    color: ${props.isOn ? 'var(--text2)' : 'var(--text3)'};
+
                     transition: color 0.5s 0.2s;
                 }
                 &:after {
-                    color: var(--text1);
+                    color: ${props.isOn ? 'var(--text2)' : 'var(--text3)'};
                     transition: color 0.5s;
                 }
                 & + label {
                     left: 10px;
-                    right: 100px;
+                    right: 50%;
                     background: var(--dark2);
                     transition: left 0.5s, right 0.4s 0.2s;
                 }
@@ -108,7 +110,7 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
                     transition: color 0.5s 0.2s;
                 }
                 & + label {
-                    left: 100px;
+                    left: 50%;
                     right: 10px;
                     background: var(--accent1);
                     transition: left 0.4s 0.2s, right 0.5s,
@@ -123,32 +125,33 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
             overflow: hidden;
             input {
                 transition: background-color 0s 0.5s;
+
                 &:before {
-                    color: ${colors.black};
+                    color: ${props.isOn ? 'var(--text2)' : 'var(--text1)'};
                 }
                 &:after {
-                    color: ${colors.white};
+                    color: ${props.isOn ? 'var(--text1)' : 'var(--text2)'};
                 }
                 &:checked {
-                    background-color: ${colors.white};
+                    background-color: var(--accent1);
                     & + label {
-                        background: ${colors.white};
-                        animation: ${switchAnimation} 0.5s ease-out;
+                        background: var(--accent1);
+                        animation: ${switchOffAnimation} 0.5s ease-out;
                     }
                 }
                 &:not(:checked) {
-                    background: ${colors.black};
+                    background: var(--dark3);
                     & + label {
-                        background: ${colors.black};
-                        animation: ${switchOffAnimation} 0.5s ease-out;
+                        background: var(--dark3);
+                        animation: ${switchAnimation} 0.5s ease-out;
                     }
                 }
             }
             label {
                 top: 0px;
-                width: 200px;
-                height: 50px;
-                border-radius: 25px;
+                width: 50%;
+                height: 100%;
+                border-radius: ${borderRadius};
             }
         `}
 `;
@@ -157,9 +160,17 @@ interface ButtonSwitchProps {
     fullSwitch?: boolean;
     onLabel: string; // Prop for the ON label
     offLabel: string; // Prop for the OFF label
+    isOn: boolean;
+    handleToggle:
+        | MouseEventHandler<HTMLDivElement>
+        | KeyboardEventHandler<HTMLDivElement>
+        | undefined
+        // eslint-disable-next-line
+        | any;
+    id: string;
 }
 const ButtonSwitch = (props: ButtonSwitchProps) => {
-    const { fullSwitch, onLabel, offLabel } = props;
+    const { fullSwitch, onLabel, offLabel, isOn, handleToggle, id } = props;
     const switchToShow = fullSwitch ? 'switcher-2' : 'switcher-1';
 
     return (
@@ -167,8 +178,16 @@ const ButtonSwitch = (props: ButtonSwitchProps) => {
             switcherType={switchToShow}
             onLabel={onLabel}
             offLabel={offLabel}
+            isOn={isOn}
+            handleToggle={handleToggle}
+            id={id}
         >
-            <input type='checkbox' id={switchToShow} />
+            <input
+                type='checkbox'
+                id={id}
+                checked={isOn}
+                onClick={handleToggle}
+            />
             <label htmlFor={switchToShow}></label>
         </SwitchContainer>
     );

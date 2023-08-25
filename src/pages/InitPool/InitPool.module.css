@@ -194,6 +194,7 @@ color: var(--text1);
 }
 
 .left_container, .right_container{
+    
     padding: 0 8px;
     display: flex;
     flex-direction: column;
@@ -201,8 +202,10 @@ color: var(--text1);
 }
 
 .right_container{
-    justify-content: space-between;
     padding-bottom: 8px;
+
+    display: grid;
+    grid-template-rows: 15px 50px 1fr 50px;
 }
 .local_token_container, .range_width_container{
     display: flex;
@@ -264,6 +267,7 @@ color: var(--text1);
    display: grid;
    grid-template-columns: 1fr 1fr;
    width: 772px;
+  
 }
 
 }
