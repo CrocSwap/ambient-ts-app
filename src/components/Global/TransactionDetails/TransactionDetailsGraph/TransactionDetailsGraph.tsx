@@ -882,6 +882,12 @@ export default function TransactionDetailsGraph(
                     }
                 }
 
+                if (transactionType === 'liqchange' && period) {
+                    const buffer = period * 1000 * 3;
+
+                    scaleData?.xScale.domain([minDomain, maxDomain + buffer]);
+                }
+
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
 
