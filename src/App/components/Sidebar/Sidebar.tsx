@@ -299,11 +299,13 @@ function Sidebar() {
                     </FlexContainer>
                 </>
             ) : (
-                <SearchIcon
-                    open={sidebar.isOpen}
-                    size={20}
-                    onClick={() => sidebar.open(false)}
-                />
+                <div style={{ borderBottom: '1px solid var(--dark3)' }}>
+                    <SearchIcon
+                        open={sidebar.isOpen}
+                        size={20}
+                        onClick={() => sidebar.open(false)}
+                    />
+                </div>
             )}
         </FlexContainer>
     );

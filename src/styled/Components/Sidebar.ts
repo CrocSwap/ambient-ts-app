@@ -126,8 +126,6 @@ const Icon = css<{ open: boolean }>`
 `;
 export const SearchIcon = styled(BiSearch)<{ open: boolean }>`
     ${Icon}
-    margin: 8px 0;
-    border-bottom: 1px solid var(--dark3);
 `;
 export const RecentPoolsIcon = styled(GiBackwardTime)<{ open: boolean }>`
     ${Icon}
