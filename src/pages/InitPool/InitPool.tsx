@@ -49,6 +49,7 @@ import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer } from '../../styled/Common';
+import { TokenInputWalletBalance } from '../../components/Global/TokenInput/TokenInputWalletBalance';
 
 // react functional component
 export default function InitPool() {
@@ -63,7 +64,9 @@ export default function InitPool() {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay } = useContext(PoolContext);
-
+    const { isLoggedIn: isUserConnected } = useAppSelector(
+        (state) => state.userData,
+    );
     const {
         tokenAAllowance,
         tokenBAllowance,
@@ -340,7 +343,9 @@ export default function InitPool() {
         isDenomBase ? baseToken.symbol : quoteToken.symbol
     }/${isDenomBase ? quoteToken.symbol : baseToken.symbol})`;
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInitialPriceInputChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
         const isValid =
             event.target.value === '' ||
             event.target.value === '.' ||
@@ -711,7 +716,7 @@ export default function InitPool() {
                     className={styles.currency_quantity}
                     placeholder={placeholderText}
                     type='string'
-                    onChange={handleInputChange}
+                    onChange={handleInitialPriceInputChange}
                     onBlur={handleDisplayUpdate}
                     value={initialPriceForDOM}
                     inputMode='decimal'
@@ -733,7 +738,18 @@ export default function InitPool() {
         // rest of code here
     };
 
-    console.log(baseCollateral);
+    const walletContent = isUserConnected && (
+        <TokenInputWalletBalance
+            isWithdraw={false}
+            balance={'2334'}
+            availableBalance={2345}
+            useExchangeBalance={false}
+            isDexSelected={false}
+            onToggleDex={() => console.log('yes')}
+            onMaxButtonClick={() => console.log('yes')}
+            onRefresh={() => console.log('yes')}
+        />
+    );
 
     const collateralContent = (
         <div
@@ -749,27 +765,32 @@ export default function InitPool() {
                     <FiRefreshCw size={20} />
                 </FlexContainer>
             </FlexContainer>
-
-            <TokenInputQuantity
-                tokenAorB={'A'}
-                value={'0'}
-                handleTokenInputEvent={handleBaseCollateralChange}
-                disable={false}
-                token={tokenA}
-                setTokenModalOpen={setTokenModalOpen}
-                fieldId='select'
-                onInitPage
-            />
-            <TokenInputQuantity
-                tokenAorB={'A'}
-                value={'0'}
-                handleTokenInputEvent={handleQuoteCollateralChange}
-                disable={false}
-                token={tokenB}
-                setTokenModalOpen={setTokenModalOpen}
-                fieldId='select'
-                onInitPage
-            />
+            <FlexContainer>
+                <TokenInputQuantity
+                    tokenAorB={'A'}
+                    value={'0'}
+                    handleTokenInputEvent={handleBaseCollateralChange}
+                    disable={false}
+                    token={tokenA}
+                    setTokenModalOpen={setTokenModalOpen}
+                    fieldId='select'
+                    onInitPage
+                />
+                {walletContent}
+            </FlexContainer>
+            <FlexContainer>
+                <TokenInputQuantity
+                    tokenAorB={'A'}
+                    value={'0'}
+                    handleTokenInputEvent={handleQuoteCollateralChange}
+                    disable={false}
+                    token={tokenB}
+                    setTokenModalOpen={setTokenModalOpen}
+                    fieldId='select'
+                    onInitPage
+                />
+                {walletContent}
+            </FlexContainer>
         </div>
     );
 
@@ -850,7 +871,7 @@ export default function InitPool() {
                                         className={styles.currency_quantity}
                                         placeholder={placeholderText}
                                         type='string'
-                                        onChange={handleInputChange}
+                                        onChange={handleInitialPriceInputChange}
                                         onBlur={handleDisplayUpdate}
                                         value={initialPriceForDOM}
                                         inputMode='decimal'
