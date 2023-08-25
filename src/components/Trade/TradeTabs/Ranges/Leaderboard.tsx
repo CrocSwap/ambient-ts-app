@@ -78,7 +78,7 @@ function Leaderboard() {
     const ipadView = useMediaQuery('(max-width: 600px)');
     const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
 
-    const showColumns = useMediaQuery('(max-width: 1600px)');
+    const showColumns = useMediaQuery('(max-width: 1799px)');
     const phoneScreen = useMediaQuery('(max-width: 600px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
@@ -106,7 +106,7 @@ function Leaderboard() {
         {
             name: 'Last Updated',
             className: '',
-            show: showColumns,
+            show: !showColumns,
             slug: 'time',
             sortable: false,
         },
