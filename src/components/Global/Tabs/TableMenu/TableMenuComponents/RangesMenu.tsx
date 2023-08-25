@@ -114,7 +114,7 @@ export default function RangesMenu(props: propsIF) {
 
     // ----------------------
 
-    const view1 = useMediaQuery('(max-width: 800px)');
+    const view1 = useMediaQuery('(max-width: 600px)');
     const view3 = useMediaQuery('(min-width: 1800px)');
 
     const showRepositionButton =
@@ -262,8 +262,7 @@ export default function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {showRepositionButton && repositionButton}
-            {/* {!view1 && showRepositionButton && repositionButton} */}
+            {!view1 && showRepositionButton && repositionButton}
             {!view1 &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
@@ -276,7 +275,6 @@ export default function RangesMenu(props: propsIF) {
 
     const dropdownMenuContent = (
         <div className={styles.menu_column}>
-            {view1 && showRepositionButton && repositionButton}
             {view1 &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
@@ -285,6 +283,7 @@ export default function RangesMenu(props: propsIF) {
             {!view3 && !isEmpty && removeButton}
             {detailsButton}
             {!userMatchesConnectedAccount && walletButton}
+            {view1 && showRepositionButton && repositionButton}
         </div>
     );
 
