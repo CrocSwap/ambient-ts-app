@@ -152,7 +152,7 @@
     .main_list_container .row_container,
     .main_list_container .header {
         /* measured against smallest screen size for sub-iPad view (410px)*/
-        grid-template-columns: minmax(160px, 2.2fr) 1fr 1.8fr 34%;
+        grid-template-columns: minmax(100px, 2.2fr) 1fr 1.8fr 34%;
     }
     .main_list_container .account_row_container,
     .main_list_container .account_header {
@@ -179,8 +179,8 @@
     .main_list_container .header {
         /* measured against smallest screen size for merged view (1280px) with sidebar expanded */
         grid-template-columns:
-            minmax(125px, 2.3fr) minmax(72px, 1.2fr) minmax(56px, 1.1fr)
-            minmax(78px, 1.4fr) minmax(86px, 1.6fr) minmax(52px, 1fr) minmax(103px, 25%);
+            minmax(110px, 2.3fr) minmax(72px, 1.2fr) minmax(56px, 1.1fr)
+            minmax(78px, 1.4fr) minmax(86px, 1.6fr) minmax(70px, 1fr) minmax(103px, 25%);
     }
     .main_list_container .account_row_container,
     .main_list_container .account_header {
