@@ -52,6 +52,10 @@
     overflow: auto; /* Enable scrolling for the content */
 }
 
+.leaderboard .table_content {
+    overflow-y: hidden;
+}
+
 .footer {
     background: var(--dark1);
     width: 100%;
@@ -212,13 +216,13 @@
     }
 }
 
-@media only screen and (max-width: 1599px) and (min-width: 1200px) {
+@media only screen and (max-width: 1799px) and (min-width: 1200px) {
     /* measured against smallest screen size for merged view (1280px) with sidebar expanded*/
 
     .main_list_container .row_container,
     .main_list_container .header {
         grid-template-columns:
-            minmax(65px, 1fr) minmax(125px, 1fr) minmax(72px, 1fr)
+            minmax(125px, 1fr) minmax(72px, 1fr)
             minmax(70px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
                 38px,
                 1fr
@@ -228,18 +232,18 @@
     .main_list_container .account_row_container,
     .main_list_container .account_header {
         grid-template-columns:
-            minmax(65px, 1fr) minmax(125px, 1fr) minmax(72px, 1fr)
+            minmax(100px, 1fr) minmax(100px, 1fr)
             minmax(70px, 1fr) minmax(86px, 1fr) minmax(100px, 1fr) minmax(
-                38px,
+                50px,
                 1fr
             )
-            minmax(38px, 1fr)
+            minmax(55px, 1fr)
             minmax(74px, 20%);
     }
     .leaderboard .row_container,
     .leaderboard .header {
         grid-template-columns:
-            minmax(87px, 1fr) minmax(125px, 1fr) minmax(72px, 1fr)
+            minmax(125px, 1fr) minmax(72px, 1fr)
             minmax(78px, 1fr) minmax(86px, 1fr) minmax(44px, 1fr) minmax(
                 38px,
                 1fr
@@ -248,7 +252,7 @@
     }
 }
 
-@media only screen and (min-width: 1600px) {
+@media only screen and (min-width: 1800px) {
     /* measured against smallest screen size for full view (1600px) with sidebar expanded */
 
     .main_list_container .row_container,
