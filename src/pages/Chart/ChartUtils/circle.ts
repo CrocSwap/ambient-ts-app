@@ -19,9 +19,15 @@ export function createCircle(
         .mainValue((d: lineData) => d.y)
         .size(size)
         .type(d3.symbolCircle)
-        .decorate((context: any) => {
-            context.strokeStyle = '#7371fc';
-            context.fillStyle = '#8A8AFF';
+        .decorate((context: any, d: any) => {
+            if (d.isSelected) {
+                context.strokeStyle = '#7371fc';
+                context.fillStyle = 'white';
+            } else {
+                context.strokeStyle = '#7371fc';
+                context.fillStyle = '#8A8AFF';
+            }
+
             context.lineWidth = lineWidth;
         });
 }

@@ -2835,6 +2835,24 @@ export default function Chart(props: propsIF) {
         return isOverLine;
     }
 
+    function updateDrawnCircle(selectedDrawnShape?: selectedDrawnData) {
+        if (selectedDrawnShape) {
+            const index = drawnShapeHistory.findIndex(
+                (item) => item === selectedDrawnShape?.data,
+            );
+
+            const previosData = drawnShapeHistory[index].data;
+
+            const lastDataIndex = previosData.findIndex(
+                (item) => item === selectedDrawnShape?.selectedCircle,
+            );
+            previosData[lastDataIndex].isSelected =
+                selectedDrawnShape?.selectedCircle ? true : false;
+
+            drawnShapeHistory[index].data = previosData;
+        }
+    }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
@@ -2860,10 +2878,13 @@ export default function Chart(props: propsIF) {
                 scaleData,
             );
 
-            setSelectedDrawnShape({
+            const tempSelectedDrawnShape = {
                 data: resElement,
                 selectedCircle: selectedCircle,
-            });
+            };
+            updateDrawnCircle(tempSelectedDrawnShape);
+
+            setSelectedDrawnShape(tempSelectedDrawnShape);
 
             setIsDragActive(true);
         } else {

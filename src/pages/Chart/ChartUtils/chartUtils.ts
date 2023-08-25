@@ -27,7 +27,7 @@ declare global {
 export const defaultCandleBandwith = 5;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type lineData = { x: number; y: number; ctx: any };
+export type lineData = { x: number; y: number; ctx: any; isSelected: boolean };
 export type drawDataHistory = { data: lineData[]; type: string; time: number };
 export type bandLineData = { fromValue: number; toValue: number };
 export type selectedDrawnData = {
