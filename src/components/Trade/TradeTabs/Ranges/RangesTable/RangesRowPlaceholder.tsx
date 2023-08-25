@@ -39,8 +39,7 @@ interface PropsIF {
 
 // TODO: integrate into RangesRow
 export const RangesRowPlaceholder = (props: PropsIF) => {
-    const { transaction, showTimestamp, showColumns, mobileView, ipadView } =
-        props;
+    const { transaction, showColumns, mobileView, ipadView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
     const {
@@ -125,7 +124,7 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 }`}
                 tabIndex={0}
             >
-                {showTimestamp && (
+                {!showColumns && (
                     <li>
                         <p>Now</p>
                     </li>
