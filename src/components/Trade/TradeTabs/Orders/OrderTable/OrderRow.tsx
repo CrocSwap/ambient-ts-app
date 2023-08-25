@@ -286,12 +286,12 @@ function OrderRow(props: propsIF) {
                 {!ipadView && priceDisplay}
                 {!showColumns && sideDisplay}
                 {!showColumns && typeDisplay}
-                {showColumns && !ipadView && sideTypeColumn}
+                {showColumns && sideTypeColumn}
 
                 {ValueWithTooltip}
                 {!showColumns && baseQtyDisplayWithTooltip}
                 {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && tokensColumn}
+                {showColumns && !ipadView && tokensColumn}
                 {!ipadView && statusDisplay}
 
                 <li data-label='menu' className={styles.menu}>

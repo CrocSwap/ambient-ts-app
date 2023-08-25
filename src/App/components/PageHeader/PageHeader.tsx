@@ -238,7 +238,7 @@ const PageHeader = function () {
             document.title = '404 ~ Ambient';
         } else {
             document.title =
-                'Ambient | A New Zero-to-One Decentralized Trading Protocol';
+                'Ambient | Zero-to-One Decentralized Trading Protocol';
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
