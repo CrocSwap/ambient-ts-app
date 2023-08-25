@@ -26,7 +26,7 @@ export const MainSection = styled.section`
 export const TradeDropdown = styled.div`
     width: 100%;
     position: relative;
-    z-index: 999;
+    z-index: 99;
     width: 370px;
     text-align: end;
     border-radius: var(--border-radius);
