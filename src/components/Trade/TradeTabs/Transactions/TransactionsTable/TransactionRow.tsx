@@ -262,11 +262,11 @@ function TransactionRow(props: propsIF) {
                         : priceDisplay)}
                 {!showColumns && sideDisplay}
                 {!showColumns && typeDisplay}
-                {showColumns && !ipadView && typeAndSideColumn}
+                {showColumns && typeAndSideColumn}
                 {usdValueWithTooltip}
                 {!showColumns && baseQtyDisplayWithTooltip}
                 {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && baseQuoteQtyDisplayColumn}
+                {showColumns && !ipadView && baseQuoteQtyDisplayColumn}
 
                 <li data-label='menu' className={styles.menu}>
                     <TransactionsMenu
