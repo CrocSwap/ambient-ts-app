@@ -104,13 +104,6 @@ function Leaderboard() {
     );
     const headerColumns = [
         {
-            name: 'Last Updated',
-            className: '',
-            show: !showColumns,
-            slug: 'time',
-            sortable: false,
-        },
-        {
             name: 'Rank',
             className: 'ID',
             show: !showColumns,
