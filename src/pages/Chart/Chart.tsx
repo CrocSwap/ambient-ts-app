@@ -3661,11 +3661,7 @@ export default function Chart(props: propsIF) {
                                 crosshairForSubChart={crosshairData}
                                 setCrosshairData={setCrosshairData}
                                 subChartValues={subChartValues}
-                                xScale={
-                                    scaleData !== undefined
-                                        ? scaleData?.xScale
-                                        : undefined
-                                }
+                                scaleData={scaleData}
                                 render={render}
                                 yAxisWidth={yAxisWidth}
                                 setCrossHairLocation={
@@ -3678,6 +3674,11 @@ export default function Chart(props: propsIF) {
                                 isCrDataIndActive={isCrDataIndActive}
                                 xAxisActiveTooltip={xAxisActiveTooltip}
                                 zoomBase={zoomBase}
+                                mainZoom={mainZoom}
+                                setIsChartZoom={setIsChartZoom}
+                                isChartZoom={isChartZoom}
+                                lastCandleData={lastCandleData}
+                                firstCandleData={firstCandleData}
                             />
                         </>
                     )}
@@ -3705,8 +3706,12 @@ export default function Chart(props: propsIF) {
                                 lastCrDate={lastCrDate}
                                 isCrDataIndActive={isCrDataIndActive}
                                 xAxisActiveTooltip={xAxisActiveTooltip}
-                                zoomBase={zoomBase}
+                                mainZoom={mainZoom}
+                                lastCandleData={lastCandleData}
+                                firstCandleData={firstCandleData}
                                 isChartZoom={isChartZoom}
+                                zoomBase={zoomBase}
+                                setIsChartZoom={setIsChartZoom}
                             />
                         </>
                     )}

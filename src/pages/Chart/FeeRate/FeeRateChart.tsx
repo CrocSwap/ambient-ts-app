@@ -3,16 +3,20 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import '../Chart.css';
-import { setCanvasResolution } from '../ChartUtils/chartUtils';
+import { scaleData, setCanvasResolution } from '../ChartUtils/chartUtils';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { createIndicatorLine } from '../ChartUtils/indicatorLineSeries';
+import {
+    diffHashSig,
+    diffHashSigScaleData,
+} from '../../../utils/functions/diffHashSig';
 
 interface FreeRateData {
     feeData: Array<CandleData>;
     period: number;
     subChartValues: any;
     crosshairForSubChart: any;
-    xScale: any;
+    scaleData: scaleData | undefined;
     render: any;
     yAxisWidth: string;
     setCrossHairLocation: any;
@@ -24,13 +28,18 @@ interface FreeRateData {
     isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
     zoomBase: any;
+    mainZoom: any;
+    setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
+    isChartZoom: boolean;
+    firstCandleData: any;
+    lastCandleData: any;
 }
 
 function FeeRateChart(props: FreeRateData) {
     const {
         feeData,
         period,
-        xScale,
+        scaleData,
         crosshairForSubChart,
         subChartValues,
         yAxisWidth,
@@ -42,6 +51,12 @@ function FeeRateChart(props: FreeRateData) {
         isCrDataIndActive,
         xAxisActiveTooltip,
         zoomBase,
+        mainZoom,
+        setIsChartZoom,
+        isChartZoom,
+        render,
+        firstCandleData,
+        lastCandleData,
     } = props;
 
     const d3Yaxis = useRef<HTMLCanvasElement | null>(null);
@@ -52,7 +67,6 @@ function FeeRateChart(props: FreeRateData) {
     const [feeRateyScale, setFeeRateyScale] = useState<any>();
     const [lineSeries, setLineSeries] = useState<any>();
     const [crDataIndicator, setCrDataIndicator] = useState<any>();
-    const [feeRateZoom, setFeeRateZoom] = useState<any>();
     const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
         useState<any>();
     const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
@@ -107,42 +121,47 @@ function FeeRateChart(props: FreeRateData) {
     }, [feeRateyScale]);
 
     useEffect(() => {
-        if (feeData !== undefined && period) {
-            let date: any | undefined = undefined;
-
-            const zoom = d3
-                .zoom()
-                .scaleExtent([1, 10])
-                .on('start', () => {
-                    if (date === undefined) {
-                        date = feeData[feeData.length - 1].time * 1000;
+        if (scaleData !== undefined && feeData !== undefined && !isChartZoom) {
+            let scrollTimeout: NodeJS.Timeout | null = null; // Declare scrollTimeout
+            const lastCandleDate = lastCandleData?.time * 1000;
+            const firstCandleDate = firstCandleData?.time * 1000;
+            d3.select(d3CanvasCrosshair.current).on(
+                'wheel',
+                function (event) {
+                    if (scrollTimeout === null) {
+                        setIsChartZoom(true);
                     }
-                })
-                .on('zoom', (event: any) => {
-                    const domainX = xScale.domain();
-                    const linearX = d3
-                        .scaleTime()
-                        .domain(xScale.range())
-                        .range([0, domainX[1] - domainX[0]]);
 
-                    const deltaX = linearX(-event.sourceEvent.movementX);
-                    zoomBase.getNewCandleDataLeft(domainX[0] + deltaX, date);
-                    xScale.domain([domainX[0] + deltaX, domainX[1] + deltaX]);
+                    zoomBase.zoomWithWheel(
+                        event,
+                        scaleData,
+                        firstCandleDate,
+                        lastCandleDate,
+                    );
+                    render();
 
-                    props.render();
-                }) as any;
-
-            setFeeRateZoom(() => {
-                return zoom;
-            });
+                    if (scrollTimeout) {
+                        clearTimeout(scrollTimeout);
+                    }
+                    // check wheel end
+                    scrollTimeout = setTimeout(() => {
+                        setIsChartZoom(false);
+                    }, 200);
+                },
+                { passive: true },
+            );
         }
-    }, [feeData, period]);
+    }, [
+        diffHashSig(feeData),
+        diffHashSigScaleData(scaleData, 'x'),
+        isChartZoom,
+    ]);
 
     useEffect(() => {
-        if (feeRateyScale !== undefined && xScale !== undefined) {
+        if (feeRateyScale !== undefined && scaleData !== undefined) {
             const lineSeries = d3fc
                 .seriesCanvasLine()
-                .xScale(xScale)
+                .xScale(scaleData.xScale)
                 .yScale(feeRateyScale)
                 .mainValue((d: any) => d.averageLiquidityFee)
                 .crossValue((d: any) => d.time * 1000)
@@ -155,7 +174,10 @@ function FeeRateChart(props: FreeRateData) {
                 return lineSeries;
             });
 
-            const crDataIndicator = createIndicatorLine(xScale, feeRateyScale);
+            const crDataIndicator = createIndicatorLine(
+                scaleData.xScale,
+                feeRateyScale,
+            );
 
             setCrDataIndicator(() => {
                 return crDataIndicator;
@@ -165,7 +187,7 @@ function FeeRateChart(props: FreeRateData) {
                 .annotationCanvasLine()
                 .orient('vertical')
                 .value((d: any) => d.x)
-                .xScale(xScale)
+                .xScale(scaleData.xScale)
                 .yScale(feeRateyScale)
                 .label('');
 
@@ -181,7 +203,7 @@ function FeeRateChart(props: FreeRateData) {
             const crosshairHorizontalCanvas = d3fc
                 .annotationCanvasLine()
                 .value((d: any) => d.y)
-                .xScale(xScale)
+                .xScale(scaleData.xScale)
                 .yScale(feeRateyScale)
                 .label('');
 
@@ -195,7 +217,7 @@ function FeeRateChart(props: FreeRateData) {
 
             setCrosshairHorizontalCanvas(() => crosshairHorizontalCanvas);
         }
-    }, [feeRateyScale, xScale]);
+    }, [feeRateyScale, scaleData?.xScale]);
 
     useEffect(() => {
         if (feeData !== undefined) {
@@ -309,10 +331,10 @@ function FeeRateChart(props: FreeRateData) {
     }, [period, feeData, feeRateyScale, lineSeries]);
 
     useEffect(() => {
-        if (d3CanvasCrosshair !== undefined && feeRateZoom !== undefined) {
-            d3.select(d3CanvasCrosshair.current).call(feeRateZoom);
+        if (d3CanvasCrosshair !== undefined && mainZoom !== undefined) {
+            d3.select(d3CanvasCrosshair.current).call(mainZoom);
         }
-    }, [feeRateZoom, d3CanvasCrosshair]);
+    }, [mainZoom, d3CanvasCrosshair]);
 
     const drawChart = useCallback(
         (feeData: any, feeRateyScale: any) => {
@@ -329,12 +351,13 @@ function FeeRateChart(props: FreeRateData) {
                         setCrosshairActive('feeRate');
                         props.setShowTooltip(true);
 
-                        if (period !== undefined) {
+                        if (period !== undefined && scaleData) {
                             const snapDiff =
-                                xScale.invert(event.offsetX) % (period * 1000);
+                                scaleData.xScale.invert(event.offsetX) %
+                                (period * 1000);
 
                             const snappedTime =
-                                xScale.invert(event.offsetX) -
+                                scaleData.xScale.invert(event.offsetX) -
                                 (snapDiff > period * 1000 - snapDiff
                                     ? -1 * (period * 1000 - snapDiff)
                                     : snapDiff);
