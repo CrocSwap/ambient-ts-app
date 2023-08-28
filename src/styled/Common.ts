@@ -68,7 +68,7 @@ export const Margin = css<MarginProps>`
 interface GridProps {
     numCols?: number;
     numRows?: number;
-    gapSize?: number;
+    gap?: number;
     fullHeight?: boolean;
     fullWidth?: boolean;
 }
@@ -78,7 +78,7 @@ const Grid = css<GridProps>`
         numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
     grid-template-rows: ${({ numRows }) =>
         numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
-    gap: ${({ gapSize }) => (gapSize ? `${gapSize}px` : '0')};
+    gap: ${({ gap }) => (gap ? `${gap}px` : '0')};
     ${({ fullHeight }) => (fullHeight ? 'height: 100%;' : '')}
     ${({ fullWidth }) => (fullWidth ? 'width: 100%;' : '')}
 `;

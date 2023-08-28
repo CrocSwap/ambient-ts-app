@@ -17,6 +17,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
+import { FlexContainer } from '../../../styled/Common';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import {
     useAppSelector,
@@ -339,7 +340,7 @@ function SwapTokenInput(props: propsIF) {
     };
 
     return (
-        <section className={`${styles.token_input_container}`}>
+        <FlexContainer flexDirection='column' gap={8}>
             <TokenInput
                 fieldId='swap_sell'
                 tokenAorB='A'
@@ -359,10 +360,11 @@ function SwapTokenInput(props: propsIF) {
                     setSellQtyString(formatTokenInput(val, tokenA, isMax));
                 }}
             />
-            <div
-                className={`${styles.operation_container} ${
-                    disableReverseTokens && styles.disabled
-                }`}
+            <FlexContainer
+                fullWidth
+                justifyContent='center'
+                alignItems='center'
+                padding='0 0 8px 0'
             >
                 <TokensArrow
                     disabled={
@@ -370,7 +372,7 @@ function SwapTokenInput(props: propsIF) {
                     }
                     onClick={reverseTokens}
                 />
-            </div>
+            </FlexContainer>
             <TokenInput
                 fieldId='swap_buy'
                 tokenAorB='B'
@@ -392,7 +394,7 @@ function SwapTokenInput(props: propsIF) {
                     setBuyQtyString(formatTokenInput(val, tokenB, isMax));
                 }}
             />
-        </section>
+        </FlexContainer>
     );
 }
 

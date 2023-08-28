@@ -1,7 +1,7 @@
 .token_input_container {
     display: flex;
     flex-direction: column;
-    transition: all 1s ease-in-out;
+    /* transition: all 1s ease-in-out; */
 
     gap: 8px;
 }

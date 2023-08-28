@@ -1,29 +1,4 @@
-.wallet_container {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-    justify-content: space-between;
 
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text2);
-
-    padding: 8px 16px;
-    padding-bottom: 0px;
-}
-
-.balance_with_pointer {
-    display: flex;
-    flex-direction: row;
-
-    align-items: center;
-    gap: 4px;
-    cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-}
 
 .balance_column {
     display: flex;

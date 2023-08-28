@@ -50,7 +50,6 @@ import {
     isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
-import styles from './Range.module.css';
 import {
     roundDownTick,
     roundUpTick,
@@ -58,6 +57,8 @@ import {
     getPinnedPriceValuesFromDisplayPrices,
 } from './rangeFunctions';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import { FlexContainer } from '../../../styled/Common';
+import { AdvancedModeSection } from '../../../styled/Components/TradeModules';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -1284,7 +1285,12 @@ function Range() {
     };
 
     const baseModeContent = (
-        <div className={styles.info_container}>
+        <FlexContainer
+            flexDirection='column'
+            gap={8}
+            margin='8px 0 0 0'
+            padding='0 40px'
+        >
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -1293,7 +1299,7 @@ function Range() {
                 <RangeWidth {...rangeWidthProps} />
             </motion.div>
             <RangePriceInfo {...rangePriceInfoProps} />
-        </div>
+        </FlexContainer>
     );
     const advancedModeContent = (
         <>
@@ -1302,7 +1308,7 @@ function Range() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                <div className={styles.advanced_info_container}>
+                <FlexContainer padding='0 32px'>
                     <MinMaxPrice
                         minPricePercentage={minPriceDifferencePercentage}
                         maxPricePercentage={maxPriceDifferencePercentage}
@@ -1325,7 +1331,7 @@ function Range() {
                         setMaxPrice={setMaxPrice}
                         setMinPrice={setMinPrice}
                     />
-                </div>
+                </FlexContainer>
             </motion.div>
         </>
     );
@@ -1370,16 +1376,17 @@ function Range() {
                 </>
             }
             inputOptions={
-                <section
-                    className={!isPoolInitialized && styles.advanced_disabled}
-                >
+                <AdvancedModeSection disabled={!isPoolInitialized}>
                     {
-                        <div className={styles.denomination_switch_container}>
+                        <FlexContainer
+                            justifyContent='space-between'
+                            alignItems='center'
+                        >
                             <AdvancedModeToggle advancedMode={advancedMode} />
-                        </div>
+                        </FlexContainer>
                     }
                     {advancedMode ? advancedModeContent : baseModeContent}
-                </section>
+                </AdvancedModeSection>
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
