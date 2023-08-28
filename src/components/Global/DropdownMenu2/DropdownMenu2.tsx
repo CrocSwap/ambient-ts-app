@@ -47,6 +47,11 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
     return (
         <div ref={dropdownRefItem}>
             <Menu
+                alignItems='center'
+                color='text1'
+                gap={4}
+                justifyContent='center'
+                fullWidth
                 onClick={toggleMenu}
                 style={{
                     minWidth: !desktopScreen
@@ -56,9 +61,9 @@ export default function DropdownMenu2(props: DropdownMenuPropsIF) {
                         : '100px',
                 }}
             >
-                <MenuItem>
+                <MenuItem gap={4}>
                     {desktopScreen && (
-                        <Icon>
+                        <Icon justifyContent='center' alignItems='center'>
                             <img
                                 src={logo}
                                 alt={title}

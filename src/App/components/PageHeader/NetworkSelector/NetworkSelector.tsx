@@ -57,7 +57,11 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     return (
         <>
             <div style={{ position: 'relative' }}>
-                <DropdownMenuContainer>
+                <DropdownMenuContainer
+                    justifyContent='center'
+                    alignItems='center'
+                    gap={4}
+                >
                     <DropdownMenu2
                         marginTop={'50px'}
                         titleWidth={'80px'}

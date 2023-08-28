@@ -1,16 +1,10 @@
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { FlexContainer } from '../../../styled/Common';
 
-export const Menu = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    color: var(--text1);
-    width: 100%;
+export const Menu = styled(FlexContainer)`
     border-right: 4px solid transparent;
     transition: 0.2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
-    justify-content: center;
-    gap: 4px;
     position: relative;
     z-index: 999;
 
@@ -20,9 +14,7 @@ export const Menu = styled.div`
     }
 `;
 
-export const MenuItem = styled.div`
-    display: flex;
-    gap: 4px;
+export const MenuItem = styled(FlexContainer)`
     cursor: pointer;
     z-index: 999;
 `;
@@ -35,12 +27,8 @@ export const MenuContainer = styled(motion.div)`
     z-index: 999;
 `;
 
-export const Icon = styled.div`
-    display: flex;
+export const Icon = styled(FlexContainer)`
     cursor: pointer;
-    justify-content: center;
-    align-items: center;
-
     img {
         margin-right: 0.5em;
     }

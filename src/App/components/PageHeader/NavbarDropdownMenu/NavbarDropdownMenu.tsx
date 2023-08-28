@@ -83,9 +83,14 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
 
         return (
             <MenuItem
+                alignItems='center'
+                rounded
+                color='text1'
+                fontSize='header2'
                 onClick={() => props.onClick()}
                 tabIndex={0}
                 role='button'
+                fullWidth
             >
                 {innerHtml}
             </MenuItem>

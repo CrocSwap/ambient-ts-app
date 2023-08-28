@@ -399,8 +399,8 @@ const PageHeader = function () {
             {routeDisplay}
             <RightSide>
                 {show ? (
-                    <TradeNowDiv>
-                        <TradeNowButton inNav />{' '}
+                    <TradeNowDiv justifyContent='flex-end' alignItems='center'>
+                        <TradeNowButton inNav />
                     </TradeNowDiv>
                 ) : (
                     <div>

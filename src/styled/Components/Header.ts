@@ -83,11 +83,8 @@ export const RightSide = styled.div`
 `;
 
 // Define the styles for TradeNowDiv
-export const TradeNowDiv = styled.div`
+export const TradeNowDiv = styled(FlexContainer)`
     width: 380px;
-    display: flex;
-    justifycontent: flex-end;
-    alignitems: center;
     padding: 0 1rem;
 `;
 
@@ -419,18 +416,12 @@ export const Menu = styled(motion.div)`
     background: transparent;
 `;
 
-export const MenuItem = styled.div`
-    width: 100%;
+export const MenuItem = styled(FlexContainer)`
     height: 50px;
-    display: flex;
-    align-items: center;
-    border-radius: var(--border-radius);
     padding: 0.5rem;
     cursor: pointer;
-    color: var(--text1);
     font-family: var(--font-deca);
     font-weight: 300;
-    font-size: var(--header2-size);
     line-height: var(--header2-lh);
     outline: none;
     border: none;
@@ -476,57 +467,11 @@ export const ConnectButton = styled.button`
     }
 `;
 
-export const IconButton = styled.div`
-    margin-right: 0.5rem;
-    background: var(--blur-bg);
-    border-radius: 50%;
-    padding: 3px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-transform: capitalize;
-
-    &:hover {
-        filter: none;
-    }
-`;
-
-export const NonTopLevelContainer = styled.div`
-    &:hover,
-    &:focus-visible {
-        background: var(--dark2);
-    }
-`;
-
-export const GoBackStyle = styled.div`
-    &:hover,
-    &:focus-visible {
-        background: var(--dark2);
-    }
-
-    .icon_button {
-        background: var(--title-gradient);
-
-        svg {
-            color: black;
-            transition: all var(--animation-speed) ease;
-        }
-    }
-`;
-
 export const IconRight = styled.span`
     margin-left: auto;
     svg {
         color: var(--text1);
     }
-`;
-
-export const ButtonContainer = styled.div`
-    width: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 0 10px;
 `;
 
 // NavItem
@@ -551,14 +496,11 @@ interface IconButtonProps {
     square: boolean | undefined;
 }
 
-export const NavItemIconButton = styled.div<IconButtonProps>`
+export const NavItemIconButton = styled(FlexContainer)<IconButtonProps>`
     height: ${buttonSize};
     background-color: var(--dark2);
     border-radius: ${(props) => (props.square ? '4px' : '50%')};
     padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     transition: all var(--animation-speed) ease-in-out;
     cursor: pointer;
 
@@ -577,15 +519,11 @@ export const NavItemIconButton = styled.div<IconButtonProps>`
 
 // NetworkSelector
 
-export const DropdownMenuContainer = styled.div`
+export const DropdownMenuContainer = styled(FlexContainer)`
     z-index: 99999;
     background-color: var(--dark2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 0 4px;
     border-radius: 4px;
-    gap: 4px;
     height: 31px;
 `;
 

@@ -1,54 +1,51 @@
+import { FlexContainer } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import styles from './TradeNowButton.module.css';
-import { Link } from 'react-router-dom';
+import { StyledLink, ButtonText } from './TradeNowButton.styles';
 
 interface propsIF {
     inNav?: boolean;
 }
+const ContentContainer = ({ children, ...props }: any) => (
+    <FlexContainer
+        fullHeight
+        fullWidth
+        justifyContent='center'
+        alignItems='center'
+        rounded
+        background='dark2'
+        {...props}
+    >
+        {children}
+    </FlexContainer>
+);
+
 export default function TradeNowButton(props: propsIF) {
     const { inNav } = props;
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     const mobileButton = (
-        <Link
-            to={'/trade'}
+        <StyledLink
+            to='/trade'
             tabIndex={0}
             aria-label='Go to trade page button'
-            className={`${styles.action_button} ${
-                inNav && styles.nav_action_button
-            }`}
-            style={{ alignItems: 'flex-start' }}
+            inNav={inNav}
         >
-            <div className={styles.content_container}>
-                <p
-                    className={`${styles.button_text} ${
-                        inNav && styles.nav_button_text
-                    }`}
-                >
-                    Trade Now
-                </p>
-            </div>
-        </Link>
+            <ContentContainer>
+                <ButtonText inNav={inNav}>Trade Now</ButtonText>
+            </ContentContainer>
+        </StyledLink>
     );
     if (showMobileVersion) return mobileButton;
     return (
-        <Link
-            to={'/trade/market'}
+        <StyledLink
+            to='/trade/market'
             tabIndex={0}
             aria-label='Go to trade page button'
-            className={`${styles.action_button} ${
-                inNav && styles.nav_action_button
-            }`}
+            inNav={inNav}
         >
-            <div className={styles.content_container}>
-                <p
-                    className={`${styles.button_text} ${
-                        inNav && styles.nav_button_text
-                    }`}
-                >
-                    Trade Now
-                </p>
-            </div>
-        </Link>
+            <ContentContainer>
+                <ButtonText inNav={inNav}>Trade Now</ButtonText>
+            </ContentContainer>
+        </StyledLink>
     );
 }
