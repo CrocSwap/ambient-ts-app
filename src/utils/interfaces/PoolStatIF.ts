@@ -16,4 +16,9 @@ export interface PoolStatIF {
     poolLink: string;
 
     shouldInvertDisplay?: boolean;
+
+    baseTvlDecimal?: number;
+    quoteTvlDecimal?: number;
+    baseTvlUsd?: number;
+    quoteTvlUsd?: number;
 }
