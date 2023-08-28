@@ -3,7 +3,6 @@ import styles from './RangeBounds.module.css';
 import RangeWidth from '../../Trade/Range/RangeWidth/RangeWidth';
 import RangePriceInfo from '../../Trade/Range/RangePriceInfo/RangePriceInfo';
 import MinMaxPrice from '../../Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { motion } from 'framer-motion';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import AdvancedModeToggle from '../../Trade/Range/AdvancedModeToggle/AdvancedModeToggle';

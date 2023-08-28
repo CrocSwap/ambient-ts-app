@@ -1,16 +1,12 @@
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
-import { motion } from 'framer-motion';
 import { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Global/Button/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
-import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
-import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
+
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
-import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
-import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
@@ -50,7 +46,6 @@ import {
     isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
-import styles from './Range.module.css';
 import {
     roundDownTick,
     roundUpTick,

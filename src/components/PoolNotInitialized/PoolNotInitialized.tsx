@@ -4,6 +4,11 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import styles from './PoolNotInitialized.module.css';
+import {
+    setLocalTokenA,
+    setLocalTokenB,
+} from '../../utils/state/localPairDataSlice';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 
 interface PropsIF {
     chainId: string;
@@ -16,6 +21,14 @@ export const PoolNotInitalized = (props: PropsIF) => {
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
+    const dispatch = useAppDispatch();
+
+    function handleNavigationToInit() {
+        console.log('yes fdf');
+        dispatch(setLocalTokenA(tokenA));
+        dispatch(setLocalTokenB(tokenB));
+        console.log('yes');
+    }
     return (
         <div className={styles.pool_not_initialialized_container}>
             <div className={styles.pool_init_bg}>
@@ -30,6 +43,7 @@ export const PoolNotInitalized = (props: PropsIF) => {
                                 tokenB: tokenB.address,
                             })}
                             className={styles.initialize_link}
+                            onClick={() => handleNavigationToInit()}
                         >
                             Initialize Pool
                             <TokenIcon

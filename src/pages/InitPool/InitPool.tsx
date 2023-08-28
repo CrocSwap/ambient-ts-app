@@ -39,10 +39,8 @@ import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
 import { LocalPairDataIF } from '../../utils/state/localPairDataSlice';
 import TokenInputQuantity from '../../components/Global/TokenInput/TokenInputQuantity';
-import RangeWidth from '../../components/Trade/Range/RangeWidth/RangeWidth';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
-import RangePriceInfo from '../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 import ButtonSwitch from '../../components/Global/Toggle/ButtonSwitch';
 import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
@@ -577,21 +575,25 @@ export default function InitPool() {
         />
     );
 
-    // Newwwwww
+    // Newwwwww Init code
+    // eslint-disable-next-line
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
+    // eslint-disable-next-line
     const [baseCollateral, setBaseCollateral] = useState<null | string>('');
+    // eslint-disable-next-line
     const [quoteCollateral, setQuoteCollateral] = useState<null | string>('');
 
     // See Range.tsx line 81
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(23);
     const [
+        // eslint-disable-next-line
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
     ] = useState(false);
     // const tokenA = localPair.tokens[0]
     // const tokenB = localPair.tokens[1]
-
+    // eslint-disable-next-line
     const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
         | {
               pinnedMinPriceDisplay: string;
@@ -607,10 +609,12 @@ export default function InitPool() {
           }
         | undefined
     >();
+    // eslint-disable-next-line
     const [isAmbient, setIsAmbient] = useState(false);
-
+    // eslint-disable-next-line
     const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] =
         useState('');
+    // eslint-disable-next-line
     const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] =
         useState('');
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
@@ -635,12 +639,16 @@ export default function InitPool() {
     // Min Max Price
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
+    // eslint-disable-next-line
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
         useState(-10);
+    // eslint-disable-next-line
     const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
         useState(10);
+    // eslint-disable-next-line
     const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
         useState(false);
+    // eslint-disable-next-line
     const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
         useState(false);
     const [minPrice, setMinPrice] = useState(10);

@@ -102,6 +102,7 @@ function TokenInputQuantity(props: propsIF) {
                         src={token.logoURI ? uriToHttp(token.logoURI) : ''}
                         alt={token.symbol}
                         size='xl'
+                        token={token}
                     />
                     <p>{token?.symbol}</p>
 

@@ -1,6 +1,5 @@
 import React, { KeyboardEventHandler, MouseEventHandler } from 'react';
 import styled, { keyframes, css } from 'styled-components';
-import PropTypes from 'prop-types';
 
 const switchAnimation = keyframes`
   0% {
@@ -48,6 +47,7 @@ const SwitchContainer = styled.span<SwitchContainerProps>`
         border-radius: ${borderRadius};
         background-color: var(--dark3);
         outline: none;
+        cursor: pointer;
 
         &:before,
         &:after {
