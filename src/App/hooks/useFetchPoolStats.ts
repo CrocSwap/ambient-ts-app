@@ -112,6 +112,16 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
     const [poolApy, setPoolApy] = useState<string | undefined>(undefined);
+    const [quoteTvlDecimal, setQuoteTvlDecimal] = useState<number | undefined>(
+        undefined,
+    );
+    const [baseTvlDecimal, setBaseTvlDecimal] = useState<number | undefined>(
+        undefined,
+    );
+    const [quoteTvlUsd, setQuoteTvlUsd] = useState<number | undefined>(
+        undefined,
+    );
+    const [baseTvlUsd, setBaseTvlUsd] = useState<number | undefined>(undefined);
 
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<
         string | undefined
@@ -159,6 +169,11 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 const tvlResult = poolStats?.tvlTotalUsd;
                 const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
                 const apyResult = await apyEst;
+
+                setQuoteTvlDecimal(poolStats.quoteTvlDecimal);
+                setBaseTvlDecimal(poolStats.baseTvlDecimal);
+                setQuoteTvlUsd(poolStats.quoteTvlUsd);
+                setBaseTvlUsd(poolStats.baseTvlUsd);
 
                 if (tvlResult) {
                     const tvlString = getFormattedNumber({
@@ -269,6 +284,10 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         poolPrice,
         poolLink,
         shouldInvertDisplay,
+        quoteTvlUsd,
+        baseTvlUsd,
+        quoteTvlDecimal,
+        baseTvlDecimal,
     };
 };
 export default useFetchPoolStats;
