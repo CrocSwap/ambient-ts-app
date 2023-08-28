@@ -35,13 +35,13 @@ export default function PoolRow(props: propsIF) {
                         <TokenIcon
                             token={firstToken}
                             src={uriToHttp(firstToken.logoURI)}
-                            alt={'logo for token'}
+                            alt={firstToken.symbol}
                             size='2xl'
                         />
                         <TokenIcon
                             token={secondToken}
                             src={uriToHttp(secondToken.logoURI)}
-                            alt={'logo for token'}
+                            alt={secondToken.symbol}
                             size='2xl'
                         />
                     </TokenWrapper>
@@ -55,7 +55,7 @@ export default function PoolRow(props: propsIF) {
                 <p>{pool.displayPrice ?? '...'}</p>
             </TableCell>
             <TableCell>
-                <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
+                <p>{!pool.tvl || pool.tvl < 0 ? '...' : pool.tvlStr}</p>
             </TableCell>
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>

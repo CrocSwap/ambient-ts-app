@@ -5,3 +5,4 @@ export { USDC } from './USDC';
 export { USDT } from './USDT';
 export { WBTC } from './WBTC';
 export { WETH } from './WETH';
+export { FRAX } from './FRAX';

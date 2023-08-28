@@ -43,7 +43,6 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    position: relative;
 }
 
 .dropdown_menu button {
@@ -107,16 +106,6 @@
     /* transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55); */
     right: 30px;
     z-index: 5;
-}
-.dropdown_wrapper_active:after {
-    content: '';
-    position: absolute;
-    height: 0;
-    width: 0;
-    left: 98%;
-    top: 0;
-    border: 10px solid transparent;
-    border-left: 10px solid var(--dark2);
 }
 
 .dropdown_wrapper {

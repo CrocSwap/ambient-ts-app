@@ -126,7 +126,7 @@ function Ranges(props: propsIF) {
 
     // ---------------------
     // transactions per page media queries
-    const showColumns = useMediaQuery('(max-width: 1599px)');
+    const showColumns = useMediaQuery('(max-width: 1799px)');
 
     const phoneScreen = useMediaQuery('(max-width: 600px)');
 
@@ -212,7 +212,7 @@ function Ranges(props: propsIF) {
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
-            <p>ID</p>
+            <p>Position ID</p>
             Wallet
         </>
     );
@@ -234,7 +234,7 @@ function Ranges(props: propsIF) {
         {
             name: 'Last Updated',
             className: '',
-            show: showPair && showTimestamp,
+            show: !showColumns,
             slug: 'time',
             sortable: true,
         },
@@ -246,7 +246,7 @@ function Ranges(props: propsIF) {
             sortable: true,
         },
         {
-            name: 'ID',
+            name: 'Position ID',
             className: 'ID',
             show: !showColumns,
             slug: 'id',

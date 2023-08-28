@@ -152,7 +152,7 @@ function Orders(props: propsIF) {
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
-            <p>ID</p>
+            <p>Position ID</p>
             Wallet
         </>
     );
@@ -186,7 +186,7 @@ function Orders(props: propsIF) {
             sortable: true,
         },
         {
-            name: 'ID',
+            name: 'Position ID',
             className: 'ID',
             show: !showColumns,
             slug: 'id',
@@ -233,7 +233,7 @@ function Orders(props: propsIF) {
         {
             name: sideType,
             className: 'side_type',
-            show: showColumns && !ipadView,
+            show: showColumns,
             slug: 'sidetype',
             sortable: false,
             alignCenter: true,
@@ -266,7 +266,7 @@ function Orders(props: propsIF) {
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns,
+            show: showColumns && !ipadView,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
