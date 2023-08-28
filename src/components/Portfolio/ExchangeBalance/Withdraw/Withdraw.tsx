@@ -327,8 +327,8 @@ export default function Withdraw(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const averageGasUnitsForEthWithdrawal = 47000;
-    const averageGasUnitsForErc20Withdrawal = 60000;
+    const averageGasUnitsForEthWithdrawalInGasDrops = 48000;
+    const averageGasUnitsForErc20WithdrawalInGasDrops = 60000;
     const gweiInWei = 1e-9;
 
     // calculate price of gas for withdrawal
@@ -339,8 +339,8 @@ export default function Withdraw(props: propsIF) {
                 gweiInWei *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthWithdrawal
-                    : averageGasUnitsForErc20Withdrawal);
+                    ? averageGasUnitsForEthWithdrawalInGasDrops
+                    : averageGasUnitsForErc20WithdrawalInGasDrops);
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({
