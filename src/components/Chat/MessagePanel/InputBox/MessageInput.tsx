@@ -52,6 +52,7 @@ interface MessageInputProps {
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     replyMessageContent: Message | undefined;
     setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
+    sendMessageCooldown: number;
 }
 
 export default function MessageInput(props: MessageInputProps) {
@@ -339,7 +340,8 @@ export default function MessageInput(props: MessageInputProps) {
         <>
             {props.isInputDisabled && (
                 <div className={styles.disabled_text}>
-                    Message limit per minute exceeded, please wait.
+                    Message limit per minute exceeded, please wait.{' '}
+                    {props.sendMessageCooldown}s
                 </div>
             )}
             {!props.isInputDisabled && (

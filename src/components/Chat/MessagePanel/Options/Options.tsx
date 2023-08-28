@@ -27,7 +27,7 @@ export default function Options(props: propsIF) {
 
     const reply = (
         <BsFillReplyFill
-            size={10}
+            size={16}
             style={{ cursor: 'pointer' }}
             onClick={() => setReplyMessage()}
         />
@@ -55,12 +55,13 @@ export default function Options(props: propsIF) {
 
     const options = (
         <SlOptions
+            size={14}
             className={styles.options_button}
             onClick={() => setIsMoreButtonPressed(!isMoreButtonPressed)}
         />
     );
 
-    const addReaction = <BsEmojiSmileUpsideDown />;
+    const addReaction = <BsEmojiSmileUpsideDown size={14} />;
 
     const ReplyWithTooltip = (
         <TextOnlyTooltip
@@ -74,7 +75,7 @@ export default function Options(props: propsIF) {
                 </div>
             }
             placement={'top'}
-            enterDelay={750}
+            enterDelay={100}
             leaveDelay={0}
         >
             <p
@@ -98,7 +99,7 @@ export default function Options(props: propsIF) {
                 </div>
             }
             placement={'top'}
-            enterDelay={750}
+            enterDelay={100}
             leaveDelay={0}
         >
             <p
@@ -122,7 +123,7 @@ export default function Options(props: propsIF) {
                 </div>
             }
             placement={'top'}
-            enterDelay={750}
+            enterDelay={100}
             leaveDelay={0}
         >
             <p

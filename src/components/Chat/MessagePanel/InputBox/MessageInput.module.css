@@ -237,5 +237,19 @@
 
 .disabled_text{
     text-align: center;
-    font-size: .82rem;
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--accent1);
+    opacity: 1;
+    /* animation: opaToggle 2s ease-in-out infinite; */
+}
+
+@keyframes opaToggle{
+    from {
+        opacity: 1;
+    }
+    to{
+        opacity: 0;
+    }
+
 }

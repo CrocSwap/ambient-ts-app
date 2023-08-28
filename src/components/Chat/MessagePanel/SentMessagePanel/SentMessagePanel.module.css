@@ -183,12 +183,13 @@
     height: 100%;
     width: 100%;
     min-height: 53%;
-    padding: 0px 4px 8px;
     box-sizing: border-box;
     order: 4;
     align-self: stretch;
     cursor: default;
-    padding-top: 10px;
+    /* padding: 0px 4px 4px;
+    padding-top: 10px; */
+    padding: .2rem 0;
     
 }
 
@@ -316,15 +317,22 @@
 
 .msg_bubble_container{
     animation: msgBubbleAnim 0.1s ease-in-out forwards;
+    transition: background .1s ease-in-out;
     width: 90%;
+    /* border: 1px solid rgba(255,0,0, .3); */
 }
 
 .msg_bubble_container.flipped .msg_bubble_content{
     transform: rotateY(180deg);
-    padding: 1rem 0;
+    padding: .5rem 0;
     
     /* border: 1px solid  var(--accent1); */
     /* box-shadow: 0px 0px 5px var(--accent1); */
+}
+
+.replied_message_container{
+    /* background: red; */
+    padding-top: 1rem;
 }
 
 
@@ -363,7 +371,7 @@
   width: 100%;
   height: 100%;
   text-align: center;
-  background: rgba(0,0,0,.2);
+  /* background: rgba(0,0,0,.2); */
 
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -444,12 +452,13 @@
     cursor: pointer;
     position: absolute;
     width: 4rem;
-    top: 1rem;
+    top: 50%;
     bottom:  0;
     margin: auto;
     right: auto;
     left: 0;
     opacity: .5;
+    transform: translateY(-50%);
 }
 
 .like_dislike_bar_wrapper{
@@ -507,12 +516,18 @@
 }
 .flip_read  .msg_bubble_front{
     transform: rotateY(180deg);
-    top: calc(-100% - 15px);
+    top: calc(-100% - .5rem);
     background: #99bff721;
     backdrop-filter: blur(10px);
     border-radius: .4rem .4rem 0 0;
     opacity: 1;
 }
+
+.replied_message_container.flip_read .replied_box{
+    top: 0rem;
+}
+
+
 
 .verified_icon{
     display: inline-block;
@@ -541,15 +556,7 @@
     display: inline-block; 
   }
 
-  .options_button {
-    cursor: pointer;
-    display: none; 
-    position: absolute;
-    top: 30%; 
-    left: 100%; 
-    transform: translateX(-50%); 
-  }
-
+ 
   .roomInfo {
     position:absolute;
     left: 13rem; 
@@ -563,8 +570,63 @@
     font-size: 10px;
     top: 1.5rem;
   }
-  
-  .msg_bubble_container:hover .options_button {
+
+  .options_button {
+    cursor: pointer;
+    position: absolute;
+    top: 100%;
+    transition: all .2s ease-in-out;
+    left: 100%; 
+    /* right: -14rem; */
+    /* transform: translateX(-50%) translateY(-1.6rem);  */
+    opacity: 0;
+    background: var(--dark2);
+    border: 1px solid var(--accent1);
+    box-shadow: 0px 0px 4px var(--accent1);
+    display: block;
+    width: 30%;
+    height: 100%;
+    top: 0;
+}
+
+
+.has_separator .options_button {
+    transform: translateY(0rem); 
+}
+
+
+.msg_bubble_container:hover .options_button {
     display: block; 
+    /* right: -10rem; */
+    left: 70%;
+    opacity: 1;
   }
 
+  .msg_bubble_container:hover{
+    background-color: rgba(0,0,0,.2);
+  }
+
+  .flip_read .options_button{
+    display: none !important;
+    
+}
+
+
+
+.has_separator .msg_bubble_front{
+    padding-bottom: .5rem;
+}
+
+
+.msg_bubble_front{
+    /* overflow: hidden; */
+}
+
+.separator{
+    /* position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%; */
+    margin-bottom: -.5rem;
+    margin-top: .5rem;
+}

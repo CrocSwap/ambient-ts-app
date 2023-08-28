@@ -77,6 +77,11 @@ function ChatPanel(props: propsIF) {
     // eslint-disable-next-line
     const [messageCheckerInterval, setMessageCheckerInterval] = useState<any>();
     const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
+    const _cooldownVal = 12;
+    const [sendMessageCooldown, setSendMessageCooldown] =
+        useState<number>(_cooldownVal);
+    const [messageCooldownInterval, setSendMessageCooldownInterval] =
+        useState<any>();
 
     const {
         messages,
@@ -296,7 +301,7 @@ function ChatPanel(props: propsIF) {
             const messagesInLastMinute = messages.filter(
                 (item) =>
                     currentTS - new Date(item.createdAt).getTime() <=
-                        1000 * 60 && item.sender == currentUser,
+                        1000 * _cooldownVal && item.sender == currentUser,
             );
 
             if (messagesInLastMinute.length > 4) {
@@ -308,6 +313,25 @@ function ChatPanel(props: propsIF) {
 
         setMessageCheckerInterval(checkerInterval);
     }, [messages]);
+
+    useEffect(() => {
+        if (isInputDisabled == true) {
+            setSendMessageCooldown(_cooldownVal - 2);
+            const coolDownStart = new Date().getTime();
+
+            setSendMessageCooldownInterval(
+                setInterval(() => {
+                    const currentTS = new Date().getTime();
+                    const diff = Math.floor((currentTS - coolDownStart) / 1000);
+                    setSendMessageCooldown(_cooldownVal - 2 - diff);
+                }, 1000),
+            );
+        } else {
+            if (messageCooldownInterval != undefined) {
+                clearInterval(messageCooldownInterval);
+            }
+        }
+    }, [isInputDisabled]);
 
     function handleCloseChatPanel() {
         setIsChatOpen(false);
@@ -778,6 +802,7 @@ function ChatPanel(props: propsIF) {
             replyMessageContent={replyMessageContent}
             setReplyMessageContent={setReplyMessageContent}
             isInputDisabled={isInputDisabled}
+            sendMessageCooldown={sendMessageCooldown}
         />
     );
 

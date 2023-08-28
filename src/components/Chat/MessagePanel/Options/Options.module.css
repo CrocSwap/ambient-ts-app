@@ -1,7 +1,9 @@
+
 .dropdown_item {
-    background: var(--dark3);
+    /* background: var(--dark3); */
     border-radius: 4px;
     padding-left: 4px;
+    padding-right: 4px;
     padding-top: 5px;
     cursor: pointer;
     display: flex;
@@ -39,8 +41,9 @@
 .id_tooltip_style {
     margin-left: -100px;
     background: var(--dark3);
+    background: var(--dark1);
     color: var(--text1);
-    padding: 10px;
+    padding: 4px;
     border-radius: 4px;
     cursor: default;
     font-family: var(--roboto);

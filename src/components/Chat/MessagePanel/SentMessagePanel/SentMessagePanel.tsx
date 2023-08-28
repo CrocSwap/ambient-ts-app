@@ -538,8 +538,17 @@ function SentMessagePanel(props: SentMessageProps) {
                     : ''
             }  ${flipped ? styles.flipped : ''}  ${
                 flipRead ? styles.flip_read : ''
-            } `}
-            style={messageStyle()}
+            } 
+            ${
+                'repliedMessage' in props.message
+                    ? styles.replied_message_container
+                    : ' '
+            }
+
+            ${hasSeparator ? styles.has_separator : ''}
+            
+            `}
+            // style={messageStyle()}
             data-ment-index={props.mentionIndex}
         >
             <div className={styles.msg_bubble_content}>
@@ -782,7 +791,10 @@ function SentMessagePanel(props: SentMessageProps) {
                             {/* {snackbarContent} */}
                         </div>
                         {hasSeparator ? (
-                            <hr style={{ cursor: 'default' }} />
+                            <hr
+                                className={styles.separator}
+                                style={{ cursor: 'default' }}
+                            />
                         ) : (
                             <></>
                         )}
@@ -803,7 +815,7 @@ function SentMessagePanel(props: SentMessageProps) {
                             setFlipRead(true);
                         }}
                         onMouseLeave={() => {
-                            setFlipRead(false);
+                            // setFlipRead(false);
                         }}
                     >
                         💬
