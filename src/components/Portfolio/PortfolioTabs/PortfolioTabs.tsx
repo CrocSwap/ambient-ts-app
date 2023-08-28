@@ -47,12 +47,17 @@ interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string | undefined;
     connectedAccountActive: boolean;
+    fullLayoutActive: boolean;
 }
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
-    const { resolvedAddressTokens, resolvedAddress, connectedAccountActive } =
-        props;
+    const {
+        resolvedAddressTokens,
+        resolvedAddress,
+        connectedAccountActive,
+        fullLayoutActive,
+    } = props;
 
     const dispatch = useAppDispatch();
     const {
@@ -303,6 +308,7 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         changesInSelectedCandle: undefined,
         isAccountView: true,
+        fullLayoutActive: fullLayoutActive,
     };
 
     // Props for <Orders/> React Element

@@ -17,13 +17,11 @@ import { useModal } from '../../../../Global/Modal/useModal';
 
 interface propsIF {
     tx: TransactionIF;
-    ipadView: boolean;
-    showColumns: boolean;
-    showTimestamp: boolean;
+    tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
 }
 function TransactionRow(props: propsIF) {
-    const { showColumns, showTimestamp, ipadView, tx, isAccountView } = props;
+    const { tableView, tx, isAccountView } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -249,24 +247,26 @@ function TransactionRow(props: propsIF) {
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
             >
-                {showTimestamp && TxTimeWithTooltip}
+                {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
-                {!showColumns && <li>{IDWithTooltip}</li>}
-                {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
-                {showColumns && txIdColumnComponent}
-                {!ipadView &&
+                {tableView === 'large' && <li>{IDWithTooltip}</li>}
+                {tableView === 'large' && !isAccountView && (
+                    <li>{walletWithTooltip}</li>
+                )}
+                {tableView !== 'large' && txIdColumnComponent}
+                {tableView !== 'small' &&
                     (tx.entityType === 'liqchange'
                         ? tx.positionType === 'ambient'
                             ? ambientPriceDisplay
                             : lowAndHighPriceDisplay
                         : priceDisplay)}
-                {!showColumns && sideDisplay}
-                {!showColumns && typeDisplay}
-                {showColumns && typeAndSideColumn}
+                {tableView === 'large' && sideDisplay}
+                {tableView === 'large' && typeDisplay}
+                {tableView !== 'large' && typeAndSideColumn}
                 {usdValueWithTooltip}
-                {!showColumns && baseQtyDisplayWithTooltip}
-                {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && !ipadView && baseQuoteQtyDisplayColumn}
+                {tableView === 'large' && baseQtyDisplayWithTooltip}
+                {tableView === 'large' && quoteQtyDisplayWithTooltip}
+                {tableView === 'medium' && baseQuoteQtyDisplayColumn}
 
                 <li data-label='menu' className={styles.menu}>
                     <TransactionsMenu

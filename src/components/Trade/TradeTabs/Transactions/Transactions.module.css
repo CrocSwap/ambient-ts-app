@@ -171,7 +171,7 @@
         /* measured against smallest screen size for sub-iPad view (410px)*/
         grid-template-columns: minmax(100px, 2.2fr) 1fr 1.8fr 34%;
     }
-    /* Account has diffrent st\yling */
+    /* Account has different st\yling */
     .acc_list_container .row_container,
     .acc_list_container .header {
         /* measured against smallest screen size for sub-iPad view (410px)*/
@@ -189,7 +189,7 @@
             minmax(142px, 1.9fr) minmax(70px, 1.3fr)
             minmax(90px, 1.2fr) minmax(70px, 1fr) minmax(90px, 1.6fr) minmax(78px, 25%);
     }
-    /* Account has diffrent styling */
+    /* Account has different styling */
     .acc_list_container .row_container,
     .acc_list_container .header {
         /* measured against smallest screen size for iPad view (580px)*/
@@ -207,7 +207,7 @@
             minmax(76px, 1.1fr) minmax(90px, 2.6fr) minmax(80px, 1.3fr)
             minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%);
     }
-    /* Account has diffrent styling */
+    /* Account has different styling */
     .acc_list_container .row_container,
     .acc_list_container .header {
         /* measured against smallest screen size for merged view (1280px) with sidebar expanded*/
@@ -218,6 +218,15 @@
                 1.6fr
             )
             minmax(78px, 25%);
+    }
+    /* Account has different styling when sidebar and exchange balance component open*/
+    .acc_abbrev_list_container .row_container,
+    .acc_abbrev_list_container .header {
+        /* measured against smallest screen size for full view (1600px) with sidebar expanded */
+        grid-template-columns:
+            minmax(78px, 1.3fr) minmax(90px, 1fr) minmax(80px, 1fr)
+            minmax(80px, 1fr) minmax(64px, 1.5fr)
+            minmax(100px, 20%);
     }
 }
 
@@ -233,7 +242,7 @@
             )
             minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(114px, 20%);
     }
-    /* Account has diffrent styling */
+    /* Account has different styling */
     .acc_list_container .row_container,
     .acc_list_container .header {
         /* measured against smallest screen size for full view (1600px) with sidebar expanded */
@@ -244,6 +253,15 @@
                 1.7fr
             )
             minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%);
+    }
+    /* Account has different styling when sidebar and exchange balance component open*/
+    .acc_abbrev_list_container .row_container,
+    .acc_abbrev_list_container .header {
+        /* measured against smallest screen size for full view (1600px) with sidebar expanded */
+        grid-template-columns:
+            minmax(78px, 1.3fr) minmax(90px, 1fr) minmax(80px, 1fr)
+            minmax(80px, 1fr) minmax(64px, 1.5fr)
+            minmax(100px, 20%);
     }
 }
 

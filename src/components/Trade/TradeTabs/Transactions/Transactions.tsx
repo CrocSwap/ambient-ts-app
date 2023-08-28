@@ -26,6 +26,7 @@ import { IS_LOCAL_ENV } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -34,6 +35,7 @@ interface propsIF {
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
     setSelectedDate?: Dispatch<number | undefined>;
     setSelectedInsideTab?: Dispatch<number>;
+    fullLayoutActive?: boolean;
 }
 function Transactions(props: propsIF) {
     const {
@@ -43,6 +45,7 @@ function Transactions(props: propsIF) {
         setSelectedDate,
         setSelectedInsideTab,
         isAccountView,
+        fullLayoutActive,
     } = props;
 
     const {
@@ -65,6 +68,10 @@ function Transactions(props: propsIF) {
         useContext(TradeTableContext);
     const { setOutsideControl } = useContext(TradeTableContext);
     const { tokens } = useContext(TokenContext);
+
+    const {
+        sidebar: { isOpen: isSidebarOpen },
+    } = useContext(SidebarContext);
 
     const candleTime = chartSettings.candleTime.global;
 
@@ -173,10 +180,28 @@ function Transactions(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', transactionData);
 
-    const ipadView = useMediaQuery('(max-width: 600px)');
-    const showTimestamp = useMediaQuery('(min-width: 1200px)');
+    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
-    const showColumns = useMediaQuery('(max-width: 1599px)');
+    const tableView =
+        isSmallScreen ||
+        (isAccountView &&
+            !isLargeScreen &&
+            isSidebarOpen &&
+            fullLayoutActive === false)
+            ? 'small'
+            : (!isSmallScreen && !isLargeScreen) ||
+              (isAccountView &&
+                  isLargeScreen &&
+                  isSidebarOpen &&
+                  fullLayoutActive === false)
+            ? 'medium'
+            : 'large';
+
+    console.log({
+        tableView,
+        fullLayoutActive,
+    });
 
     // const showColumns = false;
 
@@ -262,7 +287,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: showTimestamp,
+            show: tableView !== 'small',
 
             slug: 'time',
             sortable: true,
@@ -277,47 +302,47 @@ function Transactions(props: propsIF) {
         {
             name: 'ID',
 
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Wallet',
-            show: !showColumns && !isAccountView,
+            show: tableView === 'large' && !isAccountView,
             slug: 'wallet',
             sortable: true,
         },
         {
             name: walID,
-            show: showColumns,
+            show: tableView !== 'large',
             slug: 'walletid',
             sortable: !isAccountView,
             alignCenter: false,
         },
         {
-            name: 'Price',
-            show: !ipadView,
+            name: 'Priceㅤㅤ',
+            show: tableView !== 'small',
             slug: 'price',
             sortable: false,
-            alignCenter: true,
+            alignRight: true,
         },
         {
             name: 'Side',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'side',
             sortable: false,
             alignCenter: true,
         },
         {
             name: 'Type',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'type',
             sortable: false,
             alignCenter: true,
         },
         {
             name: sideType,
-            show: showColumns,
+            show: tableView !== 'large',
             slug: 'sidetype',
             sortable: false,
             alignCenter: true,
@@ -332,28 +357,30 @@ function Transactions(props: propsIF) {
         {
             name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
 
-            show: !showColumns,
+            show: tableView === 'large',
+
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
             name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
-            show: !showColumns,
+            show: tableView === 'large',
+
             slug: quoteTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
             name: 'Tokensㅤㅤ',
-            show: !isAccountView && showColumns && !ipadView,
+            show: !isAccountView && tableView === 'medium',
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
         {
             name: <>Tokensㅤㅤ</>,
-            show: isAccountView && showColumns && !ipadView,
+            show: isAccountView && tableView === 'medium',
             slug: 'tokens',
             sortable: false,
             alignRight: true,
@@ -460,9 +487,7 @@ function Transactions(props: propsIF) {
         <TransactionRow
             key={idx}
             tx={tx}
-            ipadView={ipadView}
-            showColumns={showColumns}
-            showTimestamp={showTimestamp}
+            tableView={tableView}
             isAccountView={isAccountView}
         />
     ));
@@ -470,9 +495,7 @@ function Transactions(props: propsIF) {
         <TransactionRow
             key={idx}
             tx={tx}
-            ipadView={ipadView}
-            showColumns={showColumns}
-            showTimestamp={showTimestamp}
+            tableView={tableView}
             isAccountView={isAccountView}
         />
     ));
@@ -536,9 +559,7 @@ function Transactions(props: propsIF) {
                                         action: tx.txAction,
                                         details: tx.txDetails,
                                     }}
-                                    showTimestamp={showTimestamp}
-                                    showColumns={showColumns}
-                                    ipadView={ipadView}
+                                    tableView={tableView}
                                 />
                             );
                         return (
@@ -567,9 +588,7 @@ function Transactions(props: propsIF) {
                                             gridSize: tx.txDetails?.gridSize,
                                         },
                                     }}
-                                    showTimestamp={showTimestamp}
-                                    showColumns={showColumns}
-                                    ipadView={ipadView}
+                                    tableView={tableView}
                                 />
                                 <TransactionRowPlaceholder
                                     key={idx + 'add'}
@@ -595,9 +614,7 @@ function Transactions(props: propsIF) {
                                             gridSize: tx.txDetails?.gridSize,
                                         },
                                     }}
-                                    showTimestamp={showTimestamp}
-                                    showColumns={showColumns}
-                                    ipadView={ipadView}
+                                    tableView={tableView}
                                 />
                                 <TransactionRowPlaceholder
                                     key={idx + 'remove'}
@@ -623,9 +640,7 @@ function Transactions(props: propsIF) {
                                             gridSize: tx.txDetails?.gridSize,
                                         },
                                     }}
-                                    showTimestamp={showTimestamp}
-                                    showColumns={showColumns}
-                                    ipadView={ipadView}
+                                    tableView={tableView}
                                 />
                             </>
                         );
@@ -662,7 +677,7 @@ function Transactions(props: propsIF) {
                 isAccountView
                     ? styles.acc_list_container
                     : styles.main_list_container
-            } ${isTradeTableExpanded && styles.main_list_expanded}`}
+            }  ${isTradeTableExpanded && styles.main_list_expanded}`}
         >
             <div>{headerColumnsDisplay}</div>
 

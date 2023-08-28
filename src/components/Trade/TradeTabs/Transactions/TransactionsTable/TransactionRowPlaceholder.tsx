@@ -29,14 +29,12 @@ interface PropsIF {
             gridSize?: number;
         };
     };
-    showTimestamp: boolean;
-    showColumns: boolean;
-    ipadView: boolean;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 // TODO: integrate into TransactionRow
 export const TransactionRowPlaceholder = (props: PropsIF) => {
-    const { transaction, showTimestamp, showColumns, ipadView } = props;
+    const { transaction, tableView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
 
@@ -122,20 +120,20 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                 }`}
                 tabIndex={0}
             >
-                {showTimestamp && (
+                {tableView !== 'small' && (
                     <li>
                         <p>Now</p>
                     </li>
                 )}
-                {!showColumns && <li>{id}</li>}
-                {!showColumns && <li>{wallet}</li>}
-                {showColumns && (
+                {tableView === 'large' && <li>{id}</li>}
+                {tableView === 'large' && <li>{wallet}</li>}
+                {tableView !== 'large' && (
                     <li>
                         {id}
                         {wallet}
                     </li>
                 )}
-                {!ipadView ? (
+                {tableView !== 'large' ? (
                     transaction.type === 'Range' ? (
                         <li className={styles.align_right}>
                             <p>
@@ -165,7 +163,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                         <li className={styles.align_right}>...</li>
                     )
                 ) : undefined}
-                {!showColumns && (
+                {tableView === 'large' && (
                     <li className={styles.align_center}>
                         {transaction.type === 'Market' ||
                         transaction.type === 'Limit'
@@ -182,10 +180,10 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                             : transaction.action ?? '...'}
                     </li>
                 )}
-                {!showColumns && (
+                {tableView === 'large' && (
                     <li className={styles.align_center}>{transaction.type}</li>
                 )}
-                {showColumns && !ipadView && (
+                {tableView === 'medium' && (
                     <li
                         className={styles.align_center}
                         style={{ padding: '6px 0' }}
@@ -211,7 +209,9 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                 )}
                 {<li className={styles.align_right}>...</li>}
                 {<li className={styles.align_right}>...</li>}
-                {!showColumns && <li className={styles.align_right}>...</li>}
+                {tableView === 'large' && (
+                    <li className={styles.align_right}>...</li>
+                )}
                 <li
                     data-label='menu'
                     className={`${styles.menu} ${styles.align_right}`}
