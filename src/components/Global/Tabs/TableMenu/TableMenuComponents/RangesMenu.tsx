@@ -114,19 +114,19 @@ export default function RangesMenu(props: propsIF) {
 
     // ----------------------
 
-    const view1 = useMediaQuery('(max-width: 800px)');
-    const view3 = sidebar.isOpen
-        ? useMediaQuery('(min-width: 1700px)')
-        : useMediaQuery('(min-width: 1600px)');
+    const view1 = useMediaQuery('(max-width: 600px)');
+    const view3 = useMediaQuery('(min-width: 1800px)');
 
     const showRepositionButton =
         !isPositionInRange && !isPositionEmpty && userMatchesConnectedAccount;
 
     const showAbbreviatedCopyTradeButton = isAccountView
         ? sidebar.isOpen
-            ? useMediaQuery('(max-width: 1400px)')
+            ? useMediaQuery('(max-width: 1300px)')
             : useMediaQuery('(max-width: 1150px)')
-        : view1;
+        : sidebar.isOpen
+        ? useMediaQuery('(max-width: 1400px)')
+        : useMediaQuery('(max-width: 1150px)');
 
     const positionMatchesLoggedInUser =
         userMatchesConnectedAccount && isUserLoggedIn;
@@ -262,8 +262,7 @@ export default function RangesMenu(props: propsIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {showRepositionButton && repositionButton}
-            {/* {!view1 && showRepositionButton && repositionButton} */}
+            {!view1 && showRepositionButton && repositionButton}
             {!view1 &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
@@ -274,19 +273,17 @@ export default function RangesMenu(props: propsIF) {
         </div>
     );
 
-    null;
-
     const dropdownMenuContent = (
         <div className={styles.menu_column}>
-            {view1 && showRepositionButton && repositionButton}
             {view1 &&
                 !showRepositionButton &&
                 userMatchesConnectedAccount &&
                 addButton}
             {!view3 && !isEmpty && harvestButton}
-            {view1 && !isEmpty && removeButton}
+            {!view3 && !isEmpty && removeButton}
             {detailsButton}
             {!userMatchesConnectedAccount && walletButton}
+            {view1 && showRepositionButton && repositionButton}
         </div>
     );
 

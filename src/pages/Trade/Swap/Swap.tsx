@@ -238,10 +238,6 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
-    useEffect(() => {
-        setShowConfirmation(false);
-    }, [bypassConfirmSwap.isEnabled]);
-
     // calculate price of gas for swap
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -273,6 +269,7 @@ function Swap(props: propsIF) {
 
     async function initiateSwap() {
         resetConfirmation();
+
         setShowConfirmation(true);
         if (!crocEnv) return;
 

@@ -317,7 +317,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: sideType,
-            show: showColumns && !ipadView,
+            show: showColumns,
             slug: 'sidetype',
             sortable: false,
             alignCenter: true,
@@ -346,14 +346,14 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Tokensㅤㅤ',
-            show: !isAccountView && showColumns,
+            show: !isAccountView && showColumns && !ipadView,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
         {
             name: <>Tokensㅤㅤ</>,
-            show: isAccountView && showColumns,
+            show: isAccountView && showColumns && !ipadView,
             slug: 'tokens',
             sortable: false,
             alignRight: true,

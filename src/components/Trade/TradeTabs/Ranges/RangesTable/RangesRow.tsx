@@ -29,7 +29,6 @@ function RangesRow(props: propsIF) {
     const {
         ipadView,
         showColumns,
-        showTimestamp,
         showPair,
         position,
         isAccountView,
@@ -297,7 +296,7 @@ function RangesRow(props: propsIF) {
                 style={{ backgroundColor: highlightStyle }}
             >
                 {rankingOrNull}
-                {showPair && showTimestamp && rangeTimeWithTooltip}
+                {!showColumns && rangeTimeWithTooltip}
                 {isAccountView && showPair && tokenPair}
                 {idOrNull}
                 {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
