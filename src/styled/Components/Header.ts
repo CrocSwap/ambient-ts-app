@@ -29,6 +29,7 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
     @media only screen and (min-width: 800px) {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
+        padding: 0 16px;
     }
 `;
 
