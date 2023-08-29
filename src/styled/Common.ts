@@ -75,13 +75,13 @@ interface GridProps {
 }
 const Grid = css<GridProps>`
     display: grid;
-    grid-template-columns: ${({ numCols }) =>
-        numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
-    grid-template-rows: ${({ numRows }) =>
-        numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
-    gap: ${({ gapSize }) => (gapSize ? `${gapSize}px` : '0')};
-    ${({ fullHeight }) => (fullHeight ? 'height: 100%;' : '')}
-    ${({ fullWidth }) => (fullWidth ? 'width: 100%;' : '')}
+    ${({ numCols, numRows, gapSize, fullHeight, fullWidth }) => `
+        grid-template-columns: ${numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
+        grid-template-rows: ${numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
+        gap: ${gapSize ? `${gapSize}px` : '0'};
+        ${fullHeight && 'height: 100%;'}
+        ${fullWidth && 'width: 100%;'}
+    `}
 `;
 export const GridContainer = styled.div<
     GridProps &
@@ -115,20 +115,26 @@ interface FlexProps {
 }
 const Flex = css<FlexProps>`
     display: flex;
-    ${({ gap }) => gap && `gap: ${gap}px`};
-    ${({ fullWidth }) => (fullWidth ? 'width: 100%;' : '')}
-    ${({ fullHeight }) => fullHeight && 'height: 100%;'};
-    flex-direction: ${({ flexDirection }) =>
-        flexDirection ? flexDirection : 'row'};
-    ${({ justifyContent }) =>
-        justifyContent && `justify-content: ${justifyContent}`};
-    ${({ alignItems }) => alignItems && `align-items: ${alignItems}`};
-    ${({ overflow }) => `overflow: ${overflow || 'hidden'}`};
-
-    ${({ background, rounded }) => `
-    ${background && `background: ${background};`}
-    ${rounded ? 'border-radius: var(--border-radius);' : ''}
-
+    ${({
+        flexDirection,
+        fullWidth,
+        fullHeight,
+        justifyContent,
+        alignItems,
+        gap,
+        overflow,
+        background,
+        rounded,
+    }) => `
+        flex-direction: ${flexDirection ? flexDirection : 'row'};
+        ${fullWidth && 'width: 100%;'}
+        ${fullHeight && 'height: 100%;'}
+        ${justifyContent && `justify-content: ${justifyContent}`};
+        ${alignItems && `align-items: ${alignItems}`};
+        ${gap && `gap: ${gap}px`};
+        ${overflow && `overflow: ${overflow}`};
+        ${background && `background: ${background};`}
+        ${rounded && 'border-radius: var(--border-radius);'}
     `}
 `;
 export const FlexContainer = styled.div<

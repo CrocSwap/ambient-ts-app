@@ -147,7 +147,7 @@ export default function Account(props: propsIF) {
     return (
         <FlexContainer
             justifyContent='flex-end'
-            rounded={true}
+            rounded
             gap={8}
             overflow='visible'
         >

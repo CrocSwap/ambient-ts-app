@@ -160,7 +160,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             flexDirection='column'
             justifyContent='space-between'
             gap={16}
-            rounded={true}
+            rounded
             tabIndex={0}
             aria-label={`Wallet menu for ${ensName ? ensName : accountAddress}`}
         >
