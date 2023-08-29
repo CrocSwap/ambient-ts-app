@@ -145,6 +145,7 @@ function Transactions(props: propsIF) {
             );
         else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
     }, [
+        isCandleSelected,
         showAllData,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
