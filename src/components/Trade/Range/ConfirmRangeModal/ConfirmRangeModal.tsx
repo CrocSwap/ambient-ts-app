@@ -6,7 +6,6 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from './SelectedRange/SelectedRange';
 
 // START: Import Local Files
-import styles from './ConfirmRangeModal.module.css';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';

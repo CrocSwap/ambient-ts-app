@@ -1,6 +1,5 @@
 import { Resizable } from 're-resizable';
 import styled from 'styled-components';
-import { FlexContainer, Text } from '../Common';
 
 export const MainSection = styled.section`
     display: grid;

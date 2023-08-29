@@ -33,7 +33,6 @@ import {
     setLimitTick,
 } from '../../../utils/state/tradeDataSlice';
 import TokenInput from '../../Global/TokenInput/TokenInput';
-import styles from '../../Global/TokenInput/TokenInput.module.css';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 
 interface propsIF {

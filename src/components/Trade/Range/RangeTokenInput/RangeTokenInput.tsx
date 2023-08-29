@@ -21,7 +21,6 @@ import {
     setIsTokenAPrimary,
 } from '../../../../utils/state/tradeDataSlice';
 import TokenInput from '../../../Global/TokenInput/TokenInput';
-import styles from '../../../Global/TokenInput/TokenInput.module.css';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formatTokenInput } from '../../../../utils/numbers';
 import { FlexContainer, Text } from '../../../../styled/Common';

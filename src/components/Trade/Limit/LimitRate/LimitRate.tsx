@@ -16,7 +16,7 @@ import { FlexContainer } from '../../../../styled/Common';
 import {
     LimitRateButton,
     LimitRateButtonContainer,
-    LimitRateContainer,
+    PulseAnimationContainer,
     TokenQuantityInput,
 } from '../../../../styled/Components/TradeModules';
 
@@ -108,7 +108,7 @@ export default function LimitRate(props: propsIF) {
             >
                 <p>Price</p>
             </FlexContainer>
-            <LimitRateContainer
+            <PulseAnimationContainer
                 fullWidth
                 justifyContent='space-between'
                 alignItems='center'
@@ -181,7 +181,7 @@ export default function LimitRate(props: propsIF) {
                         <HiMinus />
                     </LimitRateButton>
                 </LimitRateButtonContainer>
-            </LimitRateContainer>
+            </PulseAnimationContainer>
         </FlexContainer>
     );
 }

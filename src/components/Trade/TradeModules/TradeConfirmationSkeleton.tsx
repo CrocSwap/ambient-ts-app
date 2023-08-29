@@ -5,7 +5,6 @@ import { useContext, useState } from 'react';
 import Button from '../../Global/Button/Button';
 
 // START: Import Other Local Files
-import styles from './TradeConfirmationSkeleton.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';

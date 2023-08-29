@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { FlexContainer, pulseAnimation, Text } from '../Common';
+import { FlexContainer, GridContainer, PulseAnimation, Text } from '../Common';
 
 export const SelectorContainer = styled(FlexContainer)`
     border-radius: var(--border-radius);
@@ -71,7 +71,7 @@ export const TradeModuleHeaderContainer = styled(FlexContainer)`
     }
 `;
 
-export const AdvancedModeSection = styled.section<{ disabled: boolean }>`
+export const AdvancedModeSection = styled(FlexContainer)<{ disabled: boolean }>`
     ${({ disabled }) =>
         disabled &&
         `
@@ -252,7 +252,7 @@ export const TokenQuantityContainer = styled.div<{ showPulse: boolean }>`
     display: grid;
     grid-template-columns: 1fr 145px;
 
-    ${({ showPulse }) => showPulse && pulseAnimation}
+    ${({ showPulse }) => showPulse && PulseAnimation}
 `;
 
 export const TokenSelectButton = styled.button`
@@ -418,8 +418,10 @@ export const SubmitTransactionExtraButton = styled.button`
     padding: 4px 8px;
 `;
 
-export const LimitRateContainer = styled(FlexContainer)<{ showPulse: boolean }>`
-    ${({ showPulse }) => showPulse && pulseAnimation}
+export const PulseAnimationContainer = styled(FlexContainer)<{
+    showPulse: boolean;
+}>`
+    ${({ showPulse }) => showPulse && PulseAnimation}
 `;
 
 export const LimitRateButtonContainer = styled(FlexContainer)<{
@@ -465,4 +467,56 @@ export const FeeTierDisplay = styled.div`
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     background-color: var(--dark2);
+`;
+
+export const PriceInputContainer = styled.div`
+    display: grid;
+    grid-template-columns: 18px 1fr 18px;
+    color: var(--text1);
+    font-size: 20px;
+    line-height: 24px;
+    text-align: center;
+
+    background: var(--dark2);
+    border-radius: var(--border-radius);
+    padding: 0.8rem 5px;
+`;
+
+export const PriceInputButton = styled.button`
+    cursor: pointer;
+
+    outline: none;
+    border: none;
+    background: transparent;
+
+    &:focus-visible {
+        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
+            0px 0px 21px rgba(205, 193, 255, 0.2),
+            0px 0px 12px rgba(205, 193, 255, 0.2),
+            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+            0px 0px 2px rgba(205, 193, 255, 0.2);
+    }
+`;
+
+export const PriceInput = styled.input`
+    overflow: hidden;
+    width: 100%;
+    padding: 0;
+    color: var(--text1);
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    flex: 1 1 auto;
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
+`;
+
+export const SelectedRangeContainer = styled(GridContainer)`
+    @media only screen and (min-width: 768px) {
+        grid-template-columns: 1fr 1fr;
+    }
 `;

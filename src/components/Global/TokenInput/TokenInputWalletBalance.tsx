@@ -1,4 +1,3 @@
-import styles from './TokenInputWalletBalance.module.css';
 import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';

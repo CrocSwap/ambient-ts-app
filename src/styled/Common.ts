@@ -153,7 +153,7 @@ export const Text = styled.p<
     ${({ align }) => align && `text-align: ${align};`}
 `;
 
-export const pulseAnimation = css`
+export const PulseAnimation = css`
     animation: shadow-pulse 1s 6;
     @keyframes shadow-pulse {
         0% {

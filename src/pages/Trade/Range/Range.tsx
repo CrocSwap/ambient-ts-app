@@ -1376,15 +1376,17 @@ function Range() {
                 </>
             }
             inputOptions={
-                <AdvancedModeSection disabled={!isPoolInitialized}>
-                    {
-                        <FlexContainer
-                            justifyContent='space-between'
-                            alignItems='center'
-                        >
-                            <AdvancedModeToggle advancedMode={advancedMode} />
-                        </FlexContainer>
-                    }
+                <AdvancedModeSection
+                    flexDirection='column'
+                    gap={8}
+                    disabled={!isPoolInitialized}
+                >
+                    <FlexContainer
+                        justifyContent='space-between'
+                        alignItems='center'
+                    >
+                        <AdvancedModeToggle advancedMode={advancedMode} />
+                    </FlexContainer>
                     {advancedMode ? advancedModeContent : baseModeContent}
                 </AdvancedModeSection>
             }

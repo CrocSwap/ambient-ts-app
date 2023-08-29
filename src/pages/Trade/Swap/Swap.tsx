@@ -42,7 +42,6 @@ import {
     isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
-import styles from './Swap.module.css';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
