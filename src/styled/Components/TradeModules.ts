@@ -190,7 +190,7 @@ export const TokenArrow = styled.svg<{ display: boolean; disabled: boolean }>`
     ${({ disabled }) => disabled && 'cursor: wait !important; '}
 `;
 
-export const Button = styled.button`
+export const IconButton = styled.button`
     background: transparent;
     outline: none;
     border: none;
@@ -199,7 +199,7 @@ export const Button = styled.button`
     color: var(--text2);
 `;
 
-export const Input = styled.input`
+export const ShareUrl = styled.input`
     flex: 1;
     outline: none;
     border: none;
@@ -227,7 +227,7 @@ export const TokenQuantityInput = styled.input`
     height: calc(1.5em + 0.75rem + 2px);
     padding: 0;
     max-height: 23px;
-    margin: 8.5px 0;
+    margin: 8px 0;
     margin-left: 32px;
     border: none;
     outline: 0;
@@ -311,7 +311,7 @@ export const MaxButton = styled.button`
     }
 `;
 
-export const RefreshButton = styled(Button)`
+export const RefreshButton = styled(IconButton)`
     justify-content: flex-end;
 
     &:hover > svg {
@@ -322,4 +322,110 @@ export const RefreshButton = styled(Button)`
         color: var(--text1);
         cursor: pointer;
     }
+`;
+
+export const ExtraInfoContainer = styled(FlexContainer)<{ active: boolean }>`
+    border-radius: var(--border-radius);
+
+    ${({ active }) =>
+        active
+            ? `
+        & > div:not(:first-child) {
+            &:hover {
+                color: var(--accent1);
+            }
+        }
+        &:hover {
+            cursor: pointer;
+            background: var(--dark2) !important;
+        }
+        &:focus-visible {
+            border: 1px solid var(--text1);
+        }
+    `
+            : `
+        & > div:last-child {
+            cursor: pointer;
+
+            &:hover {
+                color: var(--accent1);
+            }
+        }
+        
+        &:hover,
+        &:focus-visible {
+            border-radius: var(--border-radius);
+            cursor: default;
+            background: transparent;
+        }
+    `}
+`;
+
+export const ExtraDetailsContainer = styled.div`
+    border: 1px solid var(--dark3);
+    border-radius: var(--border-radius);
+
+    color: var(--text2);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding: 8px 16px;
+`;
+
+export const ModalContainer = styled(FlexContainer)`
+    width: 400px;
+    border-radius: var(--border-radius);
+`;
+
+export const ConfirmationDetailsContainer = styled(FlexContainer)`
+    border: 1px solid var(--border);
+    border-radius: 4px;
+`;
+
+export const ConfirmationQuantityContainer = styled.div`
+    height: 40px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 140px;
+    align-items: center;
+    background: var(--dark2);
+    padding: 0 2rem;
+    border-radius: var(--border-radius);
+`;
+
+export const SubmitTransactionButton = styled.button`
+    height: auto;
+    width: 100%;
+
+    font-size: 12px;
+    line-height: 24px;
+    text-align: center;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    padding: 12px 8px;
+
+    text-transform: capitalize;
+    background: var(--dark2);
+    color: var(--text1);
+
+    border-radius: 4px;
+`;
+
+export const SubmitTransactionExtraButton = styled.button`
+    background: transparent;
+    outline: none;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--accent5);
+    cursor: pointer;
+    border: 1px solid var(--dark3);
+    transition: all var(--animation-speed) ease-in-out;
+    border-radius: 50px;
+    padding: 4px 8px;
 `;

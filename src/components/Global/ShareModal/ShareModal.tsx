@@ -9,8 +9,8 @@ import { DISCORD_LINK } from '../../../constants';
 import Modal from '../Modal/Modal';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
-    Button,
-    Input,
+    IconButton,
+    ShareUrl,
     ShareItem,
 } from '../../../styled/Components/TradeModules';
 
@@ -116,7 +116,7 @@ export default function ShareModal({ onClose }: propsIF) {
                     gap={8}
                     color='text2'
                 >
-                    <Input
+                    <ShareUrl
                         type='text'
                         placeholder={`${linkToShare}`}
                         disabled={true}
@@ -125,13 +125,13 @@ export default function ShareModal({ onClose }: propsIF) {
                         }
                     />
 
-                    <Button
+                    <IconButton
                         onClick={handleCopyAddress}
                         tabIndex={0}
                         aria-label='Copy to clipboard'
                     >
                         <FiCopy size={25} />
-                    </Button>
+                    </IconButton>
                 </FlexContainer>
             </FlexContainer>
         </Modal>

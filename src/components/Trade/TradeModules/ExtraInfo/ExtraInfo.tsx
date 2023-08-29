@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { MouseEvent, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
+import { FlexContainer } from '../../../../styled/Common';
+import {
+    ExtraDetailsContainer,
+    ExtraInfoContainer,
+} from '../../../../styled/Components/TradeModules';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
-import styles from './ExtraInfo.module.css';
 
 interface PropsIF {
     extraInfo: {
@@ -23,14 +27,18 @@ export const ExtraInfo = (props: PropsIF) => {
     const dispatch = useAppDispatch();
 
     const [showExtraInfo, setShowExtraInfo] = useState<boolean>(false);
-    const [isConvHovered, setIsConHovered] = useState(false);
 
     return (
         <>
-            <button
-                className={`${styles.extra_info_content} ${
-                    showDropdown && styles.extra_info_content_active
-                }`}
+            <ExtraInfoContainer
+                role='button'
+                justifyContent='space-between'
+                alignItems='center'
+                fullWidth
+                color='text2'
+                fontSize='body'
+                padding='4px'
+                active={showDropdown}
                 onClick={
                     showDropdown
                         ? () => setShowExtraInfo(!showExtraInfo)
@@ -38,63 +46,48 @@ export const ExtraInfo = (props: PropsIF) => {
                 }
                 aria-label={`Gas cost is ${gasPrice}. Conversion rate is ${conversionRate}.`}
             >
-                <div className={styles.gas_pump}>
+                <FlexContainer
+                    alignItems='center'
+                    padding='0 0 0 4px'
+                    gap={4}
+                    style={{ pointerEvents: 'none' }}
+                >
                     <FaGasPump size={15} /> {gasPrice ?? '…'}
-                </div>
-                <div
-                    className={styles.token_amount}
-                    onClick={(e) => {
+                </FlexContainer>
+                <FlexContainer
+                    alignItems='center'
+                    onClick={(e: MouseEvent<HTMLDivElement>) => {
                         dispatch(toggleDidUserFlipDenom());
                         e.stopPropagation();
                     }}
-                    onMouseEnter={() => setIsConHovered(true)}
-                    onMouseOut={() => setIsConHovered(false)}
                 >
                     {conversionRate}
-                </div>
+                </FlexContainer>
 
                 {showDropdown && !showExtraInfo && (
-                    <RiArrowDownSLine
-                        size={22}
-                        className={
-                            isConvHovered
-                                ? styles.non_hovered_arrow
-                                : styles.dropdown_arrow
-                        }
-                    />
+                    <RiArrowDownSLine size={22} />
                 )}
-                {showDropdown && showExtraInfo && (
-                    <RiArrowUpSLine
-                        size={22}
-                        className={
-                            isConvHovered
-                                ? styles.non_hovered_arrow
-                                : styles.dropdown_arrow
-                        }
-                    />
-                )}
-            </button>
+                {showDropdown && showExtraInfo && <RiArrowUpSLine size={22} />}
+            </ExtraInfoContainer>
             {showExtraInfo && (
-                <div className={styles.extra_details_container}>
-                    <div className={styles.extra_details}>
-                        {extraInfo.map((item, idx) => (
-                            <div
-                                className={styles.extra_row}
-                                key={idx}
-                                tabIndex={0}
-                                aria-label={`${item.title} is ${item.data}`}
-                            >
-                                <div className={styles.align_center}>
-                                    <div>{item.title}</div>
-                                    <TooltipComponent
-                                        title={item.tooltipTitle}
-                                    />
-                                </div>
-                                <div className={styles.data}>{item.data}</div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <ExtraDetailsContainer>
+                    {extraInfo.map((item, idx) => (
+                        <FlexContainer
+                            key={idx}
+                            justifyContent='space-between'
+                            alignItems='center'
+                            padding='4px 0'
+                            tabIndex={0}
+                            aria-label={`${item.title} is ${item.data}`}
+                        >
+                            <FlexContainer gap={4}>
+                                <div>{item.title}</div>
+                                <TooltipComponent title={item.tooltipTitle} />
+                            </FlexContainer>
+                            <div>{item.data}</div>
+                        </FlexContainer>
+                    ))}
+                </ExtraDetailsContainer>
             )}
         </>
     );

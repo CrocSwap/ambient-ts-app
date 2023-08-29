@@ -202,7 +202,7 @@ function TokenInputQuantity(props: propsIF) {
                             fullWidth
                             fullHeight
                             alignItems='center'
-                            margin='8px 2rem'
+                            margin='0 32px'
                         >
                             <Spinner size={24} bg='var(--dark2)' weight={2} />
                         </FlexContainer>

@@ -68,7 +68,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                     }`}
                     placement='bottom'
                 >
-                    <div style={{ paddingTop: '4px' }} onClick={onToggleDex}>
+                    <div style={{ paddingTop: '2px' }} onClick={onToggleDex}>
                         <img
                             src={
                                 !isDexSelected ? walletEnabledIcon : walletIcon

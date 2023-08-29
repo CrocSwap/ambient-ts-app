@@ -15,6 +15,12 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import SubmitTransaction from './SubmitTransaction/SubmitTransaction';
 import Modal from '../../Global/Modal/Modal';
+import { FlexContainer, Text } from '../../../styled/Common';
+import {
+    ConfirmationDetailsContainer,
+    ConfirmationQuantityContainer,
+    ModalContainer,
+} from '../../../styled/Components/TradeModules';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -73,33 +79,53 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
 
     const tokenDisplay = (
         <>
-            <div className={styles.currency_row_container}>
-                <h2>{formattedTokenAQuantity}</h2>
-                <div className={styles.logo_display}>
+            <ConfirmationQuantityContainer>
+                <Text fontSize='header2' color='text1'>
+                    {formattedTokenAQuantity}
+                </Text>
+                <FlexContainer
+                    alignItems='center'
+                    justifyContent='space-between'
+                    margin='0 0 0 1rem'
+                >
                     <TokenIcon
                         token={tokenA}
                         src={uriToHttp(tokenA.logoURI)}
                         alt={tokenA.symbol}
                         size='2xl'
                     />
-                    <h2>{tokenA.symbol}</h2>
-                </div>
-            </div>
-            <div className={styles.arrow_container}>
+                    <Text fontSize='header2' color='text1'>
+                        {tokenA.symbol}
+                    </Text>
+                </FlexContainer>
+            </ConfirmationQuantityContainer>
+            <FlexContainer
+                fullWidth
+                justifyContent='center'
+                alignItems='center'
+            >
                 <TokensArrow onlyDisplay />
-            </div>
-            <div className={styles.currency_row_container}>
-                <h2>{formattedTokenBQuantity}</h2>
-                <div className={styles.logo_display}>
+            </FlexContainer>
+            <ConfirmationQuantityContainer>
+                <Text fontSize='header2' color='text1'>
+                    {formattedTokenBQuantity}
+                </Text>
+                <FlexContainer
+                    alignItems='center'
+                    justifyContent='space-between'
+                    margin='0 0 0 1rem'
+                >
                     <TokenIcon
                         token={tokenB}
                         src={uriToHttp(tokenB.logoURI)}
                         alt={tokenB.symbol}
                         size='2xl'
                     />
-                    <h2>{tokenB.symbol}</h2>
-                </div>
-            </div>
+                    <Text fontSize='header2' color='text1'>
+                        {tokenB.symbol}
+                    </Text>
+                </FlexContainer>
+            </ConfirmationQuantityContainer>
         </>
     );
 
@@ -108,17 +134,24 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
             title={`${type === 'Range' ? 'Pool' : type} Confirmation`}
             onClose={onClose}
         >
-            <div
-                className={styles.modal_container}
+            <ModalContainer
+                flexDirection='column'
+                padding='16px'
+                gap={8}
+                background='dark1'
                 aria-label='Transaction Confirmation modal'
             >
                 {type === 'Swap' || type === 'Limit'
                     ? tokenDisplay
                     : poolTokenDisplay}
                 {transactionDetails && (
-                    <div className={styles.extra_info_container}>
+                    <ConfirmationDetailsContainer
+                        flexDirection='column'
+                        gap={8}
+                        padding='8px'
+                    >
                         {transactionDetails}
-                    </div>
+                    </ConfirmationDetailsContainer>
                 )}
                 {extraNotes && extraNotes}
                 <footer>
@@ -163,7 +196,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                         />
                     )}
                 </footer>
-            </div>
+            </ModalContainer>
         </Modal>
     );
 }

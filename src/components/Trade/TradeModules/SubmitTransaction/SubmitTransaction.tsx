@@ -9,10 +9,14 @@ import {
 import Spinner from '../../../Global/Spinner/Spinner';
 import TransactionDenied from './TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
-import styles from './SubmitTransaction.module.css';
 import TransactionException from './TransactionException/TransactionException';
 import TransactionFailed from './TransactionFailed/TransactionFailed';
 import TransactionSubmitted from './TransactionSubmitted/TransactionSubmitted';
+import {
+    SubmitTransactionButton,
+    SubmitTransactionExtraButton,
+} from '../../../../styled/Components/TradeModules';
+import { FlexContainer } from '../../../../styled/Common';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -135,9 +139,8 @@ export default function SubmitTransaction(props: propsIF) {
 
     return (
         <section>
-            <div className={styles.button_container}>
-                <button
-                    className={styles.button_content}
+            <div>
+                <SubmitTransactionButton
                     onClick={() => setShowExtraInfo(!showExtraInfo)}
                 >
                     <div>{animationDisplay}</div>
@@ -151,40 +154,44 @@ export default function SubmitTransaction(props: propsIF) {
                     ) : (
                         <div />
                     )}
-                </button>
+                </SubmitTransactionButton>
 
                 {showExtraInfo && (
-                    <section className={styles.extra_info_container}>
+                    <FlexContainer
+                        padding='12px'
+                        margin='8px 0 0 0'
+                        background='dark2'
+                    >
                         {confirmationDisplay}
-                    </section>
+                    </FlexContainer>
                 )}
-                <div className={styles.action_button_container}>
+                <FlexContainer
+                    alignItems='center'
+                    justifyContent='flex-end'
+                    gap={8}
+                >
                     {!isTransactionPending && (
-                        <span className={styles.close_icon_container}>
-                            <button
-                                onClick={() => {
-                                    resetConfirmation();
-                                }}
-                            >
-                                {disableSubmitAgain
-                                    ? 'Reset'
-                                    : 'Submit another transaction'}
-                            </button>
-                        </span>
+                        <SubmitTransactionExtraButton
+                            onClick={() => {
+                                resetConfirmation();
+                            }}
+                        >
+                            {disableSubmitAgain
+                                ? 'Reset'
+                                : 'Submit another transaction'}
+                        </SubmitTransactionExtraButton>
                     )}
                     {(isTransactionDenied || isTransactionException) && (
-                        <span className={styles.close_icon_container}>
-                            <button
-                                onClick={() => {
-                                    resetConfirmation();
-                                    sendTransaction();
-                                }}
-                            >
-                                Retry
-                            </button>
-                        </span>
+                        <SubmitTransactionExtraButton
+                            onClick={() => {
+                                resetConfirmation();
+                                sendTransaction();
+                            }}
+                        >
+                            Retry
+                        </SubmitTransactionExtraButton>
                     )}
-                </div>
+                </FlexContainer>
             </div>
         </section>
     );
