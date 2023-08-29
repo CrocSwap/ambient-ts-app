@@ -350,10 +350,6 @@ export default function Limit() {
     ]);
 
     useEffect(() => {
-        setShowConfirmation(false);
-    }, [bypassConfirmLimit.isEnabled]);
-
-    useEffect(() => {
         setNewLimitOrderTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 

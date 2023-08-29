@@ -240,10 +240,6 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
-    useEffect(() => {
-        setShowConfirmation(false);
-    }, [bypassConfirmSwap.isEnabled]);
-
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     // calculate price of gas for swap
@@ -303,6 +299,7 @@ function Swap(props: propsIF) {
 
     async function initiateSwap() {
         resetConfirmation();
+
         setShowConfirmation(true);
         if (!crocEnv) return;
 
