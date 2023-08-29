@@ -472,10 +472,6 @@ function Range() {
     }, [rangeWidthPercentage]);
 
     useEffect(() => {
-        setShowConfirmation(false);
-    }, [bypassConfirmRange.isEnabled]);
-
-    useEffect(() => {
         setNewRangeTransactionHash('');
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
