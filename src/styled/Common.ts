@@ -39,7 +39,8 @@ interface ColorProps {
         | 'positive'
         | 'negative'
         | 'other-green'
-        | 'other-red';
+        | 'other-red'
+        | 'orange';
     background?: 'dark1' | 'dark2' | 'dark3' | 'dark4';
 }
 export const Color = css<ColorProps>`
@@ -109,6 +110,8 @@ interface FlexProps {
     justifyContent?: string;
     alignItems?: string;
     overflow?: string;
+    background?: string;
+    rounded?: boolean;
 }
 const Flex = css<FlexProps>`
     display: flex;
@@ -121,6 +124,12 @@ const Flex = css<FlexProps>`
         justifyContent && `justify-content: ${justifyContent}`};
     ${({ alignItems }) => alignItems && `align-items: ${alignItems}`};
     ${({ overflow }) => `overflow: ${overflow || 'hidden'}`};
+
+    ${({ background, rounded }) => `
+    ${background && `background: ${background};`}
+    ${rounded ? 'border-radius: var(--border-radius);' : ''}
+
+    `}
 `;
 export const FlexContainer = styled.div<
     FlexProps &

@@ -1,9 +1,8 @@
 import { useEffect, useState, memo, useContext, useCallback } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { motion, AnimateSharedLayout } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
+import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import logo from '../../../assets/images/logos/logo_mark.svg';
 import mainLogo from '../../../assets/images/logos/large.svg';
@@ -32,6 +31,19 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
+import {
+    AuthenticateButton,
+    HeaderClasses,
+    LogoContainer,
+    LogoText,
+    NavigationLink,
+    PrimaryHeader,
+    PrimaryNavigation,
+    RightSide,
+    TradeNowDiv,
+    UnderlinedMotionDiv,
+} from '../../../styled/Components/Header';
+import { FlexContainer } from '../../../styled/Common';
 
 const PageHeader = function () {
     const {
@@ -143,13 +155,12 @@ const PageHeader = function () {
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
     const connectWagmiButton = (
-        <button
-            className={styles.authenticate_button}
-            style={!desktopScreen ? { width: '140px' } : undefined}
+        <AuthenticateButton
+            desktopScreen={desktopScreen}
             onClick={openWagmiModal}
         >
             {desktopScreen ? 'Connect Wallet' : 'Connect'}
-        </button>
+        </AuthenticateButton>
     );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
@@ -290,21 +301,21 @@ const PageHeader = function () {
         if (linkDestination.includes('/trade')) {
             if (linkDestination.includes('/pool')) {
                 return locationPathname.includes('/trade/pool')
-                    ? styles.active
-                    : styles.inactive;
+                    ? HeaderClasses.active
+                    : HeaderClasses.inactive;
             } else {
                 return locationPathname.includes(tradeDestination)
-                    ? styles.active
-                    : styles.inactive;
+                    ? HeaderClasses.active
+                    : HeaderClasses.inactive;
             }
         } else if (linkDestination.includes('/swap')) {
             return locationPathname.includes('/swap')
-                ? styles.active
-                : styles.inactive;
+                ? HeaderClasses.active
+                : HeaderClasses.inactive;
         } else {
             return locationPathname === linkDestination
-                ? styles.active
-                : styles.inactive;
+                ? HeaderClasses.active
+                : HeaderClasses.inactive;
         }
     }
 
@@ -321,14 +332,13 @@ const PageHeader = function () {
     }
     const routeDisplay = (
         <AnimateSharedLayout>
-            <nav
-                className={styles.primary_navigation}
+            <PrimaryNavigation
                 id='primary_navigation'
-                data-visible={mobileNavToggle}
+                dataVisible={mobileNavToggle}
             >
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
-                        <Link
+                        <NavigationLink
                             tabIndex={0}
                             className={isActive(
                                 link.destination,
@@ -342,16 +352,11 @@ const PageHeader = function () {
                             {isUnderlined(
                                 link.destination,
                                 location.pathname,
-                            ) && (
-                                <motion.div
-                                    className={styles.underline}
-                                    layoutId='underline'
-                                />
-                            )}
-                        </Link>
+                            ) && <UnderlinedMotionDiv layoutId='underline' />}
+                        </NavigationLink>
                     ) : null,
                 )}
-            </nav>
+            </PrimaryNavigation>
         </AnimateSharedLayout>
     );
 
@@ -377,66 +382,51 @@ const PageHeader = function () {
     }, []);
 
     return (
-        <header
+        <PrimaryHeader
             data-testid={'page-header'}
-            className={`${styles.primary_header} ${
-                location.pathname === '/' && styles.fixed
-            }`}
+            fixed={location.pathname === '/'}
         >
             <div>
-                <Link
-                    to='/'
-                    className={styles.logo_container}
-                    aria-label='Home'
-                >
+                <LogoContainer to='/' aria-label='Home'>
                     {desktopScreen ? (
-                        <img src={mainLogo} alt='' />
+                        <img src={mainLogo} alt='ambient' />
                     ) : (
-                        <img
-                            src={logo}
-                            alt='ambient'
-                            className={styles.logo}
-                            style={{ maxWidth: '70%', maxHeight: '70%' }}
-                        />
+                        <LogoText src={logo} alt='ambient' />
                     )}
-                </Link>
+                </LogoContainer>
             </div>
 
             {routeDisplay}
-            <div className={styles.right_side}>
+            <RightSide>
                 {show ? (
-                    <div
-                        style={{
-                            width: '380px',
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            alignItems: 'center',
-                            padding: '0 1rem',
-                        }}
-                    >
-                        <TradeNowButton inNav />{' '}
-                    </div>
+                    <TradeNowDiv justifyContent='flex-end' alignItems='center'>
+                        <TradeNowButton inNav />
+                    </TradeNowDiv>
                 ) : (
                     <div>
-                        <div className={styles.account}>
-                            <div className={styles.branch_name}>
+                        <FlexContainer
+                            alignItems='center'
+                            gap={8}
+                            overflow='visible'
+                        >
+                            <FlexContainer fontSize='body' color={'orange'}>
                                 {APP_ENVIRONMENT !== 'local' &&
                                 APP_ENVIRONMENT !== 'production' ? (
-                                    <div className={styles.branch}>
+                                    <FlexContainer alignItems='center' gap={4}>
                                         {BRANCH_NAME}
                                         <BiGitBranch color='yellow' />
-                                    </div>
+                                    </FlexContainer>
                                 ) : null}
-                            </div>
+                            </FlexContainer>
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />
-                        </div>
+                        </FlexContainer>
                     </div>
                 )}
-            </div>
-        </header>
+            </RightSide>
+        </PrimaryHeader>
     );
 };
 
