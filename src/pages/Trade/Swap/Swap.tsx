@@ -161,6 +161,8 @@ function Swap(props: propsIF) {
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(sellQtyString || '0');
+    const isTokenADexSurplusSufficient =
+        tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1
@@ -250,8 +252,17 @@ function Swap(props: propsIF) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
                 ? 117000
                 : isWithdrawFromDexChecked
-                ? 95000
-                : 120000;
+                ? isTokenADexSurplusSufficient
+                    ? isSaveAsDexSurplusChecked
+                        ? 92000
+                        : 97000
+                    : isSaveAsDexSurplusChecked
+                    ? 105000
+                    : 110000
+                : isSaveAsDexSurplusChecked
+                ? 105000
+                : 110000;
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageSwapCostInGasDrops *
@@ -276,6 +287,8 @@ function Swap(props: propsIF) {
         ethMainnetUsdPrice,
         isSellTokenNativeToken,
         isWithdrawFromDexChecked,
+        isTokenADexSurplusSufficient,
+        isSaveAsDexSurplusChecked,
     ]);
 
     useEffect(() => {

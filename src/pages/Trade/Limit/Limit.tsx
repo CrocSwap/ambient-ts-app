@@ -130,6 +130,8 @@ export default function Limit() {
         : quoteTokenDexBalance;
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+    const isTokenADexSurplusSufficient =
+        tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1
@@ -368,10 +370,12 @@ export default function Limit() {
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageLimitCostInGasDrops = isSellTokenNativeToken
-                ? 105000
+                ? 120000
                 : isWithdrawFromDexChecked
-                ? 145000
-                : 170000;
+                ? isTokenADexSurplusSufficient
+                    ? 120000
+                    : 150000
+                : 150000;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageLimitCostInGasDrops *
@@ -390,6 +394,7 @@ export default function Limit() {
         ethMainnetUsdPrice,
         isSellTokenNativeToken,
         isWithdrawFromDexChecked,
+        isTokenADexSurplusSufficient,
     ]);
 
     const resetConfirmation = () => {
