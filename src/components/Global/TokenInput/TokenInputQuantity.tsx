@@ -23,7 +23,7 @@ import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIs
 import { useModal } from '../Modal/useModal';
 import { FlexContainer, Text } from '../../../styled/Common';
 import {
-    PoolNotInitalizedText,
+    InputDisabledText,
     TokenQuantityContainer,
     TokenQuantityInput,
     TokenSelectButton,
@@ -132,7 +132,7 @@ function TokenInputQuantity(props: propsIF) {
     const tokenSelectRef = useRef(null);
 
     const poolNotInitializedContent = tokenSelectRef.current && (
-        <PoolNotInitalizedText
+        <InputDisabledText
             flexDirection='column'
             alignItems='center'
             justifyContent='center'
@@ -151,7 +151,7 @@ function TokenInputQuantity(props: propsIF) {
                     Initialize it to continue.
                 </Link>
             </Text>
-        </PoolNotInitalizedText>
+        </InputDisabledText>
     );
 
     const input = (

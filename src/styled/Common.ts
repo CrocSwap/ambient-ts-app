@@ -152,3 +152,18 @@ export const Text = styled.p<
     ${Color}
     ${({ align }) => align && `text-align: ${align};`}
 `;
+
+export const pulseAnimation = css`
+    animation: shadow-pulse 1s 6;
+    @keyframes shadow-pulse {
+        0% {
+            box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
+            border-radius: var(--border-radius);
+        }
+
+        100% {
+            box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
+            border-radius: var(--border-radius);
+        }
+    }
+`;

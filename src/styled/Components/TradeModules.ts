@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { FlexContainer, Text } from '../Common';
+import { FlexContainer, pulseAnimation, Text } from '../Common';
 
 export const SelectorContainer = styled(FlexContainer)`
     border-radius: var(--border-radius);
@@ -210,7 +210,7 @@ export const ShareUrl = styled.input`
     text-overflow: ellipsis;
 `;
 
-export const PoolNotInitalizedText = styled(FlexContainer)`
+export const InputDisabledText = styled(FlexContainer)`
     font-size: 10px;
     line-height: var(--body-lh);
     text-align: center;
@@ -238,6 +238,10 @@ export const TokenQuantityInput = styled.input`
         box-shadow var(--animation-speed) ease-in-out;
 
     font-family: var(--mono);
+
+    &::placeholder {
+        color: var(--text3);
+    }
 `;
 
 export const TokenQuantityContainer = styled.div<{ showPulse: boolean }>`
@@ -248,23 +252,7 @@ export const TokenQuantityContainer = styled.div<{ showPulse: boolean }>`
     display: grid;
     grid-template-columns: 1fr 145px;
 
-    @keyframes shadow-pulse {
-        0% {
-            box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
-            border-radius: var(--border-radius);
-        }
-
-        100% {
-            box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
-            border-radius: var(--border-radius);
-        }
-    }
-
-    ${({ showPulse }) =>
-        showPulse &&
-        `
-        animation: shadow-pulse 1s 6;
-    `}
+    ${({ showPulse }) => showPulse && pulseAnimation}
 `;
 
 export const TokenSelectButton = styled.button`
@@ -428,4 +416,53 @@ export const SubmitTransactionExtraButton = styled.button`
     transition: all var(--animation-speed) ease-in-out;
     border-radius: 50px;
     padding: 4px 8px;
+`;
+
+export const LimitRateContainer = styled(FlexContainer)<{ showPulse: boolean }>`
+    ${({ showPulse }) => showPulse && pulseAnimation}
+`;
+
+export const LimitRateButtonContainer = styled(FlexContainer)<{
+    disabled: boolean;
+}>`
+    border-radius: var(--border-radius);
+
+    ${({ disabled }) =>
+        disabled &&
+        `
+        pointer-events: none;
+        filter: blur(2px);
+    `}
+`;
+
+export const LimitRateButton = styled.button`
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+
+    width: 20px;
+    height: 20px;
+
+    & button:hover > svg {
+        color: var(--accent1);
+    }
+    & button:focus-visible {
+        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
+            0px 0px 21px rgba(205, 193, 255, 0.2),
+            0px 0px 12px rgba(205, 193, 255, 0.2),
+            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+            0px 0px 2px rgba(205, 193, 255, 0.2);
+    }
+`;
+
+export const FeeTierDisplay = styled.div`
+    padding: 16px;
+
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--dark2);
 `;

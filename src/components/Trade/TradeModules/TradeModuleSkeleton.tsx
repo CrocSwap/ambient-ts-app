@@ -96,7 +96,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
 
     return (
-        <section style={{ overflowY: 'scroll' }}>
+        <section>
             {isTutorialActive && (
                 <FlexContainer
                     fullWidth
