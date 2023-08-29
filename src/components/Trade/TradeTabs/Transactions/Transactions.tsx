@@ -129,6 +129,10 @@ function Transactions(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (!isCandleSelected) setIsLoading(true);
+    }, [isCandleSelected]);
+
+    useEffect(() => {
         if (isAccountView && connectedAccountActive)
             setIsLoading(
                 graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
