@@ -250,7 +250,7 @@ function Swap(props: propsIF) {
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
-                ? 117000
+                ? 100000
                 : isWithdrawFromDexChecked
                 ? isTokenADexSurplusSufficient
                     ? isSaveAsDexSurplusChecked
