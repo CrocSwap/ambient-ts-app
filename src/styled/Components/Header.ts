@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 import styled, { css } from 'styled-components';
 import { motion } from 'framer-motion';
@@ -291,6 +291,23 @@ export const ActionsContainer = styled(GridContainer)`
     a:focus-visible {
         color: var(--text-grey-white);
     }
+`;
+
+export const AccountLink = styled(NavLink)`
+    cursor: pointer;
+    border: none;
+    outline: none;
+    padding: 6px 8px;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    border-radius: var(--border-radius);
+
+    background: var(--dark3);
+    text-decoration: none;
+    color: var(--text2);
 `;
 
 export const WalletContent = styled.section`

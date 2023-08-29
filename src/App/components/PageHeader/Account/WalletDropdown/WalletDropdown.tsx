@@ -1,7 +1,5 @@
-import styles from './WalletDropdown.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
-import { NavLink } from 'react-router-dom';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import {
     getChainExplorer,
@@ -27,6 +25,7 @@ import {
     NameDisplayContainer,
     WalletContent,
     WalletWrapper,
+    AccountLink,
 } from '../../../../../styled/Components/Header';
 import { FlexContainer } from '../../../../../styled/Common';
 
@@ -171,31 +170,29 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     seed={jsNumberForAddress(accountAddressFull.toLowerCase())}
                 />
 
-                <div>
-                    <FlexContainer alignItems='center' flexDirection='column'>
-                        <NameDisplay gap={16} alignItems='center'>
-                            <h2>{ensName !== '' ? ensName : accountAddress}</h2>
-                            <a
-                                target='_blank'
-                                rel='noreferrer'
-                                href={`${blockExplorer}address/${accountAddressFull}`}
-                                aria-label='View address on Etherscan'
-                            >
-                                <FiExternalLink />
-                            </a>
-                            <CopyButton
-                                onClick={handleCopyAddress}
-                                aria-label='Copy address to clipboard'
-                            >
-                                <FiCopy />
-                            </CopyButton>
-                        </NameDisplay>
-                        <WalletDisplay gap={16} alignItems='center'>
-                            <p>{connectorName}</p>
-                            <p>{props.accountAddress}</p>
-                        </WalletDisplay>
-                    </FlexContainer>
-                </div>
+                <FlexContainer alignItems='center' flexDirection='column'>
+                    <NameDisplay gap={16} alignItems='center'>
+                        <h2>{ensName !== '' ? ensName : accountAddress}</h2>
+                        <a
+                            target='_blank'
+                            rel='noreferrer'
+                            href={`${blockExplorer}address/${accountAddressFull}`}
+                            aria-label='View address on Etherscan'
+                        >
+                            <FiExternalLink />
+                        </a>
+                        <CopyButton
+                            onClick={handleCopyAddress}
+                            aria-label='Copy address to clipboard'
+                        >
+                            <FiCopy />
+                        </CopyButton>
+                    </NameDisplay>
+                    <WalletDisplay gap={16} alignItems='center'>
+                        <p>{connectorName}</p>
+                        <p>{props.accountAddress}</p>
+                    </WalletDisplay>
+                </FlexContainer>
             </NameDisplayContainer>
             <WalletContent>
                 {tokensData.map((tokenData) => (
@@ -209,16 +206,15 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 ))}
             </WalletContent>
             <ActionsContainer numCols={2} gapSize={16} fullWidth={true}>
-                <NavLink
+                <AccountLink
                     to={'/account'}
-                    className={styles.account_button}
                     aria-label='Go to the account page '
                     tabIndex={0}
                     onClick={clickOutsideHandler}
                 >
                     <CgProfile />
                     My Account
-                </NavLink>
+                </AccountLink>
                 <LogoutButton onClick={clickLogout} />
             </ActionsContainer>
         </WalletWrapper>
