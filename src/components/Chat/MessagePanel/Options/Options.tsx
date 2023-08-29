@@ -80,7 +80,7 @@ export default function Options(props: propsIF) {
         >
             <p
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font} ${styles.options_node}`}
                 tabIndex={0}
             >
                 {reply}

@@ -485,6 +485,7 @@ function ChatPanel(props: propsIF) {
         if (verificationType === 0) {
             message =
                 'Your wallet will be verified for chat. Please sign it for verification.';
+            if (isVerified) return;
         } else if (isVerified) {
             message =
                 'Your verification date will be updated to ' +

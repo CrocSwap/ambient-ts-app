@@ -580,13 +580,18 @@
     /* right: -14rem; */
     /* transform: translateX(-50%) translateY(-1.6rem);  */
     opacity: 0;
-    background: var(--dark2);
-    border: 1px solid var(--accent1);
-    box-shadow: 0px 0px 4px var(--accent1);
+    background: var(--dark1);
+    /* border: 1px solid var(--accent1); */
+    /* border: 1px solid rgba(255,255,255,.2); */
+    /* box-shadow: 0px 0px 4px var(--accent1); */
     display: block;
     width: 30%;
     height: 100%;
     top: 0;
+
+/*     
+    left: 70%; 
+    opacity: 1; */
 }
 
 
