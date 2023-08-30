@@ -89,8 +89,6 @@ const useChatSocket = (
             ...pl,
         };
 
-        console.log(payload);
-
         const response = await fetch(
             CHAT_BACKEND_URL + updateLikesDislikesCountEndpoint,
             {
@@ -100,7 +98,6 @@ const useChatSocket = (
             },
         );
         const data = await response.json();
-        console.log(data);
         if (data && data.data && data.data.message) {
             const msg = data.data.message;
             const newMessageList = messages.map((e) => {
@@ -110,7 +107,6 @@ const useChatSocket = (
                     return e;
                 }
             });
-            console.log(newMessageList);
             setMessages([...newMessageList]);
         }
 
@@ -146,7 +142,6 @@ const useChatSocket = (
     }
 
     async function isUserVerified() {
-        console.log('is user verified func' + address);
         if (address) {
             const encodedAddress = encodeURIComponent(address);
             const response = await fetch(
@@ -218,14 +213,9 @@ const useChatSocket = (
     }
 
     useEffect(() => {
-        console.log('im checking verified user.........');
-
         async function checkVerified() {
             const data = await isUserVerified();
             if (!data) return;
-            console.log(
-                localStorage.getItem('vrfTkn' + address) == data.vrfTkn,
-            );
             setIsVerified(
                 localStorage.getItem('vrfTkn' + address) == data.vrfTkn &&
                     data.vrfTkn != null,
@@ -272,7 +262,6 @@ const useChatSocket = (
         if (socketRef && socketRef.current) {
             // eslint-disable-next-line
             socketRef.current.on('msg-recieve', (data: any) => {
-                console.log('msg-recieve', data);
                 setMessages([...messagesRef.current, data]);
                 if (messagesRef.current[messagesRef.current.length - 1]) {
                     setLastMessage(data);
@@ -318,10 +307,38 @@ const useChatSocket = (
     }
 
     async function deleteMsgFromList(msgId: string) {
-        messagesRef.current = messagesRef.current.filter(
-            (m) => m._id !== msgId,
+        const payload = {
+            _id: msgId,
+        };
+
+        console.log(messages);
+        const response = await fetch(
+            `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessage/${msgId}`,
+            {
+                method: 'POST',
+            },
         );
-        setMessages(messagesRef.current);
+        const data = await response.json();
+        data.message.deletedMessageText = 'This message has deleted';
+
+        console.log(data.message.deletedMessageText);
+        if (data) {
+            const msg = data.message;
+            const newMessageList = messages.map((e) => {
+                if (e._id == msg._id) {
+                    console.log('msg');
+                    return msg;
+                } else {
+                    console.log('e');
+                    return e;
+                }
+            });
+            console.log(newMessageList);
+            setMessages([...newMessageList]);
+            console.log('22 ', messages);
+        }
+
+        return data;
     }
 
     async function sendMsg(
@@ -356,7 +373,6 @@ const useChatSocket = (
         lastMessage,
         messageUser,
         lastMessageText,
-        deleteMsgFromList,
         users,
         notifications,
         updateLikeDislike,
@@ -368,6 +384,8 @@ const useChatSocket = (
         updateUserCache,
         getMsgWithRestWithPagination,
         getAllMessages,
+        deleteMsgFromList,
+        setMessages,
     };
 };
 

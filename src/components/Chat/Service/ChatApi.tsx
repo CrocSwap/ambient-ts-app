@@ -118,7 +118,7 @@ const useChatApi = () => {
         const response = await fetch(
             host + '/chat/api/messages/deleteMessage/' + _id,
             {
-                method: 'DELETE',
+                method: 'POST',
             },
         );
         const data = await response.json();

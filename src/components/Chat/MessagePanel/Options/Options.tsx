@@ -74,7 +74,7 @@ export default function Options(props: propsIF) {
                     <span> {'Reply'}</span>
                 </div>
             }
-            placement={'top'}
+            placement={'bottom'}
             enterDelay={100}
             leaveDelay={0}
         >
@@ -98,7 +98,7 @@ export default function Options(props: propsIF) {
                     <span> {'Add Reaction'}</span>
                 </div>
             }
-            placement={'top'}
+            placement={'bottom'}
             enterDelay={100}
             leaveDelay={0}
         >
@@ -122,7 +122,7 @@ export default function Options(props: propsIF) {
                     <span> {'More'}</span>
                 </div>
             }
-            placement={'top'}
+            placement={'bottom'}
             enterDelay={100}
             leaveDelay={0}
         >
