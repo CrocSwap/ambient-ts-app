@@ -69,6 +69,9 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     } = useContext(TokenContext);
 
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const {
+        tokens: [localTokenA, localTokenB],
+    } = useAppSelector((state) => state.localPairData);
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -98,11 +101,22 @@ export const SoloTokenSelectModal = (props: propsIF) => {
 
         if (isLocalPair) {
             if (tokenAorB === 'A') {
+                if (
+                    localTokenB.address.toLowerCase() ===
+                    tkn.address.toLowerCase()
+                ) {
+                    dispatch(setLocalTokenB(localTokenA));
+                }
                 console.log('token a', console.log(tkn));
                 dispatch(setLocalTokenA(tkn));
             }
             if (tokenAorB === 'B') {
-                console.log('token b', console.log(tkn));
+                if (
+                    localTokenA.address.toLowerCase() ===
+                    tkn.address.toLowerCase()
+                ) {
+                    dispatch(setLocalTokenA(localTokenB));
+                }
                 dispatch(setLocalTokenB(tkn));
             }
             onClose();

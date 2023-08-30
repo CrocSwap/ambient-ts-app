@@ -826,7 +826,7 @@ export default function InitPool() {
                                 </p>
 
                                 <ButtonSwitch
-                                    isOn={!advancedMode}
+                                    isOn={advancedMode}
                                     handleToggle={handleToggle}
                                     id='advanced_reposition'
                                     onLabel='Unbalanced'
