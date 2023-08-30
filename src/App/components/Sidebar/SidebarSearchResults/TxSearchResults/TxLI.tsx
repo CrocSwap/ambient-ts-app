@@ -1,4 +1,4 @@
-import styles from '../SidebarSearchResults.module.css';
+import { Results } from '../../../../../styled/Components/Sidebar';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { EntityType, getTxType } from '../../../../functions/getTxType';
@@ -22,17 +22,20 @@ export default function TxLI(props: propsIF) {
     // TODO:   @Junior  ... render them inside an <ol> element
 
     return (
-        <div className={styles.card_container} onClick={() => handleClick(tx)}>
+        <Results
+            numCols={3}
+            fullWidth
+            fontWeight='300'
+            fontSize='body'
+            color='text2'
+            padding='4px'
+            onClick={() => handleClick(tx)}
+        >
             <p>
                 {tx.baseSymbol} / {tx.quoteSymbol}
             </p>
             <p style={{ textAlign: 'center' }}>{txType}</p>
-            <p
-                style={{ textAlign: 'center' }}
-                className={styles.status_display}
-            >
-                {txValue}
-            </p>
-        </div>
+            <p style={{ textAlign: 'center' }}>{txValue}</p>
+        </Results>
     );
 }

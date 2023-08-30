@@ -108,7 +108,7 @@ const TableBody = styled.tbody`
 // Pool Display
 const PoolDisplayContainer = styled.section`
     display: none;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 
     @media only screen and (min-width: 768px) {
         font-size: 10px;

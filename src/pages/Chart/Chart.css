@@ -59,10 +59,10 @@ text.y_axis {
 }
 
 .annotation-line>.line {
-    stroke: rgba(235, 235, 255, 0.4);
+    stroke: var(--text2);
     stroke-width: 3;
     stroke-dasharray: 16 16;
-    border: 2px dashed rgba(235, 235, 255, 0.4);
+    border: 2px dashed var(--text2);
 }
 
 .annotation-line>.order_sell {
@@ -80,18 +80,18 @@ text.y_axis {
 }
 
 .annotation-line > .marketLine {
-    stroke: rgba(235, 235, 255, 0.4);
+    stroke: var(--text2);
     stroke-width: 1;
     stroke-dasharray: 4 2;
     stroke-opacity: 0.4;
-    border: 2px dashed rgba(235, 235, 255, 0.4);
+    border: 2px dashed var(--text2);
 }
 
 .annotation-line>.ghostline {
-    stroke: rgba(235, 235, 255, 0.4);
+    stroke: var(--text2);
     stroke-width: 1;
     stroke-opacity: 0.5;
-    border: 1px rgba(235, 235, 255, 0.4);
+    border: 1px var(--text2);
 }
 
 .candlestick .down {
