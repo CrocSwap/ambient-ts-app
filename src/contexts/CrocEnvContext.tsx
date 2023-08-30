@@ -50,7 +50,11 @@ export const CrocEnvContextProvider = (props: {
 
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
         const [tokenA, tokenB] = getDefaultPairForChain(chainId);
-        const pairSlug = formSlugForPairParams(chainId, tokenA, tokenB);
+        const pairSlug = formSlugForPairParams({
+            chain: chainId,
+            tokenA: tokenA.address,
+            tokenB: tokenB.address,
+        });
         return {
             swap: `/swap/${pairSlug}`,
             market: `/trade/market/${pairSlug}`,

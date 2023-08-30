@@ -1,20 +1,17 @@
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-import chainNumToString from './chainNumToString';
+interface paramsObjIF {
+    chain: string;
+    tokenA: string;
+    tokenB: string;
+    lowTick?: string;
+    highTick?: string;
+}
 
-export function formSlugForPairParams(
-    chainId: string | number,
-    tokenA: TokenIF | string,
-    tokenB: TokenIF | string,
-): string {
-    if (typeof chainId === 'number') {
-        chainId = chainNumToString(chainId);
-    }
-    if (typeof tokenA !== 'string') {
-        tokenA = tokenA.address;
-    }
-    if (typeof tokenB !== 'string') {
-        tokenB = tokenB.address;
-    }
+export function formSlugForPairParams(paramsObj: paramsObjIF): string {
+    const paramTuples: [string, string][] = Object.entries(paramsObj);
+    const paramStrings: string[] = paramTuples.map((tup: [string, string]) =>
+        tup.join('='),
+    );
+    const paramsString: string = paramStrings.join('&');
 
-    return `chain=${chainId}&tokenA=${tokenA}&tokenB=${tokenB}`;
+    return paramsString;
 }

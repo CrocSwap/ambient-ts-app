@@ -106,11 +106,11 @@ export const orderRowConstants = (props: propsIF) => {
 
     const tradeLinkPath =
         '/trade/limit/' +
-        formSlugForPairParams(
-            limitOrder.chainId,
-            limitOrder.quote,
-            limitOrder.base,
-        );
+        formSlugForPairParams({
+            chain: limitOrder.chainId,
+            tokenA: limitOrder.quote,
+            tokenB: limitOrder.base,
+        });
 
     const IDWithTooltip = (
         <TextOnlyTooltip

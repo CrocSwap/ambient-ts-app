@@ -281,7 +281,11 @@ export const txRowConstants = (props: propsIF) => {
             : tx.entityType.toLowerCase() === 'liqchange'
             ? '/trade/pool/'
             : '/trade/market/') +
-        formSlugForPairParams(tx.chainId, tx.quote, tx.base);
+        formSlugForPairParams({
+            chain: tx.chainId,
+            tokenA: tx.quote,
+            tokenB: tx.base,
+        });
 
     const tokenPair = (
         <li

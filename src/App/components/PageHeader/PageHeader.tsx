@@ -32,6 +32,7 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
+import chainNumToString from '../../functions/chainNumToString';
 
 const PageHeader = function () {
     const {
@@ -157,11 +158,11 @@ const PageHeader = function () {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const paramsSlug = formSlugForPairParams(
-        tradeData.tokenA.chainId,
-        tradeData.tokenA,
-        tradeData.tokenB,
-    );
+    const paramsSlug = formSlugForPairParams({
+        chain: chainNumToString(tradeData.tokenA.chainId),
+        tokenA: tradeData.tokenA.address,
+        tokenB: tradeData.tokenB.address,
+    });
 
     const baseSymbol = tradeData.baseToken.symbol;
     const quoteSymbol = tradeData.quoteToken.symbol;
