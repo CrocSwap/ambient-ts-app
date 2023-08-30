@@ -203,13 +203,13 @@ export default function TransactionsMenu(props: propsIF) {
                                   chain: chainId,
                                   tokenA: tx.base,
                                   tokenB: tx.quote,
-                                  limitTick: tx.bidTick,
+                                  limitTick: tx.bidTick.toString(),
                               }
                             : {
                                   chain: chainId,
                                   tokenA: tx.quote,
                                   tokenB: tx.base,
-                                  limitTick: tx.askTick,
+                                  limitTick: tx.askTick.toString(),
                               },
                     );
                     handleCopyClick();
