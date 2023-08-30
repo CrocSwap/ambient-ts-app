@@ -94,90 +94,106 @@ export const SoloTokenSelectModal = (props: propsIF) => {
         if (isCustom) {
             tokens.acknowledge(tkn);
         }
-        // dispatch token data object to RTK
+
         if (isSingleToken) {
             dispatch(setSoloToken(tkn));
         }
 
-        if (isLocalPair) {
-            if (tokenAorB === 'A') {
-                if (
-                    localTokenB.address.toLowerCase() ===
-                    tkn.address.toLowerCase()
-                ) {
-                    dispatch(setLocalTokenB(localTokenA));
-                }
-                console.log('token a', console.log(tkn));
-                dispatch(setLocalTokenA(tkn));
-            }
-            if (tokenAorB === 'B') {
-                if (
-                    localTokenA.address.toLowerCase() ===
-                    tkn.address.toLowerCase()
-                ) {
-                    dispatch(setLocalTokenA(localTokenB));
-                }
-                dispatch(setLocalTokenB(tkn));
-            }
+        if (isLocalPair && tokenAorB !== null) {
+            handleLocalPair(tokenAorB, tkn);
             onClose();
             return;
         }
 
-        // array of recent tokens from App.tsx (current session only)
+        handleRecentTokens(tkn);
+
+        switch (tokenAorB) {
+            case 'A':
+                handleUpdateTokenA(tkn);
+                break;
+            case 'B':
+                handleUpdateTokenB(tkn);
+                break;
+        }
+
+        setInput('');
+        onClose();
+    };
+
+    function handleLocalPair(tokenAorB: string, tkn: TokenIF): void {
+        if (tokenAorB === 'A') {
+            if (
+                localTokenB.address.toLowerCase() === tkn.address.toLowerCase()
+            ) {
+                dispatch(setLocalTokenB(localTokenA));
+            }
+            console.log('token a', tkn);
+            dispatch(setLocalTokenA(tkn));
+        }
+        if (tokenAorB === 'B') {
+            if (
+                localTokenA.address.toLowerCase() === tkn.address.toLowerCase()
+            ) {
+                dispatch(setLocalTokenA(localTokenB));
+            }
+            dispatch(setLocalTokenB(tkn));
+        }
+    }
+
+    function handleRecentTokens(tkn: TokenIF): void {
         const recentTokens = getRecentTokens();
-        // determine if clicked token is already in the recent tokens array
-        // if not in recent tokens array, add it
-        recentTokens.some(
+        const isTokenInRecent = recentTokens.some(
             (recentToken: TokenIF) =>
                 recentToken.address.toLowerCase() ===
                     tkn.address.toLowerCase() &&
                 recentToken.chainId === tkn.chainId,
-        ) || addRecentToken(tkn);
-
-        if (tokenAorB === 'A') {
-            if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
-                reverseTokens && reverseTokens();
-                onClose();
-                return;
-            }
-            goToNewUrlParams(
-                chainId,
-                tkn.address,
-                tokenB.address.toLowerCase() === tkn.address.toLowerCase()
-                    ? tokenA.address
-                    : tokenB.address,
-            );
-            // user is updating token B
-        } else if (tokenAorB === 'B') {
-            if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
-                reverseTokens && reverseTokens();
-                onClose();
-                return;
-            }
-            goToNewUrlParams(
-                chainId,
-                tokenA.address.toLowerCase() === tkn.address.toLowerCase()
-                    ? tokenB.address
-                    : tokenA.address,
-                tkn.address,
-            );
+        );
+        if (!isTokenInRecent) {
+            addRecentToken(tkn);
         }
+    }
 
-        function goToNewUrlParams(
-            chain: string,
-            addrTokenA: string,
-            addrTokenB: string,
-        ): void {
-            linkGenAny.navigate({
-                chain: chain,
-                tokenA: addrTokenA,
-                tokenB: addrTokenB,
-            });
+    function handleUpdateTokenA(tkn: TokenIF): void {
+        if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
+            reverseTokens && reverseTokens();
+            onClose();
+            return;
         }
-        setInput('');
-        // close the token modal
-        onClose();
-    };
+        goToNewUrlParams(
+            chainId,
+            tkn.address,
+            tokenB.address.toLowerCase() === tkn.address.toLowerCase()
+                ? tokenA.address
+                : tokenB.address,
+        );
+    }
+
+    function handleUpdateTokenB(tkn: TokenIF): void {
+        if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
+            reverseTokens && reverseTokens();
+            onClose();
+            return;
+        }
+        goToNewUrlParams(
+            chainId,
+            tokenA.address.toLowerCase() === tkn.address.toLowerCase()
+                ? tokenB.address
+                : tokenA.address,
+            tkn.address,
+        );
+    }
+
+    function goToNewUrlParams(
+        chain: string,
+        addrTokenA: string,
+        addrTokenB: string,
+    ): void {
+        linkGenAny.navigate({
+            chain: chain,
+            tokenA: addrTokenA,
+            tokenB: addrTokenB,
+        });
+    }
 
     // hook to hold data for a token pulled from on-chain
     // null value is allowed to clear the hook when needed or on error
