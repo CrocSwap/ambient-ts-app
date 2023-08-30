@@ -209,7 +209,10 @@ function Transactions(props: propsIF) {
                 if (selectedCandleChangesJson) {
                     const selectedCandleChangesWithoutFills =
                         selectedCandleChangesJson.filter((tx) => {
-                            if (tx.changeType !== 'fill') {
+                            if (
+                                tx.changeType !== 'fill' &&
+                                tx.changeType !== 'cross'
+                            ) {
                                 return true;
                             } else {
                                 return false;
