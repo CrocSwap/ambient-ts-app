@@ -24,10 +24,8 @@ export const PoolNotInitalized = (props: PropsIF) => {
     const dispatch = useAppDispatch();
 
     function handleNavigationToInit() {
-        console.log('yes fdf');
         dispatch(setLocalTokenA(tokenA));
         dispatch(setLocalTokenB(tokenB));
-        console.log('yes');
     }
     return (
         <div className={styles.pool_not_initialialized_container}>
@@ -36,6 +34,7 @@ export const PoolNotInitalized = (props: PropsIF) => {
                     <div className={styles.pool_not_init_inner}>
                         <h2>This pool has not been initialized.</h2>
                         <h3>Do you want to initialize it?</h3>
+
                         <Link
                             to={linkGenInitPool.getFullURL({
                                 chain: chainId,
@@ -43,7 +42,7 @@ export const PoolNotInitalized = (props: PropsIF) => {
                                 tokenB: tokenB.address,
                             })}
                             className={styles.initialize_link}
-                            onClick={() => handleNavigationToInit()}
+                            onClick={handleNavigationToInit}
                         >
                             Initialize Pool
                             <TokenIcon

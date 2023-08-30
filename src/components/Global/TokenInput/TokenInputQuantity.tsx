@@ -22,6 +22,12 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { useModal } from '../Modal/useModal';
+import { dispatch } from 'd3';
+import {
+    setLocalTokenA,
+    setLocalTokenB,
+} from '../../../utils/state/localPairDataSlice';
+import { useAppDispatch } from '.././../../utils/hooks/reduxToolkit';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -60,6 +66,8 @@ function TokenInputQuantity(props: propsIF) {
         onInitPage = false,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
+    const dispatch = useAppDispatch();
+
     const { tradeData } = useAppSelector((state) => state);
     const {
         chainData: { chainId },
@@ -122,6 +130,10 @@ function TokenInputQuantity(props: propsIF) {
         );
 
     const tokenSelectRef = useRef(null);
+    function handleNavigationToInit() {
+        dispatch(setLocalTokenA(tradeData.tokenA));
+        dispatch(setLocalTokenB(tradeData.tokenB));
+    }
 
     const poolNotInitializedContent = tokenSelectRef.current && (
         <div className={styles.disabled_text}>
@@ -134,6 +146,7 @@ function TokenInputQuantity(props: propsIF) {
                         tokenB: tradeData.tokenB.address,
                     })}
                     className={styles.warning_text}
+                    onClick={handleNavigationToInit}
                 >
                     Initialize it to continue.
                 </Link>
