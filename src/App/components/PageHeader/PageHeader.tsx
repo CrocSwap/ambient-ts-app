@@ -16,7 +16,6 @@ import { useAccount, useDisconnect, useEnsName, useSwitchNetwork } from 'wagmi';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
-import { formSlugForPairParams } from '../../functions/urlSlugs';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -163,12 +162,6 @@ const PageHeader = function () {
     const location = useLocation();
 
     const tradeData = useAppSelector((state) => state.tradeData);
-
-    const paramsSlug = formSlugForPairParams({
-        chain: chainNumToString(tradeData.tokenA.chainId),
-        tokenA: tradeData.tokenA.address,
-        tokenB: tradeData.tokenB.address,
-    });
 
     const baseSymbol = tradeData.baseToken.symbol;
     const quoteSymbol = tradeData.quoteToken.symbol;
