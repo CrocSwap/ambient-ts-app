@@ -170,13 +170,13 @@ export default function OrdersMenu(props: propsIF) {
                               chain: chainData.chainId,
                               tokenA: limitOrder.base,
                               tokenB: limitOrder.quote,
-                              limitTick: limitOrder.bidTick,
+                              limitTick: limitOrder.bidTick.toString(),
                           }
                         : {
                               chain: chainData.chainId,
                               tokenA: limitOrder.quote,
                               tokenB: limitOrder.base,
-                              limitTick: limitOrder.askTick,
+                              limitTick: limitOrder.askTick.toString(),
                           },
                 );
                 handleCopyOrder();
