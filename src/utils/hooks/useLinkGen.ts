@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
-interface swapParamsIF {
+export interface swapParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
@@ -10,13 +10,13 @@ export interface marketParamsIF {
     tokenA: string;
     tokenB: string;
 }
-interface limitParamsIF {
+export interface limitParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
-    limitTick?: number;
+    limitTick?: string;
 }
-interface poolParamsIF {
+export interface poolParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
@@ -24,13 +24,13 @@ interface poolParamsIF {
     lowTick?: string;
 }
 
-interface initParamsIF {
+export interface initParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
 }
 
-interface repoParamsIF {
+export interface repoParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;

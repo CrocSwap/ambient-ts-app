@@ -1,7 +1,6 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAccount, useProvider, useSigner } from 'wagmi';
-import { formSlugForPairParams } from '../App/functions/urlSlugs';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
@@ -10,7 +9,14 @@ import { getDefaultPairForChain } from '../utils/data/defaultTokens';
 import { CachedDataContext } from './CachedDataContext';
 import { useMainnetProvider } from '../App/functions/useMainnetProvider';
 import { Provider } from '@ethersproject/providers';
-import { PoolIF } from '../utils/interfaces/exports';
+import { PoolIF, TokenIF } from '../utils/interfaces/exports';
+import {
+    limitParamsIF,
+    linkGenMethodsIF,
+    poolParamsIF,
+    swapParamsIF,
+    useLinkGen,
+} from '../utils/hooks/useLinkGen';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -48,21 +54,38 @@ export const CrocEnvContextProvider = (props: {
         number | undefined
     >();
 
+    // hooks to generate default URL paths
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
-        const [tokenA, tokenB] = getDefaultPairForChain(chainId);
-        const pairSlug = formSlugForPairParams({
+        const [tokenA, tokenB]: [TokenIF, TokenIF] =
+            getDefaultPairForChain(chainId);
+        const swapParams: swapParamsIF = {
             chain: chainId,
             tokenA: tokenA.address,
             tokenB: tokenB.address,
-        });
+        };
+        const limitParams: limitParamsIF = {
+            ...swapParams,
+            limitTick: '10',
+        };
+        const poolParams: poolParamsIF = {
+            ...swapParams,
+            lowTick: '-1',
+            highTick: '1',
+        };
         return {
-            swap: `/swap/${pairSlug}`,
-            market: `/trade/market/${pairSlug}`,
-            pool: `/trade/pool/${pairSlug}`,
-            limit: `/trade/limit/${pairSlug}`,
+            swap: linkGenSwap.getFullURL(swapParams),
+            market: linkGenMarket.getFullURL(swapParams),
+            limit: linkGenLimit.getFullURL(limitParams),
+            pool: linkGenPool.getFullURL(poolParams),
         };
     }
     const initUrl = createDefaultUrlParams(chainData.chainId);
+    // why is this a `useState`? why not a `useRef` or a const?
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
