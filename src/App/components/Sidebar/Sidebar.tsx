@@ -182,9 +182,13 @@ function Sidebar() {
             gap={4}
             padding='2px 8px'
         >
-            <FlexContainer alignItems='center' justifyContent='center'>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='center'
+                padding='2px 0 0 0'
+            >
                 <BiSearch
-                    size={24}
+                    size={18}
                     color={sidebar.isOpen ? 'var(--text2)' : 'var(--accent5)'}
                     onClick={focusInput}
                 />
@@ -207,7 +211,7 @@ function Sidebar() {
                     role='button'
                     tabIndex={0}
                 >
-                    <MdClose size={24} color='#ebebeb66' />{' '}
+                    <MdClose size={18} color='#ebebeb66' />{' '}
                 </FlexContainer>
             )}
         </SearchContainer>
@@ -251,12 +255,12 @@ function Sidebar() {
                         >
                             {isLocked ? (
                                 <AiFillLock
-                                    size={24}
+                                    size={18}
                                     onClick={toggleLockSidebar}
                                 />
                             ) : (
                                 <AiFillUnlock
-                                    size={24}
+                                    size={18}
                                     onClick={toggleLockSidebar}
                                 />
                             )}
@@ -268,12 +272,12 @@ function Sidebar() {
                         >
                             {openAllDefault ? (
                                 <BsChevronContract
-                                    size={24}
+                                    size={18}
                                     onClick={toggleExpandCollapseAll}
                                 />
                             ) : (
                                 <BsChevronExpand
-                                    size={24}
+                                    size={18}
                                     onClick={toggleExpandCollapseAll}
                                 />
                             )}

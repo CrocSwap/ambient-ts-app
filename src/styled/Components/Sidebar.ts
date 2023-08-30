@@ -156,6 +156,9 @@ export const ArrowIcon = styled(MdPlayArrow)<{ open: boolean }>`
 `;
 
 export const AccordionHeader = styled(motion.div)<{ open: boolean }>`
+    display: flex;
+    align-items: center;
+    justify-content: ${({ open }) => (open ? 'flex-start' : 'center')};
     width: 100%;
     padding: 8px 0;
     border-bottom: 1px solid var(--dark3);

@@ -78,9 +78,9 @@ const Grid = css<GridProps>`
     ${({ numCols, numRows, gapSize, fullHeight, fullWidth }) => `
         grid-template-columns: ${numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
         grid-template-rows: ${numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
+        ${fullHeight && 'height: 100%'};
+        ${fullWidth && 'width: 100%'};
         gap: ${gapSize ? `${gapSize}px` : '0'};
-        ${fullHeight && 'height: 100%;'}
-        ${fullWidth && 'width: 100%;'}
     `}
 `;
 export const GridContainer = styled.div<
@@ -127,14 +127,14 @@ const Flex = css<FlexProps>`
         rounded,
     }) => `
         flex-direction: ${flexDirection ? flexDirection : 'row'};
-        ${fullWidth && 'width: 100%;'}
-        ${fullHeight && 'height: 100%;'}
+        ${fullWidth && 'width: 100%'};
+        ${fullHeight && 'height: 100%'};
         ${justifyContent && `justify-content: ${justifyContent}`};
         ${alignItems && `align-items: ${alignItems}`};
         ${gap && `gap: ${gap}px`};
         ${overflow && `overflow: ${overflow}`};
-        ${background && `background: ${background};`}
-        ${rounded && 'border-radius: var(--border-radius);'}
+        ${background && `background: ${background}`};
+        ${rounded && 'border-radius: var(--border-radius)'};
     `}
 `;
 export const FlexContainer = styled.div<
@@ -165,5 +165,5 @@ export const Text = styled.p<
     ${FontSize}
     ${FontWeight}
     ${Color}
-    ${({ align }) => align && `text-align: ${align};`}
+    ${({ align }) => align && `text-align: ${align}`};
 `;
