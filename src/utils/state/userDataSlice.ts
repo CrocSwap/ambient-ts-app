@@ -74,73 +74,6 @@ export const userDataSlice = createSlice({
         setNativeToken: (state, action: PayloadAction<TokenIF>) => {
             state.tokens.nativeToken = action.payload;
         },
-        updateNativeTokenWalletBalance: (
-            state,
-            action: PayloadAction<{
-                walletBalance: string;
-                walletBalanceDisplay: string;
-                walletBalanceDisplayTruncated: string;
-            }>,
-        ) => {
-            if (!state.tokens.nativeToken) return;
-            state.tokens.nativeToken.walletBalance =
-                action.payload.walletBalance;
-            state.tokens.nativeToken.walletBalanceDisplay =
-                action.payload.walletBalanceDisplay;
-            state.tokens.nativeToken.walletBalanceDisplayTruncated =
-                action.payload.walletBalanceDisplayTruncated;
-        },
-        updateNativeTokenDexBalance: (
-            state,
-            action: PayloadAction<{
-                dexBalance: string;
-                dexBalanceDisplay: string;
-                dexBalanceDisplayTruncated: string;
-            }>,
-        ) => {
-            if (!state.tokens.nativeToken) return;
-            state.tokens.nativeToken.dexBalance = action.payload.dexBalance;
-            state.tokens.nativeToken.dexBalanceDisplay =
-                action.payload.dexBalanceDisplay;
-            state.tokens.nativeToken.dexBalanceDisplayTruncated =
-                action.payload.dexBalanceDisplayTruncated;
-        },
-        updateErc20TokenWalletBalance: (
-            state,
-            action: PayloadAction<{
-                indexOfExistingErc20Token: number;
-                walletBalance: string;
-                walletBalanceDisplay: string;
-                walletBalanceDisplayTruncated: string;
-            }>,
-        ) => {
-            if (!state.tokens.erc20Tokens) return;
-            const index = action.payload.indexOfExistingErc20Token;
-            state.tokens.erc20Tokens[index].walletBalance =
-                action.payload.walletBalance;
-            state.tokens.erc20Tokens[index].walletBalanceDisplay =
-                action.payload.walletBalanceDisplay;
-            state.tokens.erc20Tokens[index].walletBalanceDisplayTruncated =
-                action.payload.walletBalanceDisplayTruncated;
-        },
-        updateErc20TokenDexBalance: (
-            state,
-            action: PayloadAction<{
-                indexOfExistingErc20Token: number;
-                dexBalance: string;
-                dexBalanceDisplay: string;
-                dexBalanceDisplayTruncated: string;
-            }>,
-        ) => {
-            if (!state.tokens.erc20Tokens) return;
-            const index = action.payload.indexOfExistingErc20Token;
-            state.tokens.erc20Tokens[index].dexBalance =
-                action.payload.dexBalance;
-            state.tokens.erc20Tokens[index].dexBalanceDisplay =
-                action.payload.dexBalanceDisplay;
-            state.tokens.erc20Tokens[index].dexBalanceDisplayTruncated =
-                action.payload.dexBalanceDisplayTruncated;
-        },
         setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
             state.tokens.erc20Tokens = action.payload;
         },
@@ -185,10 +118,6 @@ export const {
     setNativeToken,
     setErc20Tokens,
     setRecentTokens,
-    updateNativeTokenWalletBalance,
-    updateNativeTokenDexBalance,
-    updateErc20TokenWalletBalance,
-    updateErc20TokenDexBalance,
     resetTokenData,
     resetUserAddresses,
     setSecondaryImageDataRedux,
