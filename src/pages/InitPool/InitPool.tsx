@@ -695,6 +695,18 @@ export default function InitPool() {
         setMinPrice: setMinPrice,
     };
 
+    function goToNewUrlParams(
+        chain: string,
+        addrTokenA: string,
+        addrTokenB: string,
+    ): void {
+        linkGenPool.navigate({
+            chain: chain,
+            tokenA: addrTokenA,
+            tokenB: addrTokenB,
+        });
+    }
+
     const simpleTokenSelect = (
         <div className={styles.local_token_container}>
             <p className={styles.label_title}>Select Tokens</p>
@@ -708,6 +720,13 @@ export default function InitPool() {
                 token={tokenB}
                 setTokenModalOpen={setTokenModalOpen}
             />
+            <button
+                onClick={() =>
+                    goToNewUrlParams(chainId, tokenA.address, tokenB.address)
+                }
+            >
+                Go to new link
+            </button>
         </div>
     );
 
