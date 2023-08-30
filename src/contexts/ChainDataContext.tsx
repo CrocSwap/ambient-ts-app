@@ -17,7 +17,7 @@ import isJsonString from '../utils/functions/isJsonString';
 import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { setLastBlock } from '../utils/state/graphDataSlice';
-import { setNativeToken, setErc20Tokens } from '../utils/state/userDataSlice';
+import { setTokenBalances } from '../utils/state/userDataSlice';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
@@ -37,11 +37,8 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const {
-        cachedFetchErc20TokenBalances,
-        cachedFetchNativeTokenBalance,
-        cachedTokenDetails,
-    } = useContext(CachedDataContext);
+    const { cachedFetchTokenBalances, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const { chainData, crocEnv } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
@@ -174,21 +171,8 @@ export const ChainDataContextProvider = (props: {
                 console.debug('fetching native token and erc20 token balances');
             if (crocEnv && isConnected && userAddress && chainData.chainId) {
                 try {
-                    const newNativeToken: TokenIF =
-                        await cachedFetchNativeTokenBalance(
-                            userAddress,
-                            chainData.chainId,
-                            everyEigthBlock,
-                            crocEnv,
-                        );
-
-                    dispatch(setNativeToken(newNativeToken));
-                } catch (error) {
-                    console.error({ error });
-                }
-                try {
-                    const erc20Results: TokenIF[] =
-                        await cachedFetchErc20TokenBalances(
+                    const tokenBalances: TokenIF[] =
+                        await cachedFetchTokenBalances(
                             userAddress,
                             chainData.chainId,
                             everyEigthBlock,
@@ -196,7 +180,7 @@ export const ChainDataContextProvider = (props: {
                             crocEnv,
                             client,
                         );
-                    const erc20TokensWithLogos = erc20Results.map((token) => {
+                    const tokensWithLogos = tokenBalances.map((token) => {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
@@ -205,7 +189,7 @@ export const ChainDataContextProvider = (props: {
                         return newToken;
                     });
 
-                    dispatch(setErc20Tokens(erc20TokensWithLogos));
+                    dispatch(setTokenBalances(tokensWithLogos));
                 } catch (error) {
                     console.error({ error });
                 }

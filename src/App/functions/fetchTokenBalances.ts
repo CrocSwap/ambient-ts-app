@@ -274,7 +274,7 @@ export const fetchErc20TokenBalances = async (
     return combinedErc20Balances;
 };
 
-export type Erc20TokenBalanceFn = (
+export type Erc20tokenBalancesQueryFn = (
     token: string,
     chain: string,
     lastBlock: number,
@@ -283,17 +283,21 @@ export type Erc20TokenBalanceFn = (
     client?: Client,
 ) => Promise<TokenIF[]>;
 
-export type nativeTokenBalanceFn = (
+export type nativetokenBalancesQueryFn = (
     token: string,
     chain: string,
     lastBlock: number,
     crocEnv: CrocEnv | undefined,
 ) => Promise<TokenIF>;
 
-export function memoizeFetchErc20TokenBalances(): Erc20TokenBalanceFn {
-    return memoizePromiseFn(fetchErc20TokenBalances) as Erc20TokenBalanceFn;
+export function memoizeFetchErc20TokenBalances(): Erc20tokenBalancesQueryFn {
+    return memoizePromiseFn(
+        fetchErc20TokenBalances,
+    ) as Erc20tokenBalancesQueryFn;
 }
 
-export function memoizeFetchNativeTokenBalance(): nativeTokenBalanceFn {
-    return memoizePromiseFn(fetchNativeTokenBalance) as nativeTokenBalanceFn;
+export function memoizeFetchNativeTokenBalance(): nativetokenBalancesQueryFn {
+    return memoizePromiseFn(
+        fetchNativeTokenBalance,
+    ) as nativetokenBalancesQueryFn;
 }

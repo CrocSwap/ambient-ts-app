@@ -26,10 +26,7 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import {
-    setErc20Tokens,
-    setNativeToken,
-} from '../../../utils/state/userDataSlice';
+import { setTokenBalances } from '../../../utils/state/userDataSlice';
 import { useDispatch } from 'react-redux';
 import { TokenContext } from '../../../contexts/TokenContext';
 
@@ -63,11 +60,8 @@ export default function ExchangeBalance(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const {
-        cachedFetchErc20TokenBalances,
-        cachedFetchNativeTokenBalance,
-        cachedTokenDetails,
-    } = useContext(CachedDataContext);
+    const { cachedFetchTokenBalances, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const { addTokenInfo } = useContext(TokenContext);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
@@ -116,29 +110,19 @@ export default function ExchangeBalance(props: propsIF) {
         if (recheckTokenBalances) {
             (async () => {
                 if (userAddress) {
-                    const newNativeToken: TokenIF =
-                        await cachedFetchNativeTokenBalance(
-                            userAddress,
-                            chainId,
-                            lastBlockNumber,
-                            crocEnv,
-                        );
-
-                    dispatch(setNativeToken(newNativeToken));
-
-                    const erc20Results: TokenIF[] =
-                        await cachedFetchErc20TokenBalances(
+                    const tokenBalances: TokenIF[] =
+                        await cachedFetchTokenBalances(
                             userAddress,
                             chainId,
                             lastBlockNumber,
                             cachedTokenDetails,
                             crocEnv,
                         );
-                    const erc20TokensWithLogos = erc20Results.map((token) =>
+                    const erc20TokensWithLogos = tokenBalances.map((token) =>
                         addTokenInfo(token),
                     );
 
-                    dispatch(setErc20Tokens(erc20TokensWithLogos));
+                    dispatch(setTokenBalances(erc20TokensWithLogos));
                 }
             })();
         }

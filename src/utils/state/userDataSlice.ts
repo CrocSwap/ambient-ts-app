@@ -71,10 +71,7 @@ export const userDataSlice = createSlice({
         setIsUserIdle: (state, action: PayloadAction<boolean>) => {
             state.isUserIdle = action.payload;
         },
-        setNativeToken: (state, action: PayloadAction<TokenIF>) => {
-            state.tokens.nativeToken = action.payload;
-        },
-        setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
+        setTokenBalances: (state, action: PayloadAction<TokenIF[]>) => {
             state.tokens.erc20Tokens = action.payload;
         },
         setRecentTokens: (state, action: PayloadAction<TokenIF[]>) => {
@@ -115,8 +112,7 @@ export const {
     setEnsNameCurrent,
     setEnsOrAddressTruncated,
     setIsUserIdle,
-    setNativeToken,
-    setErc20Tokens,
+    setTokenBalances,
     setRecentTokens,
     resetTokenData,
     resetUserAddresses,

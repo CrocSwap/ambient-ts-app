@@ -8,9 +8,7 @@ import {
     memoizeFetchContractDetails,
 } from '../App/functions/fetchContractDetails';
 import {
-    nativeTokenBalanceFn,
-    Erc20TokenBalanceFn,
-    memoizeFetchNativeTokenBalance,
+    Erc20tokenBalancesQueryFn,
     memoizeFetchErc20TokenBalances,
 } from '../App/functions/fetchTokenBalances';
 import {
@@ -24,8 +22,7 @@ import {
 } from '../App/functions/querySpotPrice';
 
 interface CachedDataIF {
-    cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
-    cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
+    cachedFetchTokenBalances: Erc20tokenBalancesQueryFn;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedPoolStatsFetch: PoolStatsFn;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -42,8 +39,7 @@ export const CachedDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const cachedDataState = {
-        cachedFetchNativeTokenBalance: memoizeFetchNativeTokenBalance(),
-        cachedFetchErc20TokenBalances: memoizeFetchErc20TokenBalances(),
+        cachedFetchTokenBalances: memoizeFetchErc20TokenBalances(),
         cachedFetchTokenPrice: memoizeTokenPrice(),
         cachedPoolStatsFetch: memoizePoolStats(),
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
