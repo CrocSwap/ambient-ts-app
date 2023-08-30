@@ -10,6 +10,10 @@ import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     posHashTruncated: string;
@@ -104,13 +108,8 @@ export const orderRowConstants = (props: propsIF) => {
     const phoneScreen = useMediaQuery('(max-width: 600px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
-    const tradeLinkPath =
-        '/trade/limit/' +
-        formSlugForPairParams({
-            chain: limitOrder.chainId,
-            tokenA: limitOrder.quote,
-            tokenB: limitOrder.base,
-        });
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const IDWithTooltip = (
         <TextOnlyTooltip
@@ -239,7 +238,14 @@ export const orderRowConstants = (props: propsIF) => {
             data-label='tokens'
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={tradeLinkPath}>
+            <NavLink
+                to={linkGenLimit.getFullURL({
+                    chain: limitOrder.chainId,
+                    tokenA: limitOrder.quote,
+                    tokenB: limitOrder.base,
+                    limitTick: '19',
+                })}
+            >
                 {baseTokenSymbol} / {quoteTokenSymbol}
             </NavLink>
         </li>
