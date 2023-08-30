@@ -101,6 +101,7 @@ function LimitTokenInput(props: propsIF) {
                 chain: chainId,
                 tokenA: tokenB.address,
                 tokenB: tokenA.address,
+                limitTick: '10',
             });
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));

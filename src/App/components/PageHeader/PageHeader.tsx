@@ -33,6 +33,12 @@ import {
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
 import chainNumToString from '../../functions/chainNumToString';
+import {
+    linkGenMethodsIF,
+    poolParamsIF,
+    swapParamsIF,
+    useLinkGen,
+} from '../../../utils/hooks/useLinkGen';
 
 const PageHeader = function () {
     const {
@@ -251,6 +257,22 @@ const PageHeader = function () {
         ? '/trade/edit/'
         : '/trade/market/';
 
+    // hooks to generate URL paths
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+
+    const swapParams: swapParamsIF = {
+        chain: chainNumToString(tradeData.tokenA.chainId),
+        tokenA: tradeData.tokenA.address,
+        tokenB: tradeData.tokenB.address,
+    };
+    const poolParams: poolParamsIF = {
+        ...swapParams,
+        lowTick: '12',
+        highTick: '13',
+    };
+
     const linkData = [
         {
             title: 'Home',
@@ -259,17 +281,17 @@ const PageHeader = function () {
         },
         {
             title: 'Swap',
-            destination: '/swap/' + paramsSlug,
+            destination: linkGenSwap.getFullURL(swapParams),
             shouldDisplay: true,
         },
         {
             title: 'Trade',
-            destination: tradeDestination + paramsSlug,
+            destination: linkGenMarket.getFullURL(swapParams),
             shouldDisplay: true,
         },
         {
             title: 'Pool',
-            destination: '/trade/pool/' + paramsSlug,
+            destination: linkGenPool.getFullURL(poolParams),
             shouldDisplay: true,
         },
         {
