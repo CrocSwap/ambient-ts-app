@@ -89,24 +89,12 @@ function Trade() {
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
-    const [isCandleArrived, setIsCandleDataArrived] = useState(false);
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
     const { tradeData } = useAppSelector((state) => state);
     const { isDenomBase, limitTick } = tradeData;
 
     const tradeTableRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (
-            isCandleDataNull &&
-            candleData !== undefined &&
-            candleData.candles?.length > 0
-        ) {
-            IS_LOCAL_ENV && console.debug('Data arrived');
-            setIsCandleDataArrived(false);
-        }
-    }, [candleData]);
 
     const navigationMenu = (
         <SelectorContainer justifyContent='center' alignItems='center' gap={8}>
@@ -229,8 +217,6 @@ function Trade() {
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
         unselectCandle: unselectCandle,
-        isCandleArrived: isCandleArrived,
-        setIsCandleDataArrived: setIsCandleDataArrived,
         candleTime: chartSettings.candleTime.global,
         tokens,
     };
@@ -339,7 +325,7 @@ function Trade() {
                             </ChartContainer>
                         )}
                     </ResizableContainer>
-                    <FlexContainer ref={tradeTableRef}>
+                    <FlexContainer ref={tradeTableRef} style={{ flex: 1 }}>
                         <TradeTabs2 {...tradeTabsProps} />
                     </FlexContainer>
                 </FlexContainer>

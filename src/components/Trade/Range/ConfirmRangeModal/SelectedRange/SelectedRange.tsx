@@ -160,11 +160,3 @@ function SelectedRange(props: propsIF) {
 }
 
 export default memo(SelectedRange);
-
-// open up flex and grid containers so that we can avoid inline styling
-// be smart about paddings etc
-// [].map
-// create common components
-// phase 1.5 - media queries and constants
-// phase 2 - abstraction, creating Miyu library of comps
-// phase 2.5 - standardize paddings, margins, etc.
