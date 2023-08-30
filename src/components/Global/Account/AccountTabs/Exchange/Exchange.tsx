@@ -29,12 +29,8 @@ export default function Exchange(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { nativeToken, erc20Tokens } = useAppSelector(
-        (state) => state.userData.tokens,
-    );
-    const connectedUserTokens = [nativeToken]
-        .concat(erc20Tokens)
-        .filter((token) => token);
+    const { erc20Tokens } = useAppSelector((state) => state.userData.tokens);
+    const connectedUserTokens = (erc20Tokens ?? []).filter((token) => token);
 
     const spinnerElement = <Spinner size={100} bg='var(--dark1)' centered />;
 

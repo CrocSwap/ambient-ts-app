@@ -29,12 +29,10 @@ export default function Wallet(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { nativeToken, erc20Tokens } = useAppSelector(
-        (state) => state.userData.tokens,
-    );
-    const connectedUserTokens: Array<TokenIF | undefined> = [nativeToken]
-        .concat(erc20Tokens)
-        .filter((token) => token);
+    const { erc20Tokens } = useAppSelector((state) => state.userData.tokens);
+    const connectedUserTokens: Array<TokenIF | undefined> = (
+        erc20Tokens ?? []
+    ).filter((token) => token);
 
     const userTokens: Array<TokenIF | undefined> = connectedAccountActive
         ? connectedUserTokens

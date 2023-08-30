@@ -1,13 +1,12 @@
 import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
-import Moralis from 'moralis';
-import { Erc20Value } from '@moralisweb3/common-evm-utils';
 import { ZERO_ADDRESS } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { getFormattedNumber } from './getFormattedNumber';
+import { Client } from '@covalenthq/client-sdk';
 
 export interface IDepositedTokenBalance {
     token: string;
@@ -114,15 +113,27 @@ export const fetchErc20TokenBalances = async (
     _lastBlockNumber: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
+    client: Client,
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
 
-    // Doesn't have to be comprehensive, just to satisfy typescript
-    type MoralisChainIDs = '0x1';
-    const options = { address: address, chain: chain as MoralisChainIDs };
+    const covalentChainString =
+        chain === '0x5'
+            ? 'eth-goerli'
+            : chain === '0x66eed'
+            ? 'arbitrum-goerli'
+            : 'eth-mainnet';
 
-    const erc20WalletBalancesFromMoralis =
-        await Moralis.EvmApi.token.getWalletTokenBalances(options);
+    const covalentBalancesResponse =
+        await client.BalanceService.getTokenBalancesForWalletAddress(
+            covalentChainString,
+            address,
+            {
+                noSpam: false,
+                quoteCurrency: 'USD',
+                nft: false,
+            },
+        );
 
     const erc20DexBalancesFromCache = await fetchDepositBalances({
         chainId: chain,
@@ -133,38 +144,39 @@ export const fetchErc20TokenBalances = async (
 
     const combinedErc20Balances: TokenIF[] = [];
 
-    const getTokenInfoFromMoralisBalance = (
-        erc20value: Erc20Value,
-    ): TokenIF => {
-        const moralisErc20Balance = BigNumber.from(
-            erc20value.amount.toString(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const getTokenInfoFromCovalentBalance = (tokenBalance: any): TokenIF => {
+        console.log({ tokenBalance });
+        const tokenBalanceBigNumber = BigNumber.from(
+            tokenBalance.balance.toString(),
         );
-        const moralisErc20BalanceDisplay = toDisplayQty(
-            moralisErc20Balance,
-            erc20value.decimals,
+        const balanceDisplay = toDisplayQty(
+            tokenBalanceBigNumber,
+            tokenBalance.contract_decimals,
         );
-        const moralisErc20BalanceDisplayNum = parseFloat(
-            moralisErc20BalanceDisplay,
-        );
+        const balanceDisplayNum = parseFloat(balanceDisplay);
 
-        const moralisErc20BalanceDisplayTruncated = getFormattedNumber({
-            value: moralisErc20BalanceDisplayNum,
+        const balanceDisplayTruncated = getFormattedNumber({
+            value: balanceDisplayNum,
         });
 
         return {
             chainId: parseInt(chain),
             logoURI: '',
-            name: erc20value.token?.name || '',
-            address: erc20value.token?.contractAddress.lowercase || '',
-            symbol: erc20value.token?.symbol || '',
-            decimals: erc20value.token?.decimals || 18,
-            walletBalance: moralisErc20Balance.toString(),
-            walletBalanceDisplay: moralisErc20BalanceDisplay,
-            walletBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
-            combinedBalance: moralisErc20Balance.toString(),
-            combinedBalanceDisplay: moralisErc20BalanceDisplay,
-            combinedBalanceDisplayTruncated:
-                moralisErc20BalanceDisplayTruncated,
+            name: tokenBalance.contract_name || '',
+            address:
+                tokenBalance.contract_address ===
+                '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+                    ? ZERO_ADDRESS
+                    : tokenBalance.contract_address ?? '',
+            symbol: tokenBalance.contract_ticker_symbol || '',
+            decimals: tokenBalance.contract_decimals || 18,
+            walletBalance: tokenBalanceBigNumber.toString(),
+            walletBalanceDisplay: balanceDisplay,
+            walletBalanceDisplayTruncated: balanceDisplayTruncated,
+            combinedBalance: tokenBalanceBigNumber.toString(),
+            combinedBalanceDisplay: balanceDisplay,
+            combinedBalanceDisplayTruncated: balanceDisplayTruncated,
         };
     };
 
@@ -198,18 +210,16 @@ export const fetchErc20TokenBalances = async (
         };
     };
 
-    const jsonResponse = erc20WalletBalancesFromMoralis.result;
+    const covalentData = covalentBalancesResponse.data.items;
 
-    jsonResponse.map((erc20value) => {
-        const newToken: TokenIF = getTokenInfoFromMoralisBalance(erc20value);
+    covalentData.map((tokenBalance) => {
+        const newToken: TokenIF = getTokenInfoFromCovalentBalance(tokenBalance);
         combinedErc20Balances.push(newToken);
     });
 
     if (erc20DexBalancesFromCache !== undefined) {
         erc20DexBalancesFromCache.map(
             (balanceFromCache: IDepositedTokenBalance) => {
-                if (balanceFromCache.token === ZERO_ADDRESS) return;
-
                 const indexOfExistingToken = (
                     combinedErc20Balances ?? []
                 ).findIndex(
@@ -270,6 +280,7 @@ export type Erc20TokenBalanceFn = (
     lastBlock: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
+    client?: Client,
 ) => Promise<TokenIF[]>;
 
 export type nativeTokenBalanceFn = (

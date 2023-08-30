@@ -21,6 +21,7 @@ import { setNativeToken, setErc20Tokens } from '../utils/state/userDataSlice';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
+import { Client } from '@covalenthq/client-sdk';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -43,6 +44,8 @@ export const ChainDataContextProvider = (props: {
     } = useContext(CachedDataContext);
     const { chainData, crocEnv } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
+
+    const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
 
     const dispatch = useAppDispatch();
     const { address: userAddress, isConnected } = useAccount();
@@ -191,6 +194,7 @@ export const ChainDataContextProvider = (props: {
                             everyEigthBlock,
                             cachedTokenDetails,
                             crocEnv,
+                            client,
                         );
                     const erc20TokensWithLogos = erc20Results.map((token) => {
                         const oldToken: TokenIF | undefined =
