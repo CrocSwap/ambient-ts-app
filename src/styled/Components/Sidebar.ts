@@ -45,6 +45,7 @@ export const SidebarDiv = styled.div<{ open: boolean }>`
 export const ContentContainer = styled(FlexContainer)`
     width: 100%;
     flex: 1;
+    overflow: hidden;
 
     @media only screen and (max-width: 600px) {
         overflow: auto;

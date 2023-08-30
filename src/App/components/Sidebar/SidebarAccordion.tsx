@@ -124,7 +124,10 @@ export default function SidebarAccordion(props: propsIF) {
         );
 
     return (
-        <FlexContainer flexDirection='column'>
+        <FlexContainer
+            flexDirection='column'
+            style={{ flexShrink: '1', overflow: 'hidden' }}
+        >
             <AccordionHeader
                 key={idx}
                 onClick={() => handleAccordionClick()}
