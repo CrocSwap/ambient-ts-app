@@ -12,6 +12,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { useMediaQuery } from '@material-ui/core';
 
 interface ItemRowPropsIF {
     title: string;
@@ -65,6 +66,7 @@ export default function OrderDetailsSimplify(
     );
 
     const {
+        ensName,
         userNameToDisplay,
         posHashTruncated,
         posHash,
@@ -85,6 +87,8 @@ export default function OrderDetailsSimplify(
         fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
+
+    const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
     const {
         snackbar: { open: openSnackbar },
@@ -126,7 +130,13 @@ export default function OrderDetailsSimplify(
             onClick={handleOpenWallet}
             style={{ cursor: 'pointer' }}
         >
-            <p>{userNameToDisplay}</p>
+            <p style={!ensName ? { fontFamily: 'monospace' } : undefined}>
+                {showFullAddresses
+                    ? ensName
+                        ? ensName
+                        : ownerId
+                    : userNameToDisplay}
+            </p>
             <RiExternalLinkLine />
         </div>
     );

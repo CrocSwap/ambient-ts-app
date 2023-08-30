@@ -39,7 +39,8 @@ interface ColorProps {
         | 'positive'
         | 'negative'
         | 'other-green'
-        | 'other-red';
+        | 'other-red'
+        | 'orange';
     background?: 'dark1' | 'dark2' | 'dark3' | 'dark4';
 }
 export const Color = css<ColorProps>`
@@ -109,18 +110,32 @@ interface FlexProps {
     justifyContent?: string;
     alignItems?: string;
     overflow?: string;
+    background?: string;
+    rounded?: boolean;
 }
 const Flex = css<FlexProps>`
     display: flex;
-    ${({ gap }) => gap && `gap: ${gap}px`};
-    ${({ fullWidth }) => (fullWidth ? 'width: 100%;' : '')}
-    ${({ fullHeight }) => fullHeight && 'height: 100%;'};
-    flex-direction: ${({ flexDirection }) =>
-        flexDirection ? flexDirection : 'row'};
-    ${({ justifyContent }) =>
-        justifyContent && `justify-content: ${justifyContent}`};
-    ${({ alignItems }) => alignItems && `align-items: ${alignItems}`};
-    ${({ overflow }) => `overflow: ${overflow || 'hidden'}`};
+    ${({
+        flexDirection,
+        fullWidth,
+        fullHeight,
+        justifyContent,
+        alignItems,
+        gap,
+        overflow,
+        background,
+        rounded,
+    }) => `
+        flex-direction: ${flexDirection ? flexDirection : 'row'};
+        ${fullWidth && 'width: 100%'};
+        ${fullHeight && 'height: 100%'};
+        ${justifyContent && `justify-content: ${justifyContent}`};
+        ${alignItems && `align-items: ${alignItems}`};
+        ${gap && `gap: ${gap}px`};
+        ${overflow && `overflow: ${overflow}`};
+        ${background && `background: ${background}`};
+        ${rounded && 'border-radius: var(--border-radius)'};
+    `}
 `;
 export const FlexContainer = styled.div<
     FlexProps &
@@ -150,7 +165,7 @@ export const Text = styled.p<
     ${FontSize}
     ${FontWeight}
     ${Color}
-    ${({ align }) => align && `text-align: ${align};`}
+    ${({ align }) => align && `text-align: ${align}`};
 `;
 
 export const PulseAnimation = css`

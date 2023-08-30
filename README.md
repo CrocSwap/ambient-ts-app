@@ -1,20 +1,25 @@
-## Available Scripts
-
-In the project directory, you can run:
+## Available Scripts 
 
 ### `yarn start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Runs the Ambient front-end application in development mode.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Open [http://localhost:3000](http://localhost:3000) to view it in a browser.
 
-### `yarn test`
+Note: Node v16+ is required
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### `environment variables` 
 
-### `yarn lint`
+Configure the build environment by adding a file (e.g. .env.local) with variable definitions to the top level directory before starting the server.
 
-Lints the app
+Environment variable examples:
+
+REACT_APP_CHAIN_IDS=0x1,0x5
+
+REACT_APP_INFURA_KEY=*********************
+
+### `Contributions` 
+
+Contributions are always welcome! Feel free to open a GitHub Issue or Pull Request.
+
+Please see the docs for our coding style guide: https://github.com/CrocSwap/ambient-ts-app/tree/develop/docs

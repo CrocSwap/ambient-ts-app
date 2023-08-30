@@ -78,30 +78,17 @@ export default function TxSearchResults(props: propsIF) {
                         style={{ borderBottom: '1px solid var(--dark3)' }}
                         padding='0 0 4px 0'
                     >
-                        <Text
-                            fontWeight='300'
-                            fontSize='body'
-                            color='text2'
-                            align='center'
-                        >
-                            Pool
-                        </Text>
-                        <Text
-                            fontWeight='300'
-                            fontSize='body'
-                            color='text2'
-                            align='center'
-                        >
-                            Type
-                        </Text>
-                        <Text
-                            fontWeight='300'
-                            fontSize='body'
-                            color='text2'
-                            align='center'
-                        >
-                            Value
-                        </Text>
+                        {['Pool', 'Type', 'Value'].map((item, idx) => (
+                            <Text
+                                key={idx}
+                                fontWeight='300'
+                                fontSize='body'
+                                color='text2'
+                                align='center'
+                            >
+                                {item}
+                            </Text>
+                        ))}
                     </GridContainer>
                     <ResultsContainer flexDirection='column'>
                         {searchedTxs.slice(0, 4).map((tx: TransactionIF) => (

@@ -45,6 +45,7 @@ export const SidebarDiv = styled.div<{ open: boolean }>`
 export const ContentContainer = styled(FlexContainer)`
     width: 100%;
     flex: 1;
+    overflow: hidden;
 
     @media only screen and (max-width: 600px) {
         overflow: auto;
@@ -126,8 +127,6 @@ const Icon = css<{ open: boolean }>`
 `;
 export const SearchIcon = styled(BiSearch)<{ open: boolean }>`
     ${Icon}
-    margin: 8px 0;
-    border-bottom: 1px solid var(--dark3);
 `;
 export const RecentPoolsIcon = styled(GiBackwardTime)<{ open: boolean }>`
     ${Icon}
