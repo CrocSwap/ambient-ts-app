@@ -28,6 +28,7 @@ interface ChainDataContextIF {
     setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
+    client: Client;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -55,6 +56,7 @@ export const ChainDataContextProvider = (props: {
         setLastBlockNumber,
         gasPriceInGwei,
         setGasPriceinGwei,
+        client,
     };
 
     async function pollBlockNum(): Promise<void> {

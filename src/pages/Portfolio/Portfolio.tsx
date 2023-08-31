@@ -42,7 +42,7 @@ function Portfolio() {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, client } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
@@ -186,6 +186,7 @@ function Portfolio() {
                         lastBlockNumber,
                         cachedTokenDetails,
                         crocEnv,
+                        client,
                     );
 
                     const tokensWithLogos = tokenBalanceResults.map((token) => {

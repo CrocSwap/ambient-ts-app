@@ -59,7 +59,7 @@ export default function ExchangeBalance(props: propsIF) {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, client } = useContext(ChainDataContext);
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { addTokenInfo } = useContext(TokenContext);
@@ -117,6 +117,7 @@ export default function ExchangeBalance(props: propsIF) {
                             lastBlockNumber,
                             cachedTokenDetails,
                             crocEnv,
+                            client,
                         );
                     const erc20TokensWithLogos = tokenBalances.map((token) =>
                         addTokenInfo(token),

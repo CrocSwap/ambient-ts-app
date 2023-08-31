@@ -30,14 +30,13 @@ export default function Exchange(props: propsIF) {
     const { tokens } = useContext(TokenContext);
 
     const { erc20Tokens } = useAppSelector((state) => state.userData.tokens);
-    const connectedUserTokens = (erc20Tokens ?? []).filter((token) => token);
 
     const spinnerElement = <Spinner size={100} bg='var(--dark1)' centered />;
 
     const ItemContent = () => {
         if (connectedAccountActive) {
-            if (connectedUserTokens && connectedUserTokens.length > 0) {
-                return sequenceTokens(connectedUserTokens as TokenIF[]).map(
+            if (erc20Tokens && erc20Tokens.length > 0) {
+                return sequenceTokens(erc20Tokens as TokenIF[]).map(
                     (item, idx) => (
                         <ExchangeCard
                             key={idx}

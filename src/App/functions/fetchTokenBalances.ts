@@ -146,7 +146,6 @@ export const fetchErc20TokenBalances = async (
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getTokenInfoFromCovalentBalance = (tokenBalance: any): TokenIF => {
-        console.log({ tokenBalance });
         const tokenBalanceBigNumber = BigNumber.from(
             tokenBalance.balance.toString(),
         );
