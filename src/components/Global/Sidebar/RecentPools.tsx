@@ -4,12 +4,8 @@ import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { PoolIF } from '../../../utils/interfaces/exports';
 import PoolsListItem from './PoolsListItem';
-import {
-    SidebarPoolsListContainer,
-    SidebarPoolsListHeader,
-    SidebarPoolsListHeaderContainer,
-    SidebarPoolsListItemsContainer,
-} from '../../../styled/Sidebar';
+import { HeaderGrid, ItemsContainer } from '../../../styled/Components/Sidebar';
+import { FlexContainer } from '../../../styled/Common';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -22,13 +18,15 @@ function RecentPools(props: propsIF) {
     const { recentPools } = useContext(SidebarContext);
 
     return (
-        <SidebarPoolsListContainer fontSize={'body'}>
-            <SidebarPoolsListHeaderContainer>
-                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>Volume</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>TVL</SidebarPoolsListHeader>
-            </SidebarPoolsListHeaderContainer>
-            <SidebarPoolsListItemsContainer>
+        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
+            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
+                {['Pool', 'Volume', 'TVL'].map((item) => (
+                    <FlexContainer key={item} justifyContent='center'>
+                        {item}
+                    </FlexContainer>
+                ))}
+            </HeaderGrid>
+            <ItemsContainer>
                 {recentPools.get(5).map((pool: PoolIF) => (
                     <PoolsListItem
                         pool={pool}
@@ -37,8 +35,8 @@ function RecentPools(props: propsIF) {
                         cachedFetchTokenPrice={cachedFetchTokenPrice}
                     />
                 ))}
-            </SidebarPoolsListItemsContainer>
-        </SidebarPoolsListContainer>
+            </ItemsContainer>
+        </FlexContainer>
     );
 }
 

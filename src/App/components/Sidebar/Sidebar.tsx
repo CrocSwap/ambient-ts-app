@@ -11,13 +11,11 @@ import SidebarLimitOrders from '../../../components/Global/Sidebar/SidebarLimitO
 import SidebarRecentTransactions from '../../../components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions';
 
 // START: Import Local Files
-import styles from './Sidebar.module.css';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
-import { MdClose, MdOutlineExpand } from 'react-icons/md';
-import { LuDroplets, LuFileClock } from 'react-icons/lu';
+import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
-import { AiFillLock, AiFillUnlock, AiOutlineHeart } from 'react-icons/ai';
+import { AiFillLock, AiFillUnlock } from 'react-icons/ai';
 import { BsChevronExpand, BsChevronContract } from 'react-icons/bs';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools';
 import {
@@ -30,7 +28,20 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
-import { GiBackwardTime, GiSaveArrow } from 'react-icons/gi';
+import { FlexContainer } from '../../../styled/Common';
+import {
+    ContentContainer,
+    FavoritePoolsIcon,
+    LimitsIcon,
+    RangesIcon,
+    RecentPoolsIcon,
+    SearchContainer,
+    SearchIcon,
+    SearchInput,
+    SidebarDiv,
+    TopPoolsIcon,
+    TransactionsIcon,
+} from '../../../styled/Components/Sidebar';
 
 function Sidebar() {
     const { cachedPoolStatsFetch, cachedFetchTokenPrice } =
@@ -40,9 +51,6 @@ function Sidebar() {
     const { sidebar } = useContext(SidebarContext);
 
     const graphData = useAppSelector((state) => state.graphData);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [exploreSearchInput, setExploreSearchInput] = useState('');
 
     const filterFn = <T extends { chainId: string }>(x: T) =>
         x.chainId === chainData.chainId;
@@ -62,14 +70,7 @@ function Sidebar() {
     const recentPoolsData = [
         {
             name: 'Recent Pools',
-            icon: (
-                <GiBackwardTime
-                    className={`${styles.icon} ${
-                        !sidebar.isOpen && styles.closed
-                    }`}
-                    size={20}
-                />
-            ),
+            icon: <RecentPoolsIcon open={sidebar.isOpen} size={20} />,
 
             data: (
                 <RecentPools
@@ -82,14 +83,7 @@ function Sidebar() {
     const topPoolsSection = [
         {
             name: 'Top Pools',
-            icon: (
-                <LuDroplets
-                    className={`${styles.icon} ${
-                        !sidebar.isOpen && styles.closed
-                    }`}
-                    size={20}
-                />
-            ),
+            icon: <TopPoolsIcon open={sidebar.isOpen} size={20} />,
 
             data: (
                 <TopPools
@@ -103,14 +97,7 @@ function Sidebar() {
     const rangePositions = [
         {
             name: 'Range Positions',
-            icon: (
-                <MdOutlineExpand
-                    className={`${styles.icon} ${
-                        !sidebar.isOpen && styles.closed
-                    }`}
-                    size={20}
-                />
-            ),
+            icon: <RangesIcon open={sidebar.isOpen} size={20} />,
             data: <SidebarRangePositions userPositions={mostRecentPositions} />,
         },
     ];
@@ -118,14 +105,7 @@ function Sidebar() {
     const recentLimitOrders = [
         {
             name: 'Limit Orders',
-            icon: (
-                <GiSaveArrow
-                    className={`${styles.icon} ${
-                        !sidebar.isOpen && styles.closed
-                    }`}
-                    size={20}
-                />
-            ),
+            icon: <LimitsIcon open={sidebar.isOpen} size={20} />,
             data: (
                 <SidebarLimitOrders limitOrderByUser={mostRecentLimitOrders} />
             ),
@@ -135,14 +115,7 @@ function Sidebar() {
     const favoritePools = [
         {
             name: 'Favorite Pools',
-            icon: (
-                <AiOutlineHeart
-                    className={`${styles.icon} ${
-                        !sidebar.isOpen && styles.closed
-                    }`}
-                    size={20}
-                />
-            ),
+            icon: <FavoritePoolsIcon open={sidebar.isOpen} size={20} />,
 
             data: (
                 <FavoritePools
@@ -156,14 +129,7 @@ function Sidebar() {
     const recentTransactions = [
         {
             name: 'Transactions',
-            icon: (
-                <LuFileClock
-                    className={`${styles.icon} ${
-                        !sidebar.isOpen && styles.closed
-                    }`}
-                    size={20}
-                />
-            ),
+            icon: <TransactionsIcon open={sidebar.isOpen} size={20} />,
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTxs}
@@ -182,8 +148,6 @@ function Sidebar() {
     const [searchInput, setSearchInput] = useState<string>('');
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
-
-    const searchInputRef = useRef(null);
 
     const handleInputClear = () => {
         setSearchInput('');
@@ -211,29 +175,46 @@ function Sidebar() {
         setSearchInput(e.target.value);
     };
     const searchContainer = (
-        <div className={styles.search_container}>
-            <div className={styles.search__icon} onClick={focusInput}>
+        <SearchContainer
+            flexDirection='row'
+            alignItems='center'
+            justifyContent='center'
+            gap={4}
+            padding='2px 8px'
+        >
+            <FlexContainer
+                alignItems='center'
+                justifyContent='center'
+                padding='2px 0 0 0'
+            >
                 <BiSearch
                     size={18}
                     color={sidebar.isOpen ? 'var(--text2)' : 'var(--accent5)'}
+                    onClick={focusInput}
                 />
-            </div>
-            <input
+            </FlexContainer>
+            <SearchInput
                 type='text'
                 id='search_input'
-                ref={searchInputRef}
+                value={searchInput}
                 placeholder='Search...'
-                className={styles.search__box}
-                onChange={(e) => handleSearchInput(e)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleSearchInput(e)
+                }
                 spellCheck='false'
+                autoComplete='off'
                 tabIndex={1}
             />
             {searchInput && (
-                <div onClick={handleInputClear} className={styles.close_icon}>
-                    <MdClose size={20} color='#ebebeb66' />{' '}
-                </div>
+                <FlexContainer
+                    onClick={handleInputClear}
+                    role='button'
+                    tabIndex={0}
+                >
+                    <MdClose size={18} color='#ebebeb66' />{' '}
+                </FlexContainer>
             )}
-        </div>
+        </SearchContainer>
     );
 
     const [openAllDefault, setOpenAllDefault] = useState(false);
@@ -254,83 +235,88 @@ function Sidebar() {
         setOpenAllDefault(!openAllDefault);
     };
 
-    const controlIconStyle = { margin: 'auto' };
-
     const searchContainerDisplay = (
-        <div
-            className={` ${styles.sidebar_link_search} ${
-                styles.main_search_container
-            } ${!sidebar.isOpen && styles.sidebar_link_search_closed}`}
+        <FlexContainer
+            flexDirection='row'
+            alignItems='center'
+            justifyContent='center'
+            gap={4}
         >
-            {searchContainer}
             {sidebar.isOpen ? (
-                <div style={{ cursor: 'pointer', display: 'flex' }}>
-                    <DefaultTooltip
-                        title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
+                <>
+                    {searchContainer}
+                    <FlexContainer
+                        flexDirection='row'
+                        alignItems='center'
+                        justifyContent='center'
                     >
-                        {isLocked ? (
-                            <AiFillLock
-                                style={controlIconStyle}
-                                onClick={toggleLockSidebar}
+                        <DefaultTooltip
+                            title={isLocked ? 'Unlock Sidebar' : 'Lock Sidebar'}
+                        >
+                            {isLocked ? (
+                                <AiFillLock
+                                    size={18}
+                                    onClick={toggleLockSidebar}
+                                />
+                            ) : (
+                                <AiFillUnlock
+                                    size={18}
+                                    onClick={toggleLockSidebar}
+                                />
+                            )}
+                        </DefaultTooltip>
+                        <DefaultTooltip
+                            title={
+                                openAllDefault ? 'Collapse All' : 'Expand All'
+                            }
+                        >
+                            {openAllDefault ? (
+                                <BsChevronContract
+                                    size={18}
+                                    onClick={toggleExpandCollapseAll}
+                                />
+                            ) : (
+                                <BsChevronExpand
+                                    size={18}
+                                    onClick={toggleExpandCollapseAll}
+                                />
+                            )}
+                        </DefaultTooltip>
+                        <DefaultTooltip
+                            title={
+                                isLocked
+                                    ? 'Sidebar locked'
+                                    : sidebar.isOpen
+                                    ? 'Close Sidebar'
+                                    : 'Open Sidebar'
+                            }
+                        >
+                            <input
+                                type='image'
+                                src={closeSidebarImage}
+                                alt='close sidebar'
+                                onClick={() => sidebar.close(true)}
+                                disabled={isLocked}
+                                style={{ opacity: isLocked ? 0.5 : 1 }}
                             />
-                        ) : (
-                            <AiFillUnlock
-                                style={controlIconStyle}
-                                onClick={toggleLockSidebar}
-                            />
-                        )}
-                    </DefaultTooltip>
-                    <DefaultTooltip
-                        title={openAllDefault ? 'Collapse All' : 'Expand All'}
-                    >
-                        {openAllDefault ? (
-                            <BsChevronContract
-                                style={controlIconStyle}
-                                onClick={toggleExpandCollapseAll}
-                            />
-                        ) : (
-                            <BsChevronExpand
-                                style={controlIconStyle}
-                                onClick={toggleExpandCollapseAll}
-                            />
-                        )}
-                    </DefaultTooltip>
-                    <DefaultTooltip
-                        title={
-                            isLocked
-                                ? 'Sidebar locked'
-                                : sidebar.isOpen
-                                ? 'Close Sidebar'
-                                : 'Open Sidebar'
-                        }
-                    >
-                        <input
-                            type='image'
-                            src={closeSidebarImage}
-                            alt='close sidebar'
-                            onClick={() => sidebar.close(true)}
-                            disabled={isLocked}
-                            style={{ opacity: isLocked ? 0.5 : 1 }}
-                        />
-                    </DefaultTooltip>
-                </div>
+                        </DefaultTooltip>
+                    </FlexContainer>
+                </>
             ) : (
-                <BiSearch
-                    size={20}
-                    className={!sidebar.isOpen && styles.closed}
-                    onClick={() => sidebar.open(false)}
-                />
+                <div style={{ borderBottom: '1px solid var(--dark3)' }}>
+                    <SearchIcon
+                        open={sidebar.isOpen}
+                        size={20}
+                        onClick={() => sidebar.open(false)}
+                    />
+                </div>
             )}
-        </div>
+        </FlexContainer>
     );
     const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const sidebarStyle = sidebar.isOpen
-        ? styles.sidebar_active
-        : styles.sidebar;
-
     const regularSidebarDisplay = (
-        <div className={styles.sidebar_content_container}>
+        <ContentContainer flexDirection='column'>
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     sidebar={sidebar}
@@ -398,19 +384,27 @@ function Sidebar() {
                     isDefaultOverridden={isDefaultOverridden}
                 />
             ))}
-        </div>
+        </ContentContainer>
     );
 
     return (
-        <div ref={sidebarRef} className={styles.sidebar_container}>
-            <nav
-                className={`${styles.sidebar} ${sidebarStyle}`}
+        <FlexContainer
+            ref={sidebarRef}
+            flexDirection='column'
+            alignItems='center'
+            justifyContent='center'
+        >
+            <SidebarDiv
+                open={sidebar.isOpen}
                 onClick={() => {
                     sidebar.isOpen || sidebar.open(false);
                 }}
-                style={!sidebar.isOpen ? { cursor: 'pointer' } : undefined}
             >
-                <div className={styles.sidebar_nav}>
+                <FlexContainer
+                    flexDirection='column'
+                    alignItems='center'
+                    fullHeight
+                >
                     {searchContainerDisplay}
                     {searchData.isInputValid && sidebar.isOpen && searchMode ? (
                         <SidebarSearchResults
@@ -421,9 +415,9 @@ function Sidebar() {
                     ) : (
                         regularSidebarDisplay
                     )}
-                </div>
-            </nav>
-        </div>
+                </FlexContainer>
+            </SidebarDiv>
+        </FlexContainer>
     );
 }
 

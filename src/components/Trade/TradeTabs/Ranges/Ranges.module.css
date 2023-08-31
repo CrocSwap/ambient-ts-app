@@ -218,7 +218,7 @@
     .main_list_container .row_container,
     .main_list_container .header {
         grid-template-columns:
-            minmax(100px, 1fr) minmax(70px, 1fr)
+            minmax(100px, 1fr) minmax(90px, 1fr)
             minmax(80px, 1fr) minmax(86px, 1fr) minmax(60px, 1fr) minmax(
                 60px,
                 1fr
@@ -239,7 +239,7 @@
     .leaderboard .row_container,
     .leaderboard .header {
         grid-template-columns:
-            minmax(115px, 1fr) minmax(70px, 1fr)
+            minmax(115px, 1fr) minmax(90px, 1fr)
             minmax(80px, 1fr) minmax(86px, 1fr) minmax(60px, 1fr) minmax(
                 60px,
                 1fr
@@ -255,21 +255,21 @@
     .main_list_container .header {
         grid-template-columns:
             minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
-            minmax(62px, 1fr) minmax(62px, 1fr) minmax(78px, 1fr) minmax(
+            minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(
                 100px,
                 1fr
             )
-            minmax(100px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(107px, 25%);
+            minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 25%);
     }
     .leaderboard .row_container,
     .leaderboard .header {
         grid-template-columns:
-            minmax(88px, 1fr) minmax(125px, 1fr) minmax(125px, 1fr)
-            minmax(72px, 1fr) minmax(100px, 1fr) minmax(60px, 1fr) minmax(
-                86px,
+            minmax(88px, 1fr) minmax(80px, 1fr) minmax(125px, 1fr)
+            minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(
+                90px,
                 1fr
             )
-            minmax(80px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr)
+            minmax(90px, 1fr) minmax(60px, 1fr) minmax(38px, 1fr)
             minmax(107px, 25%);
     }
 }

@@ -227,7 +227,7 @@ function Orders(props: propsIF) {
             className: 'type',
             show: !showColumns,
             slug: 'type',
-            sortable: true,
+            sortable: false,
             alignCenter: true,
         },
         {
