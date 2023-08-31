@@ -45,9 +45,11 @@ import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 import ButtonSwitch from '../../components/Global/Toggle/ButtonSwitch';
 import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
-import { FiRefreshCw } from 'react-icons/fi';
+import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer } from '../../styled/Common';
 import { TokenInputWalletBalance } from '../../components/Global/TokenInput/TokenInputWalletBalance';
+import Toggle from '../../components/Global/Toggle/Toggle';
+import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 
 // react functional component
 export default function InitPool() {
@@ -707,9 +709,36 @@ export default function InitPool() {
         });
     }
 
+    const newUrlTooltip = (
+        <TextOnlyTooltip
+            interactive
+            title={
+                <p
+                    onClick={() =>
+                        goToNewUrlParams(
+                            chainId,
+                            tokenA.address,
+                            tokenB.address,
+                        )
+                    }
+                    className={styles.gen_link}
+                >
+                    {` Trade ${tokenA.symbol} / ${tokenB.symbol}`}{' '}
+                    <FiExternalLink color='var(--accent6)' />
+                </p>
+            }
+            placement={'right'}
+            enterDelay={750}
+            leaveDelay={0}
+        >
+            <p className={styles.label_title} style={{ width: '80px' }}>
+                Select Tokens
+            </p>
+        </TextOnlyTooltip>
+    );
     const simpleTokenSelect = (
         <div className={styles.local_token_container}>
-            <p className={styles.label_title}>Select Tokens</p>
+            {newUrlTooltip}
             <LocalTokenSelect
                 tokenAorB={'A'}
                 token={tokenA}
@@ -720,13 +749,6 @@ export default function InitPool() {
                 token={tokenB}
                 setTokenModalOpen={setTokenModalOpen}
             />
-            <button
-                onClick={() =>
-                    goToNewUrlParams(chainId, tokenA.address, tokenB.address)
-                }
-            >
-                Go to new link
-            </button>
         </div>
     );
 
@@ -821,6 +843,21 @@ export default function InitPool() {
         </div>
     );
 
+    const [isMintLiq, setIsMinLiq] = useState(false);
+
+    const mintInitialLiquidity = (
+        <FlexContainer flexDirection='row' justifyContent='space-between'>
+            <p className={styles.label_title}>Mint Initial Liquidity</p>
+
+            <Toggle
+                id='init_mint_liq'
+                isOn={isMintLiq}
+                disabled={poolExists === true}
+                handleToggle={() => setIsMinLiq(!isMintLiq)}
+            />
+        </FlexContainer>
+    );
+
     const newContent = (
         <section className={styles.main}>
             <div className={styles.outer_container}>
@@ -840,6 +877,7 @@ export default function InitPool() {
                             </div>
 
                             <div className={styles.right_container}>
+                                {mintInitialLiquidity}
                                 <p className={styles.label_title}>
                                     Initial Range
                                 </p>
