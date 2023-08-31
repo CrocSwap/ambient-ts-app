@@ -11,7 +11,6 @@ import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 import { USDC } from '../../../../../utils/tokens/exports';
-import { tokenData } from '../../../../../utils/state/userDataSlice';
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import {
@@ -28,6 +27,7 @@ import {
     AccountLink,
 } from '../../../../../styled/Components/Header';
 import { FlexContainer } from '../../../../../styled/Common';
+import { ZERO_ADDRESS } from '../../../../../constants';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -37,16 +37,6 @@ interface WalletDropdownPropsIF {
     connectorName: string | undefined;
     clickLogout: () => void;
     accountAddressFull: string;
-    ethAmount: string;
-    ethValue: string | undefined;
-    walletDropdownTokenData:
-        | {
-              logo: string;
-              symbol: string;
-              value: string | undefined;
-              amount: string | undefined;
-          }[]
-        | null;
 }
 
 interface TokenAmountDisplayPropsIF {
@@ -65,23 +55,25 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         connectorName,
         clickLogout,
         accountAddressFull,
-        ethAmount,
-        ethValue,
     } = props;
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const tokenDataFromRTK: tokenData = useAppSelector(
-        (state) => state.userData.tokens,
+    const tokenBalances: TokenIF[] | undefined = useAppSelector(
+        (state) => state.userData.tokenBalances,
     );
-    const erc20Tokens: TokenIF[] = tokenDataFromRTK.erc20Tokens ?? [];
+    const nativeData: TokenIF | undefined =
+        tokenBalances &&
+        tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
     const usdcAddr: string = USDC[chainId as '0x1'];
-    const usdcData: TokenIF | undefined = erc20Tokens.find(
-        (tkn: TokenIF) =>
-            tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
-            tkn.chainId === parseInt(chainId),
-    );
+    const usdcData: TokenIF | undefined =
+        tokenBalances &&
+        tokenBalances.find(
+            (tkn: TokenIF) =>
+                tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
+                tkn.chainId === parseInt(chainId),
+        );
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const blockExplorer = getChainExplorer(chainId);
@@ -104,15 +96,15 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     }
 
     let usdcBalForDOM: string;
-    if (tokenDataFromRTK.erc20Tokens) {
-        usdcBalForDOM = usdcData?.combinedBalanceDisplayTruncated ?? '0.00';
+    if (tokenBalances) {
+        usdcBalForDOM = usdcData?.combinedBalanceDisplayTruncated ?? '...';
     } else {
         usdcBalForDOM = '…';
     }
 
     const [usdcVal, setUsdcVal] = useState<string | undefined>();
     useEffect(() => {
-        if (tokenDataFromRTK.erc20Tokens === undefined) {
+        if (tokenBalances === undefined) {
             setUsdcVal(undefined);
             return;
         }
@@ -138,12 +130,34 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 setUsdcVal(undefined);
             }
         });
-    }, [chainId, JSON.stringify(tokenDataFromRTK)]);
+    }, [chainId, JSON.stringify(tokenBalances)]);
+
+    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
+
+    const ethMainnetUsdValue =
+        ethMainnetUsdPrice !== undefined &&
+        nativeData?.combinedBalanceDisplayTruncated !== undefined
+            ? ethMainnetUsdPrice *
+              parseFloat(
+                  nativeData?.combinedBalanceDisplayTruncated.replaceAll(
+                      ',',
+                      '',
+                  ),
+              )
+            : undefined;
+
+    const ethMainnetUsdValueTruncated = getFormattedNumber({
+        value: ethMainnetUsdValue,
+        minFracDigits: 2,
+        maxFracDigits: 2,
+    });
+
+    const ethValue = ethMainnetUsdValueTruncated;
 
     const tokensData = [
         {
-            symbol: 'ETH',
-            amount: ethAmount,
+            symbol: nativeData?.symbol || '???',
+            amount: nativeData?.combinedBalanceDisplayTruncated || '0.00',
             value: ethValue,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         },

@@ -29,11 +29,13 @@ export default function Wallet(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { erc20Tokens } = useAppSelector((state) => state.userData.tokens);
+    const tokenBalances = useAppSelector(
+        (state) => state.userData.tokenBalances,
+    );
 
     const userTokens: Array<TokenIF | undefined> =
-        connectedAccountActive && erc20Tokens
-            ? erc20Tokens
+        connectedAccountActive && tokenBalances
+            ? tokenBalances
             : resolvedAddressTokens;
 
     function sequenceTokens(tkns: TokenIF[]): TokenIF[] {

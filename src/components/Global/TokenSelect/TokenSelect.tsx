@@ -15,13 +15,8 @@ export default function TokenSelect(props: propsIF) {
 
     const userData = useAppSelector((state) => state.userData);
 
-    const connectedUserNativeToken = userData.tokens.nativeToken;
-    const connectedUserErc20Tokens = userData.tokens.erc20Tokens;
+    const connectedUserTokens = userData.tokenBalances;
     const isUserLoggedIn = userData.isLoggedIn;
-
-    const connectedUserTokens = connectedUserNativeToken
-        ? [connectedUserNativeToken].concat(connectedUserErc20Tokens || [])
-        : connectedUserErc20Tokens;
 
     const isMatchingToken = (tokenInRtk: TokenIF) =>
         tokenInRtk.address.toLowerCase() === token.address.toLowerCase();
@@ -69,7 +64,7 @@ export default function TokenSelect(props: propsIF) {
                 <p>
                     {isUserLoggedIn
                         ? combinedBalanceDisplayTruncated === undefined
-                            ? connectedUserErc20Tokens !== undefined
+                            ? connectedUserTokens !== undefined
                                 ? '0'
                                 : '...'
                             : tokenIsEth &&

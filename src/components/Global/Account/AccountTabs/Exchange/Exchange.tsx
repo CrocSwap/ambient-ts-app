@@ -29,14 +29,16 @@ export default function Exchange(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { erc20Tokens } = useAppSelector((state) => state.userData.tokens);
+    const tokenBalances = useAppSelector(
+        (state) => state.userData.tokenBalances,
+    );
 
     const spinnerElement = <Spinner size={100} bg='var(--dark1)' centered />;
 
     const ItemContent = () => {
         if (connectedAccountActive) {
-            if (erc20Tokens && erc20Tokens.length > 0) {
-                return sequenceTokens(erc20Tokens as TokenIF[]).map(
+            if (tokenBalances && tokenBalances.length > 0) {
+                return sequenceTokens(tokenBalances as TokenIF[]).map(
                     (item, idx) => (
                         <ExchangeCard
                             key={idx}
