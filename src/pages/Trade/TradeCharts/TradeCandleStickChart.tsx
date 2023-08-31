@@ -24,6 +24,7 @@ import { LiquidityDataLocal } from './TradeCharts';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import {
     chartItemStates,
+    drawDataHistory,
     liquidityChartData,
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
@@ -136,6 +137,10 @@ function TradeCandleStickChart(props: propsIF) {
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
+
+    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
+        drawDataHistory[]
+    >([]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -822,6 +827,8 @@ function TradeCandleStickChart(props: propsIF) {
                         liquidityDepthScale={liquidityDepthScale}
                         candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
+                        drawnShapeHistory={drawnShapeHistory}
+                        setDrawnShapeHistory={setDrawnShapeHistory}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

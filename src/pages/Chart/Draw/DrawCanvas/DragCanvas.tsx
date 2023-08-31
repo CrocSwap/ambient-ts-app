@@ -53,7 +53,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                         scaleData.yScale(selectedDrawnShape.data?.data[0].y) +
                             movemementY,
                     ),
-                    ctx: undefined,
+                    ctx: selectedDrawnShape.data?.data[0].ctx,
                 },
                 {
                     x: scaleData.xScale.invert(
@@ -64,7 +64,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                         scaleData.yScale(selectedDrawnShape.data.data[1].y) +
                             movemementY,
                     ),
-                    ctx: undefined,
+                    ctx: selectedDrawnShape.data?.data[1].ctx,
                 },
             ];
             drawnShapeHistory[index].data = lastData;
@@ -86,6 +86,37 @@ export default function DragCanvas(props: DragCanvasProps) {
         );
         previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
         previosData[lastDataIndex].y = scaleData.yScale.invert(offsetY);
+        drawnShapeHistory[index].data = previosData;
+    }
+
+    function updateDrawRect(
+        offsetX: number,
+        offsetY: number,
+        rectDragDirection: string,
+    ) {
+        const index = drawnShapeHistory.findIndex(
+            (item) => item === selectedDrawnShape?.data,
+        );
+
+        const previosData = drawnShapeHistory[index].data;
+
+        const newX = scaleData.xScale.invert(offsetX);
+        const newY = scaleData.yScale.invert(offsetY);
+
+        previosData[0].x = rectDragDirection.includes('Left')
+            ? newX
+            : previosData[0].x;
+        previosData[0].y = rectDragDirection.includes('top')
+            ? newY
+            : previosData[0].y;
+
+        previosData[1].x = rectDragDirection.includes('Right')
+            ? newX
+            : previosData[1].x;
+        previosData[1].y = rectDragDirection.includes('bottom')
+            ? newY
+            : previosData[1].y;
+
         drawnShapeHistory[index].data = previosData;
     }
 
@@ -114,11 +145,36 @@ export default function DragCanvas(props: DragCanvasProps) {
             .node() as HTMLCanvasElement;
         const canvasRect = canvas.getBoundingClientRect();
 
+        let rectDragDirection = '';
+
         const dragDrawnShape = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
-            // .on('start', (event) => {
-            //     console.log('start');
-            // })
+            .on('start', () => {
+                if (
+                    selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'Square'
+                ) {
+                    const index = drawnShapeHistory.findIndex(
+                        (item) => item === selectedDrawnShape?.data,
+                    );
+
+                    const previosData = drawnShapeHistory[index].data;
+
+                    const selectedCircle = selectedDrawnShape.selectedCircle;
+
+                    if (selectedCircle) {
+                        const direction =
+                            previosData[0].y <= selectedCircle.y
+                                ? 'top'
+                                : 'bottom';
+
+                        rectDragDirection =
+                            previosData[0].x >= selectedCircle.x
+                                ? direction + 'Left'
+                                : direction + 'Right';
+                    }
+                }
+            })
             .on('drag', function (event) {
                 const offsetY = event.sourceEvent.clientY - canvasRect?.top;
                 const offsetX = event.sourceEvent.clientX - canvasRect?.left;
@@ -131,6 +187,17 @@ export default function DragCanvas(props: DragCanvasProps) {
                         dragLine(event);
                     } else {
                         updateDrawLine(offsetX, offsetY);
+                    }
+                }
+
+                if (
+                    selectedDrawnShape &&
+                    selectedDrawnShape.data.type === 'Square'
+                ) {
+                    if (!selectedDrawnShape.selectedCircle) {
+                        dragLine(event);
+                    } else {
+                        updateDrawRect(offsetX, offsetY, rectDragDirection);
                     }
                 }
             })

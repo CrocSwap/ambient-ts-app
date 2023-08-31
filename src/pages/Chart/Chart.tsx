@@ -131,6 +131,10 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
     candleTimeInSeconds: number;
+    drawnShapeHistory: drawDataHistory[];
+    setDrawnShapeHistory: React.Dispatch<
+        React.SetStateAction<drawDataHistory[]>
+    >;
 }
 
 export default function Chart(props: propsIF) {
@@ -155,6 +159,8 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
+        drawnShapeHistory,
+        setDrawnShapeHistory,
     } = props;
 
     const {
@@ -167,9 +173,6 @@ export default function Chart(props: propsIF) {
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
 
-    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
-        drawDataHistory[]
-    >([]);
     const [isDragActive, setIsDragActive] = useState(false);
     const [isDrawActive, setIsDrawActive] = useState(false);
     const [activeDrawingType, setActiveDrawingType] = useState('');
@@ -2322,6 +2325,12 @@ export default function Chart(props: propsIF) {
 
                             lineOfBand?.forEach((line) => {
                                 lineSeries(line);
+                                if (
+                                    selectedDrawnShape &&
+                                    selectedDrawnShape.data.time === item.time
+                                ) {
+                                    circleSeries(line);
+                                }
                             });
                         }
                     });
@@ -2795,12 +2804,49 @@ export default function Chart(props: propsIF) {
         return false;
     }
 
+    function checkRectLocation(
+        element: lineData[],
+        mouseX: number,
+        mouseY: number,
+    ) {
+        let isOverLine = false;
+
+        if (scaleData) {
+            const threshold = 10;
+
+            const allBandLines = createPointsOfBandLine(element);
+
+            allBandLines.forEach((item: { x: number; y: number }[]) => {
+                const distance = distanceToLine(
+                    mouseX,
+                    mouseY,
+                    scaleData.xScale(item[0].x),
+                    scaleData.yScale(item[0].y),
+                    scaleData.xScale(item[1].x),
+                    scaleData.yScale(item[1].y),
+                );
+
+                if (distance < threshold) {
+                    isOverLine = true;
+                }
+            });
+        }
+
+        return isOverLine;
+    }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
         drawnShapeHistory.forEach((element) => {
             if (element.type === 'Brush') {
                 if (checkLineLocation(element.data, mouseX, mouseY)) {
+                    resElement = element;
+                }
+            }
+
+            if (element.type === 'Square') {
+                if (checkRectLocation(element.data, mouseX, mouseY)) {
                     resElement = element;
                 }
             }
