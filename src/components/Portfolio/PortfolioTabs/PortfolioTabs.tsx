@@ -263,14 +263,14 @@ export default function PortfolioTabs(props: propsIF) {
 
     const activeAccountTransactionData = connectedAccountActive
         ? connectedAccountTransactionData?.filter((tx) => {
-              if (tx.changeType !== 'fill') {
+              if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
                   return true;
               } else {
                   return false;
               }
           })
         : lookupAccountTransactionData?.filter((tx) => {
-              if (tx.changeType !== 'fill') {
+              if (tx.changeType !== 'fill' && tx.changeType !== 'cross') {
                   return true;
               } else {
                   return false;

@@ -136,6 +136,10 @@ function Transactions(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (!isCandleSelected) setIsLoading(true);
+    }, [isCandleSelected]);
+
+    useEffect(() => {
         if (isAccountView && connectedAccountActive)
             setIsLoading(
                 graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
@@ -152,6 +156,7 @@ function Transactions(props: propsIF) {
             );
         else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
     }, [
+        isCandleSelected,
         showAllData,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
@@ -233,7 +238,10 @@ function Transactions(props: propsIF) {
                 if (selectedCandleChangesJson) {
                     const selectedCandleChangesWithoutFills =
                         selectedCandleChangesJson.filter((tx) => {
-                            if (tx.changeType !== 'fill') {
+                            if (
+                                tx.changeType !== 'fill' &&
+                                tx.changeType !== 'cross'
+                            ) {
                                 return true;
                             } else {
                                 return false;
