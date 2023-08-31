@@ -193,6 +193,7 @@ export const ChainDataContextProvider = (props: {
 
                     dispatch(setTokenBalances(tokensWithLogos));
                 } catch (error) {
+                    dispatch(setTokenBalances([]));
                     console.error({ error });
                 }
             }

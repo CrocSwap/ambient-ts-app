@@ -33,10 +33,8 @@ export default function Wallet(props: propsIF) {
         (state) => state.userData.tokenBalances,
     );
 
-    const userTokens: Array<TokenIF | undefined> =
-        connectedAccountActive && tokenBalances
-            ? tokenBalances
-            : resolvedAddressTokens;
+    const userTokens: Array<TokenIF | undefined> | undefined =
+        connectedAccountActive ? tokenBalances : resolvedAddressTokens;
 
     function sequenceTokens(tkns: TokenIF[]): TokenIF[] {
         const tokensWithOrigins: TokenIF[] = tkns
@@ -125,7 +123,7 @@ export default function Wallet(props: propsIF) {
         <div className={styles.container}>
             <WalletHeader />
             <div className={styles.item_container}>
-                {userTokens && userTokens.length > 0 ? (
+                {userTokens !== undefined ? (
                     // values can be `undefined` but this fn will filter them out
                     sequenceTokens(userTokens as TokenIF[]).map((token) => (
                         <WalletCard
