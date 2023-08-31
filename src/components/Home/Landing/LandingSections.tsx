@@ -1,5 +1,3 @@
-import styles from './LandingSections.module.css';
-
 import liquidityImage from '../../../assets/images/home/liquidity.png';
 import orderImage from '../../../assets/images/home/orders.png';
 import Investors from './Investors';
@@ -9,16 +7,21 @@ import bg1 from '../../../assets/images/home/home2.png';
 import bg2 from '../../../assets/images/home/home3.png';
 import bg3 from '../../../assets/images/home/home4.png';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import {
+    SlideContainer,
+    RowContainer,
+    FasterSection,
+    BGImage,
+} from './LandingSections.styles';
 
 export default function LandingSections() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     const secondRow = (
-        <div
-            className={`${styles.slide_container} ${styles.height_medium} ${styles.home2}`}
-        >
-            <div className={styles.row_container}>
-                <section className={styles.faster_section}>
+        // TODO: height can probaly be simplified - compare to figma
+        <SlideContainer tabletHeight='medium' style={{ height: '500px' }}>
+            <RowContainer>
+                <FasterSection>
                     <h1 tabIndex={0}>
                         Zero-to-One Decentralized Trading Protocol
                     </h1>
@@ -29,21 +32,21 @@ export default function LandingSections() {
                         liquidity rewards, and a fairer trading experience.
                     </p>
                     <TradeNowButton />
-                </section>
-            </div>
-        </div>
+                </FasterSection>
+            </RowContainer>
+        </SlideContainer>
     );
 
     const thirdRow = (
-        <div className={`${styles.slide_container} ${styles.height_large}`}>
-            <div className={`${styles.row_container} ${styles.column_reverse}`}>
+        <SlideContainer tabletHeight='large'>
+            <RowContainer>
                 <img
                     src={liquidityImage}
                     alt='concentrated and ambient liquidity'
                     width='331px'
                     height='420px'
                 />
-                <section className={styles.faster_section}>
+                <FasterSection>
                     <h2 tabIndex={0}>Deep, Diversified Liquidity</h2>
                     <p tabIndex={0}>
                         Ambient is built for diversified, sustainable liquidity
@@ -52,17 +55,15 @@ export default function LandingSections() {
                         (‘V2’) and knock-out liquidity in the same liquidity
                         pool.
                     </p>
-                </section>
-            </div>
-        </div>
+                </FasterSection>
+            </RowContainer>
+        </SlideContainer>
     );
 
     const fourthRow = (
-        <div
-            className={`${styles.slide_container} ${styles.height_large} ${styles.home3}`}
-        >
-            <div className={styles.row_container}>
-                <section className={styles.faster_section}>
+        <SlideContainer tabletHeight='large'>
+            <RowContainer>
+                <FasterSection>
                     <h2 tabIndex={0}>
                         Bridge the Gap Between Trading and LP’ing
                     </h2>
@@ -75,24 +76,22 @@ export default function LandingSections() {
                         for greater rewards for liquidity providers, and less
                         impact for traders.
                     </p>
-                </section>
+                </FasterSection>
                 <img
                     src={orderImage}
                     alt='range and limit orders'
                     width='240px'
                     height='420px'
                 />
-            </div>
-        </div>
+            </RowContainer>
+        </SlideContainer>
     );
 
     const fifthRow = (
-        <div
-            className={`${styles.slide_container} ${styles.height_large} ${styles.home4}`}
-        >
-            <div className={styles.row_container}>
+        <SlideContainer tabletHeight='large'>
+            <RowContainer>
                 <div />
-                <section className={styles.faster_section}>
+                <FasterSection>
                     <h2 tabIndex={0}>Better than CEX</h2>
                     <p tabIndex={0}>
                         Built for traders and market makers of all kinds,
@@ -101,16 +100,16 @@ export default function LandingSections() {
                         best-in-class user experience.
                     </p>
                     <TradeNowButton />
-                </section>
-            </div>
-        </div>
+                </FasterSection>
+            </RowContainer>
+        </SlideContainer>
     );
 
     return (
-        <div className={styles.main_container}>
-            <img src={bg1} alt='' className={styles.bg1} />
-            <img src={bg2} alt='' className={styles.bg2} />
-            <img src={bg3} alt='' className={styles.bg3} />
+        <div style={{ position: 'relative' }}>
+            <BGImage src={bg1} alt='bg1' height={600} top={100} />
+            <BGImage src={bg2} alt='bg2' height={500} top={870} />
+            <BGImage src={bg3} alt='bg3' height={600} top={1750} />
 
             {secondRow}
             {thirdRow}

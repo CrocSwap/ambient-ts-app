@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { Text } from '../../../../styled/Common';
 
 interface ButtonProps {
     inNav?: boolean;
+    mobileVersion?: boolean;
 }
 export const StyledLink = styled(Link)<ButtonProps>`
     width: 100%;
@@ -36,12 +38,19 @@ export const StyledLink = styled(Link)<ButtonProps>`
     }
 `;
 
-export const ButtonText = styled.p<ButtonProps>`
+export const ButtonText = styled(Text)<ButtonProps>`
     font-family: var(--font-logo);
     font-weight: 100;
     font-size: 30px;
     line-height: 38px;
     color: var(--accent1) !important;
+
+    ${({ mobileVersion }) =>
+        mobileVersion &&
+        `
+        font-size: var(--header-size);
+        line-height: var(--header-size);
+    `}
 
     ${(props) =>
         props.inNav &&

@@ -8,13 +8,8 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { Fade } from 'react-reveal';
-import {
-    Container,
-    StatCardContainer,
-    Title,
-    StatValue,
-    Content,
-} from './Stats.styles';
+import { StatContainer, StatCardContainer, StatValue } from './Stats.styles';
+import { HomeContent, HomeTitle } from '../../../styled/Components/Home';
 
 interface StatCardProps {
     title: string;
@@ -26,8 +21,15 @@ function StatCard(props: StatCardProps) {
     const ariaDescription = `${title} is ${value}`;
     return (
         <StatCardContainer aria-label={ariaDescription} tabIndex={0}>
-            <Title style={{ fontWeight: '100' }}>{title}</Title>
-            <StatValue>{value}</StatValue>
+            <HomeTitle style={{ fontWeight: '100' }}>{title}</HomeTitle>
+            <StatValue
+                fontWeight='300'
+                fontSize='header2'
+                color='text1'
+                font='mono'
+            >
+                {value}
+            </StatValue>
         </StatCardContainer>
     );
 }
@@ -104,27 +106,27 @@ export default function Stats() {
 
     const mobileWrapper = (
         <Fade up>
-            <Title aria-label='Ambient Finance Stats' tabIndex={0}>
+            <HomeTitle aria-label='Ambient Finance Stats' tabIndex={0}>
                 Ambient Finance Stats
-            </Title>
-            <Content>
+            </HomeTitle>
+            <HomeContent>
                 {statCardData.map((card, idx) => (
                     <StatCard key={idx} title={card.title} value={card.value} />
                 ))}
-            </Content>
+            </HomeContent>
         </Fade>
     );
 
     return (
-        <Container>
+        <StatContainer flexDirection='column' gap={16} padding='16px 0'>
             {showMobileVersion ? (
                 mobileWrapper
             ) : (
                 <>
-                    <Title aria-label='Ambient Finance Stats' tabIndex={0}>
+                    <HomeTitle aria-label='Ambient Finance Stats' tabIndex={0}>
                         Ambient Finance Stats
-                    </Title>
-                    <Content>
+                    </HomeTitle>
+                    <HomeContent>
                         {statCardData.map((card, idx) => (
                             <StatCard
                                 key={idx}
@@ -132,9 +134,9 @@ export default function Stats() {
                                 value={card.value}
                             />
                         ))}
-                    </Content>
+                    </HomeContent>
                 </>
             )}
-        </Container>
+        </StatContainer>
     );
 }
