@@ -28,7 +28,7 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
-import { useAccount } from 'wagmi';
+import { useAccount, useProvider } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
@@ -50,9 +50,12 @@ import { FlexContainer } from '../../styled/Common';
 import { TokenInputWalletBalance } from '../../components/Global/TokenInput/TokenInputWalletBalance';
 import Toggle from '../../components/Global/Toggle/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
+import { TokenContext } from '../../contexts/TokenContext';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
 
 // react functional component
 export default function InitPool() {
+    const provider = useProvider();
     const {
         wagmiModal: { open: openWagmiModalWallet },
     } = useContext(AppStateContext);
@@ -73,6 +76,8 @@ export default function InitPool() {
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
     } = useContext(TradeTokenContext);
+    const { tokens } = useContext(TokenContext);
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const dispatch = useAppDispatch();
     const handleToggle = () => dispatch(toggleAdvancedMode());

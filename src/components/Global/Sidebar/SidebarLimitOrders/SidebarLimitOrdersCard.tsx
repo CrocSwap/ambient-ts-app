@@ -1,10 +1,11 @@
-import styles from './SidebarLimitOrdersCard.module.css';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { getLimitPrice } from '../../../../App/functions/getLimitPrice';
+import { FlexContainer } from '../../../../styled/Common';
+import { ItemContainer } from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     order: LimitOrderIF;
@@ -25,14 +26,27 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
     });
 
     return (
-        <div className={styles.container} onClick={() => handleClick(order)}>
-            <div>
-                {isDenomBase
+        <ItemContainer
+            numCols={3}
+            color='text2'
+            onClick={() => handleClick(order)}
+        >
+            {[
+                isDenomBase
                     ? `${order?.baseSymbol} / ${order?.quoteSymbol}`
-                    : `${order?.quoteSymbol} / ${order?.baseSymbol}`}
-            </div>
-            <div>{price}</div>
-            <div className={styles.status_display}>{value}</div>
-        </div>
+                    : `${order?.quoteSymbol} / ${order?.baseSymbol}`,
+                price,
+                value,
+            ].map((item) => (
+                <FlexContainer
+                    key={item}
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='4px'
+                >
+                    {item}
+                </FlexContainer>
+            ))}
+        </ItemContainer>
     );
 }
