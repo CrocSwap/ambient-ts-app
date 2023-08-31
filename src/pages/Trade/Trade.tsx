@@ -31,6 +31,13 @@ import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
+import {
+    limitParamsIF,
+    linkGenMethodsIF,
+    marketParamsIF,
+    poolParamsIF,
+    useLinkGen,
+} from '../../utils/hooks/useLinkGen';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -57,31 +64,58 @@ function Trade() {
     const { setOutsideControl, setSelectedOutsideTab } =
         useContext(TradeTableContext);
 
-    const routes = [
+    const { tradeData } = useAppSelector((state) => state);
+    const { tokenA, tokenB, isDenomBase, limitTick } = tradeData;
+    const provider = useProvider();
+
+    const { params } = useParams();
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+
+    // hooks to generate default URL paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+
+    const marketParams: marketParamsIF = {
+        chain: chainId,
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
+    };
+
+    const limitParams: limitParamsIF = {
+        ...marketParams,
+        limitTick: limitTick?.toString() ?? '0',
+    };
+
+    const poolParams: poolParamsIF = {
+        ...marketParams,
+        lowTick: '23',
+        highTick: '25',
+    };
+
+    interface routeIF {
+        path: string;
+        name: string;
+    }
+
+    const routes: routeIF[] = [
         {
-            path: '/market',
+            path: linkGenMarket.getFullURL(marketParams),
             name: 'Swap',
         },
         {
-            path: '/limit',
+            path: linkGenLimit.getFullURL(limitParams),
             name: 'Limit',
         },
         {
-            path: '/pool',
+            path: linkGenPool.getFullURL(poolParams),
             name: 'Pool',
         },
     ];
 
-    const provider = useProvider();
-    const { params } = useParams();
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
-
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
-
-    const { tradeData } = useAppSelector((state) => state);
-    const { isDenomBase, limitTick } = tradeData;
 
     const tradeTableRef = useRef<HTMLDivElement>(null);
 
@@ -103,9 +137,7 @@ function Trade() {
                     className={`${styles.nav_container} trade_route`}
                     key={idx}
                 >
-                    <NavLink to={`/trade${route.path}/${params}`}>
-                        {route.name}
-                    </NavLink>
+                    <NavLink to={route.path}>{route.name}</NavLink>
                 </div>
             ))}
         </div>

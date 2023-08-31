@@ -1,5 +1,11 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import {
+    ReactNode,
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { useAccount, useProvider, useSigner } from 'wagmi';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
@@ -39,9 +45,7 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
     {} as CrocEnvContextIF,
 );
 
-export const CrocEnvContextProvider = (props: {
-    children: React.ReactNode;
-}) => {
+export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const { address: userAddress, isConnected } = useAccount();
