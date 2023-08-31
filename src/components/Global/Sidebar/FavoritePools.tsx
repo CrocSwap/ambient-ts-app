@@ -4,14 +4,13 @@ import { useContext } from 'react';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
-import {
-    SidebarPoolsListContainer,
-    SidebarPoolsListHeader,
-    SidebarPoolsListHeaderContainer,
-    SidebarPoolsListItemsContainer,
-    SidebarPoolsListViewMoreContainer,
-} from '../../../styled/Sidebar';
 import PoolsListItem from './PoolsListItem';
+import { FlexContainer } from '../../../styled/Common';
+import {
+    HeaderGrid,
+    ItemsContainer,
+    ViewMoreFlex,
+} from '../../../styled/Components/Sidebar';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -35,14 +34,18 @@ export default function FavoritePools(props: propsIF) {
     );
 
     return (
-        <SidebarPoolsListContainer fontSize={'body'}>
-            <SidebarPoolsListHeaderContainer>
-                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>Volume</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>TVL</SidebarPoolsListHeader>
-            </SidebarPoolsListHeaderContainer>
+        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
+            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
+                {['Pool', 'Volume', 'TVL'].map((item) => (
+                    <FlexContainer key={item} justifyContent='center'>
+                        {item}
+                    </FlexContainer>
+                ))}
+            </HeaderGrid>
             {isAlreadyFavorited || (
-                <SidebarPoolsListViewMoreContainer
+                <ViewMoreFlex
+                    justifyContent='center'
+                    color='accent4'
                     onClick={() =>
                         favePools.add(
                             tradeData.baseToken,
@@ -53,9 +56,9 @@ export default function FavoritePools(props: propsIF) {
                     }
                 >
                     Add Current Pool
-                </SidebarPoolsListViewMoreContainer>
+                </ViewMoreFlex>
             )}
-            <SidebarPoolsListItemsContainer>
+            <ItemsContainer>
                 {favePools.pools.map((pool, idx) => (
                     <PoolsListItem
                         key={idx}
@@ -64,7 +67,7 @@ export default function FavoritePools(props: propsIF) {
                         cachedFetchTokenPrice={props.cachedFetchTokenPrice}
                     />
                 ))}
-            </SidebarPoolsListItemsContainer>
-        </SidebarPoolsListContainer>
+            </ItemsContainer>
+        </FlexContainer>
     );
 }
