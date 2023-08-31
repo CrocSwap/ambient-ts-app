@@ -146,19 +146,23 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
               )
             : undefined;
 
-    const ethMainnetUsdValueTruncated = getFormattedNumber({
-        value: ethMainnetUsdValue,
-        minFracDigits: 2,
-        maxFracDigits: 2,
-    });
-
-    const ethValue = ethMainnetUsdValueTruncated;
+    const nativeTokenMainnetUsdValueTruncated = ethMainnetUsdValue
+        ? getFormattedNumber({
+              value: ethMainnetUsdValue,
+              minFracDigits: 2,
+              maxFracDigits: 2,
+          })
+        : undefined;
 
     const tokensData = [
         {
-            symbol: nativeData?.symbol || '???',
-            amount: nativeData?.combinedBalanceDisplayTruncated || '0.00',
-            value: ethValue,
+            symbol: nativeData?.symbol || 'ETH',
+            amount: nativeData?.combinedBalanceDisplayTruncated
+                ? nativeData?.symbol === 'ETH'
+                    ? 'Ξ ' + nativeData.combinedBalanceDisplayTruncated
+                    : nativeData.combinedBalanceDisplayTruncated
+                : '...',
+            value: nativeTokenMainnetUsdValueTruncated,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         },
         {
