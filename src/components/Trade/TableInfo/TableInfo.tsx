@@ -25,11 +25,9 @@ import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { ZERO_ADDRESS } from '../../../constants';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 interface FeaturedBoxPropsIF {
-    tokenLogo: string;
-    tokenSymbol: string;
-    tokenName: string;
-    tokenAddress: string;
+    token: TokenIF;
     balance: string;
     value: string;
 }
@@ -86,57 +84,36 @@ export default function TableInfo() {
     ];
     const featuredData = [
         {
-            tokenLogo: topToken.logoURI,
-            tokenSymbol: topToken.symbol,
-            tokenName: topToken.name,
-            tokenAddress: topToken.address,
+            token: topToken,
             balance: getFormattedNumber({ value: topTokenTvl }),
             value: getFormattedNumber({ value: topTokenTvlUsd }),
         },
         {
-            tokenLogo: bottomToken.logoURI,
-            tokenSymbol: bottomToken.symbol,
-            tokenName: bottomToken.name,
-            tokenAddress: bottomToken.address,
+            token: bottomToken,
             balance: getFormattedNumber({ value: bottomTokenTvl }),
             value: getFormattedNumber({ value: bottomTokenTvlUsd }),
         },
     ];
     function FeaturedBox(props: FeaturedBoxPropsIF) {
-        const {
-            tokenLogo,
-            tokenSymbol,
-            tokenName,
-            tokenAddress,
-            balance,
-            value,
-        } = props;
+        const { token, balance, value } = props;
         return (
             <BoxContainer>
                 <FeaturedBoxInnerContainer>
                     <FlexCenter>
-                        <img
-                            src={tokenLogo}
-                            alt='Logo'
-                            style={{
-                                width: '40px',
-                                height: '40px',
-                                borderRadius: '50px',
-                            }}
-                        />
-                        <TokenSymbol>{tokenSymbol}</TokenSymbol>
-                        <TokenName>{tokenName}</TokenName>
+                        <TokenIcon token={token} size={'3xl'} />
+                        <TokenSymbol>{token.symbol}</TokenSymbol>
+                        <TokenName>{token.name}</TokenName>
                     </FlexCenter>
                     <FlexCenter>
                         <InfoHeader>
-                            {trimString(tokenAddress, 5, 6, '…')}
+                            {trimString(token.address, 5, 6, '…')}
                         </InfoHeader>
                         <LinkText>
                             <a
                                 href={
-                                    tokenAddress === ZERO_ADDRESS
+                                    token.address === ZERO_ADDRESS
                                         ? `${blockExplorer}address/${addrs.dex}`
-                                        : `${blockExplorer}token/${tokenAddress}`
+                                        : `${blockExplorer}token/${token.address}`
                                 }
                                 target='_blank'
                                 rel='noreferrer'
@@ -179,10 +156,7 @@ export default function TableInfo() {
                             {featuredData.map((data, idx) => (
                                 <FeaturedBox
                                     key={idx}
-                                    tokenLogo={data.tokenLogo}
-                                    tokenSymbol={data.tokenSymbol}
-                                    tokenName={data.tokenName}
-                                    tokenAddress={data.tokenAddress}
+                                    token={data.token}
                                     balance={data.balance}
                                     value={data.value}
                                 />
@@ -217,10 +191,7 @@ export default function TableInfo() {
                         {featuredData.map((data, idx) => (
                             <FeaturedBox
                                 key={idx}
-                                tokenLogo={data.tokenLogo}
-                                tokenSymbol={data.tokenSymbol}
-                                tokenName={data.tokenName}
-                                tokenAddress={data.tokenAddress}
+                                token={data.token}
                                 balance={data.balance}
                                 value={data.value}
                             />
