@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 import { GridContainer, ScrollContainer } from '../../../styled/Common';
+import { FiExternalLink } from 'react-icons/fi';
 import trimString from '../../../utils/functions/trimString';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
@@ -23,6 +24,7 @@ import { getChainExplorer } from '../../../utils/data/chains';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { ZERO_ADDRESS } from '../../../constants';
 interface FeaturedBoxPropsIF {
     tokenLogo: string;
     tokenSymbol: string;
@@ -39,7 +41,7 @@ interface DetailedBoxPropsIF {
 export default function TableInfo() {
     const { tradeData } = useAppSelector((state) => state);
     const {
-        chainData: { chainId },
+        chainData: { chainId, addrs },
     } = useContext(CrocEnvContext);
     const blockExplorer = getChainExplorer(chainId);
 
@@ -71,8 +73,6 @@ export default function TableInfo() {
     const [topToken, bottomToken]: [TokenIF, TokenIF] = denomInBase
         ? [tradeData.baseToken, tradeData.quoteToken]
         : [tradeData.quoteToken, tradeData.baseToken];
-
-    console.log(topToken);
 
     const detailedData = [
         { label: 'Market Cap:', value: '$69m' },
@@ -129,15 +129,19 @@ export default function TableInfo() {
                     </FlexCenter>
                     <FlexCenter>
                         <InfoHeader>
-                            {trimString(tokenAddress, 9, 0, '…')}
+                            {trimString(tokenAddress, 5, 6, '…')}
                         </InfoHeader>
                         <LinkText>
                             <a
-                                href={`${blockExplorer}token/${tokenAddress}`}
+                                href={
+                                    tokenAddress === ZERO_ADDRESS
+                                        ? `${blockExplorer}address/${addrs.dex}`
+                                        : `${blockExplorer}token/${tokenAddress}`
+                                }
                                 target='_blank'
                                 rel='noreferrer'
                             >
-                                Link
+                                <FiExternalLink />
                             </a>
                         </LinkText>
                     </FlexCenter>
