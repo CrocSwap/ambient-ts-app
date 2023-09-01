@@ -118,7 +118,7 @@ export default function TableInfo() {
                         <TokenSymbol>{token.symbol}</TokenSymbol>
                         <TokenName>{token.name}</TokenName>
                     </FlexCenter>
-                    <FlexCenter>
+                    <FlexCenter style={{ gap: '8px' }}>
                         <InfoHeader>
                             {trimString(token.address, 5, 6, '…')}
                         </InfoHeader>
@@ -127,7 +127,7 @@ export default function TableInfo() {
                             placement='bottom'
                         >
                             <div onClick={handleCopyAddress}>
-                                <FiCopy size={25} color='var(--text3)' />
+                                <FiCopy size={16} color='var(--text3)' />
                             </div>
                         </IconWithTooltip>
                         <IconWithTooltip
