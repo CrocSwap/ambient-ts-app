@@ -20,6 +20,9 @@ import {
 import TableInfoTabs from './TableInfoTabs';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { getChainExplorer } from '../../../utils/data/chains';
+import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
+import { PoolIF } from '../../../utils/interfaces/PoolIF';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 interface FeaturedBoxPropsIF {
     tokenLogo: string;
     tokenSymbol: string;
@@ -42,6 +45,29 @@ export default function TableInfo() {
 
     const denomInBase = tradeData.isDenomBase;
 
+    const pool: PoolIF = {
+        base: tradeData.baseToken,
+        quote: tradeData.quoteToken,
+        chainId: chainId,
+        poolIdx: 36000,
+    };
+
+    const poolData = useFetchPoolStats(pool);
+
+    const {
+        poolTvl,
+        baseTvlDecimal,
+        quoteTvlDecimal,
+        quoteTvlUsd,
+        baseTvlUsd,
+    } = poolData;
+    const [topTokenTvl, bottomTokenTvl] = denomInBase
+        ? [baseTvlDecimal, quoteTvlDecimal]
+        : [quoteTvlDecimal, baseTvlDecimal];
+    const [topTokenTvlUsd, bottomTokenTvlUsd] = denomInBase
+        ? [baseTvlUsd, quoteTvlUsd]
+        : [quoteTvlUsd, baseTvlUsd];
+
     const [topToken, bottomToken]: [TokenIF, TokenIF] = denomInBase
         ? [tradeData.baseToken, tradeData.quoteToken]
         : [tradeData.quoteToken, tradeData.baseToken];
@@ -52,7 +78,7 @@ export default function TableInfo() {
         { label: 'Market Cap:', value: '$69m' },
         { label: 'FDV:', value: '$690m' },
         { label: '24h Volume:', value: '$6.93k' },
-        { label: 'TVL:', value: '$2.27m' },
+        { label: 'TVL:', value: poolTvl },
         { label: 'Total Fees:', value: '$6.93k' },
         { label: 'Tick Liquidity:', value: '$500k' },
         { label: 'Out of Range Liq:', value: '20%' },
@@ -64,16 +90,16 @@ export default function TableInfo() {
             tokenSymbol: topToken.symbol,
             tokenName: topToken.name,
             tokenAddress: topToken.address,
-            balance: topToken.combinedBalanceDisplay ?? '...',
-            value: '...',
+            balance: getFormattedNumber({ value: topTokenTvl }),
+            value: getFormattedNumber({ value: topTokenTvlUsd }),
         },
         {
             tokenLogo: bottomToken.logoURI,
             tokenSymbol: bottomToken.symbol,
             tokenName: bottomToken.name,
             tokenAddress: bottomToken.address,
-            balance: bottomToken.combinedBalanceDisplay ?? '...',
-            value: '...',
+            balance: getFormattedNumber({ value: bottomTokenTvl }),
+            value: getFormattedNumber({ value: bottomTokenTvlUsd }),
         },
     ];
     function FeaturedBox(props: FeaturedBoxPropsIF) {
@@ -162,7 +188,10 @@ export default function TableInfo() {
                         <GridContainer gapSize={28} customRows='46px 46px auto'>
                             <GridContainer numCols={4} gapSize={8}>
                                 {/* first 4 row items go here */}
-                                <DetailedBox label='TVL' value='$2.8m' />
+                                <DetailedBox
+                                    label='TVL'
+                                    value={`$${poolTvl?.toString() || '...'}`}
+                                />
                             </GridContainer>
                             {/* second 4 row items go here */}
                             <GridContainer
