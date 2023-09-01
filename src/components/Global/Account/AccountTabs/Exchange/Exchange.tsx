@@ -115,7 +115,6 @@ export default function Exchange(props: propsIF) {
         return sequencedTokens;
     }
 
-    console.log('hi', tokensToRender.length);
     return (
         <div className={styles.container}>
             <ExchangeHeader />

@@ -123,8 +123,6 @@ export default function Wallet(props: propsIF) {
     // TODO:   ... appears to be fully static, please code it locally in this file
     // TODO:   ... and make sure that it is a <header> semantic element  --Emily
 
-    console.log('hi', userTokens.length);
-
     return (
         <div className={styles.container}>
             <WalletHeader />
