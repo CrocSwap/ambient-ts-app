@@ -70,10 +70,10 @@ export default function TableInfo() {
         ? [baseTvlUsd, quoteTvlUsd]
         : [quoteTvlUsd, baseTvlUsd];
 
-    const [topToken, bottomToken]: [TokenIF, TokenIF] = denomInBase
-        ? [tradeData.baseToken, tradeData.quoteToken]
-        : [tradeData.quoteToken, tradeData.baseToken];
-
+    const [topToken, bottomToken]: [TokenIF, TokenIF] = [
+        tradeData.baseToken,
+        tradeData.quoteToken,
+    ];
     const detailedData = [
         { label: 'Market Cap:', value: '$69m' },
         { label: 'FDV:', value: '$690m' },
