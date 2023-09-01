@@ -64,7 +64,9 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
         : quoteTokenCharacter;
 
     const id = (
-        <RowItem font='mono'>{trimString(transaction.hash, 9, 0, '…')}</RowItem>
+        <RowItem font='roboto'>
+            {trimString(transaction.hash, 9, 0, '…')}
+        </RowItem>
     );
     const wallet = <p>you</p>;
 

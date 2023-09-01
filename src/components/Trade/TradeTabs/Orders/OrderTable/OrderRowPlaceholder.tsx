@@ -53,8 +53,6 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
 
     const { isDenomBase } = useAppSelector((state) => state.tradeData);
 
-    const wallet = <p>you</p>;
-
     const baseTokenCharacter = transaction.baseSymbol
         ? getUnicodeCharacter(transaction.baseSymbol)
         : '';
@@ -78,10 +76,6 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
         transaction.details?.highTick ?? 0,
         transaction.details?.poolIdx ?? 0,
     ).toString();
-
-    const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
-
-    const id = <RowItem font='mono'>{posHashTruncated}</RowItem>;
 
     const limitPrice =
         transaction.details &&
@@ -108,6 +102,12 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
         value: invLimitPriceDecimalCorrected,
     });
 
+    const id = (
+        <RowItem font='roboto'>
+            {trimString(posHash.toString(), 9, 0, '…')}
+        </RowItem>
+    );
+    const wallet = <p>you</p>;
     // TODO: use media queries and standardized styles
     return (
         <>
@@ -118,9 +118,9 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                 tabIndex={0}
             >
                 {tableView === 'large' && (
-                    <li>
+                    <div>
                         <p>Now</p>
-                    </li>
+                    </div>
                 )}
                 {tableView === 'large' && <div>{id}</div>}
                 {tableView === 'large' && <div>{wallet}</div>}

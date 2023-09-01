@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useRef, useState } from 'react';
+import { memo, useContext, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import TransactionDetailsModal from '../../../../Global/TransactionDetails/TransactionDetailsModal';
@@ -124,11 +124,6 @@ function TransactionRow(props: propsIF) {
         openSnackbar(`${txHash} copied`, 'info');
     }
 
-    const [highlightRow, setHighlightRow] = useState(false);
-    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
-    const handleRowMouseDown = () => setHighlightRow(true);
-    const handleRowMouseOut = () => setHighlightRow(false);
-
     function handleWalletCopy() {
         copy(ownerId);
         openSnackbar(`${ownerId} copied`, 'info');
@@ -158,8 +153,6 @@ function TransactionRow(props: propsIF) {
         handleOpenExplorer,
         txHashTruncated,
         openDetailsModal,
-        handleRowMouseDown,
-        handleRowMouseOut,
         usdValue,
         usernameColor,
         userNameToDisplay,
@@ -190,7 +183,6 @@ function TransactionRow(props: propsIF) {
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         truncatedDisplayPrice,
-
         handleWalletClick,
         handleWalletCopy,
     };
@@ -226,20 +218,20 @@ function TransactionRow(props: propsIF) {
         <>
             <TransactionRowStyled
                 size={tableView}
+                account={isAccountView}
                 active={tx.txId === currentTxActiveInTransactions}
                 user={userNameToDisplay === 'You' && showAllData}
-                style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
                 id={txDomId}
                 ref={currentTxActiveInTransactions ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
             >
-                {tableView !== 'small' && TxTimeWithTooltip}
+                {tableView === 'large' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
-                {tableView === 'large' && <li>{IDWithTooltip}</li>}
+                {tableView === 'large' && <div>{IDWithTooltip}</div>}
                 {tableView === 'large' && !isAccountView && (
-                    <li>{walletWithTooltip}</li>
+                    <div>{walletWithTooltip}</div>
                 )}
                 {tableView !== 'large' && txIdColumnComponent}
                 {tableView !== 'small' &&

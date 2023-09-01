@@ -3,7 +3,6 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { OptionButton } from '../../../../Global/Button/OptionButton';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
-import styles from '../Ranges.module.css';
 import { FiExternalLink } from 'react-icons/fi';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
@@ -11,6 +10,11 @@ import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharac
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { useAccount } from 'wagmi';
 import trimString from '../../../../../utils/functions/trimString';
+import {
+    RangeRow,
+    RowItem,
+} from '../../../../../styled/Components/TransactionTable';
+import { FlexContainer } from '../../../../../styled/Common';
 
 interface PropsIF {
     transaction: {
@@ -31,15 +35,12 @@ interface PropsIF {
             gridSize?: number;
         };
     };
-    showTimestamp: boolean;
-    showColumns: boolean;
-    mobileView: boolean;
-    ipadView: boolean;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 // TODO: integrate into RangesRow
 export const RangesRowPlaceholder = (props: PropsIF) => {
-    const { transaction, showColumns, mobileView, ipadView } = props;
+    const { transaction, tableView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
     const {
@@ -106,59 +107,55 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
     }
 
     const id = (
-        <p className={`${styles.mono_font}`}>
+        <RowItem font='roboto'>
             {trimString(posHash.toString(), 9, 0, '…')}
-        </p>
+        </RowItem>
     );
-    const wallet = (
-        <p className={`${styles.id_style}`} style={{ textTransform: 'none' }}>
-            you
-        </p>
-    );
+    const wallet = <p>you</p>;
     // TODO: use media queries and standardized styles
     return (
         <>
-            <ul
-                className={`${styles.row_placeholder} ${styles.row_container} ${
-                    showAllData && styles.border_left
-                }`}
+            <RangeRow
+                size={tableView}
+                user={showAllData}
+                placeholder
                 tabIndex={0}
             >
-                {!showColumns && (
-                    <li>
+                {tableView === 'large' && (
+                    <div>
                         <p>Now</p>
-                    </li>
+                    </div>
                 )}
-                {!showColumns && <li>{id}</li>}
-                {!showColumns && <li>{wallet}</li>}
-                {showColumns && (
-                    <li>
+                {tableView === 'large' && <div>{id}</div>}
+                {tableView === 'large' && <div>{wallet}</div>}
+                {tableView !== 'large' && (
+                    <div>
                         {id}
                         {wallet}
-                    </li>
+                    </div>
                 )}
-                {!showColumns && (
-                    <li className={styles.align_right}>
+                {tableView === 'large' && (
+                    <FlexContainer justifyContent='flex-end'>
                         {isAmbient
                             ? '0.00'
                             : `${priceCharacter}${
                                   pinnedDisplayPrices?.pinnedMinPriceDisplayTruncatedWithCommas ??
                                   '...'
                               }`}
-                    </li>
+                    </FlexContainer>
                 )}
-                {!showColumns && (
-                    <li className={styles.align_right}>
+                {tableView === 'large' && (
+                    <FlexContainer justifyContent='flex-end'>
                         {isAmbient
                             ? '∞'
                             : `${priceCharacter}${
                                   pinnedDisplayPrices?.pinnedMaxPriceDisplayTruncatedWithCommas ??
                                   '...'
                               }`}
-                    </li>
+                    </FlexContainer>
                 )}
-                {showColumns && !ipadView && (
-                    <li className={styles.align_right}>
+                {tableView === 'medium' && (
+                    <FlexContainer justifyContent='flex-end'>
                         <p>
                             {isAmbient
                                 ? '0.00'
@@ -175,37 +172,28 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                                       '...'
                                   }`}
                         </p>
-                    </li>
+                    </FlexContainer>
                 )}
-                {<li className={styles.align_right}>...</li>}
-                {<li className={styles.align_right}>...</li>}
-                {!showColumns ? (
-                    <li className={styles.align_right}>...</li>
+                {<FlexContainer justifyContent='flex-end'>...</FlexContainer>}
+                {<FlexContainer justifyContent='flex-end'>...</FlexContainer>}
+                {tableView === 'large' ? (
+                    <FlexContainer justifyContent='flex-end'>...</FlexContainer>
                 ) : undefined}
-                {!mobileView && <li className={styles.align_right}>...</li>}
+                {tableView === 'medium' && (
+                    <FlexContainer justifyContent='flex-end'>...</FlexContainer>
+                )}
                 {
-                    <li className={styles.align_right}>
+                    <FlexContainer justifyContent='flex-end'>
                         <RangeStatus
                             isInRange={false}
                             isAmbient={false}
                             isEmpty={true}
                             justSymbol
                         />
-                    </li>
+                    </FlexContainer>
                 }
-                <li
-                    data-label='menu'
-                    className={`${styles.menu} ${styles.align_right}`}
-                >
-                    <div
-                        style={{
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                            padding: '2px',
-                        }}
-                    >
+                <FlexContainer justifyContent='flex-end' data-label='menu'>
+                    <FlexContainer fullWidth justifyContent='flex-end'>
                         <OptionButton
                             ariaLabel='Explorer'
                             onClick={() =>
@@ -224,9 +212,9 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                                 </>
                             }
                         />
-                    </div>
-                </li>
-            </ul>
+                    </FlexContainer>
+                </FlexContainer>
+            </RangeRow>
         </>
     );
 };

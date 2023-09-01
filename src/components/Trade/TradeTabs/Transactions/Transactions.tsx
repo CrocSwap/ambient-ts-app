@@ -293,7 +293,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: tableView !== 'small',
+            show: tableView === 'large',
 
             slug: 'time',
             sortable: true,
@@ -396,7 +396,7 @@ function Transactions(props: propsIF) {
     ];
 
     const headerColumnsDisplay = (
-        <TransactionRowStyled size={tableView} header>
+        <TransactionRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
                 <TransactionHeader
                     key={idx}

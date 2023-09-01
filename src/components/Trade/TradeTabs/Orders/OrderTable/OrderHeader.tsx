@@ -74,7 +74,17 @@ function OrderHeader(props: propsIF) {
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
                     onClick={() => handleClick(slug as LimitSortType)}
                 >
-                    <Text fontSize='mini' color='text2'>
+                    <Text
+                        fontSize='mini'
+                        color='text2'
+                        align={
+                            alignRight
+                                ? 'right'
+                                : alignCenter
+                                ? 'center'
+                                : 'left'
+                        }
+                    >
                         {name} {arrow}
                     </Text>
                 </FlexContainer>

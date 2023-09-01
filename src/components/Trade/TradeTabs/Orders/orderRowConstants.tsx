@@ -43,8 +43,6 @@ interface propsIF {
     isLimitOrderPartiallyFilled: boolean;
     fillPercentage: number;
     handleCopyPosHash: () => void;
-    handleRowMouseDown: () => void;
-    handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
     baseTokenAddress: string;
@@ -76,14 +74,11 @@ export const orderRowConstants = (props: propsIF) => {
         elapsedTimeString,
         isAccountView,
         priceCharacter,
-        priceStyle,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         sideType,
         sideCharacter,
         isOrderFilled,
-        handleRowMouseDown,
-        handleRowMouseOut,
         baseTokenAddress,
         quoteTokenAddress,
         isLimitOrderPartiallyFilled,
@@ -140,7 +135,7 @@ export const orderRowConstants = (props: propsIF) => {
             enterDelay={750}
             leaveDelay={0}
         >
-            <RowItem hover font='mono' role='button' data-label='id'>
+            <RowItem hover font='roboto' role='button' data-label='id'>
                 {posHashTruncated}
             </RowItem>
         </TextOnlyTooltip>
@@ -150,8 +145,6 @@ export const orderRowConstants = (props: propsIF) => {
         <RowItem
             justifyContent='flex-end'
             type={sideType}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='value'
             tabIndex={0}
         >
@@ -175,7 +168,7 @@ export const orderRowConstants = (props: propsIF) => {
                     }}
                 >
                     <RowItem
-                        font='mono'
+                        font='roboto'
                         gap={4}
                         role='button'
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
@@ -220,8 +213,6 @@ export const orderRowConstants = (props: propsIF) => {
             data-label='wallet'
             style={{ textTransform: 'lowercase' }}
             tabIndex={0}
-            onMouseOver={handleRowMouseDown}
-            onMouseOut={handleRowMouseOut}
         >
             {userNameToDisplay}
         </RowItem>
@@ -251,8 +242,6 @@ export const orderRowConstants = (props: propsIF) => {
     const tokenPair = (
         <div
             className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='tokens'
             onClick={(event) => event.stopPropagation()}
         >
@@ -263,13 +252,7 @@ export const orderRowConstants = (props: propsIF) => {
     );
 
     const baseQtyDisplayWithTooltip = (
-        <div
-            data-label={baseTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
+        <div data-label={baseTokenSymbol} className='base_color' tabIndex={0}>
             <FlexContainer
                 alignItems='center'
                 justifyContent='flex-end'
@@ -284,13 +267,7 @@ export const orderRowConstants = (props: propsIF) => {
     );
 
     const quoteQtyDisplayWithTooltip = (
-        <div
-            data-label={quoteTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
+        <div data-label={quoteTokenSymbol} className='base_color' tabIndex={0}>
             <FlexContainer
                 alignItems='center'
                 justifyContent='flex-end'
@@ -327,20 +304,12 @@ export const orderRowConstants = (props: propsIF) => {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
+            <div style={{ textTransform: 'lowercase' }}>
                 <p className='base_color'>{elapsedTimeString}</p>
-            </li>
+            </div>
         </TextOnlyTooltip>
     ) : (
-        <div
-            style={{ textTransform: 'lowercase' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <div style={{ textTransform: 'lowercase' }}>
             <p className='base_color'>{elapsedTimeString}</p>
         </div>
     );
@@ -357,8 +326,6 @@ export const orderRowConstants = (props: propsIF) => {
             alignItems='flex-end'
             justifyContent='center'
             type={sideType}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='price'
         >
             {(
@@ -375,25 +342,13 @@ export const orderRowConstants = (props: propsIF) => {
     );
 
     const typeDisplay = (
-        <RowItem
-            justifyContent='center'
-            type={sideType}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            data-label='type'
-        >
+        <RowItem justifyContent='center' type={sideType} data-label='type'>
             Limit
         </RowItem>
     );
 
     const sideDisplay = (
-        <RowItem
-            type={sideType}
-            justifyContent='center'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            data-label='side'
-        >
+        <RowItem type={sideType} justifyContent='center' data-label='side'>
             {`${sideType} ${sideCharacter}`}
         </RowItem>
     );
@@ -402,8 +357,6 @@ export const orderRowConstants = (props: propsIF) => {
         <RowItem
             flexDirection='column'
             type={sideType}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='side-type'
             style={{ textAlign: 'center' }}
         >
@@ -414,8 +367,6 @@ export const orderRowConstants = (props: propsIF) => {
 
     const tokensColumn = (
         <div
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label={baseTokenSymbol + quoteTokenSymbol}
             className='base_color'
         >
@@ -451,11 +402,7 @@ export const orderRowConstants = (props: propsIF) => {
     );
 
     const statusDisplay = (
-        <div
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            data-label='status'
-        >
+        <div data-label='status'>
             <FlexContainer justifyContent='center' alignItems='center'>
                 <OpenOrderStatus
                     isFilled={isOrderFilled}

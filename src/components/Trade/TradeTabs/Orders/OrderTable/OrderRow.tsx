@@ -1,7 +1,7 @@
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
-import { memo, useContext, useEffect, useRef, useState } from 'react';
+import { memo, useContext, useEffect, useRef } from 'react';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -129,10 +129,6 @@ function OrderRow(props: propsIF) {
             : null;
     }, [currentPositionActive]);
 
-    const [highlightRow, setHighlightRow] = useState(false);
-    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
-    const handleRowMouseDown = () => setHighlightRow(true);
-    const handleRowMouseOut = () => setHighlightRow(false);
     const [_, copy] = useCopyToClipboard();
 
     function handleWalletCopy() {
@@ -172,8 +168,6 @@ function OrderRow(props: propsIF) {
     const orderRowConstantsProps = {
         posHashTruncated,
         openDetailsModal,
-        handleRowMouseDown,
-        handleRowMouseOut,
         posHash,
         ensName,
         handleCopyPosHash,
@@ -248,20 +242,20 @@ function OrderRow(props: propsIF) {
         <>
             <OrderRowStyled
                 size={tableView}
+                account={isAccountView}
                 active={limitOrder.limitOrderId === currentPositionActive}
                 user={userNameToDisplay === 'You' && showAllData}
                 id={orderDomId}
-                style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
                 ref={currentPositionActive ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
             >
                 {tableView === 'large' && OrderTimeWithTooltip}
-                {isAccountView && tableView !== 'small' && tokenPair}
-                {tableView === 'large' && <li>{IDWithTooltip}</li>}
+                {isAccountView && tokenPair}
+                {tableView === 'large' && <div>{IDWithTooltip}</div>}
                 {tableView === 'large' && !isAccountView && (
-                    <li>{walletWithTooltip}</li>
+                    <div>{walletWithTooltip}</div>
                 )}
                 {tableView !== 'large' && txIdColumnComponent}
                 {tableView !== 'small' && priceDisplay}

@@ -50,8 +50,6 @@ interface propsIF {
     handleCopyTxHash: () => void;
     handleOpenExplorer: () => void;
     openDetailsModal: () => void;
-    handleRowMouseDown: () => void;
-    handleRowMouseOut: () => void;
     handleWalletClick: () => void;
     handleWalletCopy: () => void;
     tx: TransactionIF;
@@ -68,8 +66,6 @@ export const txRowConstants = (props: propsIF) => {
         handleOpenExplorer,
         txHashTruncated,
         openDetailsModal,
-        handleRowMouseDown,
-        handleRowMouseOut,
         usdValue,
         ensName,
         usernameColor,
@@ -146,7 +142,7 @@ export const txRowConstants = (props: propsIF) => {
         >
             <RowItem
                 hover
-                font='mono'
+                font='roboto'
                 data-label='id'
                 role='button'
                 tabIndex={0}
@@ -160,8 +156,6 @@ export const txRowConstants = (props: propsIF) => {
         <RowItem
             justifyContent='flex-end'
             type={sideType}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='value'
             tabIndex={0}
         >
@@ -184,7 +178,7 @@ export const txRowConstants = (props: propsIF) => {
                     }}
                 >
                     <RowItem
-                        font='mono'
+                        font='roboto'
                         gap={4}
                         role='button'
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
@@ -296,8 +290,6 @@ export const txRowConstants = (props: propsIF) => {
     const tokenPair = (
         <div
             className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             onClick={(event) => event.stopPropagation()}
         >
             <NavLink to={tradeLinkPath}>
@@ -328,25 +320,14 @@ export const txRowConstants = (props: propsIF) => {
             enterDelay={750}
             leaveDelay={0}
         >
-            <div
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-                tabIndex={0}
-            >
+            <div style={{ textTransform: 'lowercase' }} tabIndex={0}>
                 <p className='base_color'>{elapsedTimeString}</p>
             </div>
         </TextOnlyTooltip>
     );
 
     const baseQtyDisplayWithTooltip = (
-        <div
-            data-label={tx.baseSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
+        <div data-label={tx.baseSymbol} className='base_color' tabIndex={0}>
             <FlexContainer
                 alignItems='center'
                 justifyContent='flex-end'
@@ -358,13 +339,7 @@ export const txRowConstants = (props: propsIF) => {
         </div>
     );
     const quoteQtyDisplayWithTooltip = (
-        <div
-            data-label={tx.quoteSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
+        <div data-label={tx.quoteSymbol} className='base_color' tabIndex={0}>
             <FlexContainer
                 alignItems='center'
                 justifyContent='flex-end'
@@ -387,8 +362,6 @@ export const txRowConstants = (props: propsIF) => {
         <RowItem
             type={sideType}
             justifyContent='center'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='side'
             tabIndex={0}
         >
@@ -470,8 +443,6 @@ export const txRowConstants = (props: propsIF) => {
         <RowItem
             justifyContent='center'
             type={sideType}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='type'
             tabIndex={0}
         >
@@ -483,8 +454,6 @@ export const txRowConstants = (props: propsIF) => {
         <RowItem
             flexDirection='column'
             type={sideType}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='side-type'
             style={{ textAlign: 'center' }}
         >
@@ -501,8 +470,6 @@ export const txRowConstants = (props: propsIF) => {
 
     const ambientPriceDisplay = (
         <div
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='price'
             className={'primary_color'}
             style={{
@@ -521,8 +488,6 @@ export const txRowConstants = (props: propsIF) => {
             alignItems='flex-end'
             justifyContent='center'
             type={sideType}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='price'
             tabIndex={0}
         >
@@ -549,8 +514,6 @@ export const txRowConstants = (props: propsIF) => {
         <RowItem
             justifyContent='flex-end'
             type={sideType}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             onClick={() => {
                 if (IS_LOCAL_ENV) {
                     console.debug({ isAccountView });

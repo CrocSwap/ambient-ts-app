@@ -186,7 +186,7 @@ function Orders(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isAccountView && tableView !== 'small',
+            show: isAccountView,
             slug: 'pool',
             sortable: true,
         },
@@ -381,7 +381,7 @@ function Orders(props: propsIF) {
     // ----------------------
 
     const headerColumnsDisplay = (
-        <OrderRowStyled size={tableView} header>
+        <OrderRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
                 <OrderHeader
                     key={idx}
@@ -491,8 +491,6 @@ function Orders(props: propsIF) {
             handleChange(mockEvent, 1);
         }
     }, [isTradeTableExpanded]);
-
-    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
 
     return (
         <FlexContainer flexDirection='column' fullHeight>

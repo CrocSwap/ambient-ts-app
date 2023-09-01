@@ -74,7 +74,17 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
                     onClick={() => handleClick(slug as TxSortType)}
                 >
-                    <Text fontSize='mini' color='text2'>
+                    <Text
+                        fontSize='mini'
+                        color='text2'
+                        align={
+                            alignRight
+                                ? 'right'
+                                : alignCenter
+                                ? 'center'
+                                : 'left'
+                        }
+                    >
                         {name} {arrow}
                     </Text>
                 </FlexContainer>

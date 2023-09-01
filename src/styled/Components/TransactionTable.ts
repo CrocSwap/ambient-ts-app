@@ -25,6 +25,8 @@ export const ClearButton = styled.button`
 `;
 
 export const Row = styled(GridContainer)<{
+    size: 'small' | 'medium' | 'large';
+    account?: boolean;
     header?: boolean;
     active?: boolean;
     user?: boolean;
@@ -35,8 +37,9 @@ export const Row = styled(GridContainer)<{
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
 
-    padding: 0 8px 4px 8px;
+    padding: 0 8px;
     gap: 4px;
+    cursor: pointer;
 
     & > * {
         font-weight: 300;
@@ -44,13 +47,18 @@ export const Row = styled(GridContainer)<{
         line-height: var(--body-lh);
         text-transform: capitalize;
         text-overflow: ellipsis;
-        overflow: hidden;
         margin: auto 0;
+        padding-top: 2px;
+        padding-bottom: 2px;
     }
 
     &:focus-visible,
     & *:focus-visible {
         border: 1px solid var(--text1);
+    }
+
+    &:hover {
+        background: var(--dark2);
     }
 
     ${({ header, active, user, placeholder }) => `
@@ -101,42 +109,133 @@ export const Row = styled(GridContainer)<{
     `}
 `;
 
-export const TransactionRow = styled(Row)<{
-    size: 'small' | 'medium' | 'large';
-}>`
-    ${({ size }) =>
-        size === 'small'
+export const TransactionRow = styled(Row)`
+    ${({ size, account }) =>
+        account
+            ? size === 'small'
+                ? `grid-template-columns: minmax(55px, 1.5fr)
+                    minmax(85px, 1.5fr) minmax(45px, 1.3fr)
+                    minmax(90px, 1fr) minmax(30px, 1fr)`
+                : size === 'medium'
+                ? `grid-template-columns: minmax(55px, 1.5fr)
+                        minmax(85px, 1.5fr) minmax(80px, 1.3fr)
+                        minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(30px, 25%)`
+                : `grid-template-columns:
+                        minmax(78px, 1.3fr) minmax(90px, 1fr) minmax(80px, 1fr)
+                        minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(80px,1.7fr)
+                        minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`
+            : size === 'small'
             ? `grid-template-columns:
-            minmax(68px, 2.6fr) minmax(30px, 1.3fr)
-        minmax(90px, 1fr) minmax(30px, 2fr)`
+                    minmax(68px, 1.5fr) minmax(30px, 1.3fr)
+                    minmax(90px, 1fr) minmax(30px, 2fr)`
             : size === 'medium'
             ? `grid-template-columns:
-            minmax(90px, 1.2fr) minmax(90px, 1.5fr) minmax(80px, 1.3fr)
-        minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%)`
+                        minmax(90px, 1.5fr) minmax(80px, 1.3fr)
+                        minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%)`
             : `grid-template-columns:
-        minmax(78px, 1.3fr) minmax(90px, 1fr) minmax(80px, 1fr)
-        minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(
-            80px,
-            1.7fr
-        )
-        minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`};
+                        minmax(78px, 1.3fr) minmax(90px, 1fr) minmax(80px, 1fr)
+                        minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(80px,1.7fr)
+                        minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`};
 `;
 
-export const OrderRow = styled(Row)<{
-    size: 'small' | 'medium' | 'large';
-}>`
-    ${({ size }) =>
-        size === 'small'
-            ? 'grid-template-columns: minmax(90px, 2.2fr) 1fr 1.8fr minmax(30px, 1fr)'
+export const OrderRow = styled(Row)`
+    ${({ size, account }) =>
+        account
+            ? size === 'small'
+                ? 'grid-template-columns: minmax(55px, 1fr) minmax(80px, 1fr) 1fr minmax(90px, 1fr) minmax(30px, 1fr)'
+                : size === 'medium'
+                ? 'grid-template-columns: minmax(55px, 1.5fr) minmax(80px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(30px, 2fr)'
+                : `grid-template-columns:
+                    minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+                    minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(100px,1fr) 2fr 2fr 1.2fr 14%`
+            : size === 'small'
+            ? 'grid-template-columns: minmax(80px, 2.2fr) 1fr 1.8fr minmax(30px, 1fr)'
             : size === 'medium'
-            ? 'grid-template-columns: minmax(90px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(30px, 2fr)'
+            ? 'grid-template-columns: minmax(80px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(30px, 2fr)'
             : `grid-template-columns:
-        minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
-        minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(
-            100px,
-            1fr
-        )
-        2fr 2fr 1.2fr 14%`};
+                        minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+                        minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(100px,1fr)2fr 2fr 1.2fr 14%`};
+`;
+
+export const RangeRow = styled(Row)<{
+    leaderboard?: boolean;
+}>`
+    ${({ size, leaderboard, account, header }) => `
+        ${
+            account
+                ? size === 'small'
+                    ? `grid-template-columns: minmax(55px, 1fr)
+                        minmax(80px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+                        30px minmax(30px, 1.5fr)`
+                    : size === 'medium'
+                    ? `grid-template-columns: minmax(40px, 1fr)
+                        minmax(80px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
+                        minmax(86px, 1fr) minmax(44px, 1fr) minmax(25px, 1fr) minmax(100px, 1fr)`
+                    : ` grid-template-columns:
+                        minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+                        minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
+                        minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 2fr)`
+                : !leaderboard
+                ? size === 'small'
+                    ? `grid-template-columns:
+                            minmax(80px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+                            minmax(20px, 1fr) minmax(30px, 20%)`
+                    : size === 'medium'
+                    ? `grid-template-columns:
+                                minmax(80px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
+                                minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(100px, 1fr)`
+                    : ` grid-template-columns:
+                                minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+                                minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
+                                minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 2fr)`
+                : size === 'small'
+                ? `grid-template-columns:
+                        minmax(80px, 1fr) minmax(60px, 1fr) minmax(50px, 1fr)
+                        minmax(20px, 1fr) minmax(30px, 20%)`
+                : size === 'medium'
+                ? `grid-template-columns:
+                            minmax(80px, 1fr) minmax(72px, 1fr) minmax(78px, 1fr)
+                            minmax(86px, 1fr) minmax(44px, 1fr) minmax(38px, 1fr) minmax(100px, 1fr)`
+                : ` grid-template-columns: 50px
+                            minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+                            minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
+                            minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 2fr)`
+        };
+        
+        ${
+            leaderboard &&
+            !header &&
+            `&:nth-child(1) {
+                    background: linear-gradient(
+                        90deg,
+                        rgba(212, 175, 55, 0.65) 0%,
+                        rgba(255, 170, 0, 0.08) 20%,
+                        rgba(209, 142, 10, 0) 100%
+                    );
+                    transition: background 0.5s ease-out;
+                }
+                
+                &:nth-child(2) {
+                    background: linear-gradient(
+                        90deg,
+                        rgba(224, 224, 224, 0.35) 0%,
+                        rgba(224, 224, 224, 0.08) 20%,
+                        rgba(224, 224, 224, 0) 100%
+                    );
+                    transition: background 0.5s ease-out;
+                }
+
+                &:nth-child(3) {
+                    background: linear-gradient(
+                        90deg,
+                        rgba(176, 141, 87, 0.35) 0%,
+                        rgba(255, 152, 56, 0.08) 20%,
+                        rgba(255, 152, 56, 0) 100%
+                    );
+                    transition: background 0.5s ease-out;
+                }`
+        }
+    `};
 `;
 
 export const RowItem = styled(FlexContainer)<{

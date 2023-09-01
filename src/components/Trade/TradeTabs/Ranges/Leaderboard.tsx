@@ -2,7 +2,6 @@
 import { useContext, useEffect, useState, memo } from 'react';
 
 // START: Import Local Files
-import styles from './Ranges.module.css';
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -13,6 +12,8 @@ import RangesRow from './RangesTable/RangesRow';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
+import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
+import { FlexContainer } from '../../../../styled/Common';
 
 // react functional component
 function Leaderboard() {
@@ -62,8 +63,24 @@ function Leaderboard() {
     const usePaginateDataOrNull =
         tradeTableState === 'Expanded' ? currentRangess : sortedPositions;
 
+    // TODO: Use these as media width constants
+    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+
+    const tableView = isSmallScreen
+        ? 'small'
+        : (!isSmallScreen && !isLargeScreen) || (isLargeScreen && isSidebarOpen)
+        ? 'medium'
+        : 'large';
+
     const footerDisplay = (
-        <div className={styles.footer}>
+        <FlexContainer
+            alignItems='center'
+            justifyContent='center'
+            gap={isSmallScreen ? 4 : 8}
+            margin='16px auto'
+            background='dark1'
+        >
             {tradeTableState === 'Expanded' && sortedPositions.length > 30 && (
                 <Pagination
                     itemsPerPage={rangesPerPage}
@@ -72,14 +89,8 @@ function Leaderboard() {
                     currentPage={currentPage}
                 />
             )}
-        </div>
+        </FlexContainer>
     );
-
-    const ipadView = useMediaQuery('(max-width: 600px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-
-    const showColumns = useMediaQuery('(max-width: 1799px)');
-    const phoneScreen = useMediaQuery('(max-width: 600px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -106,34 +117,34 @@ function Leaderboard() {
         {
             name: 'Rank',
             className: 'ID',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Last Updated',
             className: '',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'time',
             sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'wallet',
             sortable: false,
         },
         {
             name: walID,
             className: 'wallet_id',
-            show: showColumns,
+            show: tableView !== 'large',
             slug: 'walletid',
             sortable: true,
         },
         {
             name: 'Min',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'min',
             sortable: false,
             alignRight: true,
@@ -141,7 +152,7 @@ function Leaderboard() {
         {
             name: 'Max',
             className: 'side',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'max',
             sortable: false,
             alignRight: true,
@@ -150,7 +161,7 @@ function Leaderboard() {
         {
             name: minMax,
             className: 'side_type',
-            show: showColumns && !ipadView,
+            show: tableView === 'medium',
             slug: 'minMax',
             sortable: false,
             alignRight: true,
@@ -165,16 +176,14 @@ function Leaderboard() {
         },
         {
             name: `${baseTokenSymbol}`,
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
             name: `${quoteTokenSymbol}`,
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: quoteTokenSymbol,
             sortable: false,
             alignRight: true,
@@ -182,7 +191,7 @@ function Leaderboard() {
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns && !phoneScreen,
+            show: tableView === 'medium',
             slug: 'tokens',
             sortable: false,
             alignRight: true,
@@ -211,7 +220,7 @@ function Leaderboard() {
         },
     ];
     const headerColumnsDisplay = (
-        <ul className={styles.header}>
+        <RangeRowStyled size={tableView} leaderboard header>
             {headerColumns.map((header, idx) => (
                 <RangeHeader
                     key={idx}
@@ -222,7 +231,7 @@ function Leaderboard() {
                     header={header}
                 />
             ))}
-        </ul>
+        </RangeRowStyled>
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
@@ -233,21 +242,18 @@ function Leaderboard() {
                     (posId) => posId === position.positionId,
                 ) + 1
             }
-            ipadView={ipadView}
-            showColumns={showColumns}
             isAccountView={false}
             isLeaderboard={true}
-            showTimestamp={true}
-            showPair={showPair}
+            tableView={tableView}
         />
     ));
 
     return (
-        <section className={`${styles.leaderboard}`}>
+        <FlexContainer flexDirection='column' fullHeight>
             <div>{headerColumnsDisplay}</div>
-            <div className={styles.table_content}>{rowItemContent}</div>
+            <div style={{ flex: 1, overflow: 'auto' }}>{rowItemContent}</div>
             <div>{footerDisplay}</div>
-        </section>
+        </FlexContainer>
     );
 }
 
