@@ -28,13 +28,10 @@ import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { DetailedBox } from './DetailedBox';
 interface FeaturedBoxPropsIF {
     token: TokenIF;
     balance: string;
-    value: string;
-}
-interface DetailedBoxPropsIF {
-    label: string;
     value: string;
 }
 
@@ -156,17 +153,6 @@ export default function TableInfo() {
                         <BoxInfoText>${value}</BoxInfoText>
                     </FeaturedBoxInfoContainer>
                 </FeaturedBoxInnerContainer>
-            </BoxContainer>
-        );
-    }
-    function DetailedBox(props: DetailedBoxPropsIF) {
-        const { label, value } = props;
-        return (
-            <BoxContainer>
-                <DetailedBoxContainer>
-                    <InfoHeader>{label}</InfoHeader>
-                    <BoxInfoText>{value}</BoxInfoText>
-                </DetailedBoxContainer>
             </BoxContainer>
         );
     }
