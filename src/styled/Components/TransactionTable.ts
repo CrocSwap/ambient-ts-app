@@ -72,12 +72,7 @@ export const TransactionRow = styled(GridContainer)<{
     }
 
     ${({ header, active, user, placeholder }) => `
-        ${
-            header &&
-            `
-            min-height: 0;
-        `
-        }
+        ${header && 'min-height: 0'};
         ${
             active &&
             `
@@ -93,14 +88,12 @@ export const TransactionRow = styled(GridContainer)<{
             background-position: -99.99% 0;
         `
         };
-
         ${
             user &&
             `
             border-left: 2px solid var(--text1);
         `
         };
-
         ${
             placeholder &&
             `
@@ -122,7 +115,7 @@ export const TransactionRow = styled(GridContainer)<{
                 }
             }
         `
-        }
+        };
     `}
 `;
 
@@ -156,7 +149,6 @@ export const TransactionItem = styled(FlexContainer)<{
             }
         `
         };
-
         ${
             type && type === 'add'
                 ? 'color: var(--accent3)'
