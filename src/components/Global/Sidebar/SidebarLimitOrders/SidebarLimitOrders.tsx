@@ -10,13 +10,12 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import { FlexContainer } from '../../../../styled/Common';
 import {
-    SidebarPoolsListContainer,
-    SidebarPoolsListHeader,
-    SidebarPoolsListHeaderContainer,
-    SidebarPoolsListItemsContainer,
-    SidebarPoolsListViewMoreContainer,
-} from '../../../../styled/Sidebar';
+    HeaderGrid,
+    ItemsContainer,
+    ViewMoreFlex,
+} from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     limitOrderByUser?: LimitOrderIF[];
@@ -77,13 +76,15 @@ export default function SidebarLimitOrders(props: propsIF) {
     };
 
     return (
-        <SidebarPoolsListContainer fontSize={'body'}>
-            <SidebarPoolsListHeaderContainer>
-                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>Price</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>Value</SidebarPoolsListHeader>
-            </SidebarPoolsListHeaderContainer>
-            <SidebarPoolsListItemsContainer>
+        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
+            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
+                {['Pool', 'Price', 'Value'].map((item) => (
+                    <FlexContainer key={item} justifyContent='center'>
+                        {item}
+                    </FlexContainer>
+                ))}
+            </HeaderGrid>
+            <ItemsContainer>
                 {limitOrderByUser &&
                     limitOrderByUser.map((order: LimitOrderIF) => (
                         <SidebarLimitOrdersCard
@@ -96,13 +97,15 @@ export default function SidebarLimitOrders(props: propsIF) {
                         />
                     ))}
                 {isUserConnected && (
-                    <SidebarPoolsListViewMoreContainer
+                    <ViewMoreFlex
+                        justifyContent='center'
+                        color='accent4'
                         onClick={handleViewMoreClick}
                     >
                         View More
-                    </SidebarPoolsListViewMoreContainer>
+                    </ViewMoreFlex>
                 )}
-            </SidebarPoolsListItemsContainer>
-        </SidebarPoolsListContainer>
+            </ItemsContainer>
+        </FlexContainer>
     );
 }

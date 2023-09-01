@@ -157,7 +157,7 @@ export default function TransactionDetailsGraph(
                         case 'liqchange':
                             return tx?.timeFirstMint !== undefined
                                 ? tx?.timeFirstMint
-                                : new Date().getTime();
+                                : tx.txTime;
                         default:
                             return new Date().getTime();
                     }
@@ -880,6 +880,12 @@ export default function TransactionDetailsGraph(
                             maxDomain,
                         ]);
                     }
+                }
+
+                if (transactionType === 'liqchange' && period) {
+                    const buffer = period * 1000 * 2;
+
+                    scaleData?.xScale.domain([minDomain, maxDomain + buffer]);
                 }
 
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');

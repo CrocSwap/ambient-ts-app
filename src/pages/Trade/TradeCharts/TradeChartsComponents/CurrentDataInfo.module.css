@@ -32,7 +32,7 @@
     align-items: center;
     gap: 4px;
 
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 }
 
 .settings_container:not(:last-child) {

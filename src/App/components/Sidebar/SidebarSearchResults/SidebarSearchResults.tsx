@@ -1,4 +1,3 @@
-import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults';
@@ -7,6 +6,8 @@ import { PoolStatsFn } from '../../../functions/getPoolStats';
 import { sidebarSearchIF } from '../../../hooks/useSidebarSearch';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../../functions/fetchTokenPrice';
+import { SearchResultsContainer } from '../../../../styled/Components/Sidebar';
+import { Text } from '../../../../styled/Common';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -21,8 +22,18 @@ export default function SidebarSearchResults(props: propsIF) {
     );
 
     return (
-        <div className={styles.container}>
-            <div className={styles.search_result_title}>Search Results</div>
+        <SearchResultsContainer
+            flexDirection='column'
+            fullHeight
+            fullWidth
+            margin='8px 8px 0 8px'
+            padding='8px'
+            background='dark2'
+            gap={8}
+        >
+            <Text fontSize='header2' color='accent5'>
+                Search Results
+            </Text>
             <PoolsSearchResults
                 searchedPools={searchData.pools}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
@@ -39,6 +50,6 @@ export default function SidebarSearchResults(props: propsIF) {
                     />
                 </>
             )}
-        </div>
+        </SearchResultsContainer>
     );
 }

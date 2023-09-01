@@ -117,6 +117,7 @@
     color: var(--text2);
 }
 .row_container {
+    position: relative;
     width: 100%;
     min-height: 35px;
     transition: all var(--animation-speed) ease-in-out;
@@ -168,11 +169,9 @@
     .main_list_container .row_container,
     .main_list_container .header {
         /* measured against smallest screen size for sub-iPad view (410px)*/
-        grid-template-columns:
-            minmax(142px, 1.9fr) minmax(79px, 1.4fr) minmax(90px, 1.6fr)
-            minmax(28px, 25%);
+        grid-template-columns: minmax(100px, 2.2fr) 1fr 1.8fr 34%;
     }
-    /* Account has diffrent styling */
+    /* Account has diffrent st\yling */
     .acc_list_container .row_container,
     .acc_list_container .header {
         /* measured against smallest screen size for sub-iPad view (410px)*/
@@ -205,7 +204,7 @@
     .main_list_container .header {
         /* measured against smallest screen size for merged view (1280px) with sidebar expanded*/
         grid-template-columns:
-            minmax(76px, 1.1fr) minmax(115px, 2.6fr) minmax(80px, 1.3fr)
+            minmax(76px, 1.1fr) minmax(90px, 2.6fr) minmax(80px, 1.3fr)
             minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%);
     }
     /* Account has diffrent styling */
@@ -227,7 +226,7 @@
     .main_list_container .header {
         /* measured against smallest screen size for full view (1600px) with sidebar expanded */
         grid-template-columns:
-            minmax(76px, 1.3fr) minmax(80px, 2.3fr) minmax(172px, 2.3fr)
+            minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
             minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(72px, 1.3fr) minmax(
                 80px,
                 1.7fr
@@ -238,7 +237,13 @@
     .acc_list_container .row_container,
     .acc_list_container .header {
         /* measured against smallest screen size for full view (1600px) with sidebar expanded */
-        grid-template-columns: minmax(75px, 1.3fr) 2fr 1.9fr 1.5fr 1.3fr 1.3fr 1.9fr 2.2fr 2.2fr 25%;
+        grid-template-columns:
+            minmax(78px, 1.3fr) minmax(90px, 1fr) minmax(80px, 1fr)
+            minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(
+                80px,
+                1.7fr
+            )
+            minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%);
     }
 }
 
