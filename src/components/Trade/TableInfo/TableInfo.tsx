@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { GridContainer, ScrollContainer } from '../../../styled/Common';
-import { FiExternalLink } from 'react-icons/fi';
+import { FiExternalLink, FiCopy } from 'react-icons/fi';
 import trimString from '../../../utils/functions/trimString';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
@@ -14,7 +14,6 @@ import {
     TokenName,
     TokenSymbol,
     BoxInfoText,
-    LinkText,
     TabPlaceholder,
     DetailedBoxContainer,
 } from './TableInfo.styles';
@@ -26,6 +25,9 @@ import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { ZERO_ADDRESS } from '../../../constants';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
+import { AppStateContext } from '../../../contexts/AppStateContext';
 interface FeaturedBoxPropsIF {
     token: TokenIF;
     balance: string;
@@ -94,8 +96,20 @@ export default function TableInfo() {
             value: getFormattedNumber({ value: bottomTokenTvlUsd }),
         },
     ];
+
+    const [_, copy] = useCopyToClipboard();
+
+    const {
+        snackbar: { open: openSnackbar },
+    } = useContext(AppStateContext);
+
     function FeaturedBox(props: FeaturedBoxPropsIF) {
         const { token, balance, value } = props;
+
+        function handleCopyAddress() {
+            copy(token.address);
+            openSnackbar(`${token.address} copied`, 'info');
+        }
         return (
             <BoxContainer>
                 <FeaturedBoxInnerContainer>
@@ -108,7 +122,18 @@ export default function TableInfo() {
                         <InfoHeader>
                             {trimString(token.address, 5, 6, '…')}
                         </InfoHeader>
-                        <LinkText>
+                        <IconWithTooltip
+                            title='Copy transaction hash to clipboard'
+                            placement='bottom'
+                        >
+                            <div onClick={handleCopyAddress}>
+                                <FiCopy size={25} color='var(--text3)' />
+                            </div>
+                        </IconWithTooltip>
+                        <IconWithTooltip
+                            title='View on Block Explorer'
+                            placement='bottom'
+                        >
                             <a
                                 href={
                                     token.address === ZERO_ADDRESS
@@ -120,7 +145,7 @@ export default function TableInfo() {
                             >
                                 <FiExternalLink />
                             </a>
-                        </LinkText>
+                        </IconWithTooltip>
                     </FlexCenter>
                     <FeaturedBoxInfoContainer>
                         <InfoHeader>Balance</InfoHeader>
