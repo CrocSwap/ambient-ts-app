@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import styles from '../Orders.module.css';
 import { LimitSortType } from '../../useSortedLimits';
+import { FlexContainer, Text } from '../../../../../styled/Common';
 
 interface propsIF {
     header: {
@@ -47,32 +47,37 @@ function OrderHeader(props: propsIF) {
 
     const arrow = useMemo<JSX.Element | undefined>(() => {
         if (sortable) {
-            if (sortBy !== slug.toLowerCase()) {
-                return <BsSortDown style={{ opacity: '0' }} />;
-            } else if (!reverseSort) {
-                return <BsSortDown />;
-            } else if (reverseSort) {
-                return <BsSortUpAlt />;
-            } else {
-                return <BsSortDown style={{ opacity: '0' }} />;
+            if (sortBy === slug.toLowerCase()) {
+                if (!reverseSort) {
+                    return <BsSortDown />;
+                } else if (reverseSort) {
+                    return <BsSortUpAlt />;
+                }
             }
+            return undefined;
         }
     }, [sortBy, reverseSort, slug, sortable]);
-    const activeSortStyle =
-        sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
 
     return (
         <>
             {show && (
-                <li
+                <FlexContainer
+                    fullWidth
+                    alignItems='center'
+                    justifyContent={
+                        alignRight
+                            ? 'flex-end'
+                            : alignCenter
+                            ? 'center'
+                            : 'flex-start'
+                    }
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
-                    className={`${activeSortStyle} ${
-                        alignRight && styles.align_right
-                    } ${alignCenter && styles.align_center}`}
                     onClick={() => handleClick(slug as LimitSortType)}
                 >
-                    {name} {arrow}
-                </li>
+                    <Text fontSize='mini' color='text2'>
+                        {name} {arrow}
+                    </Text>
+                </FlexContainer>
             )}
         </>
     );

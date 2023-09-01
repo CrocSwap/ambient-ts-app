@@ -24,30 +24,12 @@ export const ClearButton = styled.button`
     }
 `;
 
-export const TransactionRow = styled(GridContainer)<{
-    size: 'small' | 'medium' | 'large';
+export const Row = styled(GridContainer)<{
     header?: boolean;
     active?: boolean;
     user?: boolean;
     placeholder?: boolean;
 }>`
-    ${({ size }) =>
-        size === 'small'
-            ? `grid-template-columns:
-            minmax(68px, 2.6fr) minmax(30px, 1.3fr)
-        minmax(90px, 1fr) minmax(30px, 2fr)`
-            : size === 'medium'
-            ? `grid-template-columns:
-       minmax(90px, 2.6fr) minmax(80px, 1.3fr)
-        minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%)`
-            : `grid-template-columns:
-        minmax(78px, 1.3fr) minmax(90px, 1fr) minmax(80px, 1fr)
-        minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(
-            80px,
-            1.7fr
-        )
-        minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`};
-
     position: relative;
     width: 100%;
     min-height: 35px;
@@ -119,7 +101,45 @@ export const TransactionRow = styled(GridContainer)<{
     `}
 `;
 
-export const TransactionItem = styled(FlexContainer)<{
+export const TransactionRow = styled(Row)<{
+    size: 'small' | 'medium' | 'large';
+}>`
+    ${({ size }) =>
+        size === 'small'
+            ? `grid-template-columns:
+            minmax(68px, 2.6fr) minmax(30px, 1.3fr)
+        minmax(90px, 1fr) minmax(30px, 2fr)`
+            : size === 'medium'
+            ? `grid-template-columns:
+            minmax(90px, 1.2fr) minmax(90px, 1.5fr) minmax(80px, 1.3fr)
+        minmax(80px, 1fr) minmax(80px, 1.4fr) minmax(90px, 1.6fr) minmax(78px, 25%)`
+            : `grid-template-columns:
+        minmax(78px, 1.3fr) minmax(90px, 1fr) minmax(80px, 1fr)
+        minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(65px, 1.3fr) minmax(
+            80px,
+            1.7fr
+        )
+        minmax(86px, 2.2fr) minmax(80px, 2.2fr) minmax(100px, 20%)`};
+`;
+
+export const OrderRow = styled(Row)<{
+    size: 'small' | 'medium' | 'large';
+}>`
+    ${({ size }) =>
+        size === 'small'
+            ? 'grid-template-columns: minmax(90px, 2.2fr) 1fr 1.8fr minmax(30px, 1fr)'
+            : size === 'medium'
+            ? 'grid-template-columns: minmax(90px, 1.5fr) 1.2fr 1.1fr 1.4fr 1.6fr 1fr minmax(30px, 2fr)'
+            : `grid-template-columns:
+        minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
+        minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(
+            100px,
+            1fr
+        )
+        2fr 2fr 1.2fr 14%`};
+`;
+
+export const RowItem = styled(FlexContainer)<{
     type?: 'add' | 'claim' | 'harvest' | 'remove' | 'buy' | 'sell';
     hover?: boolean;
 }>`

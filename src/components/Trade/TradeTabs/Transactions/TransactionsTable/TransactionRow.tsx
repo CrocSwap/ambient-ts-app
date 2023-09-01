@@ -235,7 +235,7 @@ function TransactionRow(props: propsIF) {
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
             >
-                {tableView === 'large' && TxTimeWithTooltip}
+                {tableView !== 'small' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
                 {tableView === 'large' && <li>{IDWithTooltip}</li>}
                 {tableView === 'large' && !isAccountView && (
@@ -256,7 +256,7 @@ function TransactionRow(props: propsIF) {
                 {tableView === 'large' && quoteQtyDisplayWithTooltip}
                 {tableView === 'medium' && baseQuoteQtyDisplayColumn}
 
-                <li data-label='menu'>
+                <div data-label='menu'>
                     <TransactionsMenu
                         tx={tx}
                         isAccountView={props.isAccountView}
@@ -265,7 +265,7 @@ function TransactionRow(props: propsIF) {
                         }
                         handleWalletClick={handleWalletClick}
                     />
-                </li>
+                </div>
             </TransactionRowStyled>
             {isDetailsModalOpen && (
                 <TransactionDetailsModal

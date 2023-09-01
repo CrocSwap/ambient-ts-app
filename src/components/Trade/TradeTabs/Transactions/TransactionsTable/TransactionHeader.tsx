@@ -54,7 +54,7 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
                     return <BsSortUpAlt />;
                 }
             }
-            return null;
+            return undefined;
         }
     }, [sortBy, reverseSort, slug, sortable]);
 

@@ -14,7 +14,7 @@ import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import React, { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { FlexContainer } from '../../../../styled/Common';
-import { TransactionItem } from '../../../../styled/Components/TransactionTable';
+import { RowItem } from '../../../../styled/Components/TransactionTable';
 
 interface propsIF {
     txHashTruncated: string;
@@ -144,7 +144,7 @@ export const txRowConstants = (props: propsIF) => {
             enterDelay={750}
             leaveDelay={0}
         >
-            <TransactionItem
+            <RowItem
                 hover
                 font='mono'
                 data-label='id'
@@ -152,12 +152,12 @@ export const txRowConstants = (props: propsIF) => {
                 tabIndex={0}
             >
                 {txHashTruncated}
-            </TransactionItem>
+            </RowItem>
         </TextOnlyTooltip>
     );
 
     const usdValueWithTooltip = (
-        <TransactionItem
+        <RowItem
             justifyContent='flex-end'
             type={sideType}
             onMouseEnter={handleRowMouseDown}
@@ -166,7 +166,7 @@ export const txRowConstants = (props: propsIF) => {
             tabIndex={0}
         >
             {usdValue}
-        </TransactionItem>
+        </RowItem>
     );
 
     const actualWalletWithTooltip = (
@@ -183,7 +183,7 @@ export const txRowConstants = (props: propsIF) => {
                         cursor: 'pointer',
                     }}
                 >
-                    <TransactionItem
+                    <RowItem
                         font='mono'
                         gap={4}
                         role='button'
@@ -203,26 +203,26 @@ export const txRowConstants = (props: propsIF) => {
                             size={'12px'}
                             onClick={handleWalletClick}
                         />
-                    </TransactionItem>
+                    </RowItem>
                 </div>
             }
             placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
-            <TransactionItem
+            <RowItem
                 color={usernameColor}
                 font={usernameColor === 'text1' ? 'roboto' : undefined}
                 data-label='wallet'
                 style={ensName ? { textTransform: 'lowercase' } : undefined}
             >
                 {userNameToDisplay}
-            </TransactionItem>
+            </RowItem>
         </TextOnlyTooltip>
     );
 
     const walletWithoutTooltip = (
-        <TransactionItem
+        <RowItem
             hover
             color={usernameColor}
             font={usernameColor === 'text1' ? 'roboto' : undefined}
@@ -231,7 +231,7 @@ export const txRowConstants = (props: propsIF) => {
             tabIndex={0}
         >
             {userNameToDisplay}
-        </TransactionItem>
+        </RowItem>
     );
 
     const walletWithTooltip = isOwnerActiveAccount
@@ -384,7 +384,7 @@ export const txRowConstants = (props: propsIF) => {
     );
 
     const sideDisplay = (
-        <TransactionItem
+        <RowItem
             type={sideType}
             justifyContent='center'
             onMouseEnter={handleRowMouseDown}
@@ -397,7 +397,7 @@ export const txRowConstants = (props: propsIF) => {
             tx.changeType === 'recover'
                 ? `${sideType}`
                 : `${sideType} ${sideCharacter}`}
-        </TransactionItem>
+        </RowItem>
     );
 
     const baseQuoteQtyDisplayColumn = (
@@ -467,7 +467,7 @@ export const txRowConstants = (props: propsIF) => {
     );
 
     const typeDisplay = (
-        <TransactionItem
+        <RowItem
             justifyContent='center'
             type={sideType}
             onMouseEnter={handleRowMouseDown}
@@ -476,11 +476,11 @@ export const txRowConstants = (props: propsIF) => {
             tabIndex={0}
         >
             {type}
-        </TransactionItem>
+        </RowItem>
     );
 
     const typeAndSideColumn = (
-        <TransactionItem
+        <RowItem
             flexDirection='column'
             type={sideType}
             onMouseEnter={handleRowMouseDown}
@@ -496,7 +496,7 @@ export const txRowConstants = (props: propsIF) => {
                     ? `${sideType}`
                     : `${sideType} ${sideCharacter}`}
             </p>
-        </TransactionItem>
+        </RowItem>
     );
 
     const ambientPriceDisplay = (
@@ -516,7 +516,7 @@ export const txRowConstants = (props: propsIF) => {
     );
 
     const lowAndHighPriceDisplay = (
-        <TransactionItem
+        <RowItem
             flexDirection='column'
             alignItems='flex-end'
             justifyContent='center'
@@ -542,11 +542,11 @@ export const txRowConstants = (props: propsIF) => {
                         : truncatedHighDisplayPrice}
                 </span>
             </p>
-        </TransactionItem>
+        </RowItem>
     );
 
     const priceDisplay = (
-        <TransactionItem
+        <RowItem
             justifyContent='flex-end'
             type={sideType}
             onMouseEnter={handleRowMouseDown}
@@ -581,7 +581,7 @@ export const txRowConstants = (props: propsIF) => {
                     </span>
                 </p>
             ) || '…'}
-        </TransactionItem>
+        </RowItem>
     );
 
     return {

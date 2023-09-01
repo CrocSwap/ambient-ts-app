@@ -293,7 +293,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: tableView === 'large',
+            show: tableView !== 'small',
 
             slug: 'time',
             sortable: true,
@@ -307,7 +307,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'ID',
-
             show: tableView === 'large',
             slug: 'id',
             sortable: false,

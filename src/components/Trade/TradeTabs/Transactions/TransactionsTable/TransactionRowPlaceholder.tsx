@@ -10,7 +10,7 @@ import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import {
-    TransactionItem,
+    RowItem,
     TransactionRow,
 } from '../../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../../styled/Common';
@@ -64,9 +64,7 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
         : quoteTokenCharacter;
 
     const id = (
-        <TransactionItem font='mono'>
-            {trimString(transaction.hash, 9, 0, '…')}
-        </TransactionItem>
+        <RowItem font='mono'>{trimString(transaction.hash, 9, 0, '…')}</RowItem>
     );
     const wallet = <p>you</p>;
 

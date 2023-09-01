@@ -34,13 +34,12 @@ interface PropsIF {
             gridSize?: number;
         };
     };
-    showColumns: boolean;
-    ipadView: boolean;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 // TODO: integrate into OrderRow
 export const OrderRowPlaceholder = (props: PropsIF) => {
-    const { transaction, showColumns, ipadView } = props;
+    const { transaction, tableView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
     const { address: userAddress } = useAccount();
@@ -118,27 +117,27 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                 }`}
                 tabIndex={0}
             >
-                {!showColumns && (
+                {tableView === 'large' && (
                     <li>
                         <p>Now</p>
                     </li>
                 )}
-                {!showColumns && <li>{id}</li>}
-                {!showColumns && <li>{wallet}</li>}
-                {showColumns && (
+                {tableView === 'large' && <li>{id}</li>}
+                {tableView === 'large' && <li>{wallet}</li>}
+                {tableView !== 'large' && (
                     <li>
                         {id}
                         {wallet}
                     </li>
                 )}
-                {!ipadView && (
+                {tableView !== 'small' && (
                     <li className={styles.align_right}>
                         {isDenomBase
                             ? `${priceCharacter}${invLimitPriceDecimalCorrectedTruncated}`
                             : `${priceCharacter}${limitPriceDecimalCorrectedTruncated}`}
                     </li>
                 )}
-                {!showColumns && (
+                {tableView === 'large' && (
                     <li className={styles.align_center}>
                         {transaction.side === 'Claim'
                             ? 'Claim'
@@ -152,10 +151,10 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                             : 'Sell' + ` ${sideCharacter}`}
                     </li>
                 )}
-                {!showColumns && (
+                {tableView === 'large' && (
                     <li className={styles.align_center}>{transaction.type}</li>
                 )}
-                {showColumns && !ipadView && (
+                {tableView !== 'large' && (
                     <li
                         className={styles.align_center}
                         style={{ padding: '6px 0' }}
@@ -176,9 +175,13 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                     </li>
                 )}
                 {<li className={styles.align_right}>...</li>}
-                {<li className={styles.align_right}>...</li>}
-                {!showColumns && <li className={styles.align_right}>...</li>}
-                {!ipadView && (
+                {tableView !== 'small' && (
+                    <li className={styles.align_right}>...</li>
+                )}
+                {tableView === 'large' && (
+                    <li className={styles.align_right}>...</li>
+                )}
+                {tableView !== 'small' && (
                     <li className={styles.align_center}>
                         <div
                             style={{
