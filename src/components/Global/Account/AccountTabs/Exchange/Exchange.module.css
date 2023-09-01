@@ -1,6 +1,6 @@
 .container {
-    width: 100%;
     height: 100%;
+    height: calc(100vh - 26.5rem);
 }
 
 .item_container {
@@ -9,6 +9,7 @@
     overflow-x: hidden;
     padding: 0 8px;
 }
+
 .item_container::-webkit-scrollbar {
     width: 1px;
     display: none;

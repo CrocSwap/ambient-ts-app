@@ -20,6 +20,10 @@ import {
     SpotPriceFn,
     memoizeQuerySpotPrice,
 } from '../App/functions/querySpotPrice';
+import {
+    FetchBlockTimeFn,
+    memoizeFetchBlockTime,
+} from '../App/functions/fetchBlockTime';
 
 interface CachedDataIF {
     cachedFetchTokenBalances: TokenBalancesQueryFn;
@@ -28,6 +32,7 @@ interface CachedDataIF {
     cachedQuerySpotPrice: SpotPriceFn;
     cachedTokenDetails: FetchContractDetailsFn;
     cachedEnsResolve: FetchAddrFn;
+    cachedFetchBlockTime: FetchBlockTimeFn;
 }
 
 export const CachedDataContext = createContext<CachedDataIF>(
@@ -45,6 +50,7 @@ export const CachedDataContextProvider = (props: {
         cachedQuerySpotPrice: memoizeQuerySpotPrice(),
         cachedTokenDetails: memoizeFetchContractDetails(),
         cachedEnsResolve: memoizeFetchEnsAddress(),
+        cachedFetchBlockTime: memoizeFetchBlockTime(),
     };
 
     return (
