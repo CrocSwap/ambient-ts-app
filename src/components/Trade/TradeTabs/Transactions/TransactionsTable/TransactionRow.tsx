@@ -1,11 +1,8 @@
-import styles from '../Transactions.module.css';
 import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-
 import TransactionDetailsModal from '../../../../Global/TransactionDetails/TransactionDetailsModal';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
@@ -14,6 +11,7 @@ import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../../Global/Modal/useModal';
+import { TransactionRow as TransactionRowStyled } from '../../../../../styled/Components/TransactionTable';
 
 interface propsIF {
     tx: TransactionIF;
@@ -49,15 +47,14 @@ function TransactionRow(props: propsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
 
-        positiveDisplayStyle,
-        negativeDisplayStyle,
+        positiveDisplayColor,
+        negativeDisplayColor,
         positiveArrow,
         negativeArrow,
         valueArrows,
 
         sideCharacter,
         priceCharacter,
-        sideTypeStyle,
         isBuy,
         elapsedTimeString,
     } = useProcessTransaction(tx, userAddress, isAccountView);
@@ -83,22 +80,12 @@ function TransactionRow(props: propsIF) {
     const isOrderRemove =
         tx.entityType === 'limitOrder' && sideType === 'remove';
 
-    const activeTransactionStyle =
-        tx.txId === currentTxActiveInTransactions
-            ? styles.active_transaction_style
-            : '';
-
-    const userPositionStyle =
-        userNameToDisplay === 'You' && showAllData
-            ? `${styles.border_left} ${sideType}_style`
-            : null;
-
-    const usernameStyle =
+    const usernameColor: 'text1' | 'accent1' | 'accent2' =
         isOwnerActiveAccount && showAllData
-            ? 'owned_tx_contrast'
+            ? 'accent2'
             : ensName || userNameToDisplay === 'You'
-            ? 'primary_color'
-            : 'username_base_color';
+            ? 'accent1'
+            : 'text1';
 
     const txDomId =
         tx.txId === currentTxActiveInTransactions ? `tx-${tx.txId}` : '';
@@ -156,7 +143,7 @@ function TransactionRow(props: propsIF) {
         }
     };
 
-    const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
+    const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
         event,
     ) => {
         if (event.key === 'Enter') {
@@ -173,9 +160,8 @@ function TransactionRow(props: propsIF) {
         openDetailsModal,
         handleRowMouseDown,
         handleRowMouseOut,
-        sideTypeStyle,
         usdValue,
-        usernameStyle,
+        usernameColor,
         userNameToDisplay,
         baseTokenLogo,
         quoteTokenLogo,
@@ -193,8 +179,8 @@ function TransactionRow(props: propsIF) {
         isOrderRemove,
         valueArrows,
         positiveArrow,
-        positiveDisplayStyle,
-        negativeDisplayStyle,
+        positiveDisplayColor,
+        negativeDisplayColor,
         negativeArrow,
         type,
         truncatedLowDisplayPrice,
@@ -238,8 +224,10 @@ function TransactionRow(props: propsIF) {
     // end of portfolio page li element ---------------
     return (
         <>
-            <ul
-                className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle} row_container_global`}
+            <TransactionRowStyled
+                size={tableView}
+                active={tx.txId === currentTxActiveInTransactions}
+                user={userNameToDisplay === 'You' && showAllData}
                 style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
                 id={txDomId}
@@ -247,7 +235,7 @@ function TransactionRow(props: propsIF) {
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
             >
-                {tableView !== 'small' && TxTimeWithTooltip}
+                {tableView === 'large' && TxTimeWithTooltip}
                 {isAccountView && tokenPair}
                 {tableView === 'large' && <li>{IDWithTooltip}</li>}
                 {tableView === 'large' && !isAccountView && (
@@ -268,7 +256,7 @@ function TransactionRow(props: propsIF) {
                 {tableView === 'large' && quoteQtyDisplayWithTooltip}
                 {tableView === 'medium' && baseQuoteQtyDisplayColumn}
 
-                <li data-label='menu' className={styles.menu}>
+                <li data-label='menu'>
                     <TransactionsMenu
                         tx={tx}
                         isAccountView={props.isAccountView}
@@ -278,7 +266,7 @@ function TransactionRow(props: propsIF) {
                         handleWalletClick={handleWalletClick}
                     />
                 </li>
-            </ul>
+            </TransactionRowStyled>
             {isDetailsModalOpen && (
                 <TransactionDetailsModal
                     tx={tx}

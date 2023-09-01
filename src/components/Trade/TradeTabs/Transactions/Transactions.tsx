@@ -1,5 +1,4 @@
 /* eslint-disable no-irregular-whitespace */
-import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -27,6 +26,11 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
+import {
+    TransactionRow as TransactionRowStyled,
+    ViewMoreButton,
+} from '../../../../styled/Components/TransactionTable';
+import { FlexContainer, Text } from '../../../../styled/Common';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -185,6 +189,7 @@ function Transactions(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', transactionData);
 
+    // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 600px)');
     const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
@@ -202,13 +207,6 @@ function Transactions(props: propsIF) {
                   fullLayoutActive === false)
             ? 'medium'
             : 'large';
-
-    console.log({
-        tableView,
-        fullLayoutActive,
-    });
-
-    // const showColumns = false;
 
     const getCandleData = () =>
         crocEnv &&
@@ -295,7 +293,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: tableView !== 'small',
+            show: tableView === 'large',
 
             slug: 'time',
             sortable: true,
@@ -328,7 +326,7 @@ function Transactions(props: propsIF) {
             alignCenter: false,
         },
         {
-            name: 'Priceㅤㅤ',
+            name: 'Price',
             show: tableView !== 'small',
             slug: 'price',
             sortable: false,
@@ -364,17 +362,14 @@ function Transactions(props: propsIF) {
         },
         {
             name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
-
             show: tableView === 'large',
-
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
-            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
+            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added to offset token logo
             show: tableView === 'large',
-
             slug: quoteTokenSymbol,
             sortable: false,
             alignRight: true,
@@ -401,12 +396,8 @@ function Transactions(props: propsIF) {
         },
     ];
 
-    const headerStyle = isAccountView
-        ? styles.portfolio_header
-        : styles.trade_header;
-
     const headerColumnsDisplay = (
-        <ul className={`${styles.header} ${headerStyle}`}>
+        <TransactionRowStyled size={tableView} header>
             {headerColumns.map((header, idx) => (
                 <TransactionHeader
                     key={idx}
@@ -417,7 +408,7 @@ function Transactions(props: propsIF) {
                     header={header}
                 />
             ))}
-        </ul>
+        </TransactionRowStyled>
     );
 
     const [page, setPage] = useState(1);
@@ -465,30 +456,38 @@ function Transactions(props: propsIF) {
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && transactionData.length > 10) ||
             (!isAccountView && tradePageCheck)) && (
-            <div className={styles.footer}>
-                <div className={styles.footer_content}>
-                    <RowsPerPageDropdown
-                        rowsPerPage={rowsPerPage}
-                        onChange={handleChangeRowsPerPage}
-                        itemCount={sortedTransactions.length}
-                        setCurrentPage={setCurrentPage}
-                        resetPageToFirst={resetPageToFirst}
-                    />
-                    <Pagination
-                        count={count}
-                        page={page}
-                        shape='circular'
-                        color='secondary'
-                        onChange={handleChange}
-                        showFirstButton
-                        showLastButton
-                        size={sPagination ? 'small' : 'medium'}
-                    />
-                    <p
-                        className={styles.showing_text}
-                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
-                </div>
-            </div>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='center'
+                gap={isSmallScreen ? 4 : 8}
+                margin='16px auto'
+                background='dark1'
+            >
+                <RowsPerPageDropdown
+                    rowsPerPage={rowsPerPage}
+                    onChange={handleChangeRowsPerPage}
+                    itemCount={sortedTransactions.length}
+                    setCurrentPage={setCurrentPage}
+                    resetPageToFirst={resetPageToFirst}
+                />
+                <Pagination
+                    count={count}
+                    page={page}
+                    shape='circular'
+                    color='secondary'
+                    onChange={handleChange}
+                    showFirstButton
+                    showLastButton
+                    size={sPagination ? 'small' : 'medium'}
+                />
+                {!isSmallScreen && (
+                    <Text
+                        fontSize='mini'
+                        color='text2'
+                        style={{ whiteSpace: 'nowrap' }}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
+                )}
+            </FlexContainer>
         );
 
     const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
@@ -541,9 +540,6 @@ function Transactions(props: propsIF) {
         !isAccountView &&
         sortedRowItemContent.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
 
-    const gridTxStyle =
-        showViewMoreButton && isCandleSelected ? styles.show_more_grid : '';
-
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
@@ -551,7 +547,10 @@ function Transactions(props: propsIF) {
             isAccountView={isAccountView}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewTransaction} className={gridTxStyle}>
+        <FlexContainer
+            flexDirection='column'
+            onKeyDown={handleKeyDownViewTransaction}
+        >
             <ul ref={listRef} id='current_row_scroll'>
                 {!isAccountView &&
                     pendingTransactions.length > 0 &&
@@ -656,17 +655,18 @@ function Transactions(props: propsIF) {
                 {currentRowItemContent}
             </ul>
             {showViewMoreButton && (
-                <div className={styles.view_more_container}>
-                    <button
-                        className={styles.view_more_button}
-                        onClick={() => toggleTradeTable()}
-                    >
+                <FlexContainer
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='8px'
+                >
+                    <ViewMoreButton onClick={() => toggleTradeTable()}>
                         View More
-                    </button>
-                </div>
+                    </ViewMoreButton>
+                </FlexContainer>
             )}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
-        </div>
+        </FlexContainer>
     );
 
     useEffect(() => {
@@ -677,19 +677,11 @@ function Transactions(props: propsIF) {
         }
     }, [isTradeTableExpanded]);
 
-    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
-
     return (
-        <div
-            className={`${
-                isAccountView
-                    ? styles.acc_list_container
-                    : styles.main_list_container
-            }  ${isTradeTableExpanded && styles.main_list_expanded}`}
-        >
+        <FlexContainer flexDirection='column' fullHeight>
             <div>{headerColumnsDisplay}</div>
 
-            <div className={styles.table_content}>
+            <div style={{ flex: 1, overflow: 'auto' }}>
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
@@ -697,8 +689,8 @@ function Transactions(props: propsIF) {
                 )}
             </div>
 
-            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
-        </div>
+            {footerDisplay}
+        </FlexContainer>
     );
 }
 

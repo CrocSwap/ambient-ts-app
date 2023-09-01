@@ -28,6 +28,9 @@
     --body-size: 12px;
     --body-lh: 15px;
 
+    --mini-size: 10px;
+    --mini-lh: 12px;
+
     /* colors */
     --blur-bg: rgba(14, 19, 26, 0.5);
 

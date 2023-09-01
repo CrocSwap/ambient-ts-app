@@ -1,8 +1,8 @@
 import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import styles from '../Transactions.module.css';
 import { TxSortType } from '../../useSortedTxs';
+import { FlexContainer, Text } from '../../../../../styled/Common';
 
 interface TransactionHeaderPropsIF {
     header: {
@@ -47,33 +47,37 @@ function TransactionHeader(props: TransactionHeaderPropsIF) {
 
     const arrow = useMemo(() => {
         if (sortable) {
-            if (sortBy !== slug.toLowerCase()) {
-                return <BsSortDown style={{ opacity: '0' }} />;
-            } else if (!reverseSort) {
-                return <BsSortDown />;
-            } else if (reverseSort) {
-                return <BsSortUpAlt />;
-            } else {
-                return <BsSortDown style={{ opacity: '0' }} />;
+            if (sortBy === slug.toLowerCase()) {
+                if (!reverseSort) {
+                    return <BsSortDown />;
+                } else if (reverseSort) {
+                    return <BsSortUpAlt />;
+                }
             }
+            return null;
         }
     }, [sortBy, reverseSort, slug, sortable]);
-
-    const activeSortStyle =
-        sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
 
     return (
         <>
             {show && (
-                <li
+                <FlexContainer
+                    fullWidth
+                    alignItems='center'
+                    justifyContent={
+                        alignRight
+                            ? 'flex-end'
+                            : alignCenter
+                            ? 'center'
+                            : 'flex-start'
+                    }
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
-                    className={`${activeSortStyle} ${
-                        alignRight && styles.align_right
-                    } ${alignCenter && styles.align_center}`}
                     onClick={() => handleClick(slug as TxSortType)}
                 >
-                    {name} {arrow}
-                </li>
+                    <Text fontSize='mini' color='text2'>
+                        {name} {arrow}
+                    </Text>
+                </FlexContainer>
             )}
         </>
     );

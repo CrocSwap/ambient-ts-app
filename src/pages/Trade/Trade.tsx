@@ -18,7 +18,6 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import { IS_LOCAL_ENV } from '../../constants';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChartContext } from '../../contexts/ChartContext';
@@ -51,8 +50,7 @@ function Trade() {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { candleData, setIsCandleSelected, isCandleDataNull } =
-        useContext(CandleContext);
+    const { setIsCandleSelected, isCandleDataNull } = useContext(CandleContext);
 
     const {
         isFullScreen: isChartFullScreen,
@@ -171,7 +169,7 @@ function Trade() {
                     {activeMobileComponent !== 'transactions' && (
                         <TradeDropdownButton
                             onClick={() =>
-                                handleMobileDropdownClick('ransactions')
+                                handleMobileDropdownClick('transactions')
                             }
                         >
                             Transactions
@@ -259,14 +257,18 @@ function Trade() {
             <FlexContainer
                 flexDirection='column'
                 fullWidth
-                fullHeight
                 background='dark2'
                 gap={8}
+                style={{ height: 'calc(100vh - 56px)' }}
                 ref={canvasRef}
             >
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
-                <FlexContainer flexDirection='column' fullHeight>
+                <FlexContainer
+                    flexDirection='column'
+                    fullHeight
+                    overflow='hidden'
+                >
                     <ResizableContainer
                         showResizeable={!isCandleDataNull}
                         enable={{
@@ -325,7 +327,11 @@ function Trade() {
                             </ChartContainer>
                         )}
                     </ResizableContainer>
-                    <FlexContainer ref={tradeTableRef} style={{ flex: 1 }}>
+                    <FlexContainer
+                        ref={tradeTableRef}
+                        style={{ flex: 1 }}
+                        overflow='hidden'
+                    >
                         <TradeTabs2 {...tradeTabsProps} />
                     </FlexContainer>
                 </FlexContainer>

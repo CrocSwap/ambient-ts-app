@@ -8,7 +8,7 @@ export const Font = css<FontProps>`
 `;
 
 interface FontSizeProps {
-    fontSize?: 'header1' | 'header2' | 'header' | 'body';
+    fontSize?: 'header1' | 'header2' | 'header' | 'body' | 'mini';
 }
 export const FontSize = css<FontSizeProps>`
     ${({ fontSize }) =>
