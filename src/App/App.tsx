@@ -277,8 +277,10 @@ export default function App() {
                     currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
+                {showMobileVersion && currentLocation !== '/' && (
+                    <SidebarFooter />
+                )}
             </div>
-            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <GlobalPopup />
             <SnackbarComponent />
             {isWagmiModalOpen && <WalletModalWagmi />}
