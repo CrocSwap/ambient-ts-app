@@ -16,6 +16,7 @@ interface propsIF {
     message: Message | undefined;
     isMoreButtonPressed: boolean;
     setIsMoreButtonPressed: Dispatch<boolean>;
+    addReactionListener: (message?: Message) => void;
 }
 export default function Options(props: propsIF) {
     const { isMoreButtonPressed, setIsMoreButtonPressed } = props;
@@ -61,7 +62,12 @@ export default function Options(props: propsIF) {
         />
     );
 
-    const addReaction = <BsEmojiSmileUpsideDown size={14} />;
+    const addReaction = (
+        <BsEmojiSmileUpsideDown
+            onClick={() => props.addReactionListener(props.message)}
+            size={14}
+        />
+    );
 
     const ReplyWithTooltip = (
         <TextOnlyTooltip

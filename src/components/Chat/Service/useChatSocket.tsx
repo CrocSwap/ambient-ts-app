@@ -12,6 +12,7 @@ import {
     getUserIsVerified,
     verifyUserEndpoint,
     updateVerifiedDateEndpoint,
+    addReactionEndpoint,
 } from '../../../constants';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
@@ -366,6 +367,38 @@ const useChatSocket = (
         });
     }
 
+    async function addReaction(
+        messageId: string,
+        userId: string,
+        reaction: string,
+    ) {
+        const payload = {
+            messageId,
+            userId,
+            reaction,
+        };
+
+        const response = await fetch(CHAT_BACKEND_URL + addReactionEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (data && data.data && data.data.message) {
+            const msg = data.data.message;
+            const newMessageList = messages.map((e) => {
+                if (e._id == msg._id) {
+                    return msg;
+                } else {
+                    return e;
+                }
+            });
+            setMessages([...newMessageList]);
+        }
+
+        return data;
+    }
+
     return {
         messages,
         getMsg,
@@ -386,6 +419,7 @@ const useChatSocket = (
         getAllMessages,
         deleteMsgFromList,
         setMessages,
+        addReaction,
     };
 };
 

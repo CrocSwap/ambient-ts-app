@@ -264,3 +264,53 @@
 .verify_button_icon{
     margin: 0 .2rem; 
 }
+
+/* 
+#chatReactionWrapper aside.emoji-picker-react{
+    background-color: transparent !important;
+    background: transparent !important;
+    backdrop-filter: blur(20px);
+
+}
+
+#chatReactionWrapper  aside.emoji-picker-react .emoji-group:before{
+    background: transparent !important;
+} */
+
+
+@keyframes scaleAnim{
+    from    { transform: scale(0); opacity: 0; }
+    to      { transform: scale(1);  opacity: 1;}
+
+}
+
+.reaction_picker_wrapper{
+    display: block;
+    position: absolute;
+    transform: scale(0);
+    bottom: 10%;
+    width: 80%;
+    height: 50%;
+    z-index: 1;
+    left: 10%;
+    animation: scaleAnim .3s ease-in-out forwards;
+    box-shadow: 0px 0px 30px var(--accent1);
+    overflow: hidden;
+    border-radius: 1rem;
+    z-index: 4;
+    opacity: 0;
+    background: var(--dark2);
+    /* height: 4rem; */
+
+}
+
+
+.reaction_picker_close{
+    display: block;
+    font-size: 1rem;
+    color: white;
+    padding: .5rem;
+    margin-right: 1rem;
+    float: right;
+    cursor: pointer;
+}

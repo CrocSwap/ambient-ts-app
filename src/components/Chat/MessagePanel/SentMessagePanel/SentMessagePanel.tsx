@@ -65,6 +65,7 @@ interface SentMessageProps {
     isChatOpen: boolean;
     isDeleted: boolean;
     deletedMessageText: string;
+    addReactionListener: (message?: Message) => void;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -249,6 +250,9 @@ function SentMessagePanel(props: SentMessageProps) {
         const strTime = hours + ':' + _min + ' ' + ampm;
         return strTime;
     };
+
+    console.log('............');
+    console.log(props.message.reactions);
 
     const getDayAndName = (previousDay: string, currentDay: string) => {
         const today = new Date();
@@ -553,6 +557,10 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
+    const createReactionsDOM = () => {
+        console.log('cont');
+    };
+
     return (
         <div
             className={`${styles.msg_bubble_container} ${
@@ -585,21 +593,27 @@ function SentMessagePanel(props: SentMessageProps) {
                             setFlipped(true);
                         }}
                     ></div>
-                    <div className={styles.options_button}>
-                        <Options
-                            setIsReplyButtonPressed={
-                                props.setIsReplyButtonPressed
-                            }
-                            message={props.message}
-                            isReplyButtonPressed={props.isReplyButtonPressed}
-                            replyMessageContent={props.replyMessageContent}
-                            setReplyMessageContent={
-                                props.setReplyMessageContent
-                            }
-                            isMoreButtonPressed={isMoreButtonPressed}
-                            setIsMoreButtonPressed={setIsMoreButtonPressed}
-                        />
-                    </div>
+                    {props.address && (
+                        <div className={styles.options_button}>
+                            <Options
+                                setIsReplyButtonPressed={
+                                    props.setIsReplyButtonPressed
+                                }
+                                message={props.message}
+                                isReplyButtonPressed={
+                                    props.isReplyButtonPressed
+                                }
+                                replyMessageContent={props.replyMessageContent}
+                                setReplyMessageContent={
+                                    props.setReplyMessageContent
+                                }
+                                isMoreButtonPressed={isMoreButtonPressed}
+                                setIsMoreButtonPressed={setIsMoreButtonPressed}
+                                addReactionListener={props.addReactionListener}
+                            />
+                        </div>
+                    )}
+
                     <div>
                         {daySeparator === '' ? (
                             ''
@@ -801,6 +815,27 @@ function SentMessagePanel(props: SentMessageProps) {
 
                             {/* {snackbarContent} */}
                         </div>
+
+                        {props.message.reactions &&
+                            Object.keys(props.message.reactions).length > 0 && (
+                                <div className={styles.reactions_wrapper}>
+                                    {Object.keys(props.message.reactions).map(
+                                        (reaction, index) => {
+                                            return (
+                                                <div
+                                                    key={props.message._id}
+                                                    className={
+                                                        styles.reaction_node
+                                                    }
+                                                >
+                                                    {reaction}
+                                                </div>
+                                            );
+                                        },
+                                    )}
+                                </div>
+                            )}
+
                         {hasSeparator ? (
                             <hr
                                 className={styles.separator}

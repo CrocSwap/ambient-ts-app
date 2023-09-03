@@ -19,6 +19,7 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { Message } from './Model/MessageModel';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import { CROCODILE_LABS_LINKS } from '../../constants';
+import Picker from 'emoji-picker-react';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -100,6 +101,7 @@ function ChatPanel(props: propsIF) {
         updateUserCache,
         getAllMessages,
         setMessages,
+        addReaction,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -107,6 +109,8 @@ function ChatPanel(props: propsIF) {
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
+    const [focusedMessage, setFocusedMessage] = useState<Message | undefined>();
+    const [showPicker, setShowPicker] = useState(false);
 
     const defaultEnsName = 'defaultValue';
 
@@ -173,6 +177,18 @@ function ChatPanel(props: propsIF) {
             setMentionPanelQuery(value.split('@')[1]);
         } else {
             if (isMentionPanelActive) setIsMentionPanelActive(false);
+        }
+    };
+
+    const reactionBtnListener = (focusedMessage?: Message) => {
+        setFocusedMessage(focusedMessage);
+        setShowPicker(true);
+    };
+
+    const addReactionEmojiPickListener = (event: any, data: any) => {
+        if (focusedMessage && currentUser) {
+            addReaction(focusedMessage._id, currentUser, data.emoji);
+            setShowPicker(false);
         }
     };
 
@@ -656,6 +672,7 @@ function ChatPanel(props: propsIF) {
                             address={address}
                             isDeleted={item.isDeleted}
                             deletedMessageText={item.deletedMessageText}
+                            addReactionListener={reactionBtnListener}
                         />
                     );
                 })}
@@ -888,6 +905,28 @@ function ChatPanel(props: propsIF) {
                     {messageList}
                     {showPopUp ? sendingLink : ''}
                     {chatNotification}
+
+                    {isChatOpen && showPicker && (
+                        <div
+                            id='chatReactionWrapper'
+                            className={styles.reaction_picker_wrapper}
+                        >
+                            <div
+                                className={styles.reaction_picker_close}
+                                onClick={() => {
+                                    setShowPicker(false);
+                                }}
+                            >
+                                {' '}
+                                X{' '}
+                            </div>
+                            <Picker
+                                onEmojiClick={addReactionEmojiPickListener}
+                                pickerStyle={{ width: '100%' }}
+                                disableSkinTonePicker={true}
+                            />
+                        </div>
+                    )}
 
                     {messageInput}
                     {/* {mentionAutoComplete} */}

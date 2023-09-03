@@ -14,4 +14,5 @@ export interface Message {
     dislikes?: [];
     isDeleted: boolean;
     deletedMessageText: string;
+    reactions: object | undefined;
 }
