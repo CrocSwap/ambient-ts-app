@@ -52,30 +52,45 @@ import Toggle from '../../components/Global/Toggle/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import { useTokenPairAllowance } from '../../App/hooks/useTokenPairAllowance';
+import { usePoolMetadata } from '../../App/hooks/usePoolMetadata';
+import { ChartContext } from '../../contexts/ChartContext';
+import { RangeContext } from '../../contexts/RangeContext';
+import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
 
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
+    const { address: userAddress } = useAccount();
+
     const {
         wagmiModal: { open: openWagmiModalWallet },
     } = useContext(AppStateContext);
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const {
         crocEnv,
         ethMainnetUsdPrice,
         chainData: { chainId },
+        chainData,
     } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const {
+        server: { isEnabled: isServerEnabled },
+    } = useContext(AppStateContext);
+    const {
+        cachedQuerySpotPrice,
+        cachedFetchTokenPrice,
+        cachedTokenDetails,
+        cachedEnsResolve,
+    } = useContext(CachedDataContext);
+    const { setSimpleRangeWidth } = useContext(RangeContext);
+
+    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { poolPriceDisplay } = useContext(PoolContext);
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-    const {
-        tokenAAllowance,
-        tokenBAllowance,
-        setRecheckTokenAApproval,
-        setRecheckTokenBApproval,
-    } = useContext(TradeTokenContext);
+    const { receiptData } = useAppSelector((state) => state);
+
     const { tokens } = useContext(TokenContext);
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
@@ -118,6 +133,22 @@ export default function InitPool() {
     const baseToken = tokenA;
     const quoteToken = tokenB;
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
+
+    const {
+        baseTokenBalance,
+        setBaseTokenBalance,
+        quoteTokenBalance,
+        setQuoteTokenBalance,
+        baseTokenDexBalance,
+        setBaseTokenDexBalance,
+        quoteTokenDexBalance,
+        setQuoteTokenDexBalance,
+        tokenAAllowance,
+        tokenBAllowance,
+        setRecheckTokenAApproval,
+        setRecheckTokenBApproval,
+        isTokenABase,
+    } = useTokenBalancesAndAllowances(baseToken, quoteToken);
 
     useEffect(() => {
         // make sure crocEnv exists (needs a moment to spin up)
@@ -583,6 +614,7 @@ export default function InitPool() {
     );
 
     // Newwwwww Init code
+
     // eslint-disable-next-line
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
     // eslint-disable-next-line
@@ -628,8 +660,6 @@ export default function InitPool() {
     const maxPriceDisplay = isAmbient
         ? 'Infinity'
         : pinnedMaxPriceDisplayTruncated;
-
-    const isTokenABase = false;
 
     const displayPriceWithDenom =
         isDenomBase && poolPriceDisplay
@@ -819,7 +849,7 @@ export default function InitPool() {
                     <FiRefreshCw size={20} />
                 </FlexContainer>
             </FlexContainer>
-            <FlexContainer>
+            <FlexContainer flexDirection='column'>
                 <TokenInputQuantity
                     tokenAorB={'A'}
                     value={'0'}
@@ -832,7 +862,7 @@ export default function InitPool() {
                 />
                 {walletContent}
             </FlexContainer>
-            <FlexContainer>
+            <FlexContainer flexDirection='column'>
                 <TokenInputQuantity
                     tokenAorB={'A'}
                     value={'0'}
