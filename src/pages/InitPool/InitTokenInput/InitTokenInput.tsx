@@ -26,7 +26,6 @@ interface PropsIF {
 export default function InitTokenInput(props: PropsIF) {
     // eslint-disable-next-line
     const {
-        baseTokenAddress,
         tokenABalance,
         tokenBBalance,
         tokenADexBalance,

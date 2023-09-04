@@ -36,7 +36,11 @@ import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
-import { LocalPairDataIF } from '../../utils/state/localPairDataSlice';
+import {
+    LocalPairDataIF,
+    setLocalTokenA,
+    setLocalTokenB,
+} from '../../utils/state/localPairDataSlice';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
@@ -53,6 +57,7 @@ import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
 import InitTokenInput from './InitTokenInput/InitTokenInput';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
+import { HiOutlineSwitchVertical } from 'react-icons/hi';
 
 // react functional component
 export default function InitPool() {
@@ -805,12 +810,17 @@ export default function InitPool() {
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (tokenAorB === 'A') {
             setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
+            console.log('toggled');
         } else {
             setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
         }
     };
     const reverseTokens = (): void => {
         console.log('tokens reversed');
+        dispatch(setLocalTokenB(tokenA));
+        dispatch(setLocalTokenA(tokenB));
+        setBaseCollateral(quoteCollateral);
+        setQuoteCollateral(baseCollateral);
     };
 
     const collateralContent = (
@@ -825,6 +835,10 @@ export default function InitPool() {
                 <FlexContainer gap={8}>
                     <LuEdit2 size={20} />
                     <FiRefreshCw size={20} />
+                    <HiOutlineSwitchVertical
+                        onClick={reverseTokens}
+                        size={20}
+                    />
                 </FlexContainer>
             </FlexContainer>
 
