@@ -615,8 +615,7 @@ export default function InitPool() {
         rescaleRangeBoundariesWithSlider,
         setRescaleRangeBoundariesWithSlider,
     ] = useState(false);
-    // const tokenA = localPair.tokens[0]
-    // const tokenB = localPair.tokens[1]
+
     // eslint-disable-next-line
     const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
         | {
@@ -827,7 +826,6 @@ export default function InitPool() {
     const handleSimulatedRefresh = () => {
         setIsLoading(true);
 
-        // Simulate a 2-second loading process
         setTimeout(() => {
             setIsLoading(false);
         }, 1000);
