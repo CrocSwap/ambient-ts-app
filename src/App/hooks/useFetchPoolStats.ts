@@ -111,6 +111,9 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
+    const [poolFeesTotal, setPoolFeesTotal] = useState<string | undefined>(
+        undefined,
+    );
     const [poolApy, setPoolApy] = useState<string | undefined>(undefined);
     const [quoteTvlDecimal, setQuoteTvlDecimal] = useState<number | undefined>(
         undefined,
@@ -167,6 +170,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                 );
 
                 const tvlResult = poolStats?.tvlTotalUsd;
+                const feesTotalResult = poolStats?.feesTotalUsd;
                 const volumeResult = poolStats?.volumeTotalUsd; // display the 24 hour volume
                 const apyResult = await apyEst;
 
@@ -181,6 +185,13 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
                         isTvl: true,
                     });
                     setPoolTvl(tvlString);
+                }
+                if (feesTotalResult) {
+                    const feesTotalString = getFormattedNumber({
+                        value: feesTotalResult,
+                        isTvl: false,
+                    });
+                    setPoolFeesTotal(feesTotalString);
                 }
                 if (volumeResult) {
                     const volumeString = getFormattedNumber({
@@ -276,6 +287,7 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         quoteLogoUri,
         poolVolume,
         poolTvl,
+        poolFeesTotal,
         poolApy,
         poolPriceChangePercent,
         isPoolPriceChangePositive,
