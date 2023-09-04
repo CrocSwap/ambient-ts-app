@@ -58,9 +58,12 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                         title='Copy transaction hash to clipboard'
                         placement='bottom'
                     >
-                        <div onClick={handleCopyAddress}>
-                            <FiCopy size={16} color='var(--text3)' />
-                        </div>
+                        <FiCopy
+                            size={16}
+                            color='var(--text3)'
+                            className='icon_hover'
+                            onClick={handleCopyAddress}
+                        />
                     </IconWithTooltip>
                     <IconWithTooltip
                         title='View on Block Explorer'
