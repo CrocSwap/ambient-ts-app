@@ -93,7 +93,6 @@ import {
 } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
-// import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -172,6 +171,8 @@ export default function Chart(props: propsIF) {
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
+
+    const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
     const [isDrawActive, setIsDrawActive] = useState(false);
@@ -2278,6 +2279,14 @@ export default function Chart(props: propsIF) {
         0.5,
     );
 
+    const selectedCircleSeries = createCircle(
+        scaleData?.xScale,
+        scaleData?.yScale,
+        80,
+        0.5,
+        true,
+    );
+
     useEffect(() => {
         const canvas = d3
             .select(d3CanvasMain.current)
@@ -2296,7 +2305,18 @@ export default function Chart(props: propsIF) {
                                 selectedDrawnShape &&
                                 selectedDrawnShape.data.time === item.time
                             ) {
-                                circleSeries(item?.data);
+                                item.data.forEach((element) => {
+                                    if (
+                                        selectedDrawnShape.selectedCircle ===
+                                        element
+                                    ) {
+                                        if (!isUpdatingShape) {
+                                            selectedCircleSeries([element]);
+                                        }
+                                    } else {
+                                        circleSeries([element]);
+                                    }
+                                });
                             }
                         }
 
@@ -2329,7 +2349,21 @@ export default function Chart(props: propsIF) {
                                     selectedDrawnShape &&
                                     selectedDrawnShape.data.time === item.time
                                 ) {
-                                    circleSeries(line);
+                                    line.forEach((element) => {
+                                        if (
+                                            selectedDrawnShape.selectedCircle &&
+                                            selectedDrawnShape.selectedCircle
+                                                .x === element.x &&
+                                            selectedDrawnShape.selectedCircle
+                                                .y === element.y
+                                        ) {
+                                            if (!isUpdatingShape) {
+                                                selectedCircleSeries([element]);
+                                            }
+                                        } else {
+                                            circleSeries([element]);
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -2343,11 +2377,17 @@ export default function Chart(props: propsIF) {
                     });
                     lineSeries.context(ctx);
                     circleSeries.context(ctx);
+                    selectedCircleSeries.context(ctx);
                 });
 
             render();
         }
-    }, [diffHashSig(drawnShapeHistory), lineSeries, selectedDrawnShape]);
+    }, [
+        diffHashSig(drawnShapeHistory),
+        lineSeries,
+        selectedDrawnShape,
+        isUpdatingShape,
+    ]);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -3509,9 +3549,9 @@ export default function Chart(props: propsIF) {
                                 selectedDrawnShape={selectedDrawnShape}
                                 drawnShapeHistory={drawnShapeHistory}
                                 render={render}
-                                setIsDragActive={setIsDragActive}
                                 mousemove={mousemove}
                                 setCrossHairDataFunc={setCrossHairDataFunc}
+                                setIsUpdatingShape={setIsUpdatingShape}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />

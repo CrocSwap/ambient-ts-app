@@ -16,6 +16,7 @@ function Toolbar(props: ToolbarProps) {
         setActiveDrawingType,
     } = props;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function handleDrawModeChange(item: any) {
         setIsDrawActive((prev: boolean) => !prev);
         setActiveDrawingType(item.label);

@@ -11,7 +11,7 @@ interface DragCanvasProps {
     selectedDrawnShape: selectedDrawnData | undefined;
     drawnShapeHistory: drawDataHistory[];
     canUserDragDrawnShape: boolean;
-    setIsDragActive: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsUpdatingShape: React.Dispatch<React.SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCrossHairDataFunc: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,7 +27,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         selectedDrawnShape,
         drawnShapeHistory,
         render,
-        setIsDragActive,
+        setIsUpdatingShape,
         mousemove,
         scaleData,
         canUserDragDrawnShape,
@@ -118,6 +118,13 @@ export default function DragCanvas(props: DragCanvasProps) {
             : previosData[1].y;
 
         drawnShapeHistory[index].data = previosData;
+        if (selectedDrawnShape) {
+            selectedDrawnShape.selectedCircle = {
+                x: newX,
+                y: newY,
+                ctx: undefined,
+            };
+        }
     }
 
     // mousemove
@@ -186,6 +193,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                     if (!selectedDrawnShape.selectedCircle) {
                         dragLine(event);
                     } else {
+                        setIsUpdatingShape(true);
                         updateDrawLine(offsetX, offsetY);
                     }
                 }
@@ -197,12 +205,13 @@ export default function DragCanvas(props: DragCanvasProps) {
                     if (!selectedDrawnShape.selectedCircle) {
                         dragLine(event);
                     } else {
+                        setIsUpdatingShape(true);
                         updateDrawRect(offsetX, offsetY, rectDragDirection);
                     }
                 }
             })
             .on('end', () => {
-                setIsDragActive(false);
+                setIsUpdatingShape(false);
             });
 
         if (d3DragCanvas.current) {

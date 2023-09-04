@@ -5,11 +5,16 @@ import * as d3fc from 'd3fc';
 
 export const circleSize = 60;
 
+const circleStrokeColor = '#7371fc';
+const circleFillColor = '#8A8AFF';
+const selectedCircleFillColor = 'wheat';
+
 export function createCircle(
     xScale: any,
     yScale: any,
     size: number,
     lineWidth: number,
+    isSelected = false,
 ) {
     return d3fc
         .seriesCanvasPoint()
@@ -20,8 +25,10 @@ export function createCircle(
         .size(size)
         .type(d3.symbolCircle)
         .decorate((context: any) => {
-            context.strokeStyle = '#7371fc';
-            context.fillStyle = '#8A8AFF';
+            context.strokeStyle = circleStrokeColor;
+            context.fillStyle = isSelected
+                ? selectedCircleFillColor
+                : circleFillColor;
             context.lineWidth = lineWidth;
         });
 }
