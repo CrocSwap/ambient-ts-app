@@ -36,6 +36,7 @@ export default function TableInfo() {
         quoteTvlUsd,
         baseTvlUsd,
         poolFeesTotal,
+        poolVolume,
     } = poolData;
     const [topTokenTvl, bottomTokenTvl] = denomInBase
         ? [baseTvlDecimal, quoteTvlDecimal]
@@ -80,6 +81,10 @@ export default function TableInfo() {
                     <GridContainer gapSize={28} customRows='46px 46px auto'>
                         <GridContainer numCols={4} gapSize={8}>
                             {/* first 4 row items go here */}
+                            <DetailedBox
+                                label='Total Vol.'
+                                value={`$${poolVolume?.toString() || '...'}`}
+                            />
                             <DetailedBox
                                 label='TVL'
                                 value={`$${poolTvl?.toString() || '...'}`}
