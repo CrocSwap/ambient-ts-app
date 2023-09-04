@@ -27,7 +27,6 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount, useProvider } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
@@ -38,7 +37,6 @@ import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
 import { LocalPairDataIF } from '../../utils/state/localPairDataSlice';
-import TokenInputQuantity from '../../components/Global/TokenInput/TokenInputQuantity';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
@@ -47,49 +45,32 @@ import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer } from '../../styled/Common';
-import { TokenInputWalletBalance } from '../../components/Global/TokenInput/TokenInputWalletBalance';
 import Toggle from '../../components/Global/Toggle/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
-import { useTokenPairAllowance } from '../../App/hooks/useTokenPairAllowance';
-import { usePoolMetadata } from '../../App/hooks/usePoolMetadata';
-import { ChartContext } from '../../contexts/ChartContext';
-import { RangeContext } from '../../contexts/RangeContext';
+
 import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
+import InitTokenInput from './InitTokenInput/InitTokenInput';
+import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
-    const { address: userAddress } = useAccount();
 
     const {
         wagmiModal: { open: openWagmiModalWallet },
     } = useContext(AppStateContext);
-    const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const {
         crocEnv,
         ethMainnetUsdPrice,
         chainData: { chainId },
-        chainData,
     } = useContext(CrocEnvContext);
-    const {
-        server: { isEnabled: isServerEnabled },
-    } = useContext(AppStateContext);
-    const {
-        cachedQuerySpotPrice,
-        cachedFetchTokenPrice,
-        cachedTokenDetails,
-        cachedEnsResolve,
-    } = useContext(CachedDataContext);
-    const { setSimpleRangeWidth } = useContext(RangeContext);
 
-    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { dexBalRange } = useContext(UserPreferenceContext);
+    const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay } = useContext(PoolContext);
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
-    const { receiptData } = useAppSelector((state) => state);
 
     const { tokens } = useContext(TokenContext);
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
@@ -123,9 +104,6 @@ export default function InitPool() {
 
     const [isDenomBase, setIsDenomBase] = useState(true);
 
-    // const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
-    //     (state) => state.tradeData,
-    // );
     const localPair: LocalPairDataIF = useAppSelector(
         (state) => state.localPairData,
     );
@@ -136,18 +114,15 @@ export default function InitPool() {
 
     const {
         baseTokenBalance,
-        setBaseTokenBalance,
         quoteTokenBalance,
-        setQuoteTokenBalance,
         baseTokenDexBalance,
-        setBaseTokenDexBalance,
         quoteTokenDexBalance,
-        setQuoteTokenDexBalance,
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
         isTokenABase,
+        baseTokenAddress,
     } = useTokenBalancesAndAllowances(baseToken, quoteToken);
 
     useEffect(() => {
@@ -618,9 +593,14 @@ export default function InitPool() {
     // eslint-disable-next-line
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
     // eslint-disable-next-line
-    const [baseCollateral, setBaseCollateral] = useState<null | string>('');
+    const [baseCollateral, setBaseCollateral] = useState<string>('');
     // eslint-disable-next-line
-    const [quoteCollateral, setQuoteCollateral] = useState<null | string>('');
+    const [quoteCollateral, setQuoteCollateral] = useState<string>('');
+
+    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] =
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
+    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
 
     // See Range.tsx line 81
     const [rangeWidthPercentage, setRangeWidthPercentage] =
@@ -822,18 +802,16 @@ export default function InitPool() {
         // rest of code here
     };
 
-    const walletContent = isUserConnected && (
-        <TokenInputWalletBalance
-            isWithdraw={false}
-            balance={'2334'}
-            availableBalance={2345}
-            useExchangeBalance={false}
-            isDexSelected={false}
-            onToggleDex={() => console.log('yes')}
-            onMaxButtonClick={() => console.log('yes')}
-            onRefresh={() => console.log('yes')}
-        />
-    );
+    const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
+        if (tokenAorB === 'A') {
+            setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked);
+        } else {
+            setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
+        }
+    };
+    const reverseTokens = (): void => {
+        console.log('tokens reversed');
+    };
 
     const collateralContent = (
         <div
@@ -849,32 +827,29 @@ export default function InitPool() {
                     <FiRefreshCw size={20} />
                 </FlexContainer>
             </FlexContainer>
-            <FlexContainer flexDirection='column'>
-                <TokenInputQuantity
-                    tokenAorB={'A'}
-                    value={'0'}
-                    handleTokenInputEvent={handleBaseCollateralChange}
-                    disable={false}
-                    token={tokenA}
-                    setTokenModalOpen={setTokenModalOpen}
-                    fieldId='select'
-                    onInitPage
-                />
-                {walletContent}
-            </FlexContainer>
-            <FlexContainer flexDirection='column'>
-                <TokenInputQuantity
-                    tokenAorB={'A'}
-                    value={'0'}
-                    handleTokenInputEvent={handleQuoteCollateralChange}
-                    disable={false}
-                    token={tokenB}
-                    setTokenModalOpen={setTokenModalOpen}
-                    fieldId='select'
-                    onInitPage
-                />
-                {walletContent}
-            </FlexContainer>
+
+            <InitTokenInput
+                baseTokenAddress={baseTokenAddress}
+                tokenABalance={baseTokenBalance}
+                tokenBBalance={quoteTokenBalance}
+                tokenADexBalance={baseTokenDexBalance}
+                tokenBDexBalance={quoteTokenDexBalance}
+                isWithdrawTokenAFromDexChecked={false}
+                isWithdrawTokenBFromDexChecked={false}
+                handleTokenAChangeEvent={handleBaseCollateralChange}
+                handleTokenBChangeEvent={handleQuoteCollateralChange}
+                tokenAInputQty={{
+                    value: baseCollateral,
+                    set: setBaseCollateral,
+                }}
+                tokenBInputQty={{
+                    value: quoteCollateral,
+                    set: setQuoteCollateral,
+                }}
+                toggleDexSelection={toggleDexSelection}
+                reverseTokens={reverseTokens}
+                disabled={poolExists === true}
+            />
         </div>
     );
 

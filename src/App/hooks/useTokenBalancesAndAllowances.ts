@@ -19,6 +19,7 @@ interface BalancesIF {
     quoteTokenBalance: string;
     setQuoteTokenBalance: React.Dispatch<React.SetStateAction<string>>;
     baseTokenDexBalance: string;
+    baseTokenAddress: string;
     setBaseTokenDexBalance: React.Dispatch<React.SetStateAction<string>>;
     quoteTokenDexBalance: string;
     setQuoteTokenDexBalance: React.Dispatch<React.SetStateAction<string>>;
@@ -61,7 +62,7 @@ export const useTokenBalancesAndAllowances = (
         lastBlockNumber,
     });
 
-    const { isTokenABase } = usePoolMetadata({
+    const { isTokenABase, baseTokenAddress } = usePoolMetadata({
         crocEnv,
         pathname: location.pathname,
         chainData,
@@ -168,5 +169,6 @@ export const useTokenBalancesAndAllowances = (
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
         isTokenABase,
+        baseTokenAddress,
     };
 };

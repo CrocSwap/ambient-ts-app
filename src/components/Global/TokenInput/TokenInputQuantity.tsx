@@ -17,7 +17,7 @@ import TokenIcon from '../TokenIcon/TokenIcon';
 import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
 import styles from './TokenInputQuantity.module.css';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
@@ -62,10 +62,10 @@ function TokenInputQuantity(props: propsIF) {
         reverseTokens,
         parseInput,
         setTokenModalOpen = () => null,
-        onInitPage = false,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const dispatch = useAppDispatch();
+    const location = useLocation();
 
     const { tradeData } = useAppSelector((state) => state);
     const {
@@ -75,6 +75,8 @@ function TokenInputQuantity(props: propsIF) {
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
     const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
+
+    const onInitPage = location.pathname.startsWith('/initpool');
 
     // needed to not dismiss exchangebalance modal when closing the token select modal
     useEffect(() => {
