@@ -98,7 +98,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                     x: valueX,
                     y: valueY,
                     ctx: undefined,
-                    isSelected: false,
                 });
             }
 
@@ -141,7 +140,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                     x: valueX,
                     y: valueY,
                     ctx: bandArea,
-                    isSelected: false,
                 };
 
                 isDrawing = false;
@@ -185,14 +183,12 @@ function DrawCanvas(props: DrawCanvasProps) {
                     x: valueX,
                     y: valueY,
                     ctx: bandArea,
-                    isSelected: false,
                 });
             } else {
                 tempLineData[1] = {
                     x: valueX,
                     y: valueY,
                     ctx: bandArea,
-                    isSelected: false,
                 };
             }
             renderCanvasArray([d3DrawCanvas]);

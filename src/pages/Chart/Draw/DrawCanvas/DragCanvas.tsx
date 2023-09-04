@@ -54,7 +54,6 @@ export default function DragCanvas(props: DragCanvasProps) {
                             movemementY,
                     ),
                     ctx: selectedDrawnShape.data?.data[0].ctx,
-                    isSelected: false,
                 },
                 {
                     x: scaleData.xScale.invert(
@@ -66,7 +65,6 @@ export default function DragCanvas(props: DragCanvasProps) {
                             movemementY,
                     ),
                     ctx: selectedDrawnShape.data?.data[1].ctx,
-                    isSelected: false,
                 },
             ];
             drawnShapeHistory[index].data = lastData;
@@ -88,7 +86,6 @@ export default function DragCanvas(props: DragCanvasProps) {
         );
         previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
         previosData[lastDataIndex].y = scaleData.yScale.invert(offsetY);
-
         drawnShapeHistory[index].data = previosData;
     }
 
