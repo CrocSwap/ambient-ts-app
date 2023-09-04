@@ -22,6 +22,7 @@ interface PropsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
     tokenBInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
     disabled: boolean;
+    isLoading: boolean;
 }
 export default function InitTokenInput(props: PropsIF) {
     // eslint-disable-next-line
@@ -38,6 +39,7 @@ export default function InitTokenInput(props: PropsIF) {
         tokenBInputQty: { value: tokenBInputQty, set: setTokenBInputQty },
         toggleDexSelection,
         reverseTokens,
+        isLoading,
         // eslint-disable-next-line
         disabled,
     } = props;
@@ -74,6 +76,7 @@ export default function InitTokenInput(props: PropsIF) {
                     setTokenAInputQty(formatTokenInput(val, tokenA, isMax));
                 }}
                 showWallet={isUserConnected}
+                isLoading={isLoading}
             />
 
             <TokenInput
@@ -93,6 +96,7 @@ export default function InitTokenInput(props: PropsIF) {
                     setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
                 showWallet={isUserConnected}
+                isLoading={isLoading}
                 isWithdraw
             />
         </section>

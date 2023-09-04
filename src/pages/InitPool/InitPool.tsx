@@ -822,6 +822,16 @@ export default function InitPool() {
         setBaseCollateral(quoteCollateral);
         setQuoteCollateral(baseCollateral);
     };
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSimulatedRefresh = () => {
+        setIsLoading(true);
+
+        // Simulate a 2-second loading process
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 1000);
+    };
 
     const collateralContent = (
         <div
@@ -834,7 +844,7 @@ export default function InitPool() {
 
                 <FlexContainer gap={8}>
                     <LuEdit2 size={20} />
-                    <FiRefreshCw size={20} />
+                    <FiRefreshCw size={20} onClick={handleSimulatedRefresh} />
                     <HiOutlineSwitchVertical
                         onClick={reverseTokens}
                         size={20}
@@ -863,6 +873,7 @@ export default function InitPool() {
                 toggleDexSelection={toggleDexSelection}
                 reverseTokens={reverseTokens}
                 disabled={poolExists === true}
+                isLoading={isLoading}
             />
         </div>
     );
