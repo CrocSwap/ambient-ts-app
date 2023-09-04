@@ -21,7 +21,7 @@ const BoxContainer = styled.div`
 const FeaturedBoxInnerContainer = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 8px;
     padding: 1rem;
 `;
 
