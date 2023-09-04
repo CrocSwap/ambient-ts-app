@@ -98,6 +98,7 @@
 .selected button {
     color: var(--accent1);
     font-size: 15px;
+    white-space: nowrap;
 }
 
 .non_selected button {
