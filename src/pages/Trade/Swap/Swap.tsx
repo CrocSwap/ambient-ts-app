@@ -265,12 +265,6 @@ function Swap(props: propsIF) {
                 1e-9 *
                 ethMainnetUsdPrice;
 
-            console.log({
-                isSellTokenNativeToken,
-                isWithdrawFromDexChecked,
-                gasPriceInDollarsNum,
-            });
-
             setSwapGasPriceinDollars(
                 getFormattedNumber({
                     value: gasPriceInDollarsNum,
