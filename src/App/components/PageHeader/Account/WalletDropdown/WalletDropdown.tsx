@@ -110,8 +110,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             return;
         }
         const usdcCombinedBalance = usdcData
-            ? BigNumber.from(usdcData.walletBalance)
-                  .add(BigNumber.from(usdcData.dexBalance))
+            ? BigNumber.from(usdcData.walletBalance ?? '0')
+                  .add(BigNumber.from(usdcData.dexBalance ?? '0'))
                   .toString()
             : undefined;
         const usdcCombinedBalanceDisplay =
@@ -156,23 +156,25 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
     const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
-    const nativeCombinedBalance = nativeData
-        ? BigNumber.from(nativeData.walletBalance)
-              .add(BigNumber.from(nativeData.dexBalance))
-              .toString()
-        : undefined;
+    const nativeCombinedBalance =
+        nativeData?.walletBalance !== undefined
+            ? BigNumber.from(nativeData.walletBalance)
+                  .add(BigNumber.from(nativeData.dexBalance ?? '0'))
+                  .toString()
+            : undefined;
     const nativeCombinedBalanceDisplay =
         nativeData && nativeCombinedBalance
             ? toDisplayQty(nativeCombinedBalance, nativeData.decimals)
             : undefined;
     const nativeCombinedBalanceDisplayNum = nativeCombinedBalanceDisplay
         ? parseFloat(nativeCombinedBalanceDisplay ?? '0')
-        : 0;
-    const nativeCombinedBalanceTruncated = nativeCombinedBalanceDisplayNum
-        ? getFormattedNumber({
-              value: nativeCombinedBalanceDisplayNum,
-          })
-        : '0';
+        : undefined;
+    const nativeCombinedBalanceTruncated =
+        nativeCombinedBalanceDisplayNum !== undefined
+            ? getFormattedNumber({
+                  value: nativeCombinedBalanceDisplayNum,
+              })
+            : undefined;
 
     const ethMainnetUsdValue =
         ethMainnetUsdPrice !== undefined &&
@@ -180,12 +182,15 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             ? ethMainnetUsdPrice * nativeCombinedBalanceDisplayNum
             : undefined;
 
-    const nativeTokenMainnetUsdValueTruncated = ethMainnetUsdValue
-        ? getFormattedNumber({
-              value: ethMainnetUsdValue,
-              isUSD: true,
-          })
-        : undefined;
+    const nativeTokenMainnetUsdValueTruncated =
+        ethMainnetUsdValue !== undefined
+            ? ethMainnetUsdValue
+                ? getFormattedNumber({
+                      value: ethMainnetUsdValue,
+                      isUSD: true,
+                  })
+                : '$0.00'
+            : undefined;
 
     const tokensData = [
         {
@@ -200,8 +205,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         },
         {
             symbol: 'USDC',
-            amount: usdcBalanceForDom,
-            value: usdcUsdValueForDom,
+            amount: usdcBalanceForDom ?? '0.00',
+            value: usdcUsdValueForDom ?? '$0.00',
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
     ];

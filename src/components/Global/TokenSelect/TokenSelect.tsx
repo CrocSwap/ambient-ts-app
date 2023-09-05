@@ -30,14 +30,18 @@ export default function TokenSelect(props: propsIF) {
 
     const combinedBalance =
         connectedUserTokens && indexOfToken !== -1
-            ? BigNumber.from(connectedUserTokens[indexOfToken].walletBalance)
+            ? BigNumber.from(
+                  connectedUserTokens[indexOfToken].walletBalance ?? '0',
+              )
                   .add(
                       BigNumber.from(
-                          connectedUserTokens[indexOfToken].dexBalance,
+                          connectedUserTokens[indexOfToken].dexBalance ?? '0',
                       ),
                   )
                   .toString()
             : undefined;
+
+    console.log({ combinedBalance });
 
     const combinedBalanceDisplay =
         combinedBalance && connectedUserTokens
@@ -49,11 +53,11 @@ export default function TokenSelect(props: propsIF) {
 
     const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay ?? '0');
 
-    const combinedBalanceDisplayTruncated = combinedBalanceDisplay
+    const combinedBalanceDisplayTruncated = combinedBalanceDisplayNum
         ? getFormattedNumber({
               value: combinedBalanceDisplayNum,
           })
-        : undefined;
+        : '0';
 
     return (
         <button
