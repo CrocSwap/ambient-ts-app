@@ -9,7 +9,6 @@ import { resetReceiptData } from '../../../../utils/state/receiptDataSlice';
 import {
     Container,
     Content,
-    Footer,
     FooterButton,
     Header,
     MainContainer,
