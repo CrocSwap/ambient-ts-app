@@ -142,7 +142,9 @@ export const TradeTokenContextProvider = (props: {
                 userAddress &&
                 isConnected &&
                 tradeData.baseToken.address &&
-                tradeData.quoteToken.address
+                tradeData.quoteToken.address &&
+                baseTokenDecimals &&
+                quoteTokenDecimals
             ) {
                 crocEnv
                     .token(tradeData.baseToken.address)
@@ -241,6 +243,8 @@ export const TradeTokenContextProvider = (props: {
         tradeData.baseToken.address,
         tradeData.quoteToken.address,
         lastBlockNumber,
+        baseTokenDecimals,
+        quoteTokenDecimals,
     ]);
 
     return (
