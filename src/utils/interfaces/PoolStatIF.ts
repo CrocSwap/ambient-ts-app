@@ -5,6 +5,7 @@ export interface PoolStatIF {
     poolPrice?: string;
     poolVolume?: string;
     poolTvl?: string;
+    poolFeesTotal?: string;
     poolApy?: string;
 
     poolPriceChangePercent?: string;
@@ -16,4 +17,10 @@ export interface PoolStatIF {
     poolLink: string;
 
     shouldInvertDisplay?: boolean;
+
+    baseTvlDecimal?: number;
+    quoteTvlDecimal?: number;
+    baseTvlUsd?: number;
+    quoteTvlUsd?: number;
+    feesTotalUsd?: number;
 }
