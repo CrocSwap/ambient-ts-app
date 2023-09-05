@@ -63,8 +63,46 @@ export const userDataSlice = createSlice({
         setIsUserIdle: (state, action: PayloadAction<boolean>) => {
             state.isUserIdle = action.payload;
         },
+        // for replacing user's wallet balances for all tokens
         setTokenBalances: (state, action: PayloadAction<TokenIF[]>) => {
             state.tokenBalances = action.payload;
+        },
+        // for one-off token wallet/dex balance update after transaction
+        setTokenBalance: (
+            state,
+            action: PayloadAction<{
+                tokenAddress: string;
+                walletBalance?: string | undefined;
+                dexBalance?: string | undefined;
+            }>,
+        ) => {
+            const tokenIndex = state.tokenBalances?.findIndex(
+                (token) =>
+                    token.address.toLowerCase() ===
+                    action.payload.tokenAddress.toLowerCase(),
+            );
+            if (
+                action.payload.walletBalance &&
+                state.tokenBalances &&
+                tokenIndex &&
+                tokenIndex !== -1
+            ) {
+                state.tokenBalances[tokenIndex] = {
+                    ...state.tokenBalances[tokenIndex],
+                    walletBalance: action.payload.walletBalance,
+                };
+            }
+            if (
+                action.payload.dexBalance &&
+                state.tokenBalances &&
+                tokenIndex &&
+                tokenIndex !== -1
+            ) {
+                state.tokenBalances[tokenIndex] = {
+                    ...state.tokenBalances[tokenIndex],
+                    dexBalance: action.payload.dexBalance,
+                };
+            }
         },
         setRecentTokens: (state, action: PayloadAction<TokenIF[]>) => {
             state.recentTokens = action.payload;
@@ -105,6 +143,7 @@ export const {
     setEnsOrAddressTruncated,
     setIsUserIdle,
     setTokenBalances,
+    setTokenBalance,
     setRecentTokens,
     resetTokenData,
     resetUserAddresses,

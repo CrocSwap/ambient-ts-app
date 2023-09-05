@@ -5,7 +5,7 @@ import {
     getChainExplorer,
     mktDataChainId,
 } from '../../../../../utils/data/chains';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
@@ -28,6 +28,8 @@ import {
 } from '../../../../../styled/Components/Header';
 import { FlexContainer } from '../../../../../styled/Common';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { BigNumber } from 'ethers';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -67,13 +69,13 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
     const usdcAddr: string = USDC[chainId as '0x1'];
-    const usdcData: TokenIF | undefined =
-        tokenBalances &&
-        tokenBalances.find(
+    const usdcData: TokenIF | undefined = useMemo(() => {
+        return tokenBalances?.find(
             (tkn: TokenIF) =>
                 tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
                 tkn.chainId === parseInt(chainId),
         );
+    }, [tokenBalances]);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const blockExplorer = getChainExplorer(chainId);
@@ -89,28 +91,46 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 </LogoName>
                 <TokenAmount gap={4} flexDirection={'column'}>
                     <h3>{amount}</h3>
-                    <h6>{value !== undefined ? '$' + value : '...'}</h6>
+                    <h6>{value !== undefined ? value : '...'}</h6>
                 </TokenAmount>
             </TokenContainer>
         );
     }
 
-    let usdcBalForDOM: string;
-    if (tokenBalances) {
-        usdcBalForDOM = usdcData?.combinedBalanceDisplayTruncated ?? '...';
-    } else {
-        usdcBalForDOM = '…';
-    }
-
-    const [usdcVal, setUsdcVal] = useState<string | undefined>();
+    const [usdcBalanceForDom, setUsdcBalanceForDom] = useState<
+        string | undefined
+    >();
+    const [usdcUsdValueForDom, setUsdcUsdValueForDom] = useState<
+        string | undefined
+    >();
     useEffect(() => {
-        if (tokenBalances === undefined) {
-            setUsdcVal(undefined);
+        if (usdcData === undefined) {
+            setUsdcUsdValueForDom(undefined);
+            setUsdcBalanceForDom(undefined);
             return;
         }
-        const usdBal: number = parseFloat(
-            usdcData?.combinedBalanceDisplay ?? '0.00',
-        );
+        const usdcCombinedBalance = usdcData
+            ? BigNumber.from(usdcData.walletBalance)
+                  .add(BigNumber.from(usdcData.dexBalance))
+                  .toString()
+            : undefined;
+        const usdcCombinedBalanceDisplay =
+            usdcData && usdcCombinedBalance
+                ? toDisplayQty(usdcCombinedBalance, usdcData.decimals)
+                : undefined;
+        const usdcCombinedBalanceDisplayNum = usdcCombinedBalanceDisplay
+            ? parseFloat(usdcCombinedBalanceDisplay ?? '0')
+            : undefined;
+
+        const usdcCombinedBalanceDisplayTruncated =
+            usdcCombinedBalanceDisplayNum
+                ? getFormattedNumber({
+                      value: usdcCombinedBalanceDisplayNum,
+                  })
+                : undefined;
+
+        setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
+
         Promise.resolve(
             cachedFetchTokenPrice(
                 USDC[mktDataChainId(chainId) as '0x1'],
@@ -119,56 +139,69 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
-                    (price && price?.usdPrice * usdBal) ?? 0;
+                    (price &&
+                        price?.usdPrice *
+                            (usdcCombinedBalanceDisplayNum ?? 0)) ??
+                    0;
                 const usdValueTruncated = getFormattedNumber({
                     value: usdValueNum,
-                    minFracDigits: 2,
-                    maxFracDigits: 2,
+                    isUSD: true,
                 });
-                setUsdcVal(usdValueTruncated);
+                setUsdcUsdValueForDom(usdValueTruncated);
             } else {
-                setUsdcVal(undefined);
+                setUsdcUsdValueForDom(undefined);
             }
         });
-    }, [chainId, JSON.stringify(tokenBalances)]);
+    }, [chainId, JSON.stringify(usdcData)]);
 
     const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
+    const nativeCombinedBalance = nativeData
+        ? BigNumber.from(nativeData.walletBalance)
+              .add(BigNumber.from(nativeData.dexBalance))
+              .toString()
+        : undefined;
+    const nativeCombinedBalanceDisplay =
+        nativeData && nativeCombinedBalance
+            ? toDisplayQty(nativeCombinedBalance, nativeData.decimals)
+            : undefined;
+    const nativeCombinedBalanceDisplayNum = nativeCombinedBalanceDisplay
+        ? parseFloat(nativeCombinedBalanceDisplay ?? '0')
+        : 0;
+    const nativeCombinedBalanceTruncated = nativeCombinedBalanceDisplayNum
+        ? getFormattedNumber({
+              value: nativeCombinedBalanceDisplayNum,
+          })
+        : '0';
+
     const ethMainnetUsdValue =
         ethMainnetUsdPrice !== undefined &&
-        nativeData?.combinedBalanceDisplayTruncated !== undefined
-            ? ethMainnetUsdPrice *
-              parseFloat(
-                  nativeData?.combinedBalanceDisplayTruncated.replaceAll(
-                      ',',
-                      '',
-                  ),
-              )
+        nativeCombinedBalanceDisplayNum !== undefined
+            ? ethMainnetUsdPrice * nativeCombinedBalanceDisplayNum
             : undefined;
 
     const nativeTokenMainnetUsdValueTruncated = ethMainnetUsdValue
         ? getFormattedNumber({
               value: ethMainnetUsdValue,
-              minFracDigits: 2,
-              maxFracDigits: 2,
+              isUSD: true,
           })
         : undefined;
 
     const tokensData = [
         {
             symbol: nativeData?.symbol || 'ETH',
-            amount: nativeData?.combinedBalanceDisplayTruncated
+            amount: nativeCombinedBalanceTruncated
                 ? nativeData?.symbol === 'ETH'
-                    ? 'Ξ ' + nativeData.combinedBalanceDisplayTruncated
-                    : nativeData.combinedBalanceDisplayTruncated
+                    ? 'Ξ ' + nativeCombinedBalanceTruncated
+                    : nativeCombinedBalanceTruncated
                 : '...',
             value: nativeTokenMainnetUsdValueTruncated,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         },
         {
             symbol: 'USDC',
-            amount: usdcBalForDOM,
-            value: usdcVal,
+            amount: usdcBalanceForDom,
+            value: usdcUsdValueForDom,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
     ];
@@ -215,7 +248,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             <WalletContent>
                 {tokensData.map((tokenData) => (
                     <TokenAmountDisplay
-                        amount={tokenData.amount}
+                        amount={
+                            tokenData.amount !== undefined
+                                ? tokenData.amount
+                                : '…'
+                        }
                         value={tokenData.value}
                         symbol={tokenData.symbol}
                         logo={tokenData.logo}

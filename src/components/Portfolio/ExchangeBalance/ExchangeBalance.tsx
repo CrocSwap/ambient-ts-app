@@ -23,12 +23,12 @@ import { fetchEnsAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { setTokenBalances } from '../../../utils/state/userDataSlice';
-import { useDispatch } from 'react-redux';
-import { TokenContext } from '../../../contexts/TokenContext';
+import { setTokenBalance } from '../../../utils/state/userDataSlice';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -53,16 +53,10 @@ export default function ExchangeBalance(props: propsIF) {
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
-    const dispatch = useDispatch();
+    const dispatchRTK = useAppDispatch();
 
-    const {
-        crocEnv,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-    const { lastBlockNumber, client } = useContext(ChainDataContext);
-    const { cachedFetchTokenBalances, cachedTokenDetails } =
-        useContext(CachedDataContext);
-    const { addTokenInfo } = useContext(TokenContext);
+    const { crocEnv } = useContext(CrocEnvContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -95,7 +89,16 @@ export default function ExchangeBalance(props: propsIF) {
             crocEnv
                 .token(selectedToken.address)
                 .wallet(userAddress)
-                .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
+
+                .then((bal: BigNumber) => {
+                    setTokenWalletBalance(bal.toString());
+                    dispatchRTK(
+                        setTokenBalance({
+                            tokenAddress: selectedToken.address,
+                            walletBalance: bal.toString(),
+                        }),
+                    );
+                })
                 .catch(console.error);
 
             crocEnv
@@ -103,32 +106,15 @@ export default function ExchangeBalance(props: propsIF) {
                 .balance(userAddress)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
+                    dispatchRTK(
+                        setTokenBalance({
+                            tokenAddress: selectedToken.address,
+                            dexBalance: bal.toString(),
+                        }),
+                    );
                 })
                 .catch(console.error);
         }
-
-        if (recheckTokenBalances) {
-            (async () => {
-                if (userAddress) {
-                    const tokenBalances: TokenIF[] =
-                        await cachedFetchTokenBalances(
-                            userAddress,
-                            chainId,
-                            lastBlockNumber,
-                            cachedTokenDetails,
-                            crocEnv,
-                            client,
-                        );
-                    const erc20TokensWithLogos = tokenBalances.map((token) =>
-                        addTokenInfo(token),
-                    );
-
-                    dispatch(setTokenBalances(erc20TokensWithLogos));
-                }
-            })();
-        }
-
-        setRecheckTokenBalances(false);
     }, [
         crocEnv,
         selectedToken.address,

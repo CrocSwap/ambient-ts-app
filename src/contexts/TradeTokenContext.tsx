@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { IS_LOCAL_ENV } from '../constants';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
@@ -11,6 +11,9 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { RangeContext } from './RangeContext';
 import { TokenContext } from './TokenContext';
+import { setTokenBalance } from '../utils/state/userDataSlice';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { BigNumber } from 'ethers';
 
 interface TradeTokenContextIF {
     baseToken: {
@@ -61,6 +64,7 @@ export const TradeTokenContextProvider = (props: {
     const { tokens } = useContext(TokenContext);
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
+    const dispatchRTK = useAppDispatch();
     const { address: userAddress, isConnected } = useAccount();
     const {
         tokenAAllowance,
@@ -142,49 +146,89 @@ export const TradeTokenContextProvider = (props: {
             ) {
                 crocEnv
                     .token(tradeData.baseToken.address)
-                    .walletDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenBalance) {
+                    .wallet(userAddress)
+                    .then((bal: BigNumber) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            baseTokenDecimals,
+                        );
+                        if (displayBalance !== baseTokenBalance) {
                             IS_LOCAL_ENV &&
                                 console.debug(
                                     'setting base token wallet balance',
                                 );
-                            setBaseTokenBalance(bal);
+                            setBaseTokenBalance(displayBalance);
+                            dispatchRTK(
+                                setTokenBalance({
+                                    tokenAddress: tradeData.baseToken.address,
+                                    walletBalance: bal.toString(),
+                                }),
+                            );
                         }
                     })
                     .catch(console.error);
                 crocEnv
                     .token(tradeData.baseToken.address)
-                    .balanceDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== baseTokenDexBalance) {
+                    .balance(userAddress)
+                    .then((bal: BigNumber) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            baseTokenDecimals,
+                        );
+                        if (displayBalance !== baseTokenDexBalance) {
                             IS_LOCAL_ENV &&
                                 console.debug('setting base token dex balance');
-                            setBaseTokenDexBalance(bal);
+                            setBaseTokenDexBalance(displayBalance);
+                            dispatchRTK(
+                                setTokenBalance({
+                                    tokenAddress: tradeData.baseToken.address,
+                                    dexBalance: bal.toString(),
+                                }),
+                            );
                         }
                     })
                     .catch(console.error);
                 crocEnv
                     .token(tradeData.quoteToken.address)
-                    .walletDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenBalance) {
+                    .wallet(userAddress)
+                    .then((bal: BigNumber) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            quoteTokenDecimals,
+                        );
+                        if (displayBalance !== quoteTokenBalance) {
                             IS_LOCAL_ENV &&
                                 console.debug('setting quote token balance');
-                            setQuoteTokenBalance(bal);
+                            setQuoteTokenBalance(displayBalance);
+                            dispatchRTK(
+                                setTokenBalance({
+                                    tokenAddress: tradeData.quoteToken.address,
+                                    walletBalance: bal.toString(),
+                                }),
+                            );
                         }
                     })
                     .catch(console.error);
                 crocEnv
                     .token(tradeData.quoteToken.address)
-                    .balanceDisplay(userAddress)
-                    .then((bal: string) => {
-                        if (bal !== quoteTokenDexBalance) {
+                    .balance(userAddress)
+                    .then((bal: BigNumber) => {
+                        const displayBalance = toDisplayQty(
+                            bal,
+                            quoteTokenDecimals,
+                        );
+                        if (displayBalance !== quoteTokenDexBalance) {
                             IS_LOCAL_ENV &&
                                 console.debug(
                                     'setting quote token dex balance',
                                 );
-                            setQuoteTokenDexBalance(bal);
+                            setQuoteTokenDexBalance(displayBalance);
+                            dispatchRTK(
+                                setTokenBalance({
+                                    tokenAddress: tradeData.quoteToken.address,
+                                    dexBalance: bal.toString(),
+                                }),
+                            );
                         }
                     })
                     .catch(console.error);

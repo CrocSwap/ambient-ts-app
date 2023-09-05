@@ -3,6 +3,9 @@ import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../TokenIcon/TokenIcon';
+import { BigNumber } from 'ethers';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     token: TokenIF;
@@ -25,12 +28,32 @@ export default function TokenSelect(props: propsIF) {
         ? connectedUserTokens.findIndex(isMatchingToken)
         : -1;
 
-    const tokenIsEth = indexOfToken === 0;
-
-    const combinedBalanceDisplayTruncated =
+    const combinedBalance =
         connectedUserTokens && indexOfToken !== -1
-            ? connectedUserTokens[indexOfToken]?.combinedBalanceDisplayTruncated
+            ? BigNumber.from(connectedUserTokens[indexOfToken].walletBalance)
+                  .add(
+                      BigNumber.from(
+                          connectedUserTokens[indexOfToken].dexBalance,
+                      ),
+                  )
+                  .toString()
             : undefined;
+
+    const combinedBalanceDisplay =
+        combinedBalance && connectedUserTokens
+            ? toDisplayQty(
+                  combinedBalance,
+                  connectedUserTokens[indexOfToken]?.decimals,
+              )
+            : undefined;
+
+    const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay ?? '0');
+
+    const combinedBalanceDisplayTruncated = combinedBalanceDisplay
+        ? getFormattedNumber({
+              value: combinedBalanceDisplayNum,
+          })
+        : undefined;
 
     return (
         <button
@@ -67,9 +90,6 @@ export default function TokenSelect(props: propsIF) {
                             ? connectedUserTokens !== undefined
                                 ? '0'
                                 : '...'
-                            : tokenIsEth &&
-                              parseFloat(combinedBalanceDisplayTruncated) === 0
-                            ? '0'
                             : combinedBalanceDisplayTruncated
                         : ''}
                 </p>

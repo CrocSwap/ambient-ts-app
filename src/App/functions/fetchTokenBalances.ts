@@ -1,11 +1,10 @@
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import { ZERO_ADDRESS } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
 import { FetchContractDetailsFn } from './fetchContractDetails';
-import { getFormattedNumber } from './getFormattedNumber';
 import { Client } from '@covalenthq/client-sdk';
 
 export interface IDepositedTokenBalance {
@@ -13,7 +12,6 @@ export interface IDepositedTokenBalance {
     symbol: string;
     decimals: number;
     balance: string;
-    balanceDecimalCorrected: number;
 }
 
 export const fetchTokenBalances = async (
@@ -59,15 +57,6 @@ export const fetchTokenBalances = async (
         const tokenBalanceBigNumber = BigNumber.from(
             tokenBalance.balance.toString(),
         );
-        const balanceDisplay = toDisplayQty(
-            tokenBalanceBigNumber,
-            tokenBalance.contract_decimals,
-        );
-        const balanceDisplayNum = parseFloat(balanceDisplay);
-
-        const balanceDisplayTruncated = getFormattedNumber({
-            value: balanceDisplayNum,
-        });
 
         return {
             chainId: parseInt(chain),
@@ -81,11 +70,6 @@ export const fetchTokenBalances = async (
             symbol: tokenBalance.contract_ticker_symbol || '',
             decimals: tokenBalance.contract_decimals || 18,
             walletBalance: tokenBalanceBigNumber.toString(),
-            walletBalanceDisplay: balanceDisplay,
-            walletBalanceDisplayTruncated: balanceDisplayTruncated,
-            combinedBalance: tokenBalanceBigNumber.toString(),
-            combinedBalanceDisplay: balanceDisplay,
-            combinedBalanceDisplayTruncated: balanceDisplayTruncated,
         };
     };
 
@@ -93,15 +77,6 @@ export const fetchTokenBalances = async (
         tokenBalance: IDepositedTokenBalance,
     ): TokenIF => {
         const dexBalance = tokenBalance.balance;
-        const dexBalanceDisplay = dexBalance
-            ? toDisplayQty(dexBalance, tokenBalance.decimals)
-            : undefined;
-        const dexBalanceDisplayNum = dexBalanceDisplay
-            ? parseFloat(dexBalanceDisplay)
-            : undefined;
-        const dexBalanceDisplayTruncated = getFormattedNumber({
-            value: dexBalanceDisplayNum,
-        });
 
         return {
             chainId: parseInt(chain),
@@ -111,11 +86,6 @@ export const fetchTokenBalances = async (
             symbol: tokenBalance.symbol,
             decimals: tokenBalance.decimals,
             dexBalance: dexBalance,
-            dexBalanceDisplay: dexBalanceDisplay,
-            dexBalanceDisplayTruncated: dexBalanceDisplayTruncated,
-            combinedBalance: dexBalance,
-            combinedBalanceDisplay: dexBalanceDisplay,
-            combinedBalanceDisplayTruncated: dexBalanceDisplayTruncated,
         };
     };
 
@@ -142,32 +112,7 @@ export const fetchTokenBalances = async (
 
                 const updatedToken = { ...existingToken };
 
-                const combinedBalance = BigNumber.from(
-                    existingToken.combinedBalance,
-                )
-                    .add(BigNumber.from(newToken.dexBalance))
-                    .toString();
-
-                const combinedBalanceDisplay = toDisplayQty(
-                    combinedBalance,
-                    existingToken.decimals,
-                );
-                const combinedBalanceDisplayNum = parseFloat(
-                    combinedBalanceDisplay,
-                );
-
-                const combinedBalanceDisplayTruncated = getFormattedNumber({
-                    value: combinedBalanceDisplayNum,
-                });
-
                 updatedToken.dexBalance = newToken.dexBalance;
-                updatedToken.dexBalanceDisplay = newToken.dexBalanceDisplay;
-                updatedToken.dexBalanceDisplayTruncated =
-                    newToken.dexBalanceDisplayTruncated;
-                updatedToken.combinedBalance = combinedBalance;
-                updatedToken.combinedBalanceDisplay = combinedBalanceDisplay;
-                updatedToken.combinedBalanceDisplayTruncated =
-                    combinedBalanceDisplayTruncated;
 
                 combinedBalances[indexOfExistingToken] = updatedToken;
             }
