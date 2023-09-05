@@ -1,7 +1,10 @@
 import React from 'react';
 import { FlexContainer } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { StyledLink, ButtonText } from './TradeNowButton.styles';
+import {
+    StyledLink,
+    TradeNowButtonText,
+} from '../../../../styled/Components/Home';
 
 interface propsIF {
     inNav?: boolean;
@@ -26,7 +29,7 @@ export default function TradeNowButton(props: propsIF) {
                 rounded
                 background='dark2'
             >
-                <ButtonText inNav={inNav}>Trade Now</ButtonText>
+                <TradeNowButtonText inNav={inNav}>Trade Now</TradeNowButtonText>
             </FlexContainer>
         </StyledLink>
     );

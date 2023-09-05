@@ -8,8 +8,13 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { Fade } from 'react-reveal';
-import { StatContainer, StatCardContainer, StatValue } from './Stats.styles';
-import { HomeContent, HomeTitle } from '../../../styled/Components/Home';
+import {
+    HomeContent,
+    HomeTitle,
+    StatContainer,
+    StatCardContainer,
+    StatValue,
+} from '../../../styled/Components/Home';
 
 interface StatCardProps {
     title: string;
@@ -20,7 +25,15 @@ function StatCard(props: StatCardProps) {
     const { title, value } = props;
     const ariaDescription = `${title} is ${value}`;
     return (
-        <StatCardContainer aria-label={ariaDescription} tabIndex={0}>
+        <StatCardContainer
+            flexDirection='column'
+            justifyContent='center'
+            gap={8}
+            alignItems='center'
+            background='dark2'
+            aria-label={ariaDescription}
+            tabIndex={0}
+        >
             <HomeTitle style={{ fontWeight: '100' }}>{title}</HomeTitle>
             <StatValue
                 fontWeight='300'

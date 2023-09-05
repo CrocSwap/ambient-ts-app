@@ -1,4 +1,4 @@
-import styles from './MobileLandingSections.module.css';
+import styles from './BackgroundImages.module.css';
 
 import logoText from '../../../assets/images/logos/logo_text.png';
 
@@ -13,15 +13,14 @@ import TopPools from '../TopPools/TopPools';
 import Investors from './Investors';
 import { useEffect, useState } from 'react';
 import {
-    Bg1,
-    Bg2,
-    Bg3,
-    Bg4,
-    MainContainer,
-    MainLogo,
+    MobileBg1,
+    MobileBg2,
+    MobileBg3,
+    MobileBg4,
+    MobileMainContainer,
+    MobileMainLogo,
     MobileCard,
-    StyledTopPools,
-} from './MobileLandingSections.styles';
+} from '../../../styled/Components/Home';
 import { FlexContainer, Text } from '../../../styled/Common';
 
 export default function MobileLandingSections() {
@@ -43,12 +42,17 @@ export default function MobileLandingSections() {
             fullHeight
         >
             <>
-                <MainLogo className={styles.home_wallpaper}>
+                <MobileMainLogo
+                    justifyContent='center'
+                    alignItems='center'
+                    fullWidth
+                    className={styles.home_wallpaper_mobile}
+                >
                     <img src={logoText} alt='ambient' />
-                </MainLogo>
-                <StyledTopPools>
+                </MobileMainLogo>
+                <div style={{ padding: '20px' }}>
                     <TopPools noTitle gap='8px' />
-                </StyledTopPools>
+                </div>
             </>
             <TradeNowButton />
         </FlexContainer>
@@ -61,7 +65,7 @@ export default function MobileLandingSections() {
             id='toppools'
             scrollSnapAlign='center'
         >
-            <Bg4 className={styles.home4} />
+            <MobileBg4 className={styles.home4} />
             <Stats />
         </MobileCard>
     );
@@ -72,7 +76,7 @@ export default function MobileLandingSections() {
             id='zerotoone'
             scrollSnapAlign='center'
         >
-            <Bg1 className={styles.home2} />
+            <MobileBg1 className={styles.home2} />
             <Fade up>
                 <h1 tabIndex={0}>Zero-to-One Decentralized Trading Protocol</h1>
                 <Text
@@ -98,7 +102,7 @@ export default function MobileLandingSections() {
             id='deep'
             scrollSnapAlign='center'
         >
-            <Bg2 className={styles.home2} />
+            <MobileBg2 className={styles.home2} />
             <Fade up>
                 <img
                     src={liquidityImage}
@@ -128,7 +132,7 @@ export default function MobileLandingSections() {
             id='limitorders'
             scrollSnapAlign='center'
         >
-            <Bg3 className={styles.home3} />
+            <MobileBg3 className={styles.home3} />
             <Fade up>
                 <img
                     src={orderImage}
@@ -162,7 +166,7 @@ export default function MobileLandingSections() {
             id='beeterthandex'
             scrollSnapAlign='center'
         >
-            <Bg4 className={styles.home4} />
+            <MobileBg4 className={styles.home4} />
             <Fade up>
                 <Text
                     style={{ fontSize: '20px', lineHeight: '30px' }}
@@ -219,7 +223,7 @@ export default function MobileLandingSections() {
     );
 
     return (
-        <MainContainer isIPhone={isIPhone} id='MainContainer'>
+        <MobileMainContainer isIPhone={isIPhone} id='MainContainer'>
             {heroSection}
             {statsSection}
             {secondRow}
@@ -228,6 +232,6 @@ export default function MobileLandingSections() {
             {fifthRow}
             {investorsSections}
             {footerSection}
-        </MainContainer>
+        </MobileMainContainer>
     );
 }

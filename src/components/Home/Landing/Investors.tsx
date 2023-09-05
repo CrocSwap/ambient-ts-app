@@ -15,40 +15,40 @@ import {
     InvestorsContainer,
     InvestorsContent,
     MobileContainer,
-    Row,
-} from './Investors.styles';
+    InvestorRow,
+} from '../../../styled/Components/Home';
 import { FlexContainer, GridContainer, Text } from '../../../styled/Common';
 export default function Investors() {
     const row1 = (
-        <Row row={1}>
+        <InvestorRow row={1}>
             <img src={blocktower} alt='block tower' />
-        </Row>
+        </InvestorRow>
     );
 
     const row2 = (
-        <Row row={2}>
+        <InvestorRow row={2}>
             <img src={jane} alt='jane street' />
             <img src={circle} alt='circle ' />
-        </Row>
+        </InvestorRow>
     );
 
     const row3 = (
-        <Row row={3}>
+        <InvestorRow row={3}>
             <img src={tensai} alt='tensai capital' />
             <img src={naval} alt='naval ravikant' />
-        </Row>
+        </InvestorRow>
     );
 
     const row4 = (
-        <Row row={4}>
+        <InvestorRow row={4}>
             <img src={yunt} alt='yunt capital' width='200px' />
             <img src={susa} alt='susa ' width='50px' />
             <img src={quantstamp} alt='quantstamp ' width='200px' />
             <img src={hypotenuse} alt='hypotenuse ' width='200px' />
-        </Row>
+        </InvestorRow>
     );
     const row5 = (
-        <Row row={5}>
+        <InvestorRow row={5}>
             {[
                 'Julian Koh',
                 'llllvvuu',
@@ -66,18 +66,18 @@ export default function Investors() {
                     {name}
                 </Text>
             ))}
-        </Row>
+        </InvestorRow>
     );
     const row6 = (
-        <Row row={6}>
+        <InvestorRow row={6}>
             <h3>Pre-Seed</h3>
-        </Row>
+        </InvestorRow>
     );
     const row7 = (
-        <Row row={7}>
+        <InvestorRow row={7}>
             <img src={PositiveSum} alt='positivie sum' />
             <img src={motivate} alt='motivate ' />
-        </Row>
+        </InvestorRow>
     );
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 

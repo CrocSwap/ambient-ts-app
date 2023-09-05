@@ -117,6 +117,7 @@ interface FlexProps {
     hideScrollbar?: boolean;
     scrollSnapAlign?: 'start' | 'end' | 'center';
     wrap?: boolean;
+    textAlign?: 'left' | 'center' | 'right';
 }
 
 export const hideScrollbarCss = css`
@@ -143,22 +144,22 @@ const Flex = css<FlexProps>`
         hideScrollbar,
         scrollSnapAlign,
         wrap,
+        textAlign,
     }) => `
         flex-direction: ${flexDirection ? flexDirection : 'row'};
-        ${fullWidth ? 'width: 100%' : ''};
-        ${fullHeight ? 'height: 100%' : ''};
-        ${justifyContent ? `justify-content: ${justifyContent}` : ''};
-        ${alignItems && `align-items: ${alignItems}`};
-        ${gap ? `gap: ${gap}px` : ''};
-        ${overflow ? `overflow: ${overflow}` : ''};
-        ${background ? `background: ${background}` : ''};
-        ${rounded ? 'border-radius: var(--border-radius)' : ''};
-        ${background ? `background: ${background};` : ''}
+        ${fullWidth ? 'width: 100%;' : ''}
+        ${fullHeight ? 'height: 100%;' : ''}
+        ${justifyContent ? `justify-content: ${justifyContent};` : ''}
+        ${alignItems && `align-items: ${alignItems};`}
+        ${gap ? `gap: ${gap}px;` : ''}
+        ${overflow ? `overflow: ${overflow};` : ''};
+        ${background ? `background: var(--${background});` : ''}
         ${rounded ? 'border-radius: var(--border-radius);' : ''}
         ${position ? `position: ${position};` : ''}
         ${hideScrollbar ? hideScrollbarCss : ''}
         ${scrollSnapAlign ? `scroll-snap-align: ${scrollSnapAlign};` : ''}
         ${wrap ? 'flex-wrap: wrap;' : ''}
+        ${textAlign ? `text-align: ${textAlign};` : ''}
 
     `}
 `;

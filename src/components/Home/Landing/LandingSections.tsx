@@ -12,25 +12,50 @@ import {
     RowContainer,
     FasterSection,
     BGImage,
-} from './LandingSections.styles';
+} from '../../../styled/Components/Home';
+import { Text } from '../../../styled/Common';
 
 export default function LandingSections() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     const secondRow = (
         // TODO: height can probaly be simplified - compare to figma
+        // TODO: I'm pretty sure all the styling on the  <Text> is redundant - they are already these values by default
+        // TODO: fontSizes should use vars
         <SlideContainer tabletHeight='medium' style={{ height: '500px' }}>
             <RowContainer>
-                <FasterSection>
-                    <h1 tabIndex={0}>
+                <FasterSection
+                    flexDirection='column'
+                    alignItems='center'
+                    textAlign='center'
+                    gap={32}
+                >
+                    <Text
+                        tabIndex={0}
+                        style={{ fontSize: '34px', lineHeight: '50px' }}
+                    >
                         Zero-to-One Decentralized Trading Protocol
-                    </h1>
-                    <h2 tabIndex={0}>Faster, Easier, and Cheaper</h2>
-                    <p tabIndex={0}>
+                    </Text>
+                    <Text
+                        font='font-logo'
+                        color='text1'
+                        fontWeight='300'
+                        align='center'
+                        style={{ fontSize: '30px', lineHeight: '38px' }}
+                        tabIndex={0}
+                    >
+                        Faster, Easier, and Cheaper
+                    </Text>
+                    <Text
+                        color='text1'
+                        fontWeight='300'
+                        fontSize='header2'
+                        tabIndex={0}
+                    >
                         Ambient runs the entire DEX inside a single smart
                         contract, allowing for low-fee transactions, greater
                         liquidity rewards, and a fairer trading experience.
-                    </p>
+                    </Text>
                     <TradeNowButton />
                 </FasterSection>
             </RowContainer>
@@ -46,15 +71,33 @@ export default function LandingSections() {
                     width='331px'
                     height='420px'
                 />
-                <FasterSection>
-                    <h2 tabIndex={0}>Deep, Diversified Liquidity</h2>
-                    <p tabIndex={0}>
+                <FasterSection
+                    flexDirection='column'
+                    alignItems='center'
+                    gap={32}
+                >
+                    <Text
+                        font='font-logo'
+                        color='text1'
+                        fontWeight='300'
+                        align='center'
+                        style={{ fontSize: '30px', lineHeight: '38px' }}
+                        tabIndex={0}
+                    >
+                        Deep, Diversified Liquidity
+                    </Text>
+                    <Text
+                        color='text1'
+                        fontWeight='300'
+                        fontSize='header2'
+                        tabIndex={0}
+                    >
                         Ambient is built for diversified, sustainable liquidity
                         that fixes the broken LP economics of AMMs. It is also
                         the only DEX to support concentrated (‘V3’), ambient
                         (‘V2’) and knock-out liquidity in the same liquidity
                         pool.
-                    </p>
+                    </Text>
                 </FasterSection>
             </RowContainer>
         </SlideContainer>
@@ -63,19 +106,35 @@ export default function LandingSections() {
     const fourthRow = (
         <SlideContainer tabletHeight='large'>
             <RowContainer>
-                <FasterSection>
-                    <h2 tabIndex={0}>
+                <FasterSection
+                    flexDirection='column'
+                    alignItems='center'
+                    gap={32}
+                >
+                    <Text
+                        font='font-logo'
+                        color='text1'
+                        fontWeight='300'
+                        align='center'
+                        style={{ fontSize: '30px', lineHeight: '38px' }}
+                        tabIndex={0}
+                    >
                         Bridge the Gap Between Trading and LP’ing
-                    </h2>
-                    <p tabIndex={0}>
+                    </Text>
+                    <Text tabIndex={0}>
                         Make your LP position a trading position – and vice
                         versa – using our range and limit orders.
-                    </p>
-                    <p tabIndex={0}>
+                    </Text>
+                    <Text
+                        color='text1'
+                        fontWeight='300'
+                        fontSize='header2'
+                        tabIndex={0}
+                    >
                         Ambient combines liquidity in a single pool, allowing
                         for greater rewards for liquidity providers, and less
                         impact for traders.
-                    </p>
+                    </Text>
                 </FasterSection>
                 <img
                     src={orderImage}
@@ -91,14 +150,32 @@ export default function LandingSections() {
         <SlideContainer tabletHeight='large'>
             <RowContainer>
                 <div />
-                <FasterSection>
-                    <h2 tabIndex={0}>Better than CEX</h2>
-                    <p tabIndex={0}>
+                <FasterSection
+                    flexDirection='column'
+                    alignItems='center'
+                    gap={32}
+                >
+                    <Text
+                        font='font-logo'
+                        color='text1'
+                        fontWeight='300'
+                        align='center'
+                        style={{ fontSize: '30px', lineHeight: '38px' }}
+                        tabIndex={0}
+                    >
+                        Better than CEX
+                    </Text>
+                    <Text
+                        color='text1'
+                        fontWeight='300'
+                        fontSize='header2'
+                        tabIndex={0}
+                    >
                         Built for traders and market makers of all kinds,
                         Ambient introduces novel DeFi-native features and an
                         array of quality-of-life improvements allowing for a
                         best-in-class user experience.
-                    </p>
+                    </Text>
                     <TradeNowButton />
                 </FasterSection>
             </RowContainer>
@@ -110,13 +187,10 @@ export default function LandingSections() {
             <BGImage src={bg1} alt='bg1' height={600} top={100} />
             <BGImage src={bg2} alt='bg2' height={500} top={870} />
             <BGImage src={bg3} alt='bg3' height={600} top={1750} />
-
             {secondRow}
             {thirdRow}
             {fourthRow}
-
             {fifthRow}
-
             {!showMobileVersion && <Investors />}
             <Footer />
         </div>

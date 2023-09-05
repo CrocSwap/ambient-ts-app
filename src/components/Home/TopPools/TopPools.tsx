@@ -3,8 +3,12 @@ import { useContext } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { Container, ViewMore } from './TopPools.styles';
-import { HomeContent, HomeTitle } from '../../../styled/Components/Home';
+import {
+    HomeContent,
+    HomeTitle,
+    TopPoolContainer,
+    TopPoolViewMore,
+} from '../../../styled/Components/Home';
 
 interface TopPoolsPropsIF {
     noTitle?: boolean;
@@ -23,7 +27,7 @@ export default function TopPools(props: TopPoolsPropsIF) {
         : topPools;
 
     return (
-        <Container flexDirection='column' gap={16}>
+        <TopPoolContainer flexDirection='column' gap={16}>
             <HomeTitle tabIndex={0} aria-label='Top Pools'>
                 Top Pools
             </HomeTitle>
@@ -36,10 +40,10 @@ export default function TopPools(props: TopPoolsPropsIF) {
                 justifyContent='center'
                 alignItems='center'
                 gap={16}
-                as={ViewMore}
+                as={TopPoolViewMore}
             >
                 <Link to='/explore'>View More</Link>
             </HomeContent>
-        </Container>
+        </TopPoolContainer>
     );
 }
