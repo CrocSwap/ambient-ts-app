@@ -155,7 +155,11 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                     </FlexContainer>
                 )}
                 {tableView === 'medium' && (
-                    <FlexContainer justifyContent='flex-end'>
+                    <FlexContainer
+                        flexDirection='column'
+                        alignItems='flex-end'
+                        justifyContent='center'
+                    >
                         <p>
                             {isAmbient
                                 ? '0.00'
@@ -179,11 +183,14 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 {tableView === 'large' ? (
                     <FlexContainer justifyContent='flex-end'>...</FlexContainer>
                 ) : undefined}
-                {tableView === 'medium' && (
+                {tableView !== 'small' && (
                     <FlexContainer justifyContent='flex-end'>...</FlexContainer>
                 )}
                 {
-                    <FlexContainer justifyContent='flex-end'>
+                    <FlexContainer
+                        justifyContent='flex-start'
+                        padding='0 0 0 8px'
+                    >
                         <RangeStatus
                             isInRange={false}
                             isAmbient={false}

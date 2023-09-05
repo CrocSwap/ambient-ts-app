@@ -67,9 +67,16 @@ function SelectedRange(props: propsIF) {
                 alignItems='center'
                 justifyContent='center'
                 background='dark2'
-                style={{ borderRadius: 'var(--border-radius)' }}
+                style={{
+                    borderRadius: 'var(--border-radius)',
+                    cursor: 'pointer',
+                }}
                 gap={4}
                 padding='8px'
+                onClick={() => {
+                    setReverseDisplay(!reverseDisplay);
+                    setDenomInBase(!denomInBase);
+                }}
             >
                 <Text fontSize='body' color='text2'>
                     {title}

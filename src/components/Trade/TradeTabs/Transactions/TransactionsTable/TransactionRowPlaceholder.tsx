@@ -188,7 +188,12 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                     </FlexContainer>
                 )}
                 {tableView !== 'large' && (
-                    <FlexContainer justifyContent='center' padding='6px 0'>
+                    <FlexContainer
+                        flexDirection='column'
+                        alignItems='center'
+                        justifyContent='center'
+                        padding='6px 0'
+                    >
                         <p>{transaction.type}</p>
                         <p>
                             {transaction.type === 'Market' ||

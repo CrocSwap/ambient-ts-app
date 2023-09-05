@@ -374,14 +374,14 @@ function Transactions(props: propsIF) {
             alignRight: true,
         },
         {
-            name: 'Tokensㅤㅤ',
+            name: 'Tokens',
             show: !isAccountView && tableView === 'medium',
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
         {
-            name: <>Tokensㅤㅤ</>,
+            name: <>Tokens</>,
             show: isAccountView && tableView === 'medium',
             slug: 'tokens',
             sortable: false,

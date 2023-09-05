@@ -341,6 +341,7 @@ function Trade() {
                 fullHeight
                 fullWidth
                 background='dark1'
+                overflow='auto'
             >
                 <Outlet
                     context={{

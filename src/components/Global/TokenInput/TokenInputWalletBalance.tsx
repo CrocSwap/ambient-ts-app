@@ -67,7 +67,10 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                     }`}
                     placement='bottom'
                 >
-                    <div style={{ paddingTop: '2px' }} onClick={onToggleDex}>
+                    <div
+                        style={{ paddingTop: '2px', cursor: 'pointer' }}
+                        onClick={onToggleDex}
+                    >
                         <img
                             src={
                                 !isDexSelected ? walletEnabledIcon : walletIcon
@@ -90,6 +93,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                             filter: !isDexSelected
                                 ? 'grayscale(100%)'
                                 : 'contrast(1) brightness(1) saturate(1)',
+                            cursor: 'pointer',
                         }}
                         onClick={onToggleDex}
                     >
