@@ -29,7 +29,15 @@ export default function TradeNowButton(props: propsIF) {
                 rounded
                 background='dark2'
             >
-                <TradeNowButtonText inNav={inNav}>Trade Now</TradeNowButtonText>
+                <TradeNowButtonText
+                    fontWeight='300'
+                    font='font-logo'
+                    fontSize='header2'
+                    color='accent1'
+                    inNav={inNav}
+                >
+                    Trade Now
+                </TradeNowButtonText>
             </FlexContainer>
         </StyledLink>
     );

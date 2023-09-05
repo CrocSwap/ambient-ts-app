@@ -92,12 +92,6 @@ export const StyledLink = styled(Link)<ButtonProps>`
 `;
 
 export const TradeNowButtonText = styled(Text)<ButtonProps>`
-    font-family: var(--font-logo);
-    font-weight: 100;
-    font-size: 30px;
-    line-height: 38px;
-    color: var(--accent1) !important;
-
     ${({ mobileVersion }) =>
         mobileVersion &&
         `
@@ -219,6 +213,7 @@ export const RowContainer = styled(FlexContainer)`
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-align: center;
     gap: 2rem;
 
     @media only screen and (min-width: 768px) {

@@ -32,6 +32,9 @@ export default function LandingSections() {
                 >
                     <Text
                         tabIndex={0}
+                        fontWeight='300'
+                        font='font-logo'
+                        color='text1'
                         style={{ fontSize: '34px', lineHeight: '50px' }}
                     >
                         Zero-to-One Decentralized Trading Protocol
@@ -121,7 +124,12 @@ export default function LandingSections() {
                     >
                         Bridge the Gap Between Trading and LP’ing
                     </Text>
-                    <Text tabIndex={0}>
+                    <Text
+                        color='text1'
+                        fontWeight='300'
+                        fontSize='header2'
+                        tabIndex={0}
+                    >
                         Make your LP position a trading position – and vice
                         versa – using our range and limit orders.
                     </Text>

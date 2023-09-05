@@ -69,8 +69,10 @@ export default function Investors() {
         </InvestorRow>
     );
     const row6 = (
-        <InvestorRow row={6}>
-            <h3>Pre-Seed</h3>
+        <InvestorRow row={6} style={{ height: '62px' }}>
+            <Text fontSize='header1' fontWeight='400'>
+                Pre-Seed
+            </Text>
         </InvestorRow>
     );
     const row7 = (
