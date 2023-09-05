@@ -161,7 +161,7 @@ function Sidebar() {
 
     const focusInput = () => {
         const inputField = document.getElementById(
-            'search_input',
+            'sidebar_search_input',
         ) as HTMLInputElement;
 
         inputField.focus();
@@ -210,6 +210,7 @@ function Sidebar() {
                         e.stopPropagation();
                         // clear search input, DOM will update
                         searchData.clearInput();
+                        setSearchInput('');
                     }
                 }}
                 spellCheck='false'
@@ -221,6 +222,7 @@ function Sidebar() {
                     onClick={() => {
                         // clear search input, DOM will update
                         searchData.clearInput();
+                        setSearchInput('');
                         // manually focus DOM on the search input
                         const searchInput =
                             document.getElementById(searchInputElementId);
