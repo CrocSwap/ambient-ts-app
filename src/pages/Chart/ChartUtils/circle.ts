@@ -3,7 +3,7 @@ import { drawDataHistory, lineData, scaleData } from './chartUtils';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 
-export const circleSize = 60;
+export const selectedCircleSize = 80;
 
 const circleStrokeColor = '#7371fc';
 const circleFillColor = '#8A8AFF';
@@ -39,7 +39,7 @@ export function checkCricleLocation(
     mouseY: number,
     scaleData: scaleData,
 ) {
-    const circleDiameter = Math.sqrt(circleSize / Math.PI);
+    const circleDiameter = Math.sqrt(selectedCircleSize / Math.PI);
     let result = undefined;
 
     const data = createCirclePoints(element);

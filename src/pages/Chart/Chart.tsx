@@ -86,11 +86,7 @@ import {
 } from './Draw/DrawCanvas/LinearLineSeries';
 import { useUndoRedo } from './ChartUtils/useUndoRedo';
 import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
-import {
-    checkCricleLocation,
-    circleSize,
-    createCircle,
-} from './ChartUtils/circle';
+import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
 
@@ -2566,7 +2562,7 @@ export default function Chart(props: propsIF) {
     const circleSeries = createCircle(
         scaleData?.xScale,
         scaleData?.yScale,
-        circleSize,
+        60,
         0.5,
     );
 
@@ -3012,7 +3008,18 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current).on(
                 'touchstart',
                 function (event: TouchEvent) {
-                    if (scaleData !== undefined) {
+                    if (
+                        scaleData !== undefined &&
+                        mainCanvasBoundingClientRect
+                    ) {
+                        const offsetY =
+                            event.targetTouches[0].clientY -
+                            mainCanvasBoundingClientRect?.top;
+                        const offsetX =
+                            event.targetTouches[0].clientX -
+                            mainCanvasBoundingClientRect?.left;
+                        drawnShapesHoverStatus(offsetX, offsetY);
+
                         const isTouchOnLineValues = isTouchOnLine(
                             event,
                             rectCanvas,
