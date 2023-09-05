@@ -41,8 +41,6 @@ export default function TokenSelect(props: propsIF) {
                   .toString()
             : undefined;
 
-    console.log({ combinedBalance });
-
     const combinedBalanceDisplay =
         combinedBalance && connectedUserTokens
             ? toDisplayQty(
