@@ -88,11 +88,11 @@ export default function TokenSelect(props: propsIF) {
             <div className={styles.modal_tokens_amount}>
                 <p>
                     {isUserLoggedIn
-                        ? combinedBalanceDisplayTruncated === undefined
-                            ? connectedUserTokens !== undefined
+                        ? connectedUserTokens !== undefined
+                            ? combinedBalanceDisplayNum === 0
                                 ? '0'
-                                : '...'
-                            : combinedBalanceDisplayTruncated
+                                : combinedBalanceDisplayTruncated
+                            : '...'
                         : ''}
                 </p>
                 <p className={styles.token_list_data}>{fromListsText}</p>

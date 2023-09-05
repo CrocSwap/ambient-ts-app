@@ -109,11 +109,12 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             setUsdcBalanceForDom(undefined);
             return;
         }
-        const usdcCombinedBalance = usdcData
-            ? BigNumber.from(usdcData.walletBalance ?? '0')
-                  .add(BigNumber.from(usdcData.dexBalance ?? '0'))
-                  .toString()
-            : undefined;
+        const usdcCombinedBalance =
+            usdcData.walletBalance !== undefined
+                ? BigNumber.from(usdcData.walletBalance)
+                      .add(BigNumber.from(usdcData.dexBalance ?? '0'))
+                      .toString()
+                : undefined;
         const usdcCombinedBalanceDisplay =
             usdcData && usdcCombinedBalance
                 ? toDisplayQty(usdcCombinedBalance, usdcData.decimals)
@@ -123,11 +124,11 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             : undefined;
 
         const usdcCombinedBalanceDisplayTruncated =
-            usdcCombinedBalanceDisplayNum
+            usdcCombinedBalanceDisplayNum !== 0
                 ? getFormattedNumber({
                       value: usdcCombinedBalanceDisplayNum,
                   })
-                : undefined;
+                : '0.00';
 
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
 
@@ -205,8 +206,16 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         },
         {
             symbol: 'USDC',
-            amount: usdcBalanceForDom ?? '0.00',
-            value: usdcUsdValueForDom ?? '$0.00',
+            amount: nativeCombinedBalanceTruncated
+                ? parseFloat(usdcBalanceForDom ?? '0') === 0
+                    ? '0.00'
+                    : usdcBalanceForDom
+                : '...',
+            value: nativeCombinedBalanceTruncated
+                ? parseFloat(usdcUsdValueForDom ?? '0') === 0
+                    ? '$0.00'
+                    : usdcUsdValueForDom
+                : '...',
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
     ];
