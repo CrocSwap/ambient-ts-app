@@ -25,7 +25,7 @@
 .column_qty p {
     font-size: 10px;
     line-height: 13px;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 }
 
 /* Desktop screen Sizes */
