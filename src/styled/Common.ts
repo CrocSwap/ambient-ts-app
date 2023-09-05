@@ -4,7 +4,7 @@ interface FontProps {
     font?: 'font-logo' | 'font-family' | 'roboto' | 'mono';
 }
 export const Font = css<FontProps>`
-    ${({ font }) => font && `font-family: var(--${font})`}
+    ${({ font }) => font && `font-family: var(--${font})`};
 `;
 
 interface FontSizeProps {
