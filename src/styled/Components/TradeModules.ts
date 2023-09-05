@@ -151,30 +151,32 @@ export const TokenArrowButton = styled.button<{
 
     ${({ disabled }) => disabled && 'cursor: wait !important; '}
 
-    &:hover {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
+    @media only screen and (min-width: 768px) {
+        &:hover {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
 
-        svg {
-            -webkit-transform: rotate(180deg);
-            -moz-transform: rotate(180deg);
-            -o-transform: rotate(180deg);
-            -ms-transform: rotate(180deg);
-            transform: rotate(180deg);
+            svg {
+                -webkit-transform: rotate(180deg);
+                -moz-transform: rotate(180deg);
+                -o-transform: rotate(180deg);
+                -ms-transform: rotate(180deg);
+                transform: rotate(180deg);
 
-            ${({ display }) =>
-                display &&
-                `
-                transform: none;
-                cursor: unset !important;
-            `}
+                ${({ display }) =>
+                    display &&
+                    `
+                    transform: none;
+                    cursor: unset !important;
+                `}
 
-            ${({ disabled }) =>
-                disabled &&
-                `
-                cursor: wait !important;
-            `}
+                ${({ disabled }) =>
+                    disabled &&
+                    `
+                    cursor: wait !important;
+                `}
+            }
         }
     }
 `;
