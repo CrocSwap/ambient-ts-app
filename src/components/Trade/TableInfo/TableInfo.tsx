@@ -66,8 +66,8 @@ export default function TableInfo() {
     return (
         <MainSection>
             <ScrollContainer>
-                <GridContainer numCols={2} gapSize={8} height={200}>
-                    <GridContainer numCols={2} gapSize={8}>
+                <GridContainer numCols={2} gap={8} height={200}>
+                    <GridContainer numCols={2} gap={8}>
                         {featuredData.map((data, idx) => (
                             <FeaturedBox
                                 key={idx}
@@ -78,8 +78,8 @@ export default function TableInfo() {
                         ))}
                     </GridContainer>
 
-                    <GridContainer gapSize={28} customRows='46px 46px auto'>
-                        <GridContainer numCols={4} gapSize={8}>
+                    <GridContainer gap={28} customRows='46px 46px auto'>
+                        <GridContainer numCols={4} gap={8}>
                             {/* first 4 row items go here */}
                             <DetailedBox
                                 label='Total Vol.'
@@ -95,7 +95,7 @@ export default function TableInfo() {
                             />
                         </GridContainer>
                         {/* second 4 row items go here */}
-                        <GridContainer numCols={4} gapSize={8}></GridContainer>
+                        <GridContainer numCols={4} gap={8}></GridContainer>
                     </GridContainer>
                 </GridContainer>
             </ScrollContainer>

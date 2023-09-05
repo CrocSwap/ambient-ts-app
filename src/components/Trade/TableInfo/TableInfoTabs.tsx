@@ -57,7 +57,7 @@ export default function TableInfoTabs() {
     function tabDataDisplay(time: string): JSX.Element {
         const dataForTime = getDetailedData(time);
         const content = dataForTime ? (
-            <GridContainer numCols={lengthOfDetailedData} gapSize={0}>
+            <GridContainer numCols={lengthOfDetailedData} gap={0}>
                 {Object.entries(dataForTime).map(([key, value]) => (
                     <TabContainer label={key} data={value} key={key} />
                 ))}
