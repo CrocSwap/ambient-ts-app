@@ -14,6 +14,7 @@ import {
     Header,
     MainContainer,
 } from './NotificationTable.styles';
+import { FlexContainer } from '../../../../styled/Common';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -100,7 +101,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                     {successfulTransactionsDisplay}
                 </Content>
 
-                <Footer>
+                <FlexContainer justifyContent='center'>
                     <FooterButton
                         onClick={() => {
                             dispatch(resetReceiptData());
@@ -109,7 +110,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                     >
                         Clear all
                     </FooterButton>
-                </Footer>
+                </FlexContainer>
             </Container>
         </MainContainer>
     );
