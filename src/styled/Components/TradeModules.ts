@@ -259,7 +259,6 @@ export const TokenQuantityContainer = styled.div<{ showPulse: boolean }>`
 
 export const TokenSelectButton = styled.button`
     width: 100%;
-    height: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
