@@ -66,11 +66,13 @@ function ConfirmRangeModal(props: propsIF) {
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
                         <TokenIcon
+                            token={tokenA}
                             src={uriToHttp(tokenA.logoURI)}
                             alt={tokenA.symbol}
                             size='2xl'
                         />
                         <TokenIcon
+                            token={tokenB}
                             src={uriToHttp(tokenB.logoURI)}
                             alt={tokenB.symbol}
                             size='2xl'
@@ -91,6 +93,7 @@ function ConfirmRangeModal(props: propsIF) {
                     <div className={styles.detail_line}>
                         <div>
                             <TokenIcon
+                                token={tokenA}
                                 src={uriToHttp(tokenA.logoURI)}
                                 alt={tokenA.symbol}
                                 size='m'
@@ -106,6 +109,7 @@ function ConfirmRangeModal(props: propsIF) {
                     <div className={styles.detail_line}>
                         <div>
                             <TokenIcon
+                                token={tokenB}
                                 src={uriToHttp(tokenB.logoURI)}
                                 alt={tokenB.symbol}
                                 size='m'

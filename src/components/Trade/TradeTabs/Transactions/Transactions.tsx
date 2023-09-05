@@ -10,7 +10,6 @@ import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
@@ -26,6 +25,7 @@ import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -56,19 +56,13 @@ function Transactions(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings, tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
-    const {
-        showAllData: showAllDataSelection,
-        tradeTableState,
-        toggleTradeTable,
-    } = useContext(TradeTableContext);
-    const {
-        sidebar: { isOpen: isSidebarOpen },
-    } = useContext(SidebarContext);
+    const { showAllData: showAllDataSelection, toggleTradeTable } =
+        useContext(TradeTableContext);
     const { setOutsideControl } = useContext(TradeTableContext);
     const { tokens } = useContext(TokenContext);
 
@@ -84,6 +78,9 @@ function Transactions(props: propsIF) {
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { transactionsByType, pendingTransactions } = useAppSelector(
+        (state) => state.receiptData,
+    );
 
     const selectedBase = tradeData.baseToken.address;
     const selectedQuote = tradeData.quoteToken.address;
@@ -132,6 +129,10 @@ function Transactions(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (!isCandleSelected) setIsLoading(true);
+    }, [isCandleSelected]);
+
+    useEffect(() => {
         if (isAccountView && connectedAccountActive)
             setIsLoading(
                 graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
@@ -148,6 +149,7 @@ function Transactions(props: propsIF) {
             );
         else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
     }, [
+        isCandleSelected,
         showAllData,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
@@ -156,22 +158,32 @@ function Transactions(props: propsIF) {
         graphData?.dataLoadingStatus.isCandleDataLoading,
     ]);
 
-    const shouldDisplayNoTableData = !isLoading && !transactionData.length;
+    const relevantTransactionsByType = transactionsByType.filter(
+        (tx) =>
+            tx.txAction &&
+            pendingTransactions.includes(tx.txHash) &&
+            tx.txDetails?.baseAddress.toLowerCase() ===
+                tradeData.baseToken.address.toLowerCase() &&
+            tx.txDetails?.quoteAddress.toLowerCase() ===
+                tradeData.quoteToken.address.toLowerCase() &&
+            tx.txDetails?.poolIdx === poolIndex,
+    );
+
+    const shouldDisplayNoTableData =
+        !isLoading &&
+        !transactionData.length &&
+        (relevantTransactionsByType.length === 0 ||
+            pendingTransactions.length === 0);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', transactionData);
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const showTimestamp = useMediaQuery('(min-width: 1000px)');
+    const ipadView = useMediaQuery('(max-width: 600px)');
+    const showTimestamp = useMediaQuery('(min-width: 1200px)');
 
-    const showColumns = isAccountView
-        ? isSidebarOpen
-            ? useMediaQuery('(max-width: 1850px)')
-            : useMediaQuery('(max-width: 1500px)')
-        : isSidebarOpen
-        ? useMediaQuery('(max-width: 1850px)')
-        : useMediaQuery('(max-width: 1600px)');
+    const showColumns = useMediaQuery('(max-width: 1599px)');
+
+    // const showColumns = false;
 
     const getCandleData = () =>
         crocEnv &&
@@ -201,7 +213,10 @@ function Transactions(props: propsIF) {
                 if (selectedCandleChangesJson) {
                     const selectedCandleChangesWithoutFills =
                         selectedCandleChangesJson.filter((tx) => {
-                            if (tx.changeType !== 'fill') {
+                            if (
+                                tx.changeType !== 'fill' &&
+                                tx.changeType !== 'cross'
+                            ) {
                                 return true;
                             } else {
                                 return false;
@@ -237,10 +252,11 @@ function Transactions(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
+    // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const sideType = (
@@ -262,7 +278,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isAccountView && showPair,
+            show: isAccountView,
             slug: 'pool',
             sortable: true,
         },
@@ -291,7 +307,7 @@ function Transactions(props: propsIF) {
             show: !ipadView,
             slug: 'price',
             sortable: false,
-            alignRight: true,
+            alignCenter: true,
         },
         {
             name: 'Side',
@@ -309,7 +325,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: sideType,
-            show: showColumns && !ipadView,
+            show: showColumns,
             slug: 'sidetype',
             sortable: false,
             alignCenter: true,
@@ -338,14 +354,14 @@ function Transactions(props: propsIF) {
         },
         {
             name: 'Tokensㅤㅤ',
-            show: !isAccountView && showColumns,
+            show: !isAccountView && showColumns && !ipadView,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
         {
             name: <>Tokensㅤㅤ</>,
-            show: isAccountView && showColumns,
+            show: isAccountView && showColumns && !ipadView,
             slug: 'tokens',
             sortable: false,
             alignRight: true,
@@ -455,7 +471,6 @@ function Transactions(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             showTimestamp={showTimestamp}
-            showPair={showPair}
             isAccountView={isAccountView}
         />
     ));
@@ -466,7 +481,6 @@ function Transactions(props: propsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             showTimestamp={showTimestamp}
-            showPair={showPair}
             isAccountView={isAccountView}
         />
     ));
@@ -516,6 +530,114 @@ function Transactions(props: propsIF) {
     ) : (
         <div onKeyDown={handleKeyDownViewTransaction} className={gridTxStyle}>
             <ul ref={listRef} id='current_row_scroll'>
+                {!isAccountView &&
+                    pendingTransactions.length > 0 &&
+                    relevantTransactionsByType.reverse().map((tx, idx) => {
+                        if (tx.txAction !== 'Reposition')
+                            return (
+                                <TransactionRowPlaceholder
+                                    key={idx}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: tx.txAction,
+                                        type: tx.txType,
+                                        action: tx.txAction,
+                                        details: tx.txDetails,
+                                    }}
+                                    showTimestamp={showTimestamp}
+                                    showColumns={showColumns}
+                                    ipadView={ipadView}
+                                />
+                            );
+                        return (
+                            <>
+                                <TransactionRowPlaceholder
+                                    key={idx + 'sell'}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: 'Sell',
+                                        type: 'Market',
+                                        action: tx.txAction,
+                                        details: {
+                                            baseSymbol:
+                                                tx.txDetails?.baseSymbol ??
+                                                '...',
+                                            quoteSymbol:
+                                                tx.txDetails?.quoteSymbol ??
+                                                '...',
+                                            baseTokenDecimals:
+                                                tx.txDetails?.baseTokenDecimals,
+                                            quoteTokenDecimals:
+                                                tx.txDetails
+                                                    ?.quoteTokenDecimals,
+                                            lowTick: tx.txDetails?.lowTick,
+                                            highTick: tx.txDetails?.highTick,
+                                            gridSize: tx.txDetails?.gridSize,
+                                        },
+                                    }}
+                                    showTimestamp={showTimestamp}
+                                    showColumns={showColumns}
+                                    ipadView={ipadView}
+                                />
+                                <TransactionRowPlaceholder
+                                    key={idx + 'add'}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: 'Add',
+                                        type: 'Range',
+                                        action: tx.txAction,
+                                        details: {
+                                            baseSymbol:
+                                                tx.txDetails?.baseSymbol ??
+                                                '...',
+                                            quoteSymbol:
+                                                tx.txDetails?.quoteSymbol ??
+                                                '...',
+                                            baseTokenDecimals:
+                                                tx.txDetails?.baseTokenDecimals,
+                                            quoteTokenDecimals:
+                                                tx.txDetails
+                                                    ?.quoteTokenDecimals,
+                                            lowTick: tx.txDetails?.lowTick,
+                                            highTick: tx.txDetails?.highTick,
+                                            gridSize: tx.txDetails?.gridSize,
+                                        },
+                                    }}
+                                    showTimestamp={showTimestamp}
+                                    showColumns={showColumns}
+                                    ipadView={ipadView}
+                                />
+                                <TransactionRowPlaceholder
+                                    key={idx + 'remove'}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: 'Remove',
+                                        type: 'Range',
+                                        action: tx.txAction,
+                                        details: {
+                                            baseSymbol:
+                                                tx.txDetails?.baseSymbol ??
+                                                '...',
+                                            quoteSymbol:
+                                                tx.txDetails?.quoteSymbol ??
+                                                '...',
+                                            baseTokenDecimals:
+                                                tx.txDetails?.baseTokenDecimals,
+                                            quoteTokenDecimals:
+                                                tx.txDetails
+                                                    ?.quoteTokenDecimals,
+                                            lowTick: tx.txDetails?.lowTick,
+                                            highTick: tx.txDetails?.highTick,
+                                            gridSize: tx.txDetails?.gridSize,
+                                        },
+                                    }}
+                                    showTimestamp={showTimestamp}
+                                    showColumns={showColumns}
+                                    ipadView={ipadView}
+                                />
+                            </>
+                        );
+                    })}
                 {currentRowItemContent}
             </ul>
             {showViewMoreButton && (
@@ -532,14 +654,6 @@ function Transactions(props: propsIF) {
         </div>
     );
 
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    useEffect(() => {
-        if (mobileView) {
-            toggleTradeTable();
-        }
-    }, [mobileView]);
-
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
             setCurrentPage(1);
@@ -552,9 +666,11 @@ function Transactions(props: propsIF) {
 
     return (
         <div
-            className={`${styles.main_list_container} ${
-                isTradeTableExpanded && styles.main_list_expanded
-            }`}
+            className={`${
+                isAccountView
+                    ? styles.acc_list_container
+                    : styles.main_list_container
+            } ${isTradeTableExpanded && styles.main_list_expanded}`}
         >
             <div>{headerColumnsDisplay}</div>
 

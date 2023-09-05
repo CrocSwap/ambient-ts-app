@@ -77,7 +77,7 @@ function TradeTabs2(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings, tradeTableState } = useContext(ChartContext);
 
     const candleTime = chartSettings.candleTime.global;
 
@@ -103,7 +103,6 @@ function TradeTabs2(props: propsIF) {
         setShowAllData,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
-        tradeTableState,
         outsideControl,
         selectedOutsideTab,
     } = useContext(TradeTableContext);

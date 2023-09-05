@@ -61,6 +61,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
+                            token={baseToken}
                             src={uriToHttp(baseToken.logoURI)}
                             alt={baseToken.symbol}
                             size='m'
@@ -69,10 +70,10 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     </div>
                     <span>{currentBaseQtyDisplayTruncated}</span>
                 </div>
-
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
+                            token={baseToken}
                             src={uriToHttp(baseToken.logoURI)}
                             alt={baseToken.symbol}
                             size='m'
@@ -82,10 +83,10 @@ export default function ConfirmRepositionModal(props: propsIF) {
                     <span>{newBaseQtyDisplay}</span>
                 </div>
                 <p className={styles.divider} />
-
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
+                            token={quoteToken}
                             src={uriToHttp(quoteToken.logoURI)}
                             alt={quoteToken.symbol}
                             size='m'
@@ -97,6 +98,7 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.detail_line}>
                     <div>
                         <TokenIcon
+                            token={quoteToken}
                             src={uriToHttp(quoteToken.logoURI)}
                             alt={quoteToken.symbol}
                             size='m'
@@ -115,11 +117,13 @@ export default function ConfirmRepositionModal(props: propsIF) {
                 <div className={styles.token_display}>
                     <div className={styles.tokens}>
                         <TokenIcon
+                            token={tokenA}
                             src={uriToHttp(tokenA.logoURI)}
                             alt={tokenA.symbol}
                             size='2xl'
                         />
                         <TokenIcon
+                            token={tokenB}
                             src={uriToHttp(tokenB.logoURI)}
                             alt={tokenB.symbol}
                             size='2xl'

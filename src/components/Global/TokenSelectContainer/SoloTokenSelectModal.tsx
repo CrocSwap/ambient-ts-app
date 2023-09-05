@@ -26,7 +26,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { wrappedNatives } from '../../../utils/tokens/wrappedNatives';
+import { wrappedNatives } from '../../../utils/data/wrappedNatives';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;

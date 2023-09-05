@@ -1,4 +1,12 @@
-import { memo, useContext, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    memo,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
@@ -37,25 +45,21 @@ interface propsIF {
         candleData: CandleData | undefined,
     ) => void;
     chartItemStates: chartItemStates;
-    setCurrentData: React.Dispatch<
-        React.SetStateAction<CandleData | undefined>
-    >;
-    setCurrentVolumeData: React.Dispatch<
-        React.SetStateAction<number | undefined>
-    >;
+    setCurrentData: Dispatch<SetStateAction<CandleData | undefined>>;
+    setCurrentVolumeData: Dispatch<SetStateAction<number | undefined>>;
     selectedDate: number | undefined;
-    setSelectedDate: React.Dispatch<number | undefined>;
+    setSelectedDate: Dispatch<number | undefined>;
     rescale: boolean | undefined;
-    setRescale: React.Dispatch<React.SetStateAction<boolean>>;
+    setRescale: Dispatch<SetStateAction<boolean>>;
     latest: boolean | undefined;
-    setLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    setLatest: Dispatch<SetStateAction<boolean>>;
     reset: boolean | undefined;
-    setReset: React.Dispatch<React.SetStateAction<boolean>>;
+    setReset: Dispatch<SetStateAction<boolean>>;
     showLatest: boolean | undefined;
-    setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
-    setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowLatest: Dispatch<SetStateAction<boolean>>;
+    setShowTooltip: Dispatch<SetStateAction<boolean>>;
 
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsLoading: Dispatch<SetStateAction<boolean>>;
     isLoading: boolean;
 }
 
@@ -157,7 +161,7 @@ function TradeCandleStickChart(props: propsIF) {
                         ? liq.upperBoundInvPriceDecimalCorrected <
                               barThreshold &&
                               liq.lowerBoundInvPriceDecimalCorrected !== '-inf'
-                        : liq.lowerBoundPriceDecimalCorrected > barThreshold &&
+                        : liq.upperBoundPriceDecimalCorrected > barThreshold &&
                               liq.upperBoundPriceDecimalCorrected !== '+inf';
                 },
             );
@@ -166,7 +170,7 @@ function TradeCandleStickChart(props: propsIF) {
                 liqBoundaryData !== undefined
                     ? denominationsInBase
                         ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
-                        : liqBoundaryData.upperBoundPriceDecimalCorrected
+                        : liqBoundaryData.lowerBoundPriceDecimalCorrected
                     : barThreshold;
             const liqBoundary =
                 typeof liqBoundaryArg === 'number'

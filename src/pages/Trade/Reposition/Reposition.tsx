@@ -27,6 +27,7 @@ import {
     addReceipt,
     addTransactionByType,
     removePendingTx,
+    updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
@@ -294,7 +295,21 @@ function Reposition() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
+                        txAction: 'Reposition',
+                        txType: 'Range',
+                        txDescription: `Reposition ${position.baseSymbol}+${position.quoteSymbol}`,
+                        txDetails: {
+                            baseAddress: position.base,
+                            quoteAddress: position.quote,
+                            poolIdx: poolIndex,
+                            baseSymbol: position.baseSymbol,
+                            quoteSymbol: position.quoteSymbol,
+                            baseTokenDecimals: baseTokenDecimals,
+                            quoteTokenDecimals: quoteTokenDecimals,
+                            lowTick: pinnedLowTick,
+                            highTick: pinnedHighTick,
+                            gridSize: lookupChain(position.chainId).gridSize,
+                        },
                     }),
                 );
             // We want the user to exit themselves
@@ -320,6 +335,12 @@ function Reposition() {
                 dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 setNewRepositionTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;

@@ -1,7 +1,5 @@
-import styles from './WalletDropdown.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
-import { NavLink } from 'react-router-dom';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import {
     getChainExplorer,
@@ -16,6 +14,20 @@ import { USDC } from '../../../../../utils/tokens/exports';
 import { tokenData } from '../../../../../utils/state/userDataSlice';
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
+import {
+    NameDisplay,
+    WalletDisplay,
+    CopyButton,
+    TokenContainer,
+    LogoName,
+    TokenAmount,
+    ActionsContainer,
+    NameDisplayContainer,
+    WalletContent,
+    WalletWrapper,
+    AccountLink,
+} from '../../../../../styled/Components/Header';
+import { FlexContainer } from '../../../../../styled/Common';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -24,7 +36,6 @@ interface WalletDropdownPropsIF {
     clickOutsideHandler: () => void;
     connectorName: string | undefined;
     clickLogout: () => void;
-    walletWrapperStyle: string;
     accountAddressFull: string;
     ethAmount: string;
     ethValue: string | undefined;
@@ -53,7 +64,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         clickOutsideHandler,
         connectorName,
         clickLogout,
-        walletWrapperStyle,
         accountAddressFull,
         ethAmount,
         ethValue,
@@ -80,20 +90,16 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         const { logo, symbol, amount, value } = props;
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
-            <section
-                className={styles.token_container}
-                tabIndex={0}
-                aria-label={ariaLabel}
-            >
-                <div className={styles.logo_name}>
+            <TokenContainer tabIndex={0} aria-label={ariaLabel}>
+                <LogoName alignItems='center' gap={4}>
                     <img src={logo} alt='' />
                     <h3>{symbol}</h3>
-                </div>
-                <div className={styles.token_amount}>
+                </LogoName>
+                <TokenAmount gap={4} flexDirection={'column'}>
                     <h3>{amount}</h3>
                     <h6>{value !== undefined ? '$' + value : '...'}</h6>
-                </div>
-            </section>
+                </TokenAmount>
+            </TokenContainer>
         );
     }
 
@@ -150,18 +156,22 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     ];
 
     return (
-        <div
-            className={walletWrapperStyle}
+        <WalletWrapper
+            flexDirection='column'
+            justifyContent='space-between'
+            gap={16}
+            rounded
             tabIndex={0}
             aria-label={`Wallet menu for ${ensName ? ensName : accountAddress}`}
         >
-            <div className={styles.name_display_container}>
+            <NameDisplayContainer gap={4} alignItems='center'>
                 <Jazzicon
                     diameter={50}
                     seed={jsNumberForAddress(accountAddressFull.toLowerCase())}
                 />
-                <div className={styles.name_display_content}>
-                    <div className={styles.name_display}>
+
+                <FlexContainer alignItems='center' flexDirection='column'>
+                    <NameDisplay gap={16} alignItems='center'>
                         <h2>{ensName !== '' ? ensName : accountAddress}</h2>
                         <a
                             target='_blank'
@@ -171,21 +181,20 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         >
                             <FiExternalLink />
                         </a>
-                        <button
+                        <CopyButton
                             onClick={handleCopyAddress}
-                            className={styles.copy_button}
                             aria-label='Copy address to clipboard'
                         >
                             <FiCopy />
-                        </button>
-                    </div>
-                    <div className={styles.wallet_display}>
+                        </CopyButton>
+                    </NameDisplay>
+                    <WalletDisplay gap={16} alignItems='center'>
                         <p>{connectorName}</p>
                         <p>{props.accountAddress}</p>
-                    </div>
-                </div>
-            </div>
-            <section className={styles.wallet_content}>
+                    </WalletDisplay>
+                </FlexContainer>
+            </NameDisplayContainer>
+            <WalletContent>
                 {tokensData.map((tokenData) => (
                     <TokenAmountDisplay
                         amount={tokenData.amount}
@@ -195,20 +204,19 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         key={JSON.stringify(tokenData)}
                     />
                 ))}
-            </section>
-            <div className={styles.actions_container}>
-                <NavLink
+            </WalletContent>
+            <ActionsContainer numCols={2} gapSize={16} fullWidth={true}>
+                <AccountLink
                     to={'/account'}
-                    className={styles.account_button}
                     aria-label='Go to the account page '
                     tabIndex={0}
                     onClick={clickOutsideHandler}
                 >
                     <CgProfile />
                     My Account
-                </NavLink>
+                </AccountLink>
                 <LogoutButton onClick={clickLogout} />
-            </div>
-        </div>
+            </ActionsContainer>
+        </WalletWrapper>
     );
 }
