@@ -120,8 +120,8 @@ function decoratePoolStats(
     stats.baseVolumeDecimal = payload.baseVolume / Math.pow(10, baseDecimals);
     stats.quoteVolumeDecimal =
         payload.quoteVolume / Math.pow(10, quoteDecimals);
-    stats.baseFeeDecimal = payload.baseFee / Math.pow(10, baseDecimals);
-    stats.quoteFeeDecimal = payload.quoteFee / Math.pow(10, quoteDecimals);
+    stats.baseFeeDecimal = payload.baseFees / Math.pow(10, baseDecimals);
+    stats.quoteFeeDecimal = payload.quoteFees / Math.pow(10, quoteDecimals);
 
     stats.baseTvlUsd = stats.baseTvlDecimal * basePrice;
     stats.quoteTvlUsd = stats.quoteTvlDecimal * quotePrice;
@@ -132,7 +132,7 @@ function decoratePoolStats(
 
     stats.tvlTotalUsd = stats.baseTvlUsd + stats.quoteTvlUsd;
     stats.volumeTotalUsd = (stats.baseVolumeUsd + stats.quoteVolumeUsd) / 2.0;
-    stats.feeTotalUsd = stats.baseFeeUsd + stats.quoteFeeUsd;
+    stats.feesTotalUsd = stats.baseFeeUsd + stats.quoteFeeUsd;
 
     return stats;
 }
@@ -143,8 +143,8 @@ interface PoolStatsServerIF {
     quoteTvl: number;
     baseVolume: number;
     quoteVolume: number;
-    baseFee: number;
-    quoteFee: number;
+    baseFees: number;
+    quoteFees: number;
     lastPriceIndic: number;
     feeRate: number;
 }
@@ -167,7 +167,7 @@ type PoolStatsIF = PoolStatsServerIF & {
     quoteFeeUsd: number;
     tvlTotalUsd: number;
     volumeTotalUsd: number;
-    feeTotalUsd: number;
+    feesTotalUsd: number;
 };
 
 const get24hChange = async (
