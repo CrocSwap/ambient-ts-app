@@ -30,6 +30,18 @@ export function getUserLabel(user: User | null): string {
     );
 }
 
+export function getUserLabelForReactions(user: User | null): string {
+    if (user == null) return '';
+
+    if (hasEnsName(user)) {
+        return user.ensName;
+    }
+    return (
+        user.walletID.substring(0, 6) + '...'
+        // + user.walletID.substring(user.walletID.length - 4)
+    );
+}
+
 export function userLabelForFilter(user: User | null): string {
     if (user == null) return '';
 

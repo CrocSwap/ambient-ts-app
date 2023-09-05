@@ -692,3 +692,18 @@
     display: inline-block;
     font-size: .9rem;
 }
+
+
+.reaction_users_tooltip div {
+
+    margin: .2rem 0;
+}
+.reaction_users_tooltip{
+    background: var(--dark1);
+    padding: .2rem .5rem;
+    margin-top: -.5rem;
+    border-radius: .5rem;
+    font-size: .72rem;
+    box-shadow: 0px 0px 30px var(--accent1);
+
+}

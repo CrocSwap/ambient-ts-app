@@ -12,9 +12,16 @@ import {
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import useChatApi from '../../Service/ChatApi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { User } from '../../Model/UserModel';
+import {
+    User,
+    getUserLabel,
+    getUserLabelForReactions,
+} from '../../Model/UserModel';
 import { AiOutlineCheck, AiOutlineCheckCircle } from 'react-icons/ai';
-import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import {
+    DefaultTooltip,
+    TextOnlyTooltip,
+} from '../../../Global/StyledTooltip/StyledTooltip';
 
 import { IoReturnUpForwardSharp } from 'react-icons/io5';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
@@ -250,9 +257,6 @@ function SentMessagePanel(props: SentMessageProps) {
         const strTime = hours + ':' + _min + ' ' + ampm;
         return strTime;
     };
-
-    console.log('............');
-    console.log(props.message.reactions);
 
     const getDayAndName = (previousDay: string, currentDay: string) => {
         const today = new Date();
@@ -557,9 +561,50 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
-    const createReactionsDOM = () => {
+    const getReactionNode = () => {
         console.log('cont');
     };
+
+    function getReactionUsers(reaction: string) {
+        const ret = [''];
+
+        console.log('.....................');
+        console.log(reaction);
+        console.log(props.message.reactions);
+        if (props.message.reactions != undefined) {
+            console.log(props.message.reactions[reaction]);
+
+            props.message.reactions[reaction].map((user: string) => {
+                const userObj = props.userMap?.get(user);
+                console.log(userObj);
+                if (userObj) {
+                    ret.push(getUserLabelForReactions(userObj));
+                }
+            });
+            console.log('??????????????????????');
+        }
+
+        // props.message.reactions?[reaction].map((user: string, i:number, a: string[]) => {
+
+        //     console.log('!!!!!!!!!!!!!!!!!!!!!!!!!')
+        //     console.log(user)
+        //     console.log(a)
+        //     const userObj = props.userMap?.get(user);
+        //     console.log(userObj)
+        //     if(userObj){
+        //         ret.push(getUserLabel(userObj))
+        //     }
+        // }):[''];
+
+        ret.splice(0, 1);
+
+        if (ret.length > 0) {
+            console.log('..................................');
+            console.log(ret);
+        }
+
+        return ret;
+    }
 
     return (
         <div
@@ -822,14 +867,37 @@ function SentMessagePanel(props: SentMessageProps) {
                                     {Object.keys(props.message.reactions).map(
                                         (reaction, index) => {
                                             return (
-                                                <div
-                                                    key={props.message._id}
-                                                    className={
-                                                        styles.reaction_node
+                                                <TextOnlyTooltip
+                                                    key={reaction}
+                                                    title={
+                                                        <div
+                                                            className={
+                                                                styles.reaction_users_tooltip
+                                                            }
+                                                        >
+                                                            {getReactionUsers(
+                                                                reaction,
+                                                            ).map((e) => {
+                                                                return (
+                                                                    <div
+                                                                        key={e}
+                                                                    >
+                                                                        {e}
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
                                                     }
                                                 >
-                                                    {reaction}
-                                                </div>
+                                                    <div
+                                                        key={props.message._id}
+                                                        className={
+                                                            styles.reaction_node
+                                                        }
+                                                    >
+                                                        {reaction}
+                                                    </div>
+                                                </TextOnlyTooltip>
                                             );
                                         },
                                     )}

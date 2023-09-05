@@ -1,3 +1,7 @@
+interface ReactionModel {
+    [key: string]: string[];
+}
+
 export interface Message {
     _id: string;
     message: string;
@@ -14,5 +18,5 @@ export interface Message {
     dislikes?: [];
     isDeleted: boolean;
     deletedMessageText: string;
-    reactions: object | undefined;
+    reactions: ReactionModel;
 }
