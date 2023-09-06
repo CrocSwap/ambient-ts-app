@@ -9,7 +9,6 @@ import { useSortedPositions } from '../useSortedPositions';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
@@ -18,9 +17,6 @@ import { FlexContainer } from '../../../../styled/Common';
 // react functional component
 function Leaderboard() {
     const { showAllData } = useContext(TradeTableContext);
-    const {
-        sidebar: { isOpen: isSidebarOpen },
-    } = useContext(SidebarContext);
 
     const { tradeTableState } = useContext(ChartContext);
 
