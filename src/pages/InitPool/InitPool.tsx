@@ -36,12 +36,11 @@ import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
-import {
-    // eslint-disable-next-line
-    LocalPairDataIF,
-    setLocalTokenA,
-    setLocalTokenB,
-} from '../../utils/state/localPairDataSlice';
+// import {
+//     LocalPairDataIF,
+//     setLocalTokenA,
+//     setLocalTokenB,
+// } from '../../utils/state/localPairDataSlice';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
@@ -58,7 +57,7 @@ import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
 import InitTokenInput from './InitTokenInput/InitTokenInput';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
-import { HiOutlineSwitchVertical } from 'react-icons/hi';
+import Spinner from '../../components/Global/Spinner/Spinner';
 
 // react functional component
 export default function InitPool() {
@@ -775,6 +774,18 @@ export default function InitPool() {
             />
         </div>
     );
+    const [isLoading, setIsLoading] = useState(false);
+    const [initPriceForDom, setInitPriceForDom] = useState<
+        string | undefined
+    >();
+    const handleSimulatedRefresh = () => {
+        setIsLoading(true);
+        setInitPriceForDom(initialPriceForDOM);
+
+        setTimeout(() => {
+            setIsLoading(false);
+        }, 1000);
+    };
 
     const initPriceContainer = (
         <div
@@ -782,23 +793,39 @@ export default function InitPool() {
                 poolExists === true && styles.content_disabled
             }`}
         >
-            <p className={styles.label_title}>Initial Price</p>
+            <FlexContainer flexDirection='row' justifyContent='space-between'>
+                <p className={styles.label_title}>Initial Price</p>
+
+                <FlexContainer gap={8}>
+                    <LuEdit2
+                        size={20}
+                        onClick={() => setInitPriceForDom(initialPriceForDOM)}
+                    />
+                    <FiRefreshCw size={20} onClick={handleSimulatedRefresh} />
+                </FlexContainer>
+            </FlexContainer>
             <section style={{ width: '100%' }}>
-                <input
-                    id='initial-pool-price-quantity'
-                    className={styles.currency_quantity}
-                    placeholder={placeholderText}
-                    type='string'
-                    onChange={handleInitialPriceInputChange}
-                    onBlur={handleDisplayUpdate}
-                    value={initialPriceForDOM}
-                    inputMode='decimal'
-                    autoComplete='off'
-                    autoCorrect='off'
-                    min='0'
-                    minLength={1}
-                    pattern={exponentialNumRegEx.source}
-                />
+                {isLoading ? (
+                    <div className={styles.circular_progress}>
+                        <Spinner size={24} bg='var(--dark2)' weight={2} />
+                    </div>
+                ) : (
+                    <input
+                        id='initial-pool-price-quantity'
+                        className={`${styles.currency_quantity} `}
+                        placeholder={placeholderText}
+                        type='string'
+                        onChange={handleInitialPriceInputChange}
+                        onBlur={handleDisplayUpdate}
+                        value={initPriceForDom ? initialPriceForDOM : ''}
+                        inputMode='decimal'
+                        autoComplete='off'
+                        autoCorrect='off'
+                        min='0'
+                        minLength={1}
+                        pattern={exponentialNumRegEx.source}
+                    />
+                )}
             </section>
         </div>
     );
@@ -819,22 +846,6 @@ export default function InitPool() {
             setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
         }
     };
-    const reverseTokens = (): void => {
-        console.log('tokens reversed');
-        dispatch(setLocalTokenB(tokenA));
-        dispatch(setLocalTokenA(tokenB));
-        setBaseCollateral(quoteCollateral);
-        setQuoteCollateral(baseCollateral);
-    };
-    const [isLoading, setIsLoading] = useState(false);
-
-    const handleSimulatedRefresh = () => {
-        setIsLoading(true);
-
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 1000);
-    };
 
     const collateralContent = (
         <div
@@ -844,15 +855,6 @@ export default function InitPool() {
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
                 <p className={styles.label_title}>Collateral</p>
-
-                <FlexContainer gap={8}>
-                    <LuEdit2 size={20} />
-                    <FiRefreshCw size={20} onClick={handleSimulatedRefresh} />
-                    <HiOutlineSwitchVertical
-                        onClick={reverseTokens}
-                        size={20}
-                    />
-                </FlexContainer>
             </FlexContainer>
 
             <InitTokenInput
@@ -876,9 +878,8 @@ export default function InitPool() {
                     set: setQuoteCollateral,
                 }}
                 toggleDexSelection={toggleDexSelection}
-                reverseTokens={reverseTokens}
                 disabled={poolExists === true}
-                isLoading={isLoading}
+                reverseTokens={() => console.log('reversed')}
             />
         </div>
     );
@@ -969,7 +970,6 @@ export default function InitPool() {
                         {tokenBDisplay}
                         <div className={styles.padding_center}>
                             <div className={styles.pool_price_container}>
-                                <span>Initial Price</span>
                                 <section style={{ width: '100%' }}>
                                     <input
                                         id='initial-pool-price-quantity'
