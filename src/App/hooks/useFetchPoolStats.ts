@@ -37,8 +37,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         boolean | undefined
     >();
 
-    const poolName = `${pool?.base.symbol} / ${pool?.quote.symbol}`;
-
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.base.symbol)
         : '';
@@ -282,7 +280,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     ]);
 
     return {
-        poolName,
         baseLogoUri,
         quoteLogoUri,
         poolVolume,
