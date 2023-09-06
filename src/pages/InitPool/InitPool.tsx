@@ -856,6 +856,8 @@ export default function InitPool() {
             </FlexContainer>
 
             <InitTokenInput
+                tokenA={tokenA}
+                tokenB={tokenB}
                 baseTokenAddress={baseTokenAddress}
                 tokenABalance={baseTokenBalance}
                 tokenBBalance={quoteTokenBalance}
