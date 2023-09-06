@@ -141,6 +141,8 @@ function TransactionRow(props: propsIF) {
     const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
         event,
     ) => {
+        console.log('handleKeyPress');
+
         if (event.key === 'Enter') {
             openDetailsModal();
         } else if (event.ctrlKey && event.key === 'c') {
@@ -206,6 +208,7 @@ function TransactionRow(props: propsIF) {
     } = txRowConstants(txRowConstantsProps);
 
     function handleRowClick() {
+        console.log('handleRowClick');
         if (tx.txId === currentTxActiveInTransactions) {
             return;
         }

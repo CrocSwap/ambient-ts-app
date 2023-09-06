@@ -122,7 +122,7 @@ export const txRowConstants = (props: propsIF) => {
                         cursor: 'pointer',
                         fontFamily: 'var(--roboto)',
                         whiteSpace: 'nowrap',
-                        width: '421px',
+                        width: '424px',
                     }}
                 >
                     <span onClick={handleOpenExplorer}>

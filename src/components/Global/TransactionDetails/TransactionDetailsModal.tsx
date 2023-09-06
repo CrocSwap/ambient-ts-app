@@ -165,10 +165,7 @@ export default function TransactionDetailsModal(props: propsIF) {
 
     return (
         <Modal usingCustomHeader onClose={onClose}>
-            <div
-                className={styles.outer_container}
-                onClick={(event) => event.stopPropagation()}
-            >
+            <div className={styles.outer_container}>
                 <TransactionDetailsHeader {...transactionDetailsHeaderProps} />
                 {showShareComponent ? (
                     shareComponent

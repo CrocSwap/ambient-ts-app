@@ -108,13 +108,13 @@ export default function rangeRowConstants(props: propsIF) {
                         cursor: 'pointer',
                         fontFamily: 'var(--roboto)',
                         whiteSpace: 'nowrap',
-                        width: '421px',
+                        width: '438px',
                     }}
                     onClick={(event) => event.stopPropagation()}
                 >
                     {posHash.toString()}
                     <FiCopy
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', margin: '0 8px' }}
                         onClick={handleCopyPosHash}
                     />
                 </p>

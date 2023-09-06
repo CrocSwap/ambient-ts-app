@@ -69,7 +69,7 @@ function Leaderboard() {
 
     const tableView = isSmallScreen
         ? 'small'
-        : (!isSmallScreen && !isLargeScreen) || (isLargeScreen && isSidebarOpen)
+        : !isSmallScreen && !isLargeScreen
         ? 'medium'
         : 'large';
 

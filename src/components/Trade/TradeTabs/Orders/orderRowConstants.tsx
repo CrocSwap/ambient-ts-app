@@ -120,13 +120,13 @@ export const orderRowConstants = (props: propsIF) => {
                         cursor: 'pointer',
                         fontFamily: 'var(--roboto)',
                         whiteSpace: 'nowrap',
-                        width: '421px',
+                        width: '438px',
                     }}
                     onClick={(event) => event.stopPropagation()}
                 >
                     {posHash}
                     <FiCopy
-                        style={{ cursor: 'pointer' }}
+                        style={{ cursor: 'pointer', margin: '0 8px' }}
                         onClick={handleCopyPosHash}
                     />
                 </p>
