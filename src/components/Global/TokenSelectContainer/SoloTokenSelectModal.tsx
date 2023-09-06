@@ -127,8 +127,15 @@ export const SoloTokenSelectModal = (props: propsIF) => {
             ) {
                 dispatch(setLocalTokenB(localTokenA));
             }
-            console.log('token a', tkn);
+
             dispatch(setLocalTokenA(tkn));
+            goToNewUrlParams(
+                chainId,
+                tkn.address,
+                tokenB.address.toLowerCase() === tkn.address.toLowerCase()
+                    ? tokenA.address
+                    : tokenB.address,
+            );
         }
         if (tokenAorB === 'B') {
             if (
@@ -138,6 +145,13 @@ export const SoloTokenSelectModal = (props: propsIF) => {
             }
             dispatch(setLocalTokenB(tkn));
         }
+        goToNewUrlParams(
+            chainId,
+            tokenA.address.toLowerCase() === tkn.address.toLowerCase()
+                ? tokenB.address
+                : tokenA.address,
+            tkn.address,
+        );
     }
 
     function handleRecentTokens(tkn: TokenIF): void {

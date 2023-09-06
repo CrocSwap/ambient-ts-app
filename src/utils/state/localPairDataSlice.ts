@@ -21,6 +21,7 @@ export interface LocalPairDataIF {
 const dfltChainId = getDefaultChainId();
 const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
 const dfltTokenB = getDefaultPairForChain(dfltChainId)[1];
+
 const initialState: LocalPairDataIF = {
     tokens: [dfltTokenA, dfltTokenB], // Set the initial tokens in the tuple
 };

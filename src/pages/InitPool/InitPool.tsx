@@ -37,6 +37,7 @@ import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
 import {
+    // eslint-disable-next-line
     LocalPairDataIF,
     setLocalTokenA,
     setLocalTokenB,
@@ -109,13 +110,17 @@ export default function InitPool() {
 
     const [isDenomBase, setIsDenomBase] = useState(true);
 
-    const localPair: LocalPairDataIF = useAppSelector(
-        (state) => state.localPairData,
-    );
-    const [tokenA, tokenB] = localPair.tokens;
-    const baseToken = tokenA;
-    const quoteToken = tokenB;
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
+    // const localPair: LocalPairDataIF = useAppSelector(
+    //     (state) => state.localPairData,
+    // );
+    // const [tokenA, tokenB] = localPair.tokens;
+    // const baseToken = tokenA;
+    // const quoteToken = tokenB;
+    const {
+        tradeData: { tokenA, tokenB, baseToken, quoteToken },
+    } = useAppSelector((state) => state);
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const {
         baseTokenBalance,
