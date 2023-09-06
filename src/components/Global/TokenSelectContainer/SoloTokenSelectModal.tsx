@@ -121,37 +121,29 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     };
 
     function handleLocalPair(tokenAorB: string, tkn: TokenIF): void {
-        if (tokenAorB === 'A') {
-            if (
-                localTokenB.address.toLowerCase() === tkn.address.toLowerCase()
-            ) {
-                dispatch(setLocalTokenB(localTokenA));
-            }
+        let updatedLocalTokenA = localTokenA;
+        let updatedLocalTokenB = localTokenB;
 
+        if (
+            (tokenAorB === 'A' &&
+                localTokenB.address.toLowerCase() ===
+                    tkn.address.toLowerCase()) ||
+            (tokenAorB === 'B' &&
+                localTokenA.address.toLowerCase() === tkn.address.toLowerCase())
+        ) {
+            [updatedLocalTokenA, updatedLocalTokenB] = [
+                localTokenB,
+                localTokenA,
+            ];
+        }
+
+        if (tokenAorB === 'A') {
             dispatch(setLocalTokenA(tkn));
-            goToNewUrlParams(
-                chainId,
-                tkn.address,
-                tokenB.address.toLowerCase() === tkn.address.toLowerCase()
-                    ? tokenA.address
-                    : tokenB.address,
-            );
-        }
-        if (tokenAorB === 'B') {
-            if (
-                localTokenA.address.toLowerCase() === tkn.address.toLowerCase()
-            ) {
-                dispatch(setLocalTokenA(localTokenB));
-            }
+            goToNewUrlParams(chainId, tkn.address, updatedLocalTokenB.address);
+        } else if (tokenAorB === 'B') {
             dispatch(setLocalTokenB(tkn));
+            goToNewUrlParams(chainId, updatedLocalTokenA.address, tkn.address);
         }
-        goToNewUrlParams(
-            chainId,
-            tokenA.address.toLowerCase() === tkn.address.toLowerCase()
-                ? tokenB.address
-                : tokenA.address,
-            tkn.address,
-        );
     }
 
     function handleRecentTokens(tkn: TokenIF): void {
