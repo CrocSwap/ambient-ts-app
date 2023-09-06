@@ -2,7 +2,6 @@ import { useContext } from 'react';
 import { GridContainer, ScrollContainer } from '../../../styled/Common';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { MainSection } from './TableInfo.styles';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
@@ -17,8 +16,6 @@ export default function TableInfo() {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-
-    const denomInBase = tradeData.isDenomBase;
 
     const pool: PoolIF = {
         base: tradeData.baseToken,
@@ -38,28 +35,17 @@ export default function TableInfo() {
         poolFeesTotal,
         poolVolume,
     } = poolData;
-    const [topTokenTvl, bottomTokenTvl] = denomInBase
-        ? [baseTvlDecimal, quoteTvlDecimal]
-        : [quoteTvlDecimal, baseTvlDecimal];
-    const [topTokenTvlUsd, bottomTokenTvlUsd] = denomInBase
-        ? [baseTvlUsd, quoteTvlUsd]
-        : [quoteTvlUsd, baseTvlUsd];
-
-    const [topToken, bottomToken]: [TokenIF, TokenIF] = [
-        tradeData.baseToken,
-        tradeData.quoteToken,
-    ];
 
     const featuredData = [
         {
-            token: topToken,
-            balance: getFormattedNumber({ value: topTokenTvl }),
-            value: getFormattedNumber({ value: topTokenTvlUsd }),
+            token: tradeData.baseToken,
+            balance: getFormattedNumber({ value: baseTvlDecimal }),
+            value: getFormattedNumber({ value: baseTvlUsd }),
         },
         {
-            token: bottomToken,
-            balance: getFormattedNumber({ value: bottomTokenTvl }),
-            value: getFormattedNumber({ value: bottomTokenTvlUsd }),
+            token: tradeData.quoteToken,
+            balance: getFormattedNumber({ value: quoteTvlDecimal }),
+            value: getFormattedNumber({ value: quoteTvlUsd }),
         },
     ];
 
