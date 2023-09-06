@@ -60,7 +60,6 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                     >
                         <FiCopy
                             size={16}
-                            color='var(--text3)'
                             className='icon_hover'
                             onClick={handleCopyAddress}
                         />
