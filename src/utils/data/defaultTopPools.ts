@@ -20,7 +20,7 @@ import { ChainIdType } from './chains';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import chainNumToString from '../../App/functions/chainNumToString';
 
-class TopPool implements PoolIF {
+export class TopPool implements PoolIF {
     name: string;
     base: TokenIF;
     quote: TokenIF;
