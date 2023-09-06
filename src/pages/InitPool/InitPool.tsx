@@ -44,7 +44,6 @@ import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalToke
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
-import ButtonSwitch from '../../components/Global/Toggle/ButtonSwitch';
 import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
@@ -898,6 +897,19 @@ export default function InitPool() {
             />
         </FlexContainer>
     );
+    const advancedModeToggle = (
+        <FlexContainer flexDirection='row' justifyContent='space-between'>
+            <p className={styles.label_title}>
+                {!advancedMode ? 'Balance' : 'Unbalanced'}{' '}
+            </p>
+
+            <Toggle
+                isOn={!advancedMode}
+                handleToggle={handleToggle}
+                id='advanced_reposition'
+            />
+        </FlexContainer>
+    );
 
     const newContent = (
         <section className={styles.main}>
@@ -919,17 +931,8 @@ export default function InitPool() {
 
                             <div className={styles.right_container}>
                                 {mintInitialLiquidity}
-                                <p className={styles.label_title}>
-                                    Initial Range
-                                </p>
+                                {advancedModeToggle}
 
-                                <ButtonSwitch
-                                    isOn={advancedMode}
-                                    handleToggle={handleToggle}
-                                    id='advanced_reposition'
-                                    onLabel='Unbalanced'
-                                    offLabel='Balanced'
-                                />
                                 <RangeBounds
                                     isRangeBoundsDisabled={poolExists === true}
                                     {...rangeWidthProps}
