@@ -87,23 +87,20 @@ export default function MessageInput(props: MessageInputProps) {
         }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function openEmojiPanel(e: any) {
-        if (e.keyCode === 88 && e.altKey) {
+    function openEmojiPanel(e: KeyboardEvent) {
+        if (e.code === 'KeyC' && e.altKey) {
             setShowEmojiPicker(true);
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function closeEmojiPanel(e: any) {
-        if (e.keyCode === 81 && e.altKey) {
+    function closeEmojiPanel(e: KeyboardEvent) {
+        if (e.code === 'KeyQ' && e.altKey) {
             setShowEmojiPicker(false);
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function openInfo(e: any) {
-        if (e.keyCode === 77 && e.ctrlKey) {
+    function openInfo(e: KeyboardEvent) {
+        if (e.code === 'KeyM' && e.ctrlKey) {
             setShowEmojiPicker(true);
             setIsInfoPressed(true);
         }

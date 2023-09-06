@@ -117,14 +117,15 @@ export default function LimitActionModal(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const averageGasUnitsForHarvestTx = type === 'Remove' ? 90069 : 68309;
+    const averageGasUnitsForHarvestTxInGasDrops =
+        type === 'Remove' ? 90069 : 68309;
     const numGweiInWei = 1e-9;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageGasUnitsForHarvestTx *
+                averageGasUnitsForHarvestTxInGasDrops *
                 numGweiInWei *
                 ethMainnetUsdPrice;
 

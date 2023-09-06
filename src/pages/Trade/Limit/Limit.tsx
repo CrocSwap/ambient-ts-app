@@ -17,7 +17,7 @@ import LimitTokenInput from '../../../components/Trade/Limit/LimitTokenInput/Lim
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -130,6 +130,8 @@ export default function Limit() {
         : quoteTokenDexBalance;
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
+    const isTokenADexSurplusSufficient =
+        tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1
@@ -359,9 +361,17 @@ export default function Limit() {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
     }, [tokenADexBalance]);
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageLimitCostInGasDrops = 193000;
+            const averageLimitCostInGasDrops = isSellTokenNativeToken
+                ? 120000
+                : isWithdrawFromDexChecked
+                ? isTokenADexSurplusSufficient
+                    ? 120000
+                    : 150000
+                : 150000;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageLimitCostInGasDrops *
@@ -375,7 +385,13 @@ export default function Limit() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        isSellTokenNativeToken,
+        isWithdrawFromDexChecked,
+        isTokenADexSurplusSufficient,
+    ]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);

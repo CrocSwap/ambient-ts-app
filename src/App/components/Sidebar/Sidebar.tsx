@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { useState, useRef, useContext, memo } from 'react';
+import {
+    useState,
+    useRef,
+    useContext,
+    ChangeEvent,
+    KeyboardEvent,
+    memo,
+} from 'react';
 import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
@@ -149,21 +156,12 @@ function Sidebar() {
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
 
-    const handleInputClear = () => {
-        setSearchInput('');
-        setSearchMode(false);
-        const currentInput = document.getElementById(
-            'search_input',
-        ) as HTMLInputElement;
-        currentInput.value = '';
-    };
-
     // ------------------------------------------
     // ---------------------------Explore SEARCH CONTAINER-----------------------
 
     const focusInput = () => {
         const inputField = document.getElementById(
-            'search_input',
+            'sidebar_search_input',
         ) as HTMLInputElement;
 
         inputField.focus();
@@ -174,6 +172,11 @@ function Sidebar() {
         searchData.setInput(e.target.value);
         setSearchInput(e.target.value);
     };
+
+    // id for search input HTML elem in the DOM
+    // defined in a const because we reference this multiple places
+    const searchInputElementId = 'sidebar_search_input';
+
     const searchContainer = (
         <SearchContainer
             flexDirection='row'
@@ -195,19 +198,36 @@ function Sidebar() {
             </FlexContainer>
             <SearchInput
                 type='text'
-                id='search_input'
-                value={searchInput}
+                id={searchInputElementId}
+                value={searchData.rawInput}
                 placeholder='Search...'
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     handleSearchInput(e)
                 }
+                onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+                    if (e.code === 'Escape') {
+                        // prevent keypress from de-focusing the input
+                        e.stopPropagation();
+                        // clear search input, DOM will update
+                        searchData.clearInput();
+                        setSearchInput('');
+                    }
+                }}
                 spellCheck='false'
                 autoComplete='off'
                 tabIndex={1}
             />
             {searchInput && (
                 <FlexContainer
-                    onClick={handleInputClear}
+                    onClick={() => {
+                        // clear search input, DOM will update
+                        searchData.clearInput();
+                        setSearchInput('');
+                        // manually focus DOM on the search input
+                        const searchInput =
+                            document.getElementById(searchInputElementId);
+                        searchInput && searchInput.focus();
+                    }}
                     role='button'
                     tabIndex={0}
                 >
