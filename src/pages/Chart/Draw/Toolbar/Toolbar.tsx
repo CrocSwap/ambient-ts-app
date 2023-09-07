@@ -66,29 +66,27 @@ function Toolbar(props: ToolbarProps) {
                 <div className={styles.drawlist_cotainer}>
                     <div>
                         {iconList.map((item, index) => (
-                            <div key={index} className={styles.icon_card}>
-                                <div
+                            <div
+                                key={index}
+                                className={
+                                    isDrawActive
+                                        ? styles.icon_active_container
+                                        : styles.icon_inactive_container
+                                }
+                                onClick={() => handleDrawModeChange(item)}
+                            >
+                                <img
                                     className={
-                                        isDrawActive
-                                            ? styles.icon_active_container
-                                            : styles.icon_inactive_container
+                                        (activeDrawingType === 'Cross' &&
+                                            item.label === 'Cross') ||
+                                        (isDrawActive &&
+                                            activeDrawingType === item.label)
+                                            ? styles.icon_active
+                                            : styles.icon_inactive
                                     }
-                                    onClick={() => handleDrawModeChange(item)}
-                                >
-                                    <img
-                                        className={
-                                            (activeDrawingType === 'Cross' &&
-                                                item.label === 'Cross') ||
-                                            (isDrawActive &&
-                                                activeDrawingType ===
-                                                    item.label)
-                                                ? styles.icon_active
-                                                : styles.icon_inactive
-                                        }
-                                        src={item.icon}
-                                        alt=''
-                                    />
-                                </div>
+                                    src={item.icon}
+                                    alt=''
+                                />
                             </div>
                         ))}
                     </div>
