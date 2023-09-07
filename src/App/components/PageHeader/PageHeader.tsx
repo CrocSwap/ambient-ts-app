@@ -271,10 +271,11 @@ const PageHeader = function () {
         tokenA: tradeData.tokenA.address,
         tokenB: tradeData.tokenB.address,
     };
+
     const poolParams: poolParamsIF = {
         ...swapParams,
-        lowTick: '12',
-        highTick: '13',
+        lowTick: tradeData.advancedLowTick ?? 0,
+        highTick: tradeData.advancedHighTick ?? 0,
     };
 
     const linkData = [
