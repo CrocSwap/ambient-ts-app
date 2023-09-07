@@ -135,6 +135,10 @@ interface propsIF {
     setDrawnShapeHistory: React.Dispatch<
         React.SetStateAction<drawDataHistory[]>
     >;
+    isDrawActive: boolean;
+    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
+    activeDrawingType: string;
+    setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function Chart(props: propsIF) {
@@ -161,6 +165,10 @@ export default function Chart(props: propsIF) {
         candleTimeInSeconds,
         drawnShapeHistory,
         setDrawnShapeHistory,
+        isDrawActive,
+        setIsDrawActive,
+        activeDrawingType,
+        setActiveDrawingType,
     } = props;
 
     const {
@@ -174,8 +182,6 @@ export default function Chart(props: propsIF) {
         useContext(PoolContext);
 
     const [isDragActive, setIsDragActive] = useState(false);
-    const [isDrawActive, setIsDrawActive] = useState(false);
-    const [activeDrawingType, setActiveDrawingType] = useState('');
 
     const [localCandleDomains, setLocalCandleDomains] = useState<candleDomain>({
         lastCandleDate: undefined,
@@ -288,6 +294,8 @@ export default function Chart(props: propsIF) {
     const { undo, redo } = useUndoRedo(drawnShapeHistory, setDrawnShapeHistory);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
+
+    const [isToolbarOpen, setIsToolbarOpen] = useState(true);
 
     const unparsedCandleData = useMemo(() => {
         const data = unparsedData.candles
@@ -3423,15 +3431,16 @@ export default function Chart(props: propsIF) {
                         height: '100%',
                     }}
                 >
-                    <div>
+                    <div className='chart_grid'>
                         <Toolbar
                             isDrawActive={isDrawActive}
                             setIsDrawActive={setIsDrawActive}
                             activeDrawingType={activeDrawingType}
                             setActiveDrawingType={setActiveDrawingType}
+                            isToolbarOpen={isToolbarOpen}
+                            setIsToolbarOpen={setIsToolbarOpen}
                         />
-                    </div>
-                    <div className='chart_grid'>
+
                         <CandleChart
                             chartItemStates={props.chartItemStates}
                             data={visibleCandleData}
@@ -3499,6 +3508,7 @@ export default function Chart(props: propsIF) {
                                 setCrossHairDataFunc={setCrossHairDataFunc}
                                 setIsDrawActive={setIsDrawActive}
                                 activeDrawingType={activeDrawingType}
+                                setActiveDrawingType={setActiveDrawingType}
                             />
                         )}
 
@@ -3602,6 +3612,7 @@ export default function Chart(props: propsIF) {
                             xAxisActiveTooltip={xAxisActiveTooltip}
                             zoomBase={zoomBase}
                             isChartZoom={isChartZoom}
+                            isToolbarOpen={isToolbarOpen}
                         />
                     </div>
                 </div>

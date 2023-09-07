@@ -45,6 +45,7 @@ interface xAxisIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     zoomBase: any;
     isChartZoom: boolean;
+    isToolbarOpen: boolean;
 }
 
 function XAxisCanvas(props: xAxisIF) {
@@ -70,6 +71,7 @@ function XAxisCanvas(props: xAxisIF) {
         showLatestActive,
         zoomBase,
         isChartZoom,
+        isToolbarOpen,
     } = props;
 
     const d3Xaxis = useRef<HTMLInputElement | null>(null);
@@ -106,6 +108,7 @@ function XAxisCanvas(props: xAxisIF) {
         if (scaleData) {
             const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
+            const column = isToolbarOpen ? 35 : 9;
 
             const timeOfEndCandleLocation = timeOfEndCandle
                 ? xScale(timeOfEndCandle)
@@ -245,21 +248,22 @@ function XAxisCanvas(props: xAxisIF) {
                                         ) {
                                             context.fillText(
                                                 formatValue,
-                                                xScale(d.date.getTime()),
+                                                xScale(d.date.getTime()) +
+                                                    column,
                                                 Y + tickSize,
                                             );
                                         }
                                     } else {
                                         context.fillText(
                                             formatValue,
-                                            xScale(d.date.getTime()),
+                                            xScale(d.date.getTime()) + column,
                                             Y + tickSize,
                                         );
                                     }
                                 } else {
                                     context.fillText(
                                         formatValue,
-                                        xScale(d.date.getTime()),
+                                        xScale(d.date.getTime()) + column,
                                         Y + tickSize,
                                     );
                                 }
@@ -288,7 +292,7 @@ function XAxisCanvas(props: xAxisIF) {
                 if (dateCrosshair && crosshairActive !== 'none') {
                     context.fillText(
                         dateCrosshair,
-                        xScale(crosshairData[0].x),
+                        xScale(crosshairData[0].x) + column,
                         Y + tickSize,
                     );
                 }
@@ -305,7 +309,11 @@ function XAxisCanvas(props: xAxisIF) {
                 }
 
                 if (firstCrDateLocation) {
-                    context.fillText('🐊', firstCrDateLocation, Y + tickSize);
+                    context.fillText(
+                        '🐊',
+                        firstCrDateLocation + column,
+                        Y + tickSize,
+                    );
                 }
 
                 if (timeOfEndCandle && timeOfEndCandleLocation) {
@@ -322,7 +330,7 @@ function XAxisCanvas(props: xAxisIF) {
                     }
                     context.fillText(
                         '🥚',
-                        timeOfEndCandleLocation,
+                        timeOfEndCandleLocation + column,
                         Y + tickSize,
                     );
                 }

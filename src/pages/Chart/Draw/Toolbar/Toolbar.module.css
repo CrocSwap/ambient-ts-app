@@ -1,18 +1,148 @@
-.icon_grid {
+.toolbar_container {
     display: flex;
-    width: 5%;
     grid-column: 2;
     grid-row: 3;
-  }
-  
-  .icon_card {
+}
+
+.icon_card {
+    flex-direction: row-reverse;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  
-  .label {
+}
+
+.label {
     font-size: 14px;
+}
+
+.icon_card img {
+    width: 24px;
+    height: 24px;
+    aspect-ratio: 1;
+}
+
+.icon_card img:hover {
+    cursor: pointer;
+}
+
+.close_divider_container {
+    display: flex;
+    width: 9px;
+    height: 100%;
+    flex-direction: row-reverse;
+}
+
+.close_divider_container:hover {
+    cursor: pointer;
+}
+
+.divider_container {
+    width: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.drawlist_cotainer {
+    display: flex;
+}
+
+.divider {
+    background: #242f3f;
+    width: 1px;
+}
+
+.divider_container:hover {
+    cursor: pointer;
+}
+
+.icon_active_container {
+    margin-bottom: 10px;
+    display: flex;
+    width: Fixed (24px);
+    height: Fixed (24px);
+    padding: 2px;
+    border-radius: 4px;
+    gap: 10px;
+}
+
+.icon_inactive_container {
+    margin-bottom: 10px;
+    display: flex;
+    width: Fixed (24px);
+    height: Fixed (24px);
+    padding: 2px;
+    border-radius: 4px;
+    gap: 10px;
+}
+
+.icon_active_container:hover {
+    background: #242f3f;
+}
+
+.icon_inactive_container:hover {
+    background: #242f3f;
+}
+
+.icon_active {
+    margin: 0.5px;
+    filter: invert(45%) sepia(99%) saturate(2440%) hue-rotate(220deg)
+        brightness(100%) contrast(98%);
+}
+
+.icon_inactive {
+    margin: 0.5px;
+    filter: invert(70%) sepia(14%) saturate(341%) hue-rotate(169deg)
+        brightness(100%) contrast(100%);
+}
+
+.close_divider_button {
+    position: relative;
+    width: 8px;
+    height: 30px;
+    top: 70%;
+    left: 50%;
+    padding: 0px 2px 0px 2px;
+    border-radius: 4px;
+    background: linear-gradient(0deg, #7371fc, #7371fc),
+        linear-gradient(0deg, #242f3f, #242f3f);
+    border: 1px solid #242f3f;
+    cursor: pointer;
+    display: grid;
+    align-items: center;
+    justify-content: end;
+    z-index: 999;
+}
+
+.divider_button {
+    position: relative;
+    width: 8px;
+    height: 30px;
+    top: 70%;
+    left: 50%;
+    padding: 0px 2px 0px 2px;
+    border-radius: 4px;
+    border: 1px;
+    background: var(--dark1);
+    border: 1px solid #242f3f;
+    cursor: pointer;
+    display: grid;
+    align-items: center;
+    justify-content: start;
+    z-index: 999;
+}
+
+.arrow_left {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-top: 1px solid #dbdbdb;
+    border-right: 1px solid #dbdbdb;
+    transform: rotate(225deg);
   }
-  
+
+.arrow_right {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-top: 1px solid #dbdbdb;
+    border-right: 1px solid #dbdbdb;
+    transform: rotate(45deg);
+  }
