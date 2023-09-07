@@ -90,7 +90,9 @@ export default function OrdersSearchResults(props: propsIF) {
             chain: chainId,
             tokenA: limitOrder.base,
             tokenB: limitOrder.quote,
-            limitTick: '10',
+            limitTick: limitOrder.isBid
+                ? limitOrder.bidTick.toString()
+                : limitOrder.askTick.toString(),
         });
     };
 
