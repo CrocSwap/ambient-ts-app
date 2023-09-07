@@ -578,8 +578,12 @@ function Reposition() {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageRepositionCostInGasDrops = 260705;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 260705 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageRepositionCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
