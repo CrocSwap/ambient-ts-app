@@ -181,7 +181,7 @@ function TvlChart(props: TvlData) {
 
                 setBuffer(() => buffer);
 
-                let domain = [0, maxYBoundary + buffer * 2];
+                let domain = [0, maxYBoundary + buffer * 3];
 
                 if (maxYBoundary === minYBoundary && maxYBoundary === 0) {
                     domain = [-1, 1];
