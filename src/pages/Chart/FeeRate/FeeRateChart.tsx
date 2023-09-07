@@ -385,12 +385,13 @@ function FeeRateChart(props: FreeRateData) {
                       ).toFixed(2) + '%'
                     : '-'}
             </label>
+
             <d3fc-canvas
                 className='y-axis-canvas'
                 ref={d3Yaxis}
                 style={{
                     width: yAxisWidth,
-                    gridColumn: 4,
+                    gridColumn: 5,
                     gridRow: 3,
                 }}
             ></d3fc-canvas>

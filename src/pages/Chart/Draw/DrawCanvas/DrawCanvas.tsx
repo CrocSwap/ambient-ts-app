@@ -22,6 +22,7 @@ interface DrawCanvasProps {
     setCrossHairDataFunc: any;
     setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
     activeDrawingType: string;
+    setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -35,6 +36,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         setCrossHairDataFunc,
         setIsDrawActive,
         activeDrawingType,
+        setActiveDrawingType,
     } = props;
 
     const circleSeries = createCircle(
@@ -158,6 +160,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     }
                     return prevData;
                 });
+                setActiveDrawingType('Cross');
             }
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

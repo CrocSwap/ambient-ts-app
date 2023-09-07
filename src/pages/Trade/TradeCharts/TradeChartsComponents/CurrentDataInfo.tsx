@@ -4,7 +4,6 @@ import { Dispatch, memo, SetStateAction } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import Toolbar from '../../../Chart/Draw/Toolbar/Toolbar';
 
 interface CurrentDataInfoPropsIF {
     showTooltip: boolean;
