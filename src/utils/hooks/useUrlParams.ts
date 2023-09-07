@@ -22,6 +22,16 @@ import validateChain from '../functions/validateChain';
 /* Hook to process GET-request style parameters passed to the URL. This includes
  * chain, tokens, and context-specific tick parameters. All action is intermediated
  * by passing parameters through to the tradeDataSlice in redux. */
+
+// union of all recognized param keys in the app
+type validParams =
+    | 'chain'
+    | 'tokenA'
+    | 'tokenB'
+    | 'lowTick'
+    | 'highTick'
+    | 'limitTick';
+
 export const useUrlParams = (
     requiredParams: string[],
     tokens: tokenMethodsIF,
@@ -40,7 +50,7 @@ export const useUrlParams = (
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
         // split params string at every ampersand
-        const paramMap = new Map<string, string>();
+        const paramMap = new Map<validParams, string>();
 
         // Splits and parses GET params in x=a&y=b&z=c formater
         fixedParams
@@ -53,7 +63,7 @@ export const useUrlParams = (
             .map((par) => par.filter((e) => e !== ''))
             // remove tuples with trisomy issues
             .filter((par) => par.length === 2)
-            .forEach((par) => paramMap.set(par[0], par[1]));
+            .forEach((par) => paramMap.set(par[0] as validParams, par[1]));
 
         return paramMap;
     }, [params]);
