@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { useParams, Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink } from 'react-router-dom';
 import { Resizable } from 're-resizable';
 import {
     useEffect,
@@ -68,7 +68,6 @@ function Trade() {
     const { tokenA, tokenB, isDenomBase, limitTick } = tradeData;
     const provider = useProvider();
 
-    const { params } = useParams();
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     // hooks to generate default URL paths
