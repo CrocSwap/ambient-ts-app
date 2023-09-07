@@ -1,4 +1,4 @@
-import styles from './Button.module.css';
+import { ButtonBase } from './Button.styles';
 
 interface propsIF {
     disabled?: boolean;
@@ -11,24 +11,20 @@ interface propsIF {
 export default function Toggle(props: propsIF) {
     const { disabled, action, title, flat, customAriaLabel } = props;
 
-    const buttonTypeStyle = flat ? styles.btn_flat : styles.btn_gradient;
-
     const ariaLabelToDisplay = disabled
         ? `Button is disabled. ${title}`
         : customAriaLabel
         ? customAriaLabel
         : '';
     return (
-        <button
-            className={`${disabled ? styles.disabled_btn : buttonTypeStyle} ${
-                styles.btn
-            }`}
+        <ButtonBase
             onClick={action}
             disabled={disabled}
             aria-label={ariaLabelToDisplay}
             tabIndex={0}
+            flat={!!flat}
         >
             {title}
-        </button>
+        </ButtonBase>
     );
 }

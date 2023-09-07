@@ -1,5 +1,3 @@
-import styles from './ExchangeBalance.module.css';
-
 import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
 import Transfer from './Transfer/Transfer';
@@ -32,6 +30,13 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { useDispatch } from 'react-redux';
 import { TokenContext } from '../../../contexts/TokenContext';
+import {
+    ControlContainer,
+    InfoText,
+    MotionContainer,
+    MotionSubContainer,
+} from './ExchangeBalance.styles';
+import { FlexContainer } from '../../../styled/Common';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -287,8 +292,7 @@ export default function ExchangeBalance(props: propsIF) {
     ];
 
     const exchangeControl = (
-        <section
-            className={styles.control_container}
+        <ControlContainer
             onClick={() => setFullLayoutActive(!fullLayoutActive)}
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
@@ -299,28 +303,40 @@ export default function ExchangeBalance(props: propsIF) {
                     width='20px'
                 />
             </IconWithTooltip>
-        </section>
+        </ControlContainer>
     );
 
     const columnView = useMediaQuery('(max-width: 1200px)');
 
-    const restrictWidth =
-        !isModalView && useMediaQuery('screen and (min-width: 1200px)');
-    const restrictWidthStyle = restrictWidth
-        ? `${styles.container_restrict_width}`
-        : '';
-
     return (
         <>
-            <motion.main
+            <MotionContainer
                 animate={
                     columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'
                 }
-                style={{ width: '100%' }}
-                className={`${styles.container} ${restrictWidthStyle}`}
+                fullWidth
+                flexDirection='column'
+                alignItems='center'
+                background='dark1'
+                rounded
+                fullHeight
+                desktop={{ maxWidth: '400px%' }}
             >
-                <motion.div className={styles.main_container}>
-                    <div className={styles.tabs_container}>
+                <MotionSubContainer
+                    fullHeight
+                    fullWidth
+                    alignItems='center'
+                    rounded
+                    id='subcont'
+                >
+                    <FlexContainer
+                        fullHeight
+                        fullWidth
+                        rounded
+                        background='dark1'
+                        justifyContent='center'
+                        position='relative'
+                    >
                         {(!fullLayoutActive || columnView || isModalView) && (
                             <TabComponent
                                 data={accountData}
@@ -330,18 +346,16 @@ export default function ExchangeBalance(props: propsIF) {
                             />
                         )}
                         {!isModalView && exchangeControl}
-                    </div>
-                </motion.div>
+                    </FlexContainer>
+                </MotionSubContainer>
                 {(!fullLayoutActive || columnView || isModalView) && (
-                    <section>
-                        <div className={styles.info_text}>
-                            Collateral deposited into the Ambient Finance
-                            exchange can be traded at lower gas costs.
-                            Collateral can be withdrawn at any time.
-                        </div>
-                    </section>
+                    <InfoText>
+                        Collateral deposited into the Ambient Finance exchange
+                        can be traded at lower gas costs. Collateral can be
+                        withdrawn at any time.
+                    </InfoText>
                 )}
-            </motion.main>
+            </MotionContainer>
         </>
     );
 }
