@@ -83,6 +83,7 @@ export default function OrdersMenu(props: propsIF) {
             dispatch(setShouldLimitDirectionReverse(true));
         }
 
+        // why is this is in on a half-second delay?
         setTimeout(() => {
             dispatch(
                 setLimitTick(

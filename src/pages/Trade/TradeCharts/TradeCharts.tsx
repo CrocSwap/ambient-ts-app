@@ -127,9 +127,8 @@ function TradeCharts(props: propsIF) {
 
     // END OF CHART SETTINGS------------------------------------------------------------
 
-    // eslint-disable-next-line
-    function closeOnEscapeKeyDown(e: any) {
-        if ((e.charCode || e.keyCode) === 27) setIsChartFullScreen(false);
+    function closeOnEscapeKeyDown(e: KeyboardEvent) {
+        if (e.code === 'Escape') setIsChartFullScreen(false);
     }
 
     useEffect(() => {

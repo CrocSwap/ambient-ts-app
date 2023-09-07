@@ -1,4 +1,4 @@
-import {
+import React, {
     useRef,
     Children,
     ReactNode,
@@ -8,8 +8,11 @@ import {
     SetStateAction,
     memo,
 } from 'react';
-import styles from './NavItem.module.css';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import {
+    NavItemButton,
+    NavItemIconButton,
+} from '../../../../styled/Components/Header';
 
 interface NavItemPropsIF {
     children: ReactNode;
@@ -46,21 +49,17 @@ function NavItem(props: NavItemPropsIF) {
     });
 
     return (
-        <button
-            className={styles.nav_item}
+        <NavItemButton
+            className='nav_item'
             ref={navItemRef}
             tabIndex={0}
             aria-label='Nav item'
         >
-            <div
-                className={styles.icon_button}
-                onClick={() => setOpen(!open)}
-                style={{ borderRadius: square ? '4px' : '50%' }}
-            >
+            <NavItemIconButton square={square} onClick={() => setOpen(!open)}>
                 {icon}
-            </div>
+            </NavItemIconButton>
             {open && childrenWithProps}
-        </button>
+        </NavItemButton>
     );
 }
 
