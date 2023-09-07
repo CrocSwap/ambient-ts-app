@@ -22,6 +22,7 @@ import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -188,7 +189,8 @@ export default function RangesMenu(props: propsIF) {
     const copyButton = position ? (
         <OptionButton
             onClick={() => {
-                linkGenPool.navigate({
+                // URL params for link to pool page
+                const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
@@ -200,7 +202,9 @@ export default function RangesMenu(props: propsIF) {
                             : position.quote,
                     lowTick: position.bidTick,
                     highTick: position.askTick,
-                });
+                };
+                // navigate user to pool page with URL params defined above
+                linkGenPool.navigate(poolLinkParams);
                 handleCopyClick();
             }}
             content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
@@ -210,7 +214,8 @@ export default function RangesMenu(props: propsIF) {
     const addButton = (
         <OptionButton
             onClick={() => {
-                linkGenPool.navigate({
+                // URL params for link to pool page
+                const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
@@ -222,7 +227,9 @@ export default function RangesMenu(props: propsIF) {
                             : position.quote,
                     lowTick: position.bidTick,
                     highTick: position.askTick,
-                });
+                };
+                // navigate user to pool page with URL params defined above
+                linkGenPool.navigate(poolLinkParams);
                 handleCopyClick();
                 setCurrentRangeInAdd(position.positionId);
             }}

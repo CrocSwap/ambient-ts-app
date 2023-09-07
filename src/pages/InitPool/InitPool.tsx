@@ -29,7 +29,11 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount, useProvider } from 'wagmi';
-import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import {
+    useLinkGen,
+    linkGenMethodsIF,
+    poolParamsIF,
+} from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 import uriToHttp from '../../utils/functions/uriToHttp';
@@ -304,13 +308,16 @@ export default function InitPool() {
                     if (receipt) {
                         dispatch(addReceipt(JSON.stringify(receipt)));
                         dispatch(removePendingTx(receipt.transactionHash));
-                        linkGenPool.navigate({
+                        // URL params for link to pool page
+                        const poolLinkParams: poolParamsIF = {
                             chain: chainId,
                             tokenA: baseToken.address,
                             tokenB: quoteToken.address,
                             lowTick: advancedLowTick,
                             highTick: advancedHighTick,
-                        });
+                        };
+                        // navigate user to pool page with URL params defined above
+                        linkGenPool.navigate(poolLinkParams);
                     }
                 } catch (error) {
                     if (

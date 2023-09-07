@@ -10,6 +10,7 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
@@ -237,6 +238,15 @@ export default function rangeRowConstants(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
+    // URL params for link to pool page
+    const poolLinkParams: poolParamsIF = {
+        chain: position.chainId,
+        tokenA: position.quote,
+        tokenB: position.base,
+        lowTick: position.askTick,
+        highTick: position.bidTick,
+    };
+
     const tokenPair = (
         <li
             className='base_color'
@@ -244,15 +254,7 @@ export default function rangeRowConstants(props: propsIF) {
             onMouseLeave={handleRowMouseOut}
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink
-                to={linkGenPool.getFullURL({
-                    chain: position.chainId,
-                    tokenA: position.quote,
-                    tokenB: position.base,
-                    lowTick: position.askTick,
-                    highTick: position.bidTick,
-                })}
-            >
+            <NavLink to={linkGenPool.getFullURL(poolLinkParams)}>
                 <div>
                     {baseTokenSymbol} / {quoteTokenSymbol}
                 </div>

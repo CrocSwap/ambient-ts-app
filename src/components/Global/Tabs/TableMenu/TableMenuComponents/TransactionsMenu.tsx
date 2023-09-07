@@ -32,6 +32,7 @@ import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
@@ -171,13 +172,16 @@ export default function TransactionsMenu(props: propsIF) {
         tx.entityType === 'liqchange' ? (
             <OptionButton
                 onClick={() => {
-                    linkGenPool.navigate({
+                    // URL params for link to pool page
+                    const poolLinkParams: poolParamsIF = {
                         chain: chainId,
                         tokenA: tx.isBid ? tx.base : tx.quote,
                         tokenB: tx.isBid ? tx.quote : tx.base,
                         lowTick: tx.bidTick,
                         highTick: tx.askTick,
-                    });
+                    };
+                    // navigate user to pool page with URL params defined above
+                    linkGenPool.navigate(poolLinkParams);
                     handleCopyClick();
                 }}
                 ariaLabel='Copy trade.'

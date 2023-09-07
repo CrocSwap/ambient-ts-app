@@ -6,6 +6,7 @@ import { useContext } from 'react';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../../functions/getFormattedNumber';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -96,13 +97,16 @@ export default function PositionsSearchResults(props: propsIF) {
         setCurrentPositionActive(position.lastMintTx);
         setShowAllData(false);
         const { base, quote, bidTick, askTick } = position;
-        linkGenPool.navigate({
+        // URL params for link to pool page
+        const poolLinkParams: poolParamsIF = {
             chain: chainId,
             tokenA: base,
             tokenB: quote,
             lowTick: bidTick,
             highTick: askTick,
-        });
+        };
+        // navigate user to `/trade/pool` with defined URL params
+        linkGenPool.navigate(poolLinkParams);
     };
 
     return (
