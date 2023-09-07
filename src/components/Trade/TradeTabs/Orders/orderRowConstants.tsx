@@ -10,6 +10,7 @@ import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import {
+    limitParamsIF,
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
@@ -229,6 +230,14 @@ export const orderRowConstants = (props: propsIF) => {
         />
     );
 
+    // URL params for link to limit page
+    const limitLinkParams: limitParamsIF = {
+        chain: limitOrder.chainId,
+        tokenA: limitOrder.quote,
+        tokenB: limitOrder.base,
+        limitTick: limitOrder.isBid ? limitOrder.askTick : limitOrder.bidTick,
+    };
+
     const tokenPair = (
         <li
             className='base_color'
@@ -237,16 +246,7 @@ export const orderRowConstants = (props: propsIF) => {
             data-label='tokens'
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink
-                to={linkGenLimit.getFullURL({
-                    chain: limitOrder.chainId,
-                    tokenA: limitOrder.quote,
-                    tokenB: limitOrder.base,
-                    limitTick: limitOrder.isBid
-                        ? limitOrder.askTick
-                        : limitOrder.bidTick,
-                })}
-            >
+            <NavLink to={linkGenLimit.getFullURL(limitLinkParams)}>
                 {baseTokenSymbol} / {quoteTokenSymbol}
             </NavLink>
         </li>

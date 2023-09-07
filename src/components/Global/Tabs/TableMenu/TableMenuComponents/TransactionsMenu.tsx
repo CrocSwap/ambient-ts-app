@@ -33,6 +33,7 @@ import {
     useLinkGen,
     linkGenMethodsIF,
     poolParamsIF,
+    limitParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
@@ -123,12 +124,15 @@ export default function TransactionsMenu(props: propsIF) {
             }
         } else if (tx.entityType === 'limitOrder') {
             dispatch(setLimitTickCopied(true));
-            linkGenLimit.navigate({
+            // URL params for link to limit page
+            const limitLinkParams: limitParamsIF = {
                 chain: chainId,
                 tokenA: tx.base,
                 tokenB: tx.quote,
                 limitTick: tx.isBuy ? tx.bidTick : tx.askTick,
-            });
+            };
+            // navigate user to limit page with URL params defined above
+            linkGenLimit.navigate(limitLinkParams);
             const shouldReverse =
                 tradeData.tokenA.address.toLowerCase() ===
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
@@ -192,12 +196,15 @@ export default function TransactionsMenu(props: propsIF) {
                 onClick={() => {
                     dispatch(setLimitTickCopied(true));
                     dispatch(setLimitTick(undefined));
-                    linkGenLimit.navigate({
+                    // URL params for link to limit page
+                    const limitLinkParams: limitParamsIF = {
                         chain: chainId,
                         tokenA: tx.isBid ? tx.base : tx.quote,
                         tokenB: tx.isBid ? tx.quote : tx.base,
                         limitTick: tx.isBid ? tx.bidTick : tx.askTick,
-                    });
+                    };
+                    // navigate user to limit page with URL params defined above
+                    linkGenLimit.navigate(limitLinkParams);
                     handleCopyClick();
                 }}
                 ariaLabel='Copy trade.'

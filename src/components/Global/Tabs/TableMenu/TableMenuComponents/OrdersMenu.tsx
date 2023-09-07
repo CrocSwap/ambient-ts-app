@@ -24,6 +24,7 @@ import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    limitParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
@@ -165,21 +166,16 @@ export default function OrdersMenu(props: propsIF) {
         <OptionButton
             onClick={() => {
                 dispatch(setLimitTickCopied(true));
-                linkGenLimit.navigate(
-                    limitOrder.isBid
-                        ? {
-                              chain: chainData.chainId,
-                              tokenA: limitOrder.base,
-                              tokenB: limitOrder.quote,
-                              limitTick: limitOrder.bidTick,
-                          }
-                        : {
-                              chain: chainData.chainId,
-                              tokenA: limitOrder.quote,
-                              tokenB: limitOrder.base,
-                              limitTick: limitOrder.askTick,
-                          },
-                );
+                const { base, quote, isBid, bidTick, askTick } = limitOrder;
+                // URL params for link to limit page
+                const limitLinkParams: limitParamsIF = {
+                    chain: chainData.chainId,
+                    tokenA: isBid ? base : quote,
+                    tokenB: isBid ? quote : base,
+                    limitTick: isBid ? bidTick : askTick,
+                };
+                // navigate user to limit page with URL params defined above
+                linkGenLimit.navigate(limitLinkParams);
                 handleCopyOrder();
             }}
             content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}

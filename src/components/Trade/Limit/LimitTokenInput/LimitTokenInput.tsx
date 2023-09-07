@@ -10,6 +10,7 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import {
+    limitParamsIF,
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
@@ -98,12 +99,15 @@ function LimitTokenInput(props: propsIF) {
 
         if (!limitTickCopied) {
             // @Ben: need help determining correct value for `limitTick` here
-            linkGenLimit.navigate({
+            // URL params for link to limit page
+            const limitLinkParams: limitParamsIF = {
                 chain: chainId,
                 tokenA: tokenB.address,
                 tokenB: tokenA.address,
-                limitTick: '10',
-            });
+                limitTick: 10,
+            };
+            // navigate user to limit page with URL params defined above
+            linkGenLimit.navigate(limitLinkParams);
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
