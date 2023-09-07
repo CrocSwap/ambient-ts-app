@@ -65,6 +65,8 @@ export default function SidebarRangePositions(props: propsIF) {
             chain: chainId,
             tokenA: pos.base,
             tokenB: pos.quote,
+            lowTick: pos.bidTick,
+            highTick: pos.askTick,
         });
     };
 
