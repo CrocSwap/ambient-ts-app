@@ -414,7 +414,9 @@ const PageHeader = function () {
                                 APP_ENVIRONMENT !== 'production' ? (
                                     <FlexContainer alignItems='center' gap={4}>
                                         {BRANCH_NAME}
-                                        <BiGitBranch color='yellow' />
+                                        {APP_ENVIRONMENT !== 'testnet' && (
+                                            <BiGitBranch color='yellow' />
+                                        )}
                                     </FlexContainer>
                                 ) : null}
                             </FlexContainer>
