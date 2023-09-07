@@ -115,12 +115,14 @@ export const useUrlParams = (
         //     paramKeys.includes(param) || redirectUser();
         // });
         // array of parameter tuples from URL
-        const paramTuples: Array<[string, string]> = [...urlParamMap.entries()];
+        const paramTuples: Array<[validParams, string]> = [
+            ...urlParamMap.entries(),
+        ];
         // run a validation fn against each param tuple
-        paramTuples.forEach((pt: [string, string]) => validateParam(pt));
+        paramTuples.forEach((pT: [validParams, string]) => validateParam(pT));
         // fn to validate each parameter tuple, will redirect user to the default
         // ... parameterization on current route if validation fails
-        function validateParam(p: [string, string]): void {
+        function validateParam(p: [validParams, string]): void {
             const [key, val] = p;
             if (key === 'chain') {
                 validateChain(val) || redirectUser();
