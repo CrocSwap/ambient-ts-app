@@ -198,8 +198,8 @@ export default function RangesMenu(props: propsIF) {
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
                             ? position.base
                             : position.quote,
-                    lowTick: position.bidTick.toString(),
-                    highTick: position.askTick.toString(),
+                    lowTick: position.bidTick,
+                    highTick: position.askTick,
                 });
                 handleCopyClick();
             }}
@@ -220,8 +220,8 @@ export default function RangesMenu(props: propsIF) {
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
                             ? position.base
                             : position.quote,
-                    lowTick: position.bidTick.toString(),
-                    highTick: position.askTick.toString(),
+                    lowTick: position.bidTick,
+                    highTick: position.askTick,
                 });
                 handleCopyClick();
                 setCurrentRangeInAdd(position.positionId);
