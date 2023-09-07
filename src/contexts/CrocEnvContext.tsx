@@ -72,6 +72,10 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
             tokenA: tokenA.address,
             tokenB: tokenB.address,
         };
+        // @Ben: need guidance on default limit params for limit and pool
+        // @Ben: ... this is the default params in the app, eg the user
+        // @Ben: ... hits `/trade/limit` and the app needs to redirect with
+        // @Ben: ... default values for the ticks
         const limitParams: limitParamsIF = {
             ...swapParams,
             limitTick: '10',
