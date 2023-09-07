@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
 
 export const useRepoExitPath = (): string => {
@@ -36,13 +37,17 @@ export const useRepoExitPath = (): string => {
             // return value from tuple or empty string in tuple is not found
             return paramTuple ? paramTuple[1] : '';
         };
-        // generate and return nav path
+        // URL params for link to pool page
         // @Ben: need guidance on what to use for `lowTick` and `highTick` here
-        return linkGenPool.getFullURL({
+        const poolLinkParams: poolParamsIF = {
             chain: findParam('chain'),
             tokenA: findParam('tokenA'),
             tokenB: findParam('tokenB'),
-        });
+            lowTick: 0,
+            highTick: 0,
+        };
+        // generate and return nav path
+        return linkGenPool.getFullURL(poolLinkParams);
     }, [params]);
 
     // return memoized URL pathway
