@@ -36,6 +36,20 @@ function Toolbar(props: ToolbarProps) {
         }
     }, [isToolbarOpen]);
 
+    useEffect(() => {
+        const feeRate = document.getElementById('fee_rate_chart');
+        const tvl = document.getElementById('tvl_chart');
+        if (feeRate && tvl) {
+            feeRate.style.gridTemplateColumns =
+                (isToolbarOpen ? '3.1% ' : '9px ') +
+                'auto 1fr auto minmax(1em, max-content)';
+            tvl.style.gridTemplateColumns =
+                (isToolbarOpen ? '3.1% ' : '9px ') +
+                'auto 1fr auto minmax(1em, max-content)';
+        }
+    }, [isToolbarOpen]);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function handleDrawModeChange(item: any) {
         if (item.label === 'Cross') return;
 

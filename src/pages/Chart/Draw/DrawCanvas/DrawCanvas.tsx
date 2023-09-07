@@ -71,30 +71,70 @@ function DrawCanvas(props: DrawCanvasProps) {
         let isDrawing = false;
         const tempLineData: lineData[] = [];
 
+        let touchTimeout: NodeJS.Timeout | null = null; // Declare touchTimeout
+
+        d3.select(d3DrawCanvas.current).on(
+            'touchstart',
+            (event: TouchEvent) => {
+                const clientX = event.targetTouches[0].clientX;
+                const clientY = event.targetTouches[0].clientY;
+                startDrawing(clientX, clientY);
+            },
+        );
+
+        d3.select(d3DrawCanvas.current).on('touchmove', (event: TouchEvent) => {
+            const clientX = event.targetTouches[0].clientX;
+            const clientY = event.targetTouches[0].clientY;
+            draw(clientX, clientY);
+
+            if (touchTimeout) {
+                clearTimeout(touchTimeout);
+            }
+            // check touchmove end
+            touchTimeout = setTimeout(() => {
+                endDrawing(clientX, clientY);
+            }, 500);
+        });
+
         d3.select(d3DrawCanvas.current).on(
             'mousedown',
             (event: PointerEvent) => {
-                startDrawing(event);
+                startDrawing(event.clientX, event.clientY);
+            },
+        );
+        d3.select(d3DrawCanvas.current).on('mouseup', (event: PointerEvent) => {
+            endDrawing(event.clientX, event.clientY);
+        });
+
+        d3.select(d3DrawCanvas.current).on(
+            'mousemove',
+            (event: PointerEvent) => {
+                draw(event.clientX, event.clientY);
+            },
+        );
+
+        d3.select(d3DrawCanvas.current).on(
+            'mousedown',
+            (event: PointerEvent) => {
+                startDrawing(event.clientX, event.clientY);
             },
         );
 
         d3.select(d3DrawCanvas.current).on('mouseup', (event: PointerEvent) => {
-            endDrawing(event);
+            endDrawing(event.clientX, event.clientY);
         });
 
-        canvas.addEventListener('mousemove', draw);
-
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        function startDrawing(event: any) {
+        function startDrawing(mouseX: number, mouseY: number) {
             isDrawing = true;
-            const offsetY = event.clientY - canvasRect?.top;
-            const offsetX = event.clientX - canvasRect?.left;
+            const offsetY = mouseY - canvasRect?.top;
+            const offsetX = mouseX - canvasRect?.left;
 
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
 
             if (tempLineData.length > 0) {
-                endDrawing(event);
+                endDrawing(mouseX, mouseY);
             } else {
                 tempLineData.push({
                     x: valueX,
@@ -108,9 +148,9 @@ function DrawCanvas(props: DrawCanvasProps) {
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        function endDrawing(event: any) {
-            const offsetY = event.clientY - canvasRect?.top;
-            const offsetX = event.clientX - canvasRect?.left;
+        function endDrawing(mouseX: number, mouseY: number) {
+            const offsetY = mouseY - canvasRect?.top;
+            const offsetX = mouseX - canvasRect?.left;
 
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
@@ -164,9 +204,9 @@ function DrawCanvas(props: DrawCanvasProps) {
             }
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        function draw(event: any) {
-            const offsetY = event.clientY - canvasRect?.top;
-            const offsetX = event.clientX - canvasRect?.left;
+        function draw(mouseX: number, mouseY: number) {
+            const offsetY = mouseY - canvasRect?.top;
+            const offsetX = mouseX - canvasRect?.left;
 
             setCrossHairDataFunc(offsetX, offsetY);
 

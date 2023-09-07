@@ -86,14 +86,9 @@ import {
 } from './Draw/DrawCanvas/LinearLineSeries';
 import { useUndoRedo } from './ChartUtils/useUndoRedo';
 import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
-import {
-    checkCricleLocation,
-    circleSize,
-    createCircle,
-} from './ChartUtils/circle';
+import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
-// import { ChartContext } from '../../contexts/ChartContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -180,6 +175,8 @@ export default function Chart(props: propsIF) {
         useContext(CandleContext);
     const { pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
+
+    const [isUpdatingShape, setIsUpdatingShape] = useState(false);
 
     const [isDragActive, setIsDragActive] = useState(false);
 
@@ -2573,8 +2570,16 @@ export default function Chart(props: propsIF) {
     const circleSeries = createCircle(
         scaleData?.xScale,
         scaleData?.yScale,
-        circleSize,
+        60,
         0.5,
+    );
+
+    const selectedCircleSeries = createCircle(
+        scaleData?.xScale,
+        scaleData?.yScale,
+        80,
+        0.5,
+        true,
     );
 
     useEffect(() => {
@@ -2595,7 +2600,18 @@ export default function Chart(props: propsIF) {
                                 selectedDrawnShape &&
                                 selectedDrawnShape.data.time === item.time
                             ) {
-                                circleSeries(item?.data);
+                                item.data.forEach((element) => {
+                                    if (
+                                        selectedDrawnShape.selectedCircle ===
+                                        element
+                                    ) {
+                                        if (!isUpdatingShape) {
+                                            selectedCircleSeries([element]);
+                                        }
+                                    } else {
+                                        circleSeries([element]);
+                                    }
+                                });
                             }
                         }
 
@@ -2628,7 +2644,21 @@ export default function Chart(props: propsIF) {
                                     selectedDrawnShape &&
                                     selectedDrawnShape.data.time === item.time
                                 ) {
-                                    circleSeries(line);
+                                    line.forEach((element) => {
+                                        if (
+                                            selectedDrawnShape.selectedCircle &&
+                                            selectedDrawnShape.selectedCircle
+                                                .x === element.x &&
+                                            selectedDrawnShape.selectedCircle
+                                                .y === element.y
+                                        ) {
+                                            if (!isUpdatingShape) {
+                                                selectedCircleSeries([element]);
+                                            }
+                                        } else {
+                                            circleSeries([element]);
+                                        }
+                                    });
                                 }
                             });
                         }
@@ -2642,11 +2672,17 @@ export default function Chart(props: propsIF) {
                     });
                     lineSeries.context(ctx);
                     circleSeries.context(ctx);
+                    selectedCircleSeries.context(ctx);
                 });
 
             render();
         }
-    }, [diffHashSig(drawnShapeHistory), lineSeries, selectedDrawnShape]);
+    }, [
+        diffHashSig(drawnShapeHistory),
+        lineSeries,
+        selectedDrawnShape,
+        isUpdatingShape,
+    ]);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2980,7 +3016,18 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current).on(
                 'touchstart',
                 function (event: TouchEvent) {
-                    if (scaleData !== undefined) {
+                    if (
+                        scaleData !== undefined &&
+                        mainCanvasBoundingClientRect
+                    ) {
+                        const offsetY =
+                            event.targetTouches[0].clientY -
+                            mainCanvasBoundingClientRect?.top;
+                        const offsetX =
+                            event.targetTouches[0].clientX -
+                            mainCanvasBoundingClientRect?.left;
+                        drawnShapesHoverStatus(offsetX, offsetY);
+
                         const isTouchOnLineValues = isTouchOnLine(
                             event,
                             rectCanvas,
@@ -3941,9 +3988,9 @@ export default function Chart(props: propsIF) {
                                 selectedDrawnShape={selectedDrawnShape}
                                 drawnShapeHistory={drawnShapeHistory}
                                 render={render}
-                                setIsDragActive={setIsDragActive}
                                 mousemove={mousemove}
                                 setCrossHairDataFunc={setCrossHairDataFunc}
+                                setIsUpdatingShape={setIsUpdatingShape}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
