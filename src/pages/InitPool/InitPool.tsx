@@ -86,9 +86,14 @@ export default function InitPool() {
 
     const [isDenomBase, setIsDenomBase] = useState(true);
 
-    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const {
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        advancedLowTick,
+        advancedHighTick,
+    } = useAppSelector((state) => state.tradeData);
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
 
     useEffect(() => {
@@ -303,6 +308,8 @@ export default function InitPool() {
                             chain: chainId,
                             tokenA: baseToken.address,
                             tokenB: quoteToken.address,
+                            lowTick: advancedLowTick,
+                            highTick: advancedHighTick,
                         });
                     }
                 } catch (error) {
