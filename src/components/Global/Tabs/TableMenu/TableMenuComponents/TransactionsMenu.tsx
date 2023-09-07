@@ -122,21 +122,14 @@ export default function TransactionsMenu(props: propsIF) {
             }
         } else if (tx.entityType === 'limitOrder') {
             dispatch(setLimitTickCopied(true));
-            linkGenLimit.navigate(
-                tx.isBuy
-                    ? {
-                          chain: chainId,
-                          tokenA: tx.base,
-                          tokenB: tx.quote,
-                          limitTick: tx.bidTick.toString(),
-                      }
-                    : {
-                          chain: chainId,
-                          tokenA: tx.quote,
-                          tokenB: tx.base,
-                          limitTick: tx.askTick.toString(),
-                      },
-            );
+            linkGenLimit.navigate({
+                chain: chainId,
+                tokenA: tx.base,
+                tokenB: tx.quote,
+                limitTick: tx.isBuy
+                    ? tx.bidTick.toString()
+                    : tx.askTick.toString(),
+            });
             const shouldReverse =
                 tradeData.tokenA.address.toLowerCase() ===
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
@@ -197,21 +190,14 @@ export default function TransactionsMenu(props: propsIF) {
                 onClick={() => {
                     dispatch(setLimitTickCopied(true));
                     dispatch(setLimitTick(undefined));
-                    linkGenLimit.navigate(
-                        tx.isBid
-                            ? {
-                                  chain: chainId,
-                                  tokenA: tx.base,
-                                  tokenB: tx.quote,
-                                  limitTick: tx.bidTick.toString(),
-                              }
-                            : {
-                                  chain: chainId,
-                                  tokenA: tx.quote,
-                                  tokenB: tx.base,
-                                  limitTick: tx.askTick.toString(),
-                              },
-                    );
+                    linkGenLimit.navigate({
+                        chain: chainId,
+                        tokenA: tx.isBid ? tx.base : tx.quote,
+                        tokenB: tx.isBid ? tx.quote : tx.base,
+                        limitTick: tx.isBid
+                            ? tx.bidTick.toString()
+                            : tx.askTick.toString(),
+                    });
                     handleCopyClick();
                 }}
                 ariaLabel='Copy trade.'
