@@ -95,10 +95,13 @@ export default function PositionsSearchResults(props: propsIF) {
         setSelectedOutsideTab(2);
         setCurrentPositionActive(position.lastMintTx);
         setShowAllData(false);
+        const { base, quote, bidTick, askTick } = position;
         linkGenPool.navigate({
             chain: chainId,
-            tokenA: position.base,
-            tokenB: position.quote,
+            tokenA: base,
+            tokenB: quote,
+            lowTick: bidTick,
+            highTick: askTick,
         });
     };
 
