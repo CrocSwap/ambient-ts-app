@@ -16,7 +16,8 @@ import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 import { usePoolList } from '../App/hooks/usePoolList';
-import { PoolIF } from '../utils/interfaces/exports';
+import { PoolIF, PoolStatIF } from '../utils/interfaces/exports';
+import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -27,6 +28,7 @@ interface PoolContextIF {
     poolPriceChangePercent: string | undefined;
     ambientApy: number | undefined;
     dailyVol: number | undefined;
+    poolData: PoolStatIF;
 }
 
 export const PoolContext = createContext<PoolContextIF>({} as PoolContextIF);
@@ -62,6 +64,15 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
     );
 
+    const poolArg: PoolIF = {
+        base: tradeData.baseToken,
+        quote: tradeData.quoteToken,
+        chainId: chainData.chainId,
+        poolIdx: chainData.poolIndex,
+    };
+
+    const poolData = useFetchPoolStats(poolArg);
+
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
     const [dailyVol] = useState<number | undefined>();
 
@@ -95,6 +106,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         poolPriceChangePercent,
         ambientApy,
         dailyVol,
+        poolData,
     };
 
     // Asynchronously query the APY and volatility estimates from the backend

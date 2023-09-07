@@ -37,8 +37,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         boolean | undefined
     >();
 
-    const poolName = `${pool?.base.symbol} / ${pool?.quote.symbol}`;
-
     const baseTokenCharacter = poolPriceDisplay
         ? getUnicodeCharacter(pool.base.symbol)
         : '';
@@ -139,6 +137,24 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
         pool?.base.address,
         pool?.quote.address,
     );
+
+    // Reset pool metric states that require asynchronous updates when pool changes
+    const resetPoolStats = () => {
+        setPoolVolume(undefined);
+        setPoolTvl(undefined);
+        setPoolFeesTotal(undefined);
+        setPoolApy(undefined);
+        setQuoteTvlDecimal(undefined);
+        setBaseTvlDecimal(undefined);
+        setQuoteTvlUsd(undefined);
+        setBaseTvlUsd(undefined);
+        setPoolPriceChangePercent(undefined);
+        setIsPoolPriceChangePositive(true);
+    };
+
+    useEffect(() => {
+        resetPoolStats();
+    }, [JSON.stringify(pool)]);
 
     const fetchPoolStats = () => {
         (async () => {
@@ -282,7 +298,6 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
     ]);
 
     return {
-        poolName,
         baseLogoUri,
         quoteLogoUri,
         poolVolume,
