@@ -243,8 +243,8 @@ export const orderRowConstants = (props: propsIF) => {
                     tokenA: limitOrder.quote,
                     tokenB: limitOrder.base,
                     limitTick: limitOrder.isBid
-                        ? limitOrder.askTick.toString()
-                        : limitOrder.bidTick.toString(),
+                        ? limitOrder.askTick
+                        : limitOrder.bidTick,
                 })}
             >
                 {baseTokenSymbol} / {quoteTokenSymbol}

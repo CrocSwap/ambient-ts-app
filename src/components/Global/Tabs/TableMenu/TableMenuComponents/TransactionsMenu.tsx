@@ -126,9 +126,7 @@ export default function TransactionsMenu(props: propsIF) {
                 chain: chainId,
                 tokenA: tx.base,
                 tokenB: tx.quote,
-                limitTick: tx.isBuy
-                    ? tx.bidTick.toString()
-                    : tx.askTick.toString(),
+                limitTick: tx.isBuy ? tx.bidTick : tx.askTick,
             });
             const shouldReverse =
                 tradeData.tokenA.address.toLowerCase() ===
@@ -194,9 +192,7 @@ export default function TransactionsMenu(props: propsIF) {
                         chain: chainId,
                         tokenA: tx.isBid ? tx.base : tx.quote,
                         tokenB: tx.isBid ? tx.quote : tx.base,
-                        limitTick: tx.isBid
-                            ? tx.bidTick.toString()
-                            : tx.askTick.toString(),
+                        limitTick: tx.isBid ? tx.bidTick : tx.askTick,
                     });
                     handleCopyClick();
                 }}

@@ -61,13 +61,12 @@ export default function SidebarLimitOrders(props: propsIF) {
         setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderId);
         setShowAllData(false);
+        const { base, quote, isBid, bidTick, askTick } = limitOrder;
         linkGenLimit.navigate({
             chain: chainId,
-            tokenA: limitOrder.base,
-            tokenB: limitOrder.quote,
-            limitTick: limitOrder.isBid
-                ? limitOrder.bidTick.toString()
-                : limitOrder.askTick.toString(),
+            tokenA: base,
+            tokenB: quote,
+            limitTick: isBid ? bidTick : askTick,
         });
     };
 

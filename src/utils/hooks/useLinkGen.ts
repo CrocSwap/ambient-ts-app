@@ -14,7 +14,7 @@ export interface limitParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
-    limitTick: string;
+    limitTick: string | number;
 }
 export interface poolParamsIF {
     chain: string;
@@ -134,7 +134,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
                 paramsSlug =
                     '/' +
                     Object.entries(paramsObj)
-                        .map((tup: string[]) => tup.join('='))
+                        .map((tup: [string, string | number]) => tup.join('='))
                         .join('&');
             }
         }
