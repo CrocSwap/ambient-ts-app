@@ -57,11 +57,11 @@ export const useUrlParams = (
                 paramsForPage = globalParams;
                 break;
             case 'limit':
-                paramsForPage = [...globalParams, 'limitTick'];
+                paramsForPage = globalParams.concat(['limitTick']);
                 break;
             case 'pool':
             case 'initpool':
-                paramsForPage = [...globalParams, 'lowTick', 'highTick'];
+                paramsForPage = globalParams.concat(['lowTick', 'highTick']);
                 break;
             // all non-parameterized URL pathways
             default:
