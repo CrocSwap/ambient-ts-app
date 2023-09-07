@@ -1,4 +1,3 @@
-import styles from './NotificationTable.module.css';
 import { Dispatch, RefObject, SetStateAction } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
 
@@ -7,6 +6,14 @@ import {
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { resetReceiptData } from '../../../../utils/state/receiptDataSlice';
+import {
+    Container,
+    Content,
+    FooterButton,
+    Header,
+    MainContainer,
+} from './NotificationTable.styles';
+import { FlexContainer } from '../../../../styled/Common';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -47,7 +54,7 @@ const NotificationTable = (props: NotificationTableProps) => {
                 txType={
                     transactionsByType.find(
                         (e) => e.txHash === tx?.transactionHash,
-                    )?.txType
+                    )?.txDescription
                 }
             />
         ),
@@ -60,7 +67,7 @@ const NotificationTable = (props: NotificationTableProps) => {
             txBlockNumber={tx.blockNumber}
             txType={
                 transactionsByType.find((e) => e.txHash === tx?.transactionHash)
-                    ?.txType
+                    ?.txDescription
             }
         />
     ));
@@ -69,34 +76,42 @@ const NotificationTable = (props: NotificationTableProps) => {
             key={idx}
             status='pending'
             hash={tx}
-            txType={transactionsByType.find((e) => e.txHash === tx)?.txType}
+            txType={
+                transactionsByType.find((e) => e.txHash === tx)?.txDescription
+            }
         />
     ));
 
     if (!showNotificationTable) return null;
     return (
-        <div className={styles.main_container}>
-            <div ref={notificationItemRef} className={styles.container}>
-                <section className={styles.header}>Recent Transactions</section>
+        <MainContainer>
+            <Container
+                flexDirection='column'
+                justifyContent='space-between'
+                fullWidth
+                background='dark1'
+                ref={notificationItemRef}
+            >
+                <Header>Recent Transactions</Header>
 
-                <section className={styles.content}>
+                <Content flexDirection='column' gap={8}>
                     {pendingTransactionsDisplay}
                     {failedTransactionsDisplay}
                     {successfulTransactionsDisplay}
-                </section>
+                </Content>
 
-                <section className={styles.footer}>
-                    <button
+                <FlexContainer justifyContent='center'>
+                    <FooterButton
                         onClick={() => {
                             dispatch(resetReceiptData());
                         }}
                         aria-label='Clear all'
                     >
                         Clear all
-                    </button>
-                </section>
-            </div>
-        </div>
+                    </FooterButton>
+                </FlexContainer>
+            </Container>
+        </MainContainer>
     );
 };
 

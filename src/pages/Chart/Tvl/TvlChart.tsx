@@ -32,7 +32,11 @@ interface TvlData {
     isCrDataIndActive: boolean;
     xAxisActiveTooltip: string;
     zoomBase: any;
+    mainZoom: any;
+    firstCandleData: CandleData;
+    lastCandleData: CandleData;
     isChartZoom: boolean;
+    setIsChartZoom: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function TvlChart(props: TvlData) {
@@ -50,8 +54,13 @@ function TvlChart(props: TvlData) {
         lastCrDate,
         isCrDataIndActive,
         xAxisActiveTooltip,
-        zoomBase,
+        mainZoom,
+        firstCandleData,
+        lastCandleData,
         isChartZoom,
+        setIsChartZoom,
+        zoomBase,
+        render,
     } = props;
 
     // const tvlMainDiv = useRef(null);
@@ -65,7 +74,6 @@ function TvlChart(props: TvlData) {
     const [lineSeries, setLineSeries] = useState<any>();
     const [tvlGradient, setTvlGradient] = useState<any>();
     const [crDataIndicator, setCrDataIndicator] = useState<any>();
-    const [tvlZoom, setTvlZoom] = useState<any>();
     const [crosshairVerticalCanvas, setCrosshairVerticalCanvas] =
         useState<any>();
     const [crosshairHorizontalCanvas, setCrosshairHorizontalCanvas] =
@@ -121,40 +129,45 @@ function TvlChart(props: TvlData) {
     }, [diffHashSig(tvlData)]);
 
     useEffect(() => {
-        if (tvlData !== undefined && period && !isChartZoom) {
-            let date: any | undefined = undefined;
+        if (scaleData !== undefined && tvlData !== undefined && !isChartZoom) {
+            const lastCandleDate = lastCandleData?.time * 1000;
+            const firstCandleDate = firstCandleData?.time * 1000;
 
-            const zoom = d3
-                .zoom()
-                .on('start', () => {
-                    if (date === undefined) {
-                        date = tvlData[tvlData.length - 1].time * 1000;
-                    }
-                })
-                .on('zoom', (event: any) => {
-                    const domainX = scaleData?.xScale.domain();
-                    const linearX = d3
-                        .scaleTime()
-                        .domain(scaleData?.xScale.range())
-                        .range([0, domainX[1] - domainX[0]]);
+            let scrollTimeout: NodeJS.Timeout | null = null; // Declare scrollTimeout
 
-                    const deltaX = linearX(-event.sourceEvent.movementX);
+            if (lastCandleDate && firstCandleDate) {
+                d3.select(d3CanvasCrosshair.current).on(
+                    'wheel',
+                    function (event) {
+                        if (scrollTimeout === null) {
+                            setIsChartZoom(true);
+                        }
 
-                    zoomBase.getNewCandleDataLeft(domainX[0] + deltaX, date);
+                        zoomBase.zoomWithWheel(
+                            event,
+                            scaleData,
+                            firstCandleDate,
+                            lastCandleDate,
+                        );
+                        render();
 
-                    scaleData?.xScale.domain([
-                        domainX[0] + deltaX,
-                        domainX[1] + deltaX,
-                    ]);
-
-                    props.render();
-                }) as any;
-
-            setTvlZoom(() => {
-                return zoom;
-            });
+                        if (scrollTimeout) {
+                            clearTimeout(scrollTimeout);
+                        }
+                        // check wheel end
+                        scrollTimeout = setTimeout(() => {
+                            setIsChartZoom(false);
+                        }, 200);
+                    },
+                    { passive: true },
+                );
+            }
         }
-    }, [tvlData, diffHashSigScaleData(scaleData, 'x'), isChartZoom]);
+    }, [
+        diffHashSig(tvlData),
+        diffHashSigScaleData(scaleData, 'x'),
+        isChartZoom,
+    ]);
 
     useEffect(() => {
         if (tvlyScale !== undefined) {
@@ -168,7 +181,7 @@ function TvlChart(props: TvlData) {
 
                 setBuffer(() => buffer);
 
-                let domain = [0, maxYBoundary + buffer * 2];
+                let domain = [0, maxYBoundary + buffer * 3];
 
                 if (maxYBoundary === minYBoundary && maxYBoundary === 0) {
                     domain = [-1, 1];
@@ -387,10 +400,10 @@ function TvlChart(props: TvlData) {
     ]);
 
     useEffect(() => {
-        if (d3CanvasCrosshair !== undefined && tvlZoom !== undefined) {
-            d3.select(d3CanvasCrosshair.current).call(tvlZoom);
+        if (d3CanvasCrosshair !== undefined && mainZoom !== undefined) {
+            d3.select(d3CanvasCrosshair.current).call(mainZoom);
         }
-    }, [tvlZoom, d3CanvasCrosshair]);
+    }, [mainZoom, d3CanvasCrosshair]);
 
     useEffect(() => {
         const canvas = d3

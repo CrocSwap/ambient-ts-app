@@ -237,13 +237,10 @@ export default function App() {
                             }
                         />
                         <Route path='initpool/:params' element={<InitPool />} />
-                        <Route
-                            path='account'
-                            element={<Portfolio userAccount={true} />}
-                        />
+                        <Route path='account' element={<Portfolio />} />
                         <Route
                             path='account/:address'
-                            element={<Portfolio userAccount={false} />}
+                            element={<Portfolio />}
                         />
 
                         <Route
@@ -259,10 +256,7 @@ export default function App() {
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
-                        <Route
-                            path='/:address'
-                            element={<Portfolio userAccount={false} />}
-                        />
+                        <Route path='/:address' element={<Portfolio />} />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'
@@ -278,8 +272,10 @@ export default function App() {
                     currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
+                {showMobileVersion && currentLocation !== '/' && (
+                    <SidebarFooter />
+                )}
             </div>
-            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <GlobalPopup />
             <SnackbarComponent />
             {isWagmiModalOpen && <WalletModalWagmi />}

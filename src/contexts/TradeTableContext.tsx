@@ -2,9 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
-import { PoolContext } from './PoolContext';
-
-type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
+import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -16,8 +14,6 @@ interface TradeTableContextIF {
     setCurrentPositionActive: (val: string) => void;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: (val: string) => void;
-    tradeTableState: TradeTableState;
-    setTradeTableState: (val: TradeTableState) => void;
     toggleTradeTable: () => void;
     toggleTradeTableCollapse: () => void;
     showAllData: boolean;
@@ -38,7 +34,8 @@ export const TradeTableContextProvider = (props: {
 }) => {
     const { isCandleSelected, isCandleDataNull } = useContext(CandleContext);
     const { setChartHeight, chartHeights } = useContext(ChartContext);
-    const { isPoolInitialized } = useContext(PoolContext);
+
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { pathname: currentLocation } = useLocation();
 
@@ -46,8 +43,7 @@ export const TradeTableContextProvider = (props: {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
-    const [tradeTableState, setTradeTableState] =
-        useState<TradeTableState>(undefined);
+
     const [isTradeTableMinimized, setIsTradeTableMinimized] = useState(false);
 
     const [showSwapPulseAnimation, setShowSwapPulseAnimation] = useState(false);
@@ -65,33 +61,25 @@ export const TradeTableContextProvider = (props: {
         setCurrentTxActiveInTransactions,
         currentPositionActive,
         setCurrentPositionActive,
-        tradeTableState,
-        setTradeTableState,
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
         toggleTradeTable: () => {
-            if (!tradeTableState) {
-                if (chartHeights.current > chartHeights.default) {
-                    setChartHeight(chartHeights.default);
-                } else {
-                    setChartHeight(4);
-                    setTradeTableState('Expanded');
-                }
+            if (
+                chartHeights.current > chartHeights.min &&
+                chartHeights.current < chartHeights.max
+            ) {
+                setChartHeight(chartHeights.min);
             } else {
-                setChartHeight(chartHeights.default);
-                setTradeTableState(undefined);
+                setChartHeight(chartHeights.saved);
             }
         },
         toggleTradeTableCollapse: () => {
-            if (!tradeTableState) {
-                if (chartHeights.current < chartHeights.default) {
-                    setChartHeight(chartHeights.default);
-                } else {
-                    setChartHeight(chartHeights.max);
-                    setTradeTableState('Collapsed');
-                }
+            if (
+                chartHeights.current > chartHeights.min &&
+                chartHeights.current < chartHeights.max
+            ) {
+                setChartHeight(chartHeights.max);
             } else {
-                setChartHeight(chartHeights.default);
-                setTradeTableState(undefined);
+                setChartHeight(chartHeights.saved);
             }
         },
         isTradeTableMinimized,
@@ -158,16 +146,21 @@ export const TradeTableContextProvider = (props: {
             toggleTradeTabBasedOnRoute();
     }, [location.pathname]);
 
+    const resetTable = () => {
+        if (
+            chartHeights.saved > chartHeights.min &&
+            chartHeights.saved < chartHeights.max
+        ) {
+            setChartHeight(chartHeights.saved);
+        }
+    };
     useEffect(() => {
         if (isCandleDataNull && isPoolInitialized) {
-            setChartHeight(4);
-            setTradeTableState('Expanded');
+            setChartHeight(chartHeights.min);
         } else {
-            setChartHeight(chartHeights.default);
-            setTradeTableState(undefined);
+            resetTable();
         }
     }, [isCandleDataNull, isPoolInitialized]);
-
     return (
         <TradeTableContext.Provider value={tradeTableContext}>
             {props.children}

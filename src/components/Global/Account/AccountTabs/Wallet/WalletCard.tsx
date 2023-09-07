@@ -2,7 +2,7 @@ import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import styles from './WalletCard.module.css';
 import { useContext, useEffect, useState } from 'react';
-import { ETH_ICON_URL, ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
@@ -12,7 +12,7 @@ import { getFormattedNumber } from '../../../../../App/functions/getFormattedNum
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 
 interface propsIF {
-    token?: TokenIF;
+    token: TokenIF;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
@@ -60,7 +60,7 @@ export default function WalletCard(props: propsIF) {
                         mainnetAddress,
                         '0x1',
                     );
-                    if (price) setTokenPrice(price);
+                    price && setTokenPrice(price);
                 }
             } catch (err) {
                 console.error(err);
@@ -79,10 +79,6 @@ export default function WalletCard(props: propsIF) {
             ? token.walletBalanceDisplayTruncated
             : '0';
 
-    const tokenImageSrc =
-        tokenFromMap?.logoURI ?? token?.logoURI ?? ETH_ICON_URL;
-    const tokenImageAlt = tokenFromMap?.symbol ?? token?.symbol ?? '???';
-
     const iconAndSymbolWithTooltip = (
         <DefaultTooltip
             interactive
@@ -95,11 +91,14 @@ export default function WalletCard(props: propsIF) {
         >
             <div className={styles.token_icon}>
                 <TokenIcon
-                    src={uriToHttp(tokenImageSrc)}
-                    alt={tokenImageAlt}
+                    token={token}
+                    src={uriToHttp(token.logoURI)}
+                    alt={token.symbol ?? 'unknown token'}
                     size='2xl'
                 />
-                <p className={styles.token_key}>{tokenImageAlt}</p>
+                <p className={styles.token_key}>
+                    {token.symbol ?? 'unknown token'}
+                </p>
             </div>
         </DefaultTooltip>
     );

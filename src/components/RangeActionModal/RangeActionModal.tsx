@@ -21,6 +21,7 @@ import {
     addTransactionByType,
     removePendingTx,
     removePositionPendingUpdate,
+    updateTransactionHash,
 } from '../../utils/state/receiptDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
@@ -43,6 +44,7 @@ import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface propsIF {
     type: RangeModalActionType;
@@ -112,14 +114,15 @@ export default function RangeActionModal(props: propsIF) {
         string | undefined
     >();
 
-    const averageGasUnitsForRemovalTx = type === 'Remove' ? 94500 : 92500;
+    const averageGasUnitsForRemovalTxInGasDrops =
+        type === 'Remove' ? 94500 : 92500;
     const numGweiInWei = 1e-9;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageGasUnitsForRemovalTx *
+                averageGasUnitsForRemovalTxInGasDrops *
                 numGweiInWei *
                 ethMainnetUsdPrice;
 
@@ -368,6 +371,7 @@ export default function RangeActionModal(props: propsIF) {
                         surplus: dexBalRange.outputToDexBal.isEnabled,
                     });
                     IS_LOCAL_ENV && console.debug(tx?.hash);
+                    dispatch(addPendingTx(tx?.hash));
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
                     if (
@@ -386,6 +390,7 @@ export default function RangeActionModal(props: propsIF) {
                         lowLimit,
                         highLimit,
                     ]);
+                    dispatch(addPendingTx(tx?.hash));
                     IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
@@ -411,13 +416,6 @@ export default function RangeActionModal(props: propsIF) {
                 IS_LOCAL_ENV && console.debug(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
                 setNewTransactionHash(tx?.hash);
-                if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
-                        }),
-                    );
             } catch (error) {
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -425,7 +423,6 @@ export default function RangeActionModal(props: propsIF) {
                     location.reload();
                 }
                 console.error({ error });
-                dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
@@ -433,6 +430,29 @@ export default function RangeActionModal(props: propsIF) {
             IS_LOCAL_ENV &&
                 console.debug('unsupported position type for removal');
         }
+
+        if (tx?.hash)
+            dispatch(
+                addTransactionByType({
+                    txHash: tx.hash,
+                    txAction: 'Remove',
+                    txType: 'Range',
+                    txDescription: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
+                    txDetails: {
+                        baseAddress: position.base,
+                        quoteAddress: position.quote,
+                        poolIdx: poolIndex,
+                        baseSymbol: position.baseSymbol,
+                        quoteSymbol: position.quoteSymbol,
+                        baseTokenDecimals: position.baseDecimals,
+                        quoteTokenDecimals: position.quoteDecimals,
+                        isAmbient: isAmbient,
+                        lowTick: position.bidTick,
+                        highTick: position.askTick,
+                        gridSize: lookupChain(position.chainId).gridSize,
+                    },
+                }),
+            );
 
         let receipt;
 
@@ -449,6 +469,12 @@ export default function RangeActionModal(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
@@ -490,7 +516,23 @@ export default function RangeActionModal(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
+                            txAction: 'Harvest',
+                            txType: 'Range',
+                            txDescription: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
+                            txDetails: {
+                                baseAddress: position.base,
+                                quoteAddress: position.quote,
+                                poolIdx: poolIndex,
+                                baseSymbol: position.baseSymbol,
+                                quoteSymbol: position.quoteSymbol,
+                                baseTokenDecimals: position.baseDecimals,
+                                quoteTokenDecimals: position.quoteDecimals,
+                                isAmbient: isAmbient,
+                                lowTick: position.bidTick,
+                                highTick: position.askTick,
+                                gridSize: lookupChain(position.chainId)
+                                    .gridSize,
+                            },
                         }),
                     );
             } catch (error) {
@@ -523,6 +565,12 @@ export default function RangeActionModal(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -642,6 +690,8 @@ export default function RangeActionModal(props: propsIF) {
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
+                    baseTokenAddress={baseTokenAddress}
+                    quoteTokenAddress={quoteTokenAddress}
                 />
             </div>
             <div>

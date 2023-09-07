@@ -14,7 +14,7 @@ import SwapTokenInput from '../../../components/Swap/SwapTokenInput/SwapTokenInp
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -32,6 +32,7 @@ import {
     addTransactionByType,
     removePendingTx,
     addReceipt,
+    updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
 import {
     TransactionError,
@@ -49,7 +50,7 @@ function Swap(props: propsIF) {
     const { isOnTradeRoute } = props;
     const {
         crocEnv,
-        chainData: { chainId },
+        chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -160,6 +161,8 @@ function Swap(props: propsIF) {
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(sellQtyString || '0');
+    const isTokenADexSurplusSufficient =
+        tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1
@@ -237,14 +240,25 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
-    useEffect(() => {
-        setShowConfirmation(false);
-    }, [bypassConfirmSwap.isEnabled]);
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     // calculate price of gas for swap
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageSwapCostInGasDrops = 106000;
+            const averageSwapCostInGasDrops = isSellTokenNativeToken
+                ? 100000
+                : isWithdrawFromDexChecked
+                ? isTokenADexSurplusSufficient
+                    ? isSaveAsDexSurplusChecked
+                        ? 92000
+                        : 97000
+                    : isSaveAsDexSurplusChecked
+                    ? 105000
+                    : 110000
+                : isSaveAsDexSurplusChecked
+                ? 105000
+                : 110000;
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageSwapCostInGasDrops *
@@ -258,7 +272,14 @@ function Swap(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        isSellTokenNativeToken,
+        isWithdrawFromDexChecked,
+        isTokenADexSurplusSufficient,
+        isSaveAsDexSurplusChecked,
+    ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -272,6 +293,7 @@ function Swap(props: propsIF) {
 
     async function initiateSwap() {
         resetConfirmation();
+
         setShowConfirmation(true);
         if (!crocEnv) return;
 
@@ -303,7 +325,21 @@ function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                        txAction:
+                            buyTokenAddress.toLowerCase() ===
+                            quoteToken.address.toLowerCase()
+                                ? 'Buy'
+                                : 'Sell',
+                        txType: 'Market',
+                        txDescription: `Swap ${tokenA.symbol}→${tokenB.symbol}`,
+                        txDetails: {
+                            baseAddress: baseToken.address,
+                            quoteAddress: quoteToken.address,
+                            poolIdx: poolIndex,
+                            baseSymbol: baseToken.symbol,
+                            quoteSymbol: quoteToken.symbol,
+                            isBid: isSellTokenBase,
+                        },
                     }),
                 );
         } catch (error) {
@@ -329,6 +365,12 @@ function Swap(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 dispatch(addPendingTx(newTransactionHash));
 
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 setNewSwapTransactionHash(newTransactionHash);
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
                 receipt = error.receipt;
@@ -363,7 +405,8 @@ function Swap(props: propsIF) {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${tokenSymbol}`,
+                        txType: 'Approve',
+                        txDescription: `Approval of ${tokenSymbol}`,
                     }),
                 );
             let receipt;
@@ -381,6 +424,12 @@ function Swap(props: propsIF) {
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {

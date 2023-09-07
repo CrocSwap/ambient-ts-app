@@ -2,14 +2,13 @@ import { useEffect, useState } from 'react';
 import ExchangeBalance from '../../../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import coins from '../../../../assets/images/coins.svg';
 import NavItem from '../NavItem/NavItem';
-import styles from './ExchangeBalanceDropdown.module.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import { StyledExchangeBalanceDropdown } from '../../../../styled/Components/Header';
 
 export const ExchangeBalanceDropdown = () => {
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
-
     const escapePressed = useKeyPress('Escape');
 
     useEffect(() => {
@@ -28,14 +27,14 @@ export const ExchangeBalanceDropdown = () => {
             allowClicksOutside={tokenModalOpen}
             square={showMobileVersion}
         >
-            <div className={styles.dropdown}>
+            <StyledExchangeBalanceDropdown>
                 <ExchangeBalance
                     fullLayoutActive={fullLayoutActive}
                     setFullLayoutActive={setFullLayoutActive}
                     setTokenModalOpen={setTokenModalOpen}
                     isModalView
                 />
-            </div>
+            </StyledExchangeBalanceDropdown>
         </NavItem>
     );
 };

@@ -15,6 +15,7 @@ import {
     addReceipt,
     addTransactionByType,
     removePendingTx,
+    updateTransactionHash,
 } from '../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
@@ -27,7 +28,7 @@ import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
-import { useAccount } from 'wagmi';
+import { useAccount, useProvider } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
@@ -35,9 +36,12 @@ import uriToHttp from '../../utils/functions/uriToHttp';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
+import { TokenContext } from '../../contexts/TokenContext';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
 
 // react functional component
 export default function InitPool() {
+    const provider = useProvider();
     const {
         wagmiModal: { open: openWagmiModalWallet },
     } = useContext(AppStateContext);
@@ -54,6 +58,8 @@ export default function InitPool() {
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
     } = useContext(TradeTokenContext);
+    const { tokens } = useContext(TokenContext);
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const dispatch = useAppDispatch();
 
@@ -161,8 +167,12 @@ export default function InitPool() {
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageInitCostInGasDrops = 157922;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageInitCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
                 getFormattedNumber({
@@ -186,7 +196,8 @@ export default function InitPool() {
                 dispatch(
                     addTransactionByType({
                         txHash: tx.hash,
-                        txType: `Approval of ${token.symbol}`,
+                        txType: 'Approve',
+                        txDescription: `Approval of ${token.symbol}`,
                     }),
                 );
             let receipt;
@@ -204,6 +215,12 @@ export default function InitPool() {
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
 
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
                 } else if (isTransactionFailedError(error)) {
@@ -246,7 +263,8 @@ export default function InitPool() {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                                txType: 'Init',
+                                txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
                             }),
                         );
                     let receipt;
@@ -265,6 +283,12 @@ export default function InitPool() {
                             dispatch(addPendingTx(newTransactionHash));
 
                             //    setNewSwapTransactionHash(newTransactionHash);
+                            dispatch(
+                                updateTransactionHash({
+                                    oldHash: error.hash,
+                                    newHash: error.replacement.hash,
+                                }),
+                            );
                             IS_LOCAL_ENV &&
                                 console.debug({ newTransactionHash });
                             receipt = error.receipt;
@@ -465,6 +489,7 @@ export default function InitPool() {
         <div className={styles.pool_display}>
             <div>
                 <TokenIcon
+                    token={tokenA}
                     src={uriToHttp(tokenA.logoURI)}
                     alt={tokenA.symbol}
                     size='2xl'
@@ -479,6 +504,7 @@ export default function InitPool() {
         <div className={styles.pool_display}>
             <div>
                 <TokenIcon
+                    token={tokenB}
                     src={uriToHttp(tokenB.logoURI)}
                     alt={tokenB.symbol}
                     size='2xl'

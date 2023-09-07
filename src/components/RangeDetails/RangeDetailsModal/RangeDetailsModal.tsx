@@ -66,11 +66,9 @@ export default function RangeDetailsModal(props: propsIF) {
         maxRangeDenomByMoneyness,
         onClose,
     } = props;
-    console.log('woooh');
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
-
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -244,6 +242,8 @@ export default function RangeDetailsModal(props: propsIF) {
                         positionApy={updatedPositionApy}
                         minRangeDenomByMoneyness={minRangeDenomByMoneyness}
                         maxRangeDenomByMoneyness={maxRangeDenomByMoneyness}
+                        baseTokenAddress={baseTokenAddress}
+                        quoteTokenAddress={quoteTokenAddress}
                     />
                 </div>
                 <div className={styles.right_container}>

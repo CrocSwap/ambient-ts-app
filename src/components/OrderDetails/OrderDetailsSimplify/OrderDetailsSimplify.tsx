@@ -11,6 +11,8 @@ import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { useMediaQuery } from '@material-ui/core';
 
 interface ItemRowPropsIF {
     title: string;
@@ -29,8 +31,6 @@ interface OrderDetailsSimplifyPropsIF {
     isDenomBase: boolean;
     isOrderFilled: boolean;
     isBid: boolean;
-    approximateSellQtyTruncated: string;
-    approximateBuyQtyTruncated: string;
     baseDisplayFrontend: string;
     quoteDisplayFrontend: string;
     quoteTokenLogo: string;
@@ -48,19 +48,11 @@ export default function OrderDetailsSimplify(
 ) {
     const {
         isBid,
-        approximateSellQtyTruncated,
-        approximateBuyQtyTruncated,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
         isOrderFilled,
-        // quoteTokenLogo,
-        // baseTokenLogo,
         baseTokenSymbol,
         quoteTokenSymbol,
         baseTokenName,
         quoteTokenName,
-        isFillStarted,
-        // truncatedDisplayPrice,
         isDenomBase,
         usdValue,
         limitOrder,
@@ -74,6 +66,7 @@ export default function OrderDetailsSimplify(
     );
 
     const {
+        ensName,
         userNameToDisplay,
         posHashTruncated,
         posHash,
@@ -90,8 +83,12 @@ export default function OrderDetailsSimplify(
         truncatedDisplayPriceDenomByMoneyness,
         startPriceDisplayDenomByMoneyness,
         middlePriceDisplayDenomByMoneyness,
+        isLimitOrderPartiallyFilled,
+        fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
+
+    const showFullAddresses = useMediaQuery('(min-width: 768px)');
 
     const {
         snackbar: { open: openSnackbar },
@@ -133,7 +130,13 @@ export default function OrderDetailsSimplify(
             onClick={handleOpenWallet}
             style={{ cursor: 'pointer' }}
         >
-            <p>{userNameToDisplay}</p>
+            <p style={!ensName ? { fontFamily: 'monospace' } : undefined}>
+                {showFullAddresses
+                    ? ensName
+                        ? ensName
+                        : ownerId
+                    : userNameToDisplay}
+            </p>
             <RiExternalLinkLine />
         </div>
     );
@@ -170,7 +173,11 @@ export default function OrderDetailsSimplify(
         'MM/DD/YYYY HH:mm',
     );
 
-    const status = isOrderFilled ? 'Filled' : 'Not Filled';
+    const status = isOrderFilled
+        ? 'Fill Complete'
+        : isLimitOrderPartiallyFilled
+        ? 'Fill Partially Complete'
+        : 'Fill Not Yet Started';
 
     const infoContent = [
         {
@@ -202,7 +209,18 @@ export default function OrderDetailsSimplify(
         {
             title: 'Status ',
             content: status,
-            explanation: 'The current fill status of the order.',
+            explanation: 'The current fill status of the order',
+        },
+        {
+            title: 'Fill Completion ',
+            content:
+                getFormattedNumber({
+                    value: fillPercentage,
+                    minFracDigits: 0,
+                    maxFracDigits: 0,
+                }) + '%',
+
+            explanation: 'The current fill percentage of the order',
         },
 
         {
@@ -222,14 +240,19 @@ export default function OrderDetailsSimplify(
         {
             title: 'From Qty ',
             content: isBid
-                ? isFillStarted
-                    ? approximateSellQtyTruncated + ' ' + baseTokenSymbol
-                    : baseDisplayFrontend + ' ' + baseTokenSymbol
-                : isFillStarted
-                ? approximateSellQtyTruncated + ' ' + quoteTokenSymbol
-                : quoteDisplayFrontend + ' ' + quoteTokenSymbol,
-            explanation:
-                'The quantity of the sell token (scaled by its decimals value)',
+                ? getFormattedNumber({
+                      value: limitOrder.originalPositionLiqBaseDecimalCorrected,
+                  }) +
+                  ' ' +
+                  baseTokenSymbol
+                : getFormattedNumber({
+                      value: limitOrder.originalPositionLiqQuoteDecimalCorrected,
+                  }) +
+                  ' ' +
+                  quoteTokenSymbol,
+            explanation: `The approximate input quantity of ${
+                isBid ? baseTokenSymbol : quoteTokenSymbol
+            }`,
         },
         {
             title: 'To Token ',
@@ -248,14 +271,19 @@ export default function OrderDetailsSimplify(
         {
             title: 'To Qty ',
             content: isBid
-                ? isOrderFilled
-                    ? quoteDisplayFrontend + ' ' + quoteTokenSymbol
-                    : approximateBuyQtyTruncated + ' ' + quoteTokenSymbol
-                : isOrderFilled
-                ? baseDisplayFrontend + ' ' + baseTokenSymbol
-                : approximateBuyQtyTruncated + ' ' + baseTokenSymbol,
-            explanation:
-                'The quantity of the to/buy token (scaled by its decimals value)',
+                ? getFormattedNumber({
+                      value: limitOrder.expectedPositionLiqQuoteDecimalCorrected,
+                  }) +
+                  ' ' +
+                  quoteTokenSymbol
+                : getFormattedNumber({
+                      value: limitOrder.expectedPositionLiqBaseDecimalCorrected,
+                  }) +
+                  ' ' +
+                  baseTokenSymbol,
+            explanation: `The approximate output quantity of ${
+                isBid ? quoteTokenSymbol : baseTokenSymbol
+            } `,
         },
 
         {
@@ -267,7 +295,7 @@ export default function OrderDetailsSimplify(
                 : isDenomBase
                 ? `1  ${baseTokenSymbol} = ${startPriceDisplay}  ${quoteTokenSymbol}`
                 : `1  ${quoteTokenSymbol} = ${startPriceDisplay}  ${baseTokenSymbol}`,
-            explanation: 'Price at which the limit order fill starts',
+            explanation: 'Price at which token conversion starts',
         },
         {
             title: 'Fill Middle ',
@@ -280,7 +308,7 @@ export default function OrderDetailsSimplify(
                 : `1  ${quoteTokenSymbol} = ${middlePriceDisplay}  ${baseTokenSymbol}`,
 
             explanation:
-                'The effective price - halfway between start and finish',
+                'The effective conversion price - halfway between start and finish',
         },
         {
             title: 'Fill End ',
@@ -292,7 +320,8 @@ export default function OrderDetailsSimplify(
                 ? `1  ${baseTokenSymbol} = ${truncatedDisplayPrice}  ${quoteTokenSymbol}`
                 : `1  ${quoteTokenSymbol} = ${truncatedDisplayPrice}  ${baseTokenSymbol}`,
 
-            explanation: 'Price at which limit order fill ends',
+            explanation:
+                'Price at which conversion ends and limit order can be claimed',
         },
         {
             title: 'Value ',

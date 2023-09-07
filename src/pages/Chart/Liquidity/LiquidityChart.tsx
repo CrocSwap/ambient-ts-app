@@ -611,8 +611,12 @@ export default function LiquidityChart(props: liquidityPropsIF) {
             }
             const pinnedTick =
                 liquidityMouseMoveActive === 'bid'
-                    ? liqTooltipSelectedLiqBar?.upperBound
-                    : liqTooltipSelectedLiqBar?.lowerBound;
+                    ? isDenomBase
+                        ? liqTooltipSelectedLiqBar?.upperBound
+                        : liqTooltipSelectedLiqBar?.lowerBound
+                    : isDenomBase
+                    ? liqTooltipSelectedLiqBar?.lowerBound
+                    : liqTooltipSelectedLiqBar?.upperBound;
 
             const percentage = parseFloat(
                 (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
@@ -684,7 +688,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     return closest;
                 });
 
-                const pinnedTick = closest?.upperBound;
+                const pinnedTick = isDenomBase
+                    ? closest?.upperBound
+                    : closest?.lowerBound;
 
                 const percentage = parseFloat(
                     (
@@ -747,7 +753,9 @@ export default function LiquidityChart(props: liquidityPropsIF) {
                     return closest;
                 });
 
-                const pinnedTick = closest?.lowerBound;
+                const pinnedTick = isDenomBase
+                    ? closest?.lowerBound
+                    : closest?.upperBound;
 
                 const percentage = parseFloat(
                     (

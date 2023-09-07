@@ -21,6 +21,7 @@ import {
     addReceipt,
     addTransactionByType,
     removePendingTx,
+    updateTransactionHash,
 } from '../../../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
@@ -199,7 +200,8 @@ export default function Withdraw(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: `Withdrawal of ${selectedToken.symbol}`,
+                            txType: 'Withdraw',
+                            txDescription: `Withdrawal of ${selectedToken.symbol}`,
                         }),
                     );
 
@@ -218,6 +220,12 @@ export default function Withdraw(props: propsIF) {
                         const newTransactionHash = error.replacement.hash;
                         dispatch(addPendingTx(newTransactionHash));
 
+                        dispatch(
+                            updateTransactionHash({
+                                oldHash: error.hash,
+                                newHash: error.replacement.hash,
+                            }),
+                        );
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
                     } else if (isTransactionFailedError(error)) {
@@ -319,8 +327,8 @@ export default function Withdraw(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const averageGasUnitsForEthWithdrawal = 47000;
-    const averageGasUnitsForErc20Withdrawal = 60000;
+    const averageGasUnitsForEthWithdrawalInGasDrops = 48000;
+    const averageGasUnitsForErc20WithdrawalInGasDrops = 60000;
     const gweiInWei = 1e-9;
 
     // calculate price of gas for withdrawal
@@ -331,8 +339,8 @@ export default function Withdraw(props: propsIF) {
                 gweiInWei *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthWithdrawal
-                    : averageGasUnitsForErc20Withdrawal);
+                    ? averageGasUnitsForEthWithdrawalInGasDrops
+                    : averageGasUnitsForErc20WithdrawalInGasDrops);
 
             setWithdrawGasPriceinDollars(
                 getFormattedNumber({

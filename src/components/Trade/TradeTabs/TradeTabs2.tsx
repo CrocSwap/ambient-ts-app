@@ -43,6 +43,7 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import TableInfo from '../TableInfo/TableInfo';
 
 interface propsIF {
     filter: CandleData | undefined;
@@ -77,7 +78,7 @@ function TradeTabs2(props: propsIF) {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings, tradeTableState } = useContext(ChartContext);
 
     const candleTime = chartSettings.candleTime.global;
 
@@ -103,7 +104,6 @@ function TradeTabs2(props: propsIF) {
         setShowAllData,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
-        tradeTableState,
         outsideControl,
         selectedOutsideTab,
     } = useContext(TradeTableContext);
@@ -359,6 +359,13 @@ function TradeTabs2(props: propsIF) {
                   content: <Leaderboard />,
                   icon: leaderboard,
                   showRightSideOption: false,
+              },
+              {
+                  label: 'Info',
+                  content: <TableInfo />,
+                  icon: leaderboard,
+                  showRightSideOption: false,
+                  //   onClick: handleChartHeightOnInfo,
               },
           ];
 

@@ -5,6 +5,8 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     font-weight: 300;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 /* order table */
@@ -180,6 +182,14 @@
     
     .css-1idz92c-MuiCircularProgress-svg {
         color: var(--title-gradient) !important;
+    }
+
+    .icon_hover:hover{
+ 
+            color: var(--accent1) !important;
+            cursor: pointer ;
+        
+        
     }
     @media only screen and (min-width: 1280px) {
     .top-pools-analytics-table td, .top-pools-analytics-table  th{

@@ -10,13 +10,12 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
+import { FlexContainer } from '../../../../styled/Common';
 import {
-    SidebarPoolsListContainer,
-    SidebarPoolsListHeader,
-    SidebarPoolsListHeaderContainer,
-    SidebarPoolsListItemsContainer,
-    SidebarPoolsListViewMoreContainer,
-} from '../../../../styled/Sidebar';
+    ItemsContainer,
+    RangeHeaderGrid,
+    ViewMoreFlex,
+} from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     userPositions?: PositionIF[];
@@ -77,14 +76,15 @@ export default function SidebarRangePositions(props: propsIF) {
     };
 
     return (
-        <SidebarPoolsListContainer>
-            <SidebarPoolsListHeaderContainer range>
-                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>Range</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>Value</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader></SidebarPoolsListHeader>
-            </SidebarPoolsListHeaderContainer>
-            <SidebarPoolsListItemsContainer>
+        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
+            <RangeHeaderGrid color='text2' padding='4px 0'>
+                {['Pool', 'Range', 'Value', ''].map((item) => (
+                    <FlexContainer key={item} justifyContent='center'>
+                        {item}
+                    </FlexContainer>
+                ))}
+            </RangeHeaderGrid>
+            <ItemsContainer>
                 {userPositions &&
                     userPositions.map((position, idx) => (
                         <SidebarRangePositionsCard
@@ -94,13 +94,15 @@ export default function SidebarRangePositions(props: propsIF) {
                         />
                     ))}
                 {isUserConnected && (
-                    <SidebarPoolsListViewMoreContainer
+                    <ViewMoreFlex
+                        justifyContent='center'
+                        color='accent4'
                         onClick={handleViewMoreClick}
                     >
                         View More
-                    </SidebarPoolsListViewMoreContainer>
+                    </ViewMoreFlex>
                 )}
-            </SidebarPoolsListItemsContainer>
-        </SidebarPoolsListContainer>
+            </ItemsContainer>
+        </FlexContainer>
     );
 }

@@ -10,6 +10,7 @@ import {
     addTransactionByType,
     removePendingTx,
     addReceipt,
+    updateTransactionHash,
 } from '../../utils/state/receiptDataSlice';
 import {
     TransactionError,
@@ -45,6 +46,7 @@ export default function LimitActionModal(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
@@ -53,10 +55,18 @@ export default function LimitActionModal(props: propsIF) {
         quoteDisplay,
         truncatedDisplayPrice,
         initialTokenQty,
+        baseTokenAddress,
+        quoteTokenAddress,
+        fillPercentage,
     } = useProcessOrder(limitOrder, userAddress);
 
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
+
+    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTxHash, setNewTxHash] = useState('');
@@ -67,8 +77,6 @@ export default function LimitActionModal(props: propsIF) {
     const [currentLiquidity, setCurrentLiquidity] = useState<
         BigNumber | undefined
     >();
-
-    const { lastBlockNumber } = useContext(ChainDataContext);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -109,14 +117,15 @@ export default function LimitActionModal(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const averageGasUnitsForHarvestTx = type === 'Remove' ? 90069 : 68309;
+    const averageGasUnitsForHarvestTxInGasDrops =
+        type === 'Remove' ? 90069 : 68309;
     const numGweiInWei = 1e-9;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageGasUnitsForHarvestTx *
+                averageGasUnitsForHarvestTxInGasDrops *
                 numGweiInWei *
                 ethMainnetUsdPrice;
 
@@ -149,7 +158,22 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
+                                txAction: 'Remove',
+                                txType: 'Limit',
+                                txDescription: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
+                                txDetails: {
+                                    baseAddress: limitOrder.base,
+                                    quoteAddress: limitOrder.quote,
+                                    poolIdx: poolIndex,
+                                    baseSymbol: limitOrder.baseSymbol,
+                                    quoteSymbol: limitOrder.quoteSymbol,
+                                    baseTokenDecimals: limitOrder.baseDecimals,
+                                    quoteTokenDecimals:
+                                        limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
+                                },
                             }),
                         );
                 } else {
@@ -163,7 +187,22 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
+                                txAction: 'Remove',
+                                txType: 'Limit',
+                                txDescription: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
+                                txDetails: {
+                                    baseAddress: limitOrder.base,
+                                    quoteAddress: limitOrder.quote,
+                                    poolIdx: poolIndex,
+                                    baseSymbol: limitOrder.baseSymbol,
+                                    quoteSymbol: limitOrder.quoteSymbol,
+                                    baseTokenDecimals: limitOrder.baseDecimals,
+                                    quoteTokenDecimals:
+                                        limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
+                                },
                             }),
                         );
                 }
@@ -191,6 +230,12 @@ export default function LimitActionModal(props: propsIF) {
                     dispatch(removePendingTx(error.hash));
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
@@ -232,7 +277,22 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
+                                txAction: 'Claim',
+                                txType: 'Limit',
+                                txDescription: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
+                                txDetails: {
+                                    baseAddress: limitOrder.base,
+                                    quoteAddress: limitOrder.quote,
+                                    poolIdx: poolIndex,
+                                    baseSymbol: limitOrder.baseSymbol,
+                                    quoteSymbol: limitOrder.quoteSymbol,
+                                    baseTokenDecimals: limitOrder.baseDecimals,
+                                    quoteTokenDecimals:
+                                        limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
+                                },
                             }),
                         );
                 } else {
@@ -246,7 +306,22 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
+                                txAction: 'Claim',
+                                txType: 'Limit',
+                                txDescription: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
+                                txDetails: {
+                                    baseAddress: limitOrder.base,
+                                    quoteAddress: limitOrder.quote,
+                                    poolIdx: poolIndex,
+                                    baseSymbol: limitOrder.baseSymbol,
+                                    quoteSymbol: limitOrder.quoteSymbol,
+                                    baseTokenDecimals: limitOrder.baseDecimals,
+                                    quoteTokenDecimals:
+                                        limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
+                                },
                             }),
                         );
                 }
@@ -273,6 +348,12 @@ export default function LimitActionModal(props: propsIF) {
                     dispatch(removePendingTx(error.hash));
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
@@ -343,10 +424,14 @@ export default function LimitActionModal(props: propsIF) {
                 <LimitActionTokenHeader
                     isDenomBase={isDenomBase}
                     isOrderFilled={isOrderFilled}
+                    baseTokenAddress={baseTokenAddress}
+                    quoteTokenAddress={quoteTokenAddress}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogo}
                     quoteTokenLogoURI={quoteTokenLogo}
+                    fillPercentage={fillPercentage}
                 />
                 <div className={styles.info_container}>
                     <LimitActionInfo {...limitInfoProps} />

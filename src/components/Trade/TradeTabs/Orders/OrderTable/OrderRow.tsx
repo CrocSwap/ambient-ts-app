@@ -19,6 +19,7 @@ interface propsIF {
     showPair: boolean;
     isAccountView: boolean;
 }
+
 function OrderRow(props: propsIF) {
     const { showColumns, ipadView, showPair, limitOrder, isAccountView } =
         props;
@@ -47,8 +48,8 @@ function OrderRow(props: propsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
-
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         truncatedDisplayPrice,
         sideType,
         usdValue,
@@ -56,13 +57,19 @@ function OrderRow(props: propsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
-
+        fillPercentage,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
         elapsedTimeString,
+        baseTokenAddress,
+        quoteTokenAddress,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
@@ -186,6 +193,7 @@ function OrderRow(props: propsIF) {
         handleRowMouseDown,
         handleRowMouseOut,
         posHash,
+        ensName,
         handleCopyPosHash,
         sellOrderStyle,
         usdValue,
@@ -210,6 +218,14 @@ function OrderRow(props: propsIF) {
         sideType,
         sideCharacter,
         isOrderFilled,
+        baseTokenAddress,
+        quoteTokenAddress,
+        isLimitOrderPartiallyFilled,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
+        fillPercentage,
     };
 
     const {
@@ -250,7 +266,11 @@ function OrderRow(props: propsIF) {
     return (
         <>
             <ul
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle} row_container_global`}
+                className={`${
+                    isAccountView ? styles.account_row_container : undefined
+                } ${
+                    styles.row_container
+                } ${activePositionStyle} ${userPositionStyle} row_container_global`}
                 id={orderDomId}
                 style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
@@ -266,12 +286,12 @@ function OrderRow(props: propsIF) {
                 {!ipadView && priceDisplay}
                 {!showColumns && sideDisplay}
                 {!showColumns && typeDisplay}
-                {showColumns && !ipadView && sideTypeColumn}
+                {showColumns && sideTypeColumn}
 
                 {ValueWithTooltip}
                 {!showColumns && baseQtyDisplayWithTooltip}
                 {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && tokensColumn}
+                {showColumns && !ipadView && tokensColumn}
                 {!ipadView && statusDisplay}
 
                 <li data-label='menu' className={styles.menu}>

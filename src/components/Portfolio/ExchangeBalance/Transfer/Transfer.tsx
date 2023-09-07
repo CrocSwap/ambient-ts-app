@@ -20,6 +20,7 @@ import {
     addReceipt,
     addTransactionByType,
     removePendingTx,
+    updateTransactionHash,
 } from '../../../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
@@ -189,7 +190,8 @@ export default function Transfer(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: `Transfer ${selectedToken.symbol}`,
+                            txType: 'Transfer',
+                            txDescription: `Transfer ${selectedToken.symbol}`,
                         }),
                     );
                 let receipt;
@@ -207,6 +209,12 @@ export default function Transfer(props: propsIF) {
                         const newTransactionHash = error.replacement.hash;
                         dispatch(addPendingTx(newTransactionHash));
 
+                        dispatch(
+                            updateTransactionHash({
+                                oldHash: error.hash,
+                                newHash: error.replacement.hash,
+                            }),
+                        );
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
                     } else if (isTransactionFailedError(error)) {
@@ -282,8 +290,8 @@ export default function Transfer(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const averageGasUnitsForEthTransfer = 45000;
-    const averageGasUnitsForErc20Transfer = 45000;
+    const averageGasUnitsForEthTransferInGasDrops = 45000;
+    const averageGasUnitsForErc20TransferInGasDrops = 45000;
     const gweiInWei = 1e-9;
 
     // calculate price of gas for exchange balance transfer
@@ -294,8 +302,8 @@ export default function Transfer(props: propsIF) {
                 gweiInWei *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthTransfer
-                    : averageGasUnitsForErc20Transfer);
+                    ? averageGasUnitsForEthTransferInGasDrops
+                    : averageGasUnitsForErc20TransferInGasDrops);
 
             setTransferGasPriceinDollars(
                 getFormattedNumber({
