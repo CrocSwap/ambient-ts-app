@@ -181,7 +181,9 @@ function TvlChart(props: TvlData) {
 
                 setBuffer(() => buffer);
 
-                let domain = [0, maxYBoundary + buffer * 3];
+                const bufferMultiplier = 2.5; // 2.5 seems to add just enough vertical space for the TVL label in the subchart to not collide with the drawing
+
+                let domain = [0, maxYBoundary + buffer * bufferMultiplier];
 
                 if (maxYBoundary === minYBoundary && maxYBoundary === 0) {
                     domain = [-1, 1];
