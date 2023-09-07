@@ -278,7 +278,13 @@ const PageHeader = function () {
         highTick: tradeData.advancedHighTick ?? 0,
     };
 
-    const linkData = [
+    interface linkDataIF {
+        title: string;
+        destination: string;
+        shouldDisplay: boolean;
+    }
+
+    const linkData: linkDataIF[] = [
         {
             title: 'Home',
             destination: '/',
