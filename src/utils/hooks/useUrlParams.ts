@@ -46,7 +46,7 @@ export const useUrlParams = (
 
     const { switchNetwork } = useSwitchNetwork();
 
-    const urlParamMap = useMemo<Map<string, string>>(() => {
+    const urlParamMap = useMemo<Map<validParams, string>>(() => {
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
         // split params string at every ampersand
@@ -133,7 +133,7 @@ export const useUrlParams = (
     }
 
     // All relevant flags that we want to update on any change
-    const dependencies = [
+    const dependencies: validParams[] = [
         'chain',
         'tokenA',
         'tokenB',
@@ -143,7 +143,7 @@ export const useUrlParams = (
     ];
 
     function processOptParam(
-        paramName: string,
+        paramName: validParams,
         processFn: (val: string) => void,
     ): void {
         if (urlParamMap.has(paramName)) {
@@ -239,5 +239,8 @@ export const useUrlParams = (
         return () => {
             flag = false;
         };
-    }, [tokensOnChain.length, ...dependencies.map((x) => urlParamMap.get(x))]);
+    }, [
+        tokensOnChain.length,
+        ...dependencies.map((x: validParams) => urlParamMap.get(x)),
+    ]);
 };
