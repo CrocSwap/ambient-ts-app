@@ -37,6 +37,7 @@ export const useRepoExitPath = (): string => {
             return paramTuple ? paramTuple[1] : '';
         };
         // generate and return nav path
+        // @Ben: need guidance on what to use for `lowTick` and `highTick` here
         return linkGenPool.getFullURL({
             chain: findParam('chain'),
             tokenA: findParam('tokenA'),
