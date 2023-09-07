@@ -886,7 +886,11 @@ export default function InitPool() {
     const [isMintLiq, setIsMinLiq] = useState(false);
 
     const mintInitialLiquidity = (
-        <FlexContainer flexDirection='row' justifyContent='space-between'>
+        <FlexContainer
+            flexDirection='row'
+            justifyContent='space-between'
+            className={poolExists && styles.content_disabled}
+        >
             <p className={styles.label_title}>Mint Initial Liquidity</p>
 
             <Toggle
@@ -898,7 +902,11 @@ export default function InitPool() {
         </FlexContainer>
     );
     const advancedModeToggle = (
-        <FlexContainer flexDirection='row' justifyContent='space-between'>
+        <FlexContainer
+            flexDirection='row'
+            justifyContent='space-between'
+            className={poolExists && styles.content_disabled}
+        >
             <p className={styles.label_title}>
                 {!advancedMode ? 'Balance' : 'Unbalanced'}{' '}
             </p>
@@ -907,6 +915,7 @@ export default function InitPool() {
                 isOn={!advancedMode}
                 handleToggle={handleToggle}
                 id='advanced_reposition'
+                disabled={poolExists === true}
             />
         </FlexContainer>
     );
@@ -940,6 +949,24 @@ export default function InitPool() {
                                     {...minMaxPriceProps}
                                     customSwitch={true}
                                 />
+
+                                <div>
+                                    <InitPoolExtraInfo
+                                        initialPrice={parseFloat(
+                                            initialPriceForDOM.replaceAll(
+                                                ',',
+                                                '',
+                                            ),
+                                        )}
+                                        isDenomBase={isDenomBase}
+                                        initGasPriceinDollars={
+                                            initGasPriceinDollars
+                                        }
+                                        baseToken={baseToken}
+                                        quoteToken={quoteToken}
+                                        setIsDenomBase={setIsDenomBase}
+                                    />
+                                </div>
 
                                 <ButtonToRender />
                             </div>

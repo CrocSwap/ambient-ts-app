@@ -199,13 +199,16 @@ color: var(--text1);
     display: flex;
     flex-direction: column;
     gap: 8px;
+
+    display: grid;
+   grid-template-rows: 100px 100px 1fr ;
 }
 
 .right_container{
     padding-bottom: 8px;
 
     display: grid;
-    grid-template-rows: 20px 20px 1fr 50px;
+    grid-template-rows: 20px 20px 180px 84px 50px;
 }
 .local_token_container, .range_width_container{
     display: flex;
@@ -224,6 +227,7 @@ color: var(--text1);
     display: flex;
     flex-direction: column;
     gap: 10px;
+    justify-content: center;
 }
 
 .currency_quantity {
