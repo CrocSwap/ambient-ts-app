@@ -108,12 +108,7 @@ export const useUrlParams = (
         const areParamsMissing: boolean = requiredParams.some(
             (param: validParams) => !paramKeys.includes(param),
         );
-        console.log({ areParamsMissing, paramKeys, requiredParams });
         areParamsMissing && redirectUser();
-        // redirect user if a required param is missing
-        // requiredParams.some((param: validParams) => {
-        //     paramKeys.includes(param) || redirectUser();
-        // });
         // array of parameter tuples from URL
         const paramTuples: Array<[validParams, string]> = [
             ...urlParamMap.entries(),
