@@ -27,12 +27,14 @@ function Toolbar(props: ToolbarProps) {
         const feeRate = document.getElementById('fee_rate_chart');
         const tvl = document.getElementById('tvl_chart');
         if (feeRate && tvl) {
+            const toolbar = document.getElementById('toolbar_container');
+
+            const column = toolbar ? toolbar.getClientRects()[0].width : 9;
+
             feeRate.style.gridTemplateColumns =
-                (isToolbarOpen ? '3.1% ' : '9px ') +
-                'auto 1fr auto minmax(1em, max-content)';
+                column + 'px auto 1fr auto minmax(1em, max-content)';
             tvl.style.gridTemplateColumns =
-                (isToolbarOpen ? '3.1% ' : '9px ') +
-                'auto 1fr auto minmax(1em, max-content)';
+                column + 'px auto 1fr auto minmax(1em, max-content)';
         }
     }, [isToolbarOpen]);
 
@@ -61,7 +63,7 @@ function Toolbar(props: ToolbarProps) {
     ];
 
     return (
-        <div className={styles.toolbar_container}>
+        <div className={styles.toolbar_container} id='toolbar_container'>
             {isToolbarOpen ? (
                 <div className={styles.drawlist_cotainer}>
                     <div>

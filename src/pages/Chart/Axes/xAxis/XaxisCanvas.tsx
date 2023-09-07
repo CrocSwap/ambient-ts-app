@@ -108,7 +108,10 @@ function XAxisCanvas(props: xAxisIF) {
         if (scaleData) {
             const _width = mobileView ? 25 : 65; // magic number of pixels to blur surrounding price
             const tickSize = 6;
-            const column = isToolbarOpen ? 35 : 9;
+
+            const toolbar = document.getElementById('toolbar_container');
+
+            const column = toolbar ? toolbar.getClientRects()[0].width : 9;
 
             const timeOfEndCandleLocation = timeOfEndCandle
                 ? xScale(timeOfEndCandle)
@@ -395,6 +398,7 @@ function XAxisCanvas(props: xAxisIF) {
         location,
         crosshairActive,
         xAxis === undefined,
+        isToolbarOpen,
     ]);
 
     useEffect(() => {
