@@ -83,7 +83,7 @@ function Trade() {
 
     const limitParams: limitParamsIF = {
         ...marketParams,
-        limitTick: limitTick?.toString() ?? '0',
+        limitTick: limitTick ?? 0,
     };
 
     const poolParams: poolParamsIF = {
