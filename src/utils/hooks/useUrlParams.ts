@@ -50,6 +50,7 @@ export const useUrlParams = (
         // output variable
         let paramsForPage: validParams[];
         // logic router for required URL params for each parameterized route
+        // all parameterized pathways MUST have mandatory params defined here
         switch (pageName) {
             case 'swap':
             case 'market':
@@ -81,7 +82,7 @@ export const useUrlParams = (
         const fixedParams = params ?? '';
         // output variable
         const paramMap = new Map<validParams, string>();
-        // parse URL params in x=a&y=b&z=c formater
+        // parse URL params from `x=a&y=b&z=c` format
         fixedParams
             // split params string at every ampersand
             .split('&')
@@ -93,6 +94,7 @@ export const useUrlParams = (
             .map((par) => par.filter((e) => e !== ''))
             // remove tuples with trisomy issues
             .filter((par) => par.length === 2)
+            // add each key-val pair to the param map
             .forEach((par) => paramMap.set(par[0] as validParams, par[1]));
         // return Map of all params in the URL
         return paramMap;
@@ -108,6 +110,7 @@ export const useUrlParams = (
         const areParamsMissing: boolean = requiredParams.some(
             (param: validParams) => !paramKeys.includes(param),
         );
+        // redirect user if any required URL params are missing
         areParamsMissing && redirectUser();
         // array of parameter tuples from URL
         const paramTuples: Array<[validParams, string]> = [
