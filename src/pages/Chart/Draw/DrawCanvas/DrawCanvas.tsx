@@ -20,7 +20,6 @@ interface DrawCanvasProps {
     >;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCrossHairDataFunc: any;
-    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
     activeDrawingType: string;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -34,7 +33,6 @@ function DrawCanvas(props: DrawCanvasProps) {
         scaleData,
         setDrawnShapeHistory,
         setCrossHairDataFunc,
-        setIsDrawActive,
         activeDrawingType,
         setActiveDrawingType,
     } = props;
@@ -185,7 +183,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                 };
 
                 isDrawing = false;
-                setIsDrawActive(false);
+                setActiveDrawingType('Cross');
 
                 setDrawnShapeHistory((prevData: drawDataHistory[]) => {
                     if (tempLineData.length > 0) {

@@ -37,7 +37,6 @@ import {
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Toolbar from '../../Chart/Draw/Toolbar/Toolbar';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -100,10 +99,6 @@ function TradeCandleStickChart(props: propsIF) {
     const [liqBoundary, setLiqBoundary] = useState<number | undefined>(
         undefined,
     );
-
-    const [isDrawActive, setIsDrawActive] = useState(false);
-    const [activeDrawingType, setActiveDrawingType] = useState('Cross');
-
     const tradeData = useAppSelector((state) => state.tradeData);
     const { liquidityData: unparsedLiquidityData } = useAppSelector(
         (state) => state.graphData,
@@ -837,10 +832,6 @@ function TradeCandleStickChart(props: propsIF) {
                         unparsedData={candleData}
                         drawnShapeHistory={drawnShapeHistory}
                         setDrawnShapeHistory={setDrawnShapeHistory}
-                        isDrawActive={isDrawActive}
-                        setIsDrawActive={setIsDrawActive}
-                        activeDrawingType={activeDrawingType}
-                        setActiveDrawingType={setActiveDrawingType}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

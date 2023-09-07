@@ -130,10 +130,6 @@ interface propsIF {
     setDrawnShapeHistory: React.Dispatch<
         React.SetStateAction<drawDataHistory[]>
     >;
-    isDrawActive: boolean;
-    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
-    activeDrawingType: string;
-    setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function Chart(props: propsIF) {
@@ -160,10 +156,6 @@ export default function Chart(props: propsIF) {
         candleTimeInSeconds,
         drawnShapeHistory,
         setDrawnShapeHistory,
-        isDrawActive,
-        setIsDrawActive,
-        activeDrawingType,
-        setActiveDrawingType,
     } = props;
 
     const {
@@ -216,6 +208,7 @@ export default function Chart(props: propsIF) {
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
+    const [activeDrawingType, setActiveDrawingType] = useState('Cross');
 
     const [chartMousemoveEvent, setChartMousemoveEvent] = useState<
         MouseEvent<HTMLDivElement> | undefined
@@ -3902,8 +3895,6 @@ export default function Chart(props: propsIF) {
                 >
                     <div className='chart_grid'>
                         <Toolbar
-                            isDrawActive={isDrawActive}
-                            setIsDrawActive={setIsDrawActive}
                             activeDrawingType={activeDrawingType}
                             setActiveDrawingType={setActiveDrawingType}
                             isToolbarOpen={isToolbarOpen}
@@ -3970,12 +3961,11 @@ export default function Chart(props: propsIF) {
                             className='main-canvas'
                         ></d3fc-canvas>
 
-                        {isDrawActive && scaleData && (
+                        {activeDrawingType !== 'Cross' && scaleData && (
                             <DrawCanvas
                                 scaleData={scaleData}
                                 setDrawnShapeHistory={setDrawnShapeHistory}
                                 setCrossHairDataFunc={setCrossHairDataFunc}
-                                setIsDrawActive={setIsDrawActive}
                                 activeDrawingType={activeDrawingType}
                                 setActiveDrawingType={setActiveDrawingType}
                             />

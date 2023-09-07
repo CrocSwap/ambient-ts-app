@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
 import drawRect from '../../../../assets/images/icons/draw/rect.svg';
 
 interface ToolbarProps {
-    isDrawActive: boolean;
-    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
     activeDrawingType: string;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
     isToolbarOpen: boolean;
@@ -15,8 +13,6 @@ interface ToolbarProps {
 
 function Toolbar(props: ToolbarProps) {
     const {
-        isDrawActive,
-        setIsDrawActive,
         activeDrawingType,
         setActiveDrawingType,
         isToolbarOpen,
@@ -51,9 +47,6 @@ function Toolbar(props: ToolbarProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function handleDrawModeChange(item: any) {
-        if (item.label === 'Cross') return;
-
-        setIsDrawActive((prev: boolean) => !prev);
         setActiveDrawingType(item.label);
     }
 
@@ -83,7 +76,7 @@ function Toolbar(props: ToolbarProps) {
                             <div
                                 key={index}
                                 className={
-                                    isDrawActive
+                                    activeDrawingType === 'Cross'
                                         ? styles.icon_active_container
                                         : styles.icon_inactive_container
                                 }
@@ -91,10 +84,7 @@ function Toolbar(props: ToolbarProps) {
                             >
                                 <img
                                     className={
-                                        (activeDrawingType === 'Cross' &&
-                                            item.label === 'Cross') ||
-                                        (isDrawActive &&
-                                            activeDrawingType === item.label)
+                                        activeDrawingType === item.label
                                             ? styles.icon_active
                                             : styles.icon_inactive
                                     }
