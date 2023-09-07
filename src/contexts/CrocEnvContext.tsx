@@ -82,8 +82,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         };
         const poolParams: poolParamsIF = {
             ...swapParams,
-            lowTick: '-1',
-            highTick: '1',
+            lowTick: -1,
+            highTick: 1,
         };
         return {
             swap: linkGenSwap.getFullURL(swapParams),
