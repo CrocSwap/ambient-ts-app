@@ -15,7 +15,7 @@ import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider, useSwitchNetwork } from 'wagmi';
 import { getDefaultPairForChain } from '../data/defaultTokens';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
-import { linkGenMethodsIF, useLinkGen } from './useLinkGen';
+import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
 import validateAddress from '../functions/validateAddress';
 import validateChain from '../functions/validateChain';
 
@@ -33,7 +33,6 @@ type validParams =
     | 'limitTick';
 
 export const useUrlParams = (
-    requiredParams: string[],
     tokens: tokenMethodsIF,
     dfltChainId: string,
     provider?: ethers.providers.Provider,
@@ -42,18 +41,49 @@ export const useUrlParams = (
 
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
 
+    // generate an array of required params in the URL based on route
+    const requiredParams = useMemo<validParams[]>(() => {
+        // name of page currently in the DOM
+        const pageName: pageNames = linkGenCurrent.currentPage;
+        // global params for all parameterized pathways
+        const globalParams: validParams[] = ['chain', 'tokenA', 'tokenB'];
+        // output variable
+        let paramsForPage: validParams[];
+        // logic router for required URL params for each parameterized route
+        switch (pageName) {
+            case 'swap':
+            case 'market':
+                paramsForPage = globalParams;
+                break;
+            case 'limit':
+                paramsForPage = [...globalParams, 'limitTick'];
+                break;
+            case 'pool':
+            case 'initpool':
+                paramsForPage = [...globalParams, 'lowTick', 'highTick'];
+                break;
+            // all non-parameterized URL pathways
+            default:
+                paramsForPage = [];
+                break;
+        }
+        // return array of required URL params
+        return paramsForPage;
+    }, [linkGenCurrent.currentPage]);
+
     const dispatch = useAppDispatch();
 
     const { switchNetwork } = useSwitchNetwork();
 
+    // map of all params in the current URL string
     const urlParamMap = useMemo<Map<validParams, string>>(() => {
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
-        // split params string at every ampersand
+        // output variable
         const paramMap = new Map<validParams, string>();
-
-        // Splits and parses GET params in x=a&y=b&z=c formater
+        // parse URL params in x=a&y=b&z=c formater
         fixedParams
+            // split params string at every ampersand
             .split('&')
             // remove any values missing an = symbol
             .filter((par) => par.includes('='))
@@ -64,20 +94,26 @@ export const useUrlParams = (
             // remove tuples with trisomy issues
             .filter((par) => par.length === 2)
             .forEach((par) => paramMap.set(par[0] as validParams, par[1]));
-
+        // return Map of all params in the URL
         return paramMap;
     }, [params]);
 
     // redirect user to default params if params received are malformed
     useEffect(() => {
         // array of keys deconstructed from params string
-        const paramKeys: string[] = [...urlParamMap.keys()];
+        const paramKeys: validParams[] = [...urlParamMap.keys()];
         // logic to redirect a user to current URL with default params
         const redirectUser = (): void => linkGenCurrent.redirect();
+        // determine if any required URL params are missing
+        const areParamsMissing: boolean = requiredParams.some(
+            (param: validParams) => !paramKeys.includes(param),
+        );
+        console.log({ areParamsMissing, paramKeys, requiredParams });
+        areParamsMissing && redirectUser();
         // redirect user if a required param is missing
-        requiredParams.some((param: string) => {
-            paramKeys.includes(param) || redirectUser();
-        });
+        // requiredParams.some((param: validParams) => {
+        //     paramKeys.includes(param) || redirectUser();
+        // });
         // array of parameter tuples from URL
         const paramTuples: Array<[string, string]> = [...urlParamMap.entries()];
         // run a validation fn against each param tuple

@@ -63,7 +63,7 @@ export default function InitPool() {
         setRecheckTokenBApproval,
     } = useContext(TradeTokenContext);
     const { tokens } = useContext(TokenContext);
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     const dispatch = useAppDispatch();
 

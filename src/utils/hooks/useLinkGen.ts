@@ -68,6 +68,7 @@ const BASE_URL_PATHS = {
 export type pageNames = keyof typeof BASE_URL_PATHS;
 
 export interface linkGenMethodsIF {
+    currentPage: pageNames;
     baseURL: string;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF) => void;
@@ -151,6 +152,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     return {
+        currentPage: getPageFromLocation(),
         baseURL,
         getFullURL,
         navigate: navigateUser,

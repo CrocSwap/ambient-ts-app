@@ -75,7 +75,7 @@ function Trade() {
     } = tradeData;
     const provider = useProvider();
 
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     // hooks to generate default URL paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');

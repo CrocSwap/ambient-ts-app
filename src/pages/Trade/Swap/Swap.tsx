@@ -94,7 +94,7 @@ function Swap(props: propsIF) {
     } = pathname.includes('/trade')
         ? useTradeData()
         : useAppSelector((state) => state);
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
         isTokenAPrimary ? primaryQuantity : '',
