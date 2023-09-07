@@ -97,6 +97,7 @@ function LimitTokenInput(props: propsIF) {
         }
 
         if (!limitTickCopied) {
+            // @Ben: need help determining correct value for `limitTick` here
             linkGenLimit.navigate({
                 chain: chainId,
                 tokenA: tokenB.address,
