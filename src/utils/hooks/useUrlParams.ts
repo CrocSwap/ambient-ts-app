@@ -139,23 +139,31 @@ export const useUrlParams = (
         }
     }, [urlParamMap]);
 
+    // fn to update the current URL without a navigation event
     function updateURL(baseURL: string, changes: updatesIF): void {
+        // copy of the current URL param map
         const workingMap: Map<validParams, string> = urlParamMap;
+        // process any updates to existing k-v pairs (also adds new ones)
         if (changes.update) {
             changes.update.forEach((param: [validParams, string | number]) => {
                 const [k, v] = param;
                 workingMap.set(k, v.toString());
             });
         }
+        // remove any k-v pairs marked for deletion
         if (changes.delete) {
             changes.delete.forEach((param: validParams) =>
                 workingMap.delete(param),
             );
         }
+        // use the updated param map to build a new param string
         const newParamString = [...workingMap.entries()]
             .map((pair) => pair.join('='))
             .join('&');
         console.log(newParamString);
+        // overwrite the last item in the history stack
+        // using `.pushState()` will fill the history stack with garbage
+        // current state, if any, is preserved
         window.history.replaceState(
             { ...window.history.state },
             '',
