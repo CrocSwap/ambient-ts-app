@@ -53,6 +53,8 @@ export const useUrlParams = (
 ): urlParamsMethodsIF => {
     const { params } = useParams();
 
+    // this is used for updating the URL bar
+    // also for when params need to be re-parsed because the page has changed
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
 
     // generate an array of required params in the URL based on route
