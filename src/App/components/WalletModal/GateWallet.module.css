@@ -8,6 +8,7 @@
     border-radius: var(--border-radius);
     text-align: center;
     padding-bottom: 1rem;
+    height: 100%;
 }
 
 .main_container section {
@@ -24,7 +25,7 @@
 
 .main_container p {
     color: var(--text1);
-    font-size: 12;
+    font-size: 16px;
 
     line-height: 22px;
 }
@@ -45,6 +46,6 @@
     .main_container {
         width: 510px;
 
-        height: 223px;
+        height: 250px;
     }
 }
