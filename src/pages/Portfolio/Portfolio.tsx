@@ -325,6 +325,20 @@ function Portfolio() {
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
     };
 
+    const contentToRenderOnMobile = (() => {
+        switch (true) {
+            case (!showTabsAndNotExchange && isUserConnected) ||
+                addressFromParams !== undefined:
+                return <PortfolioTabs {...portfolioTabsProps} />;
+            case showTabsAndNotExchange &&
+                isUserConnected &&
+                connectedAccountActive:
+                return exchangeBalanceComponent;
+            default:
+                return notConnectedContent;
+        }
+    })();
+
     const mobilePortfolio = (
         <section
             style={{
@@ -337,17 +351,7 @@ function Portfolio() {
             }}
         >
             {connectedAccountActive && mobileDataToggle}
-            {!showTabsAndNotExchange ? (
-                !isUserConnected ? (
-                    notConnectedContent
-                ) : (
-                    <PortfolioTabs {...portfolioTabsProps} />
-                )
-            ) : !isUserConnected ? (
-                notConnectedContent
-            ) : (
-                connectedAccountActive && exchangeBalanceComponent
-            )}
+            {contentToRenderOnMobile}
         </section>
     );
 
