@@ -87,7 +87,12 @@ function TokenInput(props: propsIF) {
     };
 
     const handleToggleDex = () => {
-        if (formatTokenInput(balanceWithBuffer, token) === tokenInput) {
+        // if the sell token quantity is maximized and the user switches to use exchange balance,
+        // then the quantity should be updated to the exchange balance maximum
+        if (
+            tokenAorB === 'A' &&
+            formatTokenInput(balanceWithBuffer, token) === tokenInput
+        ) {
             const balance = subtractBuffer(
                 isDexSelected ? walletBalance : walletAndExchangeBalance,
             );
