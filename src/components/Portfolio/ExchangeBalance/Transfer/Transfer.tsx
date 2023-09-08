@@ -290,8 +290,8 @@ export default function Transfer(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const averageGasUnitsForEthTransfer = 45000;
-    const averageGasUnitsForErc20Transfer = 45000;
+    const averageGasUnitsForEthTransferInGasDrops = 45000;
+    const averageGasUnitsForErc20TransferInGasDrops = 45000;
     const gweiInWei = 1e-9;
 
     // calculate price of gas for exchange balance transfer
@@ -302,8 +302,8 @@ export default function Transfer(props: propsIF) {
                 gweiInWei *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthTransfer
-                    : averageGasUnitsForErc20Transfer);
+                    ? averageGasUnitsForEthTransferInGasDrops
+                    : averageGasUnitsForErc20TransferInGasDrops);
 
             setTransferGasPriceinDollars(
                 getFormattedNumber({
