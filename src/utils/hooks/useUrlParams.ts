@@ -165,9 +165,12 @@ export const useUrlParams = (
             );
         }
         // use the updated param map to build a new param string
-        const newParamString = [...workingMap.entries()]
-            // .filter()
+        const newParamString: string = [...workingMap.entries()]
+            // remove unrecognized params
+            .filter((pair) => validParams.includes(pair[0]))
+            // transform k-v tuples in param strings
             .map((pair) => pair.join('='))
+            // join individual params into a unified param string
             .join('&');
         console.log(newParamString);
         // overwrite the last item in the history stack
