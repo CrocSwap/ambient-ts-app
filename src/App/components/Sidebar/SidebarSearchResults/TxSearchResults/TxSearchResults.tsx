@@ -1,13 +1,18 @@
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useContext } from 'react';
-import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI';
 import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
+import {
+    FlexContainer,
+    GridContainer,
+    Text,
+} from '../../../../../styled/Common';
+import { ResultsContainer } from '../../../../../styled/Components/Sidebar';
 
 interface propsIF {
     searchedTxs: TransactionIF[];
@@ -53,16 +58,39 @@ export default function TxSearchResults(props: propsIF) {
     // TODO:   @Junior  also make the <div> elems inside it into <hX> elements
 
     return (
-        <div>
-            <div className={styles.card_title}>My Recent Transactions</div>
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='flex-start'
+            gap={8}
+        >
+            <Text fontWeight='500' fontSize='body' color='accent5'>
+                My Recent Transactions
+            </Text>
             {searchedTxs.length ? (
-                <>
-                    <div className={styles.header}>
-                        <div>Pool</div>
-                        <div>Type</div>
-                        <div>Value</div>
-                    </div>
-                    <div className={styles.main_result_container}>
+                <FlexContainer flexDirection='column' fullWidth>
+                    <GridContainer
+                        numCols={3}
+                        fullWidth
+                        fontWeight='300'
+                        fontSize='body'
+                        color='text2'
+                        style={{ borderBottom: '1px solid var(--dark3)' }}
+                        padding='0 0 4px 0'
+                    >
+                        {['Pool', 'Type', 'Value'].map((item, idx) => (
+                            <Text
+                                key={idx}
+                                fontWeight='300'
+                                fontSize='body'
+                                color='text2'
+                                align='center'
+                            >
+                                {item}
+                            </Text>
+                        ))}
+                    </GridContainer>
+                    <ResultsContainer flexDirection='column'>
                         {searchedTxs.slice(0, 4).map((tx: TransactionIF) => (
                             <TxLI
                                 key={`tx-sidebar-search-result-${JSON.stringify(
@@ -72,11 +100,17 @@ export default function TxSearchResults(props: propsIF) {
                                 handleClick={handleClick}
                             />
                         ))}
-                    </div>
-                </>
+                    </ResultsContainer>
+                </FlexContainer>
             ) : (
-                <h5 className={styles.not_found_text}>No Transactions Found</h5>
+                <FlexContainer
+                    margin='0 8px 96px 8px'
+                    fontSize='body'
+                    color='text2'
+                >
+                    No Transactions Found
+                </FlexContainer>
             )}
-        </div>
+        </FlexContainer>
     );
 }

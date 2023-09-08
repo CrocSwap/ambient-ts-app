@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, KeyboardEvent } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './SlippageTolerance.module.css';
 import { OptionButton } from '../Button/OptionButton';
@@ -6,7 +6,7 @@ import { OptionButton } from '../Button/OptionButton';
 interface propsIF {
     persistedSlippage: number;
     setCurrentSlippage: Dispatch<SetStateAction<number>>;
-    handleKeyDown: (event: { keyCode: number }) => void;
+    handleKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
     presets: number[];
 }
 

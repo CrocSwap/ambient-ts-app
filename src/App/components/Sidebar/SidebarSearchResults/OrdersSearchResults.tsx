@@ -1,5 +1,4 @@
 import { useContext } from 'react';
-import styles from './SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -10,6 +9,11 @@ import {
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../../functions/getFormattedNumber';
+import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
+import {
+    Results,
+    ResultsContainer,
+} from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];
@@ -43,8 +47,13 @@ function LimitOrderLI(props: limitOrderPropsIF) {
     });
 
     return (
-        <li
-            className={styles.card_container}
+        <Results
+            numCols={3}
+            fullWidth
+            fontWeight='300'
+            fontSize='body'
+            color='text2'
+            padding='4px'
             onClick={() => handleClick(limitOrder)}
         >
             <p>
@@ -52,7 +61,7 @@ function LimitOrderLI(props: limitOrderPropsIF) {
             </p>
             <p style={{ textAlign: 'center' }}>{displayPrice}</p>
             <p style={{ textAlign: 'center' }}>{valueUSD}</p>
-        </li>
+        </Results>
     );
 }
 
@@ -85,16 +94,39 @@ export default function OrdersSearchResults(props: propsIF) {
     };
 
     return (
-        <div>
-            <h6 className={styles.card_title}>My Limit Orders</h6>
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='flex-start'
+            gap={8}
+        >
+            <Text fontWeight='500' fontSize='body' color='accent5'>
+                My Limit Orders
+            </Text>
             {searchedLimitOrders.length ? (
-                <>
-                    <header className={styles.header}>
-                        <div>Pool</div>
-                        <div>Price</div>
-                        <div>Value</div>
-                    </header>
-                    <ol className={styles.main_result_container}>
+                <FlexContainer flexDirection='column' fullWidth>
+                    <GridContainer
+                        numCols={3}
+                        fullWidth
+                        fontWeight='300'
+                        fontSize='body'
+                        color='text2'
+                        style={{ borderBottom: '1px solid var(--dark3)' }}
+                        padding='0 0 4px 0'
+                    >
+                        {['Pool', 'Price', 'Value'].map((item, idx) => (
+                            <Text
+                                key={idx}
+                                fontWeight='300'
+                                fontSize='body'
+                                color='text2'
+                                align='center'
+                            >
+                                {item}
+                            </Text>
+                        ))}
+                    </GridContainer>
+                    <ResultsContainer flexDirection='column'>
                         {searchedLimitOrders
                             .slice(0, 4)
                             .map((limitOrder: LimitOrderIF) => (
@@ -106,11 +138,17 @@ export default function OrdersSearchResults(props: propsIF) {
                                     handleClick={handleClick}
                                 />
                             ))}
-                    </ol>
-                </>
+                    </ResultsContainer>
+                </FlexContainer>
             ) : (
-                <h5 className={styles.not_found_text}>No Orders Found</h5>
+                <FlexContainer
+                    margin='0 8px 96px 8px'
+                    fontSize='body'
+                    color='text2'
+                >
+                    No Orders Found
+                </FlexContainer>
             )}
-        </div>
+        </FlexContainer>
     );
 }
