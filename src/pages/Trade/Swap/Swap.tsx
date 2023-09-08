@@ -41,7 +41,6 @@ import {
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import styles from './Swap.module.css';
-import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -281,8 +280,6 @@ function Swap(props: propsIF) {
         isTokenADexSurplusSufficient,
         isSaveAsDexSurplusChecked,
     ]);
-
-    const { baseURL } = useLinkGen();
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -661,7 +658,7 @@ function Swap(props: propsIF) {
             />
             <button
                 onClick={() =>
-                    updateURL(baseURL, {
+                    updateURL({
                         update: [['chain', 19]],
                         delete: ['tokenB', 'limitTick'],
                     })

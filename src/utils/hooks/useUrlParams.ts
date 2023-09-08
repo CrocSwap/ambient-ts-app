@@ -42,7 +42,7 @@ interface updatesIF {
 }
 
 interface urlParamsMethodsIF {
-    updateURL: (baseURL: string, changes: updatesIF) => void;
+    updateURL: (changes: updatesIF) => void;
 }
 
 export const useUrlParams = (
@@ -146,7 +146,7 @@ export const useUrlParams = (
     }, [urlParamMap]);
 
     // fn to update the current URL without a navigation event
-    function updateURL(baseURL: string, changes: updatesIF): void {
+    function updateURL(changes: updatesIF): void {
         // copy of the current URL param map
         const workingMap: Map<validParamsType, string> = urlParamMap;
         // process any updates to existing k-v pairs (also adds new ones)
@@ -179,7 +179,7 @@ export const useUrlParams = (
         window.history.replaceState(
             { ...window.history.state },
             '',
-            baseURL + '/' + newParamString,
+            linkGenCurrent.baseURL + '/' + newParamString,
         );
     }
 
