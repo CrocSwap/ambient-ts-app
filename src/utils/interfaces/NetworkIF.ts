@@ -1,21 +1,26 @@
 import { TopPool } from '../data/defaultTopPools';
+import { TokenIF } from './TokenIF';
 
 interface Tokens {
     ETH: string;
     USDC: string;
+    USDT: string;
     DAI: string;
     UNI: string;
     WETH: string;
+    WBTC: string;
     PEPE: string;
+    FRAX: string;
 }
 
 export interface NetworkIF {
-    chain: string;
-    wagmi: any;
+    chainId: string;
+    wagmiChain: any;
+    shouldPollBlock: boolean;
     marketData: string;
-    networkBE: string;
     tokens: Tokens;
+    defaultPair: TokenIF[];
     topPools: TopPool[];
-    gasPriceInGwei: number;
-    moneynessRank: Map<string, number>;
+    stableTokens: string[];
+    getGasPriceInGwei: () => Promise<number | undefined>;
 }

@@ -1,24 +1,7 @@
-import {
-    arbGoerliETH,
-    arbGoerliDAI,
-    arbGoerliUSDC,
-    arbGoerliWBTC,
-    goerliETH,
-    goerliUSDC,
-    goerliWBTC,
-    goerliDAI,
-    mainnetETH,
-    mainnetUSDC,
-    mainnetWBTC,
-    mainnetDAI,
-    mainnetUSDT,
-    goerliUSDT,
-} from './defaultTokens';
 import { PoolIF, TokenIF } from '../interfaces/exports';
 import sortTokens from '../functions/sortTokens';
-import { ChainIdType } from './chains';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import chainNumToString from '../../App/functions/chainNumToString';
+import { supportedNetworks } from '../networks';
 
 export class TopPool implements PoolIF {
     name: string;
@@ -40,32 +23,5 @@ export class TopPool implements PoolIF {
 }
 
 export function getDefaultTopPools(chainId: string): PoolIF[] {
-    if (chainId in defaultTopPools) {
-        return defaultTopPools[chainId as ChainIdType];
-    } else {
-        return [];
-    }
+    return supportedNetworks[chainId].topPools;
 }
-
-const MAINNET_POOL_ID = lookupChain('0x1').poolIndex;
-const GOERLI_POOL_ID = lookupChain('0x5').poolIndex;
-
-const defaultTopPools = {
-    '0x1': [
-        new TopPool(mainnetETH, mainnetUSDC, MAINNET_POOL_ID),
-        new TopPool(mainnetETH, mainnetWBTC, MAINNET_POOL_ID),
-        new TopPool(mainnetDAI, mainnetUSDC, MAINNET_POOL_ID),
-        new TopPool(mainnetUSDT, mainnetUSDC, MAINNET_POOL_ID),
-    ],
-    '0x5': [
-        new TopPool(goerliETH, goerliUSDC, GOERLI_POOL_ID),
-        new TopPool(goerliETH, goerliWBTC, GOERLI_POOL_ID),
-        new TopPool(goerliUSDC, goerliDAI, GOERLI_POOL_ID),
-        new TopPool(goerliUSDT, goerliUSDC, GOERLI_POOL_ID),
-    ],
-    '0x66eed': [
-        new TopPool(arbGoerliETH, arbGoerliUSDC, GOERLI_POOL_ID),
-        new TopPool(arbGoerliETH, arbGoerliWBTC, GOERLI_POOL_ID),
-        new TopPool(arbGoerliETH, arbGoerliDAI, GOERLI_POOL_ID),
-    ],
-};

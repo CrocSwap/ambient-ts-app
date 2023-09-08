@@ -1,16 +1,12 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import {
-    getChainExplorer,
-    mktDataChainId,
-} from '../../../../../utils/data/chains';
+import { getChainExplorer } from '../../../../../utils/data/chains';
 import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import { USDC } from '../../../../../utils/tokens/exports';
 import { tokenData } from '../../../../../utils/state/userDataSlice';
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
@@ -69,6 +65,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         ethValue,
     } = props;
     const {
+        selectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -76,10 +73,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         (state) => state.userData.tokens,
     );
     const erc20Tokens: TokenIF[] = tokenDataFromRTK.erc20Tokens ?? [];
-    const usdcAddr: string = USDC[chainId as '0x1'];
     const usdcData: TokenIF | undefined = erc20Tokens.find(
         (tkn: TokenIF) =>
-            tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
+            tkn.address.toLowerCase() === selectedNetwork.tokens.USDC &&
             tkn.chainId === parseInt(chainId),
     );
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
@@ -120,10 +116,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             usdcData?.combinedBalanceDisplay ?? '0.00',
         );
         Promise.resolve(
-            cachedFetchTokenPrice(
-                USDC[mktDataChainId(chainId) as '0x1'],
-                chainId,
-            ),
+            cachedFetchTokenPrice(selectedNetwork.tokens.USDC, chainId),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =

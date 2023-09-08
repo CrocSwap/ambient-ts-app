@@ -1,9 +1,8 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
-import {
-    getMainnetEquivalent,
-    translateMainnetForGraphcache,
-} from '../../utils/data/testTokenMap';
+import { translateMainnetForGraphcache } from '../../utils/data/testTokenMap';
+import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
+import { supportedNetworks } from '../../utils/networks';
 import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -220,16 +219,10 @@ async function expandPoolStats(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<CandleData[]> {
-    const mainnetBase = getMainnetEquivalent(base, chainId);
-    const mainnetQuote = getMainnetEquivalent(quote, chainId);
-    const basePricePromise = cachedFetchTokenPrice(
-        mainnetBase.token,
-        mainnetBase.chainId,
-    );
-    const quotePricePromise = cachedFetchTokenPrice(
-        mainnetQuote.token,
-        mainnetQuote.chainId,
-    );
+    const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
+    const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
+    const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
 
     const baseDecimals = crocEnv.token(base).decimals;
     const quoteDecimals = crocEnv.token(quote).decimals;

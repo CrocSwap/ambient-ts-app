@@ -1,6 +1,7 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL } from '../../constants';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
+import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
+import { supportedNetworks } from '../../utils/networks';
 import { TokenPriceFn } from './fetchTokenPrice';
 
 const poolLiquidityCacheEndpoint = GRAPHCACHE_SMALL_URL + '/pool_liq_curve?';
@@ -52,16 +53,10 @@ async function expandLiquidityData(
     const pool = crocEnv.pool(base, quote);
     const curveTick = pool.spotTick();
 
-    const mainnetBase = getMainnetEquivalent(base, chainId);
-    const mainnetQuote = getMainnetEquivalent(quote, chainId);
-    const basePricePromise = cachedFetchTokenPrice(
-        mainnetBase.token,
-        mainnetBase.chainId,
-    );
-    const quotePricePromise = cachedFetchTokenPrice(
-        mainnetQuote.token,
-        mainnetQuote.chainId,
-    );
+    const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
+    const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
+    const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;

@@ -12,10 +12,10 @@ import { WagmiConfig, createClient, configureChains } from 'wagmi';
 import { infuraProvider } from 'wagmi/providers/infura';
 
 import { InjectedConnector } from 'wagmi/connectors/injected';
-import { getWagmiChains } from './utils/data/chains';
 import Moralis from 'moralis/.';
 import { GLOBAL_MODAL_PORTAL_ID, MORALIS_KEY } from './constants';
 import { GlobalContexts } from './contexts/GlobalContexts';
+import { supportedNetworks } from './utils/networks';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -34,7 +34,7 @@ if (doReload) {
 // Don't bother rendering page if this is a reload, because it'll slow down the full load
 if (!doReload) {
     const { chains, provider, webSocketProvider } = configureChains(
-        getWagmiChains(),
+        Object.values(supportedNetworks).map((network) => network.wagmiChain),
         [
             infuraProvider({
                 apiKey:
