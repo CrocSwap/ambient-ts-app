@@ -150,20 +150,18 @@ export const useUrlParams = (
         // copy of the current URL param map
         const workingMap: Map<validParamsType, string> = urlParamMap;
         // process any updates to existing k-v pairs (also adds new ones)
-        if (changes.update) {
+        changes.update &&
             changes.update.forEach(
                 (param: [validParamsType, string | number]) => {
                     const [k, v] = param;
                     workingMap.set(k, v.toString());
                 },
             );
-        }
         // remove any k-v pairs marked for deletion
-        if (changes.delete) {
+        changes.delete &&
             changes.delete.forEach((param: validParamsType) =>
                 workingMap.delete(param),
             );
-        }
         // use the updated param map to build a new param string
         const newParamString: string = [...workingMap.entries()]
             // remove unrecognized params
@@ -172,7 +170,6 @@ export const useUrlParams = (
             .map((pair) => pair.join('='))
             // join individual params into a unified param string
             .join('&');
-        console.log(newParamString);
         // overwrite the last item in the history stack
         // using `.pushState()` will fill the history stack with garbage
         // current state, if any, is preserved
