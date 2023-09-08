@@ -44,7 +44,7 @@ import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalToke
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
-import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
+// import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer } from '../../styled/Common';
@@ -57,6 +57,7 @@ import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesA
 import InitTokenInput from './InitTokenInput/InitTokenInput';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import Spinner from '../../components/Global/Spinner/Spinner';
+import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 
 // react functional component
 export default function InitPool() {
@@ -80,7 +81,7 @@ export default function InitPool() {
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const dispatch = useAppDispatch();
-    const handleToggle = () => dispatch(toggleAdvancedMode());
+    // const handleToggle = () => dispatch(toggleAdvancedMode());
     const {
         tradeData: { advancedMode },
     } = useAppSelector((state) => state);
@@ -883,7 +884,7 @@ export default function InitPool() {
         </div>
     );
 
-    const [isMintLiq, setIsMinLiq] = useState(false);
+    const [isMintLiq, setIsMinLiq] = useState(true);
 
     const mintInitialLiquidity = (
         <FlexContainer
@@ -901,24 +902,24 @@ export default function InitPool() {
             />
         </FlexContainer>
     );
-    const advancedModeToggle = (
-        <FlexContainer
-            flexDirection='row'
-            justifyContent='space-between'
-            className={poolExists && styles.content_disabled}
-        >
-            <p className={styles.label_title}>
-                {!advancedMode ? 'Balance' : 'Unbalanced'}{' '}
-            </p>
+    // const advancedModeToggle = (
+    //     <FlexContainer
+    //         flexDirection='row'
+    //         justifyContent='space-between'
+    //         className={poolExists && styles.content_disabled}
+    //     >
+    //         <p className={styles.label_title}>
+    //             {!advancedMode ? 'Balance' : 'Unbalanced'}{' '}
+    //         </p>
 
-            <Toggle
-                isOn={!advancedMode}
-                handleToggle={handleToggle}
-                id='advanced_reposition'
-                disabled={poolExists === true}
-            />
-        </FlexContainer>
-    );
+    //         <Toggle
+    //             isOn={!advancedMode}
+    //             handleToggle={handleToggle}
+    //             id='advanced_reposition'
+    //             disabled={poolExists === true}
+    //         />
+    //     </FlexContainer>
+    // );
 
     const newContent = (
         <section className={styles.main}>
@@ -940,17 +941,27 @@ export default function InitPool() {
 
                             <div className={styles.right_container}>
                                 {mintInitialLiquidity}
-                                {advancedModeToggle}
+                                <AdvancedModeToggle
+                                    advancedMode={advancedMode}
+                                />
 
                                 <RangeBounds
-                                    isRangeBoundsDisabled={poolExists === true}
+                                    isRangeBoundsDisabled={
+                                        poolExists === true || !isMintLiq
+                                    }
                                     {...rangeWidthProps}
                                     {...rangePriceInfoProps}
                                     {...minMaxPriceProps}
                                     customSwitch={true}
                                 />
 
-                                <div>
+                                <div
+                                    className={
+                                        poolExists === true || !isMintLiq
+                                            ? styles.content_disabled
+                                            : ''
+                                    }
+                                >
                                     <InitPoolExtraInfo
                                         initialPrice={parseFloat(
                                             initialPriceForDOM.replaceAll(
