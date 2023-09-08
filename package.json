@@ -5,6 +5,7 @@
     "dependencies": {
         "@crocswap-libs/sdk": "^0.2.75",
         "@d3fc/d3fc-extent": "^4.0.2",
+        "@emotion/is-prop-valid": "^1.2.1",
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
         "@material-ui/core": "^4.12.4",
