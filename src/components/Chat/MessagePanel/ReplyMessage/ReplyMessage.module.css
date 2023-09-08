@@ -233,18 +233,19 @@
     font-family: 'Times New Roman';
     font-style: normal;
     font-weight: 300;
-   
     line-height: 15px;
     flex-grow: 5px !important;
     margin-left: 10px;
     color: rgb(214, 203, 203);
     align-self: stretch;
     word-break: break-word;
-    white-space: normal;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     font-size: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%
 }
 
 .change_positive {

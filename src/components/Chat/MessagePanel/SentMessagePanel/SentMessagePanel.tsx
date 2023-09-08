@@ -73,22 +73,15 @@ interface SentMessageProps {
     isDeleted: boolean;
     deletedMessageText: string;
     addReactionListener: (message?: Message) => void;
+    isDeleteMessageButtonPressed: boolean;
+    setIsDeleteMessageButtonPressed: Dispatch<SetStateAction<boolean>>;
+    deleteMsgFromList: any;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
-    const { room, address, isChatOpen, ensName, isSubscriptionsEnabled } =
-        props;
-    const { deleteMsgFromList } = useChatSocket(
-        room,
-        isSubscriptionsEnabled,
-        isChatOpen,
-        address,
-        ensName,
-    );
+    const { deleteMsgFromList } = props;
     const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
     const [aa, setaa] = useState('');
-    const [isDeleteMessageButtonPressed, setIsDeleteMessageButtonPressed] =
-        useState(false);
     const [hasSeparator, setHasSeparator] = useState(false);
     const [isClickedOptions, setIsClickedOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
@@ -115,6 +108,8 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    const deletedMessageText = 'This message has deleted.';
 
     const handleInitialLikeDislike = () => {
         let retVal = 0;
@@ -240,11 +235,10 @@ function SentMessagePanel(props: SentMessageProps) {
     }, [props.message]);
 
     useEffect(() => {
-        if (isDeleteMessageButtonPressed) {
-            props.setIsMessageDeleted(true);
-            deleteMessages(props.message._id);
+        if (props.isMessageDeleted) {
+            console.log('xxx', props.message);
         }
-    }, [isDeleteMessageButtonPressed]);
+    }, [props.isMessageDeleted]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -326,8 +320,8 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function detectLinksFromMessage(url: string) {
-        if (props.isDeleted) {
-            return props.message.deletedMessageText;
+        if (props.message.isDeleted) {
+            return <></>;
         } else {
             if (url.includes(' ')) {
                 const words: string[] = url.split(' ');
@@ -477,10 +471,6 @@ function SentMessagePanel(props: SentMessageProps) {
                 );
             }
         }
-    }
-
-    function deleteMessages(id: string) {
-        deleteMsgFromList(id);
     }
 
     const jazziconsSeed = props.message.walletID.toLowerCase();
@@ -830,11 +820,11 @@ function SentMessagePanel(props: SentMessageProps) {
                                 {isMoreButtonPressed ? (
                                     <div className={styles.menu}>
                                         <Menu
-                                            isDeleteMessageButtonPressed={
-                                                isDeleteMessageButtonPressed
+                                            isMessageDeleted={
+                                                props.isMessageDeleted
                                             }
-                                            setIsDeleteMessageButtonPressed={
-                                                setIsDeleteMessageButtonPressed
+                                            setIsMessageDeleted={
+                                                props.setIsMessageDeleted
                                             }
                                             setIsMoreButtonPressed={
                                                 setIsMoreButtonPressed
@@ -843,6 +833,10 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 setFlipped(true);
                                                 setFlipRead(true);
                                             }}
+                                            deleteMsgFromList={
+                                                deleteMsgFromList
+                                            }
+                                            id={props.message._id}
                                         />
                                     </div>
                                 ) : (

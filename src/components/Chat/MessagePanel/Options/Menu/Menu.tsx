@@ -3,16 +3,27 @@ import styles from './Menu.module.css';
 import { FiArrowLeft, FiDelete, FiInfo, FiRotateCw } from 'react-icons/fi';
 import { BsFillReplyFill, BsEmojiSmileUpsideDown } from 'react-icons/bs';
 interface propsIF {
-    isDeleteMessageButtonPressed: boolean;
-    setIsDeleteMessageButtonPressed: Dispatch<SetStateAction<boolean>>;
+    isMessageDeleted: boolean;
+    setIsMessageDeleted: Dispatch<SetStateAction<boolean>>;
     setIsMoreButtonPressed: Dispatch<SetStateAction<boolean>>;
     setFlipped: Dispatch<SetStateAction<boolean>>;
+    deleteMsgFromList: any;
+    id: string;
 }
 export default function Menu(props: propsIF) {
-    function closePanel() {
-        props.setIsDeleteMessageButtonPressed(true);
+    const closePanel = () => {
+        console.log('id: ', props.id);
+        props.setIsMessageDeleted(true);
+        props.deleteMsgFromList(props.id).then((result: any) => {
+            if (result.status === 'OK') {
+                props.setIsMessageDeleted(true);
+                return result;
+            } else {
+                props.setIsMessageDeleted(false);
+            }
+        });
         props.setIsMoreButtonPressed(false);
-    }
+    };
 
     const options = [
         {
