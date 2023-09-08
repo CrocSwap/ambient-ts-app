@@ -196,6 +196,7 @@ export const AuthenticateButton = styled.button<AuthenticateButtonProps>`
     outline: none;
     color: var(--dark2);
     font-weight: 300;
+    font-size: var(--header2-size);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 4px;
 
