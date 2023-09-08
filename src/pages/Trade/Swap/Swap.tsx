@@ -41,6 +41,7 @@ import {
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import styles from './Swap.module.css';
+import { useLinkGen } from '../../../utils/hooks/useLinkGen';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -94,7 +95,7 @@ function Swap(props: propsIF) {
     } = pathname.includes('/trade')
         ? useTradeData()
         : useAppSelector((state) => state);
-    useUrlParams(tokens, chainId, provider);
+    const { updateURL } = useUrlParams(tokens, chainId, provider);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
         isTokenAPrimary ? primaryQuantity : '',
@@ -280,6 +281,8 @@ function Swap(props: propsIF) {
         isTokenADexSurplusSufficient,
         isSaveAsDexSurplusChecked,
     ]);
+
+    const { baseURL } = useLinkGen();
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -504,149 +507,169 @@ function Swap(props: propsIF) {
         ) : undefined;
 
     return (
-        <TradeModuleSkeleton
-            isSwapPage={!isOnTradeRoute}
-            header={
-                <TradeModuleHeader
-                    slippage={swapSlippage}
-                    bypassConfirm={bypassConfirmSwap}
-                    settingsTitle='Swap'
-                    isSwapPage={!isOnTradeRoute}
-                />
-            }
-            input={
-                <SwapTokenInput
-                    setIsLiquidityInsufficient={setIsLiquidityInsufficient}
-                    slippageTolerancePercentage={slippageTolerancePercentage}
-                    setPriceImpact={setPriceImpact}
-                    sellQtyString={{
-                        value: sellQtyString,
-                        set: setSellQtyString,
-                    }}
-                    buyQtyString={{ value: buyQtyString, set: setBuyQtyString }}
-                    isSellLoading={{
-                        value: isSellLoading,
-                        set: setIsSellLoading,
-                    }}
-                    isBuyLoading={{ value: isBuyLoading, set: setIsBuyLoading }}
-                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                    setSwapAllowed={setSwapAllowed}
-                    toggleDexSelection={toggleDexSelection}
-                />
-            }
-            transactionDetails={
-                <SwapExtraInfo
-                    priceImpact={priceImpact}
-                    effectivePriceWithDenom={effectivePriceWithDenom}
-                    slippageTolerance={slippageTolerancePercentage}
-                    liquidityProviderFeeString={liquidityProviderFeeString}
-                    swapGasPriceinDollars={swapGasPriceinDollars}
-                    showExtraInfoDropdown={primaryQuantity !== ''}
-                />
-            }
-            modal={
-                isModalOpen ? (
-                    <ConfirmSwapModal
-                        onClose={handleModalClose}
-                        tokenPair={{
-                            dataTokenA: tokenA,
-                            dataTokenB: tokenB,
-                        }}
-                        isDenomBase={isDenomBase}
-                        baseTokenSymbol={baseToken.symbol}
-                        quoteTokenSymbol={quoteToken.symbol}
-                        initiateSwapMethod={initiateSwap}
-                        newSwapTransactionHash={newSwapTransactionHash}
-                        txErrorCode={txErrorCode}
-                        showConfirmation={showConfirmation}
-                        resetConfirmation={resetConfirmation}
+        <>
+            <TradeModuleSkeleton
+                isSwapPage={!isOnTradeRoute}
+                header={
+                    <TradeModuleHeader
+                        slippage={swapSlippage}
+                        bypassConfirm={bypassConfirmSwap}
+                        settingsTitle='Swap'
+                        isSwapPage={!isOnTradeRoute}
+                    />
+                }
+                input={
+                    <SwapTokenInput
+                        setIsLiquidityInsufficient={setIsLiquidityInsufficient}
                         slippageTolerancePercentage={
                             slippageTolerancePercentage
                         }
-                        effectivePrice={effectivePrice}
-                        isSellTokenBase={isSellTokenBase}
-                        sellQtyString={sellQtyString}
-                        buyQtyString={buyQtyString}
-                        isTokenAPrimary={isTokenAPrimary}
+                        setPriceImpact={setPriceImpact}
+                        sellQtyString={{
+                            value: sellQtyString,
+                            set: setSellQtyString,
+                        }}
+                        buyQtyString={{
+                            value: buyQtyString,
+                            set: setBuyQtyString,
+                        }}
+                        isSellLoading={{
+                            value: isSellLoading,
+                            set: setIsSellLoading,
+                        }}
+                        isBuyLoading={{
+                            value: isBuyLoading,
+                            set: setIsBuyLoading,
+                        }}
+                        isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                        isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                        setSwapAllowed={setSwapAllowed}
+                        toggleDexSelection={toggleDexSelection}
                     />
-                ) : (
-                    <></>
-                )
-            }
-            button={
-                <Button
-                    title={
-                        areBothAckd
-                            ? bypassConfirmSwap.isEnabled
-                                ? swapAllowed
-                                    ? 'Submit Swap'
-                                    : swapButtonErrorMessage
-                                : swapAllowed
-                                ? bypassConfirmSwap.isEnabled
-                                    ? 'Submit Swap'
-                                    : 'Confirm'
-                                : swapButtonErrorMessage
-                            : 'Acknowledge'
-                    }
-                    action={
-                        areBothAckd
-                            ? bypassConfirmSwap.isEnabled
-                                ? initiateSwap
-                                : handleModalOpen
-                            : ackAsNeeded
-                    }
-                    disabled={
-                        (!swapAllowed ||
-                            sellQtyString === '' ||
-                            buyQtyString === '') &&
-                        areBothAckd
-                    }
-                    flat
-                />
-            }
-            bypassConfirm={
-                showConfirmation && bypassConfirmSwap.isEnabled ? (
-                    <SubmitTransaction
-                        type='Swap'
-                        newTransactionHash={newSwapTransactionHash}
-                        txErrorCode={txErrorCode}
-                        resetConfirmation={resetConfirmation}
-                        sendTransaction={initiateSwap}
-                        transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}
+                }
+                transactionDetails={
+                    <SwapExtraInfo
+                        priceImpact={priceImpact}
+                        effectivePriceWithDenom={effectivePriceWithDenom}
+                        slippageTolerance={slippageTolerancePercentage}
+                        liquidityProviderFeeString={liquidityProviderFeeString}
+                        swapGasPriceinDollars={swapGasPriceinDollars}
+                        showExtraInfoDropdown={primaryQuantity !== ''}
                     />
-                ) : undefined
-            }
-            approveButton={
-                isPoolInitialized &&
-                !isTokenAAllowanceSufficient &&
-                parseFloat(sellQtyString) > 0 &&
-                sellQtyString !== 'Infinity' ? (
+                }
+                modal={
+                    isModalOpen ? (
+                        <ConfirmSwapModal
+                            onClose={handleModalClose}
+                            tokenPair={{
+                                dataTokenA: tokenA,
+                                dataTokenB: tokenB,
+                            }}
+                            isDenomBase={isDenomBase}
+                            baseTokenSymbol={baseToken.symbol}
+                            quoteTokenSymbol={quoteToken.symbol}
+                            initiateSwapMethod={initiateSwap}
+                            newSwapTransactionHash={newSwapTransactionHash}
+                            txErrorCode={txErrorCode}
+                            showConfirmation={showConfirmation}
+                            resetConfirmation={resetConfirmation}
+                            slippageTolerancePercentage={
+                                slippageTolerancePercentage
+                            }
+                            effectivePrice={effectivePrice}
+                            isSellTokenBase={isSellTokenBase}
+                            sellQtyString={sellQtyString}
+                            buyQtyString={buyQtyString}
+                            isTokenAPrimary={isTokenAPrimary}
+                        />
+                    ) : (
+                        <></>
+                    )
+                }
+                button={
                     <Button
                         title={
-                            !isApprovalPending
-                                ? `Approve ${tokenA.symbol}`
-                                : `${tokenA.symbol} Approval Pending`
+                            areBothAckd
+                                ? bypassConfirmSwap.isEnabled
+                                    ? swapAllowed
+                                        ? 'Submit Swap'
+                                        : swapButtonErrorMessage
+                                    : swapAllowed
+                                    ? bypassConfirmSwap.isEnabled
+                                        ? 'Submit Swap'
+                                        : 'Confirm'
+                                    : swapButtonErrorMessage
+                                : 'Acknowledge'
                         }
-                        disabled={isApprovalPending}
-                        action={async () => {
-                            await approve(tokenA.address, tokenA.symbol);
-                        }}
+                        action={
+                            areBothAckd
+                                ? bypassConfirmSwap.isEnabled
+                                    ? initiateSwap
+                                    : handleModalOpen
+                                : ackAsNeeded
+                        }
+                        disabled={
+                            (!swapAllowed ||
+                                sellQtyString === '' ||
+                                buyQtyString === '') &&
+                            areBothAckd
+                        }
                         flat
                     />
-                ) : undefined
-            }
-            warnings={
-                priceImpactWarning || liquidityInsufficientWarning ? (
-                    <>
-                        {priceImpactWarning && priceImpactWarning}
-                        {liquidityInsufficientWarning &&
-                            liquidityInsufficientWarning}
-                    </>
-                ) : undefined
-            }
-            tutorialSteps={swapTutorialSteps}
-        />
+                }
+                bypassConfirm={
+                    showConfirmation && bypassConfirmSwap.isEnabled ? (
+                        <SubmitTransaction
+                            type='Swap'
+                            newTransactionHash={newSwapTransactionHash}
+                            txErrorCode={txErrorCode}
+                            resetConfirmation={resetConfirmation}
+                            sendTransaction={initiateSwap}
+                            transactionPendingDisplayString={`Swapping ${sellQtyString} ${tokenA.symbol} for ${buyQtyString} ${tokenB.symbol}`}
+                        />
+                    ) : undefined
+                }
+                approveButton={
+                    isPoolInitialized &&
+                    !isTokenAAllowanceSufficient &&
+                    parseFloat(sellQtyString) > 0 &&
+                    sellQtyString !== 'Infinity' ? (
+                        <Button
+                            title={
+                                !isApprovalPending
+                                    ? `Approve ${tokenA.symbol}`
+                                    : `${tokenA.symbol} Approval Pending`
+                            }
+                            disabled={isApprovalPending}
+                            action={async () => {
+                                await approve(tokenA.address, tokenA.symbol);
+                            }}
+                            flat
+                        />
+                    ) : undefined
+                }
+                warnings={
+                    priceImpactWarning || liquidityInsufficientWarning ? (
+                        <>
+                            {priceImpactWarning && priceImpactWarning}
+                            {liquidityInsufficientWarning &&
+                                liquidityInsufficientWarning}
+                        </>
+                    ) : undefined
+                }
+                tutorialSteps={swapTutorialSteps}
+            />
+            <button
+                onClick={() =>
+                    updateURL(baseURL, {
+                        update: [['chain', 19]],
+                        delete: ['tokenB', 'limitTick'],
+                    })
+                }
+            >
+                Click me!!
+            </button>
+        </>
     );
 }
 

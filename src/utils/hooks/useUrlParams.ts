@@ -32,11 +32,20 @@ type validParams =
     | 'highTick'
     | 'limitTick';
 
+interface updatesIF {
+    update?: Array<[validParams, string | number]>;
+    delete?: Array<validParams>;
+}
+
+interface urlParamsMethodsIF {
+    updateURL: (baseURL: string, changes: updatesIF) => void;
+}
+
 export const useUrlParams = (
     tokens: tokenMethodsIF,
     dfltChainId: string,
     provider?: ethers.providers.Provider,
-) => {
+): urlParamsMethodsIF => {
     const { params } = useParams();
 
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
@@ -129,6 +138,30 @@ export const useUrlParams = (
             }
         }
     }, [urlParamMap]);
+
+    function updateURL(baseURL: string, changes: updatesIF): void {
+        const workingMap: Map<validParams, string> = urlParamMap;
+        if (changes.update) {
+            changes.update.forEach((param: [validParams, string | number]) => {
+                const [k, v] = param;
+                workingMap.set(k, v.toString());
+            });
+        }
+        if (changes.delete) {
+            changes.delete.forEach((param: validParams) =>
+                workingMap.delete(param),
+            );
+        }
+        const newParamString = [...workingMap.entries()]
+            .map((pair) => pair.join('='))
+            .join('&');
+        console.log(newParamString);
+        window.history.replaceState(
+            { ...window.history.state },
+            '',
+            baseURL + '/' + newParamString,
+        );
+    }
 
     const tokensOnChain: TokenIF[] = tokens.tokenUniv;
 
@@ -279,4 +312,8 @@ export const useUrlParams = (
         tokensOnChain.length,
         ...dependencies.map((x: validParams) => urlParamMap.get(x)),
     ]);
+
+    return {
+        updateURL,
+    };
 };
