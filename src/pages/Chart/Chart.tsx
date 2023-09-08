@@ -2905,6 +2905,7 @@ export default function Chart(props: propsIF) {
         bandwidth,
         isChartZoom,
         isLineDrag,
+        period,
     ]);
 
     // mouseleave

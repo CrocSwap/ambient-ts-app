@@ -57,10 +57,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-
-    const [abortController, setAbortController] =
-        useState<AbortController | null>(null);
-
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDuration | undefined
     >();
@@ -116,7 +112,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
 
     useEffect(() => {
         setCandleData(undefined);
-    }, [baseTokenAddress + quoteTokenAddress]);
+    }, [baseTokenAddress + quoteTokenAddress, candleTimeLocal]);
 
     useEffect(() => {
         isChartEnabled && isUserOnline && fetchCandles();
@@ -155,9 +151,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             candleTimeLocal &&
             crocEnv
         ) {
-            if (abortController) {
-                abortController.abort();
-            }
             const candleTime = candleScale.isShowLatestCandle
                 ? Date.now() / 1000
                 : candleScale.lastCandleDate || 0;
@@ -231,9 +224,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     }, [minTimeMemo, domainBoundaryInSecondsDebounced]);
 
     const fetchCandlesByNumDurations = (numDurations: number) => {
-        const controller = new AbortController();
-        setAbortController(controller);
-
         if (!crocEnv) {
             return;
         }
@@ -289,11 +279,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 }
             })
             .catch((e) => {
-                if (e.name === 'AbortError') {
-                    console.warn('Zoom request cancelled');
-                } else {
-                    console.error(e);
-                }
+                console.error(e);
                 setIsCandleDataNull(false);
             });
     };
