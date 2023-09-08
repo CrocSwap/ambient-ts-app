@@ -23,18 +23,22 @@ import validateChain from '../functions/validateChain';
  * chain, tokens, and context-specific tick parameters. All action is intermediated
  * by passing parameters through to the tradeDataSlice in redux. */
 
-// union of all recognized param keys in the app
-type validParams =
-    | 'chain'
-    | 'tokenA'
-    | 'tokenB'
-    | 'lowTick'
-    | 'highTick'
-    | 'limitTick';
+// array of all valid params in the app (global, anywhere)
+const validParams = [
+    'chain',
+    'tokenA',
+    'tokenB',
+    'lowTick',
+    'highTick',
+    'limitTick',
+] as const;
+
+// type generated as a union of all string literals in `validParams`
+type validParamsType = typeof validParams[number];
 
 interface updatesIF {
-    update?: Array<[validParams, string | number]>;
-    delete?: Array<validParams>;
+    update?: Array<[validParamsType, string | number]>;
+    delete?: Array<validParamsType>;
 }
 
 interface urlParamsMethodsIF {
@@ -51,13 +55,13 @@ export const useUrlParams = (
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
 
     // generate an array of required params in the URL based on route
-    const requiredParams = useMemo<validParams[]>(() => {
+    const requiredParams = useMemo<validParamsType[]>(() => {
         // name of page currently in the DOM
         const pageName: pageNames = linkGenCurrent.currentPage;
         // global params for all parameterized pathways
-        const globalParams: validParams[] = ['chain', 'tokenA', 'tokenB'];
+        const globalParams: validParamsType[] = ['chain', 'tokenA', 'tokenB'];
         // output variable
-        let paramsForPage: validParams[];
+        let paramsForPage: validParamsType[];
         // logic router for required URL params for each parameterized route
         // all parameterized pathways MUST have mandatory params defined here
         switch (pageName) {
@@ -86,11 +90,11 @@ export const useUrlParams = (
     const { switchNetwork } = useSwitchNetwork();
 
     // map of all params in the current URL string
-    const urlParamMap = useMemo<Map<validParams, string>>(() => {
+    const urlParamMap = useMemo<Map<validParamsType, string>>(() => {
         // get URL parameters or empty string if undefined
         const fixedParams = params ?? '';
         // output variable
-        const paramMap = new Map<validParams, string>();
+        const paramMap = new Map<validParamsType, string>();
         // parse URL params from `x=a&y=b&z=c` format
         fixedParams
             // split params string at every ampersand
@@ -104,7 +108,7 @@ export const useUrlParams = (
             // remove tuples with trisomy issues
             .filter((par) => par.length === 2)
             // add each key-val pair to the param map
-            .forEach((par) => paramMap.set(par[0] as validParams, par[1]));
+            .forEach((par) => paramMap.set(par[0] as validParamsType, par[1]));
         // return Map of all params in the URL
         return paramMap;
     }, [params]);
@@ -112,24 +116,26 @@ export const useUrlParams = (
     // redirect user to default params if params received are malformed
     useEffect(() => {
         // array of keys deconstructed from params string
-        const paramKeys: validParams[] = [...urlParamMap.keys()];
+        const paramKeys: validParamsType[] = [...urlParamMap.keys()];
         // logic to redirect a user to current URL with default params
         const redirectUser = (): void => linkGenCurrent.redirect();
         // determine if any required URL params are missing
         const areParamsMissing: boolean = requiredParams.some(
-            (param: validParams) => !paramKeys.includes(param),
+            (param: validParamsType) => !paramKeys.includes(param),
         );
         // redirect user if any required URL params are missing
         areParamsMissing && redirectUser();
         // array of parameter tuples from URL
-        const paramTuples: Array<[validParams, string]> = [
+        const paramTuples: Array<[validParamsType, string]> = [
             ...urlParamMap.entries(),
         ];
         // run a validation fn against each param tuple
-        paramTuples.forEach((pT: [validParams, string]) => validateParam(pT));
+        paramTuples.forEach((pT: [validParamsType, string]) =>
+            validateParam(pT),
+        );
         // fn to validate each parameter tuple, will redirect user to the default
         // ... parameterization on current route if validation fails
-        function validateParam(p: [validParams, string]): void {
+        function validateParam(p: [validParamsType, string]): void {
             const [key, val] = p;
             if (key === 'chain') {
                 validateChain(val) || redirectUser();
@@ -142,22 +148,25 @@ export const useUrlParams = (
     // fn to update the current URL without a navigation event
     function updateURL(baseURL: string, changes: updatesIF): void {
         // copy of the current URL param map
-        const workingMap: Map<validParams, string> = urlParamMap;
+        const workingMap: Map<validParamsType, string> = urlParamMap;
         // process any updates to existing k-v pairs (also adds new ones)
         if (changes.update) {
-            changes.update.forEach((param: [validParams, string | number]) => {
-                const [k, v] = param;
-                workingMap.set(k, v.toString());
-            });
+            changes.update.forEach(
+                (param: [validParamsType, string | number]) => {
+                    const [k, v] = param;
+                    workingMap.set(k, v.toString());
+                },
+            );
         }
         // remove any k-v pairs marked for deletion
         if (changes.delete) {
-            changes.delete.forEach((param: validParams) =>
+            changes.delete.forEach((param: validParamsType) =>
                 workingMap.delete(param),
             );
         }
         // use the updated param map to build a new param string
         const newParamString = [...workingMap.entries()]
+            // .filter()
             .map((pair) => pair.join('='))
             .join('&');
         console.log(newParamString);
@@ -209,18 +218,8 @@ export const useUrlParams = (
         return provider;
     }
 
-    // All relevant flags that we want to update on any change
-    const dependencies: validParams[] = [
-        'chain',
-        'tokenA',
-        'tokenB',
-        'lowTick',
-        'highTick',
-        'limitTick',
-    ];
-
     function processOptParam(
-        paramName: validParams,
+        paramName: validParamsType,
         processFn: (val: string) => void,
     ): void {
         if (urlParamMap.has(paramName)) {
@@ -318,7 +317,7 @@ export const useUrlParams = (
         };
     }, [
         tokensOnChain.length,
-        ...dependencies.map((x: validParams) => urlParamMap.get(x)),
+        ...validParams.map((x: validParamsType) => urlParamMap.get(x)),
     ]);
 
     return {
