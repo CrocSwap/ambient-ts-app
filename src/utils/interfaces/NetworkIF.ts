@@ -1,7 +1,7 @@
 import { TopPool } from '../data/defaultTopPools';
 import { TokenIF } from './TokenIF';
 
-interface Tokens {
+export interface Tokens {
     ETH: string;
     USDC: string;
     USDT: string;
