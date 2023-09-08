@@ -179,7 +179,7 @@
     .main_list_container .header {
         /* measured against smallest screen size for merged view (1280px) with sidebar expanded */
         grid-template-columns:
-            minmax(110px, 2.3fr) minmax(72px, 1.2fr) minmax(56px, 1.1fr)
+            minmax(110px, 2.3fr) minmax(90px, 1.2fr) minmax(42px, 1.1fr)
             minmax(78px, 1.4fr) minmax(86px, 1.6fr) minmax(70px, 1fr) minmax(103px, 25%);
     }
     .main_list_container .account_row_container,
@@ -201,9 +201,9 @@
         /* measured against smallest screen size for full view (1600px) with sidebar expanded */
         grid-template-columns:
             minmax(90px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
-            minmax(80px, 1fr) minmax(64px, 1.5fr) minmax(72px, 1.3fr) minmax(
-                80px,
-                1.7fr
+            minmax(80px, 1fr) minmax(64px, 1fr) minmax(64px, 1fr) minmax(
+                100px,
+                1fr
             )
             2fr 2fr 1.2fr 14%;
     }

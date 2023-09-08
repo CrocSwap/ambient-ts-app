@@ -472,10 +472,6 @@ function Range() {
     }, [rangeWidthPercentage]);
 
     useEffect(() => {
-        setShowConfirmation(false);
-    }, [bypassConfirmRange.isEnabled]);
-
-    useEffect(() => {
         setNewRangeTransactionHash('');
         setPinnedDisplayPrices(undefined);
     }, [baseToken.address + quoteToken.address]);
@@ -591,6 +587,8 @@ function Range() {
         isDenomBase,
         currentPoolPriceTick,
         baseToken.address + quoteToken.address,
+        baseTokenDecimals,
+        quoteTokenDecimals,
     ]);
 
     useEffect(() => {

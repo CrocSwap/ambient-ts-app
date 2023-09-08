@@ -5,7 +5,6 @@ import {
     useContext,
     useEffect,
     useState,
-    useCallback,
     useMemo,
     memo,
 } from 'react';
@@ -159,7 +158,7 @@ function SwapTokenInput(props: propsIF) {
         })();
     }, [tokenA, tokenB]);
 
-    const reverseTokens = useCallback((): void => {
+    const reverseTokens = (): void => {
         if (disableReverseTokens || !isPoolInitialized) return;
 
         dispatch(setLimitTick(undefined));
@@ -186,15 +185,7 @@ function SwapTokenInput(props: propsIF) {
         }
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
-    }, [
-        crocEnv,
-        poolPriceDisplay,
-        sellQtyString,
-        buyQtyString,
-        slippageTolerancePercentage,
-        isTokenAPrimary,
-        disableReverseTokens,
-    ]);
+    };
 
     const handleBlockUpdate = () => {
         setDisableReverseTokens(true);
