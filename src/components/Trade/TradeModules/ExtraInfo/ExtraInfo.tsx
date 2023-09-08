@@ -69,7 +69,7 @@ export const ExtraInfo = (props: PropsIF) => {
                 )}
                 {showDropdown && showExtraInfo && <RiArrowUpSLine size={22} />}
             </ExtraInfoContainer>
-            {showExtraInfo && (
+            {showExtraInfo && showDropdown && (
                 <ExtraDetailsContainer>
                     {extraInfo.map((item, idx) => (
                         <FlexContainer
