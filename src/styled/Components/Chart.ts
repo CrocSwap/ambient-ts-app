@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { FlexContainer, Text } from '../Common';
 
 export const HeaderButtons = styled.button<{ mobileHide?: boolean }>`

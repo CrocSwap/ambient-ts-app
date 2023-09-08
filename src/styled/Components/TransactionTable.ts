@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { FlexContainer, GridContainer } from '../Common';
 
 export const ClearButton = styled.button`
