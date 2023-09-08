@@ -74,7 +74,7 @@ export const ExtraInfo = (props: PropsIF) => {
                     />
                 )}
             </button>
-            {showExtraInfo && (
+            {showExtraInfo && showDropdown && (
                 <div className={styles.extra_details_container}>
                     <div className={styles.extra_details}>
                         {extraInfo.map((item, idx) => (
