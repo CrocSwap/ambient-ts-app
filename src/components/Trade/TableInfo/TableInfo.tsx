@@ -3,28 +3,17 @@ import { GridContainer, ScrollContainer } from '../../../styled/Common';
 
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { MainSection } from './TableInfo.styles';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import useFetchPoolStats from '../../../App/hooks/useFetchPoolStats';
-import { PoolIF } from '../../../utils/interfaces/PoolIF';
+
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 import { DetailedBox } from './DetailedBox';
 import { FeaturedBox } from './FeaturedBox';
+import { PoolContext } from '../../../contexts/PoolContext';
 
 export default function TableInfo() {
     const { tradeData } = useAppSelector((state) => state);
-    const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
 
-    const pool: PoolIF = {
-        base: tradeData.baseToken,
-        quote: tradeData.quoteToken,
-        chainId: chainId,
-        poolIdx: 36000,
-    };
-
-    const poolData = useFetchPoolStats(pool);
+    const { poolData } = useContext(PoolContext);
 
     const {
         poolTvl,

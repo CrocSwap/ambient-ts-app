@@ -6,7 +6,8 @@ import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
 import './i18n/config';
-
+import { StyleSheetManager } from 'styled-components';
+import isValidProp from '@emotion/is-prop-valid';
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
 
 import { infuraProvider } from 'wagmi/providers/infura';
@@ -95,7 +96,14 @@ if (!doReload) {
                 <Provider store={store}>
                     <BrowserRouter>
                         <GlobalContexts>
-                            <App />
+                            <StyleSheetManager
+                                shouldForwardProp={(propName) =>
+                                    isValidProp(propName)
+                                }
+                            >
+                                <App />
+                            </StyleSheetManager>
+
                             <div id={GLOBAL_MODAL_PORTAL_ID} />
                         </GlobalContexts>
                     </BrowserRouter>
