@@ -43,6 +43,7 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import TableInfo from '../TableInfo/TableInfo';
 
 interface propsIF {
     filter: CandleData | undefined;
@@ -358,6 +359,13 @@ function TradeTabs2(props: propsIF) {
                   content: <Leaderboard />,
                   icon: leaderboard,
                   showRightSideOption: false,
+              },
+              {
+                  label: 'Info',
+                  content: <TableInfo />,
+                  icon: leaderboard,
+                  showRightSideOption: false,
+                  //   onClick: handleChartHeightOnInfo,
               },
           ];
 

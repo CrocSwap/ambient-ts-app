@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, KeyboardEvent } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
@@ -34,8 +34,8 @@ export default function TransactionSettingsModal(props: propsIF) {
 
     const isPairStable = isStablePair(tokenA.address, tokenB.address, chainId);
 
-    const handleKeyDown = (event: { keyCode: number }): void => {
-        event.keyCode === 13 && updateSettings();
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
+        event.code === 'Enter' && updateSettings();
     };
 
     const persistedSlippage: number = isPairStable
