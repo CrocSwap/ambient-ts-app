@@ -4,7 +4,7 @@ import { BiSearch } from 'react-icons/bi';
 import { GiBackwardTime, GiSaveArrow } from 'react-icons/gi';
 import { LuDroplets, LuFileClock } from 'react-icons/lu';
 import { MdOutlineExpand, MdPlayArrow } from 'react-icons/md';
-import styled, { css } from 'styled-components';
+import styled, { css } from 'styled-components/macro';
 import { FlexContainer, GridContainer } from '../Common';
 
 export const SidebarDiv = styled.div<{ open: boolean }>`

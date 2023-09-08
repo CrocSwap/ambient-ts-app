@@ -167,8 +167,12 @@ export default function InitPool() {
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageInitCostInGasDrops = 157922;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageInitCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
                 getFormattedNumber({

@@ -14,7 +14,7 @@ import SwapTokenInput from '../../../components/Swap/SwapTokenInput/SwapTokenInp
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -162,6 +162,8 @@ function Swap(props: propsIF) {
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(sellQtyString || '0');
+    const isTokenADexSurplusSufficient =
+        tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1
@@ -239,10 +241,25 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
     // calculate price of gas for swap
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageSwapCostInGasDrops = 106000;
+            const averageSwapCostInGasDrops = isSellTokenNativeToken
+                ? 100000
+                : isWithdrawFromDexChecked
+                ? isTokenADexSurplusSufficient
+                    ? isSaveAsDexSurplusChecked
+                        ? 92000
+                        : 97000
+                    : isSaveAsDexSurplusChecked
+                    ? 105000
+                    : 110000
+                : isSaveAsDexSurplusChecked
+                ? 105000
+                : 110000;
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageSwapCostInGasDrops *
@@ -256,7 +273,14 @@ function Swap(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        isSellTokenNativeToken,
+        isWithdrawFromDexChecked,
+        isTokenADexSurplusSufficient,
+        isSaveAsDexSurplusChecked,
+    ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);

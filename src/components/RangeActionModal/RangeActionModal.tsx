@@ -114,14 +114,15 @@ export default function RangeActionModal(props: propsIF) {
         string | undefined
     >();
 
-    const averageGasUnitsForRemovalTx = type === 'Remove' ? 94500 : 92500;
+    const averageGasUnitsForRemovalTxInGasDrops =
+        type === 'Remove' ? 94500 : 92500;
     const numGweiInWei = 1e-9;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageGasUnitsForRemovalTx *
+                averageGasUnitsForRemovalTxInGasDrops *
                 numGweiInWei *
                 ethMainnetUsdPrice;
 
