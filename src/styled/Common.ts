@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css } from 'styled-components/macro';
 
 interface FontProps {
     font?: 'font-logo' | 'font-family' | 'roboto' | 'mono';
