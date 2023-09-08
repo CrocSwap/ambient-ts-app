@@ -24,6 +24,7 @@ import validateChain from '../functions/validateChain';
  * by passing parameters through to the tradeDataSlice in redux. */
 
 // array of all valid params in the app (global, anywhere)
+// must be listed in desired sequence in URL string
 const validParams = [
     'chain',
     'tokenA',
@@ -166,6 +167,11 @@ export const useUrlParams = (
         const newParamString: string = [...workingMap.entries()]
             // remove unrecognized params
             .filter((pair) => validParams.includes(pair[0]))
+            // sort param tuples into preferred sequence
+            .sort(
+                (p1, p2) =>
+                    validParams.indexOf(p1[0]) - validParams.indexOf(p2[0]),
+            )
             // transform k-v tuples in param strings
             .map((pair) => pair.join('='))
             // join individual params into a unified param string

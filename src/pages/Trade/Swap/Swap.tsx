@@ -660,7 +660,7 @@ function Swap(props: propsIF) {
                 onClick={() =>
                     updateURL({
                         update: [['chain', 19]],
-                        delete: ['tokenB', 'limitTick'],
+                        delete: ['limitTick'],
                     })
                 }
             >
