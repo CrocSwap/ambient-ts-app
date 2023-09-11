@@ -309,12 +309,8 @@ function TradeTabs2(props: propsIF) {
         isAccountView: false,
     };
 
-    const [showPositionsOnlyToggle, setShowPositionsOnlyToggle] =
-        useState(true);
-
     const positionsOnlyToggleProps = {
         setTransactionFilter,
-        showPositionsOnlyToggle,
         changeState,
         setSelectedDate,
         setHasUserSelectedViewAll,
@@ -465,7 +461,6 @@ function TradeTabs2(props: propsIF) {
                         <PositionsOnlyToggle {...positionsOnlyToggleProps} />
                     }
                     setSelectedInsideTab={setSelectedInsideTab}
-                    setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
                 />
             </FlexContainer>
         </FlexContainer>

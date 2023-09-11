@@ -11,7 +11,6 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 interface PositionsOnlyToggleProps {
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
     currentTab?: string;
-    showPositionsOnlyToggle?: boolean;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
@@ -20,12 +19,11 @@ interface PositionsOnlyToggleProps {
     setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;
 }
 
-const LeaderboardTabName = 'Leaderboard';
+const noFilterByUserTabs = ['Leaderboard', 'Info'];
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
         setTransactionFilter,
-        showPositionsOnlyToggle,
         changeState,
         setSelectedDate,
         setHasUserSelectedViewAll,
@@ -80,7 +78,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         !isUserConnected ||
         isCandleSelected ||
         // hide toggle if current tab is leaderboard since React state takes time to update
-        props.currentTab == LeaderboardTabName ? null : (
+        noFilterByUserTabs.includes(props.currentTab ?? '') ? null : (
             <Toggle
                 isOn={!showAllData}
                 handleToggle={() => {
@@ -111,7 +109,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 minHeight: '20px',
             }}
         >
-            {showPositionsOnlyToggle && (
+            {toggleOrNull && (
                 <FlexContainer
                     alignItems='center'
                     justifyContent='flex-end'
@@ -130,12 +128,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                                 : { cursor: 'default' }
                         }
                     >
-                        {isUserConnected &&
-                        !isCandleSelected &&
-                        // hide toggle if current tab is leaderboard since React state takes time to update
-                        props.currentTab !== LeaderboardTabName
-                            ? `My ${props.currentTab}`
-                            : null}
+                        {`My ${props.currentTab}`}
                     </Text>
                     {toggleOrNull}
                 </FlexContainer>

@@ -43,7 +43,6 @@ export default function TabComponent(props: TabPropsIF) {
         data,
         setSelectedInsideTab,
         rightTabOptions,
-        setShowPositionsOnlyToggle,
         isModalView = false,
         shouldSyncWithTradeModules = true,
         transparent = false,
@@ -86,18 +85,6 @@ export default function TabComponent(props: TabPropsIF) {
             (item) => item.label === selectedTab.label,
         );
         if (currentTabData) setSelectedTab(currentTabData);
-
-        if (
-            !currentTabData?.showRightSideOption &&
-            setShowPositionsOnlyToggle
-        ) {
-            setShowPositionsOnlyToggle(false);
-        } else if (
-            currentTabData?.showRightSideOption &&
-            setShowPositionsOnlyToggle
-        ) {
-            setShowPositionsOnlyToggle(true);
-        }
     }, [data, outsideControl]);
 
     function handleOutside2() {
