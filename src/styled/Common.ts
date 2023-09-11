@@ -45,7 +45,7 @@ interface ColorProps {
     background?: 'dark1' | 'dark2' | 'dark3' | 'dark4';
 }
 export const Color = css<ColorProps>`
-    ${({ color }) => (color ? `color: var(--${color})` : '')}
+    ${({ color }) => (color ? `color: var(--${color});` : '')}
     ${({ background }) =>
         background ? `background-color: var(--${background});` : ''}
 `;
@@ -82,8 +82,8 @@ const Grid = css<GridProps>`
         customCols ? customCols : numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
     grid-template-rows: ${({ numRows, customRows }) =>
         customRows ? customRows : numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
-    gap: ${({ gapSize }) => (gapSize ? `${gapSize}px` : '4')};
-    ${({ height }) => (height ? `height: ${height}px` : '100%')}
+    gap: ${({ gapSize }) => (gapSize ? `${gapSize}px` : '4px')};
+    ${({ height }) => (height ? `height: ${height}px;` : '')}
 `;
 export const GridContainer = styled.div<
     GridProps &
