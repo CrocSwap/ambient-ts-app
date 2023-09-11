@@ -1,7 +1,10 @@
 import React from 'react';
 import { FlexContainer } from '../../../../styled/Common';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-import { StyledLink, ButtonText } from './TradeNowButton.styles';
+import {
+    StyledLink,
+    TradeNowButtonText,
+} from '../../../../styled/Components/Home';
 
 interface propsIF {
     inNav?: boolean;
@@ -11,29 +14,9 @@ export default function TradeNowButton(props: propsIF) {
     const { inNav } = props;
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
-    const mobileButton = (
-        <StyledLink
-            to='/trade'
-            tabIndex={0}
-            aria-label='Go to trade page button'
-            inNav={inNav}
-        >
-            <FlexContainer
-                fullHeight
-                fullWidth
-                justifyContent='center'
-                alignItems='center'
-                rounded
-                background='dark2'
-            >
-                <ButtonText inNav={inNav}>Trade Now</ButtonText>
-            </FlexContainer>
-        </StyledLink>
-    );
-    if (showMobileVersion) return mobileButton;
     return (
         <StyledLink
-            to='/trade/market'
+            to={showMobileVersion ? '/trade' : '/trade/market'}
             tabIndex={0}
             aria-label='Go to trade page button'
             inNav={inNav}
@@ -46,7 +29,15 @@ export default function TradeNowButton(props: propsIF) {
                 rounded
                 background='dark2'
             >
-                <ButtonText inNav={inNav}>Trade Now</ButtonText>
+                <TradeNowButtonText
+                    fontWeight='300'
+                    font='font-logo'
+                    fontSize='header2'
+                    color='accent1'
+                    inNav={inNav}
+                >
+                    Trade Now
+                </TradeNowButtonText>
             </FlexContainer>
         </StyledLink>
     );
