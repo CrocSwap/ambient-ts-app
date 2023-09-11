@@ -258,13 +258,32 @@ export const Text = styled.p<
     FontProps &
         FontSizeProps &
         ColorProps &
-        FontWeightProps & { align?: string }
+        FontWeightProps & { align?: string } & MarginProps &
+        PaddingProps
 >`
     ${Font}
     ${FontSize}
     ${FontWeight}
     ${Color}
-    ${({ align }) => (align ? `text-align: ${align};` : '')}
+    ${Margin}
+    ${Padding}
+    ${({ align }) => align && `text-align: ${align}`};
+`;
+
+export const Span = styled.span<
+    FontProps &
+        FontSizeProps &
+        ColorProps &
+        FontWeightProps & { align?: string } & MarginProps &
+        PaddingProps
+>`
+    ${Font}
+    ${FontSize}
+    ${FontWeight}
+    ${Color}
+    ${Margin}
+    ${Padding}
+    ${({ align }) => align && `text-align: ${align}`};
 `;
 
 export const PulseAnimation = css`

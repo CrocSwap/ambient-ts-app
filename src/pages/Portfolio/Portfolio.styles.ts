@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { FlexContainer } from '../../styled/Common';
 
 export const PortfolioContainer = styled(FlexContainer)`

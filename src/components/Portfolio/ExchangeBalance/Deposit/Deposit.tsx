@@ -1,4 +1,3 @@
-import styles from './Deposit.module.css';
 import DepositButton from './DepositButton/DepositButton';
 import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySelector';
 import { TokenIF } from '../../../../utils/interfaces/exports';
@@ -34,6 +33,8 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import { MaxButton } from './Deposit.styles';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -398,10 +399,10 @@ export default function Deposit(props: propsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
 
     return (
-        <div className={styles.deposit_container}>
-            <div className={styles.info_text_non_clickable}>
+        <FlexContainer flexDirection='column' gap={16} padding={'16px'}>
+            <Text fontSize='body' color='text2'>
                 Deposit collateral for future trading at lower gas costs:
-            </div>
+            </Text>
             <DepositCurrencySelector
                 disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
@@ -410,30 +411,38 @@ export default function Deposit(props: propsIF) {
                 setInputValue={setInputValue}
                 setTokenModalOpen={setTokenModalOpen}
             />
-            <div className={styles.additional_info}>
-                <div
-                    className={`${styles.available_container} ${styles.info_text_non_clickable}`}
-                >
-                    <div className={styles.available_text}>Available:</div>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <FlexContainer fontSize='body' color='text2'>
+                    <Text margin='0 6px 0 0' color='text1'>
+                        Available:
+                    </Text>
                     {tokenWalletBalanceTruncated || '...'}
-                    <button
-                        className={`${styles.max_button} ${
-                            isWalletBalanceSufficientToCoverDeposit &&
-                            styles.max_button_enabled
-                        }`}
+                    <MaxButton
                         onClick={handleBalanceClick}
                         disabled={!isWalletBalanceSufficientToCoverDeposit}
                     >
                         Max
-                    </button>
-                </div>
-                <div className={styles.gas_pump}>
-                    <div className={styles.svg_container}>
-                        <FaGasPump size={12} />{' '}
-                    </div>
+                    </MaxButton>
+                </FlexContainer>
+                <FlexContainer
+                    alignItems='center'
+                    justifyContent='flex-end'
+                    color='text2'
+                    fontSize='body'
+                >
+                    <FlexContainer
+                        background='dark1'
+                        width='20px'
+                        height='20px'
+                        padding='0 6px 0 0'
+                        justifyContent='center'
+                        alignItems='center'
+                    >
+                        <FaGasPump size={12} />
+                    </FlexContainer>
                     {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
-                </div>
-            </div>
+                </FlexContainer>
+            </FlexContainer>
             <DepositButton
                 onClick={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();
@@ -441,6 +450,6 @@ export default function Deposit(props: propsIF) {
                 disabled={isButtonDisabled}
                 buttonMessage={buttonMessage}
             />
-        </div>
+        </FlexContainer>
     );
 }
