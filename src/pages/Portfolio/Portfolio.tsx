@@ -366,9 +366,9 @@ function Portfolio() {
 
             <div
                 className={
-                    addressFromParams
+                    !connectedAccountActive
                         ? styles.full_table
-                        : !connectedAccountActive || fullLayoutActive
+                        : fullLayoutActive
                         ? styles.full_layout_container
                         : styles.tabs_exchange_balance_container
                 }

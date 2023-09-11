@@ -133,6 +133,9 @@
 
     .full_table{
         display: grid;
+        grid-template-columns: auto ;
+        column-gap: 16px;
+        overflow: hidden;
         flex: 1;
     }
 
@@ -147,6 +150,8 @@
     .tabs_exchange_balance_container {
         grid-template-columns: auto 380px;
     }
+
+ 
 
     .mobile_toggle_container {
         display: none;
