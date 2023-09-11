@@ -300,7 +300,7 @@ function Trade() {
         <section
             className={styles.main_layout_mobile}
             style={{
-                height: 'calc(100vh - 56px)',
+                height: 'calc(100dvh - 150px)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '4px',
