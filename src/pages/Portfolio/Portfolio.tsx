@@ -338,7 +338,7 @@ function Portfolio() {
         >
             {connectedAccountActive && mobileDataToggle}
             {!showTabsAndNotExchange ? (
-                !isUserConnected ? (
+                !isUserConnected && !addressFromParams ? (
                     notConnectedContent
                 ) : (
                     <PortfolioTabs {...portfolioTabsProps} />
