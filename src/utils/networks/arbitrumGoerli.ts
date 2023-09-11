@@ -8,6 +8,7 @@ import {
 } from '../data/defaultTokens';
 import { TopPool } from '../data/defaultTopPools';
 import { NetworkIF } from '../interfaces/NetworkIF';
+import { Provider } from '@ethersproject/providers';
 
 export const arbitrumGoerli: NetworkIF = {
     chainId: '0x66eed',
@@ -34,8 +35,8 @@ export const arbitrumGoerli: NetworkIF = {
     stableTokens: [
         '0xc944b73fba33a773a4a07340333a3184a70af1ae', // USDC
     ],
-    getGasPriceInGwei: async () => {
-        // TODO: get Arbitrum gas price https://docs.arbitrum.io/devs-how-tos/how-to-estimate-gas#where-do-we-get-all-this-information-from
-        return 0;
+    getGasPriceInGwei: async (provider?: Provider) => {
+        if (!provider) return 0;
+        return (await provider.getGasPrice()).toNumber() * 1e-9;
     },
 };
