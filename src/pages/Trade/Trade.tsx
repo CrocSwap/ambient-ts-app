@@ -75,7 +75,7 @@ function Trade() {
     } = tradeData;
     const provider = useProvider();
 
-    useUrlParams(tokens, chainId, provider);
+    const { updateURL } = useUrlParams(tokens, chainId, provider);
 
     // hooks to generate default URL paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -161,6 +161,7 @@ function Trade() {
                 context={{
                     tradeData: tradeData,
                     navigationMenu: navigationMenu,
+                    updateURL: updateURL,
                 }}
             />
         </div>

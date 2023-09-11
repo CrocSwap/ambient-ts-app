@@ -37,7 +37,7 @@ const validParams = [
 // type generated as a union of all string literals in `validParams`
 type validParamsType = typeof validParams[number];
 
-interface updatesIF {
+export interface updatesIF {
     update?: Array<[validParamsType, string | number]>;
     delete?: Array<validParamsType>;
 }

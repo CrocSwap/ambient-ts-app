@@ -88,7 +88,7 @@ export default function Limit() {
         limitTickCopied,
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
-    const { limitTickFromParams } = useTradeData();
+    const { limitTickFromParams, updateURL } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
@@ -703,6 +703,7 @@ export default function Limit() {
                     isSellTokenBase={isSellTokenBase}
                     setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                     fieldId='limit-rate'
+                    updateURL={updateURL}
                 />
             }
             transactionDetails={

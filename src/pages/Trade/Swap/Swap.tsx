@@ -659,7 +659,10 @@ function Swap(props: propsIF) {
             <button
                 onClick={() =>
                     updateURL({
-                        update: [['chain', 19]],
+                        update: [
+                            ['chain', 19],
+                            ['lowTick', 85],
+                        ],
                         delete: ['limitTick'],
                     })
                 }
