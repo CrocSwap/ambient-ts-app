@@ -82,6 +82,7 @@ export default function LimitRate(props: propsIF) {
                     ? pinTickLower(limit, gridSize)
                     : pinTickUpper(limit, gridSize);
                 dispatch(setLimitTick(pinnedTick));
+                updateURL({ update: [['limitTick', pinnedTick]] });
             }
         }
     };
