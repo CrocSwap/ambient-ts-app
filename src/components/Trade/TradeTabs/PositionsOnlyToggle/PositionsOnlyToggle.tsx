@@ -109,7 +109,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 minHeight: '20px',
             }}
         >
-            {toggleOrNull && (
+            {toggleOrNull && ( // display toggle if user is logged in and viewing tx/limit/range tables
                 <FlexContainer
                     alignItems='center'
                     justifyContent='flex-end'
