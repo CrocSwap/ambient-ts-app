@@ -57,6 +57,10 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         quoteToken: { address: quoteTokenAddress },
     } = useContext(TradeTokenContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+
+    const [abortController, setAbortController] =
+        useState<AbortController | null>(null);
+
     const [candleData, setCandleData] = useState<
         CandlesByPoolAndDuration | undefined
     >();
@@ -64,6 +68,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     const [isCandleSelected, setIsCandleSelected] = useState<
         boolean | undefined
     >();
+
+    const [isZoomRequestCanceled, setIsZoomRequestCanceled] = useState(false);
 
     const [timeOfEndCandle, setTimeOfEndCandle] = useState<
         number | undefined
@@ -151,6 +157,12 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             candleTimeLocal &&
             crocEnv
         ) {
+            if (abortController) {
+                abortController.abort();
+            }
+
+            setIsZoomRequestCanceled(true);
+
             const candleTime = candleScale.isShowLatestCandle
                 ? Date.now() / 1000
                 : candleScale.lastCandleDate || 0;
@@ -179,6 +191,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     setIsCandleDataNull(true);
                 }
                 setIsFetchingCandle(false);
+                setIsZoomRequestCanceled(false);
             });
         } else {
             setIsFetchingCandle(true);
@@ -228,6 +241,11 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             return;
         }
 
+        const controller = new AbortController();
+        setAbortController(controller);
+
+        const signal = controller?.signal; // used cancel the request when the pool or timeframe changes before the zoom request end
+
         fetchCandleSeriesHybrid(
             true,
             chainData,
@@ -238,6 +256,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             numDurations,
             crocEnv,
             cachedFetchTokenPrice,
+            signal,
         )
             .then((incrCandles) => {
                 if (incrCandles && candleData) {
@@ -279,13 +298,17 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                 }
             })
             .catch((e) => {
-                console.error(e);
+                if (e.name === 'AbortError') {
+                    console.warn('Zoom request cancelled');
+                } else {
+                    console.error(e);
+                }
                 setIsCandleDataNull(false);
             });
     };
 
     useEffect(() => {
-        if (!numDurationsNeeded) return;
+        if (!numDurationsNeeded || isZoomRequestCanceled) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
