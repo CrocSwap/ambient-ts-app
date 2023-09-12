@@ -27,9 +27,7 @@ function Toolbar(props: ToolbarProps) {
         const feeRate = document.getElementById('fee_rate_chart');
         const tvl = document.getElementById('tvl_chart');
         if (feeRate && tvl) {
-            const toolbar = document.getElementById('toolbar_container');
-
-            const column = toolbar ? toolbar.getClientRects()[0].width : 9;
+            const column = isToolbarOpen ? 38 : 9;
 
             feeRate.style.gridTemplateColumns =
                 column + 'px auto 1fr auto minmax(1em, max-content)';
@@ -63,11 +61,20 @@ function Toolbar(props: ToolbarProps) {
     ];
 
     return (
-        <div className={styles.toolbar_container} id='toolbar_container'>
-            {isToolbarOpen ? (
-                <div className={styles.drawlist_cotainer}>
-                    <div>
-                        {iconList.map((item, index) => (
+        <div
+            className={` ${
+                isToolbarOpen ? styles.toolbar_container_active : ''
+            } ${styles.toolbar_container} `}
+            id='toolbar_container'
+        >
+            <div
+                className={` ${
+                    isToolbarOpen ? styles.drawlist_container_active : ''
+                } ${styles.drawlist_container} `}
+            >
+                <div>
+                    {isToolbarOpen &&
+                        iconList.map((item, index) => (
                             <div key={index} className={styles.icon_card}>
                                 <div
                                     className={
@@ -93,31 +100,28 @@ function Toolbar(props: ToolbarProps) {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                </div>
+            </div>
 
-                    <div className={styles.divider_container}>
-                        <div className={styles.divider}></div>
-                        <div
-                            className={styles.divider_button}
-                            onClick={() =>
-                                setIsToolbarOpen((prev: boolean) => !prev)
-                            }
-                        >
-                            <span className={styles.arrow_left}></span>
-                        </div>
-                    </div>
-                </div>
-            ) : (
+            <div
+                className={styles.divider_container}
+                onClick={() => setIsToolbarOpen((prev: boolean) => !prev)}
+            >
+                <div className={styles.divider}></div>
                 <div
-                    className={styles.close_divider_container}
-                    onClick={() => setIsToolbarOpen((prev: boolean) => !prev)}
+                    className={
+                        isToolbarOpen
+                            ? styles.divider_button
+                            : styles.close_divider_button
+                    }
                 >
-                    <div className={styles.divider}></div>
-                    <div className={styles.close_divider_button}>
-                        <span className={styles.arrow_right}></span>
-                    </div>
+                    <span
+                        className={` ${
+                            isToolbarOpen ? styles.arrow_left : ''
+                        } ${styles.arrow_right} `}
+                    ></span>
                 </div>
-            )}
+            </div>
         </div>
     );
 }
