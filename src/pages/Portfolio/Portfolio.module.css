@@ -131,7 +131,7 @@
         gap: 1rem;
     }
 
-    .full_table{
+    .full_table {
         display: grid;
         grid-template-columns: auto ;
         column-gap: 16px;

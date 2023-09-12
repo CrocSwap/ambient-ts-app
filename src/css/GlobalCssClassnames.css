@@ -77,122 +77,120 @@
 
 .hide_scrollvar::-webkit-scrollbar {
     display: none;
-  }
+}
 
-  .emoji-picker-react .emoji-group:before,
-  .emoji-picker-react input.emoji-search {
-      color: var(--text2) !important;
-      background: var(--dark2) !important;
-    }
-    
-    aside.emoji-picker-react {
-        background: var(--dark2) !important;
-        box-shadow: 0 5px 10px var(--dark1) !important;
-        border: 1px solid var(--border) !important;
-    }
-    
-    .emoji-picker-react .emoji-categories button {
-        filter: invert(100%);
-    }
-    
-    .MuiTooltip-popper {
-        z-index: 9999999 !important;
-    }
-    
-    .introjs-tooltip {
-        background: var(--dark2) !important;
-        /* background: white !important; */
-    }
-    .introjs-tooltip-header {
-        color: var(--text1);
-        /* color: black; */
-        font-weight: 300;
-        font-size: 18px;
-        line-height: 22px;
-    }
-    .introjs-tooltip-title {
-        color: var(--text2) !important;
-        /* color: black !important; */
-        font-weight: 300;
-        font-size: 12px;
-        line-height: 15px;
-    }
-    .introjs-button {
-        background: var(--dark2) !important;
-        
-        outline: none !important;
-        border: none !important;
-        color: var(--text2) !important;
-        text-shadow: none !important;
-        transition: all var(--animation-speed) ease-in-out !important;
-        padding: 0 1rem !important;
-    }
-    .introjs-tooltipbuttons a {
-        /* font-size: 1.2rem; */
-        color: var(--accent5);
-        /* font-weight: 700; */
-    }
-    
-    .introjs-button:hover {
-        color: var(--text1) !important;
-        border: none !important;
-        outline: none !important;
-    }
-    .introjs-tooltipbuttons {
-        position: fixed;
-        right: 51.14px;
-        bottom: 48px;
-        padding: 4px 16px !important;
-        
-        box-shadow: 0px 0px 100px rgba(205, 193, 255, 0.3),
+.emoji-picker-react .emoji-group:before,
+.emoji-picker-react input.emoji-search {
+    color: var(--text2) !important;
+    background: var(--dark2) !important;
+}
+
+aside.emoji-picker-react {
+    background: var(--dark2) !important;
+    box-shadow: 0 5px 10px var(--dark1) !important;
+    border: 1px solid var(--border) !important;
+}
+
+.emoji-picker-react .emoji-categories button {
+    filter: invert(100%);
+}
+
+.MuiTooltip-popper {
+    z-index: 9999999 !important;
+}
+
+.introjs-tooltip {
+    background: var(--dark2) !important;
+    /* background: white !important; */
+}
+.introjs-tooltip-header {
+    color: var(--text1);
+    /* color: black; */
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 22px;
+}
+.introjs-tooltip-title {
+    color: var(--text2) !important;
+    /* color: black !important; */
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;
+}
+.introjs-button {
+    background: var(--dark2) !important;
+
+    outline: none !important;
+    border: none !important;
+    color: var(--text2) !important;
+    text-shadow: none !important;
+    transition: all var(--animation-speed) ease-in-out !important;
+    padding: 0 1rem !important;
+}
+.introjs-tooltipbuttons a {
+    /* font-size: 1.2rem; */
+    color: var(--accent5);
+    /* font-weight: 700; */
+}
+
+.introjs-button:hover {
+    color: var(--text1) !important;
+    border: none !important;
+    outline: none !important;
+}
+.introjs-tooltipbuttons {
+    position: fixed;
+    right: 51.14px;
+    bottom: 48px;
+    padding: 4px 16px !important;
+
+    box-shadow: 0px 0px 100px rgba(205, 193, 255, 0.3),
         0px 0px 60px rgba(205, 193, 255, 0.3),
         0px 0px 20px rgba(205, 193, 255, 0.3),
         0px 0px 12px rgba(205, 193, 255, 0.3),
         0px 0px 6px rgba(205, 193, 255, 0.3),
         0px 0px 3px rgba(205, 193, 255, 0.3);
-        border-radius: 4px;
-    }
-    
-    /* .MuiPagination-root{
+    border-radius: 4px;
+}
+
+/* .MuiPagination-root{
         
         background: red !important;
     } */
-    .MuiPagination-ul {
-        background: var(--dark2);
-        border-radius: 4px !important;
-        flex-wrap: nowrap !important;
-    }
-    
-    .MuiPaginationItem-root {
-        color: var(--text2) !important;
-        outline: 1px solid transparent !important;
-    }
-    
-    .MuiPaginationItem-root:hover{
-        color: var(--text1) !important;
-    } 
-    .Mui-selected.MuiPaginationItem-root {
-        color: var(--text1) !important;
-        background: transparent !important;
-    }
-    
-    .MuiPaginationItem-root {
-        display: inline-flex !important;
-    }
-    
-    .css-1idz92c-MuiCircularProgress-svg {
-        color: var(--title-gradient) !important;
-    }
+.MuiPagination-ul {
+    background: var(--dark2);
+    border-radius: 4px !important;
+    flex-wrap: nowrap !important;
+}
 
-    .icon_hover:hover{
- 
-            color: var(--accent1) !important;
-            cursor: pointer ;
-        
-        
-    }
-    @media only screen and (min-width: 1280px) {
-    .top-pools-analytics-table td, .top-pools-analytics-table  th{
+.MuiPaginationItem-root {
+    color: var(--text2) !important;
+    outline: 1px solid transparent !important;
+}
+
+.MuiPaginationItem-root:hover {
+    color: var(--text1) !important;
+}
+.Mui-selected.MuiPaginationItem-root {
+    color: var(--text1) !important;
+    background: transparent !important;
+}
+
+.MuiPaginationItem-root {
+    display: inline-flex !important;
+}
+
+.css-1idz92c-MuiCircularProgress-svg {
+    color: var(--title-gradient) !important;
+}
+
+.icon_hover:hover{
+    color: var(--accent1) !important;
+    cursor: pointer;
+}
+@media only screen and (min-width: 1280px) {
+    .top-pools-analytics-table td,
+    .top-pools-analytics-table th {
         min-width: 180px;
     }
 }

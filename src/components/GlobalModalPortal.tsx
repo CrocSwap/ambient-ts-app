@@ -11,7 +11,7 @@ export default function GlobalModalPortal(props: propsIF) {
 
     const getGlobalModalPortal = (elem: ReactNode) => {
         return createPortal(
-            elem,
+            <div onClick={(e) => e.stopPropagation()}>{elem}</div>,
             document.getElementById(GLOBAL_MODAL_PORTAL_ID) ?? document.body,
         );
     };

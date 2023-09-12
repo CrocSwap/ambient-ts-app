@@ -21,8 +21,7 @@
     gap: 0.8rem;
 }
 
-
-.hoverable_icon{
+.hoverable_icon {
     fill: var(--text2) !important;
     color: var(--text2) !important;
     width: 100%;
@@ -31,6 +30,6 @@
     justify-content: center;
     align-items: center;
 }
-.hoverable_icon:hover{
-    fill: var(--accent1) !important
+.hoverable_icon:hover {
+    fill: var(--accent1) !important;
 }

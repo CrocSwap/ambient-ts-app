@@ -55,10 +55,8 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-   
-  
-    min-height: 40px;
 
+    min-height: 40px;
 }
 .swap_input {
     width: 70%;
@@ -72,12 +70,10 @@
     padding: 0 4px;
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
-
 }
 .token_select:hover {
     background: var(--dark3);
 }
-
 
 .token_list_text {
     font-size: var(--header2-size);

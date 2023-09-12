@@ -8,7 +8,7 @@ export const Font = css<FontProps>`
 `;
 
 interface FontSizeProps {
-    fontSize?: 'header1' | 'header2' | 'header' | 'body';
+    fontSize?: 'header1' | 'header2' | 'header' | 'body' | 'mini';
 }
 export const FontSize = css<FontSizeProps>`
     ${({ fontSize }) =>
@@ -70,7 +70,7 @@ export const Margin = css<MarginProps>`
 interface GridProps {
     numCols?: number;
     numRows?: number;
-    gapSize?: number;
+    gap?: number;
     height?: number;
     fullWidth?: boolean;
     customRows?: string;
@@ -82,7 +82,7 @@ const Grid = css<GridProps>`
         customCols ? customCols : numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
     grid-template-rows: ${({ numRows, customRows }) =>
         customRows ? customRows : numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
-    gap: ${({ gapSize }) => (gapSize ? `${gapSize}px` : '4px')};
+    gap: ${({ gap }) => (gap ? `${gap}px` : '4px')};
     ${({ height }) => (height ? `height: ${height}px;` : '')}
 `;
 export const GridContainer = styled.div<
@@ -195,6 +195,21 @@ export const Text = styled.p<
     ${FontWeight}
     ${Color}
     ${({ align }) => (align ? `text-align: ${align};` : '')}
+`;
+
+export const PulseAnimation = css`
+    animation: shadow-pulse 1s 6;
+    @keyframes shadow-pulse {
+        0% {
+            box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
+            border-radius: var(--border-radius);
+        }
+
+        100% {
+            box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
+            border-radius: var(--border-radius);
+        }
+    }
 `;
 
 interface ScrollContainerProps {

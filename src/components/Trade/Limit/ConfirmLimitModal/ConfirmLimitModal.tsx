@@ -1,9 +1,9 @@
-import styles from '../../TradeModules/TradeConfirmationSkeleton.module.css';
 import { useContext } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
+import { FlexContainer, Text } from '../../../../styled/Common';
 
 interface propsIF {
     initiateLimitOrderMethod: () => Promise<void>;
@@ -73,46 +73,54 @@ export default function ConfirmLimitModal(props: propsIF) {
 
     const transactionDetails = (
         <>
-            <div className={styles.row}>
-                <p>Current Price</p>
-                <p>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    Current Price
+                </Text>
+                <Text fontSize='body' color='text2'>
                     {isDenomBase
                         ? `${displayPoolPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                         : `${displayPoolPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Fill Start</p>
-                <p>
+                </Text>
+            </FlexContainer>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    Fill Start
+                </Text>
+                <Text fontSize='body' color='text2'>
                     {isDenomBase
                         ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                         : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Fill Middle</p>
-                <p>
+                </Text>
+            </FlexContainer>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    Fill Middle
+                </Text>
+                <Text fontSize='body' color='text2'>
                     {isDenomBase
                         ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                         : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Fill End</p>
-                <p>
+                </Text>
+            </FlexContainer>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    Fill End
+                </Text>
+                <Text fontSize='body' color='text2'>
                     {isDenomBase
                         ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                         : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
+                </Text>
+            </FlexContainer>
         </>
     );
 
     const extraNotes = (
-        <div className={styles.extra_note}>
+        <Text fontSize='body' color='accent2' style={{ textAlign: 'center' }}>
             {`${tokenB.symbol} will be available for withdrawal after the limit order is filled. 
         ${tokenA.symbol} can be withdrawn at any time before fill completion.`}
-        </div>
+        </Text>
     );
 
     return (

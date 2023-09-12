@@ -5,34 +5,34 @@ import {
     DefaultTooltip,
     TextOnlyTooltip,
 } from '../../../Global/StyledTooltip/StyledTooltip';
-import styles from './Transactions.module.css';
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { NavLink } from 'react-router-dom';
 import moment from 'moment';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
+import { FlexContainer } from '../../../../styled/Common';
+import { RowItem } from '../../../../styled/Components/TransactionTable';
 
 interface propsIF {
     txHashTruncated: string;
-    sideTypeStyle: string;
     usdValue: string;
-    usernameStyle: string;
+    usernameColor: 'accent1' | 'accent2' | 'text1';
     userNameToDisplay: string;
     baseTokenLogo: string;
     baseQuantityDisplay: string;
     quoteTokenLogo: string;
     quoteQuantityDisplay: string;
     elapsedTimeString: string;
-    sideType: string;
+    sideType: 'add' | 'claim' | 'harvest' | 'remove' | 'buy' | 'sell';
     sideCharacter: string;
     ensName: string | null;
     ownerId: string;
     positiveArrow: string;
-    positiveDisplayStyle: string;
-    negativeDisplayStyle: string;
+    positiveDisplayColor: 'text1' | 'positive';
+    negativeDisplayColor: 'text1' | 'negative';
     negativeArrow: string;
     type: string;
     truncatedLowDisplayPrice: string | undefined;
@@ -50,8 +50,6 @@ interface propsIF {
     handleCopyTxHash: () => void;
     handleOpenExplorer: () => void;
     openDetailsModal: () => void;
-    handleRowMouseDown: () => void;
-    handleRowMouseOut: () => void;
     handleWalletClick: () => void;
     handleWalletCopy: () => void;
     tx: TransactionIF;
@@ -68,12 +66,9 @@ export const txRowConstants = (props: propsIF) => {
         handleOpenExplorer,
         txHashTruncated,
         openDetailsModal,
-        handleRowMouseDown,
-        handleRowMouseOut,
-        sideTypeStyle,
         usdValue,
         ensName,
-        usernameStyle,
+        usernameColor,
         userNameToDisplay,
         baseTokenLogo,
         quoteTokenLogo,
@@ -90,8 +85,8 @@ export const txRowConstants = (props: propsIF) => {
         isOrderRemove,
         valueArrows,
         positiveArrow,
-        positiveDisplayStyle,
-        negativeDisplayStyle,
+        positiveDisplayColor,
+        negativeDisplayColor,
         negativeArrow,
         type,
         truncatedLowDisplayPrice,
@@ -117,8 +112,18 @@ export const txRowConstants = (props: propsIF) => {
             interactive
             title={
                 <div
-                    className={styles.id_tooltip_style}
                     onClick={(event) => event.stopPropagation()}
+                    style={{
+                        marginLeft: '-60px',
+                        background: 'var(--dark3)',
+                        color: 'var(--text1)',
+                        padding: '12px',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontFamily: 'var(--roboto)',
+                        whiteSpace: 'nowrap',
+                        width: '424px',
+                    }}
                 >
                     <span onClick={handleOpenExplorer}>
                         {' '}
@@ -135,27 +140,27 @@ export const txRowConstants = (props: propsIF) => {
             enterDelay={750}
             leaveDelay={0}
         >
-            <p
+            <RowItem
+                hover
+                font='roboto'
                 data-label='id'
-                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+                role='button'
                 tabIndex={0}
             >
                 {txHashTruncated}
-            </p>
+            </RowItem>
         </TextOnlyTooltip>
     );
 
     const usdValueWithTooltip = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <RowItem
+            justifyContent='flex-end'
+            type={sideType}
             data-label='value'
-            className={sideTypeStyle}
-            style={{ textAlign: 'right' }}
             tabIndex={0}
         >
             {usdValue}
-        </li>
+        </RowItem>
     );
 
     const actualWalletWithTooltip = (
@@ -172,17 +177,13 @@ export const txRowConstants = (props: propsIF) => {
                         cursor: 'pointer',
                     }}
                 >
-                    <p
-                        className={`${styles.mono_font}`}
-                        onClick={(event) => event.stopPropagation()}
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            whiteSpace: 'nowrap',
-
-                            gap: '4px',
-                        }}
+                    <RowItem
+                        font='roboto'
+                        gap={4}
+                        role='button'
+                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+                            event.stopPropagation()
+                        }
                     >
                         <span onClick={handleWalletClick}>{ownerId}</span>
                         <FiCopy
@@ -196,32 +197,35 @@ export const txRowConstants = (props: propsIF) => {
                             size={'12px'}
                             onClick={handleWalletClick}
                         />
-                    </p>
+                    </RowItem>
                 </div>
             }
             placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
-            <p
+            <RowItem
+                color={usernameColor}
+                font={usernameColor === 'text1' ? 'roboto' : undefined}
                 data-label='wallet'
-                className={usernameStyle}
                 style={ensName ? { textTransform: 'lowercase' } : undefined}
             >
                 {userNameToDisplay}
-            </p>
+            </RowItem>
         </TextOnlyTooltip>
     );
 
     const walletWithoutTooltip = (
-        <p
+        <RowItem
+            hover
+            color={usernameColor}
+            font={usernameColor === 'text1' ? 'roboto' : undefined}
             data-label='wallet'
-            className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
             tabIndex={0}
         >
             {userNameToDisplay}
-        </p>
+        </RowItem>
     );
 
     const walletWithTooltip = isOwnerActiveAccount
@@ -284,16 +288,14 @@ export const txRowConstants = (props: propsIF) => {
         formSlugForPairParams(tx.chainId, tx.quote, tx.base);
 
     const tokenPair = (
-        <li
+        <div
             className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             onClick={(event) => event.stopPropagation()}
         >
             <NavLink to={tradeLinkPath}>
                 {tx.baseSymbol} / {tx.quoteSymbol}
             </NavLink>
-        </li>
+        </div>
     );
 
     const TxTimeWithTooltip = (
@@ -318,76 +320,49 @@ export const txRowConstants = (props: propsIF) => {
             enterDelay={750}
             leaveDelay={0}
         >
-            <li
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-                tabIndex={0}
-            >
+            <div style={{ textTransform: 'lowercase' }} tabIndex={0}>
                 <p className='base_color'>{elapsedTimeString}</p>
-            </li>
+            </div>
         </TextOnlyTooltip>
     );
 
     const baseQtyDisplayWithTooltip = (
-        <li
-            data-label={tx.baseSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
+        <div data-label={tx.baseSymbol} className='base_color' tabIndex={0}>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='flex-end'
+                gap={4}
             >
                 {baseQuantityDisplay}
                 {baseTokenLogoComponent}
-            </div>
-        </li>
+            </FlexContainer>
+        </div>
     );
     const quoteQtyDisplayWithTooltip = (
-        <li
-            data-label={tx.quoteSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
+        <div data-label={tx.quoteSymbol} className='base_color' tabIndex={0}>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='flex-end'
+                gap={4}
             >
                 {quoteQuantityDisplay}
                 {quoteTokenLogoComponent}
-            </div>
-        </li>
+            </FlexContainer>
+        </div>
     );
 
     const txIdColumnComponent = (
-        <li>
+        <div>
             {IDWithTooltip}
             {walletWithTooltip}
-        </li>
+        </div>
     );
 
     const sideDisplay = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <RowItem
+            type={sideType}
+            justifyContent='center'
             data-label='side'
-            className={sideTypeStyle}
-            style={{ textAlign: 'center' }}
             tabIndex={0}
         >
             {tx.entityType === 'liqchange' ||
@@ -395,11 +370,11 @@ export const txRowConstants = (props: propsIF) => {
             tx.changeType === 'recover'
                 ? `${sideType}`
                 : `${sideType} ${sideCharacter}`}
-        </li>
+        </RowItem>
     );
 
     const baseQuoteQtyDisplayColumn = (
-        <li
+        <div
             data-label={tx.baseSymbol + tx.quoteSymbol}
             className='color_white'
             style={{ textAlign: 'right' }}
@@ -407,8 +382,11 @@ export const txRowConstants = (props: propsIF) => {
                 openDetailsModal();
             }}
         >
-            <div
-                className={`${styles.token_qty} ${positiveDisplayStyle}`}
+            <FlexContainer
+                justifyContent='flex-end'
+                alignItems='center'
+                gap={4}
+                color={positiveDisplayColor}
                 style={{
                     whiteSpace: 'nowrap',
                 }}
@@ -428,10 +406,13 @@ export const txRowConstants = (props: propsIF) => {
                     : isOrderRemove
                     ? quoteTokenLogoComponent
                     : baseTokenLogoComponent}
-            </div>
+            </FlexContainer>
 
-            <div
-                className={`${styles.token_qty} ${negativeDisplayStyle}`}
+            <FlexContainer
+                justifyContent='flex-end'
+                alignItems='center'
+                gap={4}
+                color={negativeDisplayColor}
                 style={{
                     whiteSpace: 'nowrap',
                 }}
@@ -454,29 +435,26 @@ export const txRowConstants = (props: propsIF) => {
                     : isOrderRemove
                     ? baseTokenLogoComponent
                     : quoteTokenLogoComponent}
-            </div>
-        </li>
+            </FlexContainer>
+        </div>
     );
 
     const typeDisplay = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <RowItem
+            justifyContent='center'
+            type={sideType}
             data-label='type'
-            className={sideTypeStyle}
-            style={{ textAlign: 'center' }}
             tabIndex={0}
         >
             {type}
-        </li>
+        </RowItem>
     );
 
     const typeAndSideColumn = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <RowItem
+            flexDirection='column'
+            type={sideType}
             data-label='side-type'
-            className={sideTypeStyle}
             style={{ textAlign: 'center' }}
         >
             <p>{type}</p>
@@ -487,13 +465,11 @@ export const txRowConstants = (props: propsIF) => {
                     ? `${sideType}`
                     : `${sideType} ${sideCharacter}`}
             </p>
-        </li>
+        </RowItem>
     );
 
     const ambientPriceDisplay = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <div
             data-label='price'
             className={'primary_color'}
             style={{
@@ -503,18 +479,19 @@ export const txRowConstants = (props: propsIF) => {
             tabIndex={0}
         >
             ambient
-        </li>
+        </div>
     );
 
     const lowAndHighPriceDisplay = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <RowItem
+            flexDirection='column'
+            alignItems='flex-end'
+            justifyContent='center'
+            type={sideType}
             data-label='price'
-            className={`${sideTypeStyle}`}
             tabIndex={0}
         >
-            <p className={`${styles.align_right} `}>
+            <p>
                 <span>{truncatedLowDisplayPrice ? priceCharacter : '…'}</span>
                 <span>
                     {isAccountView
@@ -522,7 +499,7 @@ export const txRowConstants = (props: propsIF) => {
                         : truncatedLowDisplayPrice}
                 </span>
             </p>
-            <p className={`${styles.align_right} `}>
+            <p>
                 <span>{truncatedHighDisplayPrice ? priceCharacter : '…'}</span>
                 <span>
                     {isAccountView
@@ -530,13 +507,13 @@ export const txRowConstants = (props: propsIF) => {
                         : truncatedHighDisplayPrice}
                 </span>
             </p>
-        </li>
+        </RowItem>
     );
 
     const priceDisplay = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <RowItem
+            justifyContent='flex-end'
+            type={sideType}
             onClick={() => {
                 if (IS_LOCAL_ENV) {
                     console.debug({ isAccountView });
@@ -547,11 +524,10 @@ export const txRowConstants = (props: propsIF) => {
                 openDetailsModal();
             }}
             data-label='price'
-            className={`${styles.align_right}  ${sideTypeStyle}`}
             tabIndex={0}
         >
             {(
-                <p className={`${styles.align_right} `}>
+                <p>
                     <span>
                         {(
                             isAccountView
@@ -568,7 +544,7 @@ export const txRowConstants = (props: propsIF) => {
                     </span>
                 </p>
             ) || '…'}
-        </li>
+        </RowItem>
     );
 
     return {
