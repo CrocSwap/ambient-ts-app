@@ -133,6 +133,19 @@
     display: none;
 }
 
+.tab_icon_container{
+
+    background: var(--dark3);
+    padding: 4px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.tab_icon_container:hover{
+    cursor: pointer;
+    background: var(--dark2);
+    transition: all var(--animation-speed) ease-in-out;
+}
 .tab_icon {
     display: flex;
 }
