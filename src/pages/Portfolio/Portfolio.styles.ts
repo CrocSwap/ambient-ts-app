@@ -71,3 +71,25 @@ export const PortfolioTabsContainer = styled.div<{
         }}
     }
 `;
+
+export const MobileToggleContainer = styled(FlexContainer)``;
+
+export const MobileButton = styled.button<{ active: boolean }>`
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding: 4px 1.5rem;
+
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border: none;
+    outline: none;
+
+    &:hover {
+        color: var(--text1);
+    }
+
+    ${({ active }) => `
+        color: ${active ? 'black' : 'var(--text1)'};
+        background: ${active ? 'var(--accent1)' : 'transparent'};
+    `}
+`;

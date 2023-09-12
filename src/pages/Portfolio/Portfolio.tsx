@@ -10,7 +10,6 @@ import Button from '../../components/Global/Button/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 // START: Import Other Local Files
-import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { fetchEnsAddress } from '../../App/functions/fetchAddress';
 import { Navigate, useParams } from 'react-router-dom';
@@ -24,7 +23,11 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { useSimulatedIsUserConnected } from '../../App/hooks/useSimulatedIsUserConnected';
-import { PortfolioContainer, PortfolioTabsContainer } from './Portfolio.styles';
+import {
+    MobileButton,
+    PortfolioContainer,
+    PortfolioTabsContainer,
+} from './Portfolio.styles';
 import { FlexContainer, Text } from '../../styled/Common';
 
 function Portfolio() {
@@ -273,43 +276,49 @@ function Portfolio() {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const mobileDataToggle = (
-        <div className={styles.mobile_toggle_container}>
-            <button
+        <FlexContainer
+            justifyContent='center'
+            alignItems='center'
+            background='dark2'
+            rounded
+            outline='text2'
+            margin='10px auto'
+        >
+            <MobileButton
                 onClick={() =>
                     setShowTabsAndNotExchange(!showTabsAndNotExchange)
                 }
-                className={
-                    showTabsAndNotExchange
-                        ? styles.non_active_button_mobile_toggle
-                        : styles.active_button_mobile_toggle
-                }
+                active={!showTabsAndNotExchange}
             >
                 Transactions
-            </button>
-            <button
+            </MobileButton>
+            <MobileButton
                 onClick={() =>
                     setShowTabsAndNotExchange(!showTabsAndNotExchange)
                 }
-                className={
-                    showTabsAndNotExchange
-                        ? styles.active_button_mobile_toggle
-                        : styles.non_active_button_mobile_toggle
-                }
+                active={showTabsAndNotExchange}
             >
                 Exchange
-            </button>
-        </div>
+            </MobileButton>
+        </FlexContainer>
     );
 
     const notConnectedContent = (
-        <div className={styles.non_connected_content}>
+        <FlexContainer
+            fullWidth
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='center'
+            gap={8}
+        >
             <Text>Please connect your wallet.</Text>
             <Button
                 flat
                 title='Connect Wallet'
                 action={() => openModalWallet()}
+                width='30%'
             />
-        </div>
+        </FlexContainer>
     );
 
     const portfolioTabsProps = {

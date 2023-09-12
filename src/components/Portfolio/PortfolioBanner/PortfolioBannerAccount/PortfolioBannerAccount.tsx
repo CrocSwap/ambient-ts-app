@@ -1,7 +1,6 @@
 // import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import { useContext, useState } from 'react';
-import { motion } from 'framer-motion';
 interface IPortfolioBannerAccountPropsIF {
     ensName: string;
     resolvedAddress: string;
@@ -9,11 +8,12 @@ interface IPortfolioBannerAccountPropsIF {
     ensNameAvailable: boolean;
     jazziconsToDisplay: JSX.Element | null;
 }
-import styles from './PortfolioBannerAccount.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { FlexContainer, Span } from '../../../../styled/Common';
+import { MainContainer } from '../PortfolioBanner.styles';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -80,21 +80,32 @@ export default function PortfolioBannerAccount(
     }
 
     return (
-        <motion.main
-            className={styles.main_container}
-            animate={showAccountDetails ? 'open' : 'closed'}
-        >
-            <div
-                className={styles.account_container}
+        <MainContainer animate={showAccountDetails ? 'open' : 'closed'}>
+            <FlexContainer
+                alignItems='flex-end'
+                zIndex={1}
+                gap={22}
                 onClick={() => setShowAccountDetails(!showAccountDetails)}
             >
                 {props.jazziconsToDisplay}
 
-                <div className={styles.account_names}>
-                    <span className={styles.name} onClick={handleCopyEnsName}>
+                <FlexContainer flexDirection='column'>
+                    <Span
+                        fontWeight='300'
+                        fontSize='header1'
+                        pointer
+                        letterSpacing
+                        color='text1'
+                        onClick={handleCopyEnsName}
+                    >
                         {ensNameToDisplay}
-                    </span>
-                    <span className={styles.hash} onClick={handleCopyAddress}>
+                    </Span>
+                    <Span
+                        fontWeight='300'
+                        fontSize='body'
+                        pointer
+                        onClick={handleCopyAddress}
+                    >
                         {addressToDisplay}
                         {addressToDisplay ? <FiCopy size={'12px'} /> : null}
                         {addressToDisplay ? (
@@ -108,9 +119,9 @@ export default function PortfolioBannerAccount(
                                 }}
                             />
                         ) : null}
-                    </span>
-                </div>
-            </div>
-        </motion.main>
+                    </Span>
+                </FlexContainer>
+            </FlexContainer>
+        </MainContainer>
     );
 }

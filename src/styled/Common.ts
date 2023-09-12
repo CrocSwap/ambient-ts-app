@@ -2,9 +2,11 @@ import styled, { css } from 'styled-components/macro';
 
 interface FontProps {
     font?: 'font-logo' | 'font-family' | 'roboto' | 'mono';
+    letterSpacing?: boolean;
 }
 export const Font = css<FontProps>`
     ${({ font }) => (font ? `font-family: var(--${font});` : '')}
+    ${({ letterSpacing }) => (letterSpacing ? 'letter-spacing: -0.02em;' : '')}
 `;
 
 interface FontSizeProps {
@@ -27,21 +29,23 @@ export const FontWeight = css<FontWeightProps>`
     ${({ fontWeight }) => (fontWeight ? `font-weight: ${fontWeight};` : '')}
 `;
 
+type textColors =
+    | 'text1'
+    | 'text2'
+    | 'text3'
+    | 'accent1'
+    | 'accent2'
+    | 'accent3'
+    | 'accent4'
+    | 'accent5'
+    | 'positive'
+    | 'negative'
+    | 'other-green'
+    | 'other-red'
+    | 'orange';
+
 interface ColorProps {
-    color?:
-        | 'text1'
-        | 'text2'
-        | 'text3'
-        | 'accent1'
-        | 'accent2'
-        | 'accent3'
-        | 'accent4'
-        | 'accent5'
-        | 'positive'
-        | 'negative'
-        | 'other-green'
-        | 'other-red'
-        | 'orange';
+    color?: textColors;
     background?: 'dark1' | 'dark2' | 'dark3' | 'dark4' | 'title-gradient';
 }
 
@@ -136,6 +140,8 @@ export interface ContainerProps {
     wrap?: boolean;
     textAlign?: 'left' | 'center' | 'right';
     maxWidth?: string;
+    outline?: textColors;
+    zIndex?: number;
 }
 
 export const hideScrollbarCss = css`
@@ -164,6 +170,8 @@ export const ContainerStyles = (props: ContainerProps) => {
         wrap,
         textAlign,
         maxWidth,
+        outline,
+        zIndex,
     } = props;
     return `
         ${fullWidth ? 'width: 100%;' : ''}
@@ -181,6 +189,7 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${background ? `background: ${background};` : ''}
         ${rounded ? 'border-radius: var(--border-radius);' : ''}
         ${maxWidth ? `max-width: ${maxWidth};` : ''}
+        ${zIndex ? `z-index: ${zIndex};` : ''}
 
         ${
             transition
@@ -188,6 +197,7 @@ export const ContainerStyles = (props: ContainerProps) => {
                 : ''
         }
         ${cursor ? `cursor: ${cursor};` : ''}
+        ${outline ? `outline: 1px solid ${outline};` : ''}
     `;
 };
 
@@ -274,7 +284,7 @@ export const Span = styled.span<
     FontProps &
         FontSizeProps &
         ColorProps &
-        FontWeightProps & { align?: string } & MarginProps &
+        FontWeightProps & { align?: string; pointer?: boolean } & MarginProps &
         PaddingProps
 >`
     ${Font}
@@ -283,7 +293,8 @@ export const Span = styled.span<
     ${Color}
     ${Margin}
     ${Padding}
-    ${({ align }) => align && `text-align: ${align}`};
+    ${({ align }) => align && `text-align: ${align};`}
+    ${({ pointer }) => pointer && 'cursor: pointer;'}
 `;
 
 export const PulseAnimation = css`

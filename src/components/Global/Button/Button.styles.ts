@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components/macro';
 
-export const ButtonBase = styled.button<{ flat: boolean }>`
-    width: 100%;
+export const ButtonBase = styled.button<{ flat: boolean; width?: string }>`
+    width: ${({ width }) => width || '100%'};
     outline: none;
     padding: 12px 16px;
     font-size: 16px;
