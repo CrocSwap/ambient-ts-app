@@ -192,6 +192,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                             resetConfirmation={resetConfirmation}
                             sendTransaction={initiate}
                             transactionPendingDisplayString={statusText}
+                            disableSubmitAgain
                         />
                     )}
                 </footer>

@@ -411,12 +411,16 @@ export const SubmitTransactionExtraButton = styled.button`
     outline: none;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--accent5);
+    color: var(--text1);
     cursor: pointer;
     border: 1px solid var(--dark3);
     transition: all var(--animation-speed) ease-in-out;
     border-radius: 50px;
     padding: 4px 8px;
+
+    &:hover {
+        color: var(--accent5);
+    }
 `;
 
 export const PulseAnimationContainer = styled(FlexContainer)<{

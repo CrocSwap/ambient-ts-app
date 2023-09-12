@@ -48,6 +48,9 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionDenied ||
         isTransactionException
     );
+    const isTransactionConfirmed =
+        isTransactionApproved &&
+        !receiptData.pendingTransactions.includes(newTransactionHash);
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
@@ -93,6 +96,7 @@ export default function SubmitTransaction(props: propsIF) {
             tokenBDecimals={tokenB.decimals}
             tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
+            isConfirmed={isTransactionConfirmed}
             noAnimation
         />
     );
@@ -131,6 +135,8 @@ export default function SubmitTransaction(props: propsIF) {
         ? 'Transaction Denied'
         : lastReceipt && !isLastReceiptSuccess
         ? 'Transaction Failed'
+        : isTransactionConfirmed
+        ? 'Transaction Confirmed'
         : isTransactionApproved
         ? 'Transaction Submitted'
         : transactionPendingDisplayString;
@@ -157,9 +163,12 @@ export default function SubmitTransaction(props: propsIF) {
 
             {showExtraInfo && (
                 <FlexContainer
+                    fullWidth
+                    alignItems='center'
+                    justifyContent='center'
                     padding='12px'
-                    margin='8px 0 0 0'
                     background='dark2'
+                    rounded
                 >
                     {confirmationDisplay}
                 </FlexContainer>
