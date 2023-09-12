@@ -38,7 +38,6 @@ import {
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../contexts/SidebarContext';
-import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { RangeContext } from '../../contexts/RangeContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import CandleChart from './Candle/CandleChart';
@@ -73,11 +72,7 @@ import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useDebounce from '../../App/hooks/useDebounce';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
-import {
-    limitParamsIF,
-    linkGenMethodsIF,
-    useLinkGen,
-} from '../../utils/hooks/useLinkGen';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 interface propsIF {
     isTokenABase: boolean;
