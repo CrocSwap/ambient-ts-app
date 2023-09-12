@@ -70,10 +70,8 @@ export const useUrlParams = (
         switch (pageName) {
             case 'swap':
             case 'market':
-                paramsForPage = globalParams;
-                break;
             case 'limit':
-                paramsForPage = globalParams.concat(['limitTick']);
+                paramsForPage = globalParams;
                 break;
             case 'pool':
             case 'initpool':

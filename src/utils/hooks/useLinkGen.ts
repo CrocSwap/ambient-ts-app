@@ -14,7 +14,7 @@ export interface limitParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
-    limitTick: number;
+    limitTick?: number;
 }
 export interface poolParamsIF {
     chain: string;
