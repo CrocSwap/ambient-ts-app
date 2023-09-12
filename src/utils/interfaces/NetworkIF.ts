@@ -1,3 +1,4 @@
+import { Provider } from '@ethersproject/providers';
 import { TopPool } from '../data/defaultTopPools';
 import { TokenIF } from './TokenIF';
 
@@ -22,5 +23,5 @@ export interface NetworkIF {
     defaultPair: TokenIF[];
     topPools: TopPool[];
     stableTokens: string[];
-    getGasPriceInGwei: () => Promise<number | undefined>;
+    getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }

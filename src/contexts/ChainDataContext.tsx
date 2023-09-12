@@ -16,6 +16,7 @@ import {
 import isJsonString from '../utils/functions/isJsonString';
 import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
+import { supportedNetworks } from '../utils/networks';
 import { setLastBlock } from '../utils/state/graphDataSlice';
 import { setNativeToken, setErc20Tokens } from '../utils/state/userDataSlice';
 import { CachedDataContext } from './CachedDataContext';
@@ -41,7 +42,7 @@ export const ChainDataContextProvider = (props: {
         cachedFetchNativeTokenBalance,
         cachedTokenDetails,
     } = useContext(CachedDataContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, provider } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
@@ -142,22 +143,17 @@ export const ChainDataContextProvider = (props: {
         }
     }, [lastNewHeadMessage]);
 
+    const fetchGasPrice = async () => {
+        const newGasPrice = await supportedNetworks[
+            chainData.chainId
+        ].getGasPriceInGwei(provider);
+        if (gasPriceInGwei !== newGasPrice) {
+            setGasPriceinGwei(newGasPrice);
+        }
+    };
+
     useEffect(() => {
-        fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-        )
-            .then((response) => response.json())
-            .then((response) => {
-                if (response.result.ProposeGasPrice) {
-                    const newGasPrice = parseInt(
-                        response.result.ProposeGasPrice,
-                    );
-                    if (gasPriceInGwei !== newGasPrice) {
-                        setGasPriceinGwei(newGasPrice);
-                    }
-                }
-            })
-            .catch(console.error);
+        fetchGasPrice();
     }, [lastBlockNumber]);
 
     // prevents useEffect below from triggering every block update

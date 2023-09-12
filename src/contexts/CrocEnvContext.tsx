@@ -8,7 +8,6 @@ import { useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
 import { getDefaultPairForChain } from '../utils/data/defaultTokens';
 import { CachedDataContext } from './CachedDataContext';
-import { useMainnetProvider } from '../App/functions/useMainnetProvider';
 import { Provider } from '@ethersproject/providers';
 import { NetworkIF, PoolIF } from '../utils/interfaces/exports';
 import { ethereumGoerli } from '../utils/networks/ethereumGoerli';
@@ -30,7 +29,7 @@ interface CrocEnvContextIF {
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
-    mainnetProvider: Provider | undefined;
+    provider: Provider | undefined;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
@@ -69,7 +68,6 @@ export const CrocEnvContextProvider = (props: {
         useState<UrlRoutesTemplate>(initUrl);
 
     const provider = useProvider();
-    const mainnetProvider = useMainnetProvider();
 
     const crocEnvContext = {
         crocEnv,
@@ -81,8 +79,7 @@ export const CrocEnvContextProvider = (props: {
         topPools,
         ethMainnetUsdPrice,
         defaultUrlParams,
-        mainnetProvider:
-            chainData.chainId === '0x1' ? provider : mainnetProvider,
+        provider,
     };
 
     useBlacklist(userAddress);

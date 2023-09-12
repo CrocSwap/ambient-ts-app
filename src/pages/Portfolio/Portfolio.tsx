@@ -50,7 +50,7 @@ function Portfolio() {
 
     const dispatch = useAppDispatch();
 
-    const { mainnetProvider } = useContext(CrocEnvContext);
+    const { provider } = useContext(CrocEnvContext);
 
     const { address: addressFromParams } = useParams();
 
@@ -80,10 +80,11 @@ function Portfolio() {
 
     useEffect(() => {
         (async () => {
-            if (addressFromParams && isAddressEns && mainnetProvider) {
+            if (addressFromParams && isAddressEns && provider) {
                 try {
-                    const newResolvedAddress =
-                        await mainnetProvider.resolveName(addressFromParams);
+                    const newResolvedAddress = await provider.resolveName(
+                        addressFromParams,
+                    );
                     setResolvedAddress(newResolvedAddress ?? '');
                     dispatch(setResolvedAddressRedux(newResolvedAddress ?? ''));
                 } catch (error) {
@@ -97,16 +98,16 @@ function Portfolio() {
                 dispatch(setResolvedAddressRedux(''));
             }
         })();
-    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
+    }, [addressFromParams, isAddressHex, isAddressEns, provider]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (addressFromParams && !isAddressEns && mainnetProvider) {
+            if (addressFromParams && !isAddressEns && provider) {
                 try {
                     const ensName = await fetchEnsAddress(
-                        mainnetProvider,
+                        provider,
                         addressFromParams,
                         chainId,
                     );
@@ -121,7 +122,7 @@ function Portfolio() {
                 setSecondaryEnsName(addressFromParams);
             }
         })();
-    }, [addressFromParams, isAddressEns, mainnetProvider]);
+    }, [addressFromParams, isAddressEns, provider]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (

@@ -48,7 +48,7 @@ export default function ExchangeBalance(props: propsIF) {
         setTokenModalOpen = () => null,
     } = props;
 
-    const { mainnetProvider } = useContext(CrocEnvContext);
+    const { provider } = useContext(CrocEnvContext);
 
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
@@ -176,8 +176,8 @@ export default function ExchangeBalance(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (sendToAddress && isSendToAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(
+            if (sendToAddress && isSendToAddressEns && provider) {
+                const newResolvedAddress = await provider.resolveName(
                     sendToAddress,
                 );
 
@@ -196,12 +196,7 @@ export default function ExchangeBalance(props: propsIF) {
                 setResolvedAddress(undefined);
             }
         })();
-    }, [
-        sendToAddress,
-        isSendToAddressHex,
-        isSendToAddressEns,
-        mainnetProvider,
-    ]);
+    }, [sendToAddress, isSendToAddressHex, isSendToAddressEns, provider]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState<
         string | undefined
@@ -215,11 +210,11 @@ export default function ExchangeBalance(props: propsIF) {
                 isSendToAddressHex &&
                 sendToAddress.length === 42 &&
                 sendToAddress.startsWith('0x') &&
-                mainnetProvider
+                provider
             ) {
                 try {
                     const ensName = await fetchEnsAddress(
-                        mainnetProvider,
+                        provider,
                         sendToAddress,
                         '0x1',
                     );
