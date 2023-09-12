@@ -22,7 +22,7 @@ interface PositionsOnlyToggleProps {
     setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;
 }
 
-const LeaderboardTabName = 'Leaderboard';
+const noFilterByUserTabs = ['Leaderboard', 'Info'];
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
@@ -92,7 +92,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         !isUserConnected ||
         isCandleSelected ||
         // hide toggle if current tab is leaderboard since React state takes time to update
-        props.currentTab == LeaderboardTabName ? null : (
+        noFilterByUserTabs.includes(props.currentTab ?? '') ? null : (
             <Toggle
                 isOn={!showAllData}
                 handleToggle={() => {
@@ -134,7 +134,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                     {isUserConnected &&
                     !isCandleSelected &&
                     // hide toggle if current tab is leaderboard since React state takes time to update
-                    props.currentTab !== LeaderboardTabName
+                    !noFilterByUserTabs.includes(props.currentTab ?? '')
                         ? `My ${props.currentTab}`
                         : null}
                 </p>
