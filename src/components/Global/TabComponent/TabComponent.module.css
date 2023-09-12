@@ -158,7 +158,7 @@
     border-bottom: 1px solid var(--text1);
 }
 @media (min-width: 800px) {
-    .tab_icon {
+     .tab_icon_container {
         display: none;
     }
 }
