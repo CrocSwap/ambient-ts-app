@@ -22,8 +22,8 @@ function CompletedTableInfo() {
     return (
         <MainSection>
             <ScrollContainer>
-                <GridContainer numCols={2} gapSize={8} height={200}>
-                    <GridContainer numCols={2} gapSize={8}>
+                <GridContainer numCols={2} gap={8} height={200}>
+                    <GridContainer numCols={2} gap={8}>
                         {/* {featuredData.map((data, idx) => (
                                 <FeaturedBox
                                     key={idx}
@@ -34,8 +34,8 @@ function CompletedTableInfo() {
                             ))} */}
                     </GridContainer>
 
-                    <GridContainer gapSize={28} customRows='46px 46px auto'>
-                        <GridContainer numCols={4} gapSize={8}>
+                    <GridContainer gap={28} customRows='46px 46px auto'>
+                        <GridContainer numCols={4} gap={8}>
                             {detailedData.slice(0, 4).map((data, idx) => (
                                 <DetailedBox
                                     label={data.label}
@@ -44,7 +44,7 @@ function CompletedTableInfo() {
                                 />
                             ))}
                         </GridContainer>
-                        <GridContainer numCols={4} gapSize={8}>
+                        <GridContainer numCols={4} gap={8}>
                             {detailedData
                                 .slice(4, detailedData.length)
                                 .map((data, idx) => (

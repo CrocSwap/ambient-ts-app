@@ -2,7 +2,6 @@
     display: grid;
     grid-auto-rows: auto;
     row-gap: 8px;
-   
 }
 .slippage_title {
     display: flex;
@@ -25,7 +24,7 @@
     width: 100%;
     height: 100%;
     display: flex;
-  
+
     -webkit-box-align: center;
     align-items: center;
     -webkit-box-pack: justify;
@@ -44,8 +43,8 @@
     text-align: left;
 }
 
-.slippage_content input::placeholder{
-    color: var(--text2)
+.slippage_content input::placeholder {
+    color: var(--text2);
 }
 
 .input_container {
@@ -53,7 +52,6 @@
     width: 100%;
     flex-direction: row;
     align-items: center;
-   
 }
 .slippage_content button {
     margin: 0 2px;

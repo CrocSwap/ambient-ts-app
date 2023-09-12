@@ -84,11 +84,11 @@ export default function Investors() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     const preSeedMobile = (
-        <GridContainer gapSize={10} style={{ justifyItems: 'center' }}>
-            <GridContainer gapSize={10} style={{ justifyItems: 'center' }}>
+        <GridContainer gap={10} style={{ justifyItems: 'center' }}>
+            <GridContainer gap={10} style={{ justifyItems: 'center' }}>
                 <Text fontSize='header1'>Pre-Seed</Text>
             </GridContainer>
-            <GridContainer numCols={2} gapSize={10}>
+            <GridContainer numCols={2} gap={10}>
                 <img src={PositiveSum} alt='positive sum' />
                 <img src={motivate} alt='motivate' />
             </GridContainer>
@@ -97,11 +97,7 @@ export default function Investors() {
 
     const mobileVersion = (
         <>
-            <MobileContainer
-                id='MobileContainer'
-                gapSize={10}
-                padding='16px 32px'
-            >
+            <MobileContainer id='MobileContainer' gap={10} padding='16px 32px'>
                 <FlexContainer
                     id='MobileContent'
                     justifyContent='center'

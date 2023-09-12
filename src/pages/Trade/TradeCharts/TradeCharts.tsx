@@ -9,7 +9,6 @@ import {
 } from 'react';
 
 // START: Import Local Files
-import styles from './TradeCharts.module.css';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
@@ -24,6 +23,9 @@ import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
+import { FlexContainer } from '../../../styled/Common';
+import { MainContainer } from '../../../styled/Components/Chart';
+import { TutorialButton } from '../../../styled/Components/Tutorial';
 
 // interface for React functional component props
 interface propsIF {
@@ -141,21 +143,15 @@ function TradeCharts(props: propsIF) {
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
     const timeFrameContent = (
-        <div className={styles.time_frame_container}>
-            <div
-                className={styles.chart_overlay_container}
-                id='trade_charts_time_frame'
-            >
+        <FlexContainer
+            justifyContent='space-between'
+            alignItems='center'
+            padding='4px 4px 8px 4px'
+        >
+            <div>
                 <TimeFrame candleTime={chartSettings.candleTime.global} />
             </div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-                id='trade_charts_volume_tvl'
-            >
+            <div>
                 <VolumeTVLFee
                     setShowVolume={setShowVolume}
                     setShowTvl={setShowTvl}
@@ -165,17 +161,10 @@ function TradeCharts(props: propsIF) {
                     showFeeRate={showFeeRate}
                 />
             </div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'end',
-                    alignItems: 'end',
-                }}
-                id='trade_charts_curve_depth'
-            >
+            <div>
                 <CurveDepth overlayMethods={chartSettings.poolOverlay} />
             </div>
-        </div>
+        </FlexContainer>
     );
 
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
@@ -190,24 +179,30 @@ function TradeCharts(props: propsIF) {
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
     return (
-        <div
-            className={styles.main_container_chart}
+        <MainContainer
+            flexDirection='column'
+            fullHeight
+            fullWidth
             style={{
                 padding: isChartFullScreen ? '1rem' : '0',
                 background: isChartFullScreen ? 'var(--dark2)' : '',
             }}
             ref={chartCanvasRef}
         >
-            <div className={`${styles.graph_style}`}>
+            <div>
                 {isTutorialActive && (
-                    <div className={styles.tutorial_button_container}>
-                        <button
-                            className={styles.tutorial_button}
+                    <FlexContainer
+                        fullWidth
+                        justifyContent='flex-end'
+                        alignItems='flex-end'
+                        padding='0 8px'
+                    >
+                        <TutorialButton
                             onClick={() => setIsTutorialEnabled(true)}
                         >
                             Tutorial Mode
-                        </button>
-                    </div>
+                        </TutorialButton>
+                    </FlexContainer>
                 )}
                 {isChartFullScreen && <TradeChartsHeader />}
                 {timeFrameContent}
@@ -250,7 +245,7 @@ function TradeCharts(props: propsIF) {
                 setIsTutorialEnabled={setIsTutorialEnabled}
                 steps={tradeChartTutorialSteps}
             />
-        </div>
+        </MainContainer>
     );
 }
 

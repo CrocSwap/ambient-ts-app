@@ -44,11 +44,13 @@ export const SidebarDiv = styled.div<{ open: boolean }>`
 
 export const ContentContainer = styled(FlexContainer)`
     width: 100%;
-    flex: 1;
     overflow: hidden;
 
     @media only screen and (max-width: 600px) {
         overflow: auto;
+    }
+    @media only screen and (min-width: 600px) {
+        flex: 1;
     }
 `;
 
@@ -164,7 +166,7 @@ export const AccordionHeader = styled(motion.div)<{ open: boolean }>`
     padding: 8px 0;
     border-bottom: 1px solid var(--dark3);
 
-    margin-left: ${({ open }) => (open ? '10px' : '0px')};
+    padding-left: ${({ open }) => (open ? '10px' : '0px')};
 
     white-space: nowrap;
     overflow: hidden;

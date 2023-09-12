@@ -1,4 +1,3 @@
-import styles from './PositionsOnlyToggle.module.css';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import Toggle from '../../../Global/Toggle/Toggle';
 import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
@@ -7,31 +6,26 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { CandleContext } from '../../../../contexts/CandleContext';
 import { CandleData } from '../../../../App/functions/fetchCandleSeries';
 import { ChartContext } from '../../../../contexts/ChartContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
 
 interface PositionsOnlyToggleProps {
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
     currentTab?: string;
-    showPositionsOnlyToggle?: boolean;
     changeState: (
         isOpen: boolean | undefined,
         candleData: CandleData | undefined,
     ) => void;
     setSelectedDate: React.Dispatch<number | undefined>;
-    isCandleArrived: boolean;
-    setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
     setHasUserSelectedViewAll: Dispatch<SetStateAction<boolean>>;
 }
 
-const LeaderboardTabName = 'Leaderboard';
+const noFilterByUserTabs = ['Leaderboard', 'Info'];
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
         setTransactionFilter,
-        showPositionsOnlyToggle,
         changeState,
         setSelectedDate,
-        isCandleArrived,
-        setIsCandleDataArrived,
         setHasUserSelectedViewAll,
     } = props;
 
@@ -56,25 +50,20 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
 
     const expandIcon = (
         <div
-            className={styles.icon}
+            role='button'
             onClick={() => {
                 toggleTradeTable();
-                setIsCandleDataArrived(false);
             }}
         >
             <MdExpand />
-            {isCandleArrived && (
-                <span className={styles.graph_indicator}></span>
-            )}
         </div>
     );
 
     const collapseIcon = (
         <div
-            className={styles.icon}
+            role='button'
             onClick={() => {
                 toggleTradeTableCollapse();
-                setIsCandleDataArrived(false);
 
                 if (isCandleDataNull) {
                     setIsManualCandleFetchRequested(true);
@@ -82,9 +71,6 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
             }}
         >
             <MdCloseFullscreen />
-            {isCandleArrived && (
-                <span className={styles.graph_indicator}></span>
-            )}
         </div>
     );
 
@@ -92,7 +78,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         !isUserConnected ||
         isCandleSelected ||
         // hide toggle if current tab is leaderboard since React state takes time to update
-        props.currentTab == LeaderboardTabName ? null : (
+        noFilterByUserTabs.includes(props.currentTab ?? '') ? null : (
             <Toggle
                 isOn={!showAllData}
                 handleToggle={() => {
@@ -115,33 +101,40 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     };
 
     return (
-        <div className={styles.main_container}>
-            <div
-                className={`${styles.options_toggle} ${
-                    !showPositionsOnlyToggle && styles.disable_right
-                }`}
-            >
-                <p
-                    onClick={() => {
-                        unselectCandle();
-                    }}
-                    style={
-                        isCandleSelected
-                            ? { cursor: 'pointer' }
-                            : { cursor: 'default' }
-                    }
+        <FlexContainer
+            alignItems='center'
+            gap={8}
+            style={{
+                transition: 'var(--animation-speed) ease-in-out',
+                minHeight: '20px',
+            }}
+        >
+            {toggleOrNull && ( // display toggle if user is logged in and viewing tx/limit/range tables
+                <FlexContainer
+                    alignItems='center'
+                    justifyContent='flex-end'
+                    gap={8}
+                    margin='0 8px 0 0'
                 >
-                    {isUserConnected &&
-                    !isCandleSelected &&
-                    // hide toggle if current tab is leaderboard since React state takes time to update
-                    props.currentTab !== LeaderboardTabName
-                        ? `My ${props.currentTab}`
-                        : null}
-                </p>
-                {toggleOrNull}
-            </div>
+                    <Text
+                        fontSize='body'
+                        color='text2'
+                        onClick={() => {
+                            unselectCandle();
+                        }}
+                        style={
+                            isCandleSelected
+                                ? { cursor: 'pointer' }
+                                : { cursor: 'default' }
+                        }
+                    >
+                        {`My ${props.currentTab}`}
+                    </Text>
+                    {toggleOrNull}
+                </FlexContainer>
+            )}
             {tradeTableState !== 'Collapsed' && collapseIcon}
             {tradeTableState !== 'Expanded' && expandIcon}
-        </div>
+        </FlexContainer>
     );
 }

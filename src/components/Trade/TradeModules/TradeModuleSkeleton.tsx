@@ -5,11 +5,16 @@ import { useTradeData } from '../../../App/hooks/useTradeData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
+import { FlexContainer, GridContainer } from '../../../styled/Common';
+import {
+    AcknowledgeLink,
+    AcknowledgeText,
+} from '../../../styled/Components/TradeModules';
+import { TutorialButton } from '../../../styled/Components/Tutorial';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ConnectWalletButton } from '../../Global/Button/ConnectWalletButton';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
-import styles from './TradeModuleSkeleton.module.css';
 
 interface PropsIF {
     header: React.ReactNode;
@@ -91,16 +96,18 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     );
 
     return (
-        <section className={styles.scrollable_container}>
+        <section>
             {isTutorialActive && (
-                <div className={styles.tutorial_button_container}>
-                    <button
-                        className={styles.tutorial_button}
-                        onClick={() => setIsTutorialEnabled(true)}
-                    >
+                <FlexContainer
+                    fullWidth
+                    justifyContent='flex-end'
+                    alignItems='flex-end'
+                    padding='0 8px'
+                >
+                    <TutorialButton onClick={() => setIsTutorialEnabled(true)}>
                         Tutorial Mode
-                    </button>
-                </div>
+                    </TutorialButton>
+                </FlexContainer>
             )}{' '}
             <ContentContainer isOnTradeRoute={!isSwapPage}>
                 {header}
@@ -113,7 +120,12 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     {input}
                 </motion.div>
                 {inputOptions && inputOptions}
-                <div className={styles.info_button_container}>
+                <FlexContainer
+                    flexDirection='column'
+                    gap={8}
+                    margin='8px 0 0 0'
+                    padding='0 32px'
+                >
                     {transactionDetails}
                     {isUserConnected === undefined ? null : isUserConnected ===
                       true ? (
@@ -124,22 +136,22 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                                 {!bypassConfirm ? button : bypassConfirm}
                                 {ackTokenMessage && (
                                     // NO
-                                    <p
-                                        className={styles.acknowledge_text}
+                                    <AcknowledgeText
+                                        fontSize='body'
                                         dangerouslySetInnerHTML={{
                                             __html: formattedAckTokenMessage,
                                         }}
-                                    ></p>
+                                    ></AcknowledgeText>
                                 )}
                                 {needConfirmTokenA ||
                                     (needConfirmTokenB && (
-                                        <div
-                                            className={
-                                                styles.acknowledge_etherscan_links
-                                            }
+                                        <GridContainer
+                                            numCols={2}
+                                            gap={16}
+                                            margin='4px 0'
                                         >
                                             {needConfirmTokenA && (
-                                                <a
+                                                <AcknowledgeLink
                                                     href={
                                                         blockExplorer +
                                                         'token/' +
@@ -152,7 +164,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                                                     {tokenA.symbol ||
                                                         tokenA.name}{' '}
                                                     <FiExternalLink />
-                                                </a>
+                                                </AcknowledgeLink>
                                             )}
                                             {needConfirmTokenB && (
                                                 <a
@@ -170,7 +182,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                                                     <FiExternalLink />
                                                 </a>
                                             )}
-                                        </div>
+                                        </GridContainer>
                                     ))}
                             </>
                         )
@@ -178,7 +190,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                         <ConnectWalletButton onClick={openWagmiModal} />
                     )}
                     {warnings && warnings}
-                </div>
+                </FlexContainer>
             </ContentContainer>
             {modal}
             <TutorialOverlay
