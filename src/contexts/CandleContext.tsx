@@ -157,10 +157,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             candleTimeLocal &&
             crocEnv
         ) {
-            if (abortController) {
-                abortController.abort();
-            }
-
             setIsZoomRequestCanceled(true);
 
             const candleTime = candleScale.isShowLatestCandle
@@ -191,7 +187,6 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                     setIsCandleDataNull(true);
                 }
                 setIsFetchingCandle(false);
-                setIsZoomRequestCanceled(false);
             });
         } else {
             setIsFetchingCandle(true);
@@ -259,7 +254,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             signal,
         )
             .then((incrCandles) => {
-                if (incrCandles && candleData) {
+                if (incrCandles && candleData && !isZoomRequestCanceled) {
                     const newCandles: CandleData[] = [];
                     if (incrCandles.candles.length === 0) {
                         candleData.candles.sort(
@@ -295,6 +290,8 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
                         candles: candleData.candles.concat(newCandles),
                     });
                     setCandleData(newSeries);
+                } else {
+                    setIsZoomRequestCanceled(false);
                 }
             })
             .catch((e) => {
@@ -308,11 +305,17 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     };
 
     useEffect(() => {
-        if (!numDurationsNeeded || isZoomRequestCanceled) return;
+        if (!numDurationsNeeded) return;
         if (numDurationsNeeded > 0 && numDurationsNeeded < 3000) {
             fetchCandlesByNumDurations(numDurationsNeeded);
         }
     }, [numDurationsNeeded]);
+
+    useEffect(() => {
+        if (abortController && isZoomRequestCanceled) {
+            abortController.abort();
+        }
+    }, [isZoomRequestCanceled]);
 
     return (
         <CandleContext.Provider value={candleContext}>
