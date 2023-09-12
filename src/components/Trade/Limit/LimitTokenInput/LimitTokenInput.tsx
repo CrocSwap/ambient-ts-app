@@ -113,13 +113,6 @@ function LimitTokenInput(props: propsIF) {
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 
-    // useEffect(() => {
-    //     if (shouldLimitDirectionReverse) {
-    //         reverseTokens();
-    //         // dispatch(setShouldLimitDirectionReverse(false));
-    //     }
-    // }, [shouldLimitDirectionReverse]);
-
     useEffect(() => {
         isTokenAPrimary
             ? setTokenAInputQty(primaryQuantity)
