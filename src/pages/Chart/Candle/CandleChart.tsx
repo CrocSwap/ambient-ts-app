@@ -41,7 +41,7 @@ export default function CandleChart(props: candlePropsIF) {
         lastCandleData,
     } = props;
     const d3CanvasCandle = useRef<HTMLCanvasElement | null>(null);
-    const [firstCandle, setFirstCandle] = useState<number>();
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [candlestick, setCandlestick] = useState<any>();
     const selectedCandleColor = '#E480FF';
@@ -68,13 +68,8 @@ export default function CandleChart(props: candlePropsIF) {
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('re-rending chart');
         if (tradeTableState === 'Expanded') return;
-
         if (data && data.length > 0 && scaleData) {
-            if (!showLatest && firstCandle && data[0].time !== firstCandle) {
-                setFirstCandle(() => {
-                    return data[0].time;
-                });
-
+            if (!showLatest) {
                 const domainLeft = scaleData?.xScale.domain()[0];
                 const domainRight = scaleData?.xScale.domain()[1];
 
@@ -82,20 +77,9 @@ export default function CandleChart(props: candlePropsIF) {
                     domainLeft + period * 1000,
                     domainRight + period * 1000,
                 ]);
-            } else if (firstCandle === undefined) {
-                setFirstCandle(() => {
-                    return data[0].time;
-                });
             }
         }
-
-        // renderCanvasArray([d3CanvasCandle]);
-    }, [
-        diffHashSig(chartItemStates),
-        tradeTableState,
-        lastCandleData,
-        firstCandle,
-    ]);
+    }, [diffHashSig(chartItemStates), tradeTableState, lastCandleData]);
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
