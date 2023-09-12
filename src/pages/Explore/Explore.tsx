@@ -4,7 +4,7 @@ import TopPools from '../../components/Global/Analytics/TopPools';
 import { ExploreContext } from '../../contexts/ExploreContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { PoolContext } from '../../contexts/PoolContext';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import { useTimeElapsed, useTimeElapsedIF } from './useTimeElapsed';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 

@@ -20,7 +20,9 @@ import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import { PoolContext } from '../../contexts/PoolContext';
 
 export interface sidebarSearchIF {
+    rawInput: string;
     setInput: Dispatch<SetStateAction<string>>;
+    clearInput: () => void;
     isInputValid: boolean;
     pools: PoolIF[];
     positions: PositionIF[];
@@ -48,6 +50,11 @@ export const useSidebarSearch = (
 
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string | null>(null);
+
+    // fn to clear the search input
+    function clearInput(): void {
+        setRawInput('');
+    }
 
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
@@ -315,7 +322,9 @@ export const useSidebarSearch = (
     }, [limitOrderList.length, validatedInput]);
 
     return {
+        rawInput,
         setInput: setRawInput,
+        clearInput: clearInput,
         isInputValid: !!searchAs,
         pools: outputPools,
         positions: outputPositions,

@@ -1,4 +1,4 @@
-## Available Scripts 
+## Ambient Finance Open Source Web Application
 
 ### `yarn start`
 
@@ -10,13 +10,13 @@ Note: Node v16+ is required
 
 ### `environment variables` 
 
-Configure the build environment by adding a file (e.g. .env.local) with variable definitions to the top level directory before starting the server.
+Configure your build environment by adding a file (e.g. .env.local) with variable definitions to the top level directory before starting the server.
 
 Environment variable examples:
 
-REACT_APP_CHAIN_IDS=0x1,0x5
+REACT_APP_CHAIN_IDS=0x1,0x5 (Ethereum Mainnet and Ethereum Görli (testnet) are currently supported
 
-REACT_APP_INFURA_KEY=*********************
+REACT_APP_INFURA_KEY=********************* (please use your own Infura key for development purposes)
 
 ### `Contributions` 
 

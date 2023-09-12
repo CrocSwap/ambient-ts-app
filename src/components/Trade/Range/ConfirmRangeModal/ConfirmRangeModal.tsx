@@ -6,12 +6,13 @@ import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
 import SelectedRange from './SelectedRange/SelectedRange';
 
 // START: Import Local Files
-import styles from './ConfirmRangeModal.module.css';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
+import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
+import { FeeTierDisplay } from '../../../../styled/Components/TradeModules';
 
 interface propsIF {
     sendTransaction: () => Promise<void>;
@@ -62,9 +63,13 @@ function ConfirmRangeModal(props: propsIF) {
 
     const poolTokenDisplay = (
         <>
-            <section className={styles.position_display}>
-                <div className={styles.token_display}>
-                    <div className={styles.tokens}>
+            <FlexContainer
+                justifyContent='space-between'
+                alignItems='center'
+                padding='8px 0'
+            >
+                <FlexContainer alignItems='center' gap={8}>
+                    <FlexContainer alignItems='center' gap={8}>
                         <TokenIcon
                             token={tokenA}
                             src={uriToHttp(tokenA.logoURI)}
@@ -77,51 +82,51 @@ function ConfirmRangeModal(props: propsIF) {
                             alt={tokenB.symbol}
                             size='2xl'
                         />
-                    </div>
-                    <span className={styles.token_symbol}>
+                    </FlexContainer>
+                    <Text fontSize='header2' color='text1'>
                         {tokenA.symbol}/{tokenB.symbol}
-                    </span>
-                </div>
+                    </Text>
+                </FlexContainer>
                 <RangeStatus
                     isInRange={isInRange}
                     isEmpty={false}
                     isAmbient={isAmbient}
                 />
-            </section>
-            <section className={styles.fee_tier_display}>
-                <div className={styles.fee_tier_container}>
-                    <div className={styles.detail_line}>
-                        <div>
+            </FlexContainer>
+            <FeeTierDisplay>
+                <GridContainer gap={12}>
+                    <FlexContainer justifyContent='space-between'>
+                        <FlexContainer alignItems='center' gap={8}>
                             <TokenIcon
                                 token={tokenA}
                                 src={uriToHttp(tokenA.logoURI)}
                                 alt={tokenA.symbol}
                                 size='m'
                             />
-                            <span>{tokenA.symbol}</span>
-                        </div>
-                        <span>
+                            <Text fontSize='body'>{tokenA.symbol}</Text>
+                        </FlexContainer>
+                        <Text fontSize='body'>
                             {tokenAQty !== ''
                                 ? tokenACharacter + tokenAQty
                                 : '0'}
-                        </span>
-                    </div>
-                    <div className={styles.detail_line}>
-                        <div>
+                        </Text>
+                    </FlexContainer>
+                    <FlexContainer justifyContent='space-between'>
+                        <FlexContainer alignItems='center' gap={8}>
                             <TokenIcon
                                 token={tokenB}
                                 src={uriToHttp(tokenB.logoURI)}
                                 alt={tokenB.symbol}
                                 size='m'
                             />
-                            <span>{tokenB.symbol}</span>
-                        </div>
-                        <span>
+                            <Text fontSize='body'>{tokenB.symbol}</Text>
+                        </FlexContainer>
+                        <Text fontSize='body'>
                             {tokenBQty ? tokenBCharacter + tokenBQty : '0'}
-                        </span>
-                    </div>
-                </div>
-            </section>
+                        </Text>
+                    </FlexContainer>
+                </GridContainer>
+            </FeeTierDisplay>
             {isAmbient || (
                 <SelectedRange
                     isTokenABase={isTokenABase}

@@ -1,11 +1,10 @@
-import styles from './LimitRate.module.css';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../../utils/hooks/reduxToolkit';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
 import { pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useContext } from 'react';
 import { HiPlus, HiMinus } from 'react-icons/hi';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
@@ -13,6 +12,13 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
+import { FlexContainer } from '../../../../styled/Common';
+import {
+    LimitRateButton,
+    LimitRateButtonContainer,
+    PulseAnimationContainer,
+    TokenQuantityInput,
+} from '../../../../styled/Components/TradeModules';
 
 interface propsIF {
     previousDisplayPrice: string;
@@ -93,26 +99,29 @@ export default function LimitRate(props: propsIF) {
     };
 
     return (
-        <div className={styles.swapbox}>
-            <span
-                className={styles.direction}
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    height: '19px',
-                }}
+        <FlexContainer flexDirection='column' gap={4}>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='space-between'
+                fontSize='body'
+                color='text2'
             >
                 <p>Price</p>
-            </span>
-            <div
-                className={`${styles.swap_input}  ${
-                    showOrderPulseAnimation && styles.pulse_animation
-                }`}
+            </FlexContainer>
+            <PulseAnimationContainer
+                fullWidth
+                justifyContent='space-between'
+                alignItems='center'
+                gap={4}
+                showPulse={showOrderPulseAnimation}
                 id='limit_rate'
             >
-                <div className={styles.token_amount}>
-                    <input
+                <FlexContainer
+                    fullWidth
+                    background='dark2'
+                    style={{ borderRadius: 'var(--border-radius)' }}
+                >
+                    <TokenQuantityInput
                         id={`${fieldId}-quantity`}
                         onFocus={() => {
                             const limitRateInputField = document.getElementById(
@@ -121,12 +130,15 @@ export default function LimitRate(props: propsIF) {
 
                             (limitRateInputField as HTMLInputElement).select();
                         }}
-                        onChange={(e) => handleOnChange(e.target.value)}
-                        className={styles.currency_quantity}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                            handleOnChange(e.target.value)
+                        }
                         placeholder={
                             !isPoolInitialized ? 'Pool not initialized' : '0.0'
                         }
-                        onBlur={(e) => handleOnBlur(e.target.value)}
+                        onBlur={(e: ChangeEvent<HTMLInputElement>) =>
+                            handleOnBlur(e.target.value)
+                        }
                         value={
                             !isPoolInitialized
                                 ? 'Pool not initialized'
@@ -148,26 +160,28 @@ export default function LimitRate(props: propsIF) {
                         aria-atomic='true'
                         aria-relevant='all'
                     />
-                </div>
-                <div
-                    className={`${styles.button_controls} ${
-                        !isPoolInitialized && styles.button_control_disable
-                    }`}
+                </FlexContainer>
+                <LimitRateButtonContainer
+                    flexDirection='column'
+                    justifyContent='center'
+                    alignItems='center'
+                    background='dark2'
+                    disabled={!isPoolInitialized}
                 >
-                    <button
+                    <LimitRateButton
                         onClick={!isDenomBase ? increaseTick : decreaseTick}
                         aria-label='Increase limit tick.'
                     >
                         <HiPlus />
-                    </button>
-                    <button
+                    </LimitRateButton>
+                    <LimitRateButton
                         onClick={!isDenomBase ? decreaseTick : increaseTick}
                         aria-label='Decrease limit tick.'
                     >
                         <HiMinus />
-                    </button>
-                </div>
-            </div>
-        </div>
+                    </LimitRateButton>
+                </LimitRateButtonContainer>
+            </PulseAnimationContainer>
+        </FlexContainer>
     );
 }

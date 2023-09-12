@@ -116,7 +116,9 @@ export default function Exchange(props: propsIF) {
         <div className={styles.container}>
             <ExchangeHeader />
             <div className={styles.item_container}>
-                {tokensToRender && tokensToRender.length > 0 ? (
+                {tokensToRender &&
+                tokensToRender.length > 0 &&
+                tokensToRender[0] !== undefined ? (
                     // values can be `undefined` but this fn will filter them out
                     sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
                         <ExchangeCard

@@ -10,10 +10,10 @@
 }
 
 .container {
-    width: 100%; 
+    width: 100%;
     max-width: 800px;
     height: 80%;
-    
+
     overflow: auto;
     margin: 5% auto;
 

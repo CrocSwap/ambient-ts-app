@@ -136,33 +136,33 @@ function Portfolio() {
             : setFullLayoutActive(false);
     }, [connectedAccountActive]);
 
-    const fullLayerToggle = (
-        <div
-            className={styles.right_tab_option}
-            onClick={() => setFullLayoutActive(!fullLayoutActive)}
-        >
-            <section>
-                {' '}
-                <div
-                    className={`${styles.full_layout_svg} ${
-                        fullLayoutActive && styles.active_layout_style
-                    } `}
-                />
-            </section>
-            <section className={styles.shared_layout_svg}>
-                <div
-                    className={`${styles.full_layout_svg_copied} ${
-                        !fullLayoutActive && styles.active_layout_style
-                    }`}
-                />
-                <div
-                    className={`${styles.half_layout_svg} ${
-                        !fullLayoutActive && styles.active_layout_style
-                    }`}
-                />
-            </section>
-        </div>
-    );
+    // const fullLayerToggle = (
+    //     <div
+    //         className={styles.right_tab_option}
+    //         onClick={() => setFullLayoutActive(!fullLayoutActive)}
+    //     >
+    //         <section>
+    //             {' '}
+    //             <div
+    //                 className={`${styles.full_layout_svg} ${
+    //                     fullLayoutActive && styles.active_layout_style
+    //                 } `}
+    //             />
+    //         </section>
+    //         <section className={styles.shared_layout_svg}>
+    //             <div
+    //                 className={`${styles.full_layout_svg_copied} ${
+    //                     !fullLayoutActive && styles.active_layout_style
+    //                 }`}
+    //             />
+    //             <div
+    //                 className={`${styles.half_layout_svg} ${
+    //                     !fullLayoutActive && styles.active_layout_style
+    //                 }`}
+    //             />
+    //         </section>
+    //     </div>
+    // );
 
     const [resolvedAddressTokens, setResolvedAddressTokens] = useState<
         TokenIF[]
@@ -278,8 +278,7 @@ function Portfolio() {
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,
-        fullLayoutToggle: fullLayerToggle,
-        tokens: tokens,
+        fullLayoutActive: fullLayoutActive,
     };
 
     const portfolioBannerProps = {
@@ -299,6 +298,20 @@ function Portfolio() {
         ensName: secondaryEnsName ? secondaryEnsName : ensName ?? '',
     };
 
+    const contentToRenderOnMobile = (() => {
+        switch (true) {
+            case (!showTabsAndNotExchange && isUserConnected) ||
+                addressFromParams !== undefined:
+                return <PortfolioTabs {...portfolioTabsProps} />;
+            case showTabsAndNotExchange &&
+                isUserConnected &&
+                connectedAccountActive:
+                return exchangeBalanceComponent;
+            default:
+                return notConnectedContent;
+        }
+    })();
+
     const mobilePortfolio = (
         <section
             style={{
@@ -311,17 +324,7 @@ function Portfolio() {
             }}
         >
             {connectedAccountActive && mobileDataToggle}
-            {!showTabsAndNotExchange ? (
-                !isUserConnected ? (
-                    notConnectedContent
-                ) : (
-                    <PortfolioTabs {...portfolioTabsProps} />
-                )
-            ) : !isUserConnected ? (
-                notConnectedContent
-            ) : (
-                connectedAccountActive && exchangeBalanceComponent
-            )}
+            {contentToRenderOnMobile}
         </section>
     );
 
@@ -337,7 +340,7 @@ function Portfolio() {
             <div
                 className={
                     !connectedAccountActive
-                        ? styles.full_layout_container
+                        ? styles.full_table
                         : fullLayoutActive
                         ? styles.full_layout_container
                         : styles.tabs_exchange_balance_container

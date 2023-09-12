@@ -1,5 +1,4 @@
 export interface PoolStatIF {
-    poolName?: string;
     baseLogoUri?: string;
     quoteLogoUri?: string;
     poolPrice?: string;

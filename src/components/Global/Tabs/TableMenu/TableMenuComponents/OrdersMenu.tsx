@@ -29,6 +29,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
 import { OptionButton } from '../../../Button/OptionButton';
+import { FlexContainer } from '../../../../../styled/Common';
 
 // interface for React functional component props
 interface propsIF {
@@ -238,8 +239,12 @@ export default function OrdersMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
     return (
-        <div onClick={(event) => event.stopPropagation()}>
-            <div className={styles.main_container}>
+        <FlexContainer justifyContent='flex-end'>
+            <div
+                onClick={(event) => event.stopPropagation()}
+                style={{ width: 'min-content', cursor: 'default' }}
+                className={styles.main_container}
+            >
                 {ordersMenu}
                 {dropdownOrdersMenu}
             </div>
@@ -261,6 +266,6 @@ export default function OrdersMenu(props: propsIF) {
                     onClose={closeActionModal}
                 />
             )}
-        </div>
+        </FlexContainer>
     );
 }

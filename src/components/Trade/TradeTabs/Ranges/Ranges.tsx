@@ -2,7 +2,6 @@
 import { useEffect, useState, useContext, memo, useRef } from 'react';
 
 // START: Import Local Files
-import styles from './Ranges.module.css';
 import { Pagination } from '@mui/material';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
@@ -21,6 +20,11 @@ import { RangeContext } from '../../../../contexts/RangeContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangesRowPlaceholder } from './RangesTable/RangesRowPlaceholder';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import {
+    RangeRow as RangeRowStyled,
+    ViewMoreButton,
+} from '../../../../styled/Components/TransactionTable';
+import { FlexContainer, Text } from '../../../../styled/Common';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -124,11 +128,17 @@ function Ranges(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
         useSortedPositions('time', rangeData);
 
-    // ---------------------
-    // transactions per page media queries
-    const showColumns = useMediaQuery('(max-width: 1799px)');
+    // TODO: Use these as media width constants
+    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
-    const phoneScreen = useMediaQuery('(max-width: 600px)');
+    const tableView =
+        isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
+            ? 'small'
+            : (!isSmallScreen && !isLargeScreen) ||
+              (isAccountView && isLargeScreen && isSidebarOpen)
+            ? 'medium'
+            : 'large';
 
     useEffect(() => {
         setCurrentPage(1);
@@ -176,35 +186,39 @@ function Ranges(props: propsIF) {
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && rangeData.length > 10) ||
             (!isAccountView && tradePageCheck)) && (
-            <div className={styles.footer}>
-                <div className={styles.footer_content}>
-                    <RowsPerPageDropdown
-                        rowsPerPage={rowsPerPage}
-                        onChange={handleChangeRowsPerPage}
-                        itemCount={sortedPositions.length}
-                        setCurrentPage={setCurrentPage}
-                        resetPageToFirst={resetPageToFirst}
-                    />
-                    <Pagination
-                        count={count}
-                        page={page}
-                        shape='circular'
-                        color='secondary'
-                        onChange={handleChange}
-                        showFirstButton
-                        showLastButton
-                        size={sPagination ? 'small' : 'medium'}
-                    />
-                    <p
-                        className={styles.showing_text}
-                    >{`showing ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
-                </div>
-            </div>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='center'
+                gap={isSmallScreen ? 4 : 8}
+                margin='16px auto'
+                background='dark1'
+            >
+                <RowsPerPageDropdown
+                    rowsPerPage={rowsPerPage}
+                    onChange={handleChangeRowsPerPage}
+                    itemCount={sortedPositions.length}
+                    setCurrentPage={setCurrentPage}
+                    resetPageToFirst={resetPageToFirst}
+                />
+                <Pagination
+                    count={count}
+                    page={page}
+                    shape='circular'
+                    color='secondary'
+                    onChange={handleChange}
+                    showFirstButton
+                    showLastButton
+                    size={sPagination ? 'small' : 'medium'}
+                />
+                {!isSmallScreen && (
+                    <Text
+                        fontSize='mini'
+                        color='text2'
+                        style={{ whiteSpace: 'nowrap' }}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
+                )}
+            </FlexContainer>
         );
-
-    const ipadView = useMediaQuery('(max-width: 600px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const showTimestamp = useMediaQuery('(min-width: 1200px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -234,41 +248,41 @@ function Ranges(props: propsIF) {
         {
             name: 'Last Updated',
             className: '',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'time',
             sortable: true,
         },
         {
             name: 'Pair',
             className: '',
-            show: isAccountView && showPair,
+            show: isAccountView,
             slug: 'pool',
             sortable: true,
         },
         {
             name: 'Position ID',
             className: 'ID',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns && !isAccountView,
+            show: tableView === 'large' && !isAccountView,
             slug: 'wallet',
             sortable: showAllData,
         },
         {
             name: walID,
             className: 'wallet_id',
-            show: showColumns,
+            show: tableView !== 'large',
             slug: 'walletid',
             sortable: !isAccountView,
         },
         {
             name: 'Min',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'min',
             sortable: false,
             alignRight: true,
@@ -276,7 +290,7 @@ function Ranges(props: propsIF) {
         {
             name: 'Max',
             className: 'side',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'max',
             sortable: false,
             alignRight: true,
@@ -284,7 +298,7 @@ function Ranges(props: propsIF) {
         {
             name: minMax,
             className: 'side_type',
-            show: showColumns && !ipadView,
+            show: tableView === 'medium',
             slug: 'minMax',
             sortable: false,
             alignRight: true,
@@ -299,16 +313,14 @@ function Ranges(props: propsIF) {
         },
         {
             name: isAccountView ? '' : `${baseTokenSymbol}`,
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
             name: isAccountView ? '' : `${quoteTokenSymbol}`,
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: quoteTokenSymbol,
             sortable: false,
             alignRight: true,
@@ -316,7 +328,7 @@ function Ranges(props: propsIF) {
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns && !phoneScreen,
+            show: tableView === 'medium',
             slug: 'tokens',
             sortable: false,
             alignRight: true,
@@ -346,16 +358,8 @@ function Ranges(props: propsIF) {
         },
     ];
 
-    const headerStyle = isAccountView
-        ? styles.portfolio_header
-        : styles.trade_header;
-
     const headerColumnsDisplay = (
-        <ul
-            className={`${styles.header} ${
-                isAccountView ? styles.account_header : undefined
-            } ${headerStyle}`}
-        >
+        <RangeRowStyled size={tableView} account={isAccountView} header>
             {headerColumns.map((header, idx) => (
                 <RangeHeader
                     key={idx}
@@ -366,17 +370,14 @@ function Ranges(props: propsIF) {
                     header={header}
                 />
             ))}
-        </ul>
+        </RangeRowStyled>
     );
     const sortedRowItemContent = sortedPositions.map((position, idx) => (
         <RangesRow
             key={idx}
             position={position}
-            ipadView={ipadView}
-            showColumns={showColumns}
             isAccountView={isAccountView}
-            showTimestamp={showTimestamp}
-            showPair={showPair}
+            tableView={tableView}
         />
     ));
 
@@ -384,11 +385,8 @@ function Ranges(props: propsIF) {
         <RangesRow
             key={idx}
             position={position}
-            ipadView={ipadView}
-            showColumns={showColumns}
             isAccountView={isAccountView}
-            showTimestamp={showTimestamp}
-            showPair={showPair}
+            tableView={tableView}
         />
     ));
 
@@ -433,10 +431,7 @@ function Ranges(props: propsIF) {
                                 type: tx.txType,
                                 details: tx.txDetails,
                             }}
-                            showTimestamp={showTimestamp}
-                            showColumns={showColumns}
-                            ipadView={ipadView}
-                            mobileView={phoneScreen}
+                            tableView={tableView}
                         />
                     ))}
                 {currentRowItemContent}
@@ -447,16 +442,15 @@ function Ranges(props: propsIF) {
                 !isTradeTableExpanded &&
                     !props.isAccountView &&
                     sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
-                        <div className={styles.view_more_container}>
-                            <button
-                                className={styles.view_more_button}
-                                onClick={() => {
-                                    toggleTradeTable();
-                                }}
-                            >
+                        <FlexContainer
+                            justifyContent='center'
+                            alignItems='center'
+                            padding='8px'
+                        >
+                            <ViewMoreButton onClick={() => toggleTradeTable()}>
                                 View More
-                            </button>
-                        </div>
+                            </ViewMoreButton>
+                        </FlexContainer>
                     )
             }
         </div>
@@ -464,17 +458,11 @@ function Ranges(props: propsIF) {
         <NoTableData type='ranges' isAccountView={isAccountView} />
     );
 
-    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
-
     return (
-        <section
-            className={`${styles.main_list_container} ${
-                isTradeTableExpanded && styles.main_list_expanded
-            }`}
-        >
+        <FlexContainer flexDirection='column' fullHeight>
             <div>{headerColumnsDisplay}</div>
 
-            <div className={styles.table_content}>
+            <div style={{ flex: 1, overflow: 'auto' }}>
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
@@ -482,8 +470,8 @@ function Ranges(props: propsIF) {
                 )}
             </div>
 
-            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
-        </section>
+            {footerDisplay}
+        </FlexContainer>
     );
 }
 

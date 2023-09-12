@@ -55,12 +55,16 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                         {trimString(token.address, 5, 6, '…')}
                     </InfoHeader>
                     <IconWithTooltip
-                        title='Copy transaction hash to clipboard'
+                        title={
+                            token.address === ZERO_ADDRESS
+                                ? 'Copy the zero address (Ambient convention) to clipboard'
+                                : `Copy ${token.symbol} address to clipboard`
+                        }
                         placement='bottom'
+                        enterDelay='1000'
                     >
                         <FiCopy
                             size={16}
-                            color='var(--text3)'
                             className='icon_hover'
                             onClick={handleCopyAddress}
                         />
@@ -68,6 +72,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                     <IconWithTooltip
                         title='View on Block Explorer'
                         placement='bottom'
+                        enterDelay='1000'
                     >
                         <a
                             href={

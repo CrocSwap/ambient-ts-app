@@ -14,13 +14,15 @@ import SwapTokenInput from '../../../components/Swap/SwapTokenInput/SwapTokenInp
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
-import { IS_LOCAL_ENV } from '../../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { FlexContainer } from '../../../styled/Common';
+import { WarningContainer } from '../../../styled/Components/TradeModules';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import {
     useAppDispatch,
@@ -40,7 +42,6 @@ import {
     isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
-import styles from './Swap.module.css';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -161,6 +162,8 @@ function Swap(props: propsIF) {
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(sellQtyString || '0');
+    const isTokenADexSurplusSufficient =
+        tokenASurplusMinusTokenARemainderNum >= 0;
     const tokenAQtyCoveredByWalletBalance = isWithdrawFromDexChecked
         ? tokenASurplusMinusTokenARemainderNum < 0
             ? tokenASurplusMinusTokenARemainderNum * -1
@@ -238,10 +241,25 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     }, [baseToken.address + quoteToken.address]);
 
+    const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
+
     // calculate price of gas for swap
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageSwapCostInGasDrops = 106000;
+            const averageSwapCostInGasDrops = isSellTokenNativeToken
+                ? 100000
+                : isWithdrawFromDexChecked
+                ? isTokenADexSurplusSufficient
+                    ? isSaveAsDexSurplusChecked
+                        ? 92000
+                        : 97000
+                    : isSaveAsDexSurplusChecked
+                    ? 105000
+                    : 110000
+                : isSaveAsDexSurplusChecked
+                ? 105000
+                : 110000;
+
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageSwapCostInGasDrops *
@@ -255,7 +273,14 @@ function Swap(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [
+        gasPriceInGwei,
+        ethMainnetUsdPrice,
+        isSellTokenNativeToken,
+        isWithdrawFromDexChecked,
+        isTokenADexSurplusSufficient,
+        isSaveAsDexSurplusChecked,
+    ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -444,39 +469,47 @@ function Swap(props: propsIF) {
     };
 
     const liquidityInsufficientWarning = isLiquidityInsufficient ? (
-        <div className={styles.price_impact}>
-            <div className={styles.align_center}>
-                <div
-                    style={{
-                        color: '#f6385b',
-                    }}
-                >
-                    Current Pool Liquidity is Insufficient for this Swap
-                </div>
-            </div>
-            <div>
-                <TooltipComponent
-                    title='Current Pool Liquidity is Insufficient for this Swap'
-                    placement='bottom'
-                />
-            </div>
-        </div>
+        <WarningContainer
+            flexDirection='row'
+            justifyContent='space-between'
+            alignItems='center'
+            fontSize='body'
+            color='other-red'
+            padding='4px 8px'
+        >
+            <div>Current Pool Liquidity is Insufficient for this Swap</div>
+            <TooltipComponent
+                title='Current Pool Liquidity is Insufficient for this Swap'
+                placement='bottom'
+            />
+        </WarningContainer>
     ) : undefined;
 
     const priceImpactWarning =
         !isLiquidityInsufficient && priceImpactNum && priceImpactNum > 2 ? (
-            <div className={styles.price_impact}>
-                <div className={styles.align_center}>
+            <WarningContainer
+                flexDirection='row'
+                justifyContent='space-between'
+                alignItems='center'
+                fontSize='body'
+                color='other-red'
+                padding='4px 8px'
+            >
+                <FlexContainer
+                    flexDirection='row'
+                    gap={4}
+                    alignItems='center'
+                    style={{ minWidth: '70px' }}
+                    padding='0 4px 0 0'
+                >
                     <div>Price Impact Warning</div>
                     <TooltipComponent
                         title='Difference Between Current (Spot) Price and Final Price'
                         placement='bottom'
                     />
-                </div>
-                <div className={styles.data}>
-                    {getPriceImpactString(priceImpactNum)}%
-                </div>
-            </div>
+                </FlexContainer>
+                <div>{getPriceImpactString(priceImpactNum)}%</div>
+            </WarningContainer>
         ) : undefined;
 
     return (
