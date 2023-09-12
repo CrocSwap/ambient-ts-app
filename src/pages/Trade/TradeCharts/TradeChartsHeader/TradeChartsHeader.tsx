@@ -39,7 +39,8 @@ export const TradeChartsHeader = (props: { tradePage?: boolean }) => {
                       canvasRef.current,
                       '#171d27',
                       undefined,
-                      chartHeights.max - chartHeights.current - 4,
+                      // height, trade charts header + chart height
+                      50 + chartHeights.current,
                   );
             if (blob) {
                 copy(blob);
