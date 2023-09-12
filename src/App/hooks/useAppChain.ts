@@ -26,7 +26,9 @@ export const useAppChain = (
     const { chain: chainNetwork } = useNetwork();
 
     function determineConnected(chainNetwork?: { id: number }): string {
-        return chainNetwork ? chainNumToString(chainNetwork.id) : defaultChain;
+        return chainNetwork
+            ? chainNumToString(chainNetwork.id)
+            : localStorage.getItem('chainId') || defaultChain;
     }
 
     const defaultChain = getDefaultChainId();
@@ -78,6 +80,7 @@ export const useAppChain = (
             validateChainId(currentChain) &&
             nextChain !== currentChain
         ) {
+            localStorage.setItem('chainId', nextChain);
             nukeAndReloadApp();
         }
 

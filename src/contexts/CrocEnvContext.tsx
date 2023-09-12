@@ -47,7 +47,8 @@ export const CrocEnvContextProvider = (props: {
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     const [selectedNetwork, setSelectedNetwork] =
         useState<NetworkIF>(ethereumGoerli);
-    const [chainData, isChainSupported] = useAppChain(isConnected);
+    const [chainData, isChainSupported, setNextChain] =
+        useAppChain(isConnected);
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
@@ -67,13 +68,18 @@ export const CrocEnvContextProvider = (props: {
     const [defaultUrlParams, setDefaultUrlParams] =
         useState<UrlRoutesTemplate>(initUrl);
 
-    const provider = useProvider();
+    const provider = useProvider({ chainId: +chainData.chainId });
+
+    const updateNetwork = (network: NetworkIF) => {
+        setSelectedNetwork(network);
+        setNextChain(network.chainId);
+    };
 
     const crocEnvContext = {
         crocEnv,
         setCrocEnv,
         selectedNetwork,
-        setSelectedNetwork,
+        setSelectedNetwork: updateNetwork,
         chainData,
         isChainSupported,
         topPools,
