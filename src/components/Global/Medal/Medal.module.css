@@ -86,11 +86,11 @@
 }
 .quiz_medal__ribbon__left {
     border-color: #fc402d #fc402d transparent #fc402d;
-    left: 8px;
+    left: 4px;
     transform: rotate(20deg) translateZ(-32px);
 }
 .quiz_medal__ribbon__right {
-    left: 22px;
+    left: 18px;
     border-color: #f31903 #f31903 transparent #f31903;
     transform: rotate(-20deg) translateZ(-48px);
 }
