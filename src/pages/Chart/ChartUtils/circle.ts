@@ -3,13 +3,18 @@ import { drawDataHistory, lineData, scaleData } from './chartUtils';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 
-export const circleSize = 60;
+export const selectedCircleSize = 80;
+
+const circleStrokeColor = '#7371fc';
+const circleFillColor = '#8A8AFF';
+const selectedCircleFillColor = 'wheat';
 
 export function createCircle(
     xScale: any,
     yScale: any,
     size: number,
     lineWidth: number,
+    isSelected = false,
 ) {
     return d3fc
         .seriesCanvasPoint()
@@ -20,8 +25,10 @@ export function createCircle(
         .size(size)
         .type(d3.symbolCircle)
         .decorate((context: any) => {
-            context.strokeStyle = '#7371fc';
-            context.fillStyle = '#8A8AFF';
+            context.strokeStyle = circleStrokeColor;
+            context.fillStyle = isSelected
+                ? selectedCircleFillColor
+                : circleFillColor;
             context.lineWidth = lineWidth;
         });
 }
@@ -32,7 +39,7 @@ export function checkCricleLocation(
     mouseY: number,
     scaleData: scaleData,
 ) {
-    const circleDiameter = Math.sqrt(circleSize / Math.PI);
+    const circleDiameter = Math.sqrt(selectedCircleSize / Math.PI);
     let result = undefined;
 
     const data = createCirclePoints(element);
