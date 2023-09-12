@@ -3463,15 +3463,15 @@ export default function Chart(props: propsIF) {
         }
     };
 
+    // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const onBlurLimitRate = (
         limitPreviousData: number,
         newLimitValue: number,
-    ) => {
-        if (newLimitValue === undefined) {
-            return;
-        }
+    ): void => {
+        if (newLimitValue === undefined) return;
+
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(newLimitValue)
             : pool?.fromDisplayPrice(1 / newLimitValue);
@@ -3501,16 +3501,13 @@ export default function Chart(props: propsIF) {
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
             if (!tickDispPrice) {
-                // reverseTokenForChart(limitPreviousData, newLimitValue);
                 setLimit(() => {
                     return newLimitValue;
                 });
             } else {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
-
                     newLimitValue = displayPriceWithDenom;
-                    // reverseTokenForChart(limitPreviousData, newLimitValue);
                     setLimit(() => {
                         return newLimitValue;
                     });
