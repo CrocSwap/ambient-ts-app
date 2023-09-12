@@ -19,7 +19,9 @@ interface DragCanvasProps {
     render: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mousemove: any;
-    setSelectedDrawnShape: any;
+    setSelectedDrawnShape: React.Dispatch<
+        React.SetStateAction<selectedDrawnData | undefined>
+    >;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
