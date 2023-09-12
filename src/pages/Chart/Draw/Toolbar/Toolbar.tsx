@@ -5,8 +5,6 @@ import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
 import drawRect from '../../../../assets/images/icons/draw/rect.svg';
 
 interface ToolbarProps {
-    isDrawActive: boolean;
-    setIsDrawActive: React.Dispatch<React.SetStateAction<boolean>>;
     activeDrawingType: string;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
     isToolbarOpen: boolean;
@@ -20,8 +18,6 @@ interface IconList {
 
 function Toolbar(props: ToolbarProps) {
     const {
-        isDrawActive,
-        setIsDrawActive,
         activeDrawingType,
         setActiveDrawingType,
         isToolbarOpen,
@@ -42,9 +38,6 @@ function Toolbar(props: ToolbarProps) {
     }, [isToolbarOpen]);
 
     function handleDrawModeChange(item: IconList) {
-        if (item.label === 'Cross') return;
-
-        setIsDrawActive((prev: boolean) => !prev);
         setActiveDrawingType(item.label);
     }
 
@@ -83,7 +76,7 @@ function Toolbar(props: ToolbarProps) {
                             <div key={index} className={styles.icon_card}>
                                 <div
                                     className={
-                                        isDrawActive
+                                        activeDrawingType === 'Cross'
                                             ? styles.icon_active_container
                                             : styles.icon_inactive_container
                                     }
@@ -91,11 +84,7 @@ function Toolbar(props: ToolbarProps) {
                                 >
                                     <img
                                         className={
-                                            (activeDrawingType === 'Cross' &&
-                                                item.label === 'Cross') ||
-                                            (isDrawActive &&
-                                                activeDrawingType ===
-                                                    item.label)
+                                            activeDrawingType === item.label
                                                 ? styles.icon_active
                                                 : styles.icon_inactive
                                         }

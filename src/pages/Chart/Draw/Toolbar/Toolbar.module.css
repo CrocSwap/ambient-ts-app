@@ -15,13 +15,8 @@
     display: flex;
 }
 
-.icon_card img {
-    width: 24px;
-    height: 24px;
-    aspect-ratio: 1;
-}
 
-.icon_card img:hover {
+.icon_active_container,.icon_inactive_container img:hover {
     cursor: pointer;
 }
 
