@@ -229,6 +229,7 @@ const useChatSocket = (
 
         if (address !== undefined && address != 'undefined') {
             socketRef.current = io(CHAT_BACKEND_WSS_URL, {
+                path: '/chat/api/subscribe/',
                 query: { roomId: room, address, ensName },
             });
         }
@@ -262,7 +263,7 @@ const useChatSocket = (
 
         if (socketRef && socketRef.current) {
             // eslint-disable-next-line
-            socketRef.current.on('msg-recieve', (data: any) => {
+            socketRef.current.on('msg-recieve-2', (data: any) => {
                 setMessages([...messagesRef.current, data]);
                 if (messagesRef.current[messagesRef.current.length - 1]) {
                     setLastMessage(data);
