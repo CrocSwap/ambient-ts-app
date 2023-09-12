@@ -12,7 +12,7 @@ import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { FlexContainer, Span } from '../../../../styled/Common';
+import { FlexContainer } from '../../../../styled/Common';
 import { PortfolioBannerMainContainer } from '../../../../styled/Components/Portfolio';
 
 export default function PortfolioBannerAccount(
@@ -92,20 +92,21 @@ export default function PortfolioBannerAccount(
                 {props.jazziconsToDisplay}
 
                 <FlexContainer flexDirection='column'>
-                    <Span
+                    <FlexContainer
                         fontWeight='300'
                         fontSize='header1'
-                        pointer
+                        cursor='pointer'
                         letterSpacing
                         color='text1'
                         onClick={handleCopyEnsName}
                     >
                         {ensNameToDisplay}
-                    </Span>
-                    <Span
+                    </FlexContainer>
+                    <FlexContainer
                         fontWeight='300'
                         fontSize='body'
-                        pointer
+                        gap={8}
+                        cursor='pointer'
                         onClick={handleCopyAddress}
                     >
                         {addressToDisplay}
@@ -121,7 +122,7 @@ export default function PortfolioBannerAccount(
                                 }}
                             />
                         ) : null}
-                    </Span>
+                    </FlexContainer>
                 </FlexContainer>
             </FlexContainer>
         </PortfolioBannerMainContainer>
