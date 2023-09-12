@@ -37,7 +37,6 @@ import {
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import Toolbar from '../../Chart/Draw/Toolbar/Toolbar';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {

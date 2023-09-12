@@ -291,6 +291,12 @@ export default function Chart(props: propsIF) {
     const [selectedDrawnShape, setSelectedDrawnShape] = useState<
         selectedDrawnData | undefined
     >(undefined);
+
+    const [hoveredDrawnShape, setHoveredDrawnShape] = useState<
+        selectedDrawnData | undefined
+    >(undefined);
+
+    const [isShapeSelected, setIsShapeSelected] = useState(false);
     const { undo, redo } = useUndoRedo(drawnShapeHistory, setDrawnShapeHistory);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
@@ -605,13 +611,13 @@ export default function Chart(props: propsIF) {
             chartMousemoveEvent &&
             mainCanvasBoundingClientRect &&
             scaleData &&
-            selectedDrawnShape
+            hoveredDrawnShape
         ) {
             return true;
         }
 
         return false;
-    }, [selectedDrawnShape, chartMousemoveEvent, mainCanvasBoundingClientRect]);
+    }, [hoveredDrawnShape, chartMousemoveEvent, mainCanvasBoundingClientRect]);
 
     useEffect(() => {
         if (isLineDrag) {
@@ -947,6 +953,8 @@ export default function Chart(props: propsIF) {
                         }
                     })
                     .filter((event) => {
+                        setIsShapeSelected(false);
+
                         if (location.pathname.includes('/market')) {
                             return !canUserDragDrawnShape;
                         } else {
@@ -2592,8 +2600,11 @@ export default function Chart(props: propsIF) {
                         if (item.type === 'Brush') {
                             lineSeries(item?.data);
                             if (
-                                selectedDrawnShape &&
-                                selectedDrawnShape.data.time === item.time
+                                (hoveredDrawnShape &&
+                                    hoveredDrawnShape.data.time ===
+                                        item.time) ||
+                                (selectedDrawnShape &&
+                                    selectedDrawnShape.data.time === item.time)
                             ) {
                                 circleSeries(item?.data);
                             }
@@ -2625,8 +2636,12 @@ export default function Chart(props: propsIF) {
                             lineOfBand?.forEach((line) => {
                                 lineSeries(line);
                                 if (
-                                    selectedDrawnShape &&
-                                    selectedDrawnShape.data.time === item.time
+                                    (hoveredDrawnShape &&
+                                        hoveredDrawnShape.data.time ===
+                                            item.time) ||
+                                    (selectedDrawnShape &&
+                                        selectedDrawnShape.data.time ===
+                                            item.time)
                                 ) {
                                     circleSeries(line);
                                 }
@@ -2646,7 +2661,12 @@ export default function Chart(props: propsIF) {
 
             render();
         }
-    }, [diffHashSig(drawnShapeHistory), lineSeries, selectedDrawnShape]);
+    }, [
+        diffHashSig(drawnShapeHistory),
+        lineSeries,
+        hoveredDrawnShape,
+        selectedDrawnShape,
+    ]);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -3065,6 +3085,7 @@ export default function Chart(props: propsIF) {
         isChartZoom,
         diffHashSig(drawnShapeHistory),
         isLineDrag,
+        isShapeSelected,
     ]);
 
     // mouseleave
@@ -3103,6 +3124,8 @@ export default function Chart(props: propsIF) {
                 selectedDateEvent(isHoverCandleOrVolumeData, nearest);
 
                 setCrosshairActive('none');
+
+                setIsShapeSelected(false);
 
                 if (
                     (location.pathname.includes('pool') ||
@@ -3209,7 +3232,7 @@ export default function Chart(props: propsIF) {
         bandwidth,
         diffHashSigChart(unparsedCandleData),
         liquidityData,
-        selectedDrawnShape,
+        hoveredDrawnShape,
     ]);
 
     function checkLineLocation(
@@ -3290,7 +3313,7 @@ export default function Chart(props: propsIF) {
                 scaleData,
             );
 
-            setSelectedDrawnShape({
+            setHoveredDrawnShape({
                 data: resElement,
                 selectedCircle: selectedCircle,
             });
@@ -3298,7 +3321,7 @@ export default function Chart(props: propsIF) {
             setIsDragActive(true);
         } else {
             setIsDragActive(false);
-            setSelectedDrawnShape(undefined);
+            setHoveredDrawnShape(undefined);
         }
     };
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
@@ -3836,6 +3859,8 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth,
         poolPriceDisplay,
         isChartZoom,
+        isShapeSelected,
+        selectedDrawnShape,
     };
 
     return (
@@ -3938,12 +3963,14 @@ export default function Chart(props: propsIF) {
                             <DragCanvas
                                 scaleData={scaleData}
                                 canUserDragDrawnShape={canUserDragDrawnShape}
-                                selectedDrawnShape={selectedDrawnShape}
+                                hoveredDrawnShape={hoveredDrawnShape}
                                 drawnShapeHistory={drawnShapeHistory}
                                 render={render}
                                 setIsDragActive={setIsDragActive}
                                 mousemove={mousemove}
                                 setCrossHairDataFunc={setCrossHairDataFunc}
+                                setIsShapeSelected={setIsShapeSelected}
+                                setSelectedDrawnShape={setSelectedDrawnShape}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
@@ -4040,6 +4067,8 @@ export default function Chart(props: propsIF) {
                             zoomBase={zoomBase}
                             isChartZoom={isChartZoom}
                             isToolbarOpen={isToolbarOpen}
+                            isShapeSelected={isShapeSelected}
+                            selectedDrawnShape={selectedDrawnShape}
                         />
                     </div>
                 </div>

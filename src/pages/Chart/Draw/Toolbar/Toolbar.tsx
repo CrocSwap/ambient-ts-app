@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
@@ -11,6 +11,11 @@ interface ToolbarProps {
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
     isToolbarOpen: boolean;
     setIsToolbarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+interface IconList {
+    icon: any;
+    label: string;
 }
 
 function Toolbar(props: ToolbarProps) {
@@ -36,14 +41,14 @@ function Toolbar(props: ToolbarProps) {
         }
     }, [isToolbarOpen]);
 
-    function handleDrawModeChange(item: any) {
+    function handleDrawModeChange(item: IconList) {
         if (item.label === 'Cross') return;
 
         setIsDrawActive((prev: boolean) => !prev);
         setActiveDrawingType(item.label);
     }
 
-    const iconList = [
+    const iconList: IconList[] = [
         {
             icon: drawCross,
             label: 'Cross',
