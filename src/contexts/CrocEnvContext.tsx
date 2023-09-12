@@ -78,7 +78,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         // @Ben: ... default values for the ticks
         const limitParams: limitParamsIF = {
             ...swapParams,
-            limitTick: 10,
+            limitTick: 102,
         };
         const poolParams: poolParamsIF = {
             ...swapParams,

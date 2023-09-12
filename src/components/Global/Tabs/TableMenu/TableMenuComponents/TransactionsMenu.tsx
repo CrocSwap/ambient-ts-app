@@ -20,7 +20,7 @@ import {
     setLimitTick,
     setLimitTickCopied,
     setShouldSwapDirectionReverse,
-    setShouldLimitDirectionReverse,
+    // setShouldLimitDirectionReverse,
     setShouldRangeDirectionReverse,
     setPrimaryQuantityRange,
     setRangeTicksCopied,
@@ -133,12 +133,12 @@ export default function TransactionsMenu(props: propsIF) {
             };
             // navigate user to limit page with URL params defined above
             linkGenLimit.navigate(limitLinkParams);
-            const shouldReverse =
-                tradeData.tokenA.address.toLowerCase() ===
-                (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
-            if (shouldReverse) {
-                dispatch(setShouldLimitDirectionReverse(true));
-            }
+            // const shouldReverse =
+            //     tradeData.tokenA.address.toLowerCase() ===
+            //     (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
+            // if (shouldReverse) {
+            //     dispatch(setShouldLimitDirectionReverse(true));
+            // }
             setTimeout(() => {
                 dispatch(setLimitTick(tx.isBuy ? tx.bidTick : tx.askTick));
             }, 500);

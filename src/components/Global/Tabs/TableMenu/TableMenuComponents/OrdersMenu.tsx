@@ -13,12 +13,12 @@ import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
-    useAppSelector,
+    // useAppSelector,
 } from '../../../../../utils/hooks/reduxToolkit';
 import {
     setLimitTick,
     setLimitTickCopied,
-    setShouldLimitDirectionReverse,
+    // setShouldLimitDirectionReverse,
 } from '../../../../../utils/state/tradeDataSlice';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
@@ -62,7 +62,7 @@ export default function OrdersMenu(props: propsIF) {
     } = useContext(SidebarContext);
     const { handlePulseAnimation } = useContext(TradeTableContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    // const tradeData = useAppSelector((state) => state.tradeData);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
@@ -74,15 +74,15 @@ export default function OrdersMenu(props: propsIF) {
         handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
 
-        const shouldReverse =
-            tradeData.tokenA.address.toLowerCase() ===
-            (limitOrder.isBid
-                ? limitOrder.quote.toLowerCase()
-                : limitOrder.base.toLowerCase());
+        // const shouldReverse =
+        //     tradeData.tokenA.address.toLowerCase() ===
+        //     (limitOrder.isBid
+        //         ? limitOrder.quote.toLowerCase()
+        //         : limitOrder.base.toLowerCase());
 
-        if (shouldReverse) {
-            dispatch(setShouldLimitDirectionReverse(true));
-        }
+        // if (shouldReverse) {
+        //     dispatch(setShouldLimitDirectionReverse(true));
+        // }
 
         // why is this is in on a half-second delay?
         setTimeout(() => {

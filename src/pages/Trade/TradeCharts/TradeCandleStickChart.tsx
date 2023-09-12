@@ -36,6 +36,7 @@ import {
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { updatesIF } from '../../../utils/hooks/useUrlParams';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -57,13 +58,19 @@ interface propsIF {
     showLatest: boolean | undefined;
     setShowLatest: Dispatch<SetStateAction<boolean>>;
     setShowTooltip: Dispatch<SetStateAction<boolean>>;
-
     setIsLoading: Dispatch<SetStateAction<boolean>>;
     isLoading: boolean;
+    updateURL: (changes: updatesIF) => void;
 }
 
 function TradeCandleStickChart(props: propsIF) {
-    const { selectedDate, setSelectedDate, isLoading, setIsLoading } = props;
+    const {
+        selectedDate,
+        setSelectedDate,
+        isLoading,
+        setIsLoading,
+        updateURL,
+    } = props;
 
     const { candleData, isFetchingCandle, isCandleDataNull, setCandleScale } =
         useContext(CandleContext);
@@ -826,6 +833,7 @@ function TradeCandleStickChart(props: propsIF) {
                         liquidityDepthScale={liquidityDepthScale}
                         candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
+                        updateURL={updateURL}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

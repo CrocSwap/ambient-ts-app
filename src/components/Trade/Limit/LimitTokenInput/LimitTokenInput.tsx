@@ -19,7 +19,7 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
     setIsTokenAPrimary,
-    setShouldLimitDirectionReverse,
+    // setShouldLimitDirectionReverse,
     setPrimaryQuantity,
     setIsTokenAPrimaryRange,
 } from '../../../../utils/state/tradeDataSlice';
@@ -104,7 +104,7 @@ function LimitTokenInput(props: propsIF) {
                 chain: chainId,
                 tokenA: tokenB.address,
                 tokenB: tokenA.address,
-                limitTick: 10,
+                limitTick: 101,
             };
             // navigate user to limit page with URL params defined above
             linkGenLimit.navigate(limitLinkParams);
@@ -113,12 +113,12 @@ function LimitTokenInput(props: propsIF) {
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 
-    useEffect(() => {
-        if (shouldLimitDirectionReverse) {
-            reverseTokens();
-            dispatch(setShouldLimitDirectionReverse(false));
-        }
-    }, [shouldLimitDirectionReverse]);
+    // useEffect(() => {
+    //     if (shouldLimitDirectionReverse) {
+    //         reverseTokens();
+    //         // dispatch(setShouldLimitDirectionReverse(false));
+    //     }
+    // }, [shouldLimitDirectionReverse]);
 
     useEffect(() => {
         isTokenAPrimary

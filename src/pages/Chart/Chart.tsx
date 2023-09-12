@@ -15,8 +15,6 @@ import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
     setIsLinesSwitched,
-    // setIsTokenAPrimary,
-    setShouldLimitDirectionReverse,
     candleScale,
     candleDomain,
 } from '../../utils/state/tradeDataSlice';
@@ -74,6 +72,12 @@ import { Zoom } from './ChartUtils/zoom';
 import XAxisCanvas from './Axes/xAxis/XaxisCanvas';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useDebounce from '../../App/hooks/useDebounce';
+import { updatesIF } from '../../utils/hooks/useUrlParams';
+import {
+    limitParamsIF,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../utils/hooks/useLinkGen';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -111,6 +115,7 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
     candleTimeInSeconds: number;
+    updateURL: (changes: updatesIF) => void;
 }
 
 export default function Chart(props: propsIF) {
@@ -135,6 +140,7 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
+        updateURL,
     } = props;
 
     const {
@@ -162,7 +168,7 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth: rangeSimpleRangeWidth,
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
-    const { handlePulseAnimation } = useContext(TradeTableContext);
+    // const { handlePulseAnimation } = useContext(TradeTableContext);
 
     const [isChartZoom, setIsChartZoom] = useState(false);
 
@@ -1155,26 +1161,31 @@ export default function Chart(props: propsIF) {
     function reverseTokenForChart(
         limitPreviousData: number,
         newLimitValue: number,
-    ) {
+    ): boolean {
+        // output variable
+        let needsInversion = false;
+        // doesn't exist on initialization
         if (poolPriceDisplay) {
+            // logic tree to determine if the limit price crosses the current pool price
+            // sell => buy or buy to sell
             if (sellOrderStyle === 'order_sell') {
+                // old price > pool price AND new price is < pool price
                 if (
                     limitPreviousData > poolPriceDisplay &&
                     newLimitValue < poolPriceDisplay
                 ) {
-                    handlePulseAnimation('limitOrder');
-                    dispatch(setShouldLimitDirectionReverse(true));
+                    needsInversion = true;
                 }
             } else {
                 if (
                     limitPreviousData < poolPriceDisplay &&
                     newLimitValue > poolPriceDisplay
                 ) {
-                    handlePulseAnimation('limitOrder');
-                    dispatch(setShouldLimitDirectionReverse(true));
+                    needsInversion = true;
                 }
             }
         }
+        return needsInversion;
     }
 
     const getNoZoneData = () => {
@@ -3452,6 +3463,8 @@ export default function Chart(props: propsIF) {
         }
     };
 
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+
     const onBlurLimitRate = (
         limitPreviousData: number,
         newLimitValue: number,
@@ -3472,11 +3485,23 @@ export default function Chart(props: propsIF) {
 
             dispatch(setLimitTick(pinnedTick));
 
+            // if user moves limit price to other side of the current price
+            // ... then redirect to new URL params (to reverse the token
+            // ... pair; else just update the `limitTick` value in the URL
+            reverseTokenForChart(limitPreviousData, newLimitValue)
+                ? linkGenLimit.redirect({
+                      chain: chainData.chainId,
+                      tokenA: tokenB.address,
+                      tokenB: tokenA.address,
+                      limitTick: pinnedTick,
+                  })
+                : updateURL({ update: [['limitTick', pinnedTick]] });
+
             const tickPrice = tickToPrice(pinnedTick);
 
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
             if (!tickDispPrice) {
-                reverseTokenForChart(limitPreviousData, newLimitValue);
+                // reverseTokenForChart(limitPreviousData, newLimitValue);
                 setLimit(() => {
                     return newLimitValue;
                 });
@@ -3485,7 +3510,7 @@ export default function Chart(props: propsIF) {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
 
                     newLimitValue = displayPriceWithDenom;
-                    reverseTokenForChart(limitPreviousData, newLimitValue);
+                    // reverseTokenForChart(limitPreviousData, newLimitValue);
                     setLimit(() => {
                         return newLimitValue;
                     });

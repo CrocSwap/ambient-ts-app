@@ -24,6 +24,7 @@ import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
+import { updatesIF } from '../../../utils/hooks/useUrlParams';
 
 // interface for React functional component props
 interface propsIF {
@@ -35,6 +36,7 @@ interface propsIF {
     setSelectedDate: Dispatch<number | undefined>;
     setIsChartLoading: Dispatch<React.SetStateAction<boolean>>;
     isChartLoading: boolean;
+    updateURL: (changes: updatesIF) => void;
 }
 export interface LiquidityDataLocal {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -62,7 +64,7 @@ export interface LiqSnap {
 
 // React functional component
 function TradeCharts(props: propsIF) {
-    const { selectedDate, setSelectedDate } = props;
+    const { selectedDate, setSelectedDate, updateURL } = props;
 
     const {
         tutorial: { isActive: isTutorialActive },
@@ -243,6 +245,7 @@ function TradeCharts(props: propsIF) {
                     setShowTooltip={setShowTooltip}
                     isLoading={props.isChartLoading}
                     setIsLoading={props.setIsChartLoading}
+                    updateURL={updateURL}
                 />
             </div>
             <TutorialOverlay

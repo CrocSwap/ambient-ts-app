@@ -279,6 +279,7 @@ function Trade() {
         setSelectedDate: setSelectedDate,
         isChartLoading,
         setIsChartLoading,
+        updateURL,
     };
 
     const tradeTabsProps = {
