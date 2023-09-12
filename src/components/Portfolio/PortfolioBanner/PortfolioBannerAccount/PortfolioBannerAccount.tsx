@@ -13,7 +13,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer, Span } from '../../../../styled/Common';
-import { MainContainer } from '../PortfolioBanner.styles';
+import { PortfolioBannerMainContainer } from '../../../../styled/Components/Portfolio';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -80,7 +80,9 @@ export default function PortfolioBannerAccount(
     }
 
     return (
-        <MainContainer animate={showAccountDetails ? 'open' : 'closed'}>
+        <PortfolioBannerMainContainer
+            animate={showAccountDetails ? 'open' : 'closed'}
+        >
             <FlexContainer
                 alignItems='flex-end'
                 zIndex={1}
@@ -122,6 +124,6 @@ export default function PortfolioBannerAccount(
                     </Span>
                 </FlexContainer>
             </FlexContainer>
-        </MainContainer>
+        </PortfolioBannerMainContainer>
     );
 }

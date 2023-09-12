@@ -1,5 +1,3 @@
-import DepositButton from './DepositButton/DepositButton';
-import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySelector';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
@@ -34,7 +32,12 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { MaxButton } from './Deposit.styles';
+import Button from '../../../Global/Button/Button';
+import CurrencySelector from '../CurrencySelector';
+import {
+    SVGContainer,
+    MaxButton,
+} from '../../../../styled/Components/Portfolio';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -403,10 +406,10 @@ export default function Deposit(props: propsIF) {
             <Text fontSize='body' color='text2'>
                 Deposit collateral for future trading at lower gas costs:
             </Text>
-            <DepositCurrencySelector
+            <CurrencySelector
                 disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
-                setDepositQty={setDepositQtyNonDisplay}
+                setQty={setDepositQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 setTokenModalOpen={setTokenModalOpen}
@@ -430,25 +433,19 @@ export default function Deposit(props: propsIF) {
                     color='text2'
                     fontSize='body'
                 >
-                    <FlexContainer
-                        background='dark1'
-                        width='20px'
-                        height='20px'
-                        padding='0 6px 0 0'
-                        justifyContent='center'
-                        alignItems='center'
-                    >
+                    <SVGContainer>
                         <FaGasPump size={12} />
-                    </FlexContainer>
+                    </SVGContainer>
                     {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
                 </FlexContainer>
             </FlexContainer>
-            <DepositButton
-                onClick={() => {
+            <Button
+                title={buttonMessage}
+                action={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();
                 }}
                 disabled={isButtonDisabled}
-                buttonMessage={buttonMessage}
+                flat={true}
             />
         </FlexContainer>
     );

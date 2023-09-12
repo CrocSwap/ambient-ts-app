@@ -7,7 +7,6 @@ import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
 import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
-import { motion } from 'framer-motion';
 import {
     SetStateAction,
     Dispatch,
@@ -30,13 +29,15 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { useDispatch } from 'react-redux';
 import { TokenContext } from '../../../contexts/TokenContext';
-import {
-    ControlContainer,
-    InfoText,
-    MotionContainer,
-    MotionSubContainer,
-} from './ExchangeBalance.styles';
+
 import { FlexContainer } from '../../../styled/Common';
+
+import {
+    PortfolioControlContainer,
+    PortfolioInfoText,
+    PortfolioMotionContainer,
+    PortfolioMotionSubContainer,
+} from '../../../styled/Components/Portfolio';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -292,7 +293,7 @@ export default function ExchangeBalance(props: propsIF) {
     ];
 
     const exchangeControl = (
-        <ControlContainer
+        <PortfolioControlContainer
             onClick={() => setFullLayoutActive(!fullLayoutActive)}
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
@@ -303,14 +304,14 @@ export default function ExchangeBalance(props: propsIF) {
                     width='20px'
                 />
             </IconWithTooltip>
-        </ControlContainer>
+        </PortfolioControlContainer>
     );
 
     const columnView = useMediaQuery('(max-width: 1200px)');
 
     return (
         <>
-            <MotionContainer
+            <PortfolioMotionContainer
                 animate={
                     columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'
                 }
@@ -322,7 +323,7 @@ export default function ExchangeBalance(props: propsIF) {
                 fullHeight
                 desktop={{ maxWidth: '400px%' }}
             >
-                <MotionSubContainer
+                <PortfolioMotionSubContainer
                     fullHeight
                     fullWidth
                     alignItems='center'
@@ -347,15 +348,15 @@ export default function ExchangeBalance(props: propsIF) {
                         )}
                         {!isModalView && exchangeControl}
                     </FlexContainer>
-                </MotionSubContainer>
+                </PortfolioMotionSubContainer>
                 {(!fullLayoutActive || columnView || isModalView) && (
-                    <InfoText>
+                    <PortfolioInfoText>
                         Collateral deposited into the Ambient Finance exchange
                         can be traded at lower gas costs. Collateral can be
                         withdrawn at any time.
-                    </InfoText>
+                    </PortfolioInfoText>
                 )}
-            </MotionContainer>
+            </PortfolioMotionContainer>
         </>
     );
 }

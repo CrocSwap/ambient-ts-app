@@ -27,7 +27,7 @@ import {
     MobileButton,
     PortfolioContainer,
     PortfolioTabsContainer,
-} from './Portfolio.styles';
+} from '../../styled/Components/Portfolio';
 import { FlexContainer, Text } from '../../styled/Common';
 
 function Portfolio() {

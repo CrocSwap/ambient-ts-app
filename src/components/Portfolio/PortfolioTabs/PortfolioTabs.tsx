@@ -40,7 +40,7 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { PortfolioTabsContainer } from '../../../styled/Components/Portfolio';
+import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
 
 // interface for React functional component props
 interface propsIF {
@@ -375,7 +375,7 @@ export default function PortfolioTabs(props: propsIF) {
     ];
 
     return (
-        <PortfolioTabsContainer>
+        <PortfolioTabsPortfolioTabsContainer>
             <TabComponent
                 data={
                     connectedAccountActive
@@ -384,6 +384,6 @@ export default function PortfolioTabs(props: propsIF) {
                 }
                 rightTabOptions={false}
             />
-        </PortfolioTabsContainer>
+        </PortfolioTabsPortfolioTabsContainer>
     );
 }

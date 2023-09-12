@@ -42,6 +42,7 @@ type textColors =
     | 'negative'
     | 'other-green'
     | 'other-red'
+    | 'white'
     | 'orange';
 
 interface ColorProps {
@@ -121,6 +122,7 @@ export const Flex = css<FlexProps>`
     `}
 `;
 
+type overflowTypes = 'scroll' | 'auto' | 'hidden' | 'visible';
 export interface ContainerProps {
     transition?: boolean;
     cursor?: 'pointer' | 'default';
@@ -131,7 +133,10 @@ export interface ContainerProps {
     fullWidth?: boolean;
     justifyContent?: string;
     alignItems?: string;
-    overflow?: string;
+    overflow?: overflowTypes;
+    overflowY?: overflowTypes;
+    overflowX?: overflowTypes;
+
     background?: string;
     rounded?: boolean;
     position?: 'relative' | 'absolute' | 'fixed';
@@ -142,6 +147,8 @@ export interface ContainerProps {
     maxWidth?: string;
     outline?: textColors;
     zIndex?: number;
+    minHeight?: string;
+    maxHeight?: string;
 }
 
 export const hideScrollbarCss = css`
@@ -162,6 +169,8 @@ export const ContainerStyles = (props: ContainerProps) => {
         alignItems,
         gap,
         overflow,
+        overflowX,
+        overflowY,
         background,
         rounded,
         position,
@@ -172,6 +181,8 @@ export const ContainerStyles = (props: ContainerProps) => {
         maxWidth,
         outline,
         zIndex,
+        minHeight,
+        maxHeight,
     } = props;
     return `
         ${fullWidth ? 'width: 100%;' : ''}
@@ -186,6 +197,8 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${wrap ? 'flex-wrap: wrap;' : ''}
         ${textAlign ? `text-align: ${textAlign};` : ''}
         ${overflow ? `overflow: ${overflow};` : ''}
+        ${overflowX ? `overflow-x: ${overflowX};` : ''}
+        ${overflowY ? `overflow-y: ${overflowY};` : ''}
         ${background ? `background: ${background};` : ''}
         ${rounded ? 'border-radius: var(--border-radius);' : ''}
         ${maxWidth ? `max-width: ${maxWidth};` : ''}
@@ -198,6 +211,8 @@ export const ContainerStyles = (props: ContainerProps) => {
         }
         ${cursor ? `cursor: ${cursor};` : ''}
         ${outline ? `outline: 1px solid ${outline};` : ''}
+        ${minHeight ? `min-height: ${minHeight};` : ''}
+        ${maxHeight ? `max-height: ${maxHeight};` : ''}
     `;
 };
 

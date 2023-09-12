@@ -7,7 +7,7 @@ import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAcco
 // START: Import Other Local Files
 import trimString from '../../../utils/functions/trimString';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { RectangleContainer } from './PortfolioBanner.styles';
+import { PortfolioBannerRectangleContainer } from '../../../styled/Components/Portfolio';
 import accountImage from '../../../assets/images/backgrounds/account_image.svg';
 interface propsIF {
     ensName: string;
@@ -41,7 +41,9 @@ export default function PortfolioBanner(props: propsIF) {
             : null;
 
     return (
-        <RectangleContainer style={{ backgroundImage: `url(${accountImage})` }}>
+        <PortfolioBannerRectangleContainer
+            style={{ backgroundImage: `url(${accountImage})` }}
+        >
             <PortfolioBannerAccount
                 ensName={ensName}
                 ensNameAvailable={ensNameAvailable}
@@ -49,6 +51,6 @@ export default function PortfolioBanner(props: propsIF) {
                 truncatedAccountAddress={truncatedAccountAddress}
                 jazziconsToDisplay={jazziconsToDisplay}
             />
-        </RectangleContainer>
+        </PortfolioBannerRectangleContainer>
     );
 }

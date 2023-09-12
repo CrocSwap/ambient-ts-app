@@ -9,7 +9,7 @@ interface propsIF {
     width?: string;
 }
 
-export default function Toggle(props: propsIF) {
+export default function Button(props: propsIF) {
     const { disabled, action, title, flat, customAriaLabel, width } = props;
 
     const ariaLabelToDisplay = disabled
