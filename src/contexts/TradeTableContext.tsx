@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
+import { useAccount } from 'wagmi';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -57,6 +58,14 @@ export const TradeTableContextProvider = (props: {
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
+
+    const { isConnected } = useAccount();
+
+    useEffect(() => {
+        if (!isConnected) {
+            setShowAllData(true);
+        }
+    }, [isConnected]);
 
     const tradeTableContext = {
         showAllData,
