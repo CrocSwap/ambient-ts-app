@@ -216,7 +216,6 @@ export default function ExchangeBalance(props: propsIF) {
                     const ensName = await fetchEnsAddress(
                         provider,
                         sendToAddress,
-                        '0x1',
                     );
                     if (ensName) {
                         setSecondaryEnsName(ensName);

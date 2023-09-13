@@ -55,7 +55,6 @@ export const getLimitOrderData = async (
     const ensRequest = cachedEnsResolve(
         (await crocEnv.context).provider,
         order.user,
-        '0x1',
     );
 
     newOrder.ensResolution = (await ensRequest) ?? '';

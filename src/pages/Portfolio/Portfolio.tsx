@@ -109,7 +109,6 @@ function Portfolio() {
                     const ensName = await fetchEnsAddress(
                         provider,
                         addressFromParams,
-                        chainId,
                     );
 
                     if (ensName) setSecondaryEnsName(ensName);

@@ -58,7 +58,6 @@ export const getPositionData = async (
     const ensRequest = cachedEnsResolve(
         (await crocEnv.context).provider,
         newPosition.user,
-        '0x1',
     );
 
     const basePricedToken = getMainnetAddress(
