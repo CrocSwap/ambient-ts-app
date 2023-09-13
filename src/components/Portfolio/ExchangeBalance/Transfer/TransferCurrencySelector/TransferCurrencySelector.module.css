@@ -56,10 +56,8 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-   
-  
-    min-height: 40px;
 
+    min-height: 40px;
 }
 .swap_input {
     width: 70%;

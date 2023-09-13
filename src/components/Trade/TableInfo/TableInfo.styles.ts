@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import backgroundImage from '../../../assets/images/backgrounds/tableInfoBg.png';
 
 // can be extracted to common

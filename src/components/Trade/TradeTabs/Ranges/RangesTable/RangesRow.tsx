@@ -1,11 +1,9 @@
-import { useEffect, useRef, useState, useContext, memo } from 'react';
+import { useEffect, useRef, useContext, memo } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
-import styles from '../Ranges.module.css';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
@@ -13,27 +11,18 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
 import { useModal } from '../../../../Global/Modal/useModal';
 import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
+import { RangeRow as RangeRowStyled } from '../../../../../styled/Components/TransactionTable';
 
 interface propsIF {
-    showPair: boolean;
-    ipadView: boolean;
-    showColumns: boolean;
     position: PositionIF;
     rank?: number;
     isAccountView: boolean;
-    showTimestamp: boolean;
     isLeaderboard?: boolean;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 function RangesRow(props: propsIF) {
-    const {
-        ipadView,
-        showColumns,
-        showPair,
-        position,
-        isAccountView,
-        isLeaderboard,
-    } = props;
+    const { tableView, position, isAccountView, isLeaderboard } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -125,8 +114,6 @@ function RangesRow(props: propsIF) {
             ? `position-${position.firstMintTx}`
             : '';
 
-    const phoneScreen = useMediaQuery('(max-width: 600px)');
-
     const activePositionRef = useRef(null);
 
     const sideCharacter = isAccountView
@@ -166,27 +153,12 @@ function RangesRow(props: propsIF) {
         position.firstMintTx === currentPositionActive ? scrollToDiv() : null;
     }, [currentPositionActive]);
 
-    const userPositionStyle =
-        userNameToDisplay === 'You' && showAllData ? styles.border_left : null;
-
-    const usernameStyle =
-        isOwnerActiveAccount && (showAllData || isLeaderboard)
-            ? 'owned_tx_contrast'
+    const usernameColor: 'text1' | 'accent1' | 'accent2' =
+        isOwnerActiveAccount && showAllData
+            ? 'accent2'
             : ensName || userNameToDisplay === 'You'
-            ? 'primary_color'
-            : 'username_base_color';
-
-    const activePositionStyle =
-        position.firstMintTx === currentPositionActive ||
-        position.positionId === currentRangeInReposition ||
-        position.positionId === currentRangeInAdd
-            ? styles.active_position_style
-            : '';
-
-    const [highlightRow, setHighlightRow] = useState(false);
-    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
-    const handleRowMouseDown = () => setHighlightRow(true);
-    const handleRowMouseOut = () => setHighlightRow(false);
+            ? 'accent1'
+            : 'text1';
 
     function handleWalletLinkClick() {
         if (!isAccountView)
@@ -201,8 +173,6 @@ function RangesRow(props: propsIF) {
             );
     }
 
-    // eslint-disable-next-line
-    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isAccountView) {
             const accountUrl = `/${
@@ -220,34 +190,28 @@ function RangesRow(props: propsIF) {
         posHashTruncated,
         usdValue,
         openDetailsModal,
-        handleRowMouseDown,
-        handleRowMouseOut,
         handleWalletLinkClick,
         handleWalletCopy,
         ownerId,
         ensName,
         userNameToDisplay,
         isOwnerActiveAccount,
-        usernameStyle,
+        usernameColor,
         baseTokenLogo,
         quoteTokenLogo,
         position,
         baseTokenSymbol,
         quoteTokenSymbol,
         isLeaderboard,
-        showColumns,
         rank: props.rank,
         elapsedTimeString,
-
         maxRangeDenomByMoneyness,
         isAccountView,
         isAmbient,
-
         minRangeDenomByMoneyness,
         ambientOrMin,
         ambientOrMax,
         sideCharacter,
-        ipadView,
         apyString,
         apyClassname,
         isPositionInRange,
@@ -259,7 +223,7 @@ function RangesRow(props: propsIF) {
         valueWithTooltip,
         walletWithTooltip,
         tokenPair,
-        idOrNull,
+        IDWithTooltip,
         rankingOrNull,
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
@@ -267,8 +231,7 @@ function RangesRow(props: propsIF) {
         txIdColumnComponent,
         fullScreenMinDisplay,
         fullScreenMaxDisplay,
-        columnNonAmbientPrice,
-        columnAmbientPrice,
+        priceDisplay,
         tokenValues,
         apyDisplay,
         rangeDisplay,
@@ -284,42 +247,46 @@ function RangesRow(props: propsIF) {
 
     return (
         <>
-            <ul
-                className={`${
-                    styles.row_container
-                } ${activePositionStyle} ${userPositionStyle} ${
-                    isAccountView ? styles.account_row_container : undefined
-                }`}
+            <RangeRowStyled
+                size={tableView}
+                account={isAccountView}
+                leaderboard={isLeaderboard}
+                active={
+                    position.firstMintTx === currentPositionActive ||
+                    position.positionId === currentRangeInReposition ||
+                    position.positionId === currentRangeInAdd
+                }
+                user={userNameToDisplay === 'You' && showAllData}
                 onClick={handleRowClick}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
-                style={{ backgroundColor: highlightStyle }}
             >
-                {rankingOrNull}
-                {!showColumns && rangeTimeWithTooltip}
-                {isAccountView && showPair && tokenPair}
-                {idOrNull}
-                {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
-                {showColumns && txIdColumnComponent}
-                {!showColumns && fullScreenMinDisplay}
-                {!showColumns && fullScreenMaxDisplay}
-                {columnNonAmbientPrice}
-                {columnAmbientPrice}
+                {tableView === 'large' && rankingOrNull}
+                {tableView === 'large' && rangeTimeWithTooltip}
+                {isAccountView && tokenPair}
+                {tableView === 'large' && <div>{IDWithTooltip}</div>}
+                {tableView === 'large' && !isAccountView && (
+                    <div>{walletWithTooltip}</div>
+                )}
+                {tableView !== 'large' && txIdColumnComponent}
+                {tableView === 'large' && fullScreenMinDisplay}
+                {tableView === 'large' && fullScreenMaxDisplay}
+                {tableView === 'medium' && priceDisplay}
                 {valueWithTooltip}
-                {!showColumns && baseQtyDisplayWithTooltip}
-                {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && !phoneScreen && tokenValues}
+                {tableView === 'large' && baseQtyDisplayWithTooltip}
+                {tableView === 'large' && quoteQtyDisplayWithTooltip}
+                {tableView === 'medium' && tokenValues}
                 {apyDisplay}
                 {rangeDisplay}
-                <li data-label='menu' className={styles.menu}>
+                <div data-label='menu'>
                     <RangesMenu
                         {...rangeMenuProps}
                         isEmpty={position.totalValueUSD === 0}
                         handleAccountClick={handleAccountClick}
                         isAccountView={isAccountView}
                     />
-                </li>
-            </ul>
+                </div>
+            </RangeRowStyled>
             {isDetailsModalOpen && (
                 <RangeDetailsModal
                     position={position}

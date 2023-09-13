@@ -9,10 +9,14 @@ import {
 import Spinner from '../../../Global/Spinner/Spinner';
 import TransactionDenied from './TransactionDenied/TransactionDenied';
 import WaitingConfirmation from '../../../Global/WaitingConfirmation/WaitingConfirmation';
-import styles from './SubmitTransaction.module.css';
 import TransactionException from './TransactionException/TransactionException';
 import TransactionFailed from './TransactionFailed/TransactionFailed';
 import TransactionSubmitted from './TransactionSubmitted/TransactionSubmitted';
+import {
+    SubmitTransactionButton,
+    SubmitTransactionExtraButton,
+} from '../../../../styled/Components/TradeModules';
+import { FlexContainer } from '../../../../styled/Common';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -44,6 +48,9 @@ export default function SubmitTransaction(props: propsIF) {
         isTransactionDenied ||
         isTransactionException
     );
+    const isTransactionConfirmed =
+        isTransactionApproved &&
+        !receiptData.pendingTransactions.includes(newTransactionHash);
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
@@ -89,6 +96,7 @@ export default function SubmitTransaction(props: propsIF) {
             tokenBDecimals={tokenB.decimals}
             tokenBImage={uriToHttp(tokenB.logoURI)}
             chainId={tokenB.chainId}
+            isConfirmed={isTransactionConfirmed}
             noAnimation
         />
     );
@@ -127,6 +135,8 @@ export default function SubmitTransaction(props: propsIF) {
         ? 'Transaction Denied'
         : lastReceipt && !isLastReceiptSuccess
         ? 'Transaction Failed'
+        : isTransactionConfirmed
+        ? 'Transaction Confirmed'
         : isTransactionApproved
         ? 'Transaction Submitted'
         : transactionPendingDisplayString;
@@ -134,58 +144,62 @@ export default function SubmitTransaction(props: propsIF) {
     const [showExtraInfo, setShowExtraInfo] = useState(false);
 
     return (
-        <section>
-            <div className={styles.button_container}>
-                <button
-                    className={styles.button_content}
-                    onClick={() => setShowExtraInfo(!showExtraInfo)}
-                >
-                    <div>{animationDisplay}</div>
-                    <div style={{ color: buttonColor }}>{buttonText}</div>
-                    {!isTransactionPending ? (
-                        showExtraInfo ? (
-                            <RiArrowUpSLine size={20} />
-                        ) : (
-                            <RiArrowDownSLine size={20} />
-                        )
+        <FlexContainer flexDirection='column' gap={8}>
+            <SubmitTransactionButton
+                onClick={() => setShowExtraInfo(!showExtraInfo)}
+            >
+                <div>{animationDisplay}</div>
+                <div style={{ color: buttonColor }}>{buttonText}</div>
+                {!isTransactionPending ? (
+                    showExtraInfo ? (
+                        <RiArrowUpSLine size={20} />
                     ) : (
-                        <div />
-                    )}
-                </button>
-
-                {showExtraInfo && (
-                    <section className={styles.extra_info_container}>
-                        {confirmationDisplay}
-                    </section>
+                        <RiArrowDownSLine size={20} />
+                    )
+                ) : (
+                    <div />
                 )}
-                <div className={styles.action_button_container}>
-                    {!isTransactionPending && (
-                        <span className={styles.close_icon_container}>
-                            <button
-                                onClick={() => {
-                                    resetConfirmation();
-                                }}
-                            >
-                                {disableSubmitAgain
-                                    ? 'Reset'
-                                    : 'Submit another transaction'}
-                            </button>
-                        </span>
-                    )}
-                    {(isTransactionDenied || isTransactionException) && (
-                        <span className={styles.close_icon_container}>
-                            <button
-                                onClick={() => {
-                                    resetConfirmation();
-                                    sendTransaction();
-                                }}
-                            >
-                                Retry
-                            </button>
-                        </span>
-                    )}
-                </div>
-            </div>
-        </section>
+            </SubmitTransactionButton>
+
+            {showExtraInfo && (
+                <FlexContainer
+                    fullWidth
+                    alignItems='center'
+                    justifyContent='center'
+                    padding='12px'
+                    background='dark2'
+                    rounded
+                >
+                    {confirmationDisplay}
+                </FlexContainer>
+            )}
+            <FlexContainer
+                alignItems='center'
+                justifyContent='flex-end'
+                gap={8}
+            >
+                {!isTransactionPending && (
+                    <SubmitTransactionExtraButton
+                        onClick={() => {
+                            resetConfirmation();
+                        }}
+                    >
+                        {disableSubmitAgain
+                            ? 'Reset'
+                            : 'Submit another transaction'}
+                    </SubmitTransactionExtraButton>
+                )}
+                {(isTransactionDenied || isTransactionException) && (
+                    <SubmitTransactionExtraButton
+                        onClick={() => {
+                            resetConfirmation();
+                            sendTransaction();
+                        }}
+                    >
+                        Retry
+                    </SubmitTransactionExtraButton>
+                )}
+            </FlexContainer>
+        </FlexContainer>
     );
 }

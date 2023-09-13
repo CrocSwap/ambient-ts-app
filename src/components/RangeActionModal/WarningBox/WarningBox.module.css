@@ -59,17 +59,14 @@
     padding: 6px 8px;
     border: 1px solid transparent;
     white-space: nowrap;
-
-    
-    
 }
 
-.warning_box button:hover, .text_only button:hover{
+.warning_box button:hover,
+.text_only button:hover {
     background-color: transparent;
     border: 1px solid var(--other-red);
     transition: all var(--animation-speed) ease-in-out;
     color: var(--text1);
-
 }
 
 .warning_box svg,
