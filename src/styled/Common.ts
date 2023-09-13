@@ -204,11 +204,7 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${maxWidth ? `max-width: ${maxWidth};` : ''}
         ${zIndex ? `z-index: ${zIndex};` : ''}
 
-        ${
-            transition
-                ? 'transition: all var(--animation-speed) ease-in-out;'
-                : ''
-        }
+        ${transition ? 'transition: var(--transition);' : ''}
         ${cursor ? `cursor: ${cursor};` : ''}
         ${outline ? `outline: 1px solid ${outline};` : ''}
         ${minHeight ? `min-height: ${minHeight};` : ''}
@@ -293,23 +289,6 @@ export const Text = styled.p<
     ${Margin}
     ${Padding}
     ${({ align }) => align && `text-align: ${align}`};
-`;
-
-export const Span = styled.span<
-    FontProps &
-        FontSizeProps &
-        ColorProps &
-        FontWeightProps & { align?: string; pointer?: boolean } & MarginProps &
-        PaddingProps
->`
-    ${Font}
-    ${FontSize}
-    ${FontWeight}
-    ${Color}
-    ${Margin}
-    ${Padding}
-    ${({ align }) => align && `text-align: ${align};`}
-    ${({ pointer }) => pointer && 'cursor: pointer;'}
 `;
 
 export const PulseAnimation = css`

@@ -281,25 +281,6 @@ export const TokenSelectButton = styled.button`
     }
 `;
 
-export const MaxButton = styled.button`
-    cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text1);
-    outline: none;
-    border: none;
-    background: transparent;
-
-    width: 25px;
-    max-height: 20px;
-    transition: all var(--animation-speed) ease-in-out;
-    border-radius: 4px;
-
-    &:hover {
-        color: var(--accent1);
-    }
-`;
-
 export const RefreshButton = styled(IconButton)`
     justify-content: flex-end;
 

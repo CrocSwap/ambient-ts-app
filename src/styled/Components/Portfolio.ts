@@ -77,7 +77,7 @@ export const CurrencyQuantityInput = styled.input`
     }
 `;
 
-export const MaxButton = styled.button<{ disabled?: boolean }>`
+export const MaxButton = styled.button<{ disabled?: boolean; width?: string }>`
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text1);
@@ -86,18 +86,21 @@ export const MaxButton = styled.button<{ disabled?: boolean }>`
 
     color: var(--text1);
 
-    width: 60px;
+    width: ${({ width }) => width || '60px'};
     display: flex;
     justify-content: left;
     align-items: center;
-    margin-left: 6px;
 
     max-height: 20px;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     background: transparent;
     border-radius: var(--border-radius);
 
     ${({ disabled }) => (disabled ? '' : 'cursor: pointer;')}
+
+    &:hover {
+        color: var(--accent1);
+    }
 `;
 
 export const PortfolioControlContainer = styled.div`
