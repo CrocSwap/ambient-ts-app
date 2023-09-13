@@ -68,16 +68,19 @@ export class Zoom {
             (event.ctrlKey || !event.metaKey)
         );
 
-        /*   const isZoomingIn = deltaX > 0;
-        const isZoomingOut = deltaX < 0; */
-        /*   const isZoomingInWithCandleCount =
+        const isZoomingIn = deltaX > 0;
+        const isZoomingOut = deltaX < 0;
+        const isZoomingInWithCandleCount =
             isZoomingIn ||
             Math.abs(lastTime - firstTime) >= this.period * 1000 * 2;
         const isZoomingOutCandleCount =
             isZoomingOut ||
             Math.abs(lastTime - firstTime) <=
-                this.period * 1000 * maxNumCandlesForZoom; */
-        if (isPressAltOrShiftKey) {
+                this.period * 1000 * maxNumCandlesForZoom;
+        if (
+            isPressAltOrShiftKey ||
+            !(isZoomingInWithCandleCount && isZoomingOutCandleCount)
+        ) {
             if (isTouchPad) {
                 this.wheelWithPressAltKey(
                     deltaX,
