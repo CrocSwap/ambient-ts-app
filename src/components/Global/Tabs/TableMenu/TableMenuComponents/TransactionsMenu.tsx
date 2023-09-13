@@ -56,7 +56,8 @@ export default function TransactionsMenu(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-    const { handlePulseAnimation } = useContext(TradeTableContext);
+    const { handlePulseAnimation, setActiveMobileComponent } =
+        useContext(TradeTableContext);
 
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
         useModal();
@@ -81,6 +82,7 @@ export default function TransactionsMenu(props: propsIF) {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleCopyClick = () => {
+        setActiveMobileComponent('trade');
         if (tx.entityType === 'swap') {
             handlePulseAnimation('swap');
         } else if (tx.entityType === 'limitOrder') {
