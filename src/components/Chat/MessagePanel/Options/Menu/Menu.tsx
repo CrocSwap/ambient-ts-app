@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import styles from './Menu.module.css';
 import { FiArrowLeft, FiDelete, FiInfo, FiRotateCw } from 'react-icons/fi';
 import { BsFillReplyFill, BsEmojiSmileUpsideDown } from 'react-icons/bs';
+import useChatApi from '../../../Service/ChatApi';
 interface propsIF {
     isMessageDeleted: boolean;
     setIsMessageDeleted: Dispatch<SetStateAction<boolean>>;
@@ -11,18 +12,17 @@ interface propsIF {
     id: string;
 }
 export default function Menu(props: propsIF) {
+    const { deleteMessage } = useChatApi();
     const closePanel = () => {
-        console.log('id: ', props.id);
-        props.setIsMessageDeleted(true);
-        props.deleteMsgFromList(props.id).then((result: any) => {
+        deleteMessage(props.id).then((result: any) => {
             if (result.status === 'OK') {
                 props.setIsMessageDeleted(true);
+                props.deleteMsgFromList(props.id);
                 return result;
             } else {
                 props.setIsMessageDeleted(false);
             }
         });
-        props.setIsMoreButtonPressed(false);
     };
 
     const options = [

@@ -229,6 +229,8 @@ const useChatSocket = (
 
         if (address !== undefined && address != 'undefined') {
             socketRef.current = io(CHAT_BACKEND_WSS_URL, {
+                path: '/chat/api/subscribe/',
+
                 query: { roomId: room, address, ensName },
             });
         }
@@ -312,44 +314,34 @@ const useChatSocket = (
             _id: msgId,
         };
 
-        try {
-            const response = await fetch(
-                `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessage/${msgId}`,
-                {
-                    method: 'POST',
-                },
-            );
-            const data = await response.json();
+        console.log(messages);
+        const response = await fetch(
+            `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessage/${msgId}`,
+            {
+                method: 'POST',
+            },
+        );
+        const data = await response.json();
+        data.message.deletedMessageText = 'This message has deleted';
 
-            if (data.status === 'OK') {
-                // Update the message with the deleted message text
-                const updatedMessages = messages.map((message) => {
-                    if (message._id === msgId) {
-                        // Mark the message as deleted and set the deleted message text
-                        return {
-                            ...message,
-                            isDeleted: true,
-                            deletedMessageText:
-                                'This message has been deleted.',
-                        };
-                    }
-                    return message;
-                });
-
-                // Update the state with the modified messages array
-                setMessages(updatedMessages);
-
-                console.log('updatedMessages: ', updatedMessages);
-                console.log('messages: ', messages);
-
-                return data;
-            } else {
-                console.error(`Failed to delete message with ID ${msgId}.`);
-                return data;
-            }
-        } catch (error) {
-            return { status: 'Error', message: 'Failed to delete message' };
+        console.log(data.message.deletedMessageText);
+        if (data) {
+            const msg = data.message;
+            const newMessageList = messages.map((e) => {
+                if (e._id == msg._id) {
+                    console.log('msg');
+                    return msg;
+                } else {
+                    console.log('e');
+                    return e;
+                }
+            });
+            console.log(newMessageList);
+            setMessages([...newMessageList]);
+            console.log('22 ', messages);
         }
+
+        return data;
     }
 
     async function sendMsg(
