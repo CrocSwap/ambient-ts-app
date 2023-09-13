@@ -36,38 +36,9 @@ export default function Exchange(props: propsIF) {
         .concat(erc20Tokens)
         .filter((token) => token);
 
-    const spinnerElement = <Spinner size={100} bg='var(--dark1)' centered />;
-
-    const ItemContent = () => {
-        if (connectedAccountActive) {
-            if (connectedUserTokens && connectedUserTokens.length > 0) {
-                return sequenceTokens(connectedUserTokens as TokenIF[]).map(
-                    (item, idx) => (
-                        <ExchangeCard
-                            key={idx}
-                            token={item}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
-                    ),
-                );
-            }
-        }
-        if (resolvedAddressTokens && resolvedAddressTokens[0]) {
-            return sequenceTokens(resolvedAddressTokens as TokenIF[]).map(
-                (item, idx) => (
-                    <ExchangeCard
-                        key={idx}
-                        token={item}
-                        cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    />
-                ),
-            );
-        }
-        if (resolvedAddressTokens && !resolvedAddressTokens[0]) {
-            return;
-        }
-        return spinnerElement;
-    };
+    const tokensToRender = connectedAccountActive
+        ? connectedUserTokens
+        : resolvedAddressTokens;
 
     function sequenceTokens(tkns: TokenIF[]) {
         const tokensWithOrigins: TokenIF[] = tkns.map((tkn: TokenIF) => {
@@ -147,7 +118,22 @@ export default function Exchange(props: propsIF) {
     return (
         <div className={styles.container}>
             <ExchangeHeader />
-            <div className={styles.item_container}>{ItemContent()}</div>
+            <div className={styles.item_container}>
+                {tokensToRender &&
+                tokensToRender.length > 0 &&
+                tokensToRender[0] !== undefined ? (
+                    // values can be `undefined` but this fn will filter them out
+                    sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
+                        <ExchangeCard
+                            key={JSON.stringify(token)}
+                            token={token}
+                            cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        />
+                    ))
+                ) : (
+                    <Spinner size={100} bg='var(--dark1)' centered />
+                )}
+            </div>
         </div>
     );
 }

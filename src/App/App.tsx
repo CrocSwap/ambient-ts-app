@@ -44,6 +44,7 @@ import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
+import { FlexContainer } from '../styled/Common';
 
 /** ***** React Function *******/
 export default function App() {
@@ -149,7 +150,11 @@ export default function App() {
 
     return (
         <>
-            <div className={containerStyle} data-theme={selectedTheme}>
+            <FlexContainer
+                flexDirection='column'
+                className={containerStyle}
+                data-theme={selectedTheme}
+            >
                 {!isChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
@@ -264,7 +269,7 @@ export default function App() {
                         />
                     </Routes>
                 </section>
-            </div>
+            </FlexContainer>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
                     currentLocation !== '/404' &&
@@ -272,8 +277,10 @@ export default function App() {
                     currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
+                {showMobileVersion && currentLocation !== '/' && (
+                    <SidebarFooter />
+                )}
             </div>
-            {showMobileVersion && currentLocation !== '/' && <SidebarFooter />}
             <GlobalPopup />
             <SnackbarComponent />
             {isWagmiModalOpen && <WalletModalWagmi />}

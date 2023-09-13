@@ -15,7 +15,6 @@ import Spinner from '../Spinner/Spinner';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
-import styles from './TokenInputQuantity.module.css';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -27,6 +26,13 @@ import {
     setLocalTokenB,
 } from '../../../utils/state/localPairDataSlice';
 import { useAppDispatch } from '.././../../utils/hooks/reduxToolkit';
+import { FlexContainer, Text } from '../../../styled/Common';
+import {
+    InputDisabledText,
+    TokenQuantityContainer,
+    TokenQuantityInput,
+    TokenSelectButton,
+} from '../../../styled/Components/TradeModules';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -124,10 +130,14 @@ function TokenInputQuantity(props: propsIF) {
                 enterDelay={700}
                 leaveDelay={200}
             >
-                <div className={styles.token_list_text}>{token.symbol}</div>
+                <Text fontSize='header2' color='text1'>
+                    {token.symbol}
+                </Text>
             </DefaultTooltip>
         ) : (
-            <div className={styles.token_list_text}>{token.symbol}</div>
+            <Text fontSize='header2' color='text1'>
+                {token.symbol}
+            </Text>
         );
 
     const tokenSelectRef = useRef(null);
@@ -137,31 +147,37 @@ function TokenInputQuantity(props: propsIF) {
     }
 
     const poolNotInitializedContent = tokenSelectRef.current && (
-        <div className={styles.disabled_text}>
+        <InputDisabledText
+            flexDirection='column'
+            alignItems='center'
+            justifyContent='center'
+            fullHeight
+            fullWidth
+        >
             This pool has not been initialized.
-            <div className={styles.warning_text}>
+            <Text color='accent1'>
                 <Link
                     to={linkGenInitPool.getFullURL({
                         chain: chainId,
                         tokenA: tradeData.tokenA.address,
                         tokenB: tradeData.tokenB.address,
                     })}
-                    className={styles.warning_text}
                     onClick={handleNavigationToInit}
                 >
                     Initialize it to continue.
                 </Link>
-            </div>
-        </div>
+            </Text>
+        </InputDisabledText>
     );
 
     const input = (
-        <input
+        <TokenQuantityInput
             id={fieldId ? `${fieldId}_qty` : undefined}
-            className={styles.input}
             placeholder={isLoading ? '' : '0.0'}
-            onChange={(event) => onChange(event)}
-            onBlur={(event) => onBlur(event.target.value)}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(event)}
+            onBlur={(event: ChangeEvent<HTMLInputElement>) =>
+                onBlur(event.target.value)
+            }
             value={isLoading ? '' : displayValue}
             type='number'
             step='any'
@@ -188,31 +204,32 @@ function TokenInputQuantity(props: propsIF) {
         }
     })();
     return (
-        <div className={styles.container} id={fieldId}>
-            {label && <span className={styles.label}>{label}</span>}
-            <div
-                className={`${styles.input_container} ${
-                    showPulseAnimation && styles.pulse_animation
-                } ${!includeWallet && styles.bottom_padding}`}
+        <FlexContainer flexDirection='column' color='text1' id={fieldId}>
+            {label && (
+                <Text fontSize='body' color='text1' style={{ margin: '4px 0' }}>
+                    {label}
+                </Text>
+            )}
+            <TokenQuantityContainer
+                showPulse={!!showPulseAnimation}
+                style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
-                <div>
-                    <div className={styles.token_quantity_input}>
-                        {isLoading ? (
-                            <div className={styles.circular_progress}>
-                                <Spinner
-                                    size={24}
-                                    bg='var(--dark2)'
-                                    weight={2}
-                                />
-                            </div>
-                        ) : (
-                            inputContent
-                        )}
-                    </div>
+                <div style={{ position: 'relative' }}>
+                    {isLoading ? (
+                        <FlexContainer
+                            fullWidth
+                            fullHeight
+                            alignItems='center'
+                            margin='0 32px'
+                        >
+                            <Spinner size={24} bg='var(--dark2)' weight={2} />
+                        </FlexContainer>
+                    ) : (
+                        inputContent
+                    )}
                 </div>
-                <button
+                <TokenSelectButton
                     id={fieldId ? `${fieldId}_token_selector` : undefined}
-                    className={styles.token_select}
                     onClick={openTokenSelect}
                     tabIndex={0}
                     aria-label='Open swap sell token modal.'
@@ -226,8 +243,8 @@ function TokenInputQuantity(props: propsIF) {
                     />
                     {tokenSymbol}
                     <RiArrowDownSLine size={27} />
-                </button>
-            </div>
+                </TokenSelectButton>
+            </TokenQuantityContainer>
 
             {includeWallet && includeWallet}
             {isTokenSelectOpen && (
@@ -242,7 +259,7 @@ function TokenInputQuantity(props: propsIF) {
                     reverseTokens={reverseTokens}
                 />
             )}
-        </div>
+        </FlexContainer>
     );
 }
 

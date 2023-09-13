@@ -583,6 +583,8 @@ function Range() {
         isDenomBase,
         currentPoolPriceTick,
         baseToken.address + quoteToken.address,
+        baseTokenDecimals,
+        quoteTokenDecimals,
     ]);
 
     useEffect(() => {

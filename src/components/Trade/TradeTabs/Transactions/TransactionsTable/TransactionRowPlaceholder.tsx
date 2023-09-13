@@ -3,13 +3,17 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import trimString from '../../../../../utils/functions/trimString';
 import { OptionButton } from '../../../../Global/Button/OptionButton';
-import styles from '../Transactions.module.css';
 import { FiExternalLink } from 'react-icons/fi';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import {
+    RowItem,
+    TransactionRow,
+} from '../../../../../styled/Components/TransactionTable';
+import { FlexContainer } from '../../../../../styled/Common';
 
 interface PropsIF {
     transaction: {
@@ -29,14 +33,12 @@ interface PropsIF {
             gridSize?: number;
         };
     };
-    showTimestamp: boolean;
-    showColumns: boolean;
-    ipadView: boolean;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 // TODO: integrate into TransactionRow
 export const TransactionRowPlaceholder = (props: PropsIF) => {
-    const { transaction, showTimestamp, showColumns, ipadView } = props;
+    const { transaction, tableView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
 
@@ -62,15 +64,11 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
         : quoteTokenCharacter;
 
     const id = (
-        <p className={`${styles.mono_font}`}>
+        <RowItem font='roboto'>
             {trimString(transaction.hash, 9, 0, '…')}
-        </p>
+        </RowItem>
     );
-    const wallet = (
-        <p className={`${styles.id_style}`} style={{ textTransform: 'none' }}>
-            you
-        </p>
-    );
+    const wallet = <p>you</p>;
 
     const pinnedDisplayPrices =
         transaction.details?.baseTokenDecimals &&
@@ -116,28 +114,28 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
     // TODO: use media queries and standardized styles
     return (
         <>
-            <ul
-                className={`${styles.row_placeholder} ${styles.row_container} ${
-                    showAllData && styles.border_left
-                }`}
+            <TransactionRow
+                size={tableView}
+                user={showAllData}
+                placeholder
                 tabIndex={0}
             >
-                {showTimestamp && (
-                    <li>
+                {tableView === 'large' && (
+                    <div>
                         <p>Now</p>
-                    </li>
+                    </div>
                 )}
-                {!showColumns && <li>{id}</li>}
-                {!showColumns && <li>{wallet}</li>}
-                {showColumns && (
-                    <li>
+                {tableView === 'large' && <div>{id}</div>}
+                {tableView === 'large' && <div>{wallet}</div>}
+                {tableView !== 'large' && (
+                    <div>
                         {id}
                         {wallet}
-                    </li>
+                    </div>
                 )}
-                {!ipadView ? (
+                {tableView !== 'small' ? (
                     transaction.type === 'Range' ? (
-                        <li className={styles.align_right}>
+                        <FlexContainer justifyContent='flex-end'>
                             <p>
                                 {transaction.details?.isAmbient
                                     ? '0.00'
@@ -154,19 +152,21 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                           '...'
                                       }`}
                             </p>
-                        </li>
+                        </FlexContainer>
                     ) : transaction.type === 'Limit' ? (
-                        <li className={styles.align_right}>
+                        <FlexContainer justifyContent='flex-end'>
                             {isDenomBase
                                 ? `${priceCharacter}${invLimitPriceDecimalCorrectedTruncated}`
                                 : `${priceCharacter}${limitPriceDecimalCorrectedTruncated}`}
-                        </li>
+                        </FlexContainer>
                     ) : (
-                        <li className={styles.align_right}>...</li>
+                        <FlexContainer justifyContent='flex-end'>
+                            ...
+                        </FlexContainer>
                     )
                 ) : undefined}
-                {!showColumns && (
-                    <li className={styles.align_center}>
+                {tableView === 'large' && (
+                    <FlexContainer justifyContent='center'>
                         {transaction.type === 'Market' ||
                         transaction.type === 'Limit'
                             ? transaction.side === 'Claim'
@@ -180,15 +180,19 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                 ? 'Buy' + ` ${sideCharacter}`
                                 : 'Sell' + ` ${sideCharacter}`
                             : transaction.action ?? '...'}
-                    </li>
+                    </FlexContainer>
                 )}
-                {!showColumns && (
-                    <li className={styles.align_center}>{transaction.type}</li>
+                {tableView === 'large' && (
+                    <FlexContainer justifyContent='center'>
+                        {transaction.type}
+                    </FlexContainer>
                 )}
-                {showColumns && !ipadView && (
-                    <li
-                        className={styles.align_center}
-                        style={{ padding: '6px 0' }}
+                {tableView !== 'large' && (
+                    <FlexContainer
+                        flexDirection='column'
+                        alignItems='center'
+                        justifyContent='center'
+                        padding='6px 0'
                     >
                         <p>{transaction.type}</p>
                         <p>
@@ -207,23 +211,17 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                     : 'Sell' + ` ${sideCharacter}`
                                 : transaction.action ?? '...'}
                         </p>
-                    </li>
+                    </FlexContainer>
                 )}
-                {<li className={styles.align_right}>...</li>}
-                {<li className={styles.align_right}>...</li>}
-                {!showColumns && <li className={styles.align_right}>...</li>}
-                <li
-                    data-label='menu'
-                    className={`${styles.menu} ${styles.align_right}`}
-                >
-                    <div
-                        style={{
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                        }}
-                    >
+                {<FlexContainer justifyContent='flex-end'>...</FlexContainer>}
+                {tableView !== 'small' && (
+                    <FlexContainer justifyContent='flex-end'>...</FlexContainer>
+                )}
+                {tableView === 'large' && (
+                    <FlexContainer justifyContent='flex-end'>...</FlexContainer>
+                )}
+                <FlexContainer justifyContent='flex-end' data-label='menu'>
+                    <FlexContainer fullWidth justifyContent='flex-end'>
                         <OptionButton
                             ariaLabel='Explorer'
                             onClick={() =>
@@ -242,9 +240,9 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                                 </>
                             }
                         />
-                    </div>
-                </li>
-            </ul>
+                    </FlexContainer>
+                </FlexContainer>
+            </TransactionRow>
         </>
     );
 };

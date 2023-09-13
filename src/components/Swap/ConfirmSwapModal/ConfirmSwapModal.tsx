@@ -7,8 +7,8 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import TradeConfirmationSkeleton from '../../Trade/TradeModules/TradeConfirmationSkeleton';
-import styles from '../../Trade/TradeModules/TradeConfirmationSkeleton.module.css';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
+import { FlexContainer, Text } from '../../../styled/Common';
 
 interface propsIF {
     initiateSwapMethod: () => Promise<void>;
@@ -162,23 +162,37 @@ export default function ConfirmSwapModal(props: propsIF) {
     const transactionDetails = (
         <>
             {isTokenAPrimary ? (
-                <div className={styles.row}>
-                    <p>Expected Output</p>
-                    <p>
+                <FlexContainer
+                    justifyContent='space-between'
+                    alignItems='center'
+                >
+                    <Text fontSize='body' color='text2'>
+                        Expected Output
+                    </Text>
+                    <Text fontSize='body' color='text2'>
                         {localeBuyString} {buyTokenData.symbol}
-                    </p>
-                </div>
+                    </Text>
+                </FlexContainer>
             ) : (
-                <div className={styles.row}>
-                    <p>Expected Input</p>
-                    <p>
+                <FlexContainer
+                    justifyContent='space-between'
+                    alignItems='center'
+                >
+                    <Text fontSize='body' color='text2'>
+                        Expected Input
+                    </Text>
+                    <Text fontSize='body' color='text2'>
                         {localeSellString} {sellTokenData.symbol}
-                    </p>
-                </div>
+                    </Text>
+                </FlexContainer>
             )}
-            <div className={styles.row}>
-                <p>Effective Conversion Rate</p>
-                <p
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    Effective Conversion Rate
+                </Text>
+                <Text
+                    fontSize='body'
+                    color='text2'
                     onClick={() => {
                         setIsDenomBaseLocal(!isDenomBaseLocal);
                     }}
@@ -191,12 +205,16 @@ export default function ConfirmSwapModal(props: propsIF) {
                         : `${getFormattedNumber({
                               value: effectivePriceWithDenom,
                           })} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Slippage Tolerance</p>
-                <p>{slippageTolerancePercentage}%</p>
-            </div>
+                </Text>
+            </FlexContainer>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    Slippage Tolerance
+                </Text>
+                <Text fontSize='body' color='text2'>
+                    {slippageTolerancePercentage}%
+                </Text>
+            </FlexContainer>
         </>
     );
 
