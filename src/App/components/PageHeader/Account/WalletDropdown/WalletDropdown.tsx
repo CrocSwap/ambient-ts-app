@@ -205,7 +205,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                     />
                 ))}
             </WalletContent>
-            <ActionsContainer numCols={2} gapSize={16} fullWidth={true}>
+            <ActionsContainer numCols={2} gap={16} fullWidth={true}>
                 <AccountLink
                     to={'/account'}
                     aria-label='Go to the account page '

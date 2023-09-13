@@ -6,7 +6,6 @@ import {
     useContext,
     useEffect,
 } from 'react';
-import styles from './MinMaxPrice.module.css';
 import PriceInput from '../PriceInput/PriceInput';
 
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
@@ -17,6 +16,7 @@ import {
 import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
+import { FlexContainer, Text } from '../../../../../styled/Common';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -113,10 +113,10 @@ function MinMaxPrice(props: MinMaxPriceIF) {
     };
 
     const disableInputContent = (
-        <div className={styles.disable_text}>
+        <Text fontSize='body' color='negative'>
             Invalid range selected. The min price must be lower than the max
             price.
-        </div>
+        </Text>
     );
 
     useEffect(() => {
@@ -144,8 +144,15 @@ function MinMaxPrice(props: MinMaxPriceIF) {
     };
 
     return (
-        <div className={styles.min_max_container}>
-            <div className={styles.min_max_content}>
+        <FlexContainer flexDirection='column' gap={4}>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='space-between'
+                style={{
+                    transition:
+                        'transition: all var(--animation-speed) ease-in-out',
+                }}
+            >
                 <PriceInput
                     fieldId='min'
                     title='Min Price'
@@ -182,9 +189,9 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                         !isDenomBase ? decreaseHighTick : increaseLowTick
                     }
                 />
-            </div>
+            </FlexContainer>
             {disable && disableInputContent}
-        </div>
+        </FlexContainer>
     );
 }
 

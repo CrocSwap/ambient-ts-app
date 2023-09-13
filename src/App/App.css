@@ -52,14 +52,13 @@ svg {
 }
 
 svg:hover {
-    color: var(--accent1) ;
-    cursor: pointer ;
+    color: var(--accent1);
+    cursor: pointer;
 }
 
-
-button:hover > svg{
-    color: var(--accent1) ;
-    cursor: pointer ;
+button:hover > svg {
+    color: var(--accent1);
+    cursor: pointer;
 }
 
 button,
@@ -96,8 +95,6 @@ footer {
 
 .swap-body {
     height: calc(100vh - (var(--footer-height) + 2rem));
-
-
 }
 
 h3:focus-visible,
@@ -236,12 +233,12 @@ p:focus-visible {
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
-input[type=number] {
+input[type='number'] {
     appearance: textfield;
     -moz-appearance: textfield;
 }

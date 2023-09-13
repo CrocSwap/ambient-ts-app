@@ -1,11 +1,5 @@
 /* eslint-disable no-irregular-whitespace */
-// START: Import React and Dongles
 import { useContext, useEffect, useRef, useState, memo } from 'react';
-
-// START: Import JSX Elements
-import styles from './Orders.module.css';
-
-// START: Import Local Files
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
@@ -22,8 +16,11 @@ import Spinner from '../../../Global/Spinner/Spinner';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { OrderRowPlaceholder } from './OrderTable/OrderRowPlaceholder';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-
-// import OrderAccordions from './OrderAccordions/OrderAccordions';
+import {
+    OrderRow as OrderRowStyled,
+    ViewMoreButton,
+} from '../../../../styled/Components/TransactionTable';
+import { FlexContainer, Text } from '../../../../styled/Common';
 
 // interface for props for react functional component
 interface propsIF {
@@ -142,9 +139,17 @@ function Orders(props: propsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] =
         useSortedLimits('time', limitOrderData);
 
-    const ipadView = useMediaQuery('(max-width: 600px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const showColumns = useMediaQuery('(max-width: 1599px)');
+    // TODO: Use these as media width constants
+    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+
+    const tableView =
+        isSmallScreen || (isAccountView && !isLargeScreen && isSidebarOpen)
+            ? 'small'
+            : (!isSmallScreen && !isLargeScreen) ||
+              (isAccountView && isLargeScreen && isSidebarOpen)
+            ? 'medium'
+            : 'large';
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -174,42 +179,41 @@ function Orders(props: propsIF) {
         {
             name: 'Last Updated',
             className: '',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'time',
             sortable: true,
         },
         {
             name: 'Pair',
             className: '',
-            show: isAccountView && showPair,
+            show: isAccountView,
             slug: 'pool',
             sortable: true,
         },
         {
             name: 'Position ID',
             className: 'ID',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !isAccountView && !showColumns,
+            show: tableView === 'large' && !isAccountView,
             slug: 'wallet',
             sortable: showAllData,
         },
         {
             name: walID,
             className: 'wallet_it',
-            show: showColumns,
+            show: tableView !== 'large',
             slug: 'walletid',
             sortable: !isAccountView,
         },
         {
             name: 'Limit Price',
-
-            show: !ipadView,
+            show: tableView !== 'small',
             slug: 'price',
             sortable: true,
             alignRight: true,
@@ -217,7 +221,7 @@ function Orders(props: propsIF) {
         {
             name: 'Side',
             className: 'side',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'side',
             sortable: true,
             alignCenter: true,
@@ -225,7 +229,7 @@ function Orders(props: propsIF) {
         {
             name: 'Type',
             className: 'type',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'type',
             sortable: false,
             alignCenter: true,
@@ -233,7 +237,7 @@ function Orders(props: propsIF) {
         {
             name: sideType,
             className: 'side_type',
-            show: showColumns,
+            show: tableView !== 'large',
             slug: 'sidetype',
             sortable: false,
             alignCenter: true,
@@ -249,16 +253,14 @@ function Orders(props: propsIF) {
         },
         {
             name: isAccountView ? '' : `${baseTokenSymbol}`,
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
             name: isAccountView ? '' : `${quoteTokenSymbol}`,
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: quoteTokenSymbol,
             sortable: false,
             alignRight: true,
@@ -266,7 +268,7 @@ function Orders(props: propsIF) {
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns && !ipadView,
+            show: tableView === 'medium',
             slug: 'tokens',
             sortable: false,
             alignRight: true,
@@ -275,7 +277,7 @@ function Orders(props: propsIF) {
             name: 'Claimable',
             // name: ' ',
             className: '',
-            show: !ipadView,
+            show: tableView !== 'small',
             slug: 'status',
             sortable: false,
             alignCenter: true,
@@ -289,10 +291,6 @@ function Orders(props: propsIF) {
             sortable: false,
         },
     ];
-    const headerStyle = isAccountView
-        ? styles.portfolio_header
-        : styles.trade_header;
-
     // ---------------------
     // orders per page media queries
     const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
@@ -346,40 +344,44 @@ function Orders(props: propsIF) {
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && limitOrderData.length > 10) ||
             (!isAccountView && tradePageCheck)) && (
-            <div className={styles.footer}>
-                <div className={styles.footer_content}>
-                    <RowsPerPageDropdown
-                        rowsPerPage={rowsPerPage}
-                        onChange={handleChangeRowsPerPage}
-                        itemCount={sortedLimits.length}
-                        setCurrentPage={setCurrentPage}
-                        resetPageToFirst={resetPageToFirst}
-                    />
-                    <Pagination
-                        count={count}
-                        page={page}
-                        shape='circular'
-                        color='secondary'
-                        onChange={handleChange}
-                        showFirstButton
-                        showLastButton
-                        size={sPagination ? 'small' : 'medium'}
-                    />
-                    <p
-                        className={styles.showing_text}
-                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
-                </div>
-            </div>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='center'
+                gap={isSmallScreen ? 4 : 8}
+                margin='16px auto'
+                background='dark1'
+            >
+                <RowsPerPageDropdown
+                    rowsPerPage={rowsPerPage}
+                    onChange={handleChangeRowsPerPage}
+                    itemCount={sortedLimits.length}
+                    setCurrentPage={setCurrentPage}
+                    resetPageToFirst={resetPageToFirst}
+                />
+                <Pagination
+                    count={count}
+                    page={page}
+                    shape='circular'
+                    color='secondary'
+                    onChange={handleChange}
+                    showFirstButton
+                    showLastButton
+                    size={sPagination ? 'small' : 'medium'}
+                />
+                {!isSmallScreen && (
+                    <Text
+                        fontSize='mini'
+                        color='text2'
+                        style={{ whiteSpace: 'nowrap' }}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
+                )}
+            </FlexContainer>
         );
 
     // ----------------------
 
     const headerColumnsDisplay = (
-        <ul
-            className={`${isAccountView ? styles.account_header : undefined} ${
-                styles.header
-            } ${headerStyle}`}
-        >
+        <OrderRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
                 <OrderHeader
                     key={idx}
@@ -390,14 +392,12 @@ function Orders(props: propsIF) {
                     header={header}
                 />
             ))}
-        </ul>
+        </OrderRowStyled>
     );
 
     const currentRowItemContent = _DATA.currentData.map((order, idx) => (
         <OrderRow
-            showPair={showPair}
-            showColumns={showColumns}
-            ipadView={ipadView}
+            tableView={tableView}
             key={idx}
             limitOrder={order}
             isAccountView={isAccountView}
@@ -406,9 +406,7 @@ function Orders(props: propsIF) {
 
     const sortedRowItemContent = sortedLimits.map((order, idx) => (
         <OrderRow
-            showPair={showPair}
-            showColumns={showColumns}
-            ipadView={ipadView}
+            tableView={tableView}
             key={idx}
             limitOrder={order}
             isAccountView={isAccountView}
@@ -461,8 +459,7 @@ function Orders(props: propsIF) {
                                 type: tx.txType,
                                 details: tx.txDetails,
                             }}
-                            showColumns={showColumns}
-                            ipadView={ipadView}
+                            tableView={tableView}
                         />
                     ))}
                 {currentRowItemContent}
@@ -473,16 +470,15 @@ function Orders(props: propsIF) {
                 !isTradeTableExpanded &&
                     !isAccountView &&
                     sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
-                        <div className={styles.view_more_container}>
-                            <button
-                                className={styles.view_more_button}
-                                onClick={() => {
-                                    toggleTradeTable();
-                                }}
-                            >
+                        <FlexContainer
+                            justifyContent='center'
+                            alignItems='center'
+                            padding='8px'
+                        >
+                            <ViewMoreButton onClick={() => toggleTradeTable()}>
                                 View More
-                            </button>
-                        </div>
+                            </ViewMoreButton>
+                        </FlexContainer>
                     )
             }
         </div>
@@ -496,17 +492,11 @@ function Orders(props: propsIF) {
         }
     }, [isTradeTableExpanded]);
 
-    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
-
     return (
-        <div
-            className={`${styles.main_list_container} ${
-                isTradeTableExpanded && styles.main_list_expanded
-            }`}
-        >
+        <FlexContainer flexDirection='column' fullHeight>
             <div>{headerColumnsDisplay}</div>
 
-            <div className={styles.table_content}>
+            <div style={{ flex: 1, overflow: 'auto' }}>
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
@@ -514,8 +504,8 @@ function Orders(props: propsIF) {
                 )}
             </div>
 
-            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
-        </div>
+            {footerDisplay}
+        </FlexContainer>
     );
 }
 
