@@ -418,12 +418,14 @@ export default function Deposit(props: propsIF) {
                 <FlexContainer fontSize='body' color='text2' gap={6}>
                     <Text color='text1'>Available:</Text>
                     {tokenWalletBalanceTruncated || '...'}
-                    <MaxButton
-                        onClick={handleBalanceClick}
-                        disabled={!isWalletBalanceSufficientToCoverDeposit}
-                    >
-                        Max
-                    </MaxButton>
+                    {tokenWalletBalance !== '0' && (
+                        <MaxButton
+                            onClick={handleBalanceClick}
+                            disabled={!isWalletBalanceSufficientToCoverDeposit}
+                        >
+                            Max
+                        </MaxButton>
+                    )}
                 </FlexContainer>
                 <FlexContainer
                     alignItems='center'

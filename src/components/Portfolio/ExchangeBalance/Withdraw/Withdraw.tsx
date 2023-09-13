@@ -380,12 +380,9 @@ export default function Withdraw(props: propsIF) {
                 <FlexContainer fontSize='body' color='text2' gap={6}>
                     <Text color='text1'>Available:</Text>
                     {tokenDexBalanceTruncated || '...'}
-                    <MaxButton
-                        onClick={handleBalanceClick}
-                        disabled={tokenDexBalance === '0'}
-                    >
-                        Max
-                    </MaxButton>
+                    {tokenDexBalance !== '0' && (
+                        <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
+                    )}
                 </FlexContainer>
                 <GasPump>
                     <SVGContainer>
