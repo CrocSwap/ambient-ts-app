@@ -377,10 +377,8 @@ export default function Withdraw(props: propsIF) {
                 setTokenModalOpen={setTokenModalOpen}
             />
             <FlexContainer justifyContent='space-between' alignItems='center'>
-                <FlexContainer fontSize='body' color='text2'>
-                    <Text margin='0 6px 0 0' color='text1'>
-                        Available:
-                    </Text>
+                <FlexContainer fontSize='body' color='text2' gap={6}>
+                    <Text color='text1'>Available:</Text>
                     {tokenDexBalanceTruncated || '...'}
                     <MaxButton
                         onClick={handleBalanceClick}
