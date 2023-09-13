@@ -60,7 +60,8 @@ export default function OrdersMenu(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-    const { handlePulseAnimation } = useContext(TradeTableContext);
+    const { handlePulseAnimation, setActiveMobileComponent } =
+        useContext(TradeTableContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -71,6 +72,8 @@ export default function OrdersMenu(props: propsIF) {
 
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
+        setActiveMobileComponent('trade');
+
         handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
 
