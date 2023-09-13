@@ -852,12 +852,15 @@ export default function InitPool() {
     };
     const [isMintLiq, setIsMinLiq] = useState(true);
 
-    console.log(poolExists);
+    const isRangeBoundsAndCollateralDisabled =
+        poolExists === true || !isMintLiq;
 
     const collateralContent = (
         <div
             className={`${styles.collateral_container} ${
-                poolExists === true || isMintLiq ? styles.content_disabled : ''
+                isRangeBoundsAndCollateralDisabled
+                    ? styles.content_disabled
+                    : ''
             }`}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
@@ -930,7 +933,7 @@ export default function InitPool() {
                                 {mintInitialLiquidity}
                                 <div
                                     className={
-                                        poolExists === true || !isMintLiq
+                                        isRangeBoundsAndCollateralDisabled
                                             ? styles.content_disabled
                                             : ''
                                     }
@@ -942,7 +945,7 @@ export default function InitPool() {
 
                                 <RangeBounds
                                     isRangeBoundsDisabled={
-                                        poolExists === true || !isMintLiq
+                                        isRangeBoundsAndCollateralDisabled
                                     }
                                     {...rangeWidthProps}
                                     {...rangePriceInfoProps}
@@ -952,7 +955,7 @@ export default function InitPool() {
 
                                 <div
                                     className={
-                                        poolExists === true || !isMintLiq
+                                        isRangeBoundsAndCollateralDisabled
                                             ? styles.content_disabled
                                             : ''
                                     }
