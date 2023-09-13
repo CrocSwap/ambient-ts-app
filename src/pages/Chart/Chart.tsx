@@ -945,66 +945,53 @@ export default function Chart(props: propsIF) {
                     .filter((event) => {
                         setSelectedDrawnShape(undefined);
 
-                        if (location.pathname.includes('/market')) {
-                            return !canUserDragDrawnShape;
+                        if (event.type.includes('touch')) {
+                            const canvas = d3
+                                .select(d3CanvasMain.current)
+                                .select('canvas')
+                                .node() as HTMLCanvasElement;
+
+                            const rectCanvas = canvas.getBoundingClientRect();
+
+                            const lineBuffer =
+                                (scaleData?.yScale.domain()[1] -
+                                    scaleData?.yScale.domain()[0]) /
+                                15;
+
+                            const eventPoint =
+                                event.targetTouches[0].clientY -
+                                rectCanvas?.top;
+
+                            const mousePlacement =
+                                scaleData?.yScale.invert(eventPoint);
+
+                            const limitLineValue = limit;
+
+                            const minRangeValue = ranges.filter(
+                                (target: lineValue) => target.name === 'Min',
+                            )[0].value;
+                            const maxRangeValue = ranges.filter(
+                                (target: lineValue) => target.name === 'Max',
+                            )[0].value;
+
+                            const isOnLimit =
+                                location.pathname.includes('/limit') &&
+                                mousePlacement < limitLineValue + lineBuffer &&
+                                mousePlacement > limitLineValue - lineBuffer;
+
+                            const isOnRangeMin =
+                                location.pathname.includes('/pool') &&
+                                mousePlacement < minRangeValue + lineBuffer &&
+                                mousePlacement > minRangeValue - lineBuffer;
+
+                            const isOnRangeMax =
+                                location.pathname.includes('/pool') &&
+                                mousePlacement < maxRangeValue + lineBuffer &&
+                                mousePlacement > maxRangeValue - lineBuffer;
+
+                            return !isOnLimit && !isOnRangeMin && !isOnRangeMax;
                         } else {
-                            if (event.type.includes('touch')) {
-                                const canvas = d3
-                                    .select(d3CanvasMain.current)
-                                    .select('canvas')
-                                    .node() as HTMLCanvasElement;
-
-                                const rectCanvas =
-                                    canvas.getBoundingClientRect();
-
-                                const lineBuffer =
-                                    (scaleData?.yScale.domain()[1] -
-                                        scaleData?.yScale.domain()[0]) /
-                                    15;
-
-                                const eventPoint =
-                                    event.targetTouches[0].clientY -
-                                    rectCanvas?.top;
-
-                                const mousePlacement =
-                                    scaleData?.yScale.invert(eventPoint);
-
-                                const limitLineValue = limit;
-
-                                const minRangeValue = ranges.filter(
-                                    (target: lineValue) =>
-                                        target.name === 'Min',
-                                )[0].value;
-                                const maxRangeValue = ranges.filter(
-                                    (target: lineValue) =>
-                                        target.name === 'Max',
-                                )[0].value;
-
-                                const isOnLimit =
-                                    location.pathname.includes('/limit') &&
-                                    mousePlacement <
-                                        limitLineValue + lineBuffer &&
-                                    mousePlacement >
-                                        limitLineValue - lineBuffer;
-
-                                const isOnRangeMin =
-                                    location.pathname.includes('/pool') &&
-                                    mousePlacement <
-                                        minRangeValue + lineBuffer &&
-                                    mousePlacement > minRangeValue - lineBuffer;
-
-                                const isOnRangeMax =
-                                    location.pathname.includes('/pool') &&
-                                    mousePlacement <
-                                        maxRangeValue + lineBuffer &&
-                                    mousePlacement > maxRangeValue - lineBuffer;
-
-                                return (
-                                    !isOnLimit && !isOnRangeMin && !isOnRangeMax
-                                );
-                            } else {
-                                return !canUserDragRange && !canUserDragLimit;
-                            }
+                            return !canUserDragRange && !canUserDragLimit;
                         }
                     });
 
@@ -1027,7 +1014,6 @@ export default function Chart(props: propsIF) {
         maxTickForLimit,
         canUserDragRange,
         canUserDragLimit,
-        canUserDragDrawnShape,
         unparsedCandleData,
         period,
         tradeData.advancedMode,
