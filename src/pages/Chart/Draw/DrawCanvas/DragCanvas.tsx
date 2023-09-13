@@ -12,7 +12,6 @@ interface DragCanvasProps {
     drawnShapeHistory: drawDataHistory[];
     canUserDragDrawnShape: boolean;
     setIsUpdatingShape: React.Dispatch<React.SetStateAction<boolean>>;
-    setIsShapeSelected: React.Dispatch<React.SetStateAction<boolean>>;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCrossHairDataFunc: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,7 +31,6 @@ export default function DragCanvas(props: DragCanvasProps) {
         drawnShapeHistory,
         render,
         setIsUpdatingShape,
-        setIsShapeSelected,
         mousemove,
         scaleData,
         canUserDragDrawnShape,
@@ -198,7 +196,6 @@ export default function DragCanvas(props: DragCanvasProps) {
                     }
                 }
 
-                setIsShapeSelected(true);
                 setSelectedDrawnShape(hoveredDrawnShape);
             })
             .on('drag', function (event) {

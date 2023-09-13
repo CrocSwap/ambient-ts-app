@@ -47,7 +47,6 @@ interface xAxisIF {
     zoomBase: any;
     isChartZoom: boolean;
     isToolbarOpen: boolean;
-    isShapeSelected: boolean;
     selectedDrawnShape: selectedDrawnData | undefined;
 }
 
@@ -75,7 +74,6 @@ function XAxisCanvas(props: xAxisIF) {
         zoomBase,
         isChartZoom,
         isToolbarOpen,
-        isShapeSelected,
         selectedDrawnShape,
     } = props;
 
@@ -351,66 +349,64 @@ function XAxisCanvas(props: xAxisIF) {
                     );
                 }
 
-                if (isShapeSelected) {
-                    if (selectedDrawnShape) {
-                        context.filter = ' blur(0px)';
+                if (selectedDrawnShape) {
+                    context.filter = ' blur(0px)';
 
-                        const shapeData = selectedDrawnShape.data;
+                    const shapeData = selectedDrawnShape.data;
 
-                        const rectWidth =
-                            xScale(shapeData.data[1].x) -
-                            xScale(shapeData.data[0].x);
+                    const rectWidth =
+                        xScale(shapeData.data[1].x) -
+                        xScale(shapeData.data[0].x);
 
-                        context.fillStyle = '#7674ff3f';
-                        context.fillRect(
-                            xScale(shapeData.data[0].x) + column,
-                            height * 0.175,
-                            rectWidth,
-                            height * 0.65,
-                        );
+                    context.fillStyle = '#7674ff3f';
+                    context.fillRect(
+                        xScale(shapeData.data[0].x) + column,
+                        height * 0.175,
+                        rectWidth,
+                        height * 0.65,
+                    );
 
-                        shapeData.data.forEach((data) => {
-                            const shapePoint = xScale(data.x);
-                            const point = formatDateTicks(data.x, 'cr');
+                    shapeData.data.forEach((data) => {
+                        const shapePoint = xScale(data.x);
+                        const point = formatDateTicks(data.x, 'cr');
 
-                            if (point) {
-                                if (
-                                    xScale(crosshairData[0].x) >
-                                        shapePoint - (_width - 15) &&
-                                    xScale(crosshairData[0].x) <
-                                        shapePoint + (_width - 15) &&
-                                    crosshairActive !== 'none'
-                                ) {
-                                    context.filter = ' blur(7px)';
-                                    context.fillText(
-                                        point,
-                                        shapePoint + column,
-                                        height * 0.5375,
-                                    );
-                                } else {
-                                    const textWidth =
-                                        context.measureText(point).width + 10;
+                        if (point) {
+                            if (
+                                xScale(crosshairData[0].x) >
+                                    shapePoint - (_width - 15) &&
+                                xScale(crosshairData[0].x) <
+                                    shapePoint + (_width - 15) &&
+                                crosshairActive !== 'none'
+                            ) {
+                                context.filter = ' blur(7px)';
+                                context.fillText(
+                                    point,
+                                    shapePoint + column,
+                                    height * 0.5375,
+                                );
+                            } else {
+                                const textWidth =
+                                    context.measureText(point).width + 10;
 
-                                    context.fillStyle = '#5553be';
-                                    context.fillRect(
-                                        shapePoint + column - textWidth / 2,
-                                        height * 0.175,
-                                        textWidth,
-                                        height * 0.65,
-                                    );
-                                    context.fillStyle = 'rgb(214, 214, 214)';
-                                    context.font = '800 13px Lexend Deca';
-                                    context.textAlign = 'center';
-                                    context.textBaseline = 'middle';
-                                    context.fillText(
-                                        point,
-                                        shapePoint + column,
-                                        height * 0.5375,
-                                    );
-                                }
+                                context.fillStyle = '#5553be';
+                                context.fillRect(
+                                    shapePoint + column - textWidth / 2,
+                                    height * 0.175,
+                                    textWidth,
+                                    height * 0.65,
+                                );
+                                context.fillStyle = 'rgb(214, 214, 214)';
+                                context.font = '800 13px Lexend Deca';
+                                context.textAlign = 'center';
+                                context.textBaseline = 'middle';
+                                context.fillText(
+                                    point,
+                                    shapePoint + column,
+                                    height * 0.5375,
+                                );
                             }
-                        });
-                    }
+                        }
+                    });
                 }
 
                 context.restore();
@@ -474,7 +470,6 @@ function XAxisCanvas(props: xAxisIF) {
         crosshairActive,
         xAxis === undefined,
         isToolbarOpen,
-        isShapeSelected,
         selectedDrawnShape,
     ]);
 

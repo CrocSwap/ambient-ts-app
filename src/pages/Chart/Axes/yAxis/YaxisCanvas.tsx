@@ -61,7 +61,6 @@ interface yAxisIF {
     simpleRangeWidth: number;
     poolPriceDisplay: number;
     isChartZoom: boolean;
-    isShapeSelected: boolean;
     selectedDrawnShape: selectedDrawnData | undefined;
 }
 
@@ -103,7 +102,6 @@ function YAxisCanvas(props: yAxisIF) {
         simpleRangeWidth,
         poolPriceDisplay,
         isChartZoom,
-        isShapeSelected,
         selectedDrawnShape,
     } = props;
 
@@ -536,59 +534,56 @@ function YAxisCanvas(props: yAxisIF) {
                 );
             }
 
-            if (isShapeSelected) {
-                if (selectedDrawnShape) {
-                    const shapeData = selectedDrawnShape.data;
+            if (selectedDrawnShape) {
+                const shapeData = selectedDrawnShape.data;
 
-                    shapeData.data.forEach((data) => {
-                        const isScientificShapeTick = data.y
-                            .toString()
-                            .includes('e');
+                shapeData.data.forEach((data) => {
+                    const isScientificShapeTick = data.y
+                        .toString()
+                        .includes('e');
 
-                        let shapePointSubString = undefined;
-                        const shapePoint = Number(data.y.toString());
+                    let shapePointSubString = undefined;
+                    const shapePoint = Number(data.y.toString());
 
-                        let shapePointTick = getFormattedNumber({
-                            value: shapePoint,
-                            abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
-                        }).replace(',', '');
-                        if (isScientificShapeTick) {
-                            const splitNumber = data.y.toString().split('e');
+                    let shapePointTick = getFormattedNumber({
+                        value: shapePoint,
+                        abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
+                    }).replace(',', '');
+                    if (isScientificShapeTick) {
+                        const splitNumber = data.y.toString().split('e');
 
-                            shapePointSubString =
-                                Math.abs(Number(splitNumber[1])) -
-                                (splitNumber.includes('.') ? 2 : 1);
+                        shapePointSubString =
+                            Math.abs(Number(splitNumber[1])) -
+                            (splitNumber.includes('.') ? 2 : 1);
 
-                            const textScientificArray =
-                                shapePointTick.split('0.0');
-                            shapePointTick = textScientificArray[1].slice(1, 4);
-                        }
+                        const textScientificArray = shapePointTick.split('0.0');
+                        shapePointTick = textScientificArray[1].slice(1, 4);
+                    }
 
-                        const rectHeight =
-                            yScale(shapeData.data[1].y) -
-                            yScale(shapeData.data[0].y);
+                    const rectHeight =
+                        yScale(shapeData.data[1].y) -
+                        yScale(shapeData.data[0].y);
 
-                        context.fillStyle = '#7674ff1e';
-                        context.fillRect(
-                            0,
-                            yScale(shapeData.data[0].y),
-                            width,
-                            rectHeight,
-                        );
+                    context.fillStyle = '#7674ff1e';
+                    context.fillRect(
+                        0,
+                        yScale(shapeData.data[0].y),
+                        width,
+                        rectHeight,
+                    );
 
-                        createRectLabel(
-                            context,
-                            yScale(shapePoint),
-                            X,
-                            '#5553be',
-                            'white',
-                            shapePointTick,
-                            undefined,
-                            yAxisCanvasWidth,
-                            shapePointSubString,
-                        );
-                    });
-                }
+                    createRectLabel(
+                        context,
+                        yScale(shapePoint),
+                        X,
+                        '#5553be',
+                        'white',
+                        shapePointTick,
+                        undefined,
+                        yAxisCanvasWidth,
+                        shapePointSubString,
+                    );
+                });
             }
 
             if (crosshairActive === 'chart') {
@@ -925,7 +920,6 @@ function YAxisCanvas(props: yAxisIF) {
         checkLimitOrder,
         location,
         crosshairActive,
-        isShapeSelected,
         selectedDrawnShape,
     ]);
 

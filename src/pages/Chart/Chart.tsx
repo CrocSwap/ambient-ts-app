@@ -286,7 +286,6 @@ export default function Chart(props: propsIF) {
         selectedDrawnData | undefined
     >(undefined);
 
-    const [isShapeSelected, setIsShapeSelected] = useState(false);
     const { undo, redo } = useUndoRedo(drawnShapeHistory, setDrawnShapeHistory);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
@@ -944,7 +943,7 @@ export default function Chart(props: propsIF) {
                         }
                     })
                     .filter((event) => {
-                        setIsShapeSelected(false);
+                        setSelectedDrawnShape(undefined);
 
                         if (location.pathname.includes('/market')) {
                             return !canUserDragDrawnShape;
@@ -2607,12 +2606,9 @@ export default function Chart(props: propsIF) {
                             ) {
                                 item.data.forEach((element) => {
                                     if (
-                                        (selectedDrawnShape &&
-                                            selectedDrawnShape.selectedCircle ===
-                                                element) ||
-                                        (hoveredDrawnShape &&
-                                            hoveredDrawnShape.selectedCircle ===
-                                                element)
+                                        hoveredDrawnShape &&
+                                        hoveredDrawnShape.selectedCircle ===
+                                            element
                                     ) {
                                         if (!isUpdatingShape) {
                                             selectedCircleSeries([element]);
@@ -3132,7 +3128,6 @@ export default function Chart(props: propsIF) {
         isChartZoom,
         diffHashSig(drawnShapeHistory),
         isLineDrag,
-        isShapeSelected,
         period,
     ]);
 
@@ -3173,7 +3168,9 @@ export default function Chart(props: propsIF) {
 
                 setCrosshairActive('none');
 
-                setIsShapeSelected(false);
+                setSelectedDrawnShape(undefined);
+
+                setSelectedDrawnShape(undefined);
 
                 if (
                     (location.pathname.includes('pool') ||
@@ -3907,7 +3904,6 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth,
         poolPriceDisplay,
         isChartZoom,
-        isShapeSelected,
         selectedDrawnShape,
     };
 
@@ -4001,6 +3997,7 @@ export default function Chart(props: propsIF) {
                                 setCrossHairDataFunc={setCrossHairDataFunc}
                                 activeDrawingType={activeDrawingType}
                                 setActiveDrawingType={setActiveDrawingType}
+                                setSelectedDrawnShape={setSelectedDrawnShape}
                             />
                         )}
 
@@ -4013,7 +4010,6 @@ export default function Chart(props: propsIF) {
                                 render={render}
                                 mousemove={mousemove}
                                 setCrossHairDataFunc={setCrossHairDataFunc}
-                                setIsShapeSelected={setIsShapeSelected}
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 setIsUpdatingShape={setIsUpdatingShape}
                             />
@@ -4112,7 +4108,6 @@ export default function Chart(props: propsIF) {
                             zoomBase={zoomBase}
                             isChartZoom={isChartZoom}
                             isToolbarOpen={isToolbarOpen}
-                            isShapeSelected={isShapeSelected}
                             selectedDrawnShape={selectedDrawnShape}
                         />
                     </div>

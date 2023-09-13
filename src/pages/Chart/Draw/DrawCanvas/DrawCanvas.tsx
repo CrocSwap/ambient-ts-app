@@ -6,6 +6,7 @@ import {
     lineData,
     renderCanvasArray,
     scaleData,
+    selectedDrawnData,
     setCanvasResolution,
 } from '../../ChartUtils/chartUtils';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
@@ -22,6 +23,9 @@ interface DrawCanvasProps {
     setCrossHairDataFunc: any;
     activeDrawingType: string;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
+    setSelectedDrawnShape: React.Dispatch<
+        React.SetStateAction<selectedDrawnData | undefined>
+    >;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -35,6 +39,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         setCrossHairDataFunc,
         activeDrawingType,
         setActiveDrawingType,
+        setSelectedDrawnShape,
     } = props;
 
     const circleSeries = createCircle(
@@ -187,17 +192,22 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                 setDrawnShapeHistory((prevData: drawDataHistory[]) => {
                     if (tempLineData.length > 0) {
-                        return [
-                            ...prevData,
-                            {
-                                data: tempLineData,
-                                type: activeDrawingType,
-                                time: Date.now(),
-                            },
-                        ];
+                        const endPoint = {
+                            data: tempLineData,
+                            type: activeDrawingType,
+                            time: Date.now(),
+                        };
+
+                        setSelectedDrawnShape({
+                            data: endPoint,
+                            selectedCircle: undefined,
+                        });
+
+                        return [...prevData, endPoint];
                     }
                     return prevData;
                 });
+
                 setActiveDrawingType('Cross');
             }
         }
@@ -232,6 +242,16 @@ function DrawCanvas(props: DrawCanvasProps) {
                     ctx: bandArea,
                 };
             }
+
+            setSelectedDrawnShape({
+                data: {
+                    data: tempLineData,
+                    type: activeDrawingType,
+                    time: Date.now(),
+                },
+                selectedCircle: undefined,
+            });
+
             renderCanvasArray([d3DrawCanvas]);
         }
     }, []);
