@@ -21,12 +21,14 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-   
+
     cursor: pointer;
 }
-.price_title, .min_price,
+.price_title,
+.min_price,
 .current_price,
-.max_price, .apr_price  {
+.max_price,
+.apr_price {
     color: var(--text1);
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -35,7 +37,7 @@
 .min_price,
 .current_price,
 .max_price {
-color: var(--text2)
+    color: var(--text2);
 }
 
 .apr_price {
@@ -43,8 +45,7 @@ color: var(--text2)
     justify-content: center;
     align-items: center;
     gap: 4px;
-  
-    
+
     color: var(--other-green);
 }
 

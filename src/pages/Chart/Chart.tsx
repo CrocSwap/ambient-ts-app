@@ -739,6 +739,7 @@ export default function Chart(props: propsIF) {
                         // check wheel end
                         scrollTimeout = setTimeout(() => {
                             setIsChartZoom(false);
+                            showLatestActive();
                         }, 200);
                     },
                     { passive: true },
@@ -3132,6 +3133,7 @@ export default function Chart(props: propsIF) {
         diffHashSig(drawnShapeHistory),
         isLineDrag,
         isShapeSelected,
+        period,
     ]);
 
     // mouseleave

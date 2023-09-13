@@ -5,7 +5,6 @@ import settingsIcon from '../../../../assets/images/icons/settings.svg';
 import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
-import ContentHeader from '../../../Global/ContentHeader/ContentHeader';
 import TransactionSettingsModal from '../../../Global/TransactionSettingsModal/TransactionSettingsModal';
 
 // START: Import Local Files
@@ -17,6 +16,7 @@ import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
 import { RangeContext } from '../../../../contexts/RangeContext';
 import { useModal } from '../../../Global/Modal/useModal';
+import { TradeModuleHeaderContainer } from '../../../../styled/Components/TradeModules';
 
 interface propsIF {
     positionHash: string;
@@ -43,7 +43,14 @@ function RepositionHeader(props: propsIF) {
 
     return (
         <>
-            <ContentHeader>
+            <TradeModuleHeaderContainer
+                flexDirection='row'
+                alignItems='center'
+                justifyContent='space-between'
+                fullWidth
+                fontSize='header1'
+                color='text2'
+            >
                 <img
                     className={styles.settings_icon}
                     src={settingsIcon}
@@ -65,7 +72,7 @@ function RepositionHeader(props: propsIF) {
                         setCurrentRangeInReposition('');
                     }}
                 />
-            </ContentHeader>
+            </TradeModuleHeaderContainer>
             {isOpen && (
                 <TransactionSettingsModal
                     module='Reposition'

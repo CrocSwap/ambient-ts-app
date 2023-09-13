@@ -3,7 +3,7 @@
     max-width: 1000px;
 
     transition: all var(--animation-speed) ease-in-out;
-  
+
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -14,7 +14,7 @@
 .main_outer_container {
     background: url(../../../assets/images/backgrounds/detailsCard.png)
         no-repeat;
-        background-position: center bottom 40px;
+    background-position: center bottom 40px;
 }
 
 .main_content {
@@ -39,8 +39,6 @@
     border-radius: 4px;
     margin-top: auto;
     margin-bottom: auto;
-
-   
 }
 
 .right_container {
@@ -48,13 +46,12 @@
     background: rgba(23, 29, 39, 0.3);
     backdrop-filter: blur(10px);
     border-radius: 4px;
-   
 }
 
 .ambi_copyright {
     display: flex;
     justify-content: center;
-   
+
     font-weight: 300;
     font-size: 24px;
     line-height: 30px;
@@ -71,20 +68,19 @@
         display: grid;
         grid-template-rows: 60px auto;
         gap: 1rem;
-        padding-top: 1rem;  
+        padding-top: 1rem;
     }
 
-    .main_outer_container{
+    .main_outer_container {
         width: 100%;
         height: 100%;
-       
+
         display: flex;
         flex-direction: column;
-
     }
-   .main_content {
-    width: 100%;
-    height: 100%;
+    .main_content {
+        width: 100%;
+        height: 100%;
         display: grid;
         grid-template-columns: 244px auto;
         gap: 1rem;
@@ -93,31 +89,51 @@
         -webkit-animation: fadeIn ease 1s;
         -moz-animation: fadeIn ease 1s;
         -o-animation: fadeIn ease 1s;
-        -ms-animation: fadeIn ease 1s;   
+        -ms-animation: fadeIn ease 1s;
     }
 }
 
 @keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @-moz-keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @-webkit-keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @-o-keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @-ms-keyframes fadeIn {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
 }
