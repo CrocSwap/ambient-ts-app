@@ -275,7 +275,18 @@ export default function Transfer(props: propsIF) {
         resetTransferQty();
     }, [selectedToken.address]);
 
+    const isTokenDexBalanceGreaterThanZero = parseFloat(tokenDexBalance) > 0;
+
     const [inputValue, setInputValue] = useState('');
+
+    const handleBalanceClick = () => {
+        if (isTokenDexBalanceGreaterThanZero) {
+            setTransferQtyNonDisplay(tokenDexBalance);
+
+            if (tokenExchangeDepositsDisplay)
+                setInputValue(tokenExchangeDepositsDisplay);
+        }
+    };
 
     const [transferGasPriceinDollars, setTransferGasPriceinDollars] = useState<
         string | undefined
@@ -330,7 +341,10 @@ export default function Transfer(props: propsIF) {
                 <FlexContainer fontSize='body' color='text2' gap={6}>
                     <Text color='text1'>Available:</Text>
                     {tokenDexBalanceTruncated || '...'}
-                    <MaxButton disabled={tokenDexBalance === '0'}>
+                    <MaxButton
+                        onClick={handleBalanceClick}
+                        disabled={tokenDexBalance === '0'}
+                    >
                         Max
                     </MaxButton>
                 </FlexContainer>
