@@ -90,12 +90,9 @@
 }
 
 .close_divider_button {
-    justify-content: end;
+    left: 5px;
 }
 
-.divider_button {
-    justify-content: start;
-}
 
 .close_divider_button,
 .divider_button {
@@ -121,9 +118,11 @@
     border-top: 1px solid #dbdbdb;
     border-right: 1px solid #dbdbdb;
     transition: all 600ms;
+    margin-left: -2.5px;
     transform: rotate(45deg);
 }
 
 .arrow_left {
+    margin-left: 0px;
     transform: rotate(225deg);
 }

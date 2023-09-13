@@ -104,11 +104,9 @@ function Toolbar(props: ToolbarProps) {
             >
                 <div className={styles.divider}></div>
                 <div
-                    className={
-                        isToolbarOpen
-                            ? styles.divider_button
-                            : styles.close_divider_button
-                    }
+                    className={` ${
+                        isToolbarOpen ? styles.divider_button : ''
+                    } ${styles.close_divider_button} `}
                 >
                     <span
                         className={` ${
