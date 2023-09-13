@@ -850,11 +850,14 @@ export default function InitPool() {
             setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
         }
     };
+    const [isMintLiq, setIsMinLiq] = useState(true);
+
+    console.log(poolExists);
 
     const collateralContent = (
         <div
             className={`${styles.collateral_container} ${
-                poolExists === true && styles.content_disabled
+                poolExists === true || isMintLiq ? styles.content_disabled : ''
             }`}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
@@ -888,8 +891,6 @@ export default function InitPool() {
         </div>
     );
 
-    const [isMintLiq, setIsMinLiq] = useState(true);
-
     const mintInitialLiquidity = (
         <FlexContainer
             flexDirection='row'
@@ -906,24 +907,6 @@ export default function InitPool() {
             />
         </FlexContainer>
     );
-    // const advancedModeToggle = (
-    //     <FlexContainer
-    //         flexDirection='row'
-    //         justifyContent='space-between'
-    //         className={poolExists && styles.content_disabled}
-    //     >
-    //         <p className={styles.label_title}>
-    //             {!advancedMode ? 'Balance' : 'Unbalanced'}{' '}
-    //         </p>
-
-    //         <Toggle
-    //             isOn={!advancedMode}
-    //             handleToggle={handleToggle}
-    //             id='advanced_reposition'
-    //             disabled={poolExists === true}
-    //         />
-    //     </FlexContainer>
-    // );
 
     const newContent = (
         <section className={styles.main}>
@@ -945,9 +928,17 @@ export default function InitPool() {
 
                             <div className={styles.right_container}>
                                 {mintInitialLiquidity}
-                                <AdvancedModeToggle
-                                    advancedMode={advancedMode}
-                                />
+                                <div
+                                    className={
+                                        poolExists === true || !isMintLiq
+                                            ? styles.content_disabled
+                                            : ''
+                                    }
+                                >
+                                    <AdvancedModeToggle
+                                        advancedMode={advancedMode}
+                                    />
+                                </div>
 
                                 <RangeBounds
                                     isRangeBoundsDisabled={
