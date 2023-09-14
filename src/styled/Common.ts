@@ -184,7 +184,7 @@ export const FlexContainer = styled.div<
 
 FlexContainer.displayName = 'FlexContainer';
 
-export const Text = styled.p<
+export const Text = styled.span<
     FontProps &
         FontSizeProps &
         ColorProps &
