@@ -23,12 +23,14 @@ export const useAppChain = (
         switchNetwork,
     } = useSwitchNetwork();
 
+    const CHAIN_LS_KEY = 'CHAIN_ID';
+
     const { chain: chainNetwork } = useNetwork();
 
     function determineConnected(chainNetwork?: { id: number }): string {
         return chainNetwork
             ? chainNumToString(chainNetwork.id)
-            : localStorage.getItem('chainId') || defaultChain;
+            : localStorage.getItem(CHAIN_LS_KEY) || defaultChain;
     }
 
     const defaultChain = getDefaultChainId();
@@ -80,7 +82,7 @@ export const useAppChain = (
             validateChainId(currentChain) &&
             nextChain !== currentChain
         ) {
-            localStorage.setItem('chainId', nextChain);
+            localStorage.setItem(CHAIN_LS_KEY, nextChain);
             nukeAndReloadApp();
         }
 
