@@ -98,13 +98,10 @@ function LimitTokenInput(props: propsIF) {
         }
 
         if (!limitTickCopied) {
-            // @Ben: need help determining correct value for `limitTick` here
-            // URL params for link to limit page
             const limitLinkParams: limitParamsIF = {
                 chain: chainId,
                 tokenA: tokenB.address,
                 tokenB: tokenA.address,
-                limitTick: 101,
             };
             // navigate user to limit page with URL params defined above
             linkGenLimit.navigate(limitLinkParams);
