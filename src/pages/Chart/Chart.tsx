@@ -2571,7 +2571,7 @@ export default function Chart(props: propsIF) {
         });
     }, [poolPriceDisplay]);
 
-    function changeScale() {
+    function changeScale(isChangeDenom = false) {
         if (poolPriceDisplay && scaleData && rescale) {
             const xmin = scaleData?.xScale.domain()[0];
             const xmax = scaleData?.xScale.domain()[1];
@@ -2581,7 +2581,10 @@ export default function Chart(props: propsIF) {
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
 
-            if (filtered !== undefined && filtered.length > 10) {
+            if (
+                filtered !== undefined &&
+                (isChangeDenom || filtered.length > 10)
+            ) {
                 const minYBoundary = d3.min(filtered, (d) =>
                     denomInBase
                         ? d.invMaxPriceExclMEVDecimalCorrected
@@ -2737,6 +2740,10 @@ export default function Chart(props: propsIF) {
         candleTimeInSeconds === period,
         isLineDrag,
     ]);
+
+    useEffect(() => {
+        changeScale(true);
+    }, [isDenomBase]);
 
     function setYaxisDomain(minDomain: number, maxDomain: number) {
         if (scaleData) {
