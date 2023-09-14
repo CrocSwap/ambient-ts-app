@@ -10,6 +10,7 @@ import {
 } from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import {
+    resetPoolDataLoadingStatus,
     setChangesByPool,
     setDataLoadingStatus,
     setLeaderboardByPool,
@@ -214,6 +215,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
     useEffect(() => {
         if (rtkMatchesParams && props.crocEnv) {
+            dispatch(resetPoolDataLoadingStatus());
             const tokenAAddress = tradeData.tokenA.address;
             const tokenBAddress = tradeData.tokenB.address;
 
