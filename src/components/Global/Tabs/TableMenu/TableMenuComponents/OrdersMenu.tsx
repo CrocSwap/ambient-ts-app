@@ -206,7 +206,7 @@ export default function OrdersMenu(props: propsIF) {
             {detailsButton}
             {isOwnerActiveAccount && copyButton}
             {!minView && removeButton}
-            {walletButton}
+            {!isAccountView && walletButton}
         </div>
     );
 

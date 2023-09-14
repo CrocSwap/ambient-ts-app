@@ -1,5 +1,3 @@
-import styles from './ExchangeBalance.module.css';
-
 import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
 import Transfer from './Transfer/Transfer';
@@ -9,7 +7,6 @@ import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
 import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
-import { motion } from 'framer-motion';
 import {
     SetStateAction,
     Dispatch,
@@ -32,6 +29,15 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { useDispatch } from 'react-redux';
 import { TokenContext } from '../../../contexts/TokenContext';
+
+import { FlexContainer } from '../../../styled/Common';
+
+import {
+    PortfolioControlContainer,
+    PortfolioInfoText,
+    PortfolioMotionContainer,
+    PortfolioMotionSubContainer,
+} from '../../../styled/Components/Portfolio';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -282,8 +288,7 @@ export default function ExchangeBalance(props: propsIF) {
     ];
 
     const exchangeControl = (
-        <section
-            className={styles.control_container}
+        <PortfolioControlContainer
             onClick={() => setFullLayoutActive(!fullLayoutActive)}
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
@@ -294,28 +299,40 @@ export default function ExchangeBalance(props: propsIF) {
                     width='20px'
                 />
             </IconWithTooltip>
-        </section>
+        </PortfolioControlContainer>
     );
 
     const columnView = useMediaQuery('(max-width: 1200px)');
 
-    const restrictWidth =
-        !isModalView && useMediaQuery('screen and (min-width: 1200px)');
-    const restrictWidthStyle = restrictWidth
-        ? `${styles.container_restrict_width}`
-        : '';
-
     return (
         <>
-            <motion.main
+            <PortfolioMotionContainer
                 animate={
                     columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'
                 }
-                style={{ width: '100%' }}
-                className={`${styles.container} ${restrictWidthStyle}`}
+                fullWidth
+                flexDirection='column'
+                alignItems='center'
+                background='dark1'
+                rounded
+                fullHeight
+                desktop={{ maxWidth: '400px%' }}
             >
-                <motion.div className={styles.main_container}>
-                    <div className={styles.tabs_container}>
+                <PortfolioMotionSubContainer
+                    fullHeight
+                    fullWidth
+                    alignItems='center'
+                    rounded
+                    id='subcont'
+                >
+                    <FlexContainer
+                        fullHeight
+                        fullWidth
+                        rounded
+                        background='dark1'
+                        justifyContent='center'
+                        position='relative'
+                    >
                         {(!fullLayoutActive || columnView || isModalView) && (
                             <TabComponent
                                 data={accountData}
@@ -325,18 +342,16 @@ export default function ExchangeBalance(props: propsIF) {
                             />
                         )}
                         {!isModalView && exchangeControl}
-                    </div>
-                </motion.div>
+                    </FlexContainer>
+                </PortfolioMotionSubContainer>
                 {(!fullLayoutActive || columnView || isModalView) && (
-                    <section>
-                        <div className={styles.info_text}>
-                            Collateral deposited into the Ambient Finance
-                            exchange can be traded at lower gas costs.
-                            Collateral can be withdrawn at any time.
-                        </div>
-                    </section>
+                    <PortfolioInfoText>
+                        Collateral deposited into the Ambient Finance exchange
+                        can be traded at lower gas costs. Collateral can be
+                        withdrawn at any time.
+                    </PortfolioInfoText>
                 )}
-            </motion.main>
+            </PortfolioMotionContainer>
         </>
     );
 }

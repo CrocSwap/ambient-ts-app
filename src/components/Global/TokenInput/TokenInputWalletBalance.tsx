@@ -10,11 +10,8 @@ import ExchangeBalanceExplanation from '../Informational/ExchangeBalanceExplanat
 import WalletBalanceExplanation from '../Informational/WalletBalanceExplanation';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import { FlexContainer } from '../../../styled/Common';
-import {
-    MaxButton,
-    RefreshButton,
-} from '../../../styled/Components/TradeModules';
-
+import { RefreshButton } from '../../../styled/Components/TradeModules';
+import { MaxButton } from '../../../styled/Components/Portfolio';
 interface PropsIF {
     isWithdraw: boolean;
     balance: string;
@@ -217,7 +214,9 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                         enterDelay={700}
                         leaveDelay={200}
                     >
-                        <MaxButton onClick={onMaxButtonClick}>Max</MaxButton>
+                        <MaxButton width='25px' onClick={onMaxButtonClick}>
+                            Max
+                        </MaxButton>
                     </DefaultTooltip>
                 )}
             </FlexContainer>
