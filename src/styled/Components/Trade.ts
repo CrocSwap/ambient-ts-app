@@ -21,7 +21,6 @@ export const MainSection = styled.section`
         display: flex;
         flex-direction: column;
         gap: 4px;
-        padding: 0 8px;
     }
 `;
 
@@ -42,7 +41,8 @@ export const TradeDropdownButton = styled.button`
     border: none;
     color: var(--text2);
     padding: 8px;
-    width: 100%;
+    width: 90%;
+    margin: 0 auto;
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
     border-radius: var(--border-radius);
