@@ -58,6 +58,7 @@ import InitTokenInput from './InitTokenInput/InitTokenInput';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
+import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 
 // react functional component
 export default function InitPool() {
@@ -98,6 +99,8 @@ export default function InitPool() {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isInitPending, setIsInitPending] = useState(false);
 
+    const [initialPriceDisplay, setInitialPriceDisplay] = useState<string>('');
+
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState<
         number | undefined
     >();
@@ -105,9 +108,7 @@ export default function InitPool() {
         useState<string>('0');
     const [estimatedInitialPriceDisplay, setEstimatedInitialPriceDisplay] =
         useState<string>('0');
-    const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
-
-    const [isDenomBase, setIsDenomBase] = useState(true);
+    // const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
 
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
     // const localPair: LocalPairDataIF = useAppSelector(
@@ -134,6 +135,23 @@ export default function InitPool() {
         baseTokenAddress,
     } = useTokenBalancesAndAllowances(baseToken, quoteToken);
 
+    const isBaseTokenMoneynessGreaterOrEqual =
+        baseToken.address && quoteToken.address
+            ? getMoneynessRank(
+                  baseToken.address.toLowerCase() + '_' + chainId,
+              ) -
+                  getMoneynessRank(
+                      quoteToken.address.toLowerCase() + '_' + chainId,
+                  ) >=
+              0
+            : false;
+
+    const [isDenomBase, setIsDenomBase] = useState(false);
+
+    useEffect(() => {
+        setIsDenomBase(!isBaseTokenMoneynessGreaterOrEqual);
+    }, [isBaseTokenMoneynessGreaterOrEqual]);
+
     useEffect(() => {
         // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
@@ -154,45 +172,44 @@ export default function InitPool() {
         // this will happen if the user switches chains
     }, [crocEnv, sessionReceipts.length, baseToken, quoteToken]);
 
+    const updateEstimatedInitialPrice = async () => {
+        const mainnetBase = getMainnetEquivalent(baseToken.address, chainId);
+        const mainnetQuote = getMainnetEquivalent(quoteToken.address, chainId);
+        const basePricePromise = cachedFetchTokenPrice(
+            mainnetBase.token,
+            mainnetBase.chainId,
+        );
+        const quotePricePromise = cachedFetchTokenPrice(
+            mainnetQuote.token,
+            mainnetQuote.chainId,
+        );
+
+        const basePrice = (await basePricePromise)?.usdPrice || 2000;
+        const quotePrice = (await quotePricePromise)?.usdPrice || 1;
+
+        const defaultPriceNum = isDenomBase
+            ? basePrice / quotePrice
+            : quotePrice / basePrice;
+
+        const defaultPriceTruncated =
+            defaultPriceNum < 0.0001
+                ? defaultPriceNum.toExponential(2)
+                : defaultPriceNum < 2
+                ? defaultPriceNum.toPrecision(3)
+                : defaultPriceNum.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        setInitialPriceInBaseDenom(defaultPriceNum);
+        setEstimatedInitialPriceInBase(defaultPriceTruncated);
+        setInitialPriceDisplay(defaultPriceTruncated);
+    };
+
     useEffect(() => {
         (async () => {
-            const mainnetBase = getMainnetEquivalent(
-                baseToken.address,
-                chainId,
-            );
-            const mainnetQuote = getMainnetEquivalent(
-                quoteToken.address,
-                chainId,
-            );
-            const basePricePromise = cachedFetchTokenPrice(
-                mainnetBase.token,
-                mainnetBase.chainId,
-            );
-            const quotePricePromise = cachedFetchTokenPrice(
-                mainnetQuote.token,
-                mainnetQuote.chainId,
-            );
-
-            const basePrice = (await basePricePromise)?.usdPrice || 2000;
-            const quotePrice = (await quotePricePromise)?.usdPrice || 1;
-
-            const defaultPriceNum = basePrice / quotePrice;
-
-            const defaultPriceTruncated =
-                defaultPriceNum < 0.0001
-                    ? defaultPriceNum.toExponential(2)
-                    : defaultPriceNum < 2
-                    ? defaultPriceNum.toPrecision(3)
-                    : defaultPriceNum.toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
-            setInitialPriceInBaseDenom(defaultPriceNum);
-            setInitialPriceForDOM(defaultPriceTruncated);
-            setEstimatedInitialPriceInBase(defaultPriceTruncated);
-            setEstimatedInitialPriceDisplay(defaultPriceTruncated);
+            await updateEstimatedInitialPrice();
         })();
-    }, [baseToken, quoteToken]);
+    }, [baseToken, quoteToken, isDenomBase]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
         useState(false);
@@ -228,6 +245,22 @@ export default function InitPool() {
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
+
+    const focusInput = () => {
+        const inputField = document.getElementById(
+            'initial-pool-price-quantity',
+        ) as HTMLInputElement;
+        console.log({ inputField });
+
+        const timer = setTimeout(() => {
+            inputField.focus();
+            inputField.setSelectionRange(
+                inputField.value.length,
+                inputField.value.length,
+            );
+        }, 500);
+        return () => clearTimeout(timer);
+    };
 
     const approve = async (token: TokenIF) => {
         if (!crocEnv) return;
@@ -380,7 +413,7 @@ export default function InitPool() {
             : targetValue;
         const targetValueNum = parseFloat(input);
 
-        isValid && setInitialPriceForDOM(input);
+        isValid && setInitialPriceDisplay(input);
 
         if (
             isValid &&
@@ -438,7 +471,7 @@ export default function InitPool() {
                                   maximumFractionDigits: 2,
                               },
                           );
-                setInitialPriceForDOM(newInitialPriceForDOMTruncated);
+                setInitialPriceDisplay(newInitialPriceForDOMTruncated);
             } else {
                 const newInitialPriceForDOMTruncated =
                     initialPriceInBaseDenom < 0.0001
@@ -449,7 +482,7 @@ export default function InitPool() {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                           });
-                setInitialPriceForDOM(newInitialPriceForDOMTruncated);
+                setInitialPriceDisplay(newInitialPriceForDOMTruncated);
             }
         }
     };
@@ -779,12 +812,13 @@ export default function InitPool() {
         </div>
     );
     const [isLoading, setIsLoading] = useState(false);
-    const [initPriceForDom, setInitPriceForDom] = useState<
-        string | undefined
-    >();
+    const [isEditEnabled, setIsEditEnabled] = useState(false);
+
     const handleSimulatedRefresh = () => {
         setIsLoading(true);
-        setInitPriceForDom(initialPriceForDOM);
+        (async () => {
+            await updateEstimatedInitialPrice();
+        })();
 
         setTimeout(() => {
             setIsLoading(false);
@@ -803,25 +837,35 @@ export default function InitPool() {
                 <FlexContainer gap={8}>
                     <LuEdit2
                         size={20}
-                        onClick={() => setInitPriceForDom(initialPriceForDOM)}
+                        onClick={() => {
+                            setIsEditEnabled(true);
+                            focusInput();
+                        }}
                     />
                     <FiRefreshCw size={20} onClick={handleSimulatedRefresh} />
                 </FlexContainer>
             </FlexContainer>
-            <section style={{ width: '100%' }}>
+            <section
+                style={{ width: '100%' }}
+                onDoubleClick={() => {
+                    setIsEditEnabled(true);
+                    focusInput();
+                }}
+            >
                 {isLoading ? (
                     <div className={styles.circular_progress}>
                         <Spinner size={24} bg='var(--dark2)' weight={2} />
                     </div>
                 ) : (
                     <input
+                        disabled={!isEditEnabled}
                         id='initial-pool-price-quantity'
                         className={`${styles.currency_quantity} `}
                         placeholder={placeholderText}
                         type='string'
                         onChange={handleInitialPriceInputChange}
-                        onBlur={handleDisplayUpdate}
-                        value={initPriceForDom ? initialPriceForDOM : ''}
+                        onBlur={() => setIsEditEnabled(false)}
+                        value={initialPriceDisplay}
                         inputMode='decimal'
                         autoComplete='off'
                         autoCorrect='off'
@@ -962,7 +1006,7 @@ export default function InitPool() {
                                 >
                                     <InitPoolExtraInfo
                                         initialPrice={parseFloat(
-                                            initialPriceForDOM.replaceAll(
+                                            initialPriceDisplay.replaceAll(
                                                 ',',
                                                 '',
                                             ),
@@ -1017,7 +1061,7 @@ export default function InitPool() {
                                         type='string'
                                         onChange={handleInitialPriceInputChange}
                                         onBlur={handleDisplayUpdate}
-                                        value={initialPriceForDOM}
+                                        value={initialPriceDisplay}
                                         inputMode='decimal'
                                         autoComplete='off'
                                         autoCorrect='off'
@@ -1029,7 +1073,7 @@ export default function InitPool() {
                             </div>
                             <InitPoolExtraInfo
                                 initialPrice={parseFloat(
-                                    initialPriceForDOM.replaceAll(',', ''),
+                                    initialPriceDisplay.replaceAll(',', ''),
                                 )}
                                 isDenomBase={isDenomBase}
                                 initGasPriceinDollars={initGasPriceinDollars}
