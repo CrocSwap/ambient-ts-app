@@ -112,7 +112,7 @@ export default function TabComponent(props: TabPropsIF) {
 
     function handleMobileMenuIcon(icon: string, label: string) {
         return (
-            <div className={styles.tab_iconf}>
+            <div className={styles.tab_icon_container}>
                 <DefaultTooltip
                     title={label}
                     placeholder={'bottom'}
