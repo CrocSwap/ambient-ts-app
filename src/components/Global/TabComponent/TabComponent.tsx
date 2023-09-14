@@ -18,6 +18,7 @@ import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../contexts/ChartContext';
+import { FlexContainer } from '../../../styled/Common';
 
 type tabData = {
     label: string;
@@ -139,7 +140,7 @@ export default function TabComponent(props: TabPropsIF) {
     const mobileView = useMediaQuery('(min-width: 800px)');
 
     const tabsWithRightOption = (
-        <div className={styles.tab_with_option_container}>
+        <FlexContainer alignItems='center' justifyContent='space-between'>
             <ul
                 className={`${styles.tab_ul_left}`}
                 aria-label='Navigation Tabs'
@@ -195,7 +196,7 @@ export default function TabComponent(props: TabPropsIF) {
             <div className={styles.tap_option_right}>
                 {rightTabOptions ? rightOptionWithProps : null}
             </div>
-        </div>
+        </FlexContainer>
     );
 
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
