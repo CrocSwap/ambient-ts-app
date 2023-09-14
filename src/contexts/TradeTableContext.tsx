@@ -23,6 +23,9 @@ interface TradeTableContextIF {
     outsideControl: boolean;
     setOutsideControl: (val: boolean) => void;
     handlePulseAnimation: (type: 'swap' | 'limitOrder' | 'range') => void;
+
+    activeMobileComponent: string;
+    setActiveMobileComponent: (val: string) => void;
 }
 
 export const TradeTableContext = createContext<TradeTableContextIF>(
@@ -53,6 +56,7 @@ export const TradeTableContextProvider = (props: {
         useState(false);
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
+    const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
     const tradeTableContext = {
         showAllData,
@@ -92,6 +96,8 @@ export const TradeTableContextProvider = (props: {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
+        activeMobileComponent,
+        setActiveMobileComponent,
     };
 
     function handlePulseAnimation(type: 'swap' | 'limitOrder' | 'range') {

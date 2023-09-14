@@ -139,33 +139,33 @@ function Portfolio() {
             : setFullLayoutActive(false);
     }, [connectedAccountActive]);
 
-    const fullLayerToggle = (
-        <div
-            className={styles.right_tab_option}
-            onClick={() => setFullLayoutActive(!fullLayoutActive)}
-        >
-            <section>
-                {' '}
-                <div
-                    className={`${styles.full_layout_svg} ${
-                        fullLayoutActive && styles.active_layout_style
-                    } `}
-                />
-            </section>
-            <section className={styles.shared_layout_svg}>
-                <div
-                    className={`${styles.full_layout_svg_copied} ${
-                        !fullLayoutActive && styles.active_layout_style
-                    }`}
-                />
-                <div
-                    className={`${styles.half_layout_svg} ${
-                        !fullLayoutActive && styles.active_layout_style
-                    }`}
-                />
-            </section>
-        </div>
-    );
+    // const fullLayerToggle = (
+    //     <div
+    //         className={styles.right_tab_option}
+    //         onClick={() => setFullLayoutActive(!fullLayoutActive)}
+    //     >
+    //         <section>
+    //             {' '}
+    //             <div
+    //                 className={`${styles.full_layout_svg} ${
+    //                     fullLayoutActive && styles.active_layout_style
+    //                 } `}
+    //             />
+    //         </section>
+    //         <section className={styles.shared_layout_svg}>
+    //             <div
+    //                 className={`${styles.full_layout_svg_copied} ${
+    //                     !fullLayoutActive && styles.active_layout_style
+    //                 }`}
+    //             />
+    //             <div
+    //                 className={`${styles.half_layout_svg} ${
+    //                     !fullLayoutActive && styles.active_layout_style
+    //                 }`}
+    //             />
+    //         </section>
+    //     </div>
+    // );
 
     const [resolvedAddressNativeToken, setResolvedAddressNativeToken] =
         useState<TokenIF | undefined>();
@@ -304,8 +304,7 @@ function Portfolio() {
         resolvedAddressTokens: resolvedAddressTokens,
         resolvedAddress: resolvedAddress,
         connectedAccountActive: connectedAccountActive,
-        fullLayoutToggle: fullLayerToggle,
-        tokens: tokens,
+        fullLayoutActive: fullLayoutActive,
     };
 
     const portfolioBannerProps = {

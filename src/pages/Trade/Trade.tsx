@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Outlet, NavLink } from 'react-router-dom';
-import { Resizable } from 're-resizable';
+import { NumberSize } from 're-resizable';
 import {
     useEffect,
     useState,
@@ -16,10 +16,8 @@ import { BsCaretDownFill } from 'react-icons/bs';
 import TradeCharts from './TradeCharts/TradeCharts';
 import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
-import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import { IS_LOCAL_ENV } from '../../constants';
 import { CandleContext } from '../../contexts/CandleContext';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChartContext } from '../../contexts/ChartContext';
@@ -38,6 +36,19 @@ import {
     poolParamsIF,
     useLinkGen,
 } from '../../utils/hooks/useLinkGen';
+import { FlexContainer } from '../../styled/Common';
+import {
+    ChartContainer,
+    MainSection,
+    ResizableContainer,
+    TradeDropdown,
+    TradeDropdownButton,
+} from '../../styled/Components/Trade';
+import { Direction } from 're-resizable/lib/resizer';
+import {
+    SelectorWrapper,
+    SelectorContainer,
+} from '../../styled/Components/TradeModules';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -46,8 +57,7 @@ function Trade() {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { candleData, setIsCandleSelected, isCandleDataNull } =
-        useContext(CandleContext);
+    const { setIsCandleSelected, isCandleDataNull } = useContext(CandleContext);
 
     const {
         isFullScreen: isChartFullScreen,
@@ -61,8 +71,12 @@ function Trade() {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { tokens } = useContext(TokenContext);
-    const { setOutsideControl, setSelectedOutsideTab } =
-        useContext(TradeTableContext);
+    const {
+        setOutsideControl,
+        setSelectedOutsideTab,
+        activeMobileComponent,
+        setActiveMobileComponent,
+    } = useContext(TradeTableContext);
 
     const { tradeData } = useAppSelector((state) => state);
     const {
@@ -120,55 +134,19 @@ function Trade() {
     ];
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
-    const [isCandleArrived, setIsCandleDataArrived] = useState(false);
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
     const tradeTableRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (
-            isCandleDataNull &&
-            candleData !== undefined &&
-            candleData.candles?.length > 0
-        ) {
-            IS_LOCAL_ENV && console.debug('Data arrived');
-            setIsCandleDataArrived(false);
-        }
-    }, [candleData]);
-
     const navigationMenu = (
-        <div className={styles.navigation_menu}>
+        <SelectorContainer justifyContent='center' alignItems='center' gap={8}>
             {routes.map((route, idx) => (
-                <div
-                    className={`${styles.nav_container} trade_route`}
-                    key={idx}
-                >
+                <SelectorWrapper key={idx}>
                     <NavLink to={route.path}>{route.name}</NavLink>
-                </div>
+                </SelectorWrapper>
             ))}
-        </div>
+        </SelectorContainer>
     );
-
-    const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
-
-    const mainContent = (
-        <div
-            className={`${styles.right_col} ${
-                activeMobileComponent !== 'trade' ? styles.hide : ''
-            }`}
-        >
-            <Outlet
-                context={{
-                    tradeData: tradeData,
-                    navigationMenu: navigationMenu,
-                    updateURL: updateURL,
-                }}
-            />
-        </div>
-    );
-    const fullScreenStyle = isChartFullScreen
-        ? styles.chart_full_screen
-        : styles.main__chart;
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -193,66 +171,53 @@ function Trade() {
     };
 
     const mobileTradeDropdown = (
-        <section
-            style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                alignItems: 'flex-end',
-                padding: '0 2rem',
-            }}
-        >
-            <div className={styles.mobile_trades_dropdown}>
-                <button
-                    className={styles.active_mobile_trade_dropdown}
-                    style={{ textTransform: 'capitalize' }}
-                    onClick={() => setMobileDropdown(!showMobileDropdown)}
+        <TradeDropdown>
+            <TradeDropdownButton
+                onClick={() => setMobileDropdown(!showMobileDropdown)}
+            >
+                {activeMobileComponent}
+
+                <BsCaretDownFill />
+            </TradeDropdownButton>
+            {showMobileDropdown && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        marginTop: '8px',
+                        width: '100%',
+                    }}
                 >
-                    {activeMobileComponent}
+                    {activeMobileComponent !== 'trade' && (
+                        <TradeDropdownButton
+                            onClick={() => handleMobileDropdownClick('trade')}
+                        >
+                            Trade
+                        </TradeDropdownButton>
+                    )}
 
-                    <BsCaretDownFill />
-                </button>
-                {showMobileDropdown && (
-                    <div
-                        className={
-                            showMobileDropdown
-                                ? styles.active_mobile_trade_dropdown_items_containers
-                                : styles.mobile_trade_dropdown_items_containers
-                        }
-                    >
-                        {activeMobileComponent !== 'trade' && (
-                            <button
+                    {!isCandleDataNull &&
+                        isPoolInitialized &&
+                        activeMobileComponent !== 'chart' && (
+                            <TradeDropdownButton
                                 onClick={() =>
-                                    handleMobileDropdownClick('trade')
+                                    handleMobileDropdownClick('chart')
                                 }
                             >
-                                Trade
-                            </button>
+                                Chart
+                            </TradeDropdownButton>
                         )}
-
-                        {!isCandleDataNull &&
-                            isPoolInitialized &&
-                            activeMobileComponent !== 'chart' && (
-                                <button
-                                    onClick={() =>
-                                        handleMobileDropdownClick('chart')
-                                    }
-                                >
-                                    Chart
-                                </button>
-                            )}
-                        {activeMobileComponent !== 'transactions' && (
-                            <button
-                                onClick={() =>
-                                    handleMobileDropdownClick('transactions')
-                                }
-                            >
-                                Transactions
-                            </button>
-                        )}
-                    </div>
-                )}
-            </div>
-        </section>
+                    {activeMobileComponent !== 'transactions' && (
+                        <TradeDropdownButton
+                            onClick={() =>
+                                handleMobileDropdownClick('transactions')
+                            }
+                        >
+                            Transactions
+                        </TradeDropdownButton>
+                    )}
+                </div>
+            )}
+        </TradeDropdown>
     );
 
     const unselectCandle = useCallback(() => {
@@ -291,39 +256,22 @@ function Trade() {
         hasInitialized: hasInitialized,
         setHasInitialized: setHasInitialized,
         unselectCandle: unselectCandle,
-        isCandleArrived: isCandleArrived,
-        setIsCandleDataArrived: setIsCandleDataArrived,
         candleTime: chartSettings.candleTime.global,
         tokens,
     };
 
     const mobileTrade = (
-        <section
-            className={styles.main_layout_mobile}
-            style={{
-                height: 'calc(100dvh - 150px)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                padding: '0 8px',
-            }}
-        >
+        <MainSection>
             {mobileTradeDropdown}
             {activeMobileComponent === 'chart' && isPoolInitialized && (
-                <div
-                    className={` ${fullScreenStyle}`}
-                    style={{ marginLeft: '2rem' }}
-                >
+                <div style={{ marginLeft: '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     {!isCandleDataNull && <TradeCharts {...tradeChartsProps} />}
                 </div>
             )}
 
             {activeMobileComponent === 'transactions' && (
-                <div
-                    className={styles.full_table_height}
-                    style={{ marginLeft: '2rem', flex: 1 }}
-                >
+                <div style={{ marginLeft: '2rem', flex: 1 }}>
                     <TradeChartsHeader />
                     <TradeTabs2 {...tradeTabsProps} />
                 </div>
@@ -335,132 +283,116 @@ function Trade() {
                         tradeData: tradeData,
                         navigationMenu: navigationMenu,
                         limitTick: limitTick,
+                        updateURL: updateURL,
                     }}
                 />
             )}
-        </section>
+        </MainSection>
     );
 
     if (showActiveMobileComponent) return mobileTrade;
 
-    const poolNotInitContent = (
-        <Resizable
-            className={styles.chartBox}
-            enable={{
-                bottom: !isChartFullScreen,
-            }}
-            style={{ opacity: tradeTableState === 'Expanded' ? '0' : '1' }}
-            size={{ width: '100%', height: chartHeights.current }}
-            minHeight={4}
-            onResizeStart={() => {
-                // may be useful later
-            }}
-            onResizeStop={(e, direction, ref, d) => {
-                // the resizable bar is 4px in height
-
-                if (chartHeights.current + d.height < TRADE_CHART_MIN_HEIGHT) {
-                    if (tradeTableState == 'Expanded') {
-                        setChartHeight(chartHeights.default);
-                    } else {
-                        setChartHeight(chartHeights.min);
-                    }
-                } else {
-                    setChartHeight(chartHeights.current + d.height);
-                }
-            }}
-            handleClasses={
-                isChartFullScreen ? undefined : { bottom: styles.resizableBox }
-            }
-            bounds={'parent'}
-        >
-            <NoChartData
-                chainId={chainId}
-                tokenA={
-                    isDenomBase ? tradeData.baseToken : tradeData.quoteToken
-                }
-                tokenB={
-                    isDenomBase ? tradeData.quoteToken : tradeData.baseToken
-                }
-                isCandleDataNull
-            />
-        </Resizable>
-    );
-
     const showNoChartData = !isPoolInitialized || isCandleDataNull;
 
     return (
-        <section className={`${styles.main_layout}`}>
-            <div
-                className={`${styles.middle_col}
-                ${tradeTableState === 'Expanded' ? styles.flex_column : ''}`}
+        <MainSection>
+            <FlexContainer
+                flexDirection='column'
+                fullWidth
+                background='dark2'
+                gap={8}
+                style={{ height: 'calc(100vh - 56px)' }}
                 ref={canvasRef}
             >
                 <TradeChartsHeader tradePage />
                 {/* This div acts as a parent to maintain a min/max for the resizable element below */}
-                <div className={styles.resizableParent}>
-                    {showNoChartData && poolNotInitContent}
-
-                    {!showNoChartData && isPoolInitialized && (
-                        <Resizable
-                            className={styles.chartBox}
-                            enable={{
-                                bottom: !isChartFullScreen,
-                            }}
-                            size={{
-                                width: '100%',
-                                height: chartHeights.current,
-                            }}
-                            minHeight={4}
-                            onResizeStart={() => {
-                                // may be useful later
-                            }}
-                            onResizeStop={(e, direction, ref, d) => {
-                                // the resizable bar is 4px in height
-
-                                if (
-                                    chartHeights.current + d.height <
-                                    TRADE_CHART_MIN_HEIGHT
-                                ) {
-                                    if (tradeTableState == 'Expanded') {
-                                        setChartHeight(chartHeights.default);
-                                    } else {
-                                        setChartHeight(chartHeights.min);
-                                    }
+                <FlexContainer
+                    flexDirection='column'
+                    fullHeight
+                    overflow='hidden'
+                >
+                    <ResizableContainer
+                        showResizeable={!isCandleDataNull}
+                        enable={{
+                            bottom: !isChartFullScreen,
+                        }}
+                        size={{
+                            width: '100%',
+                            height: chartHeights.current,
+                        }}
+                        minHeight={4}
+                        onResizeStart={() => {
+                            // may be useful later
+                        }}
+                        onResizeStop={(
+                            evt: MouseEvent | TouchEvent,
+                            dir: Direction,
+                            ref: HTMLElement,
+                            d: NumberSize,
+                        ) => {
+                            if (
+                                chartHeights.current + d.height <
+                                TRADE_CHART_MIN_HEIGHT
+                            ) {
+                                if (tradeTableState == 'Expanded') {
+                                    setChartHeight(chartHeights.default);
                                 } else {
-                                    setChartHeight(
-                                        chartHeights.current + d.height,
-                                    );
+                                    setChartHeight(chartHeights.min);
                                 }
-                            }}
-                            handleClasses={
-                                isChartFullScreen || isCandleDataNull
-                                    ? undefined
-                                    : { bottom: styles.resizableBox }
+                            } else {
+                                setChartHeight(chartHeights.current + d.height);
                             }
-                            bounds={'parent'}
-                        >
-                            <div
-                                className={`${
-                                    activeMobileComponent !== 'chart'
-                                        ? styles.hide
-                                        : ''
-                                } ${fullScreenStyle}`}
-                            >
-                                <div className={styles.main__chart_container}>
-                                    {!isCandleDataNull && (
-                                        <TradeCharts {...tradeChartsProps} />
-                                    )}
-                                </div>
-                            </div>
-                        </Resizable>
-                    )}
-                    <div className={styles.tableBox} ref={tradeTableRef}>
+                        }}
+                        bounds={'parent'}
+                    >
+                        {showNoChartData && (
+                            <NoChartData
+                                chainId={chainId}
+                                tokenA={
+                                    isDenomBase
+                                        ? tradeData.baseToken
+                                        : tradeData.quoteToken
+                                }
+                                tokenB={
+                                    isDenomBase
+                                        ? tradeData.quoteToken
+                                        : tradeData.baseToken
+                                }
+                                isCandleDataNull
+                            />
+                        )}
+                        {!showNoChartData && isPoolInitialized && (
+                            <ChartContainer fullScreen={isChartFullScreen}>
+                                {!isCandleDataNull && (
+                                    <TradeCharts {...tradeChartsProps} />
+                                )}
+                            </ChartContainer>
+                        )}
+                    </ResizableContainer>
+                    <FlexContainer
+                        ref={tradeTableRef}
+                        style={{ flex: 1 }}
+                        overflow='hidden'
+                    >
                         <TradeTabs2 {...tradeTabsProps} />
-                    </div>
-                </div>
-            </div>
-            {mainContent}
-        </section>
+                    </FlexContainer>
+                </FlexContainer>
+            </FlexContainer>
+            <FlexContainer
+                flexDirection='column'
+                fullHeight
+                fullWidth
+                background='dark1'
+                overflow='auto'
+            >
+                <Outlet
+                    context={{
+                        tradeData: tradeData,
+                        navigationMenu: navigationMenu,
+                    }}
+                />
+            </FlexContainer>
+        </MainSection>
     );
 }
 

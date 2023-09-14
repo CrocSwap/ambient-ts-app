@@ -98,7 +98,6 @@
 .gas_pump_dropdown button:hover {
     background: var(--dark2);
     border-radius: var(--border-radius);
-
 }
 .gas_pump_dropdown button:focus-visible {
     border: 1px solid var(--text1);

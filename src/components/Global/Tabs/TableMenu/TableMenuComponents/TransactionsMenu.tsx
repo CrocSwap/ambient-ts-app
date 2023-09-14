@@ -38,6 +38,7 @@ import {
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
 import { OptionButton } from '../../../Button/OptionButton';
+import { FlexContainer } from '../../../../../styled/Common';
 
 // interface for React functional component props
 interface propsIF {
@@ -57,7 +58,8 @@ export default function TransactionsMenu(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-    const { handlePulseAnimation } = useContext(TradeTableContext);
+    const { handlePulseAnimation, setActiveMobileComponent } =
+        useContext(TradeTableContext);
 
     const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
         useModal();
@@ -82,6 +84,7 @@ export default function TransactionsMenu(props: propsIF) {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const handleCopyClick = () => {
+        setActiveMobileComponent('trade');
         if (tx.entityType === 'swap') {
             handlePulseAnimation('swap');
         } else if (tx.entityType === 'limitOrder') {
@@ -258,8 +261,7 @@ export default function TransactionsMenu(props: propsIF) {
     );
 
     const showCopyButtonOutsideDropdownMenu =
-        useMediaQuery('(min-width: 400px)');
-
+        useMediaQuery('(min-width: 650px)');
     // --------------------------------
     const transactionsMenu = (
         <div className={styles.actions_menu}>{isTxCopiable && copyButton}</div>
@@ -316,8 +318,12 @@ export default function TransactionsMenu(props: propsIF) {
     };
 
     return (
-        <div onClick={(event) => event.stopPropagation()}>
-            <div className={styles.main_container}>
+        <FlexContainer justifyContent='flex-end'>
+            <div
+                onClick={(event) => event.stopPropagation()}
+                style={{ width: 'min-content', cursor: 'default' }}
+                className={styles.main_container}
+            >
                 {showCopyButtonOutsideDropdownMenu && transactionsMenu}
                 {dropdownTransactionsMenu}
             </div>
@@ -331,6 +337,6 @@ export default function TransactionsMenu(props: propsIF) {
                     onClose={handleCloseModal}
                 />
             )}
-        </div>
+        </FlexContainer>
     );
 }

@@ -13,7 +13,6 @@
     height: 100%;
     width: 100%;
     align-items: center;
-
 }
 
 .control_container {
@@ -21,7 +20,7 @@
     display: none;
     position: absolute;
     right: 8px;
-    top: 8px;   
+    top: 8px;
 }
 .control_container p {
     writing-mode: vertical-rl;
@@ -124,14 +123,12 @@ ul.tab_navs {
     } */
 }
 @media only screen and (max-width: 600px) {
-
-    .container{
+    .container {
         border-radius: 4px;
     }
-    .main_container{
+    .main_container {
         border-radius: 4px;
     }
-
 }
 
 @media only screen and (min-width: 1200px) {
