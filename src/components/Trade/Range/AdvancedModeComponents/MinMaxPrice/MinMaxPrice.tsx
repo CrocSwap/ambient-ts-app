@@ -17,6 +17,7 @@ import { IS_LOCAL_ENV } from '../../../../../constants';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
 import { FlexContainer, Text } from '../../../../../styled/Common';
+import { useTradeData } from '../../../../../App/hooks/useTradeData';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -58,6 +59,8 @@ function MinMaxPrice(props: MinMaxPriceIF) {
     const {
         chainData: { gridSize: tickSize },
     } = useContext(CrocEnvContext);
+
+    const { updateURL } = useTradeData();
 
     const dispatch = useAppDispatch();
 
@@ -130,17 +133,33 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         }
     }, [maxPrice, minPrice]);
 
-    const increaseLowTick = () => {
-        dispatch(setAdvancedLowTick(rangeLowTick + tickSize));
+    const increaseLowTick = (): void => {
+        console.log('increase low');
+        const updatedTick: number = rangeLowTick + tickSize;
+        dispatch(setAdvancedLowTick(updatedTick));
+        // updateURL({update: [['lowTick', updatedTick]]});
     };
-    const increaseHighTick = () => {
-        dispatch(setAdvancedHighTick(rangeHighTick + tickSize));
+
+    const increaseHighTick = (): void => {
+        console.log('increase high');
+        const updatedTick: number = rangeHighTick + tickSize;
+        dispatch(setAdvancedHighTick(updatedTick));
+        // updateURL({update: [['highTick', updatedTick]]});
     };
-    const decreaseLowTick = () => {
-        dispatch(setAdvancedLowTick(rangeLowTick - tickSize));
+
+    const decreaseLowTick = (): void => {
+        console.log('decrease low');
+        const updatedTick: number = rangeLowTick - tickSize;
+        console.log({ updatedTick });
+        updateURL({ update: [['lowTick', updatedTick]] });
+        dispatch(setAdvancedLowTick(updatedTick));
     };
-    const decreaseHighTick = () => {
-        dispatch(setAdvancedHighTick(rangeHighTick - tickSize));
+
+    const decreaseHighTick = (): void => {
+        console.log('decrease high');
+        const updatedTick: number = rangeHighTick - tickSize;
+        dispatch(setAdvancedHighTick(updatedTick));
+        // updateURL({update: [['highTick', updatedTick]]});
     };
 
     return (

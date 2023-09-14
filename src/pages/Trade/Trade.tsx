@@ -389,6 +389,8 @@ function Trade() {
                     context={{
                         tradeData: tradeData,
                         navigationMenu: navigationMenu,
+                        limitTick: limitTick,
+                        updateURL: updateURL,
                     }}
                 />
             </FlexContainer>
