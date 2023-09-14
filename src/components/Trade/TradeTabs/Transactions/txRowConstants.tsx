@@ -13,7 +13,7 @@ import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import React, { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
-import { FlexContainer } from '../../../../styled/Common';
+import { FlexContainer, Text } from '../../../../styled/Common';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 
 interface propsIF {
@@ -108,48 +108,39 @@ export const txRowConstants = (props: propsIF) => {
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const IDWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    onClick={(event) => event.stopPropagation()}
-                    style={{
-                        marginLeft: '-60px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text1)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontFamily: 'var(--roboto)',
-                        whiteSpace: 'nowrap',
-                        width: '424px',
-                    }}
-                >
-                    <span onClick={handleOpenExplorer}>
-                        {' '}
-                        {tx.txHash + 'ㅤ'}
-                    </span>
-                    <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
-                    <FiExternalLink
-                        size={'12px'}
-                        onClick={handleOpenExplorer}
-                    />
-                </div>
-            } // invisible space character added
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <RowItem
-                hover
-                font='roboto'
-                data-label='id'
-                role='button'
-                tabIndex={0}
+        <RowItem hover data-label='id' role='button' tabIndex={0}>
+            <TextOnlyTooltip
+                interactive
+                title={
+                    <FlexContainer
+                        justifyContent='center'
+                        background='dark3'
+                        color='text1'
+                        padding='12px'
+                        gap={8}
+                        rounded
+                        font='roboto'
+                        role='button'
+                        style={{ width: '440px' }}
+                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+                            event.stopPropagation()
+                        }
+                    >
+                        <span onClick={handleOpenExplorer}>{tx.txHash}</span>
+                        <FiCopy size={'12px'} onClick={handleCopyTxHash} />{' '}
+                        <FiExternalLink
+                            size={'12px'}
+                            onClick={handleOpenExplorer}
+                        />
+                    </FlexContainer>
+                }
+                placement={'right'}
+                enterDelay={750}
+                leaveDelay={0}
             >
-                {txHashTruncated}
-            </RowItem>
-        </TextOnlyTooltip>
+                <Text font='roboto'>{txHashTruncated}</Text>
+            </TextOnlyTooltip>
+        </RowItem>
     );
 
     const usdValueWithTooltip = (
@@ -164,28 +155,30 @@ export const txRowConstants = (props: propsIF) => {
     );
 
     const actualWalletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginRight: '-80px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text1)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <RowItem
+        <RowItem
+            data-label='wallet'
+            style={ensName ? { textTransform: 'lowercase' } : undefined}
+        >
+            <TextOnlyTooltip
+                interactive
+                title={
+                    <FlexContainer
+                        justifyContent='center'
+                        background='dark3'
+                        color='text1'
+                        padding='12px'
+                        gap={8}
+                        rounded
                         font='roboto'
-                        gap={4}
                         role='button'
+                        style={{ width: '316px' }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }
                     >
-                        <span onClick={handleWalletClick}>{ownerId}</span>
+                        <Text font='roboto' onClick={handleWalletClick}>
+                            {ownerId}
+                        </Text>
                         <FiCopy
                             style={{ cursor: 'pointer' }}
                             size={'12px'}
@@ -197,22 +190,20 @@ export const txRowConstants = (props: propsIF) => {
                             size={'12px'}
                             onClick={handleWalletClick}
                         />
-                    </RowItem>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <RowItem
-                color={usernameColor}
-                font={usernameColor === 'text1' ? 'roboto' : undefined}
-                data-label='wallet'
-                style={ensName ? { textTransform: 'lowercase' } : undefined}
+                    </FlexContainer>
+                }
+                placement={'right'}
+                enterDelay={750}
+                leaveDelay={0}
             >
-                {userNameToDisplay}
-            </RowItem>
-        </TextOnlyTooltip>
+                <Text
+                    font={usernameColor === 'text1' ? 'roboto' : undefined}
+                    color={usernameColor}
+                >
+                    {userNameToDisplay}
+                </Text>
+            </TextOnlyTooltip>
+        </RowItem>
     );
 
     const walletWithoutTooltip = (
@@ -299,31 +290,35 @@ export const txRowConstants = (props: propsIF) => {
     );
 
     const TxTimeWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    style={{
-                        marginLeft: '-70px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text1)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
-                </p>
-            }
-            placement={'right'}
-            arrow
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <div style={{ textTransform: 'lowercase' }} tabIndex={0}>
-                <p className='base_color'>{elapsedTimeString}</p>
-            </div>
-        </TextOnlyTooltip>
+        <RowItem gap={4}>
+            <TextOnlyTooltip
+                interactive
+                title={
+                    <FlexContainer
+                        fullWidth
+                        justifyContent='center'
+                        background='dark3'
+                        color='text1'
+                        padding='12px'
+                        gap={8}
+                        rounded
+                        role='button'
+                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+                            event.stopPropagation()
+                        }
+                    >
+                        {moment(tx.txTime * 1000).format('MM/DD/YYYY HH:mm')}
+                    </FlexContainer>
+                }
+                placement={'right'}
+                enterDelay={750}
+                leaveDelay={0}
+            >
+                <Text style={{ textTransform: 'lowercase' }} tabIndex={0}>
+                    {elapsedTimeString}
+                </Text>
+            </TextOnlyTooltip>
+        </RowItem>
     );
 
     const baseQtyDisplayWithTooltip = (

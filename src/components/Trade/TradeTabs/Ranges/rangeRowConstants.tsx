@@ -15,7 +15,8 @@ import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
-import { FlexContainer } from '../../../../styled/Common';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import moment from 'moment';
 interface propsIF {
     posHashTruncated: string;
     usdValue: string;
@@ -95,38 +96,39 @@ export default function rangeRowConstants(props: propsIF) {
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const IDWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    style={{
-                        marginLeft: '-60px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text1)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontFamily: 'var(--roboto)',
-                        whiteSpace: 'nowrap',
-                        width: '438px',
-                    }}
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    {posHash.toString()}
-                    <FiCopy
-                        style={{ cursor: 'pointer', margin: '0 8px' }}
-                        onClick={handleCopyPosHash}
-                    />
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <RowItem hover font='roboto' role='button' data-label='id'>
-                {posHashTruncated}
-            </RowItem>
-        </TextOnlyTooltip>
+        <RowItem hover data-label='id' role='button' tabIndex={0}>
+            <TextOnlyTooltip
+                interactive
+                title={
+                    <FlexContainer
+                        justifyContent='center'
+                        background='dark3'
+                        color='text1'
+                        padding='12px'
+                        gap={8}
+                        rounded
+                        font='roboto'
+                        role='button'
+                        style={{ width: '440px' }}
+                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+                            event.stopPropagation()
+                        }
+                    >
+                        {posHash.toString()}
+                        <FiCopy
+                            size={'12px'}
+                            style={{ cursor: 'pointer' }}
+                            onClick={handleCopyPosHash}
+                        />
+                    </FlexContainer>
+                }
+                placement={'right'}
+                enterDelay={750}
+                leaveDelay={0}
+            >
+                <Text font='roboto'>{posHashTruncated}</Text>
+            </TextOnlyTooltip>
+        </RowItem>
     );
 
     const valueWithTooltip = (
@@ -141,28 +143,30 @@ export default function rangeRowConstants(props: propsIF) {
     );
 
     const actualWalletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    style={{
-                        marginRight: '-80px',
-                        background: 'var(--dark3)',
-                        color: 'var(--text1)',
-                        padding: '12px',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    <RowItem
+        <RowItem
+            data-label='wallet'
+            style={ensName ? { textTransform: 'lowercase' } : undefined}
+        >
+            <TextOnlyTooltip
+                interactive
+                title={
+                    <FlexContainer
+                        justifyContent='center'
+                        background='dark3'
+                        color='text1'
+                        padding='12px'
+                        gap={8}
+                        rounded
                         font='roboto'
-                        gap={4}
                         role='button'
+                        style={{ width: '316px' }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }
                     >
-                        <span onClick={handleWalletLinkClick}>{ownerId}</span>
+                        <Text font='roboto' onClick={handleWalletLinkClick}>
+                            {ownerId}
+                        </Text>
                         <FiCopy
                             size={'12px'}
                             onClick={() => handleWalletCopy()}
@@ -172,21 +176,20 @@ export default function rangeRowConstants(props: propsIF) {
                             size={'12px'}
                             onClick={handleWalletLinkClick}
                         />
-                    </RowItem>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <RowItem
-                color={usernameColor}
-                font={usernameColor === 'text1' ? 'roboto' : undefined}
-                style={ensName ? { textTransform: 'lowercase' } : undefined}
+                    </FlexContainer>
+                }
+                placement={'right'}
+                enterDelay={750}
+                leaveDelay={0}
             >
-                {userNameToDisplay}
-            </RowItem>
-        </TextOnlyTooltip>
+                <Text
+                    font={usernameColor === 'text1' ? 'roboto' : undefined}
+                    color={usernameColor}
+                >
+                    {userNameToDisplay}
+                </Text>
+            </TextOnlyTooltip>
+        </RowItem>
     );
 
     const walletWithoutTooltip = (
@@ -284,9 +287,50 @@ export default function rangeRowConstants(props: propsIF) {
     );
 
     const rangeTimeWithTooltip = (
-        <div style={{ textTransform: 'lowercase' }}>
-            <p className='base_color'>{elapsedTimeString}</p>
-        </div>
+        <RowItem gap={4}>
+            <>
+                {position.latestUpdateTime ? (
+                    <TextOnlyTooltip
+                        interactive
+                        title={
+                            <FlexContainer
+                                fullWidth
+                                justifyContent='center'
+                                background='dark3'
+                                color='text1'
+                                padding='12px'
+                                gap={8}
+                                rounded
+                                role='button'
+                                onClick={(
+                                    event: React.MouseEvent<HTMLDivElement>,
+                                ) => event.stopPropagation()}
+                            >
+                                {moment(
+                                    position.latestUpdateTime * 1000,
+                                ).format('MM/DD/YYYY HH:mm')}
+                            </FlexContainer>
+                        }
+                        placement={'right'}
+                        enterDelay={750}
+                        leaveDelay={0}
+                    >
+                        <div style={{ textTransform: 'lowercase' }}>
+                            <Text
+                                style={{ textTransform: 'lowercase' }}
+                                tabIndex={0}
+                            >
+                                {elapsedTimeString}
+                            </Text>
+                        </div>
+                    </TextOnlyTooltip>
+                ) : (
+                    <div style={{ textTransform: 'lowercase' }}>
+                        <p className='base_color'>{elapsedTimeString}</p>
+                    </div>
+                )}
+            </>
+        </RowItem>
     );
 
     const txIdColumnComponent = (
