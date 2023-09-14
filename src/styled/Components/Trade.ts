@@ -4,7 +4,7 @@ import styled from 'styled-components/macro';
 export const MainSection = styled.section`
     display: grid;
     grid-template-columns: auto 380px;
-    height: calc(100vh - 56px);
+    height: calc(100dvh - 156px);
 
     border-top: 1px solid var(--dark2);
 
