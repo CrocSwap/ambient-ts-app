@@ -4,7 +4,10 @@ import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
 import { useAccount } from 'wagmi';
-import { resetPoolDataLoadingStatus } from '../utils/state/graphDataSlice';
+import {
+    resetConnectedUserDataLoadingStatus,
+    resetPoolDataLoadingStatus,
+} from '../utils/state/graphDataSlice';
 import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 
 // 54 is the height of the trade table header
@@ -67,6 +70,7 @@ export const TradeTableContextProvider = (props: {
     useEffect(() => {
         if (!isConnected) {
             dispatch(resetPoolDataLoadingStatus());
+            dispatch(resetConnectedUserDataLoadingStatus());
             setShowAllData(true);
         }
     }, [isConnected]);
