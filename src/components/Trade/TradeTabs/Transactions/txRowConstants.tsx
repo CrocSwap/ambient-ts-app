@@ -176,7 +176,11 @@ export const txRowConstants = (props: propsIF) => {
                             event.stopPropagation()
                         }
                     >
-                        <Text font='roboto' onClick={handleWalletClick}>
+                        <Text
+                            font='roboto'
+                            onClick={handleWalletClick}
+                            style={{ cursor: 'pointer' }}
+                        >
                             {ownerId}
                         </Text>
                         <FiCopy

@@ -164,7 +164,11 @@ export default function rangeRowConstants(props: propsIF) {
                             event.stopPropagation()
                         }
                     >
-                        <Text font='roboto' onClick={handleWalletLinkClick}>
+                        <Text
+                            font='roboto'
+                            onClick={handleWalletLinkClick}
+                            style={{ cursor: 'pointer' }}
+                        >
                             {ownerId}
                         </Text>
                         <FiCopy

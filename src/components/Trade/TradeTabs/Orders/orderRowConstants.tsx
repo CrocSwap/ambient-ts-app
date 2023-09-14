@@ -176,7 +176,11 @@ export const orderRowConstants = (props: propsIF) => {
                             event.stopPropagation()
                         }
                     >
-                        <Text font='roboto' onClick={handleWalletLinkClick}>
+                        <Text
+                            font='roboto'
+                            onClick={handleWalletLinkClick}
+                            style={{ cursor: 'pointer' }}
+                        >
                             {limitOrder.user}
                         </Text>
                         <FiCopy
