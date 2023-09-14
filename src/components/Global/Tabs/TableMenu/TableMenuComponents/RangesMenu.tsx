@@ -71,7 +71,8 @@ export default function RangesMenu(props: propsIF) {
         setCurrentRangeInAdd,
     } = useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
-    const { handlePulseAnimation } = useContext(TradeTableContext);
+    const { handlePulseAnimation, setActiveMobileComponent } =
+        useContext(TradeTableContext);
 
     const { isAmbient } = rangeDetailsProps;
 
@@ -133,6 +134,8 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount && isUserLoggedIn;
 
     const handleCopyClick = () => {
+        setActiveMobileComponent('trade');
+
         dispatch(setRangeTicksCopied(true));
         handlePulseAnimation('range');
 
@@ -288,7 +291,7 @@ export default function RangesMenu(props: propsIF) {
             {!view3 && !isEmpty && harvestButton}
             {!view3 && !isEmpty && removeButton}
             {detailsButton}
-            {!userMatchesConnectedAccount && walletButton}
+            {!isAccountView && walletButton}
             {view1 && showRepositionButton && repositionButton}
         </div>
     );

@@ -20,10 +20,12 @@ interface PropsIF {
     tokenA: TokenIF;
     tokenB: TokenIF;
     isCandleDataNull: boolean;
+    isTableExpanded: boolean;
 }
 
 export const NoChartData = (props: PropsIF) => {
-    const { chainId, tokenA, tokenB, isCandleDataNull } = props;
+    const { chainId, tokenA, tokenB, isCandleDataNull, isTableExpanded } =
+        props;
     const { setIsManualCandleFetchRequested } = useContext(CandleContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
     const { toggleTradeTable } = useContext(TradeTableContext);
@@ -108,7 +110,10 @@ export const NoChartData = (props: PropsIF) => {
     }
 
     return (
-        <div className={styles.pool_not_initialialized_container}>
+        <div
+            className={styles.pool_not_initialialized_container}
+            style={{ opacity: isTableExpanded ? '0' : '1' }}
+        >
             <div className={styles.pool_init_bg}>
                 <div className={styles.pool_not_initialialized_content}>
                     <div className={styles.pool_not_init_inner}>

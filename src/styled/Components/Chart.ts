@@ -32,7 +32,6 @@ export const MainContainer = styled(FlexContainer)`
     position: relative;
 
     @media only screen and (min-device-width: 320px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) {
-        height: 75vh;
         overflow: hidden;
     }
 `;

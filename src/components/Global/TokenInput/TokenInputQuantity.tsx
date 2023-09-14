@@ -206,7 +206,7 @@ function TokenInputQuantity(props: propsIF) {
     return (
         <FlexContainer flexDirection='column' color='text1' id={fieldId}>
             {label && (
-                <Text fontSize='body' color='text1' style={{ margin: '4px 0' }}>
+                <Text margin='4px 0' fontSize='body' color='text1'>
                     {label}
                 </Text>
             )}
