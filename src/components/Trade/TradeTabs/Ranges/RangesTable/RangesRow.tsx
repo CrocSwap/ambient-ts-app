@@ -264,7 +264,9 @@ function RangesRow(props: propsIF) {
                 {tableView === 'large' && rankingOrNull}
                 {tableView === 'large' && rangeTimeWithTooltip}
                 {isAccountView && tokenPair}
-                {tableView === 'large' && <div>{IDWithTooltip}</div>}
+                {!isLeaderboard && tableView === 'large' && (
+                    <div>{IDWithTooltip}</div>
+                )}
                 {tableView === 'large' && !isAccountView && (
                     <div>{walletWithTooltip}</div>
                 )}
