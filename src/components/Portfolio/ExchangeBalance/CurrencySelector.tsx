@@ -1,23 +1,23 @@
-import { Dispatch, SetStateAction } from 'react';
-import { TokenIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../utils/interfaces/exports';
+import { Dispatch, memo, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
-import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
-import TokenInputQuantity from '../../../../Global/TokenInput/TokenInputQuantity';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import TokenInputQuantity from '../../Global/TokenInput/TokenInputQuantity';
 
 interface propsIF {
     disable?: boolean;
     selectedToken: TokenIF;
-    setWithdrawQty: Dispatch<SetStateAction<string | undefined>>;
+    setQty: Dispatch<SetStateAction<string | undefined>>;
     inputValue: string;
     setInputValue: Dispatch<SetStateAction<string>>;
     setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function WithdrawCurrencySelector(props: propsIF) {
+export function CurrencySelector(props: propsIF) {
     const {
         disable,
         selectedToken,
-        setWithdrawQty,
+        setQty: setDepositQty,
         inputValue,
         setInputValue,
         setTokenModalOpen,
@@ -25,7 +25,7 @@ export default function WithdrawCurrencySelector(props: propsIF) {
 
     const handleOnChange = (input: string) => {
         setInputValue(input);
-        setWithdrawQty(
+        setDepositQty(
             input === ''
                 ? ''
                 : fromDisplayQty(
@@ -63,3 +63,5 @@ export default function WithdrawCurrencySelector(props: propsIF) {
         />
     );
 }
+
+export default memo(CurrencySelector);

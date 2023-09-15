@@ -272,7 +272,7 @@ export default function TransactionsMenu(props: propsIF) {
             {detailsButton}
             {explorerButton}
             {!showCopyButtonOutsideDropdownMenu && copyButton}
-            {walletButton}
+            {!isAccountView && walletButton}
         </div>
     );
 

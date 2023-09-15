@@ -359,6 +359,7 @@ function Trade() {
                                         : tradeData.baseToken
                                 }
                                 isCandleDataNull
+                                isTableExpanded={tradeTableState == 'Expanded'}
                             />
                         )}
                         {!showNoChartData && isPoolInitialized && (

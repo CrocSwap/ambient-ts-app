@@ -1,6 +1,3 @@
-import styles from './Deposit.module.css';
-import DepositButton from './DepositButton/DepositButton';
-import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySelector';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
@@ -34,6 +31,13 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import Button from '../../../Global/Button/Button';
+import CurrencySelector from '../CurrencySelector';
+import {
+    SVGContainer,
+    MaxButton,
+} from '../../../../styled/Components/Portfolio';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -398,49 +402,51 @@ export default function Deposit(props: propsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
 
     return (
-        <div className={styles.deposit_container}>
-            <div className={styles.info_text_non_clickable}>
+        <FlexContainer flexDirection='column' gap={16} padding={'16px'}>
+            <Text fontSize='body' color='text2'>
                 Deposit collateral for future trading at lower gas costs:
-            </div>
-            <DepositCurrencySelector
+            </Text>
+            <CurrencySelector
                 disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
-                setDepositQty={setDepositQtyNonDisplay}
+                setQty={setDepositQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 setTokenModalOpen={setTokenModalOpen}
             />
-            <div className={styles.additional_info}>
-                <div
-                    className={`${styles.available_container} ${styles.info_text_non_clickable}`}
-                >
-                    <div className={styles.available_text}>Available:</div>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <FlexContainer fontSize='body' color='text2' gap={6}>
+                    <Text color='text1'>Available:</Text>
                     {tokenWalletBalanceTruncated || '...'}
-                    <button
-                        className={`${styles.max_button} ${
-                            isWalletBalanceSufficientToCoverDeposit &&
-                            styles.max_button_enabled
-                        }`}
-                        onClick={handleBalanceClick}
-                        disabled={!isWalletBalanceSufficientToCoverDeposit}
-                    >
-                        Max
-                    </button>
-                </div>
-                <div className={styles.gas_pump}>
-                    <div className={styles.svg_container}>
-                        <FaGasPump size={12} />{' '}
-                    </div>
+                    {tokenWalletBalance !== '0' && (
+                        <MaxButton
+                            onClick={handleBalanceClick}
+                            disabled={!isWalletBalanceSufficientToCoverDeposit}
+                        >
+                            Max
+                        </MaxButton>
+                    )}
+                </FlexContainer>
+                <FlexContainer
+                    alignItems='center'
+                    justifyContent='flex-end'
+                    color='text2'
+                    fontSize='body'
+                >
+                    <SVGContainer>
+                        <FaGasPump size={12} />
+                    </SVGContainer>
                     {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
-                </div>
-            </div>
-            <DepositButton
-                onClick={() => {
+                </FlexContainer>
+            </FlexContainer>
+            <Button
+                title={buttonMessage}
+                action={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();
                 }}
                 disabled={isButtonDisabled}
-                buttonMessage={buttonMessage}
+                flat={true}
             />
-        </div>
+        </FlexContainer>
     );
 }
