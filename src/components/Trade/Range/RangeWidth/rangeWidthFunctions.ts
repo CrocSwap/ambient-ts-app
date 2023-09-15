@@ -1,18 +1,6 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
-
-export function updateRangeWithButton(
-    value: number,
-    setRangeWidthPercentage: Dispatch<SetStateAction<number>>,
-) {
-    const inputSlider = document.getElementById('input-slider-range');
-    const valueString = value.toString();
-    if (inputSlider && valueString) {
-        (inputSlider as HTMLInputElement).value = valueString;
-    }
-    const truncatedValue = truncateDecimals(value, 2);
-    setRangeWidthPercentage(parseFloat(truncatedValue));
-}
+import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 
 export function handleRangeSlider(
     event: ChangeEvent<HTMLInputElement>,

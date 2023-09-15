@@ -7,11 +7,10 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 
 // START: Import Local Files
 import styles from './RangeWidth.module.css';
-import {
-    updateRangeWithButton,
-    handleRangeSlider,
-} from './rangeWidthFunctions';
+import { handleRangeSlider } from './rangeWidthFunctions';
 import RangeSlider from '../../../Global/RangeSlider/RangeSlider';
+import { useTradeData } from '../../../../App/hooks/useTradeData';
+import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // interface for React functional component props
 interface RangeWidthPropsIF {
@@ -32,6 +31,26 @@ function RangeWidth(props: RangeWidthPropsIF) {
     } = useContext(AppStateContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
+    const { updateURL } = useTradeData();
+    false && updateURL;
+
+    // fn to update the width of range (balanced mode) from buttons
+    function updateRangeWithButton(value: 5 | 10 | 25 | 50 | 100) {
+        // convert the numerical input to a string
+        const valueString: string = value.toString();
+        // locate the range adjustment slider in the DOM
+        const inputSlider: HTMLElement | null =
+            document.getElementById('input-slider-range');
+        // set the range adjustment slider to the value provided in args
+        if (inputSlider) {
+            (inputSlider as HTMLInputElement).value = valueString;
+        }
+        // set the input value to two decimals of precision
+        const truncatedValue: string = truncateDecimals(value, 2);
+        // convert input value to a float and update range width
+        setRangeWidthPercentage(parseFloat(truncatedValue));
+    }
+
     const PercentageOptionContent = (
         <>
             <div className={styles.percentage_options}>
@@ -42,10 +61,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 20) * 100,
-                            setRangeWidthPercentage,
-                        );
+                        updateRangeWithButton(5);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='Set range width to 5%.'
@@ -59,10 +75,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 10) * 100,
-                            setRangeWidthPercentage,
-                        );
+                        updateRangeWithButton(10);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='Set range width to 10%.'
@@ -76,10 +89,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 4) * 100,
-                            setRangeWidthPercentage,
-                        );
+                        updateRangeWithButton(25);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='Set range width to 25%.'
@@ -93,17 +103,13 @@ function RangeWidth(props: RangeWidthPropsIF) {
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 2) * 100,
-                            setRangeWidthPercentage,
-                        );
+                        updateRangeWithButton(50);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='Set range width to 50%.'
                 >
                     50%
                 </button>
-
                 <button
                     className={
                         rangeWidthPercentage === 100
@@ -111,7 +117,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                             : styles.percentage_option_buttons
                     }
                     onClick={() => {
-                        updateRangeWithButton(100, setRangeWidthPercentage);
+                        updateRangeWithButton(100);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='use Ambient range width.'
