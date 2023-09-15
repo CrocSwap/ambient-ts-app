@@ -35,7 +35,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
     false && updateURL;
 
     // fn to update the width of range (balanced mode) from buttons
-    function updateRangeWithButton(value: 5 | 10 | 25 | 50 | 100) {
+    function updateRangeWithButton(value: 5 | 10 | 25 | 50 | 100): void {
         // convert the numerical input to a string
         const valueString: string = value.toString();
         // locate the range adjustment slider in the DOM
