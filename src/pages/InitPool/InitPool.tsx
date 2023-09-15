@@ -197,13 +197,14 @@ export default function InitPool() {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        setInitialPriceInBaseDenom(defaultPriceNumInBase);
 
         if (isDenomBase) {
             setEstimatedInitialPriceDisplay(defaultPriceTruncated);
             basePrice && quotePrice && !isTokenPairDefault
                 ? setInitialPriceDisplay(defaultPriceTruncated)
-                : setInitialPriceDisplay('');
+                : !initialPriceInBaseDenom
+                ? setInitialPriceDisplay('')
+                : undefined;
         } else {
             const invertedPriceNum = 1 / defaultPriceNumInBase;
 
@@ -217,17 +218,52 @@ export default function InitPool() {
                           maximumFractionDigits: 2,
                       });
             setEstimatedInitialPriceDisplay(invertedPriceTruncated);
+
             basePrice && quotePrice && !isTokenPairDefault
                 ? setInitialPriceDisplay(invertedPriceTruncated)
-                : setInitialPriceDisplay('');
+                : !initialPriceInBaseDenom
+                ? setInitialPriceDisplay('')
+                : undefined;
         }
     };
+
+    useEffect(() => {
+        setInitialPriceInBaseDenom(undefined);
+    }, [baseToken, quoteToken]);
 
     useEffect(() => {
         (async () => {
             await updateEstimatedInitialPrice();
         })();
     }, [baseToken, quoteToken, isDenomBase]);
+
+    useEffect(() => {
+        handleDisplayUpdate();
+    }, [isDenomBase]);
+
+    const handleDisplayUpdate = () => {
+        if (initialPriceDisplay) {
+            if (isDenomBase) {
+                setInitialPriceDisplay(
+                    initialPriceInBaseDenom?.toString() ?? '',
+                );
+            } else {
+                const invertedPriceNum = 1 / (initialPriceInBaseDenom ?? 1);
+
+                const invertedPriceTruncated =
+                    invertedPriceNum < 0.0001
+                        ? invertedPriceNum.toExponential(2)
+                        : invertedPriceNum < 2
+                        ? invertedPriceNum.toPrecision(3)
+                        : invertedPriceNum.toLocaleString('en-US', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+
+                setInitialPriceDisplay(invertedPriceTruncated);
+            }
+        }
+    };
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
         useState(false);
@@ -428,7 +464,6 @@ export default function InitPool() {
             ? '0' + targetValue
             : targetValue;
         const targetValueNum = parseFloat(input);
-
         isValid && setInitialPriceDisplay(input);
 
         if (
@@ -475,8 +510,8 @@ export default function InitPool() {
                     // Display token B approval button
                     buttonContent = tokenBApprovalButton;
                 } else if (
-                    initialPriceInBaseDenom === undefined ||
-                    initialPriceInBaseDenom <= 0
+                    initialPriceDisplay === '' ||
+                    parseFloat(initialPriceDisplay.replaceAll(',', '')) <= 0
                 ) {
                     // Display button to enter an initial price
                     buttonContent = (
@@ -734,7 +769,7 @@ export default function InitPool() {
     const [isLoading, setIsLoading] = useState(false);
     const [isEditEnabled, setIsEditEnabled] = useState(false);
 
-    const handleSimulatedRefresh = () => {
+    const handleRefresh = () => {
         setIsLoading(true);
         (async () => {
             await updateEstimatedInitialPrice();
@@ -762,7 +797,7 @@ export default function InitPool() {
                             focusInput();
                         }}
                     />
-                    <FiRefreshCw size={20} onClick={handleSimulatedRefresh} />
+                    <FiRefreshCw size={20} onClick={handleRefresh} />
                 </FlexContainer>
             </FlexContainer>
             <section
