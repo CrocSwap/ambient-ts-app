@@ -230,7 +230,6 @@ const useChatSocket = (
         if (address !== undefined && address != 'undefined') {
             socketRef.current = io(CHAT_BACKEND_WSS_URL, {
                 path: '/chat/api/subscribe/',
-
                 query: { roomId: room, address, ensName },
             });
         }
@@ -264,7 +263,7 @@ const useChatSocket = (
 
         if (socketRef && socketRef.current) {
             // eslint-disable-next-line
-            socketRef.current.on('msg-recieve', (data: any) => {
+            socketRef.current.on('msg-recieve-2', (data: any) => {
                 setMessages([...messagesRef.current, data]);
                 if (messagesRef.current[messagesRef.current.length - 1]) {
                     setLastMessage(data);
@@ -274,10 +273,6 @@ const useChatSocket = (
             });
 
             socketRef.current.on('noti', (data: any) => {
-                console.log('.....................');
-                console.log(data);
-                console.log('.....................');
-
                 if (notifications) {
                     const checkVal = notifications.get(data.roomInfo);
                     if (checkVal != undefined) {
@@ -301,6 +296,20 @@ const useChatSocket = (
             }
         };
     }, [room, areSubscriptionsEnabled, isChatOpen, address, notifications]);
+    useEffect(() => {
+        if (socketRef.current) {
+            socketRef.current.on('message-deleted-listener', (data: any) => {
+                const newMessageList = messages.map((e) => {
+                    if (e._id == data._id) {
+                        return data;
+                    } else {
+                        return e;
+                    }
+                });
+                setMessages([...newMessageList]);
+            });
+        }
+    }, [messages]);
 
     async function getMsg() {
         if (!socketRef.current) return;
@@ -309,12 +318,10 @@ const useChatSocket = (
         });
     }
 
-    async function deleteMsgFromList(msgId: string) {
+    async function deleteMsgFromList(msgId: string, isModerator: boolean) {
         const payload = {
             _id: msgId,
         };
-
-        console.log(messages);
         const response = await fetch(
             `${CHAT_BACKEND_URL}/chat/api/messages/deleteMessage/${msgId}`,
             {
@@ -323,22 +330,18 @@ const useChatSocket = (
         );
         const data = await response.json();
         data.message.deletedMessageText = 'This message has deleted';
-
-        console.log(data.message.deletedMessageText);
         if (data) {
             const msg = data.message;
+            socketRef.current.emit('message-deleted', { ...data.message });
             const newMessageList = messages.map((e) => {
                 if (e._id == msg._id) {
-                    console.log('msg');
                     return msg;
                 } else {
-                    console.log('e');
                     return e;
                 }
             });
-            console.log(newMessageList);
+
             setMessages([...newMessageList]);
-            console.log('22 ', messages);
         }
 
         return data;

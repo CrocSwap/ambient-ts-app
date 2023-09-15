@@ -320,67 +320,61 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function detectLinksFromMessage(url: string) {
-        if (props.message.isDeleted) {
-            return <></>;
-        } else {
-            if (url.includes(' ')) {
-                const words: string[] = url.split(' ');
-                return (
-                    <>
-                        {words.map((word, index) => (
-                            <span
-                                onClick={() =>
-                                    props.isLinkInCrocodileLabsLinks(word)
-                                        ? handleOpenExplorer(word)
-                                        : props.isLinkInCrocodileLabsLinksForInput(
-                                              word,
-                                          )
-                                        ? handleOpenExplorerAddHttp(word)
-                                        : ''
-                                }
-                                key={index}
-                                style={
-                                    props.isLinkInCrocodileLabsLinks(word) ||
-                                    props.isLinkInCrocodileLabsLinksForInput(
-                                        word,
-                                    )
-                                        ? {
-                                              color: '#ab7de7',
-                                              cursor: 'pointer',
-                                          }
-                                        : { color: 'white', cursor: 'default' }
-                                }
-                            >
-                                {' ' + returnDomain(word)}
-                                {}
-                            </span>
-                        ))}
-                    </>
-                );
-            } else {
-                if (
-                    props.isLinkInCrocodileLabsLinks(url) ||
-                    props.isLinkInCrocodileLabsLinksForInput(url)
-                ) {
-                    return (
-                        <p
-                            style={{ color: '#ab7de7', cursor: 'pointer' }}
+        if (url.includes(' ')) {
+            const words: string[] = url.split(' ');
+            return (
+                <>
+                    {words.map((word, index) => (
+                        <span
                             onClick={() =>
-                                props.isLinkInCrocodileLabsLinks(url)
-                                    ? handleOpenExplorer(url)
+                                props.isLinkInCrocodileLabsLinks(word)
+                                    ? handleOpenExplorer(word)
                                     : props.isLinkInCrocodileLabsLinksForInput(
-                                          url,
+                                          word,
                                       )
-                                    ? handleOpenExplorerAddHttp(url)
+                                    ? handleOpenExplorerAddHttp(word)
                                     : ''
                             }
+                            key={index}
+                            style={
+                                props.isLinkInCrocodileLabsLinks(word) ||
+                                props.isLinkInCrocodileLabsLinksForInput(word)
+                                    ? {
+                                          color: '#ab7de7',
+                                          cursor: 'pointer',
+                                      }
+                                    : props.message.isDeleted
+                                    ? { color: 'red', cursor: 'default' }
+                                    : { color: 'white', cursor: 'default' }
+                            }
                         >
-                            {returnDomain(url)}
-                        </p>
-                    );
-                } else {
-                    return url;
-                }
+                            {' ' + returnDomain(word)}
+                            {}
+                        </span>
+                    ))}
+                </>
+            );
+        } else {
+            if (
+                props.isLinkInCrocodileLabsLinks(url) ||
+                props.isLinkInCrocodileLabsLinksForInput(url)
+            ) {
+                return (
+                    <p
+                        style={{ color: '#ab7de7', cursor: 'pointer' }}
+                        onClick={() =>
+                            props.isLinkInCrocodileLabsLinks(url)
+                                ? handleOpenExplorer(url)
+                                : props.isLinkInCrocodileLabsLinksForInput(url)
+                                ? handleOpenExplorerAddHttp(url)
+                                : ''
+                        }
+                    >
+                        {returnDomain(url)}
+                    </p>
+                );
+            } else {
+                return url;
             }
         }
     }
@@ -417,7 +411,13 @@ function SentMessagePanel(props: SentMessageProps) {
                 );
             } else {
                 return (
-                    <div className={styles.message}>
+                    <div
+                        className={
+                            props.message.isDeleted
+                                ? styles.deletedMessage
+                                : styles.message
+                        }
+                    >
                         {detectLinksFromMessage(props.message.message)}
                         <div className={styles.roomInfo}>
                             {' '}
@@ -460,7 +460,13 @@ function SentMessagePanel(props: SentMessageProps) {
                 );
             } else {
                 return (
-                    <div className={styles.message_without_avatar}>
+                    <div
+                        className={
+                            props.message.isDeleted
+                                ? styles.deletedMessage_without_avatar
+                                : styles.message_without_avatar
+                        }
+                    >
                         {detectLinksFromMessage(props.message.message)}
                         <div className={styles.roomInfo}>
                             {props.room === 'Admins'
@@ -597,16 +603,14 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     return (
-        !props.message.isDeleted &&
-        props.isModerator && (
-            <div
-                className={`${styles.msg_bubble_container} ${
-                    props.mentionIndex !== undefined
-                        ? 'mentionedMessage mentIndex-' + props.mentionIndex
-                        : ''
-                }  ${flipped ? styles.flipped : ''}  ${
-                    flipRead ? styles.flip_read : ''
-                } 
+        <div
+            className={`${styles.msg_bubble_container} ${
+                props.mentionIndex !== undefined
+                    ? 'mentionedMessage mentIndex-' + props.mentionIndex
+                    : ''
+            }  ${flipped ? styles.flipped : ''}  ${
+                flipRead ? styles.flip_read : ''
+            } 
             ${
                 'repliedMessage' in props.message
                     ? styles.replied_message_container
@@ -616,12 +620,13 @@ function SentMessagePanel(props: SentMessageProps) {
             ${hasSeparator ? styles.has_separator : ''}
             
             `}
-                // style={messageStyle()}
-                data-ment-index={props.mentionIndex}
-                onMouseLeave={() => {
-                    setIsMoreButtonPressed(false);
-                }}
-            >
+            // style={messageStyle()}
+            data-ment-index={props.mentionIndex}
+            onMouseLeave={() => {
+                setIsMoreButtonPressed(false);
+            }}
+        >
+            {!props.message.isDeleted || props.isModerator ? (
                 <div className={styles.msg_bubble_content}>
                     <div className={styles.msg_bubble_front}>
                         <div
@@ -857,6 +862,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                                     deleteMsgFromList
                                                 }
                                                 id={props.message._id}
+                                                isModerator={props.isModerator}
                                             />
                                         </div>
                                     ) : (
@@ -1040,8 +1046,10 @@ function SentMessagePanel(props: SentMessageProps) {
                         </div>
                     </div>
                 </div>
-            </div>
-        )
+            ) : (
+                <></>
+            )}
+        </div>
     );
 }
 

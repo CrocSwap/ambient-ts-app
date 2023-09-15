@@ -10,6 +10,7 @@ interface propsIF {
     setFlipped: Dispatch<SetStateAction<boolean>>;
     deleteMsgFromList: any;
     id: string;
+    isModerator: boolean;
 }
 export default function Menu(props: propsIF) {
     const { deleteMessage } = useChatApi();
@@ -17,7 +18,7 @@ export default function Menu(props: propsIF) {
         deleteMessage(props.id).then((result: any) => {
             if (result.status === 'OK') {
                 props.setIsMessageDeleted(true);
-                props.deleteMsgFromList(props.id);
+                props.deleteMsgFromList(props.id, props.isModerator);
                 return result;
             } else {
                 props.setIsMessageDeleted(false);

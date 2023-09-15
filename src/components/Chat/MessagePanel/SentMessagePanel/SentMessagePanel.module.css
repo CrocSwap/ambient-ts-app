@@ -107,6 +107,28 @@
     flex-direction: row;
 }
 
+.deletedMessage {
+    height: 80%;
+
+    bottom: -100%;
+
+    white-space: pre-line;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;
+    flex-grow: 5px !important;
+    margin-left: 10px;
+    width: 85%;
+    color: red;
+    align-self: stretch;
+    word-break: break-word;
+    white-space: normal;
+    display: flex;
+    flex-direction: row;
+}
+
 .message_without_avatar {
     width: 80%;
     height: 80%;
@@ -123,6 +145,28 @@
     margin: 2px 10px;
     width: 85%;
     color: var(--text1);
+    white-space: pre-line;
+    align-self: stretch;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.deletedMessage_without_avatar {
+    width: 80%;
+    height: 80%;
+
+    bottom: -100%;
+    padding: 0px 25px;
+    white-space: pre-line;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;
+    flex-grow: 5px !important;
+    margin: 2px 10px;
+    width: 85%;
+    color: red;
     white-space: pre-line;
     align-self: stretch;
     word-break: break-word;

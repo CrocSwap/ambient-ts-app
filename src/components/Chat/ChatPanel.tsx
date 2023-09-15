@@ -288,13 +288,13 @@ function ChatPanel(props: propsIF) {
         setPage(0);
     }, [room, isChatOpen === false]);
 
-    useEffect(() => {
-        if (isMessageDeleted) {
-            setIsMessageDeleted(false);
-            getMsg();
-            window.scrollTo(0, 0);
-        }
-    }, [isMessageDeleted]);
+    // useEffect(() => {
+    //     if (isMessageDeleted) {
+    //         setIsMessageDeleted(false);
+    //         getMsg();
+    //         window.scrollTo(0, 0);
+    //     }
+    // }, [isMessageDeleted]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
