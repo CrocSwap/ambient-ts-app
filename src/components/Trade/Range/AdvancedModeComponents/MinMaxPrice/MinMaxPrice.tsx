@@ -134,32 +134,27 @@ function MinMaxPrice(props: MinMaxPriceIF) {
     }, [maxPrice, minPrice]);
 
     const increaseLowTick = (): void => {
-        console.log('increase low');
         const updatedTick: number = rangeLowTick + tickSize;
+        updateURL({ update: [['lowTick', updatedTick]] });
         dispatch(setAdvancedLowTick(updatedTick));
-        // updateURL({update: [['lowTick', updatedTick]]});
     };
 
     const increaseHighTick = (): void => {
-        console.log('increase high');
         const updatedTick: number = rangeHighTick + tickSize;
+        updateURL({ update: [['highTick', updatedTick]] });
         dispatch(setAdvancedHighTick(updatedTick));
-        // updateURL({update: [['highTick', updatedTick]]});
     };
 
     const decreaseLowTick = (): void => {
-        console.log('decrease low');
         const updatedTick: number = rangeLowTick - tickSize;
-        console.log({ updatedTick });
         updateURL({ update: [['lowTick', updatedTick]] });
         dispatch(setAdvancedLowTick(updatedTick));
     };
 
     const decreaseHighTick = (): void => {
-        console.log('decrease high');
         const updatedTick: number = rangeHighTick - tickSize;
+        updateURL({ update: [['highTick', updatedTick]] });
         dispatch(setAdvancedHighTick(updatedTick));
-        // updateURL({update: [['highTick', updatedTick]]});
     };
 
     return (
