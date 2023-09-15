@@ -316,7 +316,6 @@ function Portfolio() {
                 flat
                 title='Connect Wallet'
                 action={() => openModalWallet()}
-                width='30%'
             />
         </FlexContainer>
     );

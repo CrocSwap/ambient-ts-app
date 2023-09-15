@@ -1,21 +1,27 @@
 import styled, { css } from 'styled-components/macro';
 
-export const ButtonBase = styled.button<{ flat: boolean; width?: string }>`
+export const ButtonBase = styled.button<{
+    flat: boolean;
+    width?: string;
+    height?: string;
+}>`
     width: ${({ width }) => width || '100%'};
+    max-width: 500px;
+    height: ${({ height }) => height || 'auto'};
     outline: none;
     padding: 12px 16px;
     font-size: 16px;
     line-height: 24px;
     display: block;
-    height: auto;
     cursor: pointer;
     text-align: center;
     background: transparent;
     text-transform: capitalize;
-    border-radius: 4px;
-    transition: all var(--animation-speed) ease-in-out;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
     border: 1px solid var(--accent1);
 
+    // flat or gradient
     ${({ flat }) =>
         flat
             ? css`
