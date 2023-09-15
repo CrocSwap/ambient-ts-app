@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -929,16 +929,34 @@ export default function InitPool() {
 
     const [showErrorMessage, setShowErrorMessage] = useState(false);
 
+    const erc20TokenWithDexBalance = useMemo(() => {
+        if (baseToken?.address !== ZERO_ADDRESS) {
+            if (baseTokenDexBalance !== '0.0') {
+                return baseToken;
+            }
+        }
+        if (quoteTokenDexBalance !== '0.0') {
+            return quoteToken;
+        }
+        return undefined;
+    }, [baseToken, quoteToken, baseTokenDexBalance, quoteTokenDexBalance]);
+
+    useEffect(() => {
+        if (poolExists) {
+            setShowErrorMessage(false);
+        } else if (erc20TokenWithDexBalance) {
+            setShowErrorMessage(true);
+        } else {
+            setShowErrorMessage(false);
+        }
+    }, [erc20TokenWithDexBalance, poolExists]);
+
     return (
         <section className={styles.main}>
             <div className={styles.outer_container}>
                 <div className={styles.gradient_container}>
                     <div className={styles.main_container}>
-                        <header
-                            onClick={() =>
-                                setShowErrorMessage(!showErrorMessage)
-                            }
-                        >
+                        <header>
                             <p />
                             Initialize Pool
                             <p />
@@ -977,7 +995,9 @@ export default function InitPool() {
 
                                 {showErrorMessage ? (
                                     <div style={{ padding: '0 40px' }}>
-                                        <WarningBox details='Due to known issue, you will need to remove your WBTC exchange balance before proceeding with pool initialization' />
+                                        <WarningBox
+                                            details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
+                                        />
                                     </div>
                                 ) : (
                                     <div
