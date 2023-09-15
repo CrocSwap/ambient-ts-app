@@ -133,11 +133,15 @@ export default function Investors() {
                 color='text1'
                 fontWeight='400'
                 fontSize='header1'
-                style={{ textAlign: 'center', margin: '16px 0' }}
+                style={{ textAlign: 'center' }}
             >
                 Our Investors
             </Text>
-            <InvestorsContent flexDirection='column' margin='0 auto' gap={16}>
+            <InvestorsContent
+                flexDirection='column'
+                margin='16px auto 0 auto'
+                gap={16}
+            >
                 {row1}
                 {row2}
                 {row3}
