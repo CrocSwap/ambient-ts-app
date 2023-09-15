@@ -541,7 +541,12 @@ export default function InitPool() {
                 } else {
                     // Display confirm button for final step
                     buttonContent = (
-                        <Button title='Confirm' action={sendInit} flat={true} />
+                        <Button
+                            title='Confirm'
+                            disabled={erc20TokenWithDexBalance !== undefined}
+                            action={sendInit}
+                            flat={true}
+                        />
                     );
                 }
                 break;
