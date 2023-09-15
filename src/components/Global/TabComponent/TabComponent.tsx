@@ -184,7 +184,7 @@ export default function TabComponent(props: TabPropsIF) {
                         {item.label === selectedTab.label && (
                             <div className={styles.underline} />
                         )}
-                        {item === selectedTab ? (
+                        {item.label === selectedTab.label ? (
                             <motion.div
                                 className={styles.underline}
                                 layoutId='underline'
