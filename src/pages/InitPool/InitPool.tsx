@@ -56,6 +56,7 @@ import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
+import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
 
 // react functional component
 export default function InitPool() {
@@ -910,12 +911,18 @@ export default function InitPool() {
         </FlexContainer>
     );
 
+    const [showErrorMessage, setShowErrorMessage] = useState(false);
+
     return (
         <section className={styles.main}>
             <div className={styles.outer_container}>
                 <div className={styles.gradient_container}>
                     <div className={styles.main_container}>
-                        <header>
+                        <header
+                            onClick={() =>
+                                setShowErrorMessage(!showErrorMessage)
+                            }
+                        >
                             <p />
                             Initialize Pool
                             <p />
@@ -952,29 +959,35 @@ export default function InitPool() {
                                     customSwitch={true}
                                 />
 
-                                <div
-                                    className={
-                                        poolExists === true
-                                            ? styles.content_disabled
-                                            : ''
-                                    }
-                                >
-                                    <InitPoolExtraInfo
-                                        initialPrice={parseFloat(
-                                            initialPriceDisplay.replaceAll(
-                                                ',',
-                                                '',
-                                            ),
-                                        )}
-                                        isDenomBase={isDenomBase}
-                                        initGasPriceinDollars={
-                                            initGasPriceinDollars
+                                {showErrorMessage ? (
+                                    <div style={{ padding: '0 40px' }}>
+                                        <WarningBox details='Due to known issue, you will need to remove your WBTC exchange balance before proceeding with pool initialization' />
+                                    </div>
+                                ) : (
+                                    <div
+                                        className={
+                                            poolExists === true
+                                                ? styles.content_disabled
+                                                : ''
                                         }
-                                        baseToken={baseToken}
-                                        quoteToken={quoteToken}
-                                        setIsDenomBase={setIsDenomBase}
-                                    />
-                                </div>
+                                    >
+                                        <InitPoolExtraInfo
+                                            initialPrice={parseFloat(
+                                                initialPriceDisplay.replaceAll(
+                                                    ',',
+                                                    '',
+                                                ),
+                                            )}
+                                            isDenomBase={isDenomBase}
+                                            initGasPriceinDollars={
+                                                initGasPriceinDollars
+                                            }
+                                            baseToken={baseToken}
+                                            quoteToken={quoteToken}
+                                            setIsDenomBase={setIsDenomBase}
+                                        />
+                                    </div>
+                                )}
 
                                 <ButtonToRender />
                             </div>

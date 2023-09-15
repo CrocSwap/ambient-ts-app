@@ -341,3 +341,9 @@ export const ScrollContainer = styled.div<ScrollContainerProps>`
         );
     }
 `;
+
+export const WarningText = styled.p`
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--negative);
+`;

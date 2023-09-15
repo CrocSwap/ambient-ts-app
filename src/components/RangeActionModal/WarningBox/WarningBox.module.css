@@ -4,7 +4,6 @@
     justify-content: space-between;
     align-items: center;
     padding: 12px;
-    margin-top: 1rem;
     border: solid 1px var(--other-red);
     border-radius: 4px;
     background: radial-gradient(
