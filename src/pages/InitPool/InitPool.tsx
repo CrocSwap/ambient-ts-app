@@ -460,7 +460,7 @@ export default function InitPool() {
         const isValid =
             event.target.value === '' ||
             event.target.value === '.' ||
-            event.target.validity.valid;
+            exponentialNumRegEx.test(event.target.value);
         const targetValue = event.target.value.replaceAll(',', '');
         const input = targetValue.startsWith('.')
             ? '0' + targetValue
@@ -848,7 +848,6 @@ export default function InitPool() {
                         autoCorrect='off'
                         min='0'
                         minLength={1}
-                        pattern={exponentialNumRegEx.source}
                     />
                 )}
             </section>
