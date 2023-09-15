@@ -184,6 +184,9 @@ export default function InitPool() {
         const basePrice = await basePricePromise;
         const quotePrice = await quotePricePromise;
 
+        const isReferencePriceAvailable =
+            basePrice !== undefined && quotePrice !== undefined;
+
         const baseUsdPrice = basePrice?.usdPrice || 2000;
         const quoteUsdPrice = quotePrice?.usdPrice || 1;
 
@@ -199,9 +202,11 @@ export default function InitPool() {
                       maximumFractionDigits: 2,
                   });
 
+        if (isReferencePriceAvailable)
+            setInitialPriceInBaseDenom(defaultPriceNumInBase);
         if (isDenomBase) {
             setEstimatedInitialPriceDisplay(defaultPriceTruncated);
-            basePrice && quotePrice && !isTokenPairDefault
+            isReferencePriceAvailable && !isTokenPairDefault
                 ? setInitialPriceDisplay(defaultPriceTruncated)
                 : !initialPriceInBaseDenom
                 ? setInitialPriceDisplay('')
@@ -220,7 +225,7 @@ export default function InitPool() {
                       });
             setEstimatedInitialPriceDisplay(invertedPriceTruncated);
 
-            basePrice && quotePrice && !isTokenPairDefault
+            isReferencePriceAvailable && !isTokenPairDefault
                 ? setInitialPriceDisplay(invertedPriceTruncated)
                 : !initialPriceInBaseDenom
                 ? setInitialPriceDisplay('')
@@ -230,6 +235,7 @@ export default function InitPool() {
 
     useEffect(() => {
         setInitialPriceInBaseDenom(undefined);
+        setInitialPriceDisplay('');
     }, [baseToken, quoteToken]);
 
     useEffect(() => {
@@ -781,6 +787,30 @@ export default function InitPool() {
         }, 1000);
     };
 
+    const openEditMode = () => {
+        setIsEditEnabled(true);
+        if (initialPriceDisplay === '') {
+            setInitialPriceDisplay(estimatedInitialPriceDisplay);
+            const targetValue = estimatedInitialPriceDisplay.replaceAll(
+                ',',
+                '',
+            );
+
+            const targetValueNum = parseFloat(targetValue);
+
+            if (targetValue === '') {
+                setInitialPriceInBaseDenom(undefined);
+            } else {
+                if (isDenomBase) {
+                    setInitialPriceInBaseDenom(targetValueNum);
+                } else {
+                    setInitialPriceInBaseDenom(1 / targetValueNum);
+                }
+            }
+        }
+        focusInput();
+    };
+
     const initPriceContainer = (
         <div
             className={`${styles.pool_price_container} ${
@@ -791,22 +821,13 @@ export default function InitPool() {
                 <p className={styles.label_title}>Initial Price</p>
 
                 <FlexContainer gap={8}>
-                    <LuEdit2
-                        size={20}
-                        onClick={() => {
-                            setIsEditEnabled(true);
-                            focusInput();
-                        }}
-                    />
+                    <LuEdit2 size={20} onClick={() => openEditMode()} />
                     <FiRefreshCw size={20} onClick={handleRefresh} />
                 </FlexContainer>
             </FlexContainer>
             <section
                 style={{ width: '100%' }}
-                onDoubleClick={() => {
-                    setIsEditEnabled(true);
-                    focusInput();
-                }}
+                onDoubleClick={() => openEditMode()}
             >
                 {isLoading ? (
                     <div className={styles.circular_progress}>
