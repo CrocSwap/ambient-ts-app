@@ -9,7 +9,6 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import styles from './RangeWidth.module.css';
 import { handleRangeSlider } from './rangeWidthFunctions';
 import RangeSlider from '../../../Global/RangeSlider/RangeSlider';
-import { useTradeData } from '../../../../App/hooks/useTradeData';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // interface for React functional component props
@@ -30,9 +29,6 @@ function RangeWidth(props: RangeWidthPropsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
-
-    const { updateURL } = useTradeData();
-    false && updateURL;
 
     // fn to update the width of range (balanced mode) from buttons
     function updateRangeWithButton(value: 5 | 10 | 25 | 50 | 100): void {

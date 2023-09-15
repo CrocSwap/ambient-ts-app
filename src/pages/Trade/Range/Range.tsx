@@ -59,6 +59,7 @@ import {
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../styled/Common';
 import { AdvancedModeSection } from '../../../styled/Components/TradeModules';
+import { useTradeData } from '../../../App/hooks/useTradeData';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -125,6 +126,8 @@ function Range() {
         },
         graphData,
     } = useAppSelector((state) => state);
+
+    const { updateURL } = useTradeData();
 
     const [tokenAAllowed, setTokenAAllowed] = useState<boolean>(false);
     const [tokenBAllowed, setTokenBAllowed] = useState<boolean>(false);
@@ -921,6 +924,12 @@ function Range() {
             return;
         const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
         const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+        // update URL with new tick values (rounded)
+        // updateURL({update: [
+        //     ['lowTick', roundDownTick(lowTick, gridSize)],
+        //     ['highTick', roundUpTick(highTick, gridSize)]
+        // ]});
 
         const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
             isDenomBase,
