@@ -20,7 +20,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { IS_LOCAL_ENV } from '../../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
@@ -98,14 +98,13 @@ export default function InitPool() {
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState<
         number | undefined
     >();
-    const [estimatedInitialPriceInBase, setEstimatedInitialPriceInBase] =
-        useState<string>('0');
+
     const [estimatedInitialPriceDisplay, setEstimatedInitialPriceDisplay] =
         useState<string>('0');
     // const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
 
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
-    // const localPair: LocalPairDataIF = useAppSelector(
+    // const localPair: LocalPairDataIF = useAppSelecmonetor(
     //     (state) => state.localPairData,
     // );
     // const [tokenA, tokenB] = localPair.tokens;
@@ -146,6 +145,9 @@ export default function InitPool() {
         setIsDenomBase(!isBaseTokenMoneynessGreaterOrEqual);
     }, [isBaseTokenMoneynessGreaterOrEqual]);
 
+    const isTokenPairDefault =
+        baseToken.address === ZERO_ADDRESS && quoteToken.symbol === 'USDC';
+
     useEffect(() => {
         // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
@@ -178,25 +180,47 @@ export default function InitPool() {
             mainnetQuote.chainId,
         );
 
-        const basePrice = (await basePricePromise)?.usdPrice || 2000;
-        const quotePrice = (await quotePricePromise)?.usdPrice || 1;
+        const basePrice = await basePricePromise;
+        const quotePrice = await quotePricePromise;
 
-        const defaultPriceNum = isDenomBase
-            ? basePrice / quotePrice
-            : quotePrice / basePrice;
+        const baseUsdPrice = basePrice?.usdPrice || 2000;
+        const quoteUsdPrice = quotePrice?.usdPrice || 1;
+
+        const defaultPriceNumInBase = baseUsdPrice / quoteUsdPrice;
 
         const defaultPriceTruncated =
-            defaultPriceNum < 0.0001
-                ? defaultPriceNum.toExponential(2)
-                : defaultPriceNum < 2
-                ? defaultPriceNum.toPrecision(3)
-                : defaultPriceNum.toLocaleString('en-US', {
+            defaultPriceNumInBase < 0.0001
+                ? defaultPriceNumInBase.toExponential(2)
+                : defaultPriceNumInBase < 2
+                ? defaultPriceNumInBase.toPrecision(3)
+                : defaultPriceNumInBase.toLocaleString('en-US', {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        setInitialPriceInBaseDenom(defaultPriceNum);
-        setEstimatedInitialPriceInBase(defaultPriceTruncated);
-        setInitialPriceDisplay(defaultPriceTruncated);
+        setInitialPriceInBaseDenom(defaultPriceNumInBase);
+
+        if (isDenomBase) {
+            setEstimatedInitialPriceDisplay(defaultPriceTruncated);
+            basePrice && quotePrice && !isTokenPairDefault
+                ? setInitialPriceDisplay(defaultPriceTruncated)
+                : setInitialPriceDisplay('');
+        } else {
+            const invertedPriceNum = 1 / defaultPriceNumInBase;
+
+            const invertedPriceTruncated =
+                invertedPriceNum < 0.0001
+                    ? invertedPriceNum.toExponential(2)
+                    : invertedPriceNum < 2
+                    ? invertedPriceNum.toPrecision(3)
+                    : invertedPriceNum.toLocaleString('en-US', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+            setEstimatedInitialPriceDisplay(invertedPriceTruncated);
+            basePrice && quotePrice && !isTokenPairDefault
+                ? setInitialPriceDisplay(invertedPriceTruncated)
+                : setInitialPriceDisplay('');
+        }
     };
 
     useEffect(() => {
@@ -244,7 +268,6 @@ export default function InitPool() {
         const inputField = document.getElementById(
             'initial-pool-price-quantity',
         ) as HTMLInputElement;
-        console.log({ inputField });
 
         const timer = setTimeout(() => {
             inputField.focus();
@@ -421,61 +444,6 @@ export default function InitPool() {
                 } else {
                     setInitialPriceInBaseDenom(1 / targetValueNum);
                 }
-            }
-        }
-    };
-
-    useEffect(() => {
-        handleDisplayUpdate();
-    }, [isDenomBase]);
-
-    const handleDisplayUpdate = () => {
-        if (estimatedInitialPriceInBase) {
-            if (isDenomBase) {
-                setEstimatedInitialPriceDisplay(estimatedInitialPriceInBase);
-            } else {
-                const invertedPriceNum =
-                    1 /
-                    parseFloat(estimatedInitialPriceInBase.replaceAll(',', ''));
-
-                const invertedPriceTruncated =
-                    invertedPriceNum < 0.0001
-                        ? invertedPriceNum.toExponential(2)
-                        : invertedPriceNum < 2
-                        ? invertedPriceNum.toPrecision(3)
-                        : invertedPriceNum.toLocaleString('en-US', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-                setEstimatedInitialPriceDisplay(invertedPriceTruncated);
-            }
-        }
-        if (initialPriceInBaseDenom) {
-            if (!isDenomBase) {
-                const newInitialPriceForDOMTruncated =
-                    1 / initialPriceInBaseDenom < 0.0001
-                        ? (1 / initialPriceInBaseDenom).toExponential(2)
-                        : 1 / initialPriceInBaseDenom < 2
-                        ? (1 / initialPriceInBaseDenom).toPrecision(3)
-                        : (1 / initialPriceInBaseDenom).toLocaleString(
-                              undefined,
-                              {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              },
-                          );
-                setInitialPriceDisplay(newInitialPriceForDOMTruncated);
-            } else {
-                const newInitialPriceForDOMTruncated =
-                    initialPriceInBaseDenom < 0.0001
-                        ? initialPriceInBaseDenom.toExponential(2)
-                        : initialPriceInBaseDenom < 2
-                        ? initialPriceInBaseDenom.toPrecision(3)
-                        : initialPriceInBaseDenom.toLocaleString('en-US', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-                setInitialPriceDisplay(newInitialPriceForDOMTruncated);
             }
         }
     };
