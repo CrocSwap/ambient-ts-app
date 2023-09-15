@@ -59,7 +59,6 @@ import {
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../styled/Common';
 import { AdvancedModeSection } from '../../../styled/Components/TradeModules';
-import { useTradeData } from '../../../App/hooks/useTradeData';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -126,8 +125,6 @@ function Range() {
         },
         graphData,
     } = useAppSelector((state) => state);
-
-    const { updateURL } = useTradeData();
 
     const [tokenAAllowed, setTokenAAllowed] = useState<boolean>(false);
     const [tokenBAllowed, setTokenBAllowed] = useState<boolean>(false);

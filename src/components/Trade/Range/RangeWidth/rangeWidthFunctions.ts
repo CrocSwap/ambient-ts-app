@@ -1,6 +1,5 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
-import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 
 export function handleRangeSlider(
     event: ChangeEvent<HTMLInputElement>,

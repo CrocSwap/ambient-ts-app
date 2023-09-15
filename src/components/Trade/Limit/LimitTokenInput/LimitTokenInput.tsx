@@ -92,6 +92,7 @@ function LimitTokenInput(props: propsIF) {
         : quoteTokenDexBalance;
 
     const reverseTokens = (): void => {
+        console.log('firing');
         if (!location.pathname.includes('limitTick')) {
             dispatch(setLimitTick(undefined));
             dispatch(setPoolPriceNonDisplay(0));
