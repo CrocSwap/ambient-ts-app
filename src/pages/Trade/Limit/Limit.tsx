@@ -155,11 +155,6 @@ export default function Limit() {
         },
     );
 
-    // trigger re-pinning to a default tick
-    useEffect(() => {
-        dispatch(setLimitTick(undefined));
-    }, [tokenA.address]);
-
     useEffect(() => {
         if (limitTickFromParams && limitTick === undefined) {
             dispatch(setLimitTick(limitTickFromParams));
@@ -345,8 +340,11 @@ export default function Limit() {
         updateOrderValidityStatus();
     }, [
         limitTick,
+        isTokenAPrimary,
         poolPriceNonDisplay,
         tokenAInputQty === '' && tokenBInputQty === '',
+        tokenA.address,
+        tokenB.address,
     ]);
 
     useEffect(() => {
@@ -355,7 +353,14 @@ export default function Limit() {
 
     useEffect(() => {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
-    }, [isOrderValid, tokenAInputQty, isPoolInitialized, poolPriceNonDisplay]);
+    }, [
+        isOrderValid,
+        tokenAInputQty,
+        isPoolInitialized,
+        poolPriceNonDisplay,
+        limitTick,
+        isSellTokenBase,
+    ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
