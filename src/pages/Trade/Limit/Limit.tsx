@@ -156,9 +156,9 @@ export default function Limit() {
     );
 
     // trigger re-pinning to a default tick
-    useEffect(() => {
-        dispatch(setLimitTick(undefined));
-    }, [tokenA.address]);
+    // useEffect(() => {
+    //     dispatch(setLimitTick(undefined));
+    // }, [tokenA.address]);
 
     useEffect(() => {
         if (limitTickFromParams && limitTick === undefined) {
