@@ -1,6 +1,6 @@
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 import { motion } from 'framer-motion';
-import { useContext, useState, useEffect, useMemo, memo } from 'react';
+import { useContext, useState, useEffect, useMemo, memo, useRef } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Global/Button/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -898,6 +898,9 @@ function Range() {
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
+    const counter = useRef<number>(0);
+    useEffect(() => console.log(counter.current), [counter.current]);
+
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageRangeCostInGasDrops = 140000;
@@ -925,6 +928,7 @@ function Range() {
         const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
         const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
+        counter.current++;
         // update URL with new tick values (rounded)
         // updateURL({update: [
         //     ['lowTick', roundDownTick(lowTick, gridSize)],
