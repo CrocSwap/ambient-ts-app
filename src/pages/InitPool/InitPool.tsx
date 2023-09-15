@@ -1,7 +1,5 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -31,8 +29,7 @@ import { useAccount, useProvider } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
-import uriToHttp from '../../utils/functions/uriToHttp';
-import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
@@ -88,9 +85,6 @@ export default function InitPool() {
     } = useAppSelector((state) => state);
 
     const { isConnected } = useAccount();
-
-    // function to programmatically navigate the user
-    const navigate = useNavigate();
 
     // DO NOT combine these hooks with useMemo()
     // the useMemo() hook does NOT respect asynchronicity
@@ -321,7 +315,6 @@ export default function InitPool() {
     };
 
     // hooks to generate navigation actions with pre-loaded paths
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const sendInit = () => {
@@ -562,47 +555,6 @@ export default function InitPool() {
 
         return buttonContent;
     };
-
-    const tokenADisplay = (
-        <div className={styles.pool_display}>
-            <div>
-                <TokenIcon
-                    token={tokenA}
-                    src={uriToHttp(tokenA.logoURI)}
-                    alt={tokenA.symbol}
-                    size='2xl'
-                />
-                {tokenA && <h3>{tokenA.symbol}</h3>}
-            </div>
-            {tokenA && <p>{tokenA.name}</p>}
-        </div>
-    );
-
-    const tokenBDisplay = (
-        <div className={styles.pool_display}>
-            <div>
-                <TokenIcon
-                    token={tokenB}
-                    src={uriToHttp(tokenB.logoURI)}
-                    alt={tokenB.symbol}
-                    size='2xl'
-                />
-                {tokenB && <h3>{tokenB.symbol}</h3>}
-            </div>
-            {tokenB && <p>{tokenB.name}</p>}
-        </div>
-    );
-
-    const navigateToMarket = (
-        <Navigate
-            to={linkGenMarket.getFullURL({
-                chain: chainId,
-                tokenA: baseToken.address,
-                tokenB: quoteToken.address,
-            })}
-            replace={true}
-        />
-    );
 
     const tokenAApprovalButton = (
         <Button
@@ -955,7 +907,7 @@ export default function InitPool() {
         </FlexContainer>
     );
 
-    const newContent = (
+    return (
         <section className={styles.main}>
             <div className={styles.outer_container}>
                 <div className={styles.gradient_container}>
@@ -999,7 +951,7 @@ export default function InitPool() {
 
                                 <div
                                     className={
-                                        isRangeBoundsAndCollateralDisabled
+                                        poolExists === true
                                             ? styles.content_disabled
                                             : ''
                                     }
@@ -1024,68 +976,6 @@ export default function InitPool() {
                                 <ButtonToRender />
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-
-    const yes = true;
-
-    if (yes) return newContent;
-
-    return (
-        <section className={styles.main}>
-            {poolExists && navigateToMarket}
-            <div className={styles.init_pool_container}>
-                <div className={styles.top_content}>
-                    <header>
-                        <p />
-                        <h1>Initialize Pool</h1>
-                        <VscClose
-                            size={25}
-                            onClick={() => navigate(-1)}
-                            style={{ cursor: 'pointer' }}
-                        />
-                    </header>
-                    <div className={styles.pool_display_container}>
-                        {tokenADisplay}
-                        {tokenBDisplay}
-                        <div className={styles.padding_center}>
-                            <div className={styles.pool_price_container}>
-                                <section style={{ width: '100%' }}>
-                                    <input
-                                        id='initial-pool-price-quantity'
-                                        className={styles.currency_quantity}
-                                        placeholder={placeholderText}
-                                        type='string'
-                                        onChange={handleInitialPriceInputChange}
-                                        onBlur={handleDisplayUpdate}
-                                        value={initialPriceDisplay}
-                                        inputMode='decimal'
-                                        autoComplete='off'
-                                        autoCorrect='off'
-                                        min='0'
-                                        minLength={1}
-                                        pattern={exponentialNumRegEx.source}
-                                    />
-                                </section>
-                            </div>
-                            <InitPoolExtraInfo
-                                initialPrice={parseFloat(
-                                    initialPriceDisplay.replaceAll(',', ''),
-                                )}
-                                isDenomBase={isDenomBase}
-                                initGasPriceinDollars={initGasPriceinDollars}
-                                baseToken={baseToken}
-                                quoteToken={quoteToken}
-                                setIsDenomBase={setIsDenomBase}
-                            />
-                        </div>
-
-                        <footer>
-                            <ButtonToRender />
-                        </footer>
                     </div>
                 </div>
             </div>
