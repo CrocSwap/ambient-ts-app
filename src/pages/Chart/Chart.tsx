@@ -17,6 +17,8 @@ import {
     setIsLinesSwitched,
     candleScale,
     candleDomain,
+    setIsTokenAPrimary,
+    setIsTokenAPrimaryRange,
 } from '../../utils/state/tradeDataSlice';
 
 import { PoolContext } from '../../contexts/PoolContext';
@@ -3486,12 +3488,20 @@ export default function Chart(props: propsIF) {
             // ... then redirect to new URL params (to reverse the token
             // ... pair; else just update the `limitTick` value in the URL
             reverseTokenForChart(limitPreviousData, newLimitValue)
-                ? linkGenLimit.redirect({
-                      chain: chainData.chainId,
-                      tokenA: tokenB.address,
-                      tokenB: tokenA.address,
-                      limitTick: pinnedTick,
-                  })
+                ? (() => {
+                      dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+                      dispatch(
+                          setIsTokenAPrimaryRange(
+                              !tradeData.isTokenAPrimaryRange,
+                          ),
+                      );
+                      linkGenLimit.redirect({
+                          chain: chainData.chainId,
+                          tokenA: tokenB.address,
+                          tokenB: tokenA.address,
+                          limitTick: pinnedTick,
+                      });
+                  })()
                 : updateURL({ update: [['limitTick', pinnedTick]] });
 
             const tickPrice = tickToPrice(pinnedTick);
