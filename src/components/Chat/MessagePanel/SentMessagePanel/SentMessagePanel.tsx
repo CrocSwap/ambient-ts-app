@@ -606,6 +606,11 @@ function SentMessagePanel(props: SentMessageProps) {
         return ret;
     }
 
+    function processReactions() {
+        const currReactions = props.message.reactions;
+        const shownReactions = [];
+    }
+
     return (
         <div
             className={`${styles.msg_bubble_container} ${
