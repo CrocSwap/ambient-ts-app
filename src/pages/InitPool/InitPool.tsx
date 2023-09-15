@@ -197,16 +197,16 @@ export default function InitPool() {
                 ? defaultPriceNumInBase.toExponential(2)
                 : defaultPriceNumInBase < 2
                 ? defaultPriceNumInBase.toPrecision(3)
-                : defaultPriceNumInBase.toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+                : defaultPriceNumInBase.toFixed(2);
 
-        if (isReferencePriceAvailable)
+        if (isReferencePriceAvailable && initialPriceDisplay === '') {
             setInitialPriceInBaseDenom(defaultPriceNumInBase);
+        }
         if (isDenomBase) {
             setEstimatedInitialPriceDisplay(defaultPriceTruncated);
-            isReferencePriceAvailable && !isTokenPairDefault
+            isReferencePriceAvailable &&
+            initialPriceDisplay === '' &&
+            !isTokenPairDefault
                 ? setInitialPriceDisplay(defaultPriceTruncated)
                 : !initialPriceInBaseDenom
                 ? setInitialPriceDisplay('')
@@ -219,13 +219,12 @@ export default function InitPool() {
                     ? invertedPriceNum.toExponential(2)
                     : invertedPriceNum < 2
                     ? invertedPriceNum.toPrecision(3)
-                    : invertedPriceNum.toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+                    : invertedPriceNum.toFixed(2);
             setEstimatedInitialPriceDisplay(invertedPriceTruncated);
 
-            isReferencePriceAvailable && !isTokenPairDefault
+            isReferencePriceAvailable &&
+            initialPriceDisplay === '' &&
+            !isTokenPairDefault
                 ? setInitialPriceDisplay(invertedPriceTruncated)
                 : !initialPriceInBaseDenom
                 ? setInitialPriceDisplay('')
@@ -262,11 +261,7 @@ export default function InitPool() {
                         ? invertedPriceNum.toExponential(2)
                         : invertedPriceNum < 2
                         ? invertedPriceNum.toPrecision(3)
-                        : invertedPriceNum.toLocaleString('en-US', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-
+                        : invertedPriceNum.toFixed(2);
                 setInitialPriceDisplay(invertedPriceTruncated);
             }
         }
