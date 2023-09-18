@@ -41,16 +41,13 @@ function Portfolio() {
     const {
         wagmiModal: { open: openModalWallet },
     } = useContext(AppStateContext);
-    const {
-        cachedFetchErc20TokenBalances,
-        cachedFetchNativeTokenBalance,
-        cachedTokenDetails,
-    } = useContext(CachedDataContext);
+    const { cachedFetchTokenBalances, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, client } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
@@ -182,14 +179,9 @@ function Portfolio() {
     //     </FlexContainer>
     // );
 
-    const [resolvedAddressNativeToken, setResolvedAddressNativeToken] =
-        useState<TokenIF | undefined>();
-    const [resolvedAddressErc20Tokens, setResolvedAddressErc20Tokens] =
-        useState<TokenIF[]>([]);
-
-    const resolvedAddressTokens = [resolvedAddressNativeToken].concat(
-        resolvedAddressErc20Tokens,
-    );
+    const [resolvedAddressTokens, setResolvedAddressTokens] = useState<
+        TokenIF[]
+    >([]);
 
     useEffect(() => {
         (async () => {
@@ -201,34 +193,18 @@ function Portfolio() {
                 !connectedAccountActive
             ) {
                 try {
-                    const newNativeToken = await cachedFetchNativeTokenBalance(
-                        resolvedAddress,
-                        chainId,
-                        lastBlockNumber,
-                        crocEnv,
-                    );
+                    const updatedTokens: TokenIF[] = resolvedAddressTokens;
 
-                    if (
-                        diffHashSig(resolvedAddressNativeToken) !==
-                        diffHashSig(newNativeToken)
-                    ) {
-                        setResolvedAddressNativeToken(newNativeToken);
-                    }
-                } catch (error) {
-                    console.error({ error });
-                }
-                try {
-                    const updatedTokens: TokenIF[] = resolvedAddressErc20Tokens;
-
-                    const erc20Results = await cachedFetchErc20TokenBalances(
+                    const tokenBalanceResults = await cachedFetchTokenBalances(
                         resolvedAddress,
                         chainId,
                         lastBlockNumber,
                         cachedTokenDetails,
                         crocEnv,
+                        client,
                     );
 
-                    const erc20TokensWithLogos = erc20Results.map((token) => {
+                    const tokensWithLogos = tokenBalanceResults.map((token) => {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
@@ -237,9 +213,9 @@ function Portfolio() {
                         return newToken;
                     });
 
-                    erc20TokensWithLogos.map((newToken: TokenIF) => {
+                    tokensWithLogos.map((newToken: TokenIF) => {
                         const indexOfExistingToken =
-                            resolvedAddressErc20Tokens.findIndex(
+                            resolvedAddressTokens.findIndex(
                                 (existingToken) =>
                                     existingToken.address === newToken.address,
                             );
@@ -248,15 +224,13 @@ function Portfolio() {
                             updatedTokens.push(newToken);
                         } else if (
                             diffHashSig(
-                                resolvedAddressErc20Tokens[
-                                    indexOfExistingToken
-                                ],
+                                resolvedAddressTokens[indexOfExistingToken],
                             ) !== diffHashSig(newToken)
                         ) {
                             updatedTokens[indexOfExistingToken] = newToken;
                         }
                     });
-                    setResolvedAddressErc20Tokens(updatedTokens);
+                    setResolvedAddressTokens(updatedTokens);
                 } catch (error) {
                     console.error({ error });
                 }
