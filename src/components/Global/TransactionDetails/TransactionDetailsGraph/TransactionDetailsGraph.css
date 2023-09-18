@@ -23,3 +23,8 @@
     width: 100%;
     height: 100%;
 }
+
+.main_layout_chart svg:hover {
+    color: var(--accent1) ;
+    cursor: default ;
+}
