@@ -14,7 +14,7 @@ import { TutorialButton } from '../../../styled/Components/Tutorial';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
-import Button from '../../Global/Button/Button';
+import Button from '../../Form/Button';
 
 interface PropsIF {
     header: React.ReactNode;

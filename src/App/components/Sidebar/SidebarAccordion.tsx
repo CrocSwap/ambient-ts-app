@@ -9,7 +9,7 @@ import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { AccordionHeader, ArrowIcon } from '../../../styled/Components/Sidebar';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 
 // interface for React functional component props
 interface propsIF {

@@ -1,4 +1,4 @@
-import { ButtonBase } from './Button.styles';
+import { ButtonBase } from './Form.styles';
 
 interface propsIF {
     disabled?: boolean;
@@ -6,8 +6,6 @@ interface propsIF {
     action: () => void;
     flat?: boolean;
     customAriaLabel?: string;
-    // width?: string;
-    // height?: string;
     thin?: boolean;
     black?: boolean;
 }

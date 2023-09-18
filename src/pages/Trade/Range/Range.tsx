@@ -2,7 +2,7 @@ import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 import { motion } from 'framer-motion';
 import { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';

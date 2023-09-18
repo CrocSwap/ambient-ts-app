@@ -6,7 +6,7 @@ import { useEnsName } from 'wagmi';
 import ExchangeBalance from '../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
-import Button from '../../components/Global/Button/Button';
+import Button from '../../components/Form/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 // START: Import Other Local Files

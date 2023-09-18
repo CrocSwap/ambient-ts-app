@@ -38,10 +38,10 @@ import {
     removePendingTx,
     updateTransactionHash,
 } from '../../../../utils/state/receiptDataSlice';
-import Toggle from '../../../Global/Toggle/Toggle';
-import CurrencySelector from '../CurrencySelector';
+import Toggle from '../../../Form/Toggle';
+import CurrencySelector from '../../../Form/CurrencySelector';
 import TransferAddressInput from '../Transfer/TransferAddressInput';
-import Button from '../../../Global/Button/Button';
+import Button from '../../../Form/Button';
 
 interface propsIF {
     selectedToken: TokenIF;

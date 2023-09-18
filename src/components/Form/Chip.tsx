@@ -1,4 +1,13 @@
-.option_button {
+import styled from 'styled-components/macro';
+
+interface PropsIF {
+    key?: string;
+    ariaLabel?: string;
+    selected?: boolean;
+    onClick: () => void;
+}
+
+export const Chip = styled.button<PropsIF>`
     outline: none;
     display: flex;
     justify-content: center;
@@ -10,19 +19,17 @@
     text-decoration: none;
     cursor: pointer;
     font-size: var(--body-size);
-    /* line-height: var(--body-lh); */
     color: var(--text1);
-
     background: var(--dark1);
     border: 1px solid var(--dark3);
     border-radius: 50px;
-}
 
-.option_button:hover {
-    border: 1px solid var(--accent1);
-    color: var(--accent1);
-}
+    &:hover {
+        border: 1px solid var(--accent1);
+        color: var(--accent1);
+    }
 
-.option_button:hover svg {
-    color: var(--accent1) !important;
-}
+    &:hover svg {
+        color: var(--accent1) !important;
+    }
+`;

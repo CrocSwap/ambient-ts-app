@@ -9,25 +9,25 @@ import {
     SetStateAction,
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import uriToHttp from '../../../utils/functions/uriToHttp';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import Spinner from '../Spinner/Spinner';
-import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-import TokenIcon from '../TokenIcon/TokenIcon';
-import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+import uriToHttp from '../../utils/functions/uriToHttp';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import Spinner from '../Global/Spinner/Spinner';
+import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
+import TokenIcon from '../Global/TokenIcon/TokenIcon';
+import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
-import { useModal } from '../Modal/useModal';
-import { FlexContainer, Text } from '../../../styled/Common';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
+import { useModal } from '../Global/Modal/useModal';
+import { FlexContainer, Text } from '../../styled/Common';
 import {
     InputDisabledText,
     TokenQuantityContainer,
     TokenQuantityInput,
     TokenSelectButton,
-} from '../../../styled/Components/TradeModules';
+} from '../../styled/Components/TradeModules';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;

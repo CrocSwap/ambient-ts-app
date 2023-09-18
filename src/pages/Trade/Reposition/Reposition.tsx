@@ -12,7 +12,7 @@ import RepositionHeader from '../../../components/Trade/Reposition/RepositionHea
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
 import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
 import styles from './Reposition.module.css';
 import {

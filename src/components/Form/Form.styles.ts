@@ -62,3 +62,66 @@ export const ButtonBase = styled.button<{
             pointer-events: none;
         `}
 `;
+
+export const ChipComponent = styled.button`
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all var(--animation-speed) ease-in-out;
+    white-space: nowrap;
+    height: 23px;
+    padding: 5px 8px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: var(--body-size);
+    /* line-height: var(--body-lh); */
+    color: var(--text1);
+    background: var(--dark1);
+    border: 1px solid var(--dark3);
+    border-radius: 50px;
+
+    &:hover {
+        border: 1px solid var(--accent1);
+        color: var(--accent1);
+    }
+
+    &:hover svg {
+        color: var(--accent1) !important;
+    }
+`;
+
+export const ToggleComponent = styled.div<{ disabled: boolean }>`
+    width: 36px;
+    height: 20px;
+    background: var(--dark3);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 18px;
+    border: 1px solid var(--accent1);
+    cursor: pointer;
+
+    &:focus-visible {
+        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
+            0px 0px 21px rgba(205, 193, 255, 0.2),
+            0px 0px 12px rgba(205, 193, 255, 0.2),
+            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+            0px 0px 2px rgba(205, 193, 255, 0.2);
+    }
+
+    &[data-isOn='true'] {
+        justify-content: flex-end;
+        background-color: var(--accent1);
+    }
+
+    &[data-isOn='true'] .handle {
+        background: var(--text1);
+    }
+    ${({ disabled }) =>
+        disabled &&
+        `
+    pointer-events: none;
+    opacity: 0.4;
+    `}
+`;

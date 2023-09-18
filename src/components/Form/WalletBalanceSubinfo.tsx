@@ -1,17 +1,17 @@
-import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
-import walletIcon from '../../../assets/images/icons/wallet.svg';
-import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
+import ambientLogo from '../../assets/images/icons/ambient_icon.png';
+import walletIcon from '../../assets/images/icons/wallet.svg';
+import walletEnabledIcon from '../../assets/images/icons/wallet-enabled.svg';
 import { useContext } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { FiRefreshCw } from 'react-icons/fi';
-import { AppStateContext } from '../../../contexts/AppStateContext';
-import IconWithTooltip from '../IconWithTooltip/IconWithTooltip';
-import ExchangeBalanceExplanation from '../Informational/ExchangeBalanceExplanation';
-import WalletBalanceExplanation from '../Informational/WalletBalanceExplanation';
-import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-import { FlexContainer } from '../../../styled/Common';
-import { RefreshButton } from '../../../styled/Components/TradeModules';
-import { MaxButton } from '../../../styled/Components/Portfolio';
+import { AppStateContext } from '../../contexts/AppStateContext';
+import IconWithTooltip from '../Global/IconWithTooltip/IconWithTooltip';
+import ExchangeBalanceExplanation from '../Global/Informational/ExchangeBalanceExplanation';
+import WalletBalanceExplanation from '../Global/Informational/WalletBalanceExplanation';
+import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
+import { FlexContainer } from '../../styled/Common';
+import { RefreshButton } from '../../styled/Components/TradeModules';
+import { MaxButton } from '../../styled/Components/Portfolio';
 interface PropsIF {
     isWithdraw: boolean;
     balance: string;
@@ -23,7 +23,7 @@ interface PropsIF {
     onRefresh?: () => void;
 }
 
-export const TokenInputWalletBalance = (props: PropsIF) => {
+export const WalletBallanceSubinfo = (props: PropsIF) => {
     const {
         isWithdraw,
         balance,

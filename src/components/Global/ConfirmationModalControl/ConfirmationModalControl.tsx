@@ -1,6 +1,6 @@
 import { useId, Dispatch, SetStateAction } from 'react';
 import { useLocation } from 'react-router-dom';
-import Toggle from '../Toggle/Toggle';
+import Toggle from '../../Form/Toggle';
 import styles from './ConfirmationModalControl.module.css';
 
 interface propsIF {

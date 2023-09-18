@@ -43,7 +43,7 @@ import {
     UnderlinedMotionDiv,
 } from '../../../styled/Components/Header';
 import { FlexContainer } from '../../../styled/Common';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 
 const PageHeader = function () {
     const {
