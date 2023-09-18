@@ -24,7 +24,7 @@ export const ethereumGoerli: NetworkIF = {
         DAI: '0xdc31ee1784292379fbb2964b3b9c4124d8f89c60',
         WBTC: '0xc04b0d3107736c32e19f1c62b2af67be61d63a05',
         PEPE: '0x630f8b9d8f517af8f5b8670e6a167b6c0240d583',
-        FRAX: '0x92d43093959C7DDa89896418bCE9DE0B87879646',
+        FRAX: '0x92d43093959c7dda89896418bce9de0b87879646',
     },
     defaultPair: [goerliETH, goerliUSDC],
     topPools: [
