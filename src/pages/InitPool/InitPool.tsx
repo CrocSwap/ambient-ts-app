@@ -33,11 +33,7 @@ import { exponentialNumRegEx } from '../../utils/regex/exports';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
-// import {
-//     LocalPairDataIF,
-//     setLocalTokenA,
-//     setLocalTokenB,
-// } from '../../utils/state/localPairDataSlice';
+
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
@@ -57,10 +53,6 @@ import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
-import {
-    setLocalTokenA,
-    setLocalTokenB,
-} from '../../utils/state/localPairDataSlice';
 
 // react functional component
 export default function InitPool() {
@@ -113,13 +105,6 @@ export default function InitPool() {
         tradeData: { tokenA, tokenB, baseToken, quoteToken },
     } = useAppSelector((state) => state);
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
-
-    useEffect(() => {
-        dispatch(setLocalTokenA(tokenA));
-    }, [tokenA]);
-    useEffect(() => {
-        dispatch(setLocalTokenB(tokenB));
-    }, [tokenB]);
 
     const {
         baseTokenBalance,

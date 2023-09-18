@@ -3,7 +3,6 @@ import TokenInput from '../../../components/Global/TokenInput/TokenInput';
 import { ZERO_ADDRESS } from '../../../constants';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-// import { LocalPairDataIF } from '../../../utils/state/localPairDataSlice';
 import { formatTokenInput } from '../../../utils/numbers';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
@@ -48,12 +47,8 @@ export default function InitTokenInput(props: PropsIF) {
         // eslint-disable-next-line
         disabled,
     } = props;
-    // const localPair: LocalPairDataIF = useAppSelector(
-    //     (state) => state.localPairData,
-    // );
-    const { showRangePulseAnimation } = useContext(TradeTableContext);
 
-    // const [tokenA, tokenB] = localPair.tokens;
+    const { showRangePulseAnimation } = useContext(TradeTableContext);
 
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
