@@ -125,3 +125,92 @@ export const ToggleComponent = styled.div<{ disabled: boolean }>`
     opacity: 0.4;
     `}
 `;
+
+export const RangeSliderWrapper = styled.input<{
+    grabbing: boolean;
+    percentageInput?: boolean;
+}>`
+    width: 100%;
+    height: 10px;
+    border-radius: 10px;
+    outline: none;
+    box-shadow: var(--dark-box-shadow);
+    background: var(--dark1);
+    -webkit-appearance: none;
+    ${({ grabbing }) => {
+        if (grabbing) {
+            return `
+        &::-webkit-slider-thumb {
+            cursor: grabbing;
+          }
+          &::-moz-range-thumb {
+            cursor: grabbing;
+          }`;
+        } else {
+            return `
+            &::-webkit-slider-thumb {
+                cursor: grab;
+            }
+            &::-moz-range-thumb {
+                cursor: grab;
+            }
+`;
+        }
+    }}
+
+    ${({ percentageInput }) => {
+        if (percentageInput) {
+            return `
+            &:focus-visible {
+                box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
+                    0px 0px 21px rgba(205, 193, 255, 0.2),
+                    0px 0px 12px rgba(205, 193, 255, 0.2),
+                    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
+                    0px 0px 2px rgba(205, 193, 255, 0.2);
+            }
+            `;
+        }
+    }}
+
+    &::-webkit-slider-thumb {
+        background: var(--dark2);
+        width: 20px;
+        height: 36px;
+        margin-top: -14px;
+        border: 1px solid var(--accent5);
+        box-sizing: border-box;
+        box-shadow: var(--dark-box-shadow);
+        border-radius: 10px;
+        -webkit-appearance: none;
+    }
+    &::-moz-range-thumb {
+        background: var(--dark2);
+        width: 20px;
+        height: 36px;
+        border: 1px solid var(--accent5);
+        border-radius: 10px;
+        box-shadow: var(--dark-box-shadow);
+    }
+    &::-webkit-slider-runnable-track {
+        width: 100%;
+        height: 8.4px;
+        cursor: pointer;
+        border: var(--dark-border);
+        border-radius: 10px;
+        background: var(--accent1);
+        box-shadow: var(--dark-box-shadow);
+    }
+    &::-moz-range-track {
+        width: 100%;
+        height: 6px;
+        cursor: pointer;
+        border: var(--dark-border);
+        border-radius: 10px;
+        background: var(--accent1);
+        box-shadow: var(--dark-box-shadow);
+    }
+    &:focus::-webkit-slider-runnable-track {
+        background: var(--accent1);
+        border-radius: 10px;
+    }
+`;

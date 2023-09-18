@@ -10,7 +10,6 @@ import {
 // START: Import JSX Components
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
 import RepositionPriceInfo from '../../../components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo';
-import RepositionRangeWidth from '../../../components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import Button from '../../../components/Form/Button';
 // START: Import Other Local Files
@@ -50,6 +49,7 @@ import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
 
 function Reposition() {
     // current URL parameter string
@@ -75,6 +75,7 @@ function Reposition() {
         setMaxRangePrice: setMaxPrice,
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
+        setRescaleRangeBoundariesWithSlider,
     } = useContext(RangeContext);
 
     const [isOpen, openModal, closeModal] = useModal();
@@ -618,9 +619,12 @@ function Reposition() {
                     resetTxHash={() => setNewRepositionTransactionHash('')}
                 />
                 <div className={styles.reposition_content}>
-                    <RepositionRangeWidth
+                    <RangeWidth
                         rangeWidthPercentage={rangeWidthPercentage}
                         setRangeWidthPercentage={setRangeWidthPercentage}
+                        setRescaleRangeBoundariesWithSlider={
+                            setRescaleRangeBoundariesWithSlider
+                        }
                     />
                     <RepositionPriceInfo
                         position={position}

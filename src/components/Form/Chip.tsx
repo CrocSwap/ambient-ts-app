@@ -5,7 +5,17 @@ interface PropsIF {
     ariaLabel?: string;
     selected?: boolean;
     onClick: () => void;
+    variant?: 'outlined' | 'secondary' | 'filled'; // default is outlined
 }
+
+const purpleOutlineHover = `                
+&:hover {
+    border: 1px solid var(--accent1);
+    color: var(--accent1);
+}
+&:hover svg {
+    color: var(--accent1) !important;
+}`;
 
 export const Chip = styled.button<PropsIF>`
     outline: none;
@@ -19,17 +29,29 @@ export const Chip = styled.button<PropsIF>`
     text-decoration: none;
     cursor: pointer;
     font-size: var(--body-size);
-    color: var(--text1);
-    background: var(--dark1);
+
     border: 1px solid var(--dark3);
     border-radius: 50px;
 
-    &:hover {
-        border: 1px solid var(--accent1);
-        color: var(--accent1);
-    }
+    ${({ variant }) => {
+        switch (variant) {
+            case 'secondary':
+                return `
+                color: var(--text2);
+                background-color: var(--dark2);
+                ${purpleOutlineHover}
+                `;
+            case 'filled':
+                return `background-color: var(--accent1);
+                color: var(--text1);`;
 
-    &:hover svg {
-        color: var(--accent1) !important;
-    }
+            case 'outlined':
+            default:
+                return `
+                color: var(--text1);
+                background: var(--dark1);
+                ${purpleOutlineHover}
+                `;
+        }
+    }}
 `;

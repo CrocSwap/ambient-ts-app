@@ -193,7 +193,7 @@ function TokenInputQuantity(props: propsIF) {
                 </Text>
             )}
             <TokenQuantityContainer
-                showPulse={!!showPulseAnimation}
+                animation={showPulseAnimation ? 'pulse' : ''}
                 style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
                 <div style={{ position: 'relative' }}>
