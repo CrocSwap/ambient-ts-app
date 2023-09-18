@@ -33,6 +33,7 @@ import {
     TokenQuantityInput,
     TokenSelectButton,
 } from '../../../styled/Components/TradeModules';
+import { exponentialNumRegEx } from '../../../utils/regex/exponentialNumRegEx';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -115,9 +116,14 @@ function TokenInputQuantity(props: propsIF) {
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         const isPrecisionGreaterThanDecimals =
             precisionOfInput(event.target.value) > token.decimals;
-        if (!isPrecisionGreaterThanDecimals && !isNaN(+event.target.value)) {
-            handleTokenInputEvent(event.target.value);
-            setDisplayValue(event.target.value);
+
+        if (
+            !isPrecisionGreaterThanDecimals &&
+            (event.target.value === '' ||
+                exponentialNumRegEx.test(event.target.value))
+        ) {
+            handleTokenInputEvent(value);
+            setDisplayValue(value);
         }
     };
 
@@ -179,7 +185,7 @@ function TokenInputQuantity(props: propsIF) {
                 onBlur(event.target.value)
             }
             value={isLoading ? '' : displayValue}
-            type='number'
+            type='string'
             step='any'
             inputMode='decimal'
             autoComplete='off'
