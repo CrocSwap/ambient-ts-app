@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export interface SlideInProps {
     isVisible: boolean;
@@ -38,51 +37,43 @@ const MultiStepTransaction: React.FC<MultiStepTransactionProps> = ({
         }
     };
 
-    const CurrentStepComponent = steps[currentStep].component;
+    // const CurrentStepComponent = steps[currentStep].component;
 
-    const nextButton = (
-        <>
-            {currentStep === steps.length - 1 ? (
-                <button onClick={handleNext}>Confirm</button>
-            ) : (
-                <button
-                    onClick={handleNext}
-                    disabled={currentStep === steps.length - 1}
-                >
-                    Next
-                </button>
-            )}
-        </>
-    );
+    // const nextButton = (
+    //     <>
+    //         {currentStep === steps.length - 1 ? (
+    //             <button onClick={handleNext}>Confirm</button>
+    //         ) : (
+    //             <button
+    //                 onClick={handleNext}
+    //                 disabled={currentStep === steps.length - 1}
+    //             >
+    //                 Next
+    //             </button>
+    //         )}
+    //     </>
+    // );
 
     return (
         <section>
+            <button onClick={handleNext}>here</button>
             <div>
                 {steps.map((step, index) => (
                     <div
                         key={index}
                         style={{
-                            display: currentStep === index ? 'block' : 'none',
+                            position: 'absolute',
+                            width: '100%',
+                            transition: ' opacity 0.5s ease',
+                            opacity: currentStep === index ? 1 : 0,
                         }}
                     >
-                        <CurrentStepComponent
+                        <step.component
                             onNext={handleNext}
                             onPrevious={handlePrevious}
                         />
                     </div>
                 ))}
-            </div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    marginTop: '1rem',
-                }}
-            >
-                <button onClick={handlePrevious} disabled={currentStep === 0}>
-                    Previous
-                </button>
-                {nextButton}
             </div>
         </section>
     );
