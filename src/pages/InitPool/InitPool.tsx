@@ -57,6 +57,10 @@ import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
+import {
+    setLocalTokenA,
+    setLocalTokenB,
+} from '../../utils/state/localPairDataSlice';
 
 // react functional component
 export default function InitPool() {
@@ -105,16 +109,17 @@ export default function InitPool() {
     // const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
 
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
-    // const localPair: LocalPairDataIF = useAppSelecmonetor(
-    //     (state) => state.localPairData,
-    // );
-    // const [tokenA, tokenB] = localPair.tokens;
-    // const baseToken = tokenA;
-    // const quoteToken = tokenB;
     const {
         tradeData: { tokenA, tokenB, baseToken, quoteToken },
     } = useAppSelector((state) => state);
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+
+    useEffect(() => {
+        dispatch(setLocalTokenA(tokenA));
+    }, [tokenA]);
+    useEffect(() => {
+        dispatch(setLocalTokenB(tokenB));
+    }, [tokenB]);
 
     const {
         baseTokenBalance,

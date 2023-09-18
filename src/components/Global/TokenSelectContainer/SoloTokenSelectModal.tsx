@@ -28,10 +28,6 @@ import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { wrappedNatives } from '../../../utils/data/wrappedNatives';
 import { useLocation } from 'react-router-dom';
-import {
-    setLocalTokenA,
-    setLocalTokenB,
-} from '../../../utils/state/localPairDataSlice';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -121,9 +117,6 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     };
 
     function handleLocalPair(tokenAorB: string, tkn: TokenIF): void {
-        let updatedLocalTokenA = localTokenA;
-        let updatedLocalTokenB = localTokenB;
-
         if (
             (tokenAorB === 'A' &&
                 localTokenB.address.toLowerCase() ===
@@ -131,18 +124,14 @@ export const SoloTokenSelectModal = (props: propsIF) => {
             (tokenAorB === 'B' &&
                 localTokenA.address.toLowerCase() === tkn.address.toLowerCase())
         ) {
-            [updatedLocalTokenA, updatedLocalTokenB] = [
-                localTokenB,
-                localTokenA,
-            ];
+            goToNewUrlParams(chainId, localTokenB.address, localTokenA.address);
+            return;
         }
 
         if (tokenAorB === 'A') {
-            dispatch(setLocalTokenA(tkn));
-            goToNewUrlParams(chainId, tkn.address, updatedLocalTokenB.address);
+            goToNewUrlParams(chainId, tkn.address, localTokenB.address);
         } else if (tokenAorB === 'B') {
-            dispatch(setLocalTokenB(tkn));
-            goToNewUrlParams(chainId, updatedLocalTokenA.address, tkn.address);
+            goToNewUrlParams(chainId, localTokenA.address, tkn.address);
         }
     }
 
