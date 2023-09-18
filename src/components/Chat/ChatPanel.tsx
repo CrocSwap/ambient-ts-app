@@ -52,6 +52,8 @@ function ChatPanel(props: propsIF) {
     const [userCurrentPool, setUserCurrentPool] = useState(
         currentPool.baseToken.symbol + ' / ' + currentPool.quoteToken.symbol,
     );
+    const [isDeleteMessageButtonPressed, setIsDeleteMessageButtonPressed] =
+        useState(false);
     const [showPopUp, setShowPopUp] = useState(false);
     const [popUpText, setPopUpText] = useState('');
     const { address } = useAccount();
@@ -102,6 +104,7 @@ function ChatPanel(props: propsIF) {
         getAllMessages,
         setMessages,
         addReaction,
+        deleteMsgFromList,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -285,9 +288,13 @@ function ChatPanel(props: propsIF) {
         setPage(0);
     }, [room, isChatOpen === false]);
 
-    useEffect(() => {
-        getMsg();
-    }, [isMessageDeleted === false]);
+    // useEffect(() => {
+    //     if (isMessageDeleted) {
+    //         setIsMessageDeleted(false);
+    //         getMsg();
+    //         window.scrollTo(0, 0);
+    //     }
+    // }, [isMessageDeleted]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
@@ -673,6 +680,13 @@ function ChatPanel(props: propsIF) {
                             isDeleted={item.isDeleted}
                             deletedMessageText={item.deletedMessageText}
                             addReactionListener={reactionBtnListener}
+                            isDeleteMessageButtonPressed={
+                                isDeleteMessageButtonPressed
+                            }
+                            setIsDeleteMessageButtonPressed={
+                                setIsDeleteMessageButtonPressed
+                            }
+                            deleteMsgFromList={deleteMsgFromList}
                         />
                     );
                 })}

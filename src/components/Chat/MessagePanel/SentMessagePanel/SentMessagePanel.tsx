@@ -73,22 +73,15 @@ interface SentMessageProps {
     isDeleted: boolean;
     deletedMessageText: string;
     addReactionListener: (message?: Message) => void;
+    isDeleteMessageButtonPressed: boolean;
+    setIsDeleteMessageButtonPressed: Dispatch<SetStateAction<boolean>>;
+    deleteMsgFromList: any;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
-    const { room, address, isChatOpen, ensName, isSubscriptionsEnabled } =
-        props;
-    const { deleteMsgFromList } = useChatSocket(
-        room,
-        isSubscriptionsEnabled,
-        isChatOpen,
-        address,
-        ensName,
-    );
+    const { deleteMsgFromList } = props;
     const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
     const [aa, setaa] = useState('');
-    const [isDeleteMessageButtonPressed, setIsDeleteMessageButtonPressed] =
-        useState(false);
     const [hasSeparator, setHasSeparator] = useState(false);
     const [isClickedOptions, setIsClickedOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
@@ -115,6 +108,8 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
+
+    const deletedMessageText = 'This message has deleted.';
 
     const handleInitialLikeDislike = () => {
         let retVal = 0;
@@ -240,11 +235,10 @@ function SentMessagePanel(props: SentMessageProps) {
     }, [props.message]);
 
     useEffect(() => {
-        if (isDeleteMessageButtonPressed) {
-            props.setIsMessageDeleted(true);
-            deleteMessages(props.message._id);
+        if (props.isMessageDeleted) {
+            console.log('xxx', props.message);
         }
-    }, [isDeleteMessageButtonPressed]);
+    }, [props.isMessageDeleted]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -326,67 +320,61 @@ function SentMessagePanel(props: SentMessageProps) {
     }
 
     function detectLinksFromMessage(url: string) {
-        if (props.isDeleted) {
-            return props.message.deletedMessageText;
-        } else {
-            if (url.includes(' ')) {
-                const words: string[] = url.split(' ');
-                return (
-                    <>
-                        {words.map((word, index) => (
-                            <span
-                                onClick={() =>
-                                    props.isLinkInCrocodileLabsLinks(word)
-                                        ? handleOpenExplorer(word)
-                                        : props.isLinkInCrocodileLabsLinksForInput(
-                                              word,
-                                          )
-                                        ? handleOpenExplorerAddHttp(word)
-                                        : ''
-                                }
-                                key={index}
-                                style={
-                                    props.isLinkInCrocodileLabsLinks(word) ||
-                                    props.isLinkInCrocodileLabsLinksForInput(
-                                        word,
-                                    )
-                                        ? {
-                                              color: '#ab7de7',
-                                              cursor: 'pointer',
-                                          }
-                                        : { color: 'white', cursor: 'default' }
-                                }
-                            >
-                                {' ' + returnDomain(word)}
-                                {}
-                            </span>
-                        ))}
-                    </>
-                );
-            } else {
-                if (
-                    props.isLinkInCrocodileLabsLinks(url) ||
-                    props.isLinkInCrocodileLabsLinksForInput(url)
-                ) {
-                    return (
-                        <p
-                            style={{ color: '#ab7de7', cursor: 'pointer' }}
+        if (url.includes(' ')) {
+            const words: string[] = url.split(' ');
+            return (
+                <>
+                    {words.map((word, index) => (
+                        <span
                             onClick={() =>
-                                props.isLinkInCrocodileLabsLinks(url)
-                                    ? handleOpenExplorer(url)
+                                props.isLinkInCrocodileLabsLinks(word)
+                                    ? handleOpenExplorer(word)
                                     : props.isLinkInCrocodileLabsLinksForInput(
-                                          url,
+                                          word,
                                       )
-                                    ? handleOpenExplorerAddHttp(url)
+                                    ? handleOpenExplorerAddHttp(word)
                                     : ''
                             }
+                            key={index}
+                            style={
+                                props.isLinkInCrocodileLabsLinks(word) ||
+                                props.isLinkInCrocodileLabsLinksForInput(word)
+                                    ? {
+                                          color: '#ab7de7',
+                                          cursor: 'pointer',
+                                      }
+                                    : props.message.isDeleted
+                                    ? { color: 'red', cursor: 'default' }
+                                    : { color: 'white', cursor: 'default' }
+                            }
                         >
-                            {returnDomain(url)}
-                        </p>
-                    );
-                } else {
-                    return url;
-                }
+                            {' ' + returnDomain(word)}
+                            {}
+                        </span>
+                    ))}
+                </>
+            );
+        } else {
+            if (
+                props.isLinkInCrocodileLabsLinks(url) ||
+                props.isLinkInCrocodileLabsLinksForInput(url)
+            ) {
+                return (
+                    <p
+                        style={{ color: '#ab7de7', cursor: 'pointer' }}
+                        onClick={() =>
+                            props.isLinkInCrocodileLabsLinks(url)
+                                ? handleOpenExplorer(url)
+                                : props.isLinkInCrocodileLabsLinksForInput(url)
+                                ? handleOpenExplorerAddHttp(url)
+                                : ''
+                        }
+                    >
+                        {returnDomain(url)}
+                    </p>
+                );
+            } else {
+                return url;
             }
         }
     }
@@ -423,7 +411,13 @@ function SentMessagePanel(props: SentMessageProps) {
                 );
             } else {
                 return (
-                    <div className={styles.message}>
+                    <div
+                        className={
+                            props.message.isDeleted
+                                ? styles.deletedMessage
+                                : styles.message
+                        }
+                    >
                         {detectLinksFromMessage(props.message.message)}
                         <div className={styles.roomInfo}>
                             {' '}
@@ -466,7 +460,13 @@ function SentMessagePanel(props: SentMessageProps) {
                 );
             } else {
                 return (
-                    <div className={styles.message_without_avatar}>
+                    <div
+                        className={
+                            props.message.isDeleted
+                                ? styles.deletedMessage_without_avatar
+                                : styles.message_without_avatar
+                        }
+                    >
                         {detectLinksFromMessage(props.message.message)}
                         <div className={styles.roomInfo}>
                             {props.room === 'Admins'
@@ -477,10 +477,6 @@ function SentMessagePanel(props: SentMessageProps) {
                 );
             }
         }
-    }
-
-    function deleteMessages(id: string) {
-        deleteMsgFromList(id);
     }
 
     const jazziconsSeed = props.message.walletID.toLowerCase();
@@ -635,242 +631,268 @@ function SentMessagePanel(props: SentMessageProps) {
                 setIsMoreButtonPressed(false);
             }}
         >
-            <div className={styles.msg_bubble_content}>
-                <div className={styles.msg_bubble_front}>
-                    <div
-                        className={styles.flip_trigger}
-                        onClick={() => {
-                            setFlipped(true);
-                        }}
-                    ></div>
-                    {props.address && (
-                        <div className={styles.options_button}>
-                            <Options
-                                setIsReplyButtonPressed={
-                                    props.setIsReplyButtonPressed
-                                }
-                                message={props.message}
-                                isReplyButtonPressed={
-                                    props.isReplyButtonPressed
-                                }
-                                replyMessageContent={props.replyMessageContent}
-                                setReplyMessageContent={
-                                    props.setReplyMessageContent
-                                }
-                                isMoreButtonPressed={isMoreButtonPressed}
-                                setIsMoreButtonPressed={setIsMoreButtonPressed}
-                                addReactionListener={props.addReactionListener}
-                            />
-                        </div>
-                    )}
-
-                    <div>
-                        {daySeparator === '' ? (
-                            ''
-                        ) : daySeparator !== '' ? (
-                            <p className={styles.separator}>{daySeparator}</p>
-                        ) : (
-                            ''
-                        )}
-                        {'repliedMessage' in props.message &&
-                            (showAvatar ? (
-                                <IoReturnUpForwardSharp
-                                    style={{
-                                        position: 'absolute',
-                                        top: '-0.3rem',
-                                        left: '0.6rem',
-                                    }}
-                                />
-                            ) : (
-                                <IoReturnUpForwardSharp
-                                    style={{
-                                        position: 'absolute',
-                                        top: '-0.3rem',
-                                        left: '0.6rem',
-                                        transform: 'scaleY(-1)',
-                                    }}
-                                />
-                            ))}
-
-                        {'repliedMessage' in props.message ? (
-                            <div className={styles.replied_box}>
-                                <ReplyMessage
-                                    message={repliedMessageText}
-                                    ensName={repliedMessageEnsName}
-                                    time={repliedMessageDate}
+            {!props.message.isDeleted || props.isModerator ? (
+                <div className={styles.msg_bubble_content}>
+                    <div className={styles.msg_bubble_front}>
+                        <div
+                            className={styles.flip_trigger}
+                            onClick={() => {
+                                setFlipped(true);
+                            }}
+                        ></div>
+                        {props.address && (
+                            <div className={styles.options_button}>
+                                <Options
                                     setIsReplyButtonPressed={
                                         props.setIsReplyButtonPressed
                                     }
-                                    isReplyButtonPressed={false}
-                                    myJazzicon={repliedJazzicon}
-                                    walletID={repliedMessageWalletID}
+                                    message={props.message}
+                                    isReplyButtonPressed={
+                                        props.isReplyButtonPressed
+                                    }
+                                    replyMessageContent={
+                                        props.replyMessageContent
+                                    }
+                                    setReplyMessageContent={
+                                        props.setReplyMessageContent
+                                    }
+                                    isMoreButtonPressed={isMoreButtonPressed}
+                                    setIsMoreButtonPressed={
+                                        setIsMoreButtonPressed
+                                    }
+                                    addReactionListener={
+                                        props.addReactionListener
+                                    }
                                 />
                             </div>
-                        ) : (
-                            ''
                         )}
-                        <div
-                            className={
-                                props.isUserLoggedIn
-                                    ? props.message.isMentionMessage === false
-                                        ? styles.sent_message_body
-                                        : props.message.mentionedName?.trim() ===
-                                              props.ensName?.trim() ||
-                                          props.message.mentionedName?.trim() ===
-                                              props.connectedAccountActive?.trim()
-                                        ? styles.sent_message_body_with_mention
-                                        : styles.sent_message_body
-                                    : styles.sent_message_body
-                            }
-                        >
-                            {showAvatar && (
-                                <div className={styles.avatar_jazzicons}>
-                                    {myJazzicon}
-                                </div>
+
+                        <div>
+                            {daySeparator === '' ? (
+                                ''
+                            ) : daySeparator !== '' ? (
+                                <p className={styles.separator}>
+                                    {daySeparator}
+                                </p>
+                            ) : (
+                                ''
                             )}
-                            {!showAvatar && (
-                                <div
-                                    style={{
-                                        display: 'none',
-                                        marginLeft: '10px',
-                                    }}
-                                >
-                                    <div className={styles.nft_container}>
+                            {'repliedMessage' in props.message &&
+                                (showAvatar ? (
+                                    <IoReturnUpForwardSharp
+                                        style={{
+                                            position: 'absolute',
+                                            top: '-0.3rem',
+                                            left: '0.6rem',
+                                        }}
+                                    />
+                                ) : (
+                                    <IoReturnUpForwardSharp
+                                        style={{
+                                            position: 'absolute',
+                                            top: '-0.3rem',
+                                            left: '0.6rem',
+                                            transform: 'scaleY(-1)',
+                                        }}
+                                    />
+                                ))}
+
+                            {'repliedMessage' in props.message ? (
+                                <div className={styles.replied_box}>
+                                    <ReplyMessage
+                                        message={repliedMessageText}
+                                        ensName={repliedMessageEnsName}
+                                        time={repliedMessageDate}
+                                        setIsReplyButtonPressed={
+                                            props.setIsReplyButtonPressed
+                                        }
+                                        isReplyButtonPressed={false}
+                                        myJazzicon={repliedJazzicon}
+                                        walletID={repliedMessageWalletID}
+                                    />
+                                </div>
+                            ) : (
+                                ''
+                            )}
+                            <div
+                                className={
+                                    props.isUserLoggedIn
+                                        ? props.message.isMentionMessage ===
+                                          false
+                                            ? styles.sent_message_body
+                                            : props.message.mentionedName?.trim() ===
+                                                  props.ensName?.trim() ||
+                                              props.message.mentionedName?.trim() ===
+                                                  props.connectedAccountActive?.trim()
+                                            ? styles.sent_message_body_with_mention
+                                            : styles.sent_message_body
+                                        : styles.sent_message_body
+                                }
+                            >
+                                {showAvatar && (
+                                    <div className={styles.avatar_jazzicons}>
                                         {myJazzicon}
                                     </div>
-                                </div>
-                            )}
-                            <div className={styles.message_item}>
-                                <div
-                                    className={
-                                        showName && props.isCurrentUser
-                                            ? styles.current_user_name
-                                            : showName && !props.isCurrentUser
-                                            ? styles.name
-                                            : !showName && !props.isCurrentUser
-                                            ? ''
-                                            : ''
-                                    }
-                                    onClick={() => {
-                                        if (
-                                            location.pathname !==
-                                            `/${
-                                                props.message.ensName ===
-                                                'defaultValue'
-                                                    ? props.message.walletID
-                                                    : props.message.ensName
-                                            }`
-                                        ) {
-                                            navigate(
+                                )}
+                                {!showAvatar && (
+                                    <div
+                                        style={{
+                                            display: 'none',
+                                            marginLeft: '10px',
+                                        }}
+                                    >
+                                        <div className={styles.nft_container}>
+                                            {myJazzicon}
+                                        </div>
+                                    </div>
+                                )}
+                                <div className={styles.message_item}>
+                                    <div
+                                        className={
+                                            showName && props.isCurrentUser
+                                                ? styles.current_user_name
+                                                : showName &&
+                                                  !props.isCurrentUser
+                                                ? styles.name
+                                                : !showName &&
+                                                  !props.isCurrentUser
+                                                ? ''
+                                                : ''
+                                        }
+                                        onClick={() => {
+                                            if (
+                                                location.pathname !==
                                                 `/${
-                                                    props.isCurrentUser
-                                                        ? 'account'
-                                                        : props.message
-                                                              .ensName ===
-                                                          'defaultValue'
+                                                    props.message.ensName ===
+                                                    'defaultValue'
                                                         ? props.message.walletID
                                                         : props.message.ensName
-                                                }`,
-                                            );
-                                        }
-                                    }}
-                                >
-                                    {showName && getName()}
-                                    {showAvatar && verificationDateCheck() && (
-                                        <div className={styles.verified_icon}>
-                                            <AiOutlineCheck
-                                                color='var(--other-green)'
-                                                size={10}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                                {showAvatar &&
-                                    !verificationDateCheck() &&
-                                    props.isCurrentUser && (
-                                        <>
-                                            <DefaultTooltip
-                                                interactive
-                                                title={
-                                                    props.isUserVerified
-                                                        ? 'Update verification date'
-                                                        : 'Verify wallet since this message'
-                                                }
-                                                placement={'left'}
-                                                arrow
-                                                enterDelay={400}
-                                                leaveDelay={200}
-                                            >
+                                                }`
+                                            ) {
+                                                navigate(
+                                                    `/${
+                                                        props.isCurrentUser
+                                                            ? 'account'
+                                                            : props.message
+                                                                  .ensName ===
+                                                              'defaultValue'
+                                                            ? props.message
+                                                                  .walletID
+                                                            : props.message
+                                                                  .ensName
+                                                    }`,
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        {showName && getName()}
+                                        {showAvatar &&
+                                            verificationDateCheck() && (
                                                 <div
                                                     className={
-                                                        styles.update_verify_date_icon
+                                                        styles.verified_icon
                                                     }
-                                                    onClick={() => {
-                                                        props.verifyWallet(
-                                                            1,
-                                                            new Date(
-                                                                props.message.createdAt,
-                                                            ),
-                                                        );
-                                                    }}
                                                 >
                                                     <AiOutlineCheck
-                                                        color='var(--other-red)'
+                                                        color='var(--other-green)'
                                                         size={10}
                                                     />
                                                 </div>
-                                            </DefaultTooltip>
-                                        </>
-                                    )}
-                                <PositionBox
-                                    message={props.message.message}
-                                    isInput={false}
-                                    isPosition={isPosition}
-                                    setIsPosition={setIsPosition}
-                                    walletExplorer={getName()}
-                                    isCurrentUser={props.isCurrentUser}
-                                    showAvatar={showAvatar}
-                                />
-                                {!isPosition && mentionedMessage()}
-                                {isMoreButtonPressed ? (
-                                    <div className={styles.menu}>
-                                        <Menu
-                                            isDeleteMessageButtonPressed={
-                                                isDeleteMessageButtonPressed
-                                            }
-                                            setIsDeleteMessageButtonPressed={
-                                                setIsDeleteMessageButtonPressed
-                                            }
-                                            setIsMoreButtonPressed={
-                                                setIsMoreButtonPressed
-                                            }
-                                            setFlipped={(val) => {
-                                                setFlipped(true);
-                                                setFlipRead(true);
-                                            }}
-                                        />
+                                            )}
                                     </div>
-                                ) : (
-                                    <></>
-                                )}
+                                    {showAvatar &&
+                                        !verificationDateCheck() &&
+                                        props.isCurrentUser && (
+                                            <>
+                                                <DefaultTooltip
+                                                    interactive
+                                                    title={
+                                                        props.isUserVerified
+                                                            ? 'Update verification date'
+                                                            : 'Verify wallet since this message'
+                                                    }
+                                                    placement={'left'}
+                                                    arrow
+                                                    enterDelay={400}
+                                                    leaveDelay={200}
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.update_verify_date_icon
+                                                        }
+                                                        onClick={() => {
+                                                            props.verifyWallet(
+                                                                1,
+                                                                new Date(
+                                                                    props.message.createdAt,
+                                                                ),
+                                                            );
+                                                        }}
+                                                    >
+                                                        <AiOutlineCheck
+                                                            color='var(--other-red)'
+                                                            size={10}
+                                                        />
+                                                    </div>
+                                                </DefaultTooltip>
+                                            </>
+                                        )}
+                                    <PositionBox
+                                        message={props.message.message}
+                                        isInput={false}
+                                        isPosition={isPosition}
+                                        setIsPosition={setIsPosition}
+                                        walletExplorer={getName()}
+                                        isCurrentUser={props.isCurrentUser}
+                                        showAvatar={showAvatar}
+                                    />
+                                    {!isPosition && mentionedMessage()}
+                                    {isMoreButtonPressed ? (
+                                        <div className={styles.menu}>
+                                            <Menu
+                                                isMessageDeleted={
+                                                    props.isMessageDeleted
+                                                }
+                                                setIsMessageDeleted={
+                                                    props.setIsMessageDeleted
+                                                }
+                                                setIsMoreButtonPressed={
+                                                    setIsMoreButtonPressed
+                                                }
+                                                setFlipped={(val) => {
+                                                    setFlipped(true);
+                                                    setFlipRead(true);
+                                                }}
+                                                deleteMsgFromList={
+                                                    deleteMsgFromList
+                                                }
+                                                id={props.message._id}
+                                                isModerator={props.isModerator}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <></>
+                                    )}
+                                </div>
+
+                                <div className={styles.reply_message}>
+                                    <p className={styles.message_date}>
+                                        {formatAMPM(props.message.createdAt)}
+                                    </p>
+
+                                    <div></div>
+                                </div>
+
+                                {/* {snackbarContent} */}
                             </div>
 
-                            <div className={styles.reply_message}>
-                                <p className={styles.message_date}>
-                                    {formatAMPM(props.message.createdAt)}
-                                </p>
-
-                                <div></div>
-                            </div>
-
-                            {/* {snackbarContent} */}
-                        </div>
-
-                        {props.message.reactions &&
-                            Object.keys(props.message.reactions).length > 0 && (
-                                <div className={styles.reactions_wrapper}>
-                                    {Object.keys(props.message.reactions).map(
-                                        (reaction, index) => {
+                            {props.message.reactions &&
+                                Object.keys(props.message.reactions).length >
+                                    0 && (
+                                    <div className={styles.reactions_wrapper}>
+                                        {Object.keys(
+                                            props.message.reactions,
+                                        ).map((reaction, index) => {
                                             return (
                                                 <TextOnlyTooltip
                                                     key={reaction}
@@ -904,128 +926,134 @@ function SentMessagePanel(props: SentMessageProps) {
                                                     </div>
                                                 </TextOnlyTooltip>
                                             );
-                                        },
-                                    )}
-                                </div>
+                                        })}
+                                    </div>
+                                )}
+
+                            {hasSeparator ? (
+                                <hr
+                                    className={styles.separator}
+                                    style={{ cursor: 'default' }}
+                                />
+                            ) : (
+                                <></>
                             )}
-
-                        {hasSeparator ? (
-                            <hr
-                                className={styles.separator}
-                                style={{ cursor: 'default' }}
-                            />
-                        ) : (
-                            <></>
-                        )}
+                        </div>
                     </div>
-                </div>
 
-                <div className={styles.msg_bubble_back}>
-                    <div
-                        className={styles.flip_trigger}
-                        onClick={() => {
-                            setFlipped(false);
-                            setFlipRead(false);
-                        }}
-                    ></div>
-                    <div
-                        className={styles.flip_trigger_lefted}
-                        onMouseEnter={() => {
-                            setFlipRead(true);
-                        }}
-                        onMouseLeave={() => {
-                            // setFlipRead(false);
-                        }}
-                    >
-                        💬
-                    </div>
-                    {/* <div className={styles.like_btn_base}> + </div>
+                    <div className={styles.msg_bubble_back}>
+                        <div
+                            className={styles.flip_trigger}
+                            onClick={() => {
+                                setFlipped(false);
+                                setFlipRead(false);
+                            }}
+                        ></div>
+                        <div
+                            className={styles.flip_trigger_lefted}
+                            onMouseEnter={() => {
+                                setFlipRead(true);
+                            }}
+                            onMouseLeave={() => {
+                                // setFlipRead(false);
+                            }}
+                        >
+                            💬
+                        </div>
+                        {/* <div className={styles.like_btn_base}> + </div>
                     <div className={styles.like_btn_base}> - </div> */}
 
-                    <div className={styles.msg_bubble_back_content}>
-                        <div
-                            className={`${
-                                messageVoted == 1 ? styles.active : ''
-                            } ${styles.like_btn_base} 
+                        <div className={styles.msg_bubble_back_content}>
+                            <div
+                                className={`${
+                                    messageVoted == 1 ? styles.active : ''
+                                } ${styles.like_btn_base} 
                             ${!props.isUserVerified ? styles.disabled : ''}
                             `}
-                            onClick={() => {
-                                if (props.isUserVerified) {
-                                    handleLikeAndDislikeLS(
-                                        props.message._id,
-                                        1,
-                                    );
-                                }
-                            }}
-                        >
-                            {' '}
-                            👍{' '}
-                        </div>
+                                onClick={() => {
+                                    if (props.isUserVerified) {
+                                        handleLikeAndDislikeLS(
+                                            props.message._id,
+                                            1,
+                                        );
+                                    }
+                                }}
+                            >
+                                {' '}
+                                👍{' '}
+                            </div>
 
-                        <div
-                            className={`${
-                                messageVoted == -1 ? styles.active : ''
-                            } ${styles.like_btn_base} ${styles.dislike_btn}
+                            <div
+                                className={`${
+                                    messageVoted == -1 ? styles.active : ''
+                                } ${styles.like_btn_base} ${styles.dislike_btn}
                             ${!props.isUserVerified ? styles.disabled : ''}
                             `}
-                            onClick={() => {
-                                if (props.isUserVerified) {
-                                    handleLikeAndDislikeLS(
-                                        props.message._id,
-                                        -1,
-                                    );
-                                }
-                            }}
-                        >
-                            {' '}
-                            👎{' '}
-                        </div>
+                                onClick={() => {
+                                    if (props.isUserVerified) {
+                                        handleLikeAndDislikeLS(
+                                            props.message._id,
+                                            -1,
+                                        );
+                                    }
+                                }}
+                            >
+                                {' '}
+                                👎{' '}
+                            </div>
 
-                        {likeCount + dislikeCount > 0 && (
-                            <>
-                                <div
-                                    className={styles.like_dislike_bar_wrapper}
-                                >
+                            {likeCount + dislikeCount > 0 && (
+                                <>
                                     <div
                                         className={
-                                            styles.like_dislike_node_wrapper
+                                            styles.like_dislike_bar_wrapper
                                         }
-                                        style={{
-                                            width:
-                                                (likeCount /
-                                                    (dislikeCount +
-                                                        likeCount)) *
-                                                    100 +
-                                                '%',
-                                        }}
                                     >
                                         <div
-                                            className={styles.like_dislike_node}
-                                        ></div>
-                                    </div>
-                                    <div
-                                        className={
-                                            styles.like_dislike_node_wrapper
-                                        }
-                                        style={{
-                                            width:
-                                                (dislikeCount /
-                                                    (dislikeCount +
-                                                        likeCount)) *
-                                                    100 +
-                                                '%',
-                                        }}
-                                    >
+                                            className={
+                                                styles.like_dislike_node_wrapper
+                                            }
+                                            style={{
+                                                width:
+                                                    (likeCount /
+                                                        (dislikeCount +
+                                                            likeCount)) *
+                                                        100 +
+                                                    '%',
+                                            }}
+                                        >
+                                            <div
+                                                className={
+                                                    styles.like_dislike_node
+                                                }
+                                            ></div>
+                                        </div>
                                         <div
-                                            className={`${styles.like_dislike_node} ${styles.dislike_node}`}
-                                        ></div>
+                                            className={
+                                                styles.like_dislike_node_wrapper
+                                            }
+                                            style={{
+                                                width:
+                                                    (dislikeCount /
+                                                        (dislikeCount +
+                                                            likeCount)) *
+                                                        100 +
+                                                    '%',
+                                            }}
+                                        >
+                                            <div
+                                                className={`${styles.like_dislike_node} ${styles.dislike_node}`}
+                                            ></div>
+                                        </div>
                                     </div>
-                                </div>
-                            </>
-                        )}
+                                </>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : (
+                <></>
+            )}
         </div>
     );
 }

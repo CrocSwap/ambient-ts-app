@@ -17,6 +17,13 @@ interface propsIF {
 
 export default function ReplyMessage(props: propsIF) {
     const walletID = props.walletID?.slice(0, 6) + '...';
+    function truncateText(text: string | undefined, maxLength: number) {
+        if (text!.length <= maxLength) {
+            return text;
+        }
+
+        return text!.slice(0, maxLength - 3) + '...';
+    }
     return props.isReplyButtonPressed === true ? (
         <div style={{ marginTop: '10px' }}>
             <motion.div
@@ -50,7 +57,7 @@ export default function ReplyMessage(props: propsIF) {
                             />
                         </div>
                         <div className={styles.message}>
-                            <p>{props.message}</p>
+                            <p>{truncateText(props.message, 25)}</p>
                             <p>{props.time}</p>
                         </div>
                     </div>
@@ -81,7 +88,7 @@ export default function ReplyMessage(props: propsIF) {
                     )}
                 </div>
                 <div className={styles.message}>
-                    <p>{props.message}</p>
+                    <p>{truncateText(props.message, 25)}</p>
                 </div>
             </div>
         </motion.div>
