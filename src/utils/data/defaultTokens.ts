@@ -160,6 +160,26 @@ export const arbGoerliDAI = {
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
 };
 
+export const arbETH = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 42161,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const arbUSDC = {
+    name: 'USDCoin',
+    address: '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
+    symbol: 'USDC',
+    decimals: 6,
+    chainId: 42161,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+};
+
 export const defaultTokens: TokenIF[] = [
     mainnetETH,
     mainnetUSDC,
