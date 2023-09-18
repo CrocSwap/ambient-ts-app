@@ -130,7 +130,7 @@ export const ShareItem = styled.a`
 `;
 
 export const TokenArrowButton = styled.button<{
-    display: boolean;
+    onlyDisplay: boolean;
     disabled: boolean;
 }>`
     display: flex;
@@ -147,7 +147,7 @@ export const TokenArrowButton = styled.button<{
     border: none;
     background: transparent;
 
-    cursor: ${({ display }) => (display ? 'default' : 'pointer')};
+    cursor: ${({ onlyDisplay }) => (onlyDisplay ? 'default' : 'pointer')};
 
     ${({ disabled }) => disabled && 'cursor: wait !important; '}
 
@@ -164,8 +164,8 @@ export const TokenArrowButton = styled.button<{
                 -ms-transform: rotate(180deg);
                 transform: rotate(180deg);
 
-                ${({ display }) =>
-                    display &&
+                ${({ onlyDisplay }) =>
+                    onlyDisplay &&
                     `
                     transform: none;
                     cursor: unset !important;
@@ -181,7 +181,10 @@ export const TokenArrowButton = styled.button<{
     }
 `;
 
-export const TokenArrow = styled.svg<{ display: boolean; disabled: boolean }>`
+export const TokenArrow = styled.svg<{
+    onlyDisplay: boolean;
+    disabled: boolean;
+}>`
     background-color: transparent;
     transition: 0.7s;
     -webkit-transition: 0.7s;
@@ -278,25 +281,6 @@ export const TokenSelectButton = styled.button`
 
     &:focus-visible {
         border: 1px solid var(--text1);
-    }
-`;
-
-export const MaxButton = styled.button`
-    cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text1);
-    outline: none;
-    border: none;
-    background: transparent;
-
-    width: 25px;
-    max-height: 20px;
-    transition: all var(--animation-speed) ease-in-out;
-    border-radius: 4px;
-
-    &:hover {
-        color: var(--accent1);
     }
 `;
 

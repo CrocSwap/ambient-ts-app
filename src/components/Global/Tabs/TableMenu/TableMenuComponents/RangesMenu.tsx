@@ -291,7 +291,7 @@ export default function RangesMenu(props: propsIF) {
             {!view3 && !isEmpty && harvestButton}
             {!view3 && !isEmpty && removeButton}
             {detailsButton}
-            {!userMatchesConnectedAccount && walletButton}
+            {!isAccountView && walletButton}
             {view1 && showRepositionButton && repositionButton}
         </div>
     );

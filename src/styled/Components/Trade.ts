@@ -4,7 +4,7 @@ import styled from 'styled-components/macro';
 export const MainSection = styled.section`
     display: grid;
     grid-template-columns: auto 380px;
-    height: calc(100vh - 56px);
+    height: calc(100dvh - 156px);
 
     border-top: 1px solid var(--dark2);
 
@@ -21,7 +21,6 @@ export const MainSection = styled.section`
         display: flex;
         flex-direction: column;
         gap: 4px;
-        padding: 0 8px;
     }
 `;
 
@@ -42,7 +41,8 @@ export const TradeDropdownButton = styled.button`
     border: none;
     color: var(--text2);
     padding: 8px;
-    width: 100%;
+    width: 90%;
+    margin: 0 auto;
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
     border-radius: var(--border-radius);

@@ -10,7 +10,6 @@ import Button from '../../components/Global/Button/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 // START: Import Other Local Files
-import styles from './Portfolio.module.css';
 import { TokenIF } from '../../utils/interfaces/exports';
 import { fetchEnsAddress } from '../../App/functions/fetchAddress';
 import { Navigate, useParams } from 'react-router-dom';
@@ -24,6 +23,12 @@ import { AppStateContext } from '../../contexts/AppStateContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { useSimulatedIsUserConnected } from '../../App/hooks/useSimulatedIsUserConnected';
+import {
+    MobileButton,
+    PortfolioContainer,
+    PortfolioTabsContainer,
+} from '../../styled/Components/Portfolio';
+import { FlexContainer, Text } from '../../styled/Common';
 
 function Portfolio() {
     const { addressCurrent: userAddress } = useAppSelector(
@@ -125,12 +130,10 @@ function Portfolio() {
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
-        <div className={styles.exchange_balance}>
-            <ExchangeBalance
-                fullLayoutActive={fullLayoutActive}
-                setFullLayoutActive={setFullLayoutActive}
-            />
-        </div>
+        <ExchangeBalance
+            fullLayoutActive={fullLayoutActive}
+            setFullLayoutActive={setFullLayoutActive}
+        />
     );
 
     useEffect(() => {
@@ -140,31 +143,43 @@ function Portfolio() {
     }, [connectedAccountActive]);
 
     // const fullLayerToggle = (
-    //     <div
-    //         className={styles.right_tab_option}
+    //     <FlexContainer
+    //         gap={32}
+    //         background='dark2'
+    //         padding='4px'
+    //         rounded
+    //         transition
+    //         cursor='pointer'
     //         onClick={() => setFullLayoutActive(!fullLayoutActive)}
     //     >
-    //         <section>
-    //             {' '}
-    //             <div
-    //                 className={`${styles.full_layout_svg} ${
-    //                     fullLayoutActive && styles.active_layout_style
-    //                 } `}
+    //         <FlexContainer
+    //             width='40px'
+    //             height='20px'
+    //             rounded
+    //             transition
+    //             cursor='pointer'
+    //             background={fullLayoutActive ? 'title-gradient' : 'dark2'}
+    //         />
+    //         <FlexContainer
+    //             gap={2}
+    //             position='relative'
+    //             transition
+    //             className={styles.shared_layout_svg}
+    //         >
+    //             <FlexContainer
+    //                 width='30px'
+    //                 height='20px'
+    //                 rounded
+    //                 background={fullLayoutActive ? 'title-gradient' : 'dark2'}
     //             />
-    //         </section>
-    //         <section className={styles.shared_layout_svg}>
-    //             <div
-    //                 className={`${styles.full_layout_svg_copied} ${
-    //                     !fullLayoutActive && styles.active_layout_style
-    //                 }`}
+    //             <FlexContainer
+    //                 width='20px'
+    //                 height='20px'
+    //                 rounded
+    //                 background={fullLayoutActive ? 'title-gradient' : 'dark2'}
     //             />
-    //             <div
-    //                 className={`${styles.half_layout_svg} ${
-    //                     !fullLayoutActive && styles.active_layout_style
-    //                 }`}
-    //             />
-    //         </section>
-    //     </div>
+    //         </FlexContainer>
+    //     </FlexContainer>
     // );
 
     const [resolvedAddressNativeToken, setResolvedAddressNativeToken] =
@@ -261,43 +276,49 @@ function Portfolio() {
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
     const mobileDataToggle = (
-        <div className={styles.mobile_toggle_container}>
-            <button
+        <FlexContainer
+            justifyContent='center'
+            alignItems='center'
+            background='dark2'
+            rounded
+            outline='text2'
+            margin='10px auto'
+        >
+            <MobileButton
                 onClick={() =>
                     setShowTabsAndNotExchange(!showTabsAndNotExchange)
                 }
-                className={
-                    showTabsAndNotExchange
-                        ? styles.non_active_button_mobile_toggle
-                        : styles.active_button_mobile_toggle
-                }
+                active={!showTabsAndNotExchange}
             >
                 Transactions
-            </button>
-            <button
+            </MobileButton>
+            <MobileButton
                 onClick={() =>
                     setShowTabsAndNotExchange(!showTabsAndNotExchange)
                 }
-                className={
-                    showTabsAndNotExchange
-                        ? styles.active_button_mobile_toggle
-                        : styles.non_active_button_mobile_toggle
-                }
+                active={showTabsAndNotExchange}
             >
                 Exchange
-            </button>
-        </div>
+            </MobileButton>
+        </FlexContainer>
     );
 
     const notConnectedContent = (
-        <div className={styles.non_connected_content}>
-            <p>Please connect your wallet.</p>
+        <FlexContainer
+            fullWidth
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='center'
+            gap={8}
+        >
+            <Text>Please connect your wallet.</Text>
             <Button
                 flat
                 title='Connect Wallet'
                 action={() => openModalWallet()}
+                width='30%'
             />
-        </div>
+        </FlexContainer>
     );
 
     const portfolioTabsProps = {
@@ -339,37 +360,39 @@ function Portfolio() {
     })();
 
     const mobilePortfolio = (
-        <section
+        <FlexContainer
+            flexDirection='column'
+            gap={4}
+            margin='0 auto'
+            height='calc(100vh - 8rem)'
             style={{
-                height: 'calc(100vh - 8rem)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                margin: '0 auto',
                 paddingLeft: '8px',
             }}
         >
             {connectedAccountActive && mobileDataToggle}
             {contentToRenderOnMobile}
-        </section>
+        </FlexContainer>
     );
 
     if (showActiveMobileComponent) return mobilePortfolio;
 
     return (
-        <main data-testid={'portfolio'} className={styles.portfolio_container}>
+        <PortfolioContainer
+            data-testid={'portfolio'}
+            padding='32px'
+            background='dark2'
+            flexDirection='column'
+            gap={16}
+        >
             {connectedAccountActive && showProfileSettings && (
                 <ProfileSettings {...profileSettingsProps} />
             )}
             <PortfolioBanner {...portfolioBannerProps} />
 
-            <div
-                className={
-                    !connectedAccountActive
-                        ? styles.full_table
-                        : fullLayoutActive
-                        ? styles.full_layout_container
-                        : styles.tabs_exchange_balance_container
+            <PortfolioTabsContainer
+                active={connectedAccountActive}
+                fullLayoutContainer={
+                    !connectedAccountActive || fullLayoutActive
                 }
             >
                 {isUserConnected || addressFromParams ? (
@@ -381,8 +404,8 @@ function Portfolio() {
                     : !isUserConnected && !addressFromParams
                     ? notConnectedContent
                     : undefined}
-            </div>
-        </main>
+            </PortfolioTabsContainer>
+        </PortfolioContainer>
     );
 }
 
