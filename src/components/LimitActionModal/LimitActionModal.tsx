@@ -27,7 +27,7 @@ import ModalHeader from '../Global/ModalHeader/ModalHeader';
 import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import Modal from '../Global/Modal/Modal';
 import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
-import Button from '../Global/Button/Button';
+import Button from '../Form/Button';
 import styles from './LimitActionModal.module.css';
 
 interface propsIF {

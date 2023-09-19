@@ -31,7 +31,6 @@ import {
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
 import {
-    AuthenticateButton,
     HeaderClasses,
     LogoContainer,
     LogoText,
@@ -43,6 +42,7 @@ import {
     UnderlinedMotionDiv,
 } from '../../../styled/Components/Header';
 import { FlexContainer } from '../../../styled/Common';
+import Button from '../../../components/Form/Button';
 
 const PageHeader = function () {
     const {
@@ -104,12 +104,12 @@ const PageHeader = function () {
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
     const connectWagmiButton = (
-        <AuthenticateButton
-            desktopScreen={desktopScreen}
-            onClick={openWagmiModal}
-        >
-            {desktopScreen ? 'Connect Wallet' : 'Connect'}
-        </AuthenticateButton>
+        <Button
+            title={desktopScreen ? 'Connect Wallet' : 'Connect'}
+            action={openWagmiModal}
+            thin
+            flat
+        ></Button>
     );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 

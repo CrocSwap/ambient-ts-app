@@ -1,9 +1,9 @@
 import { memo } from 'react';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { formatTokenInput } from '../../../utils/numbers';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
-import { TokenInputWalletBalance } from './TokenInputWalletBalance';
+import { WalletBallanceSubinfo } from './WalletBalanceSubinfo';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -27,7 +27,7 @@ interface propsIF {
     disabledContent?: React.ReactNode;
 }
 
-function TokenInput(props: propsIF) {
+function TokenInputWithWalletBalance(props: propsIF) {
     const {
         fieldId,
         tokenAorB,
@@ -103,7 +103,7 @@ function TokenInput(props: propsIF) {
     };
 
     const walletContent = showWallet && (
-        <TokenInputWalletBalance
+        <WalletBallanceSubinfo
             isWithdraw={isWithdraw ?? tokenAorB === 'A'}
             balance={balanceToDisplay}
             availableBalance={parseFloat(balanceWithBuffer)}
@@ -138,4 +138,4 @@ function TokenInput(props: propsIF) {
     );
 }
 
-export default memo(TokenInput);
+export default memo(TokenInputWithWalletBalance);

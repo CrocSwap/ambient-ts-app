@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components/macro';
+import { AnimationProps, Animations } from './Animations';
 
 interface FontProps {
     font?: 'font-logo' | 'font-family' | 'roboto' | 'mono';
@@ -251,30 +252,6 @@ export const Breakpoint = css<BreakpointProps>`
     `}
 `;
 
-export const FlexContainer = styled.div<
-    FlexProps &
-        FontProps &
-        FontSizeProps &
-        FontWeightProps &
-        ColorProps &
-        PaddingProps &
-        MarginProps &
-        ContainerProps &
-        BreakpointProps
->`
-    ${Flex}
-    ${Font}
-    ${FontSize}
-    ${FontWeight}
-    ${Color}
-    ${Padding}
-    ${Margin}
-    ${WrappedContainerStyles}
-    ${Breakpoint}
-`;
-
-FlexContainer.displayName = 'FlexContainer';
-
 export const Text = styled.span<
     FontProps &
         FontSizeProps &
@@ -289,21 +266,6 @@ export const Text = styled.span<
     ${Margin}
     ${Padding}
     ${({ align }) => align && `text-align: ${align}`};
-`;
-
-export const PulseAnimation = css`
-    animation: shadow-pulse 1s 6;
-    @keyframes shadow-pulse {
-        0% {
-            box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
-            border-radius: var(--border-radius);
-        }
-
-        100% {
-            box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
-            border-radius: var(--border-radius);
-        }
-    }
 `;
 
 interface ScrollContainerProps {
@@ -340,4 +302,28 @@ export const ScrollContainer = styled.div<ScrollContainerProps>`
             var(--accent) 100%
         );
     }
+`;
+
+export const FlexContainer = styled.div<
+    FlexProps &
+        FontProps &
+        FontSizeProps &
+        FontWeightProps &
+        ColorProps &
+        PaddingProps &
+        MarginProps &
+        ContainerProps &
+        BreakpointProps &
+        AnimationProps
+>`
+    ${Flex}
+    ${Font}
+    ${FontSize}
+    ${FontWeight}
+    ${Color}
+    ${Padding}
+    ${Margin}
+    ${WrappedContainerStyles}
+    ${Breakpoint}
+    ${Animations}
 `;

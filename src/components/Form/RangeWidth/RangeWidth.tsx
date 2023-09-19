@@ -2,16 +2,17 @@
 import { Dispatch, memo, SetStateAction, useContext } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 
-import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { AppStateContext } from '../../../contexts/AppStateContext';
+import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
-// START: Import Local Files
-import styles from './RangeWidth.module.css';
 import {
     updateRangeWithButton,
     handleRangeSlider,
 } from './rangeWidthFunctions';
-import RangeSlider from '../../../Global/RangeSlider/RangeSlider';
+import RangeSlider from '../RangeSlider';
+import { Chip } from '../Chip';
+import { ExplanationButton } from '../Icons/Icons.styles';
+import { FlexContainer } from '../../../styled/Common';
 
 // interface for React functional component props
 interface RangeWidthPropsIF {
@@ -34,12 +35,16 @@ function RangeWidth(props: RangeWidthPropsIF) {
 
     const PercentageOptionContent = (
         <>
-            <div className={styles.percentage_options}>
-                <button
-                    className={
-                        rangeWidthPercentage === 5
-                            ? `${styles.matching_percentage_button}`
-                            : styles.percentage_option_buttons
+            <FlexContainer
+                fullWidth
+                wrap
+                justifyContent='center'
+                alignItems='center'
+                gap={4}
+            >
+                <Chip
+                    variant={
+                        rangeWidthPercentage === 5 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
                         updateRangeWithButton(
@@ -51,12 +56,10 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     aria-label='Set range width to 5%.'
                 >
                     5%
-                </button>
-                <button
-                    className={
-                        rangeWidthPercentage === 10
-                            ? `${styles.matching_percentage_button}`
-                            : styles.percentage_option_buttons
+                </Chip>
+                <Chip
+                    variant={
+                        rangeWidthPercentage === 10 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
                         updateRangeWithButton(
@@ -68,12 +71,10 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     aria-label='Set range width to 10%.'
                 >
                     10%
-                </button>
-                <button
-                    className={
-                        rangeWidthPercentage === 25
-                            ? `${styles.matching_percentage_button}`
-                            : styles.percentage_option_buttons
+                </Chip>
+                <Chip
+                    variant={
+                        rangeWidthPercentage === 25 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
                         updateRangeWithButton(
@@ -85,12 +86,10 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     aria-label='Set range width to 25%.'
                 >
                     25%
-                </button>
-                <button
-                    className={
-                        rangeWidthPercentage === 50
-                            ? `${styles.matching_percentage_button}`
-                            : styles.percentage_option_buttons
+                </Chip>
+                <Chip
+                    variant={
+                        rangeWidthPercentage === 50 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
                         updateRangeWithButton(
@@ -102,13 +101,11 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     aria-label='Set range width to 50%.'
                 >
                     50%
-                </button>
+                </Chip>
 
-                <button
-                    className={
-                        rangeWidthPercentage === 100
-                            ? `${styles.matching_percentage_button}`
-                            : styles.percentage_option_buttons
+                <Chip
+                    variant={
+                        rangeWidthPercentage === 100 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
                         updateRangeWithButton(100, setRangeWidthPercentage);
@@ -117,8 +114,8 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     aria-label='use Ambient range width.'
                 >
                     Ambient
-                </button>
-                <button
+                </Chip>
+                <ExplanationButton
                     onClick={() =>
                         openGlobalPopup(
                             <div>
@@ -130,17 +127,16 @@ function RangeWidth(props: RangeWidthPropsIF) {
                             'right',
                         )
                     }
-                    className={styles.explanation_button}
                     aria-label='Open range width explanation popup.'
                 >
                     <AiOutlineInfoCircle color='var(--text2)' />
-                </button>
-            </div>
+                </ExplanationButton>
+            </FlexContainer>
         </>
     );
 
     const rangeWidthTooltip = (
-        <div
+        <ExplanationButton
             style={{ margin: '0 8px', cursor: 'pointer' }}
             onClick={() =>
                 openGlobalPopup(
@@ -160,16 +156,25 @@ function RangeWidth(props: RangeWidthPropsIF) {
             }
         >
             <AiOutlineInfoCircle size={17} />
-        </div>
+        </ExplanationButton>
     );
 
     return (
-        <div className={styles.range_width_container} id='range_width'>
+        <FlexContainer
+            fullWidth
+            transition
+            flexDirection='column'
+            gap={16}
+            id='range_width'
+            margin='0 0 16px 0'
+        >
             {PercentageOptionContent}
-            <span
-                className={`${styles.percentage_amount} ${
-                    showRangePulseAnimation && styles.pulse_animation
-                }`}
+            <FlexContainer
+                justifyContent='center'
+                fontWeight='100'
+                fontSize='header1'
+                color='text1'
+                animation={showRangePulseAnimation ? 'flicker' : ''}
                 id='percentage-output'
                 aria-live='polite'
                 aria-atomic='true'
@@ -179,10 +184,15 @@ function RangeWidth(props: RangeWidthPropsIF) {
                     ? 'Ambient'
                     : '± ' + rangeWidthPercentage + '%'}
                 {rangeWidthTooltip}
-            </span>
-            <div className={styles.range_width_input}>
+            </FlexContainer>
+            <FlexContainer
+                alignItems='center'
+                padding='0 16px'
+                height='40px'
+                justifyContent='center'
+            >
                 <RangeSlider
-                    className={styles.percentage_input}
+                    percentageInput
                     defaultValue={rangeWidthPercentage}
                     id='input-slider-range'
                     onChange={(event) =>
@@ -192,8 +202,8 @@ function RangeWidth(props: RangeWidthPropsIF) {
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                 />
-            </div>
-        </div>
+            </FlexContainer>
+        </FlexContainer>
     );
 }
 
