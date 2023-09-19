@@ -1,8 +1,9 @@
-import Moralis from 'moralis';
+/* eslint-disable camelcase */
 import { EvmChain } from '@moralisweb3/common-evm-utils';
 
 import { memoizePromiseFn } from './memoizePromiseFn';
 const randomNum = Math.random();
+import { ANALYTICS_URL } from '../../constants';
 
 export const fetchTokenPrice = async (
     address: string,
@@ -14,14 +15,17 @@ export const fetchTokenPrice = async (
 
     try {
         if (address && chain) {
-            const response = await Moralis.EvmApi.token.getTokenPrice({
-                address,
-                chain,
-            });
-
-            const result = response?.result;
-
-            return result;
+            const response = await fetch(
+                ANALYTICS_URL +
+                    new URLSearchParams({
+                        service: 'run',
+                        config_path: 'price',
+                        include_data: '0',
+                        token_address: address,
+                    }),
+            );
+            const result = await response.json();
+            return result?.value;
         }
     } catch (error) {
         return undefined;
