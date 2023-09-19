@@ -54,6 +54,16 @@ const useChatSocket = (
         return data.reverse();
     }
 
+    async function fetchForNotConnectedUser(roomInfo: string) {
+        const encodedRoomInfo = encodeURIComponent(roomInfo);
+        const url = `${CHAT_BACKEND_URL}${getMessageWithRestEndpoint}${encodedRoomInfo}`;
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        setMessages(data.reverse());
+    }
+
     async function getAllMessages(p?: number) {
         const queryParams = 'p=' + p;
         const url = `${CHAT_BACKEND_URL}${getAllMessagesEndpoint}?${queryParams}`;
@@ -425,6 +435,7 @@ const useChatSocket = (
         deleteMsgFromList,
         setMessages,
         addReaction,
+        fetchForNotConnectedUser,
     };
 };
 

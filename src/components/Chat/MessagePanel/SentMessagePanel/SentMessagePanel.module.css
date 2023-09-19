@@ -127,6 +127,8 @@
     white-space: normal;
     display: flex;
     flex-direction: row;
+    color: rgb(255, 163, 179);
+    opacity: .3;
 }
 
 .message_without_avatar {
@@ -166,11 +168,12 @@
     flex-grow: 5px !important;
     margin: 2px 10px;
     width: 85%;
-    color: red;
     white-space: pre-line;
     align-self: stretch;
     word-break: break-word;
     white-space: normal;
+    color: rgb(255, 163, 179);
+    opacity: .3;
 }
 
 .message_without_avatar_admin_room {
@@ -733,8 +736,17 @@
 }
 
 .reaction_node{
+    transition: all .2s ease-in-out;
     display: inline-block;
     font-size: .9rem;
+    cursor: pointer;
+    border-radius: 0.9rem;
+    padding: 0.1rem;
+}
+
+.user_reacted{
+    background: #5f5eff66;
+    box-shadow: 0px 0px 4px 3px #4a47ff;
 }
 
 

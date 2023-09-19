@@ -79,6 +79,8 @@ function ChatPanel(props: propsIF) {
     const [mentionIndex, setMentionIndex] = useState(-1);
     // eslint-disable-next-line
     const [messageCheckerInterval, setMessageCheckerInterval] = useState<any>();
+    const [notConnectedUserInterval, setNotConnectedUserInterval] =
+        useState<any>();
     const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
     const _cooldownVal = 12;
     const [sendMessageCooldown, setSendMessageCooldown] =
@@ -105,6 +107,7 @@ function ChatPanel(props: propsIF) {
         setMessages,
         addReaction,
         deleteMsgFromList,
+        fetchForNotConnectedUser,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -196,12 +199,35 @@ function ChatPanel(props: propsIF) {
     };
 
     useEffect(() => {
+        if (address == undefined && notConnectedUserInterval == undefined) {
+            const interval = setInterval(() => {
+                fetchForNotConnectedUser(room);
+            }, 10000);
+            if (notConnectedUserInterval)
+                clearInterval(notConnectedUserInterval);
+
+            setNotConnectedUserInterval(interval);
+        }
+
         document.body.addEventListener('keydown', closeOnEscapeKeyDown);
         document.body.addEventListener('keydown', openChatPanel);
         return function cleanUp() {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
     });
+
+    useEffect(() => {
+        if (notConnectedUserInterval) {
+            clearInterval(notConnectedUserInterval);
+        }
+
+        if (address == undefined) {
+            const interval = setInterval(() => {
+                fetchForNotConnectedUser(room);
+            }, 10000);
+            setNotConnectedUserInterval(interval);
+        }
+    }, [address]);
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
@@ -687,6 +713,7 @@ function ChatPanel(props: propsIF) {
                                 setIsDeleteMessageButtonPressed
                             }
                             deleteMsgFromList={deleteMsgFromList}
+                            addReaction={addReaction}
                         />
                     );
                 })}
