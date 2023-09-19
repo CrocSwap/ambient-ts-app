@@ -8,15 +8,16 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 // import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
-import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { isStableToken } from '../../../../utils/data/stablePairs';
 
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
-import { ZERO_ADDRESS } from '../../../../constants';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { getMainnetAddress } from '../../../../utils/functions/getMainnetAddress';
+import { supportedNetworks } from '../../../../utils/networks';
+import { ethereumMainnet } from '../../../../utils/networks/ethereumMainnet';
 
 // interface for component props
 interface propsIF {
@@ -122,23 +123,19 @@ function RangePriceInfo(props: propsIF) {
     const isEitherTokenStable = isStableTokenA || isStableTokenB;
 
     const updateMainnetPricesAsync = async () => {
-        const tokenAMainnetEquivalent =
-            chainId === '0x1' && tokenAAddress !== ZERO_ADDRESS
-                ? tokenAAddress
-                : testTokenMap
-                      .get(tokenAAddress.toLowerCase() + '_' + chainId)
-                      ?.split('_')[0];
-        const tokenBMainnetEquivalent =
-            chainId === '0x1' && tokenBAddress !== ZERO_ADDRESS
-                ? tokenBAddress
-                : testTokenMap
-                      .get(tokenBAddress.toLowerCase() + '_' + chainId)
-                      ?.split('_')[0];
+        const tokenAMainnetEquivalent = getMainnetAddress(
+            tokenAAddress,
+            supportedNetworks[chainId],
+        );
+        const tokenBMainnetEquivalent = getMainnetAddress(
+            tokenBAddress,
+            supportedNetworks[chainId],
+        );
 
         if (tokenAMainnetEquivalent) {
             const tokenAMainnetPrice = await cachedFetchTokenPrice(
                 tokenAMainnetEquivalent,
-                '0x1',
+                ethereumMainnet.chainId,
             );
             const usdPrice = tokenAMainnetPrice?.usdPrice;
 
@@ -150,7 +147,7 @@ function RangePriceInfo(props: propsIF) {
         if (tokenBMainnetEquivalent) {
             const tokenBMainnetPrice = await cachedFetchTokenPrice(
                 tokenBMainnetEquivalent,
-                '0x1',
+                ethereumMainnet.chainId,
             );
             const usdPrice = tokenBMainnetPrice?.usdPrice;
             setTokenBMainnetPrice(usdPrice);

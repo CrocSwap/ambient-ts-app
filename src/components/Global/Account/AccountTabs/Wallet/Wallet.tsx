@@ -9,7 +9,7 @@ import { useContext } from 'react';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../../../../constants';
-import { USDC } from '../../../../../utils/tokens/exports';
+import { supportedNetworks } from '../../../../../utils/networks';
 
 interface propsIF {
     chainId: string;
@@ -86,9 +86,7 @@ export default function Wallet(props: propsIF) {
                     // canonical token addresses to assign probability
                     const addresses = {
                         nativeToken: ZERO_ADDRESS,
-                        USDC: USDC[
-                            chainId.toLowerCase() as keyof typeof USDC
-                        ].toLowerCase(),
+                        USDC: supportedNetworks[chainId].tokens.USDC,
                     };
                     // logic router to assign numerical priority to output
                     // unlisted tokens get priority 0

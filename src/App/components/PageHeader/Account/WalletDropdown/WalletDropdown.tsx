@@ -1,16 +1,13 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import {
-    getChainExplorer,
-    mktDataChainId,
-} from '../../../../../utils/data/chains';
+import { getChainExplorer } from '../../../../../utils/data/chains';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import { USDC } from '../../../../../utils/tokens/exports';
+
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
 import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
 import {
@@ -30,6 +27,7 @@ import { FlexContainer } from '../../../../../styled/Common';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -59,6 +57,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddressFull,
     } = props;
     const {
+        selectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -68,7 +67,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
-    const usdcAddr: string = USDC[chainId as '0x1'];
+    const usdcAddr: string = selectedNetwork.tokens.USDC;
     const usdcData: TokenIF | undefined = useMemo(() => {
         return tokenBalances?.find(
             (tkn: TokenIF) =>
@@ -134,8 +133,8 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
         Promise.resolve(
             cachedFetchTokenPrice(
-                USDC[mktDataChainId(chainId) as '0x1'],
-                chainId,
+                ethereumMainnet.tokens.USDC,
+                ethereumMainnet.chainId,
             ),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {

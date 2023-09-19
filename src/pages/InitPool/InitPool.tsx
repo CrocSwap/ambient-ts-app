@@ -31,7 +31,6 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
 
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
@@ -53,6 +52,7 @@ import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
+import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
 
 // react functional component
 export default function InitPool() {
@@ -160,15 +160,23 @@ export default function InitPool() {
     }, [crocEnv, sessionReceipts.length, baseToken, quoteToken]);
 
     const updateEstimatedInitialPrice = async () => {
-        const mainnetBase = getMainnetEquivalent(baseToken.address, chainId);
-        const mainnetQuote = getMainnetEquivalent(quoteToken.address, chainId);
+        const mainnetBase =
+            baseToken.address === ZERO_ADDRESS
+                ? ethereumMainnet.tokens['WETH']
+                : ethereumMainnet.tokens[
+                      baseToken?.symbol as keyof typeof ethereumMainnet.tokens
+                  ];
+        const mainnetQuote =
+            ethereumMainnet.tokens[
+                quoteToken?.symbol as keyof typeof ethereumMainnet.tokens
+            ];
         const basePricePromise = cachedFetchTokenPrice(
-            mainnetBase.token,
-            mainnetBase.chainId,
+            mainnetBase,
+            ethereumMainnet.chainId,
         );
         const quotePricePromise = cachedFetchTokenPrice(
-            mainnetQuote.token,
-            mainnetQuote.chainId,
+            mainnetQuote,
+            ethereumMainnet.chainId,
         );
 
         const basePrice = await basePricePromise;
