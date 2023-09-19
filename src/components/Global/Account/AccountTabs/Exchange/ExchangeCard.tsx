@@ -10,6 +10,7 @@ import { getFormattedNumber } from '../../../../../App/functions/getFormattedNum
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
     token: TokenIF;
@@ -70,12 +71,19 @@ export default function ExchangeCard(props: propsIF) {
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    const exchangeBalanceNum = token?.dexBalanceDisplay
-        ? parseFloat(token?.dexBalanceDisplay)
-        : 0;
+    const dexBalanceDisplay = token.dexBalance
+        ? toDisplayQty(token.dexBalance, token.decimals)
+        : undefined;
 
-    const exchangeBalanceTruncated =
-        exchangeBalanceNum === 0 ? '0' : token?.dexBalanceDisplayTruncated;
+    const dexBalanceDisplayNum = dexBalanceDisplay
+        ? parseFloat(dexBalanceDisplay)
+        : undefined;
+
+    const dexBalanceTruncated = dexBalanceDisplayNum
+        ? getFormattedNumber({
+              value: dexBalanceDisplayNum,
+          })
+        : '0';
 
     const iconAndSymbolWithTooltip = (
         <DefaultTooltip
@@ -125,11 +133,11 @@ export default function ExchangeCard(props: propsIF) {
             {tokenInfo}
             <p className={styles.value}>
                 {getFormattedNumber({
-                    value: tokenUsdPrice * exchangeBalanceNum,
+                    value: tokenUsdPrice * (dexBalanceDisplayNum ?? 0),
                     isUSD: true,
                 })}
             </p>
-            <p className={styles.amount}>{exchangeBalanceTruncated}</p>
+            <p className={styles.amount}>{dexBalanceTruncated}</p>
         </div>
     );
 }

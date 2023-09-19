@@ -6,7 +6,6 @@ import { FlexContainer, Text } from '../../../../../styled/Common';
 import {
     PriceInputButton,
     PriceInputContainer,
-    PulseAnimationContainer,
     PriceInput as PriceInputStyled,
 } from '../../../../../styled/Components/TradeModules';
 
@@ -58,7 +57,9 @@ function PriceInput(props: priceInputProps) {
                 >
                     <FaMinus size={16} />
                 </PriceInputButton>
-                <PulseAnimationContainer showPulse={showRangePulseAnimation}>
+                <FlexContainer
+                    animation={showRangePulseAnimation ? 'pulse' : ''}
+                >
                     <PriceInputStyled
                         id={`${fieldId}-price-input-quantity`}
                         type='text'
@@ -76,7 +77,7 @@ function PriceInput(props: priceInputProps) {
                         disabled={disable}
                         aria-label={`${fieldId} price input quantity.`}
                     />
-                </PulseAnimationContainer>
+                </FlexContainer>
                 <PriceInputButton
                     onClick={increaseTick}
                     aria-label={`increase tick of ${fieldId} price.`}

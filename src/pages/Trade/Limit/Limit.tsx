@@ -8,7 +8,7 @@ import {
 import { useContext, useState, useEffect } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { useTradeData } from '../../../App/hooks/useTradeData';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';

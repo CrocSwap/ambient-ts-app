@@ -1,12 +1,5 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../../../utils/interfaces/exports';
-import styles from './Withdraw.module.css';
-import WithdrawButton from './WithdrawButton/WithdrawButton';
-import WithdrawCurrencySelector from './WithdrawCurrencySelector/WithdrawCurrencySelector';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { BigNumber } from 'ethers';
 import {
     Dispatch,
     SetStateAction,
@@ -15,7 +8,29 @@ import {
     useMemo,
     useState,
 } from 'react';
-import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
+import { FaGasPump } from 'react-icons/fa';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import useDebounce from '../../../../App/hooks/useDebounce';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import {
+    GasPump,
+    SVGContainer,
+    MaxButton,
+} from '../../../../styled/Components/Portfolio';
+import {
+    TransactionError,
+    isTransactionFailedError,
+    isTransactionReplacedError,
+} from '../../../../utils/TransactionError';
+import { checkBlacklist } from '../../../../utils/data/blacklist';
+import {
+    useAppDispatch,
+    useAppSelector,
+} from '../../../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import {
     addPendingTx,
     addReceipt,
@@ -23,20 +38,10 @@ import {
     removePendingTx,
     updateTransactionHash,
 } from '../../../../utils/state/receiptDataSlice';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
-import { BigNumber } from 'ethers';
-import { checkBlacklist } from '../../../../utils/data/blacklist';
-import { FaGasPump } from 'react-icons/fa';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import useDebounce from '../../../../App/hooks/useDebounce';
-import Toggle from '../../../Global/Toggle/Toggle';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import Toggle from '../../../Form/Toggle';
+import CurrencySelector from '../../../Form/CurrencySelector';
+import TransferAddressInput from '../Transfer/TransferAddressInput';
+import Button from '../../../Form/Button';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -281,22 +286,27 @@ export default function Withdraw(props: propsIF) {
         isSendToAddressChecked &&
         isResolvedAddressValid &&
         isResolvedAddressDifferent ? (
-            <div className={styles.info_text_non_clickable}>
+            <Text fontSize='body' color='text2'>
                 Resolved Destination Address:
-                <div className={styles.hex_address}>{resolvedAddress}</div>
-            </div>
+                <p style={{ userSelect: 'all' }}>{resolvedAddress}</p>
+            </Text>
         ) : null;
 
     const secondaryEnsOrNull =
         isSendToAddressChecked && secondaryEnsName ? (
-            <div className={styles.info_text_non_clickable}>
+            <Text fontSize='body' color='text2'>
                 Destination ENS Address: {secondaryEnsName}
-            </div>
+            </Text>
         ) : null;
 
     const toggleContent = (
-        <span className={styles.surplus_toggle}>
-            <div className={styles.toggle_container}>
+        <FlexContainer
+            justifyContent='flex-start'
+            alignItems='center'
+            fontSize='body'
+            color='text2'
+        >
+            <div style={{ marginRight: '10px' }}>
                 <Toggle
                     isOn={isSendToAddressChecked}
                     handleToggle={() =>
@@ -308,7 +318,7 @@ export default function Withdraw(props: propsIF) {
                 />
             </div>
             Send to a different address
-        </span>
+        </FlexContainer>
     );
 
     const [inputValue, setInputValue] = useState('');
@@ -352,52 +362,45 @@ export default function Withdraw(props: propsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
 
     return (
-        <div className={styles.deposit_container}>
-            <div className={styles.info_text_non_clickable}>
+        <FlexContainer flexDirection='column' gap={16} padding={'16px'}>
+            <Text fontSize='body' color='text2'>
                 Withdraw tokens from the exchange to your wallet
-            </div>
+            </Text>
             {toggleContent}
             {transferAddressOrNull}
-            <WithdrawCurrencySelector
+            <CurrencySelector
                 selectedToken={selectedToken}
-                setWithdrawQty={setWithdrawQtyNonDisplay}
+                setQty={setWithdrawQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 disable={isCurrencyFieldDisabled}
                 setTokenModalOpen={setTokenModalOpen}
             />
-            <div className={styles.additional_info}>
-                <div
-                    className={`${styles.available_container} ${styles.info_text_non_clickable}`}
-                >
-                    <div className={styles.available_text}>Available:</div>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <FlexContainer fontSize='body' color='text2' gap={6}>
+                    <Text color='text1'>Available:</Text>
                     {tokenDexBalanceTruncated || '...'}
-                    <button
-                        className={`${styles.max_button} ${
-                            tokenDexBalance !== '0' && styles.max_button_enabled
-                        }`}
-                        onClick={handleBalanceClick}
-                        disabled={tokenDexBalance === '0'}
-                    >
-                        Max
-                    </button>
-                </div>
-                <div className={styles.gas_pump}>
-                    <div className={styles.svg_container}>
+                    {tokenDexBalance !== '0' && (
+                        <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
+                    )}
+                </FlexContainer>
+                <GasPump>
+                    <SVGContainer>
                         <FaGasPump size={12} />{' '}
-                    </div>
+                    </SVGContainer>
                     {withdrawGasPriceinDollars
                         ? withdrawGasPriceinDollars
                         : '…'}
-                </div>
-            </div>
+                </GasPump>
+            </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
-            <WithdrawButton
-                onClick={withdrawFn}
+            <Button
+                title={buttonMessage}
+                action={withdrawFn}
                 disabled={isButtonDisabled}
-                buttonMessage={buttonMessage}
+                flat={true}
             />
-        </div>
+        </FlexContainer>
     );
 }
