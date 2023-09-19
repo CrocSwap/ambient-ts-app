@@ -27,7 +27,7 @@ import { FlexContainer } from '../../../../../styled/Common';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
-import { USDC } from '../../../../../assets/images/tokens/exports';
+import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -67,7 +67,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
-    const usdcAddr: string = USDC[chainId as '0x1'];
+    const usdcAddr: string = selectedNetwork.tokens.USDC;
     const usdcData: TokenIF | undefined = useMemo(() => {
         return tokenBalances?.find(
             (tkn: TokenIF) =>
@@ -132,7 +132,10 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
 
         Promise.resolve(
-            cachedFetchTokenPrice(selectedNetwork.tokens.USDC, chainId),
+            cachedFetchTokenPrice(
+                ethereumMainnet.tokens.USDC,
+                ethereumMainnet.chainId,
+            ),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
