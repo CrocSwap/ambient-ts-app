@@ -360,8 +360,7 @@ const PageHeader = function () {
                             overflow='visible'
                         >
                             <FlexContainer fontSize='body' color={'orange'}>
-                                {APP_ENVIRONMENT !== 'local' &&
-                                APP_ENVIRONMENT !== 'production' ? (
+                                {APP_ENVIRONMENT !== 'production' ? (
                                     <FlexContainer alignItems='center' gap={4}>
                                         {`${BRANCH_NAME} - v${appVersion}`}
                                         {APP_ENVIRONMENT !== 'testnet' && (
