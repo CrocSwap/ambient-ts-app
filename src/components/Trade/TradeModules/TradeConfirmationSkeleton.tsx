@@ -2,7 +2,7 @@
 import { useContext, useState } from 'react';
 
 // START: Import JSX Components
-import Button from '../../Global/Button/Button';
+import Button from '../../Form/Button';
 
 // START: Import Other Local Files
 import { TokenIF } from '../../../utils/interfaces/exports';

@@ -3,6 +3,7 @@
     "version": "1.4.0",
     "private": true,
     "dependencies": {
+        "@covalenthq/client-sdk": "^0.2.6",
         "@crocswap-libs/sdk": "^0.2.75",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/is-prop-valid": "^1.2.1",

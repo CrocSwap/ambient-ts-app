@@ -5,7 +5,7 @@ import { useConnect, useAccount, useDisconnect } from 'wagmi';
 // START: Import Local Files
 import styles from './WalletModalWagmi.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 import braveLogo from '../../../assets/images/logos/brave_lion.svg';

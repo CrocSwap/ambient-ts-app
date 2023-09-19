@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import styles from './RemoveRangeWidth.module.css';
-import RangeSlider from '../../Global/RangeSlider/RangeSlider';
+import RangeSlider from '../../Form/RangeSlider';
 
 interface RemoveRangeWidthPropsIF {
     removalPercentage: number;
@@ -87,7 +87,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                 {PercentageOptionContent}
                 <div className={styles.range_width_input}>
                     <RangeSlider
-                        className={styles.percentage_input}
+                        percentageInput
                         aria-labelledby='input slider'
                         defaultValue={removalPercentage}
                         id='remove-range-slider'

@@ -1,5 +1,5 @@
 import React, { ChangeEvent, MouseEventHandler, useState } from 'react';
-import styles from './RangeSlider.module.css'; // Import base CSS
+import { RangeSliderWrapper } from './Form.styles';
 
 interface CustomInputProps {
     size?: number;
@@ -12,7 +12,7 @@ interface CustomInputProps {
     defaultValue?: number;
     onChange: (event: ChangeEvent<HTMLInputElement>) => void;
     onClick?: MouseEventHandler<HTMLInputElement>;
-    className?: string;
+    percentageInput?: boolean;
 }
 
 const RangeSlider: React.FC<CustomInputProps> = ({
@@ -25,7 +25,7 @@ const RangeSlider: React.FC<CustomInputProps> = ({
     step = 1,
     defaultValue = 0,
     onChange,
-    className = '',
+    percentageInput = false,
 }) => {
     const [isGrabbing, setIsGrabbing] = useState(false);
 
@@ -38,7 +38,7 @@ const RangeSlider: React.FC<CustomInputProps> = ({
     };
 
     return (
-        <input
+        <RangeSliderWrapper
             size={size}
             aria-labelledby={ariaLabelledBy}
             aria-label={ariaLabel}
@@ -48,14 +48,11 @@ const RangeSlider: React.FC<CustomInputProps> = ({
             step={step}
             defaultValue={defaultValue}
             type='range'
-            className={`${styles.range_slider} ${className} ${
-                isGrabbing
-                    ? styles.range_slider_grabbing
-                    : styles.range_slider_grab
-            }`}
+            grabbing={isGrabbing}
             onChange={onChange}
             onMouseDown={handleClick}
             onMouseUp={handleMouseUp}
+            percentageInput={percentageInput}
         />
     );
 };
