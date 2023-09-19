@@ -53,6 +53,11 @@ import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
 import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
+import InitSkeleton from './InitSkeleton';
+import MultiStepTransaction, {
+    TransactionStep,
+} from '../../components/Global/MultiStepTransaction/MultiStepTransaction';
+import InitConfirmation from './InitConfirmation';
 
 // react functional component
 export default function InitPool() {
@@ -953,86 +958,98 @@ export default function InitPool() {
         }
     }, [erc20TokenWithDexBalance, poolExists]);
 
-    return (
-        <section className={styles.main}>
-            <div className={styles.outer_container}>
-                <div className={styles.gradient_container}>
-                    <div className={styles.main_container}>
-                        <header>
-                            <p />
-                            Initialize Pool
-                            <p />
-                        </header>
-
-                        <div className={styles.inner_container}>
-                            <div className={styles.left_container}>
-                                {simpleTokenSelect}
-                                {initPriceContainer}
-                                {collateralContent}
-                            </div>
-
-                            <div className={styles.right_container}>
-                                {mintInitialLiquidity}
-                                <div
-                                    className={
-                                        isRangeBoundsAndCollateralDisabled
-                                            ? styles.content_disabled
-                                            : ''
-                                    }
-                                >
-                                    <AdvancedModeToggle
-                                        advancedMode={advancedMode}
-                                    />
-                                </div>
-
-                                <RangeBounds
-                                    isRangeBoundsDisabled={
-                                        isRangeBoundsAndCollateralDisabled
-                                    }
-                                    {...rangeWidthProps}
-                                    {...rangePriceInfoProps}
-                                    {...minMaxPriceProps}
-                                    customSwitch={true}
-                                />
-
-                                {showErrorMessage ? (
-                                    <div style={{ padding: '0 40px' }}>
-                                        <WarningBox
-                                            details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div
-                                        className={
-                                            poolExists === true
-                                                ? styles.content_disabled
-                                                : ''
-                                        }
-                                    >
-                                        <InitPoolExtraInfo
-                                            initialPrice={parseFloat(
-                                                initialPriceDisplay.replaceAll(
-                                                    ',',
-                                                    '',
-                                                ),
-                                            )}
-                                            isDenomBase={isDenomBase}
-                                            initGasPriceinDollars={
-                                                initGasPriceinDollars
-                                            }
-                                            baseToken={baseToken}
-                                            quoteToken={quoteToken}
-                                            setIsDenomBase={setIsDenomBase}
-                                        />
-                                    </div>
-                                )}
-
-                                <ButtonToRender />
-                            </div>
-                        </div>
-                    </div>
+    const MainContent = () => {
+        return (
+            <InitSkeleton
+                isConfirmation={false}
+                currentStep={currentStep}
+                setCurrentStep={setCurrentStep}
+            >
+                <div className={styles.left_container}>
+                    {simpleTokenSelect}
+                    {initPriceContainer}
+                    {collateralContent}
                 </div>
-            </div>
-        </section>
+
+                <div className={styles.right_container}>
+                    {mintInitialLiquidity}
+                    <div
+                        className={
+                            isRangeBoundsAndCollateralDisabled
+                                ? styles.content_disabled
+                                : ''
+                        }
+                    >
+                        <AdvancedModeToggle advancedMode={advancedMode} />
+                    </div>
+
+                    <RangeBounds
+                        isRangeBoundsDisabled={
+                            isRangeBoundsAndCollateralDisabled
+                        }
+                        {...rangeWidthProps}
+                        {...rangePriceInfoProps}
+                        {...minMaxPriceProps}
+                        customSwitch={true}
+                    />
+
+                    {showErrorMessage ? (
+                        <div style={{ padding: '0 40px' }}>
+                            <WarningBox
+                                details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
+                            />
+                        </div>
+                    ) : (
+                        <div
+                            className={
+                                poolExists === true
+                                    ? styles.content_disabled
+                                    : ''
+                            }
+                        >
+                            <InitPoolExtraInfo
+                                initialPrice={parseFloat(
+                                    initialPriceDisplay.replaceAll(',', ''),
+                                )}
+                                isDenomBase={isDenomBase}
+                                initGasPriceinDollars={initGasPriceinDollars}
+                                baseToken={baseToken}
+                                quoteToken={quoteToken}
+                                setIsDenomBase={setIsDenomBase}
+                            />
+                        </div>
+                    )}
+
+                    <ButtonToRender />
+                </div>
+            </InitSkeleton>
+        );
+    };
+
+    const ConfirmationContent = () => {
+        return (
+            <InitSkeleton
+                isConfirmation={true}
+                currentStep={currentStep}
+                setCurrentStep={setCurrentStep}
+            >
+                <InitConfirmation setCurrentStep={setCurrentStep} />
+            </InitSkeleton>
+        );
+    };
+
+    const [currentStep, setCurrentStep] = useState(0);
+
+    const steps: TransactionStep[] = [
+        { component: MainContent },
+        { component: ConfirmationContent },
+    ];
+
+    return (
+        <MultiStepTransaction
+            steps={steps}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+        />
     );
 }

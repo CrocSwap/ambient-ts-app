@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect } from 'react';
 
 export interface SlideInProps {
     isVisible: boolean;
@@ -16,13 +16,17 @@ export interface TransactionStep {
 
 export interface MultiStepTransactionProps {
     steps: TransactionStep[];
+    currentStep: number;
+    setCurrentStep: Dispatch<SetStateAction<number>>;
+    // onNext: () =>  void;
+    // onPrevious: () => void;
 }
 
 const MultiStepTransaction: React.FC<MultiStepTransactionProps> = ({
     steps,
+    currentStep,
+    setCurrentStep,
 }) => {
-    const [currentStep, setCurrentStep] = useState(0);
-
     const handleNext = () => {
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
@@ -37,26 +41,16 @@ const MultiStepTransaction: React.FC<MultiStepTransactionProps> = ({
         }
     };
 
-    // const CurrentStepComponent = steps[currentStep].component;
-
-    // const nextButton = (
-    //     <>
-    //         {currentStep === steps.length - 1 ? (
-    //             <button onClick={handleNext}>Confirm</button>
-    //         ) : (
-    //             <button
-    //                 onClick={handleNext}
-    //                 disabled={currentStep === steps.length - 1}
-    //             >
-    //                 Next
-    //             </button>
-    //         )}
-    //     </>
-    // );
+    useEffect(() => {
+        if (currentStep < 0) {
+            setCurrentStep(0);
+        } else if (currentStep >= steps.length) {
+            setCurrentStep(steps.length - 1);
+        }
+    }, [currentStep]);
 
     return (
         <section>
-            <button onClick={handleNext}>here</button>
             <div>
                 {steps.map((step, index) => (
                     <div
