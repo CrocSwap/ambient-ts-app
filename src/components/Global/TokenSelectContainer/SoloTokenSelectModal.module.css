@@ -88,11 +88,11 @@
     line-height: var(--body-lh);
     text-align: center;
     color: var(--text1);
-    padding: 1rem;  
+    padding: 1rem;
 }
 
 @media only screen and (min-width: 768px) {
     .container {
-        width: 448px;   
+        width: 448px;
     }
 }

@@ -11,7 +11,6 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
 
 // START: Import Local Files
-import styles from './PortfolioTabs.module.css';
 import {
     useAppDispatch,
     useAppSelector,
@@ -41,18 +40,24 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
 
 // interface for React functional component props
 interface propsIF {
     resolvedAddressTokens: (TokenIF | undefined)[];
     resolvedAddress: string | undefined;
     connectedAccountActive: boolean;
+    fullLayoutActive: boolean;
 }
 
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
-    const { resolvedAddressTokens, resolvedAddress, connectedAccountActive } =
-        props;
+    const {
+        resolvedAddressTokens,
+        resolvedAddress,
+        connectedAccountActive,
+        fullLayoutActive,
+    } = props;
 
     const dispatch = useAppDispatch();
     const {
@@ -303,6 +308,7 @@ export default function PortfolioTabs(props: propsIF) {
         connectedAccountActive: connectedAccountActive,
         changesInSelectedCandle: undefined,
         isAccountView: true,
+        fullLayoutActive: fullLayoutActive,
     };
 
     // Props for <Orders/> React Element
@@ -369,7 +375,7 @@ export default function PortfolioTabs(props: propsIF) {
     ];
 
     return (
-        <div className={styles.tabs_container}>
+        <PortfolioTabsPortfolioTabsContainer>
             <TabComponent
                 data={
                     connectedAccountActive
@@ -378,6 +384,6 @@ export default function PortfolioTabs(props: propsIF) {
                 }
                 rightTabOptions={false}
             />
-        </div>
+        </PortfolioTabsPortfolioTabsContainer>
     );
 }

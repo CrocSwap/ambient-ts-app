@@ -25,8 +25,8 @@ export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
 
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const { chainData } = useContext(CrocEnvContext);
-    const connectedUserErc20Tokens = useAppSelector(
-        (state) => state.userData.tokens.erc20Tokens,
+    const connectedUserTokens = useAppSelector(
+        (state) => state.userData.tokenBalances,
     );
 
     const tokens: tokenMethodsIF = useTokens(chainData.chainId);
@@ -38,7 +38,7 @@ export const TokenContextProvider = (props: { children: React.ReactNode }) => {
         useTokenSearch(
             chainData.chainId,
             tokens,
-            connectedUserErc20Tokens ?? [],
+            connectedUserTokens ?? [],
             getRecentTokens,
         );
 

@@ -29,6 +29,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
 import { OptionButton } from '../../../Button/OptionButton';
+import { FlexContainer } from '../../../../../styled/Common';
 
 // interface for React functional component props
 interface propsIF {
@@ -59,7 +60,8 @@ export default function OrdersMenu(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-    const { handlePulseAnimation } = useContext(TradeTableContext);
+    const { handlePulseAnimation, setActiveMobileComponent } =
+        useContext(TradeTableContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -70,6 +72,8 @@ export default function OrdersMenu(props: propsIF) {
 
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
+        setActiveMobileComponent('trade');
+
         handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
 
@@ -202,7 +206,7 @@ export default function OrdersMenu(props: propsIF) {
             {detailsButton}
             {isOwnerActiveAccount && copyButton}
             {!minView && removeButton}
-            {walletButton}
+            {!isAccountView && walletButton}
         </div>
     );
 
@@ -238,8 +242,12 @@ export default function OrdersMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
     return (
-        <div onClick={(event) => event.stopPropagation()}>
-            <div className={styles.main_container}>
+        <FlexContainer justifyContent='flex-end'>
+            <div
+                onClick={(event) => event.stopPropagation()}
+                style={{ width: 'min-content', cursor: 'default' }}
+                className={styles.main_container}
+            >
                 {ordersMenu}
                 {dropdownOrdersMenu}
             </div>
@@ -261,6 +269,6 @@ export default function OrdersMenu(props: propsIF) {
                     onClose={closeActionModal}
                 />
             )}
-        </div>
+        </FlexContainer>
     );
 }

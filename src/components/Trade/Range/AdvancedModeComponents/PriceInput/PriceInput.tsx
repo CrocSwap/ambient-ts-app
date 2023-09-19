@@ -1,8 +1,14 @@
-import styles from './PriceInput.module.css';
 import { FaMinus, FaPlus } from 'react-icons/fa';
 import { ChangeEvent, FocusEventHandler, memo, useContext } from 'react';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
+import { FlexContainer, Text } from '../../../../../styled/Common';
+import {
+    PriceInputButton,
+    PriceInputContainer,
+    PulseAnimationContainer,
+    PriceInput as PriceInputStyled,
+} from '../../../../../styled/Components/TradeModules';
 
 interface priceInputProps {
     disable?: boolean;
@@ -34,26 +40,31 @@ function PriceInput(props: priceInputProps) {
             : percentageDifference.toString();
 
     return (
-        <div className={styles.minMax_container} id={`range_${fieldId}_price`}>
-            <span className={styles.title}>{title}</span>
-            <div className={styles.price_input_container}>
-                <button
-                    className={styles.sign}
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='center'
+            style={{ width: '48%' }}
+            id={`range_${fieldId}_price`}
+            gap={4}
+        >
+            <Text fontSize='body' color='text2'>
+                {title}
+            </Text>
+            <PriceInputContainer>
+                <PriceInputButton
                     onClick={decreaseTick}
                     aria-label={`decrease tick of ${fieldId} price.`}
                 >
                     <FaMinus size={16} />
-                </button>
-                <span
-                    className={
-                        showRangePulseAnimation && styles.pulse_animation
-                    }
-                >
-                    <input
+                </PriceInputButton>
+                <PulseAnimationContainer showPulse={showRangePulseAnimation}>
+                    <PriceInputStyled
                         id={`${fieldId}-price-input-quantity`}
-                        className={styles.price_quantity}
                         type='text'
-                        onChange={(event) => handleChangeEvent(event)}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                            handleChangeEvent(event)
+                        }
                         onBlur={onBlur}
                         inputMode='decimal'
                         autoComplete='off'
@@ -65,17 +76,17 @@ function PriceInput(props: priceInputProps) {
                         disabled={disable}
                         aria-label={`${fieldId} price input quantity.`}
                     />
-                </span>
-                <button
-                    className={styles.sign}
+                </PulseAnimationContainer>
+                <PriceInputButton
                     onClick={increaseTick}
                     aria-label={`increase tick of ${fieldId} price.`}
                 >
                     <FaPlus size={16} />
-                </button>
-            </div>
-            <span
-                className={styles.percentage}
+                </PriceInputButton>
+            </PriceInputContainer>
+            <Text
+                fontSize='header2'
+                color='accent5'
                 tabIndex={0}
                 aria-label={`Percentage difference is ${percentageDifferenceString} percent.`}
                 aria-live='polite'
@@ -83,8 +94,8 @@ function PriceInput(props: priceInputProps) {
                 aria-relevant='all'
             >
                 {percentageDifferenceString}%
-            </span>
-        </div>
+            </Text>
+        </FlexContainer>
     );
 }
 

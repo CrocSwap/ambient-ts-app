@@ -10,6 +10,7 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
     token: TokenIF;
@@ -70,14 +71,19 @@ export default function WalletCard(props: propsIF) {
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    const walletBalanceNum = token?.walletBalanceDisplay
-        ? parseFloat(token?.walletBalanceDisplay)
-        : 0;
+    const walletBalanceDisplay = token.walletBalance
+        ? toDisplayQty(token.walletBalance, token.decimals)
+        : undefined;
 
-    const walletBalanceTruncated =
-        token && token.walletBalanceDisplayTruncated && walletBalanceNum !== 0
-            ? token.walletBalanceDisplayTruncated
-            : '0';
+    const walletBalanceDisplayNum = walletBalanceDisplay
+        ? parseFloat(walletBalanceDisplay)
+        : undefined;
+
+    const walletBalanceTruncated = walletBalanceDisplayNum
+        ? getFormattedNumber({
+              value: walletBalanceDisplayNum,
+          })
+        : '0';
 
     const iconAndSymbolWithTooltip = (
         <DefaultTooltip
@@ -129,7 +135,7 @@ export default function WalletCard(props: propsIF) {
             {tokenInfo}
             <p className={styles.value}>
                 {getFormattedNumber({
-                    value: tokenUsdPrice * walletBalanceNum,
+                    value: tokenUsdPrice * (walletBalanceDisplayNum ?? 0),
                     isUSD: true,
                 })}
             </p>
