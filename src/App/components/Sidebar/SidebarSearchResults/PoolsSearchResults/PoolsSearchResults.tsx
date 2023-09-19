@@ -9,7 +9,7 @@ import {
     linkGenMethodsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
-import checkPoolForWETH from '../../../../functions/checkPoolForWETH';
+import checkPoolForNativeToken from '../../../../functions/checkPoolForNativeToken';
 import {
     FlexContainer,
     GridContainer,
@@ -93,7 +93,7 @@ export default function PoolsSearchResults(props: propsIF) {
                         {searchedPools
                             .filter(
                                 (pool: PoolIF) =>
-                                    !checkPoolForWETH(pool, chainId),
+                                    !checkPoolForNativeToken(pool, chainId),
                             )
                             // max five elements before content overflows container
                             .slice(0, 5)

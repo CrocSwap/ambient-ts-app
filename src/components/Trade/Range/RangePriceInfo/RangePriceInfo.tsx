@@ -171,7 +171,7 @@ function RangePriceInfo(props: propsIF) {
         if (tokenAMainnetEquivalent) {
             const tokenAMainnetPrice = await cachedFetchTokenPrice(
                 tokenAMainnetEquivalent,
-                ethereumMainnet.chainId,
+                supportedNetworks[chainId].mainnetChainId,
             );
             const usdPrice = tokenAMainnetPrice?.usdPrice;
 
@@ -183,7 +183,7 @@ function RangePriceInfo(props: propsIF) {
         if (tokenBMainnetEquivalent) {
             const tokenBMainnetPrice = await cachedFetchTokenPrice(
                 tokenBMainnetEquivalent,
-                ethereumMainnet.chainId,
+                supportedNetworks[chainId].mainnetChainId,
             );
             const usdPrice = tokenBMainnetPrice?.usdPrice;
             setTokenBMainnetPrice(usdPrice);

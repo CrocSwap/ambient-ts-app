@@ -49,7 +49,7 @@ export default function InitPool() {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const {
         crocEnv,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -124,11 +124,11 @@ export default function InitPool() {
             );
             const basePricePromise = cachedFetchTokenPrice(
                 mainnetBase,
-                chainId,
+                supportedNetworks[chainId].mainnetChainId,
             );
             const quotePricePromise = cachedFetchTokenPrice(
                 mainnetQuote,
-                chainId,
+                supportedNetworks[chainId].mainnetChainId,
             );
 
             const basePrice = (await basePricePromise)?.usdPrice || 2000;
@@ -167,13 +167,13 @@ export default function InitPool() {
 
     // calculate price of gas for pool init
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const averageInitCostInGasDrops = 157922;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageInitCostInGasDrops *
                 1e-9 *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setInitGasPriceinDollars(
                 getFormattedNumber({
@@ -182,7 +182,7 @@ export default function InitPool() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;

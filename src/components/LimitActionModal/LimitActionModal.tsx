@@ -62,7 +62,7 @@ export default function LimitActionModal(props: propsIF) {
 
     const {
         crocEnv,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
 
@@ -122,12 +122,12 @@ export default function LimitActionModal(props: propsIF) {
     const numGweiInWei = 1e-9;
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageGasUnitsForHarvestTxInGasDrops *
                 numGweiInWei *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setNetworkFee(
                 getFormattedNumber({
@@ -136,7 +136,7 @@ export default function LimitActionModal(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const removeFn = async () => {
         if (!currentLiquidity) return;

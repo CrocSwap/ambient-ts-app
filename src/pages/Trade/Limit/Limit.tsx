@@ -52,7 +52,7 @@ export default function Limit() {
     const {
         crocEnv,
         chainData: { chainId, gridSize, poolIndex },
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
     const { pool, isPoolInitialized } = useContext(PoolContext);
@@ -364,7 +364,7 @@ export default function Limit() {
     const isSellTokenNativeToken = tokenA.address === ZERO_ADDRESS;
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const averageLimitCostInGasDrops = isSellTokenNativeToken
                 ? 120000
                 : isWithdrawFromDexChecked
@@ -376,7 +376,7 @@ export default function Limit() {
                 gasPriceInGwei *
                 averageLimitCostInGasDrops *
                 1e-9 *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setOrderGasPriceInDollars(
                 getFormattedNumber({
@@ -387,7 +387,7 @@ export default function Limit() {
         }
     }, [
         gasPriceInGwei,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         isSellTokenNativeToken,
         isWithdrawFromDexChecked,
         isTokenADexSurplusSufficient,

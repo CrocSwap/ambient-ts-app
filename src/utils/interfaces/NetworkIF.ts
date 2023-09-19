@@ -16,6 +16,7 @@ export interface Tokens {
 
 export interface NetworkIF {
     chainId: string;
+    mainnetChainId: string;
     wagmiChain: any;
     shouldPollBlock: boolean;
     marketData: string;
@@ -23,5 +24,6 @@ export interface NetworkIF {
     defaultPair: TokenIF[];
     topPools: TopPool[];
     stableTokens: string[];
+    wrappedNativeTokens: string[];
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
 }

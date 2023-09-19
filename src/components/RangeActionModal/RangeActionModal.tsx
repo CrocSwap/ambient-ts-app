@@ -84,7 +84,7 @@ export default function RangeActionModal(props: propsIF) {
     const {
         crocEnv,
         chainData: { chainId, poolIndex },
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
     } = useContext(CrocEnvContext);
     const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
 
@@ -119,12 +119,12 @@ export default function RangeActionModal(props: propsIF) {
     const numGweiInWei = 1e-9;
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageGasUnitsForRemovalTxInGasDrops *
                 numGweiInWei *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setRemovalGasPriceinDollars(
                 getFormattedNumber({
@@ -133,7 +133,7 @@ export default function RangeActionModal(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const [currentLiquidity, setCurrentLiquidity] = useState<
         BigNumber | undefined

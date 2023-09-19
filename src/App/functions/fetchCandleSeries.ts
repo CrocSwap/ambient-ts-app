@@ -225,8 +225,14 @@ async function expandPoolStats(
 ): Promise<CandleData[]> {
     const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
     const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
-    const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(
+        mainnetBase,
+        supportedNetworks[chainId].mainnetChainId,
+    );
+    const quotePricePromise = cachedFetchTokenPrice(
+        mainnetQuote,
+        supportedNetworks[chainId].mainnetChainId,
+    );
 
     const baseDecimals = crocEnv.token(base).decimals;
     const quoteDecimals = crocEnv.token(quote).decimals;

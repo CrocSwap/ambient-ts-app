@@ -12,6 +12,7 @@ import { NetworkIF } from '../interfaces/exports';
 
 export const ethereumGoerli: NetworkIF = {
     chainId: '0x5',
+    mainnetChainId: '0x1',
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',
@@ -36,6 +37,9 @@ export const ethereumGoerli: NetworkIF = {
     stableTokens: [
         '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60', // DAI
         '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C', // USDC
+    ],
+    wrappedNativeTokens: [
+        '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6', // WETH
     ],
     getGasPriceInGwei: async () => {
         const response = await fetch(

@@ -5,13 +5,12 @@ import { formSlugForPairParams } from '../App/functions/urlSlugs';
 import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
-import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
+import { APP_ENVIRONMENT } from '../constants';
 import { getDefaultPairForChain } from '../utils/data/defaultTokens';
 import { CachedDataContext } from './CachedDataContext';
 import { Provider } from '@ethersproject/providers';
 import { NetworkIF, PoolIF } from '../utils/interfaces/exports';
 import { ethereumGoerli } from '../utils/networks/ethereumGoerli';
-import { ethereumMainnet } from '../utils/networks/ethereumMainnet';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -27,7 +26,7 @@ interface CrocEnvContextIF {
     chainData: ChainSpec;
     isChainSupported: boolean;
     topPools: PoolIF[];
-    ethMainnetUsdPrice: number | undefined;
+    nativeTokenUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
     provider: Provider | undefined;
 }
@@ -50,7 +49,7 @@ export const CrocEnvContextProvider = (props: {
     const [chainData, isChainSupported, setNextChain] =
         useAppChain(isConnected);
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
-    const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
+    const [nativeTokenUsdPrice, setNativeTokenUsdPrice] = useState<
         number | undefined
     >();
 
@@ -83,7 +82,7 @@ export const CrocEnvContextProvider = (props: {
         chainData,
         isChainSupported,
         topPools,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         defaultUrlParams,
         provider,
     };
@@ -143,14 +142,12 @@ export const CrocEnvContextProvider = (props: {
     useEffect(() => {
         if (provider) {
             (async () => {
-                IS_LOCAL_ENV &&
-                    console.debug('fetching WETH price from mainnet');
-                const mainnetEthPrice = await cachedFetchTokenPrice(
-                    ethereumMainnet.tokens['WETH'],
-                    ethereumMainnet.chainId,
+                const nativeTokenPrice = await cachedFetchTokenPrice(
+                    selectedNetwork.wrappedNativeTokens[0],
+                    selectedNetwork.chainId,
                 );
-                const usdPrice = mainnetEthPrice?.usdPrice;
-                setEthMainnetUsdPrice(usdPrice);
+                const usdPrice = nativeTokenPrice?.usdPrice;
+                setNativeTokenUsdPrice(usdPrice);
             })();
         }
     }, [provider]);

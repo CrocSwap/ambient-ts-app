@@ -64,12 +64,18 @@ export const getLimitOrderData = async (
         baseTokenAddress,
         supportedNetworks[chainId],
     );
-    const basePricePromise = cachedFetchTokenPrice(basePricedToken, chainId);
+    const basePricePromise = cachedFetchTokenPrice(
+        basePricedToken,
+        supportedNetworks[chainId].mainnetChainId,
+    );
     const quotePricedToken = getMainnetAddress(
         quoteTokenAddress,
         supportedNetworks[chainId],
     );
-    const quotePricePromise = cachedFetchTokenPrice(quotePricedToken, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(
+        quotePricedToken,
+        supportedNetworks[chainId].mainnetChainId,
+    );
 
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals =

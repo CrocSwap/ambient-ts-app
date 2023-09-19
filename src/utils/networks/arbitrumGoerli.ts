@@ -12,6 +12,7 @@ import { Provider } from '@ethersproject/providers';
 
 export const arbitrumGoerli: NetworkIF = {
     chainId: '0x66eed',
+    mainnetChainId: '0xa4b1',
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x1',
@@ -34,6 +35,9 @@ export const arbitrumGoerli: NetworkIF = {
     ],
     stableTokens: [
         '0xc944b73fba33a773a4a07340333a3184a70af1ae', // USDC
+    ],
+    wrappedNativeTokens: [
+        '0xe39ab88f8a4777030a534146a9ca3b52bd5d43a3', // WETH
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

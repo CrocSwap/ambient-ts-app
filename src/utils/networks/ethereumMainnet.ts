@@ -12,6 +12,7 @@ import { NetworkIF } from '../interfaces/exports';
 
 export const ethereumMainnet: NetworkIF = {
     chainId: '0x1',
+    mainnetChainId: '0x1',
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',
@@ -36,6 +37,9 @@ export const ethereumMainnet: NetworkIF = {
     stableTokens: [
         '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
         '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
+    ],
+    wrappedNativeTokens: [
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // WETH
     ],
     getGasPriceInGwei: async () => {
         const response = await fetch(

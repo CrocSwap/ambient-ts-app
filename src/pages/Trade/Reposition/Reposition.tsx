@@ -64,7 +64,7 @@ function Reposition() {
     const {
         crocEnv,
         chainData: { blockExplorer },
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
     const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
@@ -578,13 +578,13 @@ function Reposition() {
     >();
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const averageRepositionCostInGasDrops = 260705;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageRepositionCostInGasDrops *
                 1e-9 *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
@@ -593,7 +593,7 @@ function Reposition() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const txUrlOnBlockExplorer = `${blockExplorer}tx/${newRepositionTransactionHash}`;
 

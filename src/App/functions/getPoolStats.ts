@@ -86,8 +86,14 @@ async function expandPoolStats(
 
     const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
     const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
-    const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(
+        mainnetBase,
+        supportedNetworks[chainId].mainnetChainId,
+    );
+    const quotePricePromise = cachedFetchTokenPrice(
+        mainnetQuote,
+        supportedNetworks[chainId].mainnetChainId,
+    );
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;

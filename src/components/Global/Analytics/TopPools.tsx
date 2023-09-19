@@ -4,7 +4,7 @@ import { PoolDataIF } from '../../../contexts/ExploreContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
 import TableHead from './TableHead';
-import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
+import checkPoolForNativeToken from '../../../App/functions/checkPoolForNativeToken';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import Spinner from '../Spinner/Spinner';
 import {
@@ -108,7 +108,10 @@ function TopPools(props: propsIF) {
                                 sortedPools.pools
                                     .filter(
                                         (pool: PoolIF) =>
-                                            !checkPoolForWETH(pool, chainId),
+                                            !checkPoolForNativeToken(
+                                                pool,
+                                                chainId,
+                                            ),
                                     )
                                     .map((pool: PoolDataIF, idx: number) => (
                                         <PoolRow

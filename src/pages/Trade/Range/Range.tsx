@@ -67,7 +67,7 @@ function Range() {
     const {
         crocEnv,
         chainData: { chainId, gridSize, poolIndex },
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, ambientApy, dailyVol } = useContext(PoolContext);
@@ -896,13 +896,13 @@ function Range() {
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const averageRangeCostInGasDrops = 140000;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageRangeCostInGasDrops *
                 1e-9 *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setRangeGasPriceinDollars(
                 getFormattedNumber({
@@ -911,7 +911,7 @@ function Range() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice]);
 
     const updatePinnedDisplayPrices = () => {
         if (

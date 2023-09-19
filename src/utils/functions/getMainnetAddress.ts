@@ -1,10 +1,13 @@
 import { ZERO_ADDRESS } from '../../constants';
 import { NetworkIF } from '../interfaces/NetworkIF';
-import { ethereumMainnet } from '../networks/ethereumMainnet';
+import { supportedNetworks } from '../networks';
 
 export const getMainnetAddress = (address: string, network: NetworkIF) => {
-    if (address === ZERO_ADDRESS) return ethereumMainnet.tokens['WETH'];
-    if (network.chainId === ethereumMainnet.chainId) return address;
+    if (network.mainnetChainId === network.chainId) return address;
+
+    const mainnet = supportedNetworks[network.mainnetChainId];
+
+    if (address === ZERO_ADDRESS) return mainnet.tokens['WETH'];
 
     const tokenSymbol = Object.keys(network.tokens).find(
         (key) =>
@@ -12,6 +15,6 @@ export const getMainnetAddress = (address: string, network: NetworkIF) => {
             address.toLowerCase(),
     );
     return tokenSymbol
-        ? ethereumMainnet.tokens[tokenSymbol as keyof typeof network.tokens]
+        ? mainnet.tokens[tokenSymbol as keyof typeof network.tokens]
         : '';
 };

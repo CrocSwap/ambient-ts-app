@@ -65,7 +65,7 @@ export default function Withdraw(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, nativeTokenUsdPrice } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
@@ -343,11 +343,11 @@ export default function Withdraw(props: propsIF) {
 
     // calculate price of gas for withdrawal
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 gweiInWei *
-                ethMainnetUsdPrice *
+                nativeTokenUsdPrice *
                 (isTokenEth
                     ? averageGasUnitsForEthWithdrawalInGasDrops
                     : averageGasUnitsForErc20WithdrawalInGasDrops);
@@ -359,7 +359,7 @@ export default function Withdraw(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice, isTokenEth]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>

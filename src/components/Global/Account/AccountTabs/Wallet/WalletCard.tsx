@@ -9,8 +9,9 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
-import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 import { toDisplayQty } from '@crocswap-libs/sdk';
+import { getMainnetAddress } from '../../../../../utils/functions/getMainnetAddress';
+import { supportedNetworks } from '../../../../../utils/networks';
 
 interface propsIF {
     token: TokenIF;
@@ -23,6 +24,7 @@ export default function WalletCard(props: propsIF) {
         tokens: { getTokenByAddress },
     } = useContext(TokenContext);
     const {
+        selectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -49,21 +51,14 @@ export default function WalletCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                if (tokenFromMap?.symbol) {
-                    const mainnetAddress =
-                        ethereumMainnet.tokens[
-                            tokenFromMap?.symbol as keyof typeof ethereumMainnet.tokens
-                        ];
-                    if (mainnetAddress) {
-                        const price = await cachedFetchTokenPrice(
-                            mainnetAddress === ZERO_ADDRESS
-                                ? ethereumMainnet.tokens['WETH']
-                                : mainnetAddress,
-                            ethereumMainnet.chainId,
-                        );
-                        if (price) setTokenPrice(price);
-                    }
-                }
+                const price = await cachedFetchTokenPrice(
+                    getMainnetAddress(
+                        token?.address,
+                        supportedNetworks[chainId],
+                    ),
+                    supportedNetworks[chainId].mainnetChainId,
+                );
+                if (price) setTokenPrice(price);
             } catch (err) {
                 console.error(err);
             }

@@ -63,7 +63,7 @@ export default function Transfer(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { crocEnv, nativeTokenUsdPrice } = useContext(CrocEnvContext);
 
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -300,11 +300,11 @@ export default function Transfer(props: propsIF) {
 
     // calculate price of gas for exchange balance transfer
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 gweiInWei *
-                ethMainnetUsdPrice *
+                nativeTokenUsdPrice *
                 (isTokenEth
                     ? averageGasUnitsForEthTransferInGasDrops
                     : averageGasUnitsForErc20TransferInGasDrops);
@@ -316,7 +316,7 @@ export default function Transfer(props: propsIF) {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
+    }, [gasPriceInGwei, nativeTokenUsdPrice, isTokenEth]);
 
     return (
         <FlexContainer flexDirection='column' gap={16} padding={'16px'}>

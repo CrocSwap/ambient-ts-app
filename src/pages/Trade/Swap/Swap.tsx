@@ -52,7 +52,7 @@ function Swap(props: propsIF) {
     const {
         crocEnv,
         chainData: { chainId, poolIndex },
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
@@ -245,7 +245,7 @@ function Swap(props: propsIF) {
 
     // calculate price of gas for swap
     useEffect(() => {
-        if (gasPriceInGwei && ethMainnetUsdPrice) {
+        if (gasPriceInGwei && nativeTokenUsdPrice) {
             const averageSwapCostInGasDrops = isSellTokenNativeToken
                 ? 100000
                 : isWithdrawFromDexChecked
@@ -264,7 +264,7 @@ function Swap(props: propsIF) {
                 gasPriceInGwei *
                 averageSwapCostInGasDrops *
                 1e-9 *
-                ethMainnetUsdPrice;
+                nativeTokenUsdPrice;
 
             setSwapGasPriceinDollars(
                 getFormattedNumber({
@@ -275,7 +275,7 @@ function Swap(props: propsIF) {
         }
     }, [
         gasPriceInGwei,
-        ethMainnetUsdPrice,
+        nativeTokenUsdPrice,
         isSellTokenNativeToken,
         isWithdrawFromDexChecked,
         isTokenADexSurplusSufficient,

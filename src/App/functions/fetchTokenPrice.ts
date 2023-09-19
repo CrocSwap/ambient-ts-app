@@ -6,6 +6,7 @@ import { ANALYTICS_URL } from '../../constants';
 
 export const fetchTokenPrice = async (
     address: string,
+    chainId: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
@@ -18,6 +19,7 @@ export const fetchTokenPrice = async (
                         config_path: 'price',
                         include_data: '0',
                         token_address: address,
+                        chain_id: chainId,
                     }),
             );
             const result = await response.json();

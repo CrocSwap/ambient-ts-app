@@ -154,7 +154,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         });
     }, [chainId, JSON.stringify(usdcData)]);
 
-    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const { nativeTokenUsdPrice } = useContext(CrocEnvContext);
 
     const nativeCombinedBalance =
         nativeData?.walletBalance !== undefined
@@ -177,9 +177,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
             : undefined;
 
     const ethMainnetUsdValue =
-        ethMainnetUsdPrice !== undefined &&
+        nativeTokenUsdPrice !== undefined &&
         nativeCombinedBalanceDisplayNum !== undefined
-            ? ethMainnetUsdPrice * nativeCombinedBalanceDisplayNum
+            ? nativeTokenUsdPrice * nativeCombinedBalanceDisplayNum
             : undefined;
 
     const nativeTokenMainnetUsdValueTruncated =
