@@ -1,8 +1,8 @@
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../utils/interfaces/exports';
 import { Dispatch, memo, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
-import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import TokenInputQuantity from '../../Global/TokenInput/TokenInputQuantity';
+import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import TokenInputQuantity from './TokenInputQuantity';
 
 interface propsIF {
     disable?: boolean;

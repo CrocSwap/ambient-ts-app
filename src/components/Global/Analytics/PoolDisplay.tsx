@@ -1,4 +1,5 @@
-import { PoolDisplayContainer } from './Analytics.styles';
+import { PoolDisplayContainer } from '../../../styled/Components/Analytics';
+
 interface TokenNameData {
     token0: string;
     token1: string;

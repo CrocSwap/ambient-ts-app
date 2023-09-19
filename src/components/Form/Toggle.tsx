@@ -1,5 +1,5 @@
 import { MouseEventHandler, useEffect, KeyboardEventHandler } from 'react';
-import styles from './Toggle.module.css';
+import { ToggleComponent } from './Form.styles';
 interface TogglePropsIF {
     isOn: boolean;
     onColor?: string;
@@ -17,7 +17,6 @@ interface TogglePropsIF {
 
 export default function Toggle(props: TogglePropsIF) {
     const { isOn, handleToggle, id, disabled } = props;
-    const diabledStyle = disabled ? styles.disabled : '';
 
     const enterFunction = (event: KeyboardEvent) => {
         if (event.key === 'Enter') {
@@ -33,16 +32,23 @@ export default function Toggle(props: TogglePropsIF) {
     }, []);
 
     return (
-        <button
-            className={`${styles.switch} ${diabledStyle}`}
-            data-ison={isOn}
+        <ToggleComponent
+            data-isOn={isOn}
             aria-checked={isOn}
             onClick={handleToggle}
             id={`${id}switch`}
             tabIndex={0}
             role='checkbox'
+            disabled={!!disabled}
         >
-            <div className={styles.handle} />
-        </button>
+            <div
+                style={{
+                    width: '18px',
+                    height: '18px',
+                    background: 'var(--text1)',
+                    borderRadius: '40px',
+                }}
+            />
+        </ToggleComponent>
     );
 }

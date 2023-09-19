@@ -16,8 +16,6 @@ export const useAppChain = (
     Dispatch<SetStateAction<string>>,
     ((chainId_?: number | undefined) => void) | undefined,
 ] => {
-    // chain from connected wallet via Moralis
-
     const {
         // chains, error, isLoading, pendingChainId,
         switchNetwork,
