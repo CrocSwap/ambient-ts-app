@@ -1,4 +1,3 @@
-import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import styles from './WalletCard.module.css';
 import { useContext, useEffect, useState } from 'react';
@@ -10,6 +9,7 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
+import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
@@ -49,19 +49,20 @@ export default function WalletCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const tokenAddress = tokenMapKey.split('_')[0];
-                const chain = tokenMapKey.split('_')[1];
-                const isChainMainnet = chain === '0x1';
-                const mainnetAddress =
-                    isChainMainnet && tokenAddress !== ZERO_ADDRESS
-                        ? tokenMapKey.split('_')[0]
-                        : testTokenMap.get(tokenMapKey)?.split('_')[0];
-                if (mainnetAddress) {
-                    const price = await cachedFetchTokenPrice(
-                        mainnetAddress,
-                        '0x1',
-                    );
-                    price && setTokenPrice(price);
+                if (tokenFromMap?.symbol) {
+                    const mainnetAddress =
+                        ethereumMainnet.tokens[
+                            tokenFromMap?.symbol as keyof typeof ethereumMainnet.tokens
+                        ];
+                    if (mainnetAddress) {
+                        const price = await cachedFetchTokenPrice(
+                            mainnetAddress === ZERO_ADDRESS
+                                ? ethereumMainnet.tokens['WETH']
+                                : mainnetAddress,
+                            ethereumMainnet.chainId,
+                        );
+                        if (price) setTokenPrice(price);
+                    }
                 }
             } catch (err) {
                 console.error(err);

@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import { EvmChain } from '@moralisweb3/common-evm-utils';
 
 import { memoizePromiseFn } from './memoizePromiseFn';
 const randomNum = Math.random();
@@ -7,14 +6,11 @@ import { ANALYTICS_URL } from '../../constants';
 
 export const fetchTokenPrice = async (
     address: string,
-    chainId: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
-    const chain = chainId === '0x1' ? EvmChain.ETHEREUM : EvmChain.ETHEREUM;
-
     try {
-        if (address && chain) {
+        if (address) {
             const response = await fetch(
                 ANALYTICS_URL +
                     new URLSearchParams({
