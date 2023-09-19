@@ -7,6 +7,7 @@ import { Provider } from '@ethersproject/providers';
 
 export const arbitrumMainnet: NetworkIF = {
     chainId: '0xa4b1',
+    mainnetChainId: '0xa4b1',
     wagmiChain,
     shouldPollBlock: true,
     tokens: {
@@ -24,6 +25,9 @@ export const arbitrumMainnet: NetworkIF = {
     topPools: [new TopPool(arbETH, arbUSDC, lookupChain('0xa4b1').poolIndex)],
     stableTokens: [
         '0xaf88d065e77c8cc2239327c5edb3a432268e5831', // USDC
+    ],
+    wrappedNativeTokens: [
+        '0x82af49447d8a07e3bd95bd0d56f35241523fbab1', // WETH
     ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;

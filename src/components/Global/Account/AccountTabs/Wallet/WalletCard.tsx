@@ -24,7 +24,6 @@ export default function WalletCard(props: propsIF) {
         tokens: { getTokenByAddress },
     } = useContext(TokenContext);
     const {
-        selectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 

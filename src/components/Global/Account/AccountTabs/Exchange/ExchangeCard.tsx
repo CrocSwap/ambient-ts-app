@@ -25,7 +25,6 @@ export default function ExchangeCard(props: propsIF) {
     } = useContext(TokenContext);
 
     const {
-        selectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 

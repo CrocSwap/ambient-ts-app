@@ -17,7 +17,6 @@ import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { getMainnetAddress } from '../../../../utils/functions/getMainnetAddress';
 import { supportedNetworks } from '../../../../utils/networks';
-import { ethereumMainnet } from '../../../../utils/networks/ethereumMainnet';
 
 // interface for component props
 interface propsIF {
