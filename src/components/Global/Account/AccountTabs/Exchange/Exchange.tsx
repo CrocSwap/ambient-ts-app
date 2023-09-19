@@ -8,8 +8,8 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
-import { USDC } from '../../../../../utils/tokens/exports';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { supportedNetworks } from '../../../../../utils/networks';
 
 interface propsIF {
     chainId: string;
@@ -29,15 +29,12 @@ export default function Exchange(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { nativeToken, erc20Tokens } = useAppSelector(
-        (state) => state.userData.tokens,
+    const tokenBalances = useAppSelector(
+        (state) => state.userData.tokenBalances,
     );
-    const connectedUserTokens = [nativeToken]
-        .concat(erc20Tokens)
-        .filter((token) => token);
 
     const tokensToRender = connectedAccountActive
-        ? connectedUserTokens
+        ? tokenBalances
         : resolvedAddressTokens;
 
     function sequenceTokens(tkns: TokenIF[]) {
@@ -87,9 +84,7 @@ export default function Exchange(props: propsIF) {
                     // canonical token addresses to assign probability
                     const addresses = {
                         nativeToken: ZERO_ADDRESS,
-                        USDC: USDC[
-                            chainId.toLowerCase() as keyof typeof USDC
-                        ].toLowerCase(),
+                        USDC: supportedNetworks[chainId].tokens.USDC,
                     };
                     // logic router to assign numerical priority to output
                     // unlisted tokens get priority 0
@@ -119,7 +114,9 @@ export default function Exchange(props: propsIF) {
         <div className={styles.container}>
             <ExchangeHeader />
             <div className={styles.item_container}>
-                {tokensToRender && tokensToRender.length > 0 ? (
+                {tokensToRender &&
+                tokensToRender.length > 0 &&
+                tokensToRender[0] !== undefined ? (
                     // values can be `undefined` but this fn will filter them out
                     sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
                         <ExchangeCard

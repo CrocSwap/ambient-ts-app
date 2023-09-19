@@ -20,10 +20,11 @@ import {
     setRangeTicksCopied,
     setIsTokenAPrimary,
 } from '../../../../utils/state/tradeDataSlice';
-import TokenInput from '../../../Global/TokenInput/TokenInput';
-import styles from '../../../Global/TokenInput/TokenInput.module.css';
+import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formatTokenInput } from '../../../../utils/numbers';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import { InputDisabledText } from '../../../../styled/Components/TradeModules';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -202,19 +203,21 @@ function RangeTokenInput(props: propsIF) {
     };
 
     const disabledContent = (
-        <div className={styles.overlay_container}>
-            <div className={styles.disabled_text}>
-                The market is outside your specified range.
-                <div className={styles.warning_text}>
-                    Single-asset deposit only.
-                </div>
-            </div>
-        </div>
+        <InputDisabledText
+            flexDirection='column'
+            alignItems='center'
+            justifyContent='center'
+            fullHeight
+            fullWidth
+        >
+            The market is outside your specified range.
+            <Text color='accent1'>Single-asset deposit only.</Text>
+        </InputDisabledText>
     );
 
     return (
-        <section className={styles.token_input_container}>
-            <TokenInput
+        <FlexContainer flexDirection='column' gap={8}>
+            <TokenInputWithWalletBalance
                 fieldId='range_A'
                 tokenAorB='A'
                 token={tokenA}
@@ -235,15 +238,20 @@ function RangeTokenInput(props: propsIF) {
                     isTokenAInputDisabled ? disabledContent : undefined
                 }
             />
-            <div className={styles.operation_container}>
+            <FlexContainer
+                fullWidth
+                justifyContent='center'
+                alignItems='center'
+                padding='0 0 8px 0'
+            >
                 <img
-                    className={styles.inactive}
+                    style={{ cursor: 'default !important' }}
                     src={tokenArrow}
                     height={28}
                     alt='plus sign'
                 />
-            </div>
-            <TokenInput
+            </FlexContainer>
+            <TokenInputWithWalletBalance
                 fieldId='range_B'
                 tokenAorB='B'
                 token={tokenB}
@@ -265,7 +273,7 @@ function RangeTokenInput(props: propsIF) {
                 }
                 isWithdraw
             />
-        </section>
+        </FlexContainer>
     );
 }
 

@@ -11,9 +11,7 @@ import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ExchangeBalanceDropdown } from '../ExchangeBalanceDropdown/ExchangeBalanceDropdown';
-import { getFormattedNumber } from '../../../functions/getFormattedNumber';
 import {
     TitleGradientButton,
     WalletName,
@@ -21,29 +19,18 @@ import {
 import { FlexContainer } from '../../../../styled/Common';
 
 interface propsIF {
-    nativeBalance: string | undefined;
     accountAddress: string;
     accountAddressFull: string;
     clickLogout: () => void;
     ensName: string;
-    walletDropdownTokenData:
-        | {
-              logo: string;
-              symbol: string;
-              value: string | undefined;
-              amount: string | undefined;
-          }[]
-        | null;
 }
 
 export default function Account(props: propsIF) {
-    const { nativeBalance, clickLogout, ensName, walletDropdownTokenData } =
-        props;
+    const { clickLogout, ensName } = props;
 
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { connector, isConnected } = useAccount();
 
     const isUserLoggedIn = isConnected;
@@ -72,24 +59,6 @@ export default function Account(props: propsIF) {
     };
     UseOnClickOutside(walletDropdownItemRef, clickOutsideHandler);
 
-    const ethMainnetUsdValue =
-        ethMainnetUsdPrice !== undefined && nativeBalance !== undefined
-            ? ethMainnetUsdPrice * parseFloat(nativeBalance.replaceAll(',', ''))
-            : undefined;
-
-    const ethMainnetUsdValueTruncated = getFormattedNumber({
-        value: ethMainnetUsdValue,
-        minFracDigits: 2,
-        maxFracDigits: 2,
-    });
-
-    const ethQuantityInWalletAndDeposits =
-        nativeBalance === undefined
-            ? undefined
-            : parseFloat(nativeBalance) === 0
-            ? '0.00'
-            : nativeBalance;
-
     const ariaLabel =
         'You are currently on a focus mode on the account dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
 
@@ -103,7 +72,7 @@ export default function Account(props: propsIF) {
     }, [isEscapePressed]);
     const walletDisplay = (
         <section
-            style={{ position: 'relative' }}
+            style={{ position: 'relative', fontSize: '16px' }}
             ref={walletDropdownItemRef}
             aria-label={mainAriaLabel}
         >
@@ -124,20 +93,7 @@ export default function Account(props: propsIF) {
                     handleCopyAddress={handleCopyAddress}
                     connectorName={connector?.name}
                     clickLogout={clickLogout}
-                    ethAmount={
-                        isUserLoggedIn
-                            ? nativeBalance
-                                ? 'Ξ ' + ethQuantityInWalletAndDeposits
-                                : '...'
-                            : ''
-                    }
-                    ethValue={
-                        ethMainnetUsdValueTruncated !== undefined
-                            ? `${ethMainnetUsdValueTruncated}`
-                            : undefined
-                    }
                     accountAddressFull={props.accountAddressFull}
-                    walletDropdownTokenData={walletDropdownTokenData}
                     clickOutsideHandler={clickOutsideHandler}
                 />
             ) : null}

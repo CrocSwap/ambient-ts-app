@@ -53,13 +53,11 @@ async function expandTokenBalance(
     const symbol = details.then((d) => d?.symbol || '');
     const decimals = props.crocEnv.token(token).decimals;
     const balance = props.crocEnv.token(token).balance(props.user);
-    const balanceDisp = props.crocEnv.token(token).balanceDisplay(props.user);
 
     return {
         token: token,
         symbol: await symbol,
         decimals: await decimals,
         balance: (await balance).toString(),
-        balanceDecimalCorrected: parseFloat(await balanceDisp),
     };
 }

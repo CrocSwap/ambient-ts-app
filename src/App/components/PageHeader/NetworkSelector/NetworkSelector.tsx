@@ -10,6 +10,7 @@ import {
     NetworkItem,
     DropdownMenuContainer,
 } from '../../../../styled/Components/Header';
+import { supportedNetworks } from '../../../../utils/networks';
 interface NetworkSelectorPropsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
@@ -17,6 +18,7 @@ interface NetworkSelectorPropsIF {
 export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     const { switchNetwork } = props;
     const {
+        setSelectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -29,11 +31,10 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
         <MenuContent tabIndex={0} aria-label={dropdownAriaDescription}>
             {chains.map((chain, idx) => (
                 <NetworkItem
-                    onClick={() =>
-                        switchNetwork
-                            ? switchNetwork(parseInt(chain.chainId))
-                            : null
-                    }
+                    onClick={() => {
+                        switchNetwork && switchNetwork(parseInt(chain.chainId));
+                        setSelectedNetwork(supportedNetworks[chain.chainId]);
+                    }}
                     key={chain.chainId}
                     custom={idx}
                     variants={ItemEnterAnimation}

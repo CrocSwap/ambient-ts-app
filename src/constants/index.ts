@@ -15,7 +15,7 @@ export const POOL_HIDE = [
 
 // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
 // NOTE: we use 'main' for staging (testnet) and 'production' for mainnet app. All other names are treated as 'local'
-export type AppEnvironment = 'local' | 'main' | 'production';
+export type AppEnvironment = 'local' | 'testnet' | 'production';
 export const BRANCH_NAME =
     process.env.REACT_APP_BRANCH_NAME !== undefined
         ? process.env.REACT_APP_BRANCH_NAME.toLowerCase()
@@ -25,6 +25,9 @@ export const APP_ENVIRONMENT: AppEnvironment =
     (BRANCH_NAME as AppEnvironment) || 'local';
 
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
+
+export const ANALYTICS_URL =
+    'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
 
 export const GRAPHCACHE_URL =
     process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
@@ -47,10 +50,6 @@ export const CHAT_ENABLED =
     process.env.REACT_APP_CHAT_IS_ENABLED !== undefined
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
-
-export const MORALIS_KEY =
-    process.env.REACT_APP_MORALIS_KEY ||
-    'tb9SfJn2zwjLldR7JeHzLkT0cAHOu9Jc2QWVY06Sloar9VWNKTqZFMIta5BCWLma';
 
 export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;

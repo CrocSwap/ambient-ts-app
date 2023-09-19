@@ -91,12 +91,8 @@ export const useProcessOrder = (
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            getMoneynessRank(
-                limitOrder.base.toLowerCase() + '_' + limitOrder.chainId,
-            ) -
-                getMoneynessRank(
-                    limitOrder.quote.toLowerCase() + '_' + limitOrder.chainId,
-                ) >=
+            getMoneynessRank(limitOrder.baseSymbol) -
+                getMoneynessRank(limitOrder.quoteSymbol) >=
             0,
         [limitOrder.base, limitOrder.base, limitOrder.chainId],
     );
@@ -129,7 +125,7 @@ export const useProcessOrder = (
             ? 'priceBuy'
             : 'priceSell';
 
-    const sideType = isAccountView
+    const sideType: 'sell' | 'buy' = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? isBid
                 ? 'buy'

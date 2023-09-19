@@ -1,6 +1,5 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
-import styles from './Ranges.module.css';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { NavLink } from 'react-router-dom';
 import { ZERO_ADDRESS } from '../../../../constants';
@@ -15,10 +14,13 @@ import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { RowItem } from '../../../../styled/Components/TransactionTable';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import moment from 'moment';
 interface propsIF {
     posHashTruncated: string;
     usdValue: string;
-    usernameStyle: string;
+    usernameColor: 'accent1' | 'accent2' | 'text1';
     userNameToDisplay: string;
     baseTokenLogo: string;
     baseTokenSymbol: string;
@@ -37,15 +39,11 @@ interface propsIF {
     isOwnerActiveAccount: boolean;
     isAccountView: boolean;
     isAmbient: boolean;
-    ipadView: boolean;
     isPositionInRange: boolean;
     isLeaderboard: boolean | undefined;
-    showColumns: boolean;
     rank: number | undefined;
     ensName: string | null;
     handleCopyPosHash: () => void;
-    handleRowMouseDown: () => void;
-    handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
     position: PositionIF;
@@ -65,14 +63,13 @@ export default function rangeRowConstants(props: propsIF) {
         ownerId,
         userNameToDisplay,
         isOwnerActiveAccount,
-        usernameStyle,
+        usernameColor,
         baseTokenLogo,
         quoteTokenLogo,
         position,
         baseTokenSymbol,
         quoteTokenSymbol,
         isLeaderboard,
-        showColumns,
         rank,
         elapsedTimeString,
         maxRangeDenomByMoneyness,
@@ -82,12 +79,9 @@ export default function rangeRowConstants(props: propsIF) {
         ambientOrMin,
         ambientOrMax,
         sideCharacter,
-        ipadView,
         apyClassname,
         apyString,
         isPositionInRange,
-        handleRowMouseDown,
-        handleRowMouseOut,
         baseTokenAddress,
         quoteTokenAddress,
     } = props;
@@ -102,104 +96,117 @@ export default function rangeRowConstants(props: propsIF) {
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const IDWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    className={styles.id_tooltip_style}
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    {posHash.toString()}
-                    <FiCopy
-                        style={{ cursor: 'pointer' }}
-                        onClick={handleCopyPosHash}
-                    />
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                data-label='id'
-                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
+        <RowItem hover data-label='id' role='button' tabIndex={0}>
+            <TextOnlyTooltip
+                interactive
+                title={
+                    <FlexContainer
+                        justifyContent='center'
+                        background='dark3'
+                        color='text1'
+                        padding='12px'
+                        gap={8}
+                        rounded
+                        font='roboto'
+                        role='button'
+                        style={{ width: '440px', cursor: 'default' }}
+                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+                            event.stopPropagation()
+                        }
+                    >
+                        {posHash.toString()}
+                        <FiCopy
+                            size={'12px'}
+                            style={{ cursor: 'pointer' }}
+                            onClick={handleCopyPosHash}
+                        />
+                    </FlexContainer>
+                }
+                placement={'right'}
+                enterDelay={750}
+                leaveDelay={0}
             >
-                {posHashTruncated}
-            </p>
-        </TextOnlyTooltip>
+                <Text font='roboto'>{posHashTruncated}</Text>
+            </TextOnlyTooltip>
+        </RowItem>
     );
 
     const valueWithTooltip = (
-        <li
+        <FlexContainer
+            justifyContent='flex-end'
+            alignItems='center'
             data-label='value'
             className='base_color'
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
-            {' '}
             {'$' + usdValue}
-        </li>
+        </FlexContainer>
     );
 
     const actualWalletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div className={styles.wallet_tooltip_div}>
-                    <p
-                        className={styles.wallet_tooltip_p}
-                        onClick={(event) => event.stopPropagation()}
+        <RowItem
+            data-label='wallet'
+            style={ensName ? { textTransform: 'lowercase' } : undefined}
+        >
+            <TextOnlyTooltip
+                interactive
+                title={
+                    <FlexContainer
+                        justifyContent='center'
+                        background='dark3'
+                        color='text1'
+                        padding='12px'
+                        gap={8}
+                        rounded
+                        font='roboto'
+                        role='button'
+                        style={{ width: '316px' }}
+                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+                            event.stopPropagation()
+                        }
                     >
-                        <span
+                        <Text
+                            font='roboto'
                             onClick={handleWalletLinkClick}
                             style={{ cursor: 'pointer' }}
                         >
                             {ownerId}
-                        </span>
+                        </Text>
                         <FiCopy
-                            style={{ cursor: 'pointer' }}
                             size={'12px'}
                             onClick={() => handleWalletCopy()}
                         />
 
                         <FiExternalLink
-                            style={{ cursor: 'pointer' }}
                             size={'12px'}
                             onClick={handleWalletLinkClick}
                         />
-                    </p>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                data-label='wallet'
-                className={`${usernameStyle} ${styles.mono_font}`}
-                style={ensName ? { textTransform: 'lowercase' } : undefined}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
+                    </FlexContainer>
+                }
+                placement={'right'}
+                enterDelay={750}
+                leaveDelay={0}
             >
-                {userNameToDisplay}
-            </p>
-        </TextOnlyTooltip>
+                <Text
+                    font={usernameColor === 'text1' ? 'roboto' : undefined}
+                    color={usernameColor}
+                >
+                    {userNameToDisplay}
+                </Text>
+            </TextOnlyTooltip>
+        </RowItem>
     );
 
     const walletWithoutTooltip = (
-        <p
+        <RowItem
+            hover
+            color={usernameColor}
+            font={usernameColor === 'text1' ? 'roboto' : undefined}
             data-label='wallet'
-            className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
             tabIndex={0}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             {userNameToDisplay}
-        </p>
+        </RowItem>
     );
 
     const walletWithTooltip = isOwnerActiveAccount
@@ -238,10 +245,8 @@ export default function rangeRowConstants(props: propsIF) {
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const tokenPair = (
-        <li
+        <div
             className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             onClick={(event) => event.stopPropagation()}
         >
             <NavLink
@@ -255,76 +260,103 @@ export default function rangeRowConstants(props: propsIF) {
                     {baseTokenSymbol} / {quoteTokenSymbol}
                 </div>
             </NavLink>
-        </li>
+        </div>
     );
 
-    const idOrNull =
-        !isLeaderboard && !showColumns ? <li> {IDWithTooltip}</li> : null;
-
-    const rankingOrNull =
-        isLeaderboard && !showColumns ? <Medal ranking={rank ?? 80} /> : null;
+    const rankingOrNull = isLeaderboard ? <Medal ranking={rank ?? 80} /> : null;
 
     const baseQtyDisplayWithTooltip = (
-        <li
-            data-label={baseTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <div className={styles.base_display_div}>
+        <div data-label={baseTokenSymbol} className='base_color'>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='flex-end'
+                gap={4}
+            >
                 {position.positionLiqBaseTruncated || '0'}
                 {baseTokenLogoComponent}
-            </div>
-        </li>
+            </FlexContainer>
+        </div>
     );
     const quoteQtyDisplayWithTooltip = (
-        <li
-            data-label={quoteTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <div className={styles.base_display_div}>
+        <div data-label={quoteTokenSymbol} className='base_color'>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='flex-end'
+                gap={4}
+            >
                 {position.positionLiqQuoteTruncated || '0'}
                 {quoteTokenLogoComponent}
-            </div>
-        </li>
+            </FlexContainer>
+        </div>
     );
 
     const rangeTimeWithTooltip = (
-        <li
-            style={{ textTransform: 'lowercase' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <p className='base_color'>{elapsedTimeString}</p>
-        </li>
+        <RowItem gap={4}>
+            <>
+                {position.latestUpdateTime ? (
+                    <TextOnlyTooltip
+                        interactive
+                        title={
+                            <FlexContainer
+                                fullWidth
+                                justifyContent='center'
+                                background='dark3'
+                                color='text1'
+                                padding='12px'
+                                gap={8}
+                                rounded
+                                role='button'
+                                onClick={(
+                                    event: React.MouseEvent<HTMLDivElement>,
+                                ) => event.stopPropagation()}
+                            >
+                                {moment(
+                                    position.latestUpdateTime * 1000,
+                                ).format('MM/DD/YYYY HH:mm')}
+                            </FlexContainer>
+                        }
+                        placement={'right'}
+                        enterDelay={750}
+                        leaveDelay={0}
+                    >
+                        <div style={{ textTransform: 'lowercase' }}>
+                            <Text
+                                style={{ textTransform: 'lowercase' }}
+                                tabIndex={0}
+                            >
+                                {elapsedTimeString}
+                            </Text>
+                        </div>
+                    </TextOnlyTooltip>
+                ) : (
+                    <div style={{ textTransform: 'lowercase' }}>
+                        <p className='base_color'>{elapsedTimeString}</p>
+                    </div>
+                )}
+            </>
+        </RowItem>
     );
 
     const txIdColumnComponent = (
-        <li onMouseEnter={handleRowMouseDown} onMouseLeave={handleRowMouseOut}>
+        <div>
             {IDWithTooltip}
             {walletWithTooltip}
-        </li>
+        </div>
     );
 
     const fullScreenMinDisplay = isAmbient ? (
-        <li
+        <FlexContainer
+            justifyContent='flex-end'
             data-label='max price'
             className='base_color'
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <span>{'0.00'}</span>
-        </li>
+        </FlexContainer>
     ) : (
-        <li
+        <FlexContainer
+            justifyContent='flex-end'
             data-label='min price'
             className='base_color'
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <span>{sideCharacter}</span>
             <span>
@@ -332,16 +364,14 @@ export default function rangeRowConstants(props: propsIF) {
                     ? minRangeDenomByMoneyness || '…'
                     : ambientOrMin || '…'}
             </span>
-        </li>
+        </FlexContainer>
     );
 
     const fullScreenMaxDisplay = isAmbient ? (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <FlexContainer
+            justifyContent='flex-end'
             data-label='max price'
             className='base_color'
-            style={{ textAlign: 'right' }}
         >
             <span
                 style={{
@@ -350,14 +380,12 @@ export default function rangeRowConstants(props: propsIF) {
             >
                 {'∞'}
             </span>
-        </li>
+        </FlexContainer>
     ) : (
-        <li
+        <FlexContainer
+            justifyContent='flex-end'
             data-label='max price'
             className='base_color'
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <span>{sideCharacter}</span>
             <span>
@@ -365,16 +393,15 @@ export default function rangeRowConstants(props: propsIF) {
                     ? maxRangeDenomByMoneyness || '…'
                     : ambientOrMax || '…'}
             </span>
-        </li>
+        </FlexContainer>
     );
 
-    const columnNonAmbientPrice = showColumns && !ipadView && !isAmbient && (
-        <li
+    const priceDisplay = !isAmbient ? (
+        <FlexContainer
+            flexDirection='column'
+            alignItems='flex-end'
             data-label='side-type'
             className='base_color'
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
         >
             <p>
                 <span>{sideCharacter}</span>
@@ -392,15 +419,13 @@ export default function rangeRowConstants(props: propsIF) {
                         : ambientOrMax || '…'}
                 </span>
             </p>
-        </li>
-    );
-    const columnAmbientPrice = showColumns && !ipadView && isAmbient && (
-        <li
+        </FlexContainer>
+    ) : (
+        <FlexContainer
+            justifyContent='flex-end'
             data-label='side-type'
             className='base_color'
-            style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+            style={{ whiteSpace: 'nowrap' }}
         >
             <p>
                 <span
@@ -410,72 +435,63 @@ export default function rangeRowConstants(props: propsIF) {
                     {'ambient'}
                 </span>
             </p>
-        </li>
+        </FlexContainer>
     );
 
     const tokenValues = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <div
             data-label={baseTokenSymbol + quoteTokenSymbol}
             className='base_color'
-            style={{ textAlign: 'right' }}
         >
-            <div
-                className={styles.token_qty}
+            <FlexContainer
+                justifyContent='flex-end'
+                alignItems='center'
+                gap={4}
                 style={{
                     whiteSpace: 'nowrap',
                 }}
             >
                 {position.positionLiqBaseTruncated || '0'}
                 {baseTokenLogoComponent}
-            </div>
+            </FlexContainer>
 
-            <div
-                className={styles.token_qty}
+            <FlexContainer
+                justifyContent='flex-end'
+                alignItems='center'
+                gap={4}
                 style={{
                     whiteSpace: 'nowrap',
                 }}
             >
                 {position.positionLiqQuoteTruncated || '0'}
                 {quoteTokenLogoComponent}
-            </div>
-        </li>
+            </FlexContainer>
+        </div>
     );
 
     const apyDisplay = (
-        <li
-            data-label='apy'
-            style={{ textAlign: 'right' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <FlexContainer justifyContent='flex-end' data-label='apy'>
             {' '}
             <p className={apyClassname}>{apyString}</p>
-        </li>
+        </FlexContainer>
     );
 
     const rangeDisplay = (
-        <li
-            data-label='status'
-            className='gradient_text'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
+        <FlexContainer padding='0 0 0 8px' data-label='status'>
             <RangeStatus
                 isInRange={isPositionInRange}
                 isAmbient={isAmbient}
                 isEmpty={position.positionLiq === 0}
                 justSymbol
             />
-        </li>
+        </FlexContainer>
     );
 
     return {
         valueWithTooltip,
         walletWithTooltip,
         tokenPair,
-        idOrNull,
+        IDWithTooltip,
         rankingOrNull,
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
@@ -483,8 +499,7 @@ export default function rangeRowConstants(props: propsIF) {
         txIdColumnComponent,
         fullScreenMinDisplay,
         fullScreenMaxDisplay,
-        columnNonAmbientPrice,
-        columnAmbientPrice,
+        priceDisplay,
         tokenValues,
         apyDisplay,
         rangeDisplay,

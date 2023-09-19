@@ -5,7 +5,6 @@ import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { TransactionIF } from '../../utils/interfaces/exports';
 import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
-import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.module.css';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
@@ -43,9 +42,7 @@ export const useProcessTransaction = (
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
     const isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
-            getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
-        0;
+        getMoneynessRank(tx.baseSymbol) - getMoneynessRank(tx.quoteSymbol) >= 0;
 
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;
@@ -297,8 +294,6 @@ export const useProcessTransaction = (
             ? 'limit'
             : 'market';
 
-    const sideTypeStyle = `${sideType}_style`;
-
     const usdValueNum = tx.totalValueUSD;
     const totalFlowUSDNum = tx.totalValueUSD;
     const totalFlowAbsNum =
@@ -372,18 +367,18 @@ export const useProcessTransaction = (
 
     const valueArrows = tx.entityType !== 'liqchange' && !isLimitRemove;
 
-    const positiveDisplayStyle =
+    const positiveDisplayColor =
         (!isBuy ? baseQuantityDisplay === '0' : quoteQuantityDisplay === '0') ||
         !valueArrows ||
         isLimitRemove
-            ? styles.light_grey
-            : styles.positive_value;
-    const negativeDisplayStyle =
+            ? 'text1'
+            : 'positive';
+    const negativeDisplayColor =
         (isBuy ? baseQuantityDisplay === '0' : quoteQuantityDisplay === '0') ||
         !valueArrows ||
         isLimitRemove
-            ? styles.light_grey
-            : styles.negative_value;
+            ? 'text1'
+            : 'negative';
 
     // if (!tx) return null;
     return {
@@ -409,14 +404,13 @@ export const useProcessTransaction = (
         sideType,
         transactionTypeSide,
         type,
-        sideTypeStyle,
         isLimitRemove,
 
         sideCharacter,
         priceCharacter,
         isBuy,
-        positiveDisplayStyle,
-        negativeDisplayStyle,
+        positiveDisplayColor,
+        negativeDisplayColor,
 
         // Value data
         usdValue,

@@ -4,6 +4,7 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
+import { FlexContainer } from '../../../../styled/Common';
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import {
     useAppDispatch,
@@ -23,8 +24,7 @@ import {
     setIsTokenAPrimaryRange,
 } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import TokenInput from '../../../Global/TokenInput/TokenInput';
-import styles from '../../../Global/TokenInput/TokenInput.module.css';
+import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 
 interface propsIF {
@@ -221,8 +221,8 @@ function LimitTokenInput(props: propsIF) {
     };
 
     return (
-        <section className={styles.token_input_container}>
-            <TokenInput
+        <FlexContainer flexDirection='column' gap={8}>
+            <TokenInputWithWalletBalance
                 fieldId='limit_sell'
                 tokenAorB='A'
                 token={tokenA}
@@ -240,7 +240,12 @@ function LimitTokenInput(props: propsIF) {
                 }}
                 showWallet={isUserConnected}
             />
-            <div className={`${styles.operation_container}`}>
+            <FlexContainer
+                fullWidth
+                justifyContent='center'
+                alignItems='center'
+                padding='0 0 8px 0'
+            >
                 <IconWithTooltip title='Reverse tokens' placement='left'>
                     <TokensArrow
                         onClick={() => {
@@ -248,8 +253,8 @@ function LimitTokenInput(props: propsIF) {
                         }}
                     />
                 </IconWithTooltip>
-            </div>
-            <TokenInput
+            </FlexContainer>
+            <TokenInputWithWalletBalance
                 fieldId='limit_buy'
                 tokenAorB='B'
                 token={tokenB}
@@ -264,7 +269,7 @@ function LimitTokenInput(props: propsIF) {
                     setTokenBInputQty(formatTokenInput(val, tokenB, isMax));
                 }}
             />
-        </section>
+        </FlexContainer>
     );
 }
 

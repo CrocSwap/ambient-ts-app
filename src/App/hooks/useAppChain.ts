@@ -16,17 +16,19 @@ export const useAppChain = (
     Dispatch<SetStateAction<string>>,
     ((chainId_?: number | undefined) => void) | undefined,
 ] => {
-    // chain from connected wallet via Moralis
-
     const {
         // chains, error, isLoading, pendingChainId,
         switchNetwork,
     } = useSwitchNetwork();
 
+    const CHAIN_LS_KEY = 'CHAIN_ID';
+
     const { chain: chainNetwork } = useNetwork();
 
     function determineConnected(chainNetwork?: { id: number }): string {
-        return chainNetwork ? chainNumToString(chainNetwork.id) : defaultChain;
+        return chainNetwork
+            ? chainNumToString(chainNetwork.id)
+            : localStorage.getItem(CHAIN_LS_KEY) || defaultChain;
     }
 
     const defaultChain = getDefaultChainId();
@@ -78,6 +80,7 @@ export const useAppChain = (
             validateChainId(currentChain) &&
             nextChain !== currentChain
         ) {
+            localStorage.setItem(CHAIN_LS_KEY, nextChain);
             nukeAndReloadApp();
         }
 

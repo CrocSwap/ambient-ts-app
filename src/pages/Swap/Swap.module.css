@@ -1,14 +1,13 @@
 .swap_page_container {
-    background: url(../../assets/images/backgrounds/swap_bg.png) no-repeat
-    ;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
+    background: url(../../assets/images/backgrounds/swap_bg.png) no-repeat;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .swap_page_container > section {

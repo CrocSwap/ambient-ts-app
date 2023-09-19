@@ -5,7 +5,7 @@ import { useProvider } from 'wagmi';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../../App/hooks/useTradeData';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import TooltipComponent from '../../../components/Global/TooltipComponent/TooltipComponent';
 import ConfirmSwapModal from '../../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
@@ -21,6 +21,8 @@ import { PoolContext } from '../../../contexts/PoolContext';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+import { FlexContainer } from '../../../styled/Common';
+import { WarningContainer } from '../../../styled/Components/TradeModules';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import {
     useAppDispatch,
@@ -40,7 +42,6 @@ import {
     isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
-import styles from './Swap.module.css';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -468,39 +469,47 @@ function Swap(props: propsIF) {
     };
 
     const liquidityInsufficientWarning = isLiquidityInsufficient ? (
-        <div className={styles.price_impact}>
-            <div className={styles.align_center}>
-                <div
-                    style={{
-                        color: '#f6385b',
-                    }}
-                >
-                    Current Pool Liquidity is Insufficient for this Swap
-                </div>
-            </div>
-            <div>
-                <TooltipComponent
-                    title='Current Pool Liquidity is Insufficient for this Swap'
-                    placement='bottom'
-                />
-            </div>
-        </div>
+        <WarningContainer
+            flexDirection='row'
+            justifyContent='space-between'
+            alignItems='center'
+            fontSize='body'
+            color='other-red'
+            padding='4px 8px'
+        >
+            <div>Current Pool Liquidity is Insufficient for this Swap</div>
+            <TooltipComponent
+                title='Current Pool Liquidity is Insufficient for this Swap'
+                placement='bottom'
+            />
+        </WarningContainer>
     ) : undefined;
 
     const priceImpactWarning =
         !isLiquidityInsufficient && priceImpactNum && priceImpactNum > 2 ? (
-            <div className={styles.price_impact}>
-                <div className={styles.align_center}>
+            <WarningContainer
+                flexDirection='row'
+                justifyContent='space-between'
+                alignItems='center'
+                fontSize='body'
+                color='other-red'
+                padding='4px 8px'
+            >
+                <FlexContainer
+                    flexDirection='row'
+                    gap={4}
+                    alignItems='center'
+                    style={{ minWidth: '70px' }}
+                    padding='0 4px 0 0'
+                >
                     <div>Price Impact Warning</div>
                     <TooltipComponent
                         title='Difference Between Current (Spot) Price and Final Price'
                         placement='bottom'
                     />
-                </div>
-                <div className={styles.data}>
-                    {getPriceImpactString(priceImpactNum)}%
-                </div>
-            </div>
+                </FlexContainer>
+                <div>{getPriceImpactString(priceImpactNum)}%</div>
+            </WarningContainer>
         ) : undefined;
 
     return (

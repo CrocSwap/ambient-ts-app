@@ -3,13 +3,14 @@ import { FiAlertTriangle } from 'react-icons/fi';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+import { FlexContainer, Text } from '../../../styled/Common';
+import { SettingsContainer } from '../../../styled/Components/TradeModules';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import Button from '../Button/Button';
+import Button from '../../Form/Button';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import Modal from '../Modal/Modal';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
-import styles from './TransactionSettingsModal.module.css';
 
 export type TransactionModuleType =
     | 'Swap'
@@ -63,7 +64,13 @@ export default function TransactionSettingsModal(props: propsIF) {
 
     return (
         <Modal title={`${module} Settings`} onClose={onClose}>
-            <div className={styles.settings_container}>
+            <SettingsContainer
+                flexDirection='column'
+                justifyContent='space-between'
+                gap={12}
+                background='dark1'
+                padding='16px'
+            >
                 <section>
                     {module !== 'Limit Order' && (
                         <SlippageTolerance
@@ -78,15 +85,26 @@ export default function TransactionSettingsModal(props: propsIF) {
                         />
                     )}
                     {module === 'Swap' && currentSlippage > 1 && (
-                        <div className={styles.frontrun_warning}>
+                        <FlexContainer
+                            alignItems='center'
+                            padding='12px 8px 0 8px'
+                            color='accent2'
+                            fullWidth
+                        >
                             <FiAlertTriangle size={28} color='var(--accent2)' />
-                            <div>
-                                <p>
+                            <div style={{ flex: 1, paddingLeft: '8px' }}>
+                                <Text
+                                    fontSize='body'
+                                    style={{
+                                        minWidth: '100%',
+                                        maxWidth: 'min-content',
+                                    }}
+                                >
                                     Your transaction may be frontrun and result
                                     in an unfavorable trade
-                                </p>
+                                </Text>
                             </div>
-                        </div>
+                        </FlexContainer>
                     )}
                     <ConfirmationModalControl
                         tempBypassConfirm={currentSkipConfirm}
@@ -94,7 +112,7 @@ export default function TransactionSettingsModal(props: propsIF) {
                         displayInSettings={true}
                     />
                 </section>
-                <div className={styles.button_container}>
+                <div style={{ padding: '0 16px' }}>
                     <Button
                         title={
                             module === 'Limit Order'
@@ -111,7 +129,7 @@ export default function TransactionSettingsModal(props: propsIF) {
                         customAriaLabel={confirmAriaLabel}
                     />
                 </div>
-            </div>
+            </SettingsContainer>
         </Modal>
     );
 }

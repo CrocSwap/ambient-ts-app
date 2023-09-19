@@ -28,7 +28,8 @@ import {
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
-import { OptionButton } from '../../../Button/OptionButton';
+import { Chip } from '../../../../Form/Chip';
+import { FlexContainer } from '../../../../../styled/Common';
 
 // interface for React functional component props
 interface propsIF {
@@ -59,7 +60,8 @@ export default function OrdersMenu(props: propsIF) {
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-    const { handlePulseAnimation } = useContext(TradeTableContext);
+    const { handlePulseAnimation, setActiveMobileComponent } =
+        useContext(TradeTableContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -70,6 +72,8 @@ export default function OrdersMenu(props: propsIF) {
 
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
+        setActiveMobileComponent('trade');
+
         handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
 
@@ -131,37 +135,25 @@ export default function OrdersMenu(props: propsIF) {
         useMediaQuery('(min-width: 1680px)') && !isSidebarOpen;
 
     const walletButton = (
-        <OptionButton
-            ariaLabel='View wallet.'
-            onClick={handleAccountClick}
-            content={
-                <>
-                    Wallet
-                    <FiExternalLink
-                        size={15}
-                        color='white'
-                        style={{ marginLeft: '.5rem' }}
-                    />
-                </>
-            }
-        />
+        <Chip ariaLabel='View wallet.' onClick={handleAccountClick}>
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </Chip>
     );
     const removeButton =
         limitOrder && isOwnerActiveAccount && !isOrderFilled ? (
-            <OptionButton
-                onClick={() => openLimitActionModal('Remove')}
-                content='Remove'
-            />
+            <Chip onClick={() => openLimitActionModal('Remove')}>Remove</Chip>
         ) : null;
     const claimButton =
         limitOrder && isOwnerActiveAccount && isOrderFilled ? (
-            <OptionButton
-                onClick={() => openLimitActionModal('Claim')}
-                content='Claim'
-            />
+            <Chip onClick={() => openLimitActionModal('Claim')}>Claim</Chip>
         ) : null;
     const copyButton = limitOrder ? (
-        <OptionButton
+        <Chip
             onClick={() => {
                 dispatch(setLimitTickCopied(true));
                 linkGenLimit.navigate(
@@ -181,12 +173,11 @@ export default function OrdersMenu(props: propsIF) {
                 );
                 handleCopyOrder();
             }}
-            content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-        />
+        >
+            {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+        </Chip>
     ) : null;
-    const detailsButton = (
-        <OptionButton onClick={openLimitDetailsModal} content='Details' />
-    );
+    const detailsButton = <Chip onClick={openLimitDetailsModal}>Details</Chip>;
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
@@ -202,7 +193,7 @@ export default function OrdersMenu(props: propsIF) {
             {detailsButton}
             {isOwnerActiveAccount && copyButton}
             {!minView && removeButton}
-            {walletButton}
+            {!isAccountView && walletButton}
         </div>
     );
 
@@ -238,8 +229,12 @@ export default function OrdersMenu(props: propsIF) {
         } else return;
     }, [showDropdownMenu]);
     return (
-        <div onClick={(event) => event.stopPropagation()}>
-            <div className={styles.main_container}>
+        <FlexContainer justifyContent='flex-end'>
+            <div
+                onClick={(event) => event.stopPropagation()}
+                style={{ width: 'min-content', cursor: 'default' }}
+                className={styles.main_container}
+            >
                 {ordersMenu}
                 {dropdownOrdersMenu}
             </div>
@@ -261,6 +256,6 @@ export default function OrdersMenu(props: propsIF) {
                     onClose={closeActionModal}
                 />
             )}
-        </div>
+        </FlexContainer>
     );
 }

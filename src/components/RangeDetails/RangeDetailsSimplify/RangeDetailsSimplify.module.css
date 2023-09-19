@@ -29,10 +29,9 @@
     border-radius: var(--border-radius);
     border: 1px solid var(--dark2);
     padding: 8px;
-   gap: 10px;
+    gap: 10px;
     display: flex;
     flex-direction: column;
-    
 }
 
 /* info row */

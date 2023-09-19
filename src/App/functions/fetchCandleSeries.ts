@@ -1,9 +1,8 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
-import {
-    getMainnetEquivalent,
-    translateMainnetForGraphcache,
-} from '../../utils/data/testTokenMap';
+import { translateMainnetForGraphcache } from '../../utils/data/testTokenMap';
+import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
+import { supportedNetworks } from '../../utils/networks';
 import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -60,6 +59,7 @@ export async function fetchCandleSeriesHybrid(
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDuration | undefined> {
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
@@ -71,6 +71,7 @@ export async function fetchCandleSeriesHybrid(
         nCandles,
         crocEnv,
         cachedFetchTokenPrice,
+        signal,
     );
 
     if (!candles) {
@@ -103,6 +104,7 @@ export async function fetchCandleSeriesHybrid(
             quoteTokenAddress,
             stitchTime.toString(),
             stitchN.toString(),
+            signal,
         );
 
         if (!uniCandles) {
@@ -134,6 +136,7 @@ export async function fetchCandleSeriesCroc(
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDuration | undefined> {
     if (!isFetchEnabled) {
         return undefined;
@@ -158,7 +161,7 @@ export async function fetchCandleSeriesCroc(
         chainId: chainData.chainId,
     });
 
-    return fetch(candleSeriesEndpoint + '?' + reqOptions)
+    return fetch(candleSeriesEndpoint + '?' + reqOptions, { signal })
         .then((response) => response?.json())
         .then(async (json) => {
             if (!json?.data) {
@@ -220,16 +223,10 @@ async function expandPoolStats(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<CandleData[]> {
-    const mainnetBase = getMainnetEquivalent(base, chainId);
-    const mainnetQuote = getMainnetEquivalent(quote, chainId);
-    const basePricePromise = cachedFetchTokenPrice(
-        mainnetBase.token,
-        mainnetBase.chainId,
-    );
-    const quotePricePromise = cachedFetchTokenPrice(
-        mainnetQuote.token,
-        mainnetQuote.chainId,
-    );
+    const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
+    const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
+    const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
 
     const baseDecimals = crocEnv.token(base).decimals;
     const quoteDecimals = crocEnv.token(quote).decimals;
@@ -312,6 +309,7 @@ async function fetchCandleSeriesUniswap(
     quoteTokenAddress: string,
     time: string,
     candleNeeded: string,
+    signal?: AbortSignal,
 ): Promise<CandleData[] | undefined | void> {
     const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
         translateMainnetForGraphcache(
@@ -348,6 +346,7 @@ async function fetchCandleSeriesUniswap(
                             poolStatsPoolIdxOverride:
                                 chainData.poolIndex.toString(),
                         }),
+                    { signal },
                 )
                     .then((response) => response?.json())
                     .then((json) => {

@@ -1,5 +1,4 @@
 import styles from './ExchangeCard.module.css';
-import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { useContext, useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
@@ -10,6 +9,8 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
+import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
     token: TokenIF;
@@ -25,8 +26,6 @@ export default function ExchangeCard(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-
-    const tokenMapKey: string = token?.address + '_' + chainId;
 
     const tokenFromMap = token?.address
         ? getTokenByAddress(token.address)
@@ -49,34 +48,42 @@ export default function ExchangeCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const tokenAddress = tokenMapKey.split('_')[0];
-                const chain = tokenMapKey.split('_')[1];
-                const isChainMainnet = chain === '0x1';
-                const mainnetAddress =
-                    isChainMainnet && tokenAddress !== ZERO_ADDRESS
-                        ? tokenMapKey.split('_')[0]
-                        : testTokenMap.get(tokenMapKey)?.split('_')[0];
-                if (mainnetAddress) {
-                    const price = await cachedFetchTokenPrice(
-                        mainnetAddress,
-                        '0x1',
-                    );
-                    if (price) setTokenPrice(price);
+                if (tokenFromMap?.symbol) {
+                    const mainnetAddress =
+                        ethereumMainnet.tokens[
+                            tokenFromMap?.symbol as keyof typeof ethereumMainnet.tokens
+                        ];
+                    if (mainnetAddress) {
+                        const price = await cachedFetchTokenPrice(
+                            mainnetAddress === ZERO_ADDRESS
+                                ? ethereumMainnet.tokens['WETH']
+                                : mainnetAddress,
+                            ethereumMainnet.chainId,
+                        );
+                        if (price) setTokenPrice(price);
+                    }
                 }
             } catch (err) {
                 console.error(err);
             }
         })();
-    }, [tokenMapKey]);
+    }, [token?.address, chainId]);
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    const exchangeBalanceNum = token?.dexBalanceDisplay
-        ? parseFloat(token?.dexBalanceDisplay)
-        : 0;
+    const dexBalanceDisplay = token.dexBalance
+        ? toDisplayQty(token.dexBalance, token.decimals)
+        : undefined;
 
-    const exchangeBalanceTruncated =
-        exchangeBalanceNum === 0 ? '0' : token?.dexBalanceDisplayTruncated;
+    const dexBalanceDisplayNum = dexBalanceDisplay
+        ? parseFloat(dexBalanceDisplay)
+        : undefined;
+
+    const dexBalanceTruncated = dexBalanceDisplayNum
+        ? getFormattedNumber({
+              value: dexBalanceDisplayNum,
+          })
+        : '0';
 
     const iconAndSymbolWithTooltip = (
         <DefaultTooltip
@@ -126,11 +133,11 @@ export default function ExchangeCard(props: propsIF) {
             {tokenInfo}
             <p className={styles.value}>
                 {getFormattedNumber({
-                    value: tokenUsdPrice * exchangeBalanceNum,
+                    value: tokenUsdPrice * (dexBalanceDisplayNum ?? 0),
                     isUSD: true,
                 })}
             </p>
-            <p className={styles.amount}>{exchangeBalanceTruncated}</p>
+            <p className={styles.amount}>{dexBalanceTruncated}</p>
         </div>
     );
 }

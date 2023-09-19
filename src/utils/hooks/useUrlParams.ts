@@ -188,7 +188,7 @@ export const useUrlParams = (
 
             // If both tokens are valid and have data for this chain, use those
             // Otherwise fallback to the chain's default pair.
-            if (tokenPair) {
+            if (tokenPair && tokenPair[0].decimals && tokenPair[1].decimals) {
                 dispatch(setTokenA(tokenPair[0]));
                 dispatch(setTokenB(tokenPair[1]));
             } else {

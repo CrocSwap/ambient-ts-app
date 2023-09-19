@@ -6,16 +6,16 @@ import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
 import './i18n/config';
-
+import { StyleSheetManager } from 'styled-components';
+import isValidProp from '@emotion/is-prop-valid';
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
 
 import { infuraProvider } from 'wagmi/providers/infura';
 
 import { InjectedConnector } from 'wagmi/connectors/injected';
-import { getWagmiChains } from './utils/data/chains';
-import Moralis from 'moralis/.';
-import { GLOBAL_MODAL_PORTAL_ID, MORALIS_KEY } from './constants';
+import { GLOBAL_MODAL_PORTAL_ID } from './constants';
 import { GlobalContexts } from './contexts/GlobalContexts';
+import { supportedNetworks } from './utils/networks';
 
 /* Perform a single forcible reload when the page first loads. Without this, there
  * are issues with Metamask and Chrome preloading. This shortcircuits preloading, at the
@@ -34,7 +34,7 @@ if (doReload) {
 // Don't bother rendering page if this is a reload, because it'll slow down the full load
 if (!doReload) {
     const { chains, provider, webSocketProvider } = configureChains(
-        getWagmiChains(),
+        Object.values(supportedNetworks).map((network) => network.wagmiChain),
         [
             infuraProvider({
                 apiKey:
@@ -81,10 +81,6 @@ if (!doReload) {
         webSocketProvider,
     });
 
-    Moralis.start({
-        apiKey: MORALIS_KEY,
-    });
-
     const root = ReactDOM.createRoot(
         document.getElementById('root') as HTMLElement,
     );
@@ -95,7 +91,14 @@ if (!doReload) {
                 <Provider store={store}>
                     <BrowserRouter>
                         <GlobalContexts>
-                            <App />
+                            <StyleSheetManager
+                                shouldForwardProp={(propName) =>
+                                    isValidProp(propName)
+                                }
+                            >
+                                <App />
+                            </StyleSheetManager>
+
                             <div id={GLOBAL_MODAL_PORTAL_ID} />
                         </GlobalContexts>
                     </BrowserRouter>
