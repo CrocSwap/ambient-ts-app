@@ -3,7 +3,7 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-import Button from '../../components/Global/Button/Button';
+import Button from '../../components/Form/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
@@ -41,7 +41,7 @@ import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer } from '../../styled/Common';
-import Toggle from '../../components/Global/Toggle/Toggle';
+import Toggle from '../../components/Form/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';

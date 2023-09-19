@@ -35,7 +35,7 @@ import {
 } from '../../../../../utils/hooks/useLinkGen';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
-import { OptionButton } from '../../../Button/OptionButton';
+import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 
 // interface for React functional component props
@@ -163,108 +163,86 @@ export default function TransactionsMenu(props: propsIF) {
     const isTxCopiable = true;
 
     const walletButton = (
-        <OptionButton
-            ariaLabel='View wallet.'
-            onClick={props.handleWalletClick}
-            content={
-                <>
-                    Wallet
-                    <FiExternalLink
-                        size={15}
-                        color='white'
-                        style={{ marginLeft: '.5rem' }}
-                    />
-                </>
-            }
-        />
+        <Chip ariaLabel='View wallet.' onClick={props.handleWalletClick}>
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </Chip>
     );
 
-    const copyButton =
-        tx.entityType === 'liqchange' ? (
-            <OptionButton
-                onClick={() => {
-                    linkGenPool.navigate({
-                        chain: chainId,
-                        tokenA: tx.isBid ? tx.base : tx.quote,
-                        tokenB: tx.isBid ? tx.quote : tx.base,
-                        lowTick: tx.bidTick.toString(),
-                        highTick: tx.askTick.toString(),
-                    });
-                    handleCopyClick();
-                }}
-                ariaLabel='Copy trade.'
-                content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-            />
-        ) : tx.entityType === 'limitOrder' ? (
-            <OptionButton
-                onClick={() => {
-                    dispatch(setLimitTickCopied(true));
-                    dispatch(setLimitTick(undefined));
-                    linkGenLimit.navigate(
-                        tx.isBid
-                            ? {
-                                  chain: chainId,
-                                  tokenA: tx.base,
-                                  tokenB: tx.quote,
-                                  limitTick: tx.bidTick,
-                              }
-                            : {
-                                  chain: chainId,
-                                  tokenA: tx.quote,
-                                  tokenB: tx.base,
-                                  limitTick: tx.askTick,
-                              },
-                    );
-                    handleCopyClick();
-                }}
-                ariaLabel='Copy trade.'
-                content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-            />
-        ) : (
-            <OptionButton
-                onClick={() => {
-                    linkGenMarket.navigate(
-                        tx.isBuy
-                            ? {
-                                  chain: chainId,
-                                  tokenA: tx.base,
-                                  tokenB: tx.quote,
-                              }
-                            : {
-                                  chain: chainId,
-                                  tokenA: tx.quote,
-                                  tokenB: tx.base,
-                              },
-                    );
-                    handleCopyClick();
-                }}
-                ariaLabel='Copy trade.'
-                content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-            />
-        );
+    const copyButtonFunction = (entityType: string) => {
+        switch (entityType) {
+            case 'liqchange':
+                linkGenPool.navigate({
+                    chain: chainId,
+                    tokenA: tx.isBid ? tx.base : tx.quote,
+                    tokenB: tx.isBid ? tx.quote : tx.base,
+                    lowTick: tx.bidTick.toString(),
+                    highTick: tx.askTick.toString(),
+                });
+                break;
+            case 'limitOrder':
+                dispatch(setLimitTickCopied(true));
+                dispatch(setLimitTick(undefined));
+                linkGenLimit.navigate(
+                    tx.isBid
+                        ? {
+                              chain: chainId,
+                              tokenA: tx.base,
+                              tokenB: tx.quote,
+                              limitTick: tx.bidTick,
+                          }
+                        : {
+                              chain: chainId,
+                              tokenA: tx.quote,
+                              tokenB: tx.base,
+                              limitTick: tx.askTick,
+                          },
+                );
+
+                break;
+            default:
+                linkGenMarket.navigate(
+                    tx.isBuy
+                        ? {
+                              chain: chainId,
+                              tokenA: tx.base,
+                              tokenB: tx.quote,
+                          }
+                        : {
+                              chain: chainId,
+                              tokenA: tx.quote,
+                              tokenB: tx.base,
+                          },
+                );
+                break;
+        }
+        handleCopyClick();
+    };
+
+    const copyButton = (
+        <Chip onClick={() => copyButtonFunction(tx.entityType)}>
+            {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+        </Chip>
+    );
 
     const explorerButton = (
-        <OptionButton
-            onClick={handleOpenExplorer}
-            ariaLabel='Open explorer.'
-            content={
-                <>
-                    Explorer
-                    <FiExternalLink
-                        size={15}
-                        color='white'
-                        style={{ marginLeft: '.5rem' }}
-                    />
-                </>
-            }
-        />
+        <Chip onClick={handleOpenExplorer} ariaLabel='Open explorer.'>
+            Explorer
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </Chip>
     );
     const detailsButton = (
-        <OptionButton
-            onClick={openDetailsModal}
-            ariaLabel='Open details modal.'
-            content='Details'
-        />
+        <Chip onClick={openDetailsModal} ariaLabel='Open details modal.'>
+            Details
+        </Chip>
     );
 
     const showCopyButtonOutsideDropdownMenu =

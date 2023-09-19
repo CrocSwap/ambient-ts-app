@@ -1,11 +1,10 @@
 import { Dispatch, SetStateAction, useContext } from 'react';
-import TokenInput from '../../../components/Global/TokenInput/TokenInput';
 import { ZERO_ADDRESS } from '../../../constants';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { formatTokenInput } from '../../../utils/numbers';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-
+import TokenInputWithWalletBalance from '../../../components/Form/TokenInputWithWalletBalance';
 interface PropsIF {
     baseTokenAddress: string;
 
@@ -59,7 +58,7 @@ export default function InitTokenInput(props: PropsIF) {
 
     return (
         <section>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='init_collateral_A'
                 tokenAorB='A'
                 token={tokenA}
@@ -78,7 +77,7 @@ export default function InitTokenInput(props: PropsIF) {
                 showWallet={isUserConnected}
             />
 
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='init_collateral_B'
                 tokenAorB='B'
                 token={tokenB}

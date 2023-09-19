@@ -1,13 +1,12 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
-import truncateDecimals from '../../../../utils/data/truncateDecimals';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 export function updateRangeWithButton(
     value: number,
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>,
+    inputId: string,
 ) {
-    const inputSlider = document.getElementById(
-        'reposition-input-slider-range',
-    );
+    const inputSlider = document.getElementById(inputId);
     const valueString = value.toString();
     if (inputSlider && valueString) {
         (inputSlider as HTMLInputElement).value = valueString;

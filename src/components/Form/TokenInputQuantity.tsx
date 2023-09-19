@@ -9,31 +9,32 @@ import {
     SetStateAction,
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import uriToHttp from '../../../utils/functions/uriToHttp';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import Spinner from '../Spinner/Spinner';
-import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-import TokenIcon from '../TokenIcon/TokenIcon';
-import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
-import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
+
+import { exponentialNumRegEx } from '../../utils/regex/exports';
+
+import uriToHttp from '../../utils/functions/uriToHttp';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import Spinner from '../Global/Spinner/Spinner';
+import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
+import TokenIcon from '../Global/TokenIcon/TokenIcon';
+import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
+import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { Link, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
-import { useModal } from '../Modal/useModal';
-import {
-    setLocalTokenA,
-    setLocalTokenB,
-} from '../../../utils/state/localPairDataSlice';
-import { useAppDispatch } from '.././../../utils/hooks/reduxToolkit';
-import { FlexContainer, Text } from '../../../styled/Common';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
+import { useModal } from '../Global/Modal/useModal';
+import { FlexContainer, Text } from '../../styled/Common';
 import {
     InputDisabledText,
     TokenQuantityContainer,
     TokenQuantityInput,
     TokenSelectButton,
-} from '../../../styled/Components/TradeModules';
-import { exponentialNumRegEx } from '../../../utils/regex/exponentialNumRegEx';
+} from '../../styled/Components/TradeModules';
+import {
+    setLocalTokenA,
+    setLocalTokenB,
+} from '../../utils/state/localPairDataSlice';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -217,7 +218,7 @@ function TokenInputQuantity(props: propsIF) {
                 </Text>
             )}
             <TokenQuantityContainer
-                showPulse={!!showPulseAnimation}
+                animation={showPulseAnimation ? 'pulse' : ''}
                 style={{ marginBottom: !includeWallet ? '8px' : '0' }}
             >
                 <div style={{ position: 'relative' }}>

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import styles from './RangeBounds.module.css';
-import RangeWidth from '../../Trade/Range/RangeWidth/RangeWidth';
+import RangeWidth from '../../Form/RangeWidth/RangeWidth';
 import RangePriceInfo from '../../Trade/Range/RangePriceInfo/RangePriceInfo';
 import MinMaxPrice from '../../Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import { motion } from 'framer-motion';

@@ -1,5 +1,6 @@
 import styled from 'styled-components/macro';
-import { FlexContainer, GridContainer, PulseAnimation, Text } from '../Common';
+import { FlexContainer, GridContainer, Text } from '../Common';
+import { AnimationProps, Animations } from '../Animations';
 
 export const SelectorContainer = styled(FlexContainer)`
     border-radius: var(--border-radius);
@@ -249,15 +250,14 @@ export const TokenQuantityInput = styled.input`
     }
 `;
 
-export const TokenQuantityContainer = styled.div<{ showPulse: boolean }>`
+export const TokenQuantityContainer = styled.div<AnimationProps>`
     border-radius: var(--border-radius);
     background-color: var(--dark2);
     min-height: 40px;
 
     display: grid;
     grid-template-columns: 1fr 145px;
-
-    ${({ showPulse }) => showPulse && PulseAnimation}
+    ${Animations}
 `;
 
 export const TokenSelectButton = styled.button`
@@ -405,12 +405,6 @@ export const SubmitTransactionExtraButton = styled.button`
     &:hover {
         color: var(--accent5);
     }
-`;
-
-export const PulseAnimationContainer = styled(FlexContainer)<{
-    showPulse: boolean;
-}>`
-    ${({ showPulse }) => showPulse && PulseAnimation}
 `;
 
 export const LimitRateButtonContainer = styled(FlexContainer)<{
