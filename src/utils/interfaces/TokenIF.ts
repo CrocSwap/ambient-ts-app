@@ -8,12 +8,5 @@ export interface TokenIF {
     fromList?: string;
     listedBy?: string[];
     walletBalance?: string;
-    walletBalanceDisplay?: string;
-    walletBalanceDisplayTruncated?: string;
     dexBalance?: string;
-    dexBalanceDisplay?: string;
-    dexBalanceDisplayTruncated?: string;
-    combinedBalance?: string;
-    combinedBalanceDisplay?: string;
-    combinedBalanceDisplayTruncated?: string;
 }

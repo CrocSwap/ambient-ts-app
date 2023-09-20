@@ -32,8 +32,8 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import Button from '../../../Global/Button/Button';
-import CurrencySelector from '../CurrencySelector';
+import Button from '../../../Form/Button';
+import CurrencySelector from '../../../Form/CurrencySelector';
 import {
     SVGContainer,
     MaxButton,

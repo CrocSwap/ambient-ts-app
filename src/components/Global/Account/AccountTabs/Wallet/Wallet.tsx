@@ -9,7 +9,7 @@ import { useContext } from 'react';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../../../../constants';
-import { USDC } from '../../../../../utils/tokens/exports';
+import { supportedNetworks } from '../../../../../utils/networks';
 
 interface propsIF {
     chainId: string;
@@ -29,16 +29,12 @@ export default function Wallet(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { nativeToken, erc20Tokens } = useAppSelector(
-        (state) => state.userData.tokens,
+    const tokenBalances = useAppSelector(
+        (state) => state.userData.tokenBalances,
     );
-    const connectedUserTokens: Array<TokenIF | undefined> = [nativeToken]
-        .concat(erc20Tokens)
-        .filter((token) => token);
 
-    const userTokens: Array<TokenIF | undefined> = connectedAccountActive
-        ? connectedUserTokens
-        : resolvedAddressTokens;
+    const tokensToRender: Array<TokenIF | undefined> | undefined =
+        connectedAccountActive ? tokenBalances : resolvedAddressTokens;
 
     function sequenceTokens(tkns: TokenIF[]): TokenIF[] {
         const tokensWithOrigins: TokenIF[] = tkns
@@ -90,9 +86,7 @@ export default function Wallet(props: propsIF) {
                     // canonical token addresses to assign probability
                     const addresses = {
                         nativeToken: ZERO_ADDRESS,
-                        USDC: USDC[
-                            chainId.toLowerCase() as keyof typeof USDC
-                        ].toLowerCase(),
+                        USDC: supportedNetworks[chainId].tokens.USDC,
                     };
                     // logic router to assign numerical priority to output
                     // unlisted tokens get priority 0
@@ -127,9 +121,9 @@ export default function Wallet(props: propsIF) {
         <div className={styles.container}>
             <WalletHeader />
             <div className={styles.item_container}>
-                {userTokens && userTokens.length > 0 ? (
+                {tokensToRender && tokensToRender.length > 0 ? (
                     // values can be `undefined` but this fn will filter them out
-                    sequenceTokens(userTokens as TokenIF[]).map((token) => (
+                    sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
                         <WalletCard
                             key={JSON.stringify(token)}
                             token={token}

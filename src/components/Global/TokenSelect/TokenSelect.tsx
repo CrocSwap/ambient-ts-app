@@ -3,6 +3,9 @@ import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../TokenIcon/TokenIcon';
+import { BigNumber } from 'ethers';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
 interface propsIF {
     token: TokenIF;
@@ -15,13 +18,8 @@ export default function TokenSelect(props: propsIF) {
 
     const userData = useAppSelector((state) => state.userData);
 
-    const connectedUserNativeToken = userData.tokens.nativeToken;
-    const connectedUserErc20Tokens = userData.tokens.erc20Tokens;
+    const connectedUserTokens = userData.tokenBalances;
     const isUserLoggedIn = userData.isLoggedIn;
-
-    const connectedUserTokens = connectedUserNativeToken
-        ? [connectedUserNativeToken].concat(connectedUserErc20Tokens || [])
-        : connectedUserErc20Tokens;
 
     const isMatchingToken = (tokenInRtk: TokenIF) =>
         tokenInRtk.address.toLowerCase() === token.address.toLowerCase();
@@ -30,12 +28,34 @@ export default function TokenSelect(props: propsIF) {
         ? connectedUserTokens.findIndex(isMatchingToken)
         : -1;
 
-    const tokenIsEth = indexOfToken === 0;
-
-    const combinedBalanceDisplayTruncated =
+    const combinedBalance =
         connectedUserTokens && indexOfToken !== -1
-            ? connectedUserTokens[indexOfToken]?.combinedBalanceDisplayTruncated
+            ? BigNumber.from(
+                  connectedUserTokens[indexOfToken].walletBalance ?? '0',
+              )
+                  .add(
+                      BigNumber.from(
+                          connectedUserTokens[indexOfToken].dexBalance ?? '0',
+                      ),
+                  )
+                  .toString()
             : undefined;
+
+    const combinedBalanceDisplay =
+        combinedBalance && connectedUserTokens
+            ? toDisplayQty(
+                  combinedBalance,
+                  connectedUserTokens[indexOfToken]?.decimals,
+              )
+            : undefined;
+
+    const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay ?? '0');
+
+    const combinedBalanceDisplayTruncated = combinedBalanceDisplayNum
+        ? getFormattedNumber({
+              value: combinedBalanceDisplayNum,
+          })
+        : '0';
 
     return (
         <button
@@ -68,14 +88,11 @@ export default function TokenSelect(props: propsIF) {
             <div className={styles.modal_tokens_amount}>
                 <p>
                     {isUserLoggedIn
-                        ? combinedBalanceDisplayTruncated === undefined
-                            ? connectedUserErc20Tokens !== undefined
+                        ? connectedUserTokens !== undefined
+                            ? combinedBalanceDisplayNum === 0
                                 ? '0'
-                                : '...'
-                            : tokenIsEth &&
-                              parseFloat(combinedBalanceDisplayTruncated) === 0
-                            ? '0'
-                            : combinedBalanceDisplayTruncated
+                                : combinedBalanceDisplayTruncated
+                            : '...'
                         : ''}
                 </p>
                 <p className={styles.token_list_data}>{fromListsText}</p>

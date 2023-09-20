@@ -185,38 +185,6 @@ export const UnderlinedMotionDiv = styled(motion.div)`
         0px 0px 2px rgba(205, 193, 255, 0.2);
 `;
 
-interface AuthenticateButtonProps {
-    desktopScreen: boolean;
-}
-
-export const AuthenticateButton = styled.button<AuthenticateButtonProps>`
-    cursor: pointer;
-    background: var(--accent1);
-    border: none;
-    outline: none;
-    color: var(--dark2);
-    font-weight: 300;
-    font-size: var(--header2-size);
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 4px;
-
-    border-radius: var(--border-radius);
-    width: 155px;
-    height: 28px;
-    transition: box-shadow var(--animation-speed) ease-in-out;
-
-    ${({ desktopScreen }) => desktopScreen && 'width: 140px;'}
-
-    &:hover,
-    &:focus-visible {
-        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-            0px 0px 21px rgba(205, 193, 255, 0.2),
-            0px 0px 12px rgba(205, 193, 255, 0.2),
-            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-            0px 0px 2px rgba(205, 193, 255, 0.2);
-    }
-`;
-
 // WalletDropdown
 
 export const WalletDisplay = styled(FlexContainer)`

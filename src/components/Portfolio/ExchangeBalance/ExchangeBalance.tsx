@@ -20,15 +20,12 @@ import { fetchEnsAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import {
-    setErc20Tokens,
-    setNativeToken,
-} from '../../../utils/state/userDataSlice';
-import { useDispatch } from 'react-redux';
-import { TokenContext } from '../../../contexts/TokenContext';
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { setTokenBalance } from '../../../utils/state/userDataSlice';
 
 import { FlexContainer } from '../../../styled/Common';
 
@@ -54,7 +51,7 @@ export default function ExchangeBalance(props: propsIF) {
         setTokenModalOpen = () => null,
     } = props;
 
-    const { mainnetProvider } = useContext(CrocEnvContext);
+    const { provider } = useContext(CrocEnvContext);
 
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
@@ -62,19 +59,10 @@ export default function ExchangeBalance(props: propsIF) {
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
-    const dispatch = useDispatch();
+    const dispatchRTK = useAppDispatch();
 
-    const {
-        crocEnv,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const {
-        cachedFetchErc20TokenBalances,
-        cachedFetchNativeTokenBalance,
-        cachedTokenDetails,
-    } = useContext(CachedDataContext);
-    const { addTokenInfo } = useContext(TokenContext);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -107,7 +95,16 @@ export default function ExchangeBalance(props: propsIF) {
             crocEnv
                 .token(selectedToken.address)
                 .wallet(userAddress)
-                .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
+
+                .then((bal: BigNumber) => {
+                    setTokenWalletBalance(bal.toString());
+                    dispatchRTK(
+                        setTokenBalance({
+                            tokenAddress: selectedToken.address,
+                            walletBalance: bal.toString(),
+                        }),
+                    );
+                })
                 .catch(console.error);
 
             crocEnv
@@ -115,41 +112,15 @@ export default function ExchangeBalance(props: propsIF) {
                 .balance(userAddress)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
+                    dispatchRTK(
+                        setTokenBalance({
+                            tokenAddress: selectedToken.address,
+                            dexBalance: bal.toString(),
+                        }),
+                    );
                 })
                 .catch(console.error);
         }
-
-        if (recheckTokenBalances) {
-            (async () => {
-                if (userAddress) {
-                    const newNativeToken: TokenIF =
-                        await cachedFetchNativeTokenBalance(
-                            userAddress,
-                            chainId,
-                            lastBlockNumber,
-                            crocEnv,
-                        );
-
-                    dispatch(setNativeToken(newNativeToken));
-
-                    const erc20Results: TokenIF[] =
-                        await cachedFetchErc20TokenBalances(
-                            userAddress,
-                            chainId,
-                            lastBlockNumber,
-                            cachedTokenDetails,
-                            crocEnv,
-                        );
-                    const erc20TokensWithLogos = erc20Results.map((token) =>
-                        addTokenInfo(token),
-                    );
-
-                    dispatch(setErc20Tokens(erc20TokensWithLogos));
-                }
-            })();
-        }
-
-        setRecheckTokenBalances(false);
     }, [
         crocEnv,
         selectedToken.address,
@@ -182,8 +153,8 @@ export default function ExchangeBalance(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (sendToAddress && isSendToAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(
+            if (sendToAddress && isSendToAddressEns && provider) {
+                const newResolvedAddress = await provider.resolveName(
                     sendToAddress,
                 );
 
@@ -202,12 +173,7 @@ export default function ExchangeBalance(props: propsIF) {
                 setResolvedAddress(undefined);
             }
         })();
-    }, [
-        sendToAddress,
-        isSendToAddressHex,
-        isSendToAddressEns,
-        mainnetProvider,
-    ]);
+    }, [sendToAddress, isSendToAddressHex, isSendToAddressEns, provider]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState<
         string | undefined
@@ -221,11 +187,11 @@ export default function ExchangeBalance(props: propsIF) {
                 isSendToAddressHex &&
                 sendToAddress.length === 42 &&
                 sendToAddress.startsWith('0x') &&
-                mainnetProvider
+                provider
             ) {
                 try {
                     const ensName = await fetchEnsAddress(
-                        mainnetProvider,
+                        provider,
                         sendToAddress,
                         '0x1',
                     );

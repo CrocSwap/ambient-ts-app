@@ -113,6 +113,7 @@ export const TradeNowButtonText = styled(Text)<ButtonProps>`
 export const InvestorsContainer = styled.div`
     border-bottom: 1px solid var(--border);
     padding: 1rem 0 3rem 0;
+    text-align: center;
 `;
 
 export const InvestorsContent = styled(FlexContainer)`

@@ -11,7 +11,7 @@ import {
     concPosSlot,
     CrocPositionView,
 } from '@crocswap-libs/sdk';
-import Button from '../Global/Button/Button';
+import Button from '../Form/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import {

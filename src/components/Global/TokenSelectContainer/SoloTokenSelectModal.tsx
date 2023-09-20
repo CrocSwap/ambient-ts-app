@@ -26,7 +26,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { wrappedNatives } from '../../../utils/data/wrappedNatives';
+import { supportedNetworks } from '../../../utils/networks';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -291,9 +291,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                         try {
                                             chooseToken(
                                                 tokens.getTokenByAddress(
-                                                    wrappedNatives.get(
-                                                        chainId,
-                                                    ) as string,
+                                                    supportedNetworks[chainId]
+                                                        .tokens.WETH,
                                                 ) as TokenIF,
                                                 false,
                                             );

@@ -21,7 +21,7 @@ import {
     setRangeTicksCopied,
     setIsTokenAPrimary,
 } from '../../../../utils/state/tradeDataSlice';
-import TokenInput from '../../../Global/TokenInput/TokenInput';
+import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formatTokenInput } from '../../../../utils/numbers';
 import { FlexContainer, Text } from '../../../../styled/Common';
@@ -225,7 +225,7 @@ function RangeTokenInput(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='range_A'
                 tokenAorB='A'
                 token={tokenA}
@@ -259,7 +259,7 @@ function RangeTokenInput(props: propsIF) {
                     alt='plus sign'
                 />
             </FlexContainer>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='range_B'
                 tokenAorB='B'
                 token={tokenB}

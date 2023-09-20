@@ -7,7 +7,7 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import { SettingsContainer } from '../../../styled/Components/TradeModules';
 import { isStablePair } from '../../../utils/data/stablePairs';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import Button from '../Button/Button';
+import Button from '../../Form/Button';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import Modal from '../Modal/Modal';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';

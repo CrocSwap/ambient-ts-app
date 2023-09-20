@@ -30,7 +30,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import RangeActionModal from '../../../../RangeActionModal/RangeActionModal';
 import { useModal } from '../../../Modal/useModal';
 import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
-import { OptionButton } from '../../../Button/OptionButton';
+import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 
 // interface for React functional component props
@@ -184,14 +184,11 @@ export default function RangesMenu(props: propsIF) {
     );
 
     const removeButton = positionMatchesLoggedInUser ? (
-        <OptionButton
-            onClick={() => openActionModal('Remove')}
-            content='Remove'
-        />
+        <Chip onClick={() => openActionModal('Remove')}>Remove</Chip>
     ) : null;
 
     const copyButton = position ? (
-        <OptionButton
+        <Chip
             onClick={() => {
                 // URL params for link to pool page
                 const poolLinkParams: poolParamsIF = {
@@ -211,12 +208,13 @@ export default function RangesMenu(props: propsIF) {
                 linkGenPool.navigate(poolLinkParams);
                 handleCopyClick();
             }}
-            content={showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
-        />
+        >
+            {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
+        </Chip>
     ) : null;
 
     const addButton = (
-        <OptionButton
+        <Chip
             onClick={() => {
                 // URL params for link to pool page
                 const poolLinkParams: poolParamsIF = {
@@ -237,38 +235,28 @@ export default function RangesMenu(props: propsIF) {
                 handleCopyClick();
                 setCurrentRangeInAdd(position.positionId);
             }}
-            content='Add'
-        />
+        >
+            Add
+        </Chip>
     );
 
-    const detailsButton = (
-        <OptionButton onClick={openDetailsModal} content='Details' />
-    );
+    const detailsButton = <Chip onClick={openDetailsModal}>Details</Chip>;
     const harvestButton =
         !isAmbient && positionMatchesLoggedInUser ? (
-            <OptionButton
-                onClick={() => openActionModal('Harvest')}
-                content='Harvest'
-            />
+            <Chip onClick={() => openActionModal('Harvest')}>Harvest</Chip>
         ) : null;
 
     // ----------------------
 
     const walletButton = (
-        <OptionButton
-            ariaLabel='View wallet.'
-            onClick={props.handleAccountClick}
-            content={
-                <>
-                    Wallet
-                    <FiExternalLink
-                        size={15}
-                        color='white'
-                        style={{ marginLeft: '.5rem' }}
-                    />
-                </>
-            }
-        />
+        <Chip ariaLabel='View wallet.' onClick={props.handleAccountClick}>
+            Wallet
+            <FiExternalLink
+                size={15}
+                color='white'
+                style={{ marginLeft: '.5rem' }}
+            />
+        </Chip>
     );
 
     const showCopyButtonOutsideDropdownMenu =

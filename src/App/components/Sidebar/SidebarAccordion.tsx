@@ -7,9 +7,9 @@ import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-import { ConnectWalletButton } from '../../../components/Global/Button/ConnectWalletButton';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { AccordionHeader, ArrowIcon } from '../../../styled/Components/Sidebar';
+import Button from '../../../components/Form/Button';
 
 // interface for React functional component props
 interface propsIF {
@@ -116,7 +116,12 @@ export default function SidebarAccordion(props: propsIF) {
                     <p>
                         Your recent {item.name.toLowerCase()} will display here.
                     </p>
-                    <ConnectWalletButton onClick={openWagmiModal} thin />
+                    <Button
+                        action={openWagmiModal}
+                        flat
+                        thin
+                        title='Connect Wallet'
+                    />
                 </FlexContainer>
             </motion.div>
         ) : (

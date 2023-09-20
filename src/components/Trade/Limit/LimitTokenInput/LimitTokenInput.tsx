@@ -25,7 +25,7 @@ import {
     setIsTokenAPrimaryRange,
 } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
-import TokenInput from '../../../Global/TokenInput/TokenInput';
+import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 
 interface propsIF {
@@ -216,7 +216,7 @@ function LimitTokenInput(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='limit_sell'
                 tokenAorB='A'
                 token={tokenA}
@@ -248,7 +248,7 @@ function LimitTokenInput(props: propsIF) {
                     />
                 </IconWithTooltip>
             </FlexContainer>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='limit_buy'
                 tokenAorB='B'
                 token={tokenB}
