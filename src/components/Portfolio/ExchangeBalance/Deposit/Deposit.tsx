@@ -38,6 +38,7 @@ import {
     SVGContainer,
     MaxButton,
 } from '../../../../styled/Components/Portfolio';
+import { useApprove } from '../../../../App/functions/approve';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -65,6 +66,7 @@ export default function Deposit(props: propsIF) {
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
+    const { approve, isApprovalPending } = useApprove();
 
     const dispatch = useAppDispatch();
 
@@ -152,7 +154,6 @@ export default function Deposit(props: propsIF) {
         [tokenWalletBalanceAdjustedNonDisplayString, isDepositQtyValid],
     );
 
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isDepositPending, setIsDepositPending] = useState(false);
 
     useEffect(() => {
@@ -288,66 +289,12 @@ export default function Deposit(props: propsIF) {
         if (depositQtyNonDisplay) await deposit(depositQtyNonDisplay);
     };
 
-    const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${selectedToken.symbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && 'repriced';
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-
-                    IS_LOCAL_ENV && { newTransactionHash };
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
-                }
-            }
-
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAllowance(true);
-        }
-    };
-
     const approvalFn = async () => {
-        await approve(selectedToken.address);
+        await approve(
+            selectedToken.address,
+            selectedToken.symbol,
+            setRecheckTokenAllowance,
+        );
     };
 
     const resetDepositQty = () => {

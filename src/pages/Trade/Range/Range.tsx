@@ -59,6 +59,7 @@ import {
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../styled/Common';
 import { AdvancedModeSection } from '../../../styled/Components/TradeModules';
+import { useApprove } from '../../../App/functions/approve';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -88,8 +89,6 @@ function Range() {
         baseToken: { address: baseTokenAddress },
         tokenAAllowance,
         tokenBAllowance,
-        setRecheckTokenAApproval,
-        setRecheckTokenBApproval,
         baseToken: {
             balance: baseTokenBalance,
             dexBalance: baseTokenDexBalance,
@@ -182,7 +181,6 @@ function Range() {
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -1182,62 +1180,7 @@ function Range() {
         }
     };
 
-    const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${tokenSymbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    receipt = error.receipt;
-                }
-            }
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-            setRecheckTokenBApproval(true);
-        }
-    };
+    const { approve, isApprovalPending } = useApprove();
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {
