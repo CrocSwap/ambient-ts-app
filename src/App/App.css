@@ -73,6 +73,12 @@ a {
     /* position: relative;  */
 }
 
+input:disabled {
+   
+    color: var(--text3); 
+    cursor: not-allowed; 
+  }
+
 body {
     overflow-x: hidden;
 
