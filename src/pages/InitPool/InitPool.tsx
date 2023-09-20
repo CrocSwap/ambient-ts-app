@@ -4,9 +4,8 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
 import Button from '../../components/Form/Button';
-
 // START: Import Local Files
-import styles from './InitPool.module.css';
+import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     addPendingTx,
@@ -39,7 +38,7 @@ import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 // import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
-import { FlexContainer } from '../../styled/Common';
+import { FlexContainer, GridContainer, Text } from '../../styled/Common';
 import Toggle from '../../components/Form/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -53,6 +52,7 @@ import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
 import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
+import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 
 // react functional component
 export default function InitPool() {
@@ -733,7 +733,11 @@ export default function InitPool() {
         <TextOnlyTooltip
             interactive
             title={
-                <p
+                <Text
+                    fontSize='body'
+                    color='accent1'
+                    align='left'
+                    cursor='pointer'
                     onClick={() =>
                         goToNewUrlParams(
                             chainId,
@@ -741,23 +745,22 @@ export default function InitPool() {
                             tokenB.address,
                         )
                     }
-                    className={styles.gen_link}
                 >
                     {` Trade ${tokenA.symbol} / ${tokenB.symbol}`}{' '}
                     <FiExternalLink color='var(--accent6)' />
-                </p>
+                </Text>
             }
             placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
-            <p className={styles.label_title} style={{ width: '80px' }}>
+            <Text fontSize='body' color='text2' style={{ width: '80px' }}>
                 Select Tokens
-            </p>
+            </Text>
         </TextOnlyTooltip>
     );
     const simpleTokenSelect = (
-        <div className={styles.local_token_container}>
+        <FlexContainer flexDirection='column' gap={8}>
             {newUrlTooltip}
             <LocalTokenSelect
                 tokenAorB={'A'}
@@ -769,7 +772,7 @@ export default function InitPool() {
                 token={tokenB}
                 setTokenModalOpen={setTokenModalOpen}
             />
-        </div>
+        </FlexContainer>
     );
     const [isLoading, setIsLoading] = useState(false);
     const [isEditEnabled, setIsEditEnabled] = useState(false);
@@ -810,13 +813,16 @@ export default function InitPool() {
     };
 
     const initPriceContainer = (
-        <div
-            className={`${styles.pool_price_container} ${
-                poolExists === true && styles.content_disabled
-            }`}
+        <FlexContainer
+            flexDirection='column'
+            gap={10}
+            justifyContent='center'
+            blur={!!poolExists}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
-                <p className={styles.label_title}>Initial Price</p>
+                <Text fontSize='body' color='text2'>
+                    Initial Price
+                </Text>
 
                 <FlexContainer gap={8}>
                     <LuEdit2 size={20} onClick={() => openEditMode()} />
@@ -828,14 +834,18 @@ export default function InitPool() {
                 onDoubleClick={() => openEditMode()}
             >
                 {isLoading ? (
-                    <div className={styles.circular_progress}>
+                    <FlexContainer
+                        height='31px'
+                        background='dark2'
+                        alignItems='center'
+                        padding='0 16px'
+                    >
                         <Spinner size={24} bg='var(--dark2)' weight={2} />
-                    </div>
+                    </FlexContainer>
                 ) : (
-                    <input
+                    <CurrencyQuantityInput
                         disabled={!isEditEnabled}
                         id='initial-pool-price-quantity'
-                        className={`${styles.currency_quantity} `}
                         placeholder={placeholderText}
                         type='string'
                         onChange={handleInitialPriceInputChange}
@@ -849,7 +859,7 @@ export default function InitPool() {
                     />
                 )}
             </section>
-        </div>
+        </FlexContainer>
     );
     const handleBaseCollateralChange = (input: string) => {
         setBaseCollateral(input);
@@ -874,15 +884,16 @@ export default function InitPool() {
         poolExists === true || !isMintLiq;
 
     const collateralContent = (
-        <div
-            className={`${styles.collateral_container} ${
-                isRangeBoundsAndCollateralDisabled
-                    ? styles.content_disabled
-                    : ''
-            }`}
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='center'
+            gap={10}
+            blur={isRangeBoundsAndCollateralDisabled}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
-                <p className={styles.label_title}>Collateral</p>
+                <Text fontSize='body' color='text2'>
+                    Collateral
+                </Text>
             </FlexContainer>
 
             <InitTokenInput
@@ -909,16 +920,18 @@ export default function InitPool() {
                 disabled={poolExists === true}
                 reverseTokens={() => console.log('reversed')}
             />
-        </div>
+        </FlexContainer>
     );
 
     const mintInitialLiquidity = (
         <FlexContainer
             flexDirection='row'
             justifyContent='space-between'
-            className={poolExists && styles.content_disabled}
+            blur={!!poolExists}
         >
-            <p className={styles.label_title}>Mint Initial Liquidity</p>
+            <Text fontSize='body' color='text2'>
+                Mint Initial Liquidity
+            </Text>
 
             <Toggle
                 id='init_mint_liq'
@@ -954,85 +967,90 @@ export default function InitPool() {
     }, [erc20TokenWithDexBalance, poolExists]);
 
     return (
-        <section className={styles.main}>
-            <div className={styles.outer_container}>
-                <div className={styles.gradient_container}>
-                    <div className={styles.main_container}>
-                        <header>
-                            <p />
-                            Initialize Pool
-                            <p />
-                        </header>
-
-                        <div className={styles.inner_container}>
-                            <div className={styles.left_container}>
-                                {simpleTokenSelect}
-                                {initPriceContainer}
-                                {collateralContent}
-                            </div>
-
-                            <div className={styles.right_container}>
-                                {mintInitialLiquidity}
-                                <div
-                                    className={
-                                        isRangeBoundsAndCollateralDisabled
-                                            ? styles.content_disabled
-                                            : ''
-                                    }
-                                >
-                                    <AdvancedModeToggle
-                                        advancedMode={advancedMode}
-                                    />
-                                </div>
-
-                                <RangeBounds
-                                    isRangeBoundsDisabled={
-                                        isRangeBoundsAndCollateralDisabled
-                                    }
-                                    {...rangeWidthProps}
-                                    {...rangePriceInfoProps}
-                                    {...minMaxPriceProps}
-                                    customSwitch={true}
+        <FlexContainer
+            width='100vw'
+            height='100vh'
+            justifyContent='center'
+            alignItems='flex-start'
+            className={styles.background}
+        >
+            <FlexContainer
+                background='dark1'
+                rounded
+                padding='16px'
+                textAlign='center'
+                flexDirection='column'
+                outline='accent1'
+                margin='64px 0 0 0'
+                maxWidth='800px'
+                minHeight='481px'
+            >
+                {/* Header */}
+                <FlexContainer padding='16px'>
+                    <Text fontSize='header1' margin='auto'>
+                        Initialize Pool
+                    </Text>
+                </FlexContainer>
+                {/* Body */}
+                <GridContainer numCols={2} grow>
+                    {/* Left */}
+                    <FlexContainer
+                        padding='0 8px'
+                        flexDirection='column'
+                        gap={8}
+                    >
+                        {simpleTokenSelect}
+                        {initPriceContainer}
+                        {collateralContent}
+                    </FlexContainer>
+                    {/* Right */}
+                    <FlexContainer
+                        padding='0 8px'
+                        flexDirection='column'
+                        gap={8}
+                    >
+                        {mintInitialLiquidity}
+                        <FlexContainer
+                            blur={isRangeBoundsAndCollateralDisabled}
+                        >
+                            <AdvancedModeToggle advancedMode={advancedMode} />
+                        </FlexContainer>
+                        <RangeBounds
+                            isRangeBoundsDisabled={
+                                isRangeBoundsAndCollateralDisabled
+                            }
+                            {...rangeWidthProps}
+                            {...rangePriceInfoProps}
+                            {...minMaxPriceProps}
+                            customSwitch={true}
+                        />
+                        {showErrorMessage ? (
+                            <div style={{ padding: '0 40px' }}>
+                                <WarningBox
+                                    details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
                                 />
-
-                                {showErrorMessage ? (
-                                    <div style={{ padding: '0 40px' }}>
-                                        <WarningBox
-                                            details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div
-                                        className={
-                                            poolExists === true
-                                                ? styles.content_disabled
-                                                : ''
-                                        }
-                                    >
-                                        <InitPoolExtraInfo
-                                            initialPrice={parseFloat(
-                                                initialPriceDisplay.replaceAll(
-                                                    ',',
-                                                    '',
-                                                ),
-                                            )}
-                                            isDenomBase={isDenomBase}
-                                            initGasPriceinDollars={
-                                                initGasPriceinDollars
-                                            }
-                                            baseToken={baseToken}
-                                            quoteToken={quoteToken}
-                                            setIsDenomBase={setIsDenomBase}
-                                        />
-                                    </div>
-                                )}
-
-                                <ButtonToRender />
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                        ) : (
+                            <FlexContainer blur={!!poolExists}>
+                                <InitPoolExtraInfo
+                                    initialPrice={parseFloat(
+                                        initialPriceDisplay.replaceAll(',', ''),
+                                    )}
+                                    isDenomBase={isDenomBase}
+                                    initGasPriceinDollars={
+                                        initGasPriceinDollars
+                                    }
+                                    baseToken={baseToken}
+                                    quoteToken={quoteToken}
+                                    setIsDenomBase={setIsDenomBase}
+                                />
+                            </FlexContainer>
+                        )}
+
+                        <ButtonToRender />
+                    </FlexContainer>
+                </GridContainer>
+            </FlexContainer>
+        </FlexContainer>
     );
 }

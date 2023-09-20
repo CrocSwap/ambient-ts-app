@@ -250,6 +250,28 @@ export const TokenQuantityInput = styled.input`
     }
 `;
 
+export const CurrencyQuantityInput = styled.input`
+    width: 100%;
+
+    font-weight: 300;
+    height: 31px;
+    padding: 4px 16px;
+
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--text1);
+    text-align: start;
+
+    border: none;
+    border-radius: var(--border-radius);
+    outline: 0;
+    background-color: var(--dark2);
+    background-clip: padding-box;
+
+    transition: border-color var(--animation-speed) ease-in-out,
+        box-shadow var(--animation-speed) ease-in-out;
+`;
+
 export const TokenQuantityContainer = styled.div<AnimationProps>`
     border-radius: var(--border-radius);
     background-color: var(--dark2);
@@ -502,4 +524,22 @@ export const SelectedRangeContainer = styled(GridContainer)`
     @media only screen and (min-width: 768px) {
         grid-template-columns: 1fr 1fr;
     }
+`;
+
+export const MainBackground = styled(FlexContainer)`
+    height: calc(100vh - 4rem);
+
+    background: url('../../assets/images/backgrounds/background.png') no-repeat
+        center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    cursor: default;
+
+    width: 100vw;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 `;

@@ -158,7 +158,10 @@ export default function RangeBounds(props: RangeBoundsProps) {
         </>
     );
     return (
-        <section className={isRangeBoundsDisabled && styles.advanced_disabled}>
+        <section
+            className={isRangeBoundsDisabled && styles.advanced_disabled}
+            style={{ flexGrow: 1 }}
+        >
             {!customSwitch && (
                 <div className={styles.denomination_switch_container}>
                     <AdvancedModeToggle advancedMode={advancedMode} />
