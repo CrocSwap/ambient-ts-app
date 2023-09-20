@@ -127,7 +127,7 @@ export default function Deposit(props: propsIF) {
             tokenAllowance && isDepositQtyValid && !!depositQtyNonDisplay
                 ? BigNumber.from(tokenAllowance).gte(depositQtyNonDisplay)
                 : false,
-        [tokenAllowance, isDepositQtyValid],
+        [tokenAllowance, isDepositQtyValid, depositQtyNonDisplay],
     );
 
     const isWalletBalanceSufficientToCoverGas = useMemo(() => {
@@ -151,7 +151,11 @@ export default function Deposit(props: propsIF) {
                   ).gte(BigNumber.from(0))
                 ? true
                 : false,
-        [tokenWalletBalanceAdjustedNonDisplayString, isDepositQtyValid],
+        [
+            tokenWalletBalanceAdjustedNonDisplayString,
+            isDepositQtyValid,
+            depositQtyNonDisplay,
+        ],
     );
 
     const [isDepositPending, setIsDepositPending] = useState(false);
