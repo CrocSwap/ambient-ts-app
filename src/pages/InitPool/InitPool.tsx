@@ -1,9 +1,9 @@
 // START: Import React and Dongles
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-import Button from '../../components/Global/Button/Button';
+import Button from '../../components/Form/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
@@ -31,13 +31,8 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
-// import {
-//     LocalPairDataIF,
-//     setLocalTokenA,
-//     setLocalTokenB,
-// } from '../../utils/state/localPairDataSlice';
+
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
@@ -45,7 +40,7 @@ import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer } from '../../styled/Common';
-import Toggle from '../../components/Global/Toggle/Toggle';
+import Toggle from '../../components/Form/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
@@ -57,6 +52,7 @@ import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
+import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
 
 // react functional component
 export default function InitPool() {
@@ -105,12 +101,6 @@ export default function InitPool() {
     // const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
 
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
-    // const localPair: LocalPairDataIF = useAppSelecmonetor(
-    //     (state) => state.localPairData,
-    // );
-    // const [tokenA, tokenB] = localPair.tokens;
-    // const baseToken = tokenA;
-    // const quoteToken = tokenB;
     const {
         tradeData: { tokenA, tokenB, baseToken, quoteToken },
     } = useAppSelector((state) => state);
@@ -170,15 +160,23 @@ export default function InitPool() {
     }, [crocEnv, sessionReceipts.length, baseToken, quoteToken]);
 
     const updateEstimatedInitialPrice = async () => {
-        const mainnetBase = getMainnetEquivalent(baseToken.address, chainId);
-        const mainnetQuote = getMainnetEquivalent(quoteToken.address, chainId);
+        const mainnetBase =
+            baseToken.address === ZERO_ADDRESS
+                ? ethereumMainnet.tokens['WETH']
+                : ethereumMainnet.tokens[
+                      baseToken?.symbol as keyof typeof ethereumMainnet.tokens
+                  ];
+        const mainnetQuote =
+            ethereumMainnet.tokens[
+                quoteToken?.symbol as keyof typeof ethereumMainnet.tokens
+            ];
         const basePricePromise = cachedFetchTokenPrice(
-            mainnetBase.token,
-            mainnetBase.chainId,
+            mainnetBase,
+            ethereumMainnet.chainId,
         );
         const quotePricePromise = cachedFetchTokenPrice(
-            mainnetQuote.token,
-            mainnetQuote.chainId,
+            mainnetQuote,
+            ethereumMainnet.chainId,
         );
 
         const basePrice = await basePricePromise;
@@ -197,16 +195,16 @@ export default function InitPool() {
                 ? defaultPriceNumInBase.toExponential(2)
                 : defaultPriceNumInBase < 2
                 ? defaultPriceNumInBase.toPrecision(3)
-                : defaultPriceNumInBase.toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  });
+                : defaultPriceNumInBase.toFixed(2);
 
-        if (isReferencePriceAvailable)
+        if (isReferencePriceAvailable && initialPriceDisplay === '') {
             setInitialPriceInBaseDenom(defaultPriceNumInBase);
+        }
         if (isDenomBase) {
             setEstimatedInitialPriceDisplay(defaultPriceTruncated);
-            isReferencePriceAvailable && !isTokenPairDefault
+            isReferencePriceAvailable &&
+            initialPriceDisplay === '' &&
+            !isTokenPairDefault
                 ? setInitialPriceDisplay(defaultPriceTruncated)
                 : !initialPriceInBaseDenom
                 ? setInitialPriceDisplay('')
@@ -219,13 +217,12 @@ export default function InitPool() {
                     ? invertedPriceNum.toExponential(2)
                     : invertedPriceNum < 2
                     ? invertedPriceNum.toPrecision(3)
-                    : invertedPriceNum.toLocaleString('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+                    : invertedPriceNum.toFixed(2);
             setEstimatedInitialPriceDisplay(invertedPriceTruncated);
 
-            isReferencePriceAvailable && !isTokenPairDefault
+            isReferencePriceAvailable &&
+            initialPriceDisplay === '' &&
+            !isTokenPairDefault
                 ? setInitialPriceDisplay(invertedPriceTruncated)
                 : !initialPriceInBaseDenom
                 ? setInitialPriceDisplay('')
@@ -262,11 +259,7 @@ export default function InitPool() {
                         ? invertedPriceNum.toExponential(2)
                         : invertedPriceNum < 2
                         ? invertedPriceNum.toPrecision(3)
-                        : invertedPriceNum.toLocaleString('en-US', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-
+                        : invertedPriceNum.toFixed(2);
                 setInitialPriceDisplay(invertedPriceTruncated);
             }
         }
@@ -465,7 +458,7 @@ export default function InitPool() {
         const isValid =
             event.target.value === '' ||
             event.target.value === '.' ||
-            event.target.validity.valid;
+            exponentialNumRegEx.test(event.target.value);
         const targetValue = event.target.value.replaceAll(',', '');
         const input = targetValue.startsWith('.')
             ? '0' + targetValue
@@ -546,7 +539,12 @@ export default function InitPool() {
                 } else {
                     // Display confirm button for final step
                     buttonContent = (
-                        <Button title='Confirm' action={sendInit} flat={true} />
+                        <Button
+                            title='Confirm'
+                            disabled={erc20TokenWithDexBalance !== undefined}
+                            action={sendInit}
+                            flat={true}
+                        />
                     );
                 }
                 break;
@@ -848,7 +846,6 @@ export default function InitPool() {
                         autoCorrect='off'
                         min='0'
                         minLength={1}
-                        pattern={exponentialNumRegEx.source}
                     />
                 )}
             </section>
@@ -934,16 +931,34 @@ export default function InitPool() {
 
     const [showErrorMessage, setShowErrorMessage] = useState(false);
 
+    const erc20TokenWithDexBalance = useMemo(() => {
+        if (baseToken?.address !== ZERO_ADDRESS) {
+            if (baseTokenDexBalance !== '0.0') {
+                return baseToken;
+            }
+        }
+        if (quoteTokenDexBalance !== '0.0') {
+            return quoteToken;
+        }
+        return undefined;
+    }, [baseToken, quoteToken, baseTokenDexBalance, quoteTokenDexBalance]);
+
+    useEffect(() => {
+        if (poolExists) {
+            setShowErrorMessage(false);
+        } else if (erc20TokenWithDexBalance) {
+            setShowErrorMessage(true);
+        } else {
+            setShowErrorMessage(false);
+        }
+    }, [erc20TokenWithDexBalance, poolExists]);
+
     return (
         <section className={styles.main}>
             <div className={styles.outer_container}>
                 <div className={styles.gradient_container}>
                     <div className={styles.main_container}>
-                        <header
-                            onClick={() =>
-                                setShowErrorMessage(!showErrorMessage)
-                            }
-                        >
+                        <header>
                             <p />
                             Initialize Pool
                             <p />
@@ -982,7 +997,9 @@ export default function InitPool() {
 
                                 {showErrorMessage ? (
                                     <div style={{ padding: '0 40px' }}>
-                                        <WarningBox details='Due to known issue, you will need to remove your WBTC exchange balance before proceeding with pool initialization' />
+                                        <WarningBox
+                                            details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
+                                        />
                                     </div>
                                 ) : (
                                     <div

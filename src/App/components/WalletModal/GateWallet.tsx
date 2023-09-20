@@ -1,5 +1,5 @@
 import styles from './GateWallet.module.css';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import { TermsOfServiceUrls } from '../../hooks/useTermsAgreed';
 
 interface PropsIF {

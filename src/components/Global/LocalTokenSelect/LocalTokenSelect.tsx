@@ -1,11 +1,4 @@
-import {
-    useContext,
-    useState,
-    useEffect,
-    memo,
-    Dispatch,
-    SetStateAction,
-} from 'react';
+import { useState, useEffect, memo, Dispatch, SetStateAction } from 'react';
 import styled from 'styled-components';
 import TokenIcon from '../TokenIcon/TokenIcon';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
@@ -14,7 +7,6 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 
 import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
 
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useModal } from '../Modal/useModal';
 
 const MainContainer = styled.button`
@@ -73,7 +65,7 @@ interface propsIF {
     setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
 }
 
-function TokenInputQuantity(props: propsIF) {
+function TokenSelectorPoolInit(props: propsIF) {
     const {
         tokenAorB,
         token,
@@ -82,7 +74,6 @@ function TokenInputQuantity(props: propsIF) {
 
         setTokenModalOpen = () => null,
     } = props;
-    useContext(CrocEnvContext);
 
     const [isTokenSelectOpen, openTokenSelect, closeTokenSelect] = useModal();
 
@@ -127,4 +118,4 @@ function TokenInputQuantity(props: propsIF) {
     );
 }
 
-export default memo(TokenInputQuantity);
+export default memo(TokenSelectorPoolInit);

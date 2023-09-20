@@ -3,9 +3,9 @@
 let exponentialNumRegEx: RegExp;
 
 if (navigator.userAgent.includes('Safari')) {
-    exponentialNumRegEx = /^[\d]+[.]?[,\d]*[eE]?[+\-]?[\d]*[.]?[\d]*/;
+    exponentialNumRegEx = /^[\d,]+[.]?[\d]*[eE]?[+\-]?[\d]*[.]?[\d]*$/;
 } else {
-    exponentialNumRegEx = /^[\d]+[.]?[,\d]*[eE]?[+-]?[\d]*[.]?[\d]*/;
+    exponentialNumRegEx = /^[\d,]+[.]?[\d]*[eE]?[+-]?[\d]*[.]?[\d]*$/;
 }
 
 export { exponentialNumRegEx };

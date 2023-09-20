@@ -6,7 +6,7 @@ import { useEnsName } from 'wagmi';
 import ExchangeBalance from '../../components/Portfolio/ExchangeBalance/ExchangeBalance';
 import PortfolioBanner from '../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 import PortfolioTabs from '../../components/Portfolio/PortfolioTabs/PortfolioTabs';
-import Button from '../../components/Global/Button/Button';
+import Button from '../../components/Form/Button';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 // START: Import Other Local Files
@@ -41,21 +41,18 @@ function Portfolio() {
     const {
         wagmiModal: { open: openModalWallet },
     } = useContext(AppStateContext);
-    const {
-        cachedFetchErc20TokenBalances,
-        cachedFetchNativeTokenBalance,
-        cachedTokenDetails,
-    } = useContext(CachedDataContext);
+    const { cachedFetchTokenBalances, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const {
         crocEnv,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, client } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const dispatch = useAppDispatch();
 
-    const { mainnetProvider } = useContext(CrocEnvContext);
+    const { provider } = useContext(CrocEnvContext);
 
     const { address: addressFromParams } = useParams();
 
@@ -85,10 +82,11 @@ function Portfolio() {
 
     useEffect(() => {
         (async () => {
-            if (addressFromParams && isAddressEns && mainnetProvider) {
+            if (addressFromParams && isAddressEns && provider) {
                 try {
-                    const newResolvedAddress =
-                        await mainnetProvider.resolveName(addressFromParams);
+                    const newResolvedAddress = await provider.resolveName(
+                        addressFromParams,
+                    );
                     setResolvedAddress(newResolvedAddress ?? '');
                     dispatch(setResolvedAddressRedux(newResolvedAddress ?? ''));
                 } catch (error) {
@@ -102,16 +100,16 @@ function Portfolio() {
                 dispatch(setResolvedAddressRedux(''));
             }
         })();
-    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
+    }, [addressFromParams, isAddressHex, isAddressEns, provider]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (addressFromParams && !isAddressEns && mainnetProvider) {
+            if (addressFromParams && !isAddressEns && provider) {
                 try {
                     const ensName = await fetchEnsAddress(
-                        mainnetProvider,
+                        provider,
                         addressFromParams,
                         chainId,
                     );
@@ -126,7 +124,7 @@ function Portfolio() {
                 setSecondaryEnsName(addressFromParams);
             }
         })();
-    }, [addressFromParams, isAddressEns, mainnetProvider]);
+    }, [addressFromParams, isAddressEns, provider]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
@@ -182,14 +180,9 @@ function Portfolio() {
     //     </FlexContainer>
     // );
 
-    const [resolvedAddressNativeToken, setResolvedAddressNativeToken] =
-        useState<TokenIF | undefined>();
-    const [resolvedAddressErc20Tokens, setResolvedAddressErc20Tokens] =
-        useState<TokenIF[]>([]);
-
-    const resolvedAddressTokens = [resolvedAddressNativeToken].concat(
-        resolvedAddressErc20Tokens,
-    );
+    const [resolvedAddressTokens, setResolvedAddressTokens] = useState<
+        TokenIF[]
+    >([]);
 
     useEffect(() => {
         (async () => {
@@ -201,34 +194,18 @@ function Portfolio() {
                 !connectedAccountActive
             ) {
                 try {
-                    const newNativeToken = await cachedFetchNativeTokenBalance(
-                        resolvedAddress,
-                        chainId,
-                        lastBlockNumber,
-                        crocEnv,
-                    );
+                    const updatedTokens: TokenIF[] = resolvedAddressTokens;
 
-                    if (
-                        diffHashSig(resolvedAddressNativeToken) !==
-                        diffHashSig(newNativeToken)
-                    ) {
-                        setResolvedAddressNativeToken(newNativeToken);
-                    }
-                } catch (error) {
-                    console.error({ error });
-                }
-                try {
-                    const updatedTokens: TokenIF[] = resolvedAddressErc20Tokens;
-
-                    const erc20Results = await cachedFetchErc20TokenBalances(
+                    const tokenBalanceResults = await cachedFetchTokenBalances(
                         resolvedAddress,
                         chainId,
                         lastBlockNumber,
                         cachedTokenDetails,
                         crocEnv,
+                        client,
                     );
 
-                    const erc20TokensWithLogos = erc20Results.map((token) => {
+                    const tokensWithLogos = tokenBalanceResults.map((token) => {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
@@ -237,9 +214,9 @@ function Portfolio() {
                         return newToken;
                     });
 
-                    erc20TokensWithLogos.map((newToken: TokenIF) => {
+                    tokensWithLogos.map((newToken: TokenIF) => {
                         const indexOfExistingToken =
-                            resolvedAddressErc20Tokens.findIndex(
+                            resolvedAddressTokens.findIndex(
                                 (existingToken) =>
                                     existingToken.address === newToken.address,
                             );
@@ -248,15 +225,13 @@ function Portfolio() {
                             updatedTokens.push(newToken);
                         } else if (
                             diffHashSig(
-                                resolvedAddressErc20Tokens[
-                                    indexOfExistingToken
-                                ],
+                                resolvedAddressTokens[indexOfExistingToken],
                             ) !== diffHashSig(newToken)
                         ) {
                             updatedTokens[indexOfExistingToken] = newToken;
                         }
                     });
-                    setResolvedAddressErc20Tokens(updatedTokens);
+                    setResolvedAddressTokens(updatedTokens);
                 } catch (error) {
                     console.error({ error });
                 }
@@ -316,7 +291,6 @@ function Portfolio() {
                 flat
                 title='Connect Wallet'
                 action={() => openModalWallet()}
-                width='30%'
             />
         </FlexContainer>
     );
