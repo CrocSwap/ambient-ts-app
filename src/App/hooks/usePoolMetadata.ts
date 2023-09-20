@@ -1,7 +1,6 @@
 import { ChainSpec, CrocEnv, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { GRAPHCACHE_SMALL_URL } from '../../constants';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
 import {
@@ -36,6 +35,8 @@ import { getPositionData } from '../functions/getPositionData';
 import { SpotPriceFn } from '../functions/querySpotPrice';
 import useDebounce from './useDebounce';
 import { getLiquidityFee } from '../functions/getPoolStats';
+import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
+import { supportedNetworks } from '../../utils/networks';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -129,13 +130,13 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     tokenBAddress,
                 );
 
-                const { token: tokenAMainnetEquivalent } = getMainnetEquivalent(
+                const tokenAMainnetEquivalent = getMainnetAddress(
                     tokenAAddress,
-                    props.chainData.chainId,
+                    supportedNetworks[props.chainData.chainId],
                 );
-                const { token: tokenBMainnetEquivalent } = getMainnetEquivalent(
+                const tokenBMainnetEquivalent = getMainnetAddress(
                     tokenBAddress,
-                    props.chainData.chainId,
+                    supportedNetworks[props.chainData.chainId],
                 );
 
                 if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {

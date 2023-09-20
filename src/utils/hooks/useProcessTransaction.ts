@@ -42,9 +42,7 @@ export const useProcessTransaction = (
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
     const isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
-            getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
-        0;
+        getMoneynessRank(tx.baseSymbol) - getMoneynessRank(tx.quoteSymbol) >= 0;
 
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;

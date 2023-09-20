@@ -59,13 +59,9 @@ export const ExploreContextProvider = (props: { children: ReactNode }) => {
         chainId: string,
     ): Promise<PoolDataIF> {
         // moneyness of base token
-        const baseMoneyness: number = getMoneynessRank(
-            pool.base.address.toLowerCase() + '_' + chainId,
-        );
+        const baseMoneyness: number = getMoneynessRank(pool.base.symbol);
         // moneyness of quote token
-        const quoteMoneyness: number = getMoneynessRank(
-            pool.quote.address.toLowerCase() + '_' + chainId,
-        );
+        const quoteMoneyness: number = getMoneynessRank(pool.quote.symbol);
         // determination to invert based on relative moneyness
         const shouldInvert: boolean = quoteMoneyness - baseMoneyness >= 0;
         // spot price for pool

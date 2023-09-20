@@ -73,16 +73,8 @@ const useFetchPoolStats = (pool: PoolIF): PoolStatIF => {
 
                     const isBaseTokenMoneynessGreaterOrEqual =
                         pool.base.address && pool.quote.address
-                            ? getMoneynessRank(
-                                  pool.base.address.toLowerCase() +
-                                      '_' +
-                                      chainId,
-                              ) -
-                                  getMoneynessRank(
-                                      pool.quote.address.toLowerCase() +
-                                          '_' +
-                                          chainId,
-                                  ) >=
+                            ? getMoneynessRank(pool.base.symbol) -
+                                  getMoneynessRank(pool.quote.symbol) >=
                               0
                             : false;
 

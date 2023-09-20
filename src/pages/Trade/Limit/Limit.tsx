@@ -8,7 +8,7 @@ import {
 import { useContext, useState, useEffect } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { useTradeData } from '../../../App/hooks/useTradeData';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
@@ -154,11 +154,6 @@ export default function Limit() {
             maximumFractionDigits: 2,
         },
     );
-
-    // trigger re-pinning to a default tick
-    // useEffect(() => {
-    //     dispatch(setLimitTick(undefined));
-    // }, [tokenA.address]);
 
     useEffect(() => {
         if (limitTickFromParams && limitTick === undefined) {
@@ -345,8 +340,11 @@ export default function Limit() {
         updateOrderValidityStatus();
     }, [
         limitTick,
+        isTokenAPrimary,
         poolPriceNonDisplay,
         tokenAInputQty === '' && tokenBInputQty === '',
+        tokenA.address,
+        tokenB.address,
     ]);
 
     useEffect(() => {
@@ -355,7 +353,14 @@ export default function Limit() {
 
     useEffect(() => {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
-    }, [isOrderValid, tokenAInputQty, isPoolInitialized, poolPriceNonDisplay]);
+    }, [
+        isOrderValid,
+        tokenAInputQty,
+        isPoolInitialized,
+        poolPriceNonDisplay,
+        limitTick,
+        isSellTokenBase,
+    ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);

@@ -17,6 +17,8 @@ import {
     setIsLinesSwitched,
     candleScale,
     candleDomain,
+    setIsTokenAPrimary,
+    setIsTokenAPrimaryRange,
 } from '../../utils/state/tradeDataSlice';
 
 import { PoolContext } from '../../contexts/PoolContext';
@@ -656,13 +658,13 @@ export default function Chart(props: propsIF) {
             const lastCandleDate = lastCandleData?.time * 1000;
             const firstCandleDate = firstCandleData?.time * 1000;
 
-            let scrollTimeout: NodeJS.Timeout | null = null; // Declare scrollTimeout
+            let wheelTimeout: NodeJS.Timeout | null = null; // Declare wheelTimeout
 
             if (lastCandleDate && firstCandleDate) {
                 d3.select(d3CanvasMain.current).on(
                     'wheel',
                     function (event) {
-                        if (scrollTimeout === null) {
+                        if (wheelTimeout === null) {
                             setIsChartZoom(true);
                         }
 
@@ -678,11 +680,11 @@ export default function Chart(props: propsIF) {
                             changeScale();
                         }
 
-                        if (scrollTimeout) {
-                            clearTimeout(scrollTimeout);
+                        if (wheelTimeout) {
+                            clearTimeout(wheelTimeout);
                         }
                         // check wheel end
-                        scrollTimeout = setTimeout(() => {
+                        wheelTimeout = setTimeout(() => {
                             setIsChartZoom(false);
                             showLatestActive();
                         }, 200);
@@ -1153,7 +1155,13 @@ export default function Chart(props: propsIF) {
         diffHashSigScaleData(scaleData, 'y'),
     ]);
 
-    // performs reverse token function when limit line position (sell /buy) changes
+    // *** LIMIT ***
+    /**
+     * This function checks if the limit values trigger a position changes buy /sell .
+     * If the conditions are met, it initiates a pulse animation and updates the limit direction accordingly.
+     * @param limitPreviousData  limit value before the operation started
+     * @param newLimitValue  limit value the operation finished
+     */
     function reverseTokenForChart(
         limitPreviousData: number,
         newLimitValue: number,
@@ -1166,6 +1174,7 @@ export default function Chart(props: propsIF) {
             // sell => buy or buy to sell
             if (sellOrderStyle === 'order_sell') {
                 // old price > pool price AND new price is < pool price
+                // Check if the previous limit was above poolPriceDisplay and the new limit is below it
                 if (
                     limitPreviousData > poolPriceDisplay &&
                     newLimitValue < poolPriceDisplay
@@ -1173,6 +1182,7 @@ export default function Chart(props: propsIF) {
                     needsInversion = true;
                 }
             } else {
+                // Check if the previous limit was below poolPriceDisplay and the new limit is above it.
                 if (
                     limitPreviousData < poolPriceDisplay &&
                     newLimitValue > poolPriceDisplay
@@ -1184,13 +1194,28 @@ export default function Chart(props: propsIF) {
         return needsInversion;
     }
 
+    // *** LIMIT ***
+    /**
+     * This function retrieves the 'noGoZoneMin' and 'noGoZoneMax' values from the 'noGoZoneBoundaries' array.
+     * These values represent the minimum and maximum boundaries of a no-go zone.
+     *
+     * @returns {Object} An object containing 'noGoZoneMin' and 'noGoZoneMax'.
+     */
     const getNoZoneData = () => {
         const noGoZoneMin = noGoZoneBoudnaries[0][0];
         const noGoZoneMax = noGoZoneBoudnaries[0][1];
         return { noGoZoneMin: noGoZoneMin, noGoZoneMax: noGoZoneMax };
     };
 
-    // finds border ticks of nogozone
+    // *** LIMIT ***
+    /**
+     * finds border ticks of nogozone
+     * This function sets the 'minTickForLimit' and 'maxTickForLimit' values
+     * tick values are calculated based on the 'low' and 'high' values provided near the no go zone.
+     *
+     * @param low   The low value for the calculation
+     * @param high  The high value for the calculation
+     */
     const setLimitTickNearNoGoZone = (low: number, high: number) => {
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(parseFloat(low.toString()))
@@ -1254,15 +1279,22 @@ export default function Chart(props: propsIF) {
         return newLimitValue;
     }
 
+    // *** LİMİT ***
+    // This function calculates a new limit value, and adjusts it as a corrected limit if it falls within the No-Go Zone boundaries.
     function calculateLimit(newLimitValue: number) {
         if (newLimitValue < 0) newLimitValue = 0;
 
+        // If the calculated limit value is within "No Go Zone", it returns the limit value outside the region
         newLimitValue = setLimitForNoGoZone(newLimitValue);
+
+        // Get data for the No-Go Zone (minimum and maximum values)
         const { noGoZoneMin, noGoZoneMax } = getNoZoneData();
 
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(newLimitValue)
             : pool?.fromDisplayPrice(1 / newLimitValue);
+
+        // Check if the newLimitValue matches the No-Go Zone maximum or minimum
         const isNoGoneZoneMax = newLimitValue === noGoZoneMax;
         const isNoGoneZoneMin = newLimitValue === noGoZoneMin;
 
@@ -1272,11 +1304,14 @@ export default function Chart(props: propsIF) {
                 ? pinTickLower(limit, chainData.gridSize)
                 : pinTickUpper(limit, chainData.gridSize);
 
+            // If it is equal to the minimum value of no go zone, value is rounded lower tick
             if (isNoGoneZoneMin) {
                 pinnedTick = isDenomBase
                     ? pinTickUpper(limit, chainData.gridSize)
                     : pinTickLower(limit, chainData.gridSize);
             }
+
+            // If it is equal to the max value of no go zone, value is rounded upper tick
             if (isNoGoneZoneMax) {
                 pinnedTick = isDenomBase
                     ? pinTickLower(limit, chainData.gridSize)
@@ -1292,6 +1327,8 @@ export default function Chart(props: propsIF) {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
 
                     newLimitValue = displayPriceWithDenom;
+
+                    // Update newLimitValue if it's outside the No-Go Zone
                     if (
                         !(
                             newLimitValue >= noGoZoneMin &&
@@ -1542,6 +1579,7 @@ export default function Chart(props: propsIF) {
             let oldRangeMinValue: number | undefined = undefined;
             let oldRangeMaxValue: number | undefined = undefined;
 
+            // *** RANGE LINES DRAG ***
             const dragRange = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', (event) => {
@@ -1929,34 +1967,48 @@ export default function Chart(props: propsIF) {
 
             let oldLimitValue: number | undefined = undefined;
 
+            // *** LIMIT LINE DRAG ***
             const dragLimit = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', () => {
+                    // When the drag starts:
+                    // hide the cursor
                     d3.select(d3CanvasMain.current).style('cursor', 'none');
-
-                    document.addEventListener('keydown', cancelDragEvent);
-
+                    // hide the cursor over the y-axis canvas.
                     d3.select('#y-axis-canvas').style('cursor', 'none');
 
+                    // add a keydown event listener to cancel the drag.
+                    document.addEventListener('keydown', cancelDragEvent);
+
+                    // Store the initial value of the limit for potential cancellation.
                     oldLimitValue = limit;
                 })
                 .on('drag', function (event) {
+                    // During the drag:
                     if (!event.sourceEvent.type.includes('touch')) {
                         if (!cancelDrag) {
+                            // to hide the crosshair when dragging the line set the crosshairActive to 'none'.
                             setCrosshairActive('none');
+
+                            // Indicate that line is dragging
                             setIsLineDrag(true);
+
+                            // Determine the event point's Y-coordinate based on the event type.
                             const eventPoint =
                                 event.sourceEvent.type === 'mousemove'
                                     ? event.sourceEvent.clientY
                                     : event.sourceEvent.targetTouches[0]
                                           .clientY;
 
+                            // Calculate the new limit value based on the Y-coordinate.
                             newLimitValue = scaleData?.yScale.invert(
                                 eventPoint - rectCanvas.top,
                             );
 
+                            // Perform calculations based on the new limit value
                             calculateLimit(newLimitValue);
                         } else {
+                            // If the drag is canceled, restore the previous limit value.
                             if (oldLimitValue !== undefined) {
                                 setLimit(() => {
                                     return oldLimitValue as number;
@@ -1965,12 +2017,13 @@ export default function Chart(props: propsIF) {
                         }
                     }
                 })
+                // Handle the drag end event
                 .on('end', () => {
                     setIsLineDrag(false);
 
-                    draggingLine = undefined;
-
+                    // If the drag is not canceled
                     if (!cancelDrag) {
+                        // Change the cursor to 'row-resize'
                         d3.select(d3Container.current).style(
                             'cursor',
                             'row-resize',
@@ -1986,11 +2039,9 @@ export default function Chart(props: propsIF) {
                         }
                     }
 
+                    // Restore default cursor styles
                     d3.select(d3CanvasMain.current).style('cursor', 'default');
-
                     d3.select('#y-axis-canvas').style('cursor', 'default');
-
-                    setCrosshairActive('none');
                 });
 
             setDragRange(() => {
@@ -2038,7 +2089,6 @@ export default function Chart(props: propsIF) {
         }
     }, [reset]);
 
-    // create x axis
     useEffect(() => {
         if (mainZoom && d3CanvasMain.current) {
             d3.select<Element, unknown>(d3CanvasMain.current)
@@ -2066,14 +2116,7 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3CanvasMain]);
         }
-    }, [
-        location.pathname,
-        mainZoom,
-        dragLimit,
-        dragRange,
-        // d3.select('#range-line-canvas')?.node(),
-        // d3.select('#limit-line-canvas')?.node(),
-    ]);
+    }, [location.pathname, mainZoom, dragLimit, dragRange]);
 
     // create market line and liquidity tooltip
     useEffect(() => {
@@ -2942,15 +2985,21 @@ export default function Chart(props: propsIF) {
         });
     }, [isChartZoom]);
 
+    /**
+     * This useEffect block handles various interactions with the chart canvas based on user actions and context.
+     * It includes logic for handling clicks on the canvas, mouseleave events, and chart rendering.
+     */
     useEffect(() => {
         if (scaleData !== undefined) {
+            // Define the 'onClickCanvas' event handler for canvas clicks
             const onClickCanvas = (event: PointerEvent) => {
+                // If the candle or volume click
                 const { isHoverCandleOrVolumeData, nearest } =
                     candleOrVolumeDataHoverStatus(event.offsetX, event.offsetY);
-
                 selectedDateEvent(isHoverCandleOrVolumeData, nearest);
 
                 setCrosshairActive('none');
+                // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
 
                 if (
                     (location.pathname.includes('pool') ||
@@ -2961,6 +3010,7 @@ export default function Chart(props: propsIF) {
                     onClickRange(event);
                 }
 
+                // Check if the location pathname includes '/limit' and handle the click event.
                 if (
                     location.pathname.includes('/limit') &&
                     scaleData !== undefined &&
@@ -3463,6 +3513,12 @@ export default function Chart(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
+    /**
+     *  This method updates the global limitTick value according to local limit value
+     *  and It trigger sell or buy changes if necessary
+     * @param limitPreviousData  limit value before the operation started
+     * @param newLimitValue  limit value the operation finished
+     */
     const onBlurLimitRate = (
         limitPreviousData: number,
         newLimitValue: number,
@@ -3486,12 +3542,20 @@ export default function Chart(props: propsIF) {
             // ... then redirect to new URL params (to reverse the token
             // ... pair; else just update the `limitTick` value in the URL
             reverseTokenForChart(limitPreviousData, newLimitValue)
-                ? linkGenLimit.redirect({
-                      chain: chainData.chainId,
-                      tokenA: tokenB.address,
-                      tokenB: tokenA.address,
-                      limitTick: pinnedTick,
-                  })
+                ? (() => {
+                      dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+                      dispatch(
+                          setIsTokenAPrimaryRange(
+                              !tradeData.isTokenAPrimaryRange,
+                          ),
+                      );
+                      linkGenLimit.redirect({
+                          chain: chainData.chainId,
+                          tokenA: tokenB.address,
+                          tokenB: tokenA.address,
+                          limitTick: pinnedTick,
+                      });
+                  })()
                 : updateURL({ update: [['limitTick', pinnedTick]] });
 
             const tickPrice = tickToPrice(pinnedTick);

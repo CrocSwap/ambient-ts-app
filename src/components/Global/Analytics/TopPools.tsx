@@ -6,16 +6,15 @@ import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
 import TableHead from './TableHead';
 import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
+import Spinner from '../Spinner/Spinner';
 import {
-    FlexContainer,
     ScrollableContainer,
     ShadowBox,
+    SpinnerContainer,
     Table,
     TableBody,
-    SpinnerContainer,
-} from './Analytics.styles';
-import Spinner from '../Spinner/Spinner';
-
+} from '../../../styled/Components/Analytics';
+import { FlexContainer } from '../../../styled/Common';
 export interface HeaderItem {
     label: string;
     hidden: boolean;
@@ -96,7 +95,7 @@ function TopPools(props: propsIF) {
     ];
 
     return (
-        <FlexContainer>
+        <FlexContainer fullHeight fullWidth>
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>
@@ -119,7 +118,12 @@ function TopPools(props: propsIF) {
                                         />
                                     ))
                             ) : (
-                                <SpinnerContainer>
+                                <SpinnerContainer
+                                    fullHeight
+                                    fullWidth
+                                    alignItems='center'
+                                    justifyContent='center'
+                                >
                                     <Spinner
                                         size={100}
                                         bg='var(--dark1)'

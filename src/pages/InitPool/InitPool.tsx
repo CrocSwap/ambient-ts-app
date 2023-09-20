@@ -5,7 +5,7 @@ import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-import Button from '../../components/Global/Button/Button';
+import Button from '../../components/Form/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
@@ -39,9 +39,10 @@ import { exponentialNumRegEx } from '../../utils/regex/exports';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
+import { supportedNetworks } from '../../utils/networks';
 
 // react functional component
 export default function InitPool() {
@@ -122,21 +123,21 @@ export default function InitPool() {
 
     useEffect(() => {
         (async () => {
-            const mainnetBase = getMainnetEquivalent(
+            const mainnetBase = getMainnetAddress(
                 baseToken.address,
-                chainId,
+                supportedNetworks[chainId],
             );
-            const mainnetQuote = getMainnetEquivalent(
+            const mainnetQuote = getMainnetAddress(
                 quoteToken.address,
-                chainId,
+                supportedNetworks[chainId],
             );
             const basePricePromise = cachedFetchTokenPrice(
-                mainnetBase.token,
-                mainnetBase.chainId,
+                mainnetBase,
+                chainId,
             );
             const quotePricePromise = cachedFetchTokenPrice(
-                mainnetQuote.token,
-                mainnetQuote.chainId,
+                mainnetQuote,
+                chainId,
             );
 
             const basePrice = (await basePricePromise)?.usdPrice || 2000;

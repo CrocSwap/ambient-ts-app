@@ -12,9 +12,9 @@ import {
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { ConnectWalletButton } from '../../Global/Button/ConnectWalletButton';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
+import Button from '../../Form/Button';
 
 interface PropsIF {
     header: React.ReactNode;
@@ -187,7 +187,11 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                             </>
                         )
                     ) : (
-                        <ConnectWalletButton onClick={openWagmiModal} />
+                        <Button
+                            action={openWagmiModal}
+                            title='Connect Wallet'
+                            flat
+                        />
                     )}
                     {warnings && warnings}
                 </FlexContainer>

@@ -1,8 +1,6 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
-import { ZERO_ADDRESS } from '../../../../constants';
-import { testTokenMap } from '../../../../utils/data/testTokenMap';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
@@ -20,6 +18,8 @@ import {
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { supportedNetworks } from '../../../../utils/networks';
+import { getMainnetAddress } from '../../../../utils/functions/getMainnetAddress';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -52,27 +52,17 @@ export default function TransactionDetailsGraph(
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
-    const chainId = tx.chainId;
-
     const tradeData = useAppSelector((state) => state.tradeData);
     const denominationsInBase = tradeData.isDenomBase;
 
-    const mainnetBaseTokenAddress =
-        chainId === '0x1'
-            ? baseTokenAddress
-            : baseTokenAddress === ZERO_ADDRESS
-            ? baseTokenAddress
-            : testTokenMap
-                  .get(baseTokenAddress.toLowerCase() + '_' + chainId)
-                  ?.split('_')[0];
-    const mainnetQuoteTokenAddress =
-        chainId === '0x1'
-            ? quoteTokenAddress
-            : quoteTokenAddress === ZERO_ADDRESS
-            ? quoteTokenAddress
-            : testTokenMap
-                  .get(quoteTokenAddress.toLowerCase() + '_' + chainId)
-                  ?.split('_')[0];
+    const mainnetBaseTokenAddress = getMainnetAddress(
+        baseTokenAddress,
+        supportedNetworks[tx.chainId],
+    );
+    const mainnetQuoteTokenAddress = getMainnetAddress(
+        quoteTokenAddress,
+        supportedNetworks[tx.chainId],
+    );
 
     const [graphData, setGraphData] = useState<any>();
 

@@ -1,6 +1,6 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/exports';
-import Button from '../../../Global/Button/Button';
+import Button from '../../../Form/Button';
 import TransferAddressInput from './TransferAddressInput';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import {
@@ -39,7 +39,7 @@ import {
     removePendingTx,
     updateTransactionHash,
 } from '../../../../utils/state/receiptDataSlice';
-import CurrencySelector from '../CurrencySelector';
+import CurrencySelector from '../../../Form/CurrencySelector';
 
 interface propsIF {
     selectedToken: TokenIF;
