@@ -54,6 +54,7 @@ import {
 } from './rangeFunctions';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import RangeBounds from '../../../components/Global/RangeBounds/RangeBounds';
+import { useCreateRangePosition } from '../../../App/hooks/useCreateRangePosition';
 
 import { useApprove } from '../../../App/functions/approve';
 
@@ -960,129 +961,27 @@ function Range() {
         setTxErrorCode('');
         setNewRangeTransactionHash('');
     };
-
+    const { createRangePosition } = useCreateRangePosition();
     const sendTransaction = async () => {
-        if (!crocEnv) return;
-
-        resetConfirmation();
-        setShowConfirmation(true);
-
-        const pool = crocEnv.pool(tokenA.address, tokenB.address);
-
-        const spot = await pool.displayPrice();
-
-        const minPrice = spot * (1 - slippageTolerancePercentage / 100);
-        const maxPrice = spot * (1 + slippageTolerancePercentage / 100);
-
-        let tx;
-        try {
-            tx = await (isAmbient
-                ? isTokenAPrimaryRange
-                    ? pool.mintAmbientQuote(
-                          isTokenAInputDisabled ? 0 : tokenAInputQty,
-                          [minPrice, maxPrice],
-                          {
-                              surplus: [
-                                  isWithdrawTokenAFromDexChecked,
-                                  isWithdrawTokenBFromDexChecked,
-                              ],
-                          },
-                      )
-                    : pool.mintAmbientBase(
-                          isTokenBInputDisabled ? 0 : tokenBInputQty,
-                          [minPrice, maxPrice],
-                          {
-                              surplus: [
-                                  isWithdrawTokenAFromDexChecked,
-                                  isWithdrawTokenBFromDexChecked,
-                              ],
-                          },
-                      )
-                : isTokenAPrimaryRange
-                ? pool.mintRangeQuote(
-                      isTokenAInputDisabled ? 0 : tokenAInputQty,
-                      [defaultLowTick, defaultHighTick],
-                      [minPrice, maxPrice],
-                      {
-                          surplus: [
-                              isWithdrawTokenAFromDexChecked,
-                              isWithdrawTokenBFromDexChecked,
-                          ],
-                      },
-                  )
-                : pool.mintRangeBase(
-                      isTokenBInputDisabled ? 0 : tokenBInputQty,
-                      [defaultLowTick, defaultHighTick],
-                      [minPrice, maxPrice],
-                      {
-                          surplus: [
-                              isWithdrawTokenAFromDexChecked,
-                              isWithdrawTokenBFromDexChecked,
-                          ],
-                      },
-                  ));
-            setNewRangeTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction: 'Add',
-                        txType: 'Range',
-                        txDescription: isAdd
-                            ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
-                            : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
-                        txDetails: {
-                            baseAddress: baseToken.address,
-                            quoteAddress: quoteToken.address,
-                            poolIdx: poolIndex,
-                            baseSymbol: baseToken.symbol,
-                            quoteSymbol: quoteToken.symbol,
-                            baseTokenDecimals: baseTokenDecimals,
-                            quoteTokenDecimals: quoteTokenDecimals,
-                            isAmbient: isAmbient,
-                            lowTick: defaultLowTick,
-                            highTick: defaultHighTick,
-                            gridSize: gridSize,
-                        },
-                    }),
-                );
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-            setTxErrorCode(error?.code);
-        }
-
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
-                const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
-                setNewRangeTransactionHash(newTransactionHash);
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
-            }
-        }
-        if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
-        }
+        createRangePosition({
+            slippageTolerancePercentage,
+            isAmbient,
+            tokenAInputQty: isTokenAInputDisabled
+                ? 0
+                : parseFloat(tokenAInputQty),
+            tokenBInputQty: isTokenBInputDisabled
+                ? 0
+                : parseFloat(tokenBInputQty),
+            isWithdrawTokenAFromDexChecked,
+            isWithdrawTokenBFromDexChecked,
+            defaultLowTick,
+            defaultHighTick,
+            isAdd,
+            setNewRangeTransactionHash,
+            setTxErrorCode,
+            resetConfirmation,
+            setShowConfirmation,
+        });
     };
 
     const handleModalOpen = () => {
