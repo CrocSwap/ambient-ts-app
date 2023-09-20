@@ -13,6 +13,7 @@ import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';
+import { TradeDataIF } from '../../../../utils/state/tradeDataSlice';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -22,6 +23,7 @@ interface DrawCanvasProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setCrossHairDataFunc: any;
     activeDrawingType: string;
+    currentPool: TradeDataIF;
     setActiveDrawingType: React.Dispatch<React.SetStateAction<string>>;
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
@@ -40,6 +42,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         activeDrawingType,
         setActiveDrawingType,
         setSelectedDrawnShape,
+        currentPool,
     } = props;
 
     const circleSeries = createCircle(
@@ -196,6 +199,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             data: tempLineData,
                             type: activeDrawingType,
                             time: Date.now(),
+                            pool: currentPool,
                         };
 
                         setSelectedDrawnShape({
@@ -248,6 +252,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     data: tempLineData,
                     type: activeDrawingType,
                     time: Date.now(),
+                    pool: currentPool,
                 },
                 selectedCircle: undefined,
             });

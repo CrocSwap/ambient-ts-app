@@ -467,7 +467,6 @@ function Range() {
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
-            // dispatch(setRangeModuleTriggered(true));
             setSimpleRangeWidth(rangeWidthPercentage);
         }
     }, [rangeWidthPercentage]);

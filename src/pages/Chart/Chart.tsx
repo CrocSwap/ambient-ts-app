@@ -19,6 +19,7 @@ import {
     setShouldLimitDirectionReverse,
     candleScale,
     candleDomain,
+    TradeDataIF,
 } from '../../utils/state/tradeDataSlice';
 
 import { PoolContext } from '../../contexts/PoolContext';
@@ -84,7 +85,6 @@ import {
     createLinearLineSeries,
     distanceToLine,
 } from './Draw/DrawCanvas/LinearLineSeries';
-import { useUndoRedo } from './ChartUtils/useUndoRedo';
 import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
 import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
@@ -126,10 +126,13 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
     candleTimeInSeconds: number;
+    undo: any;
+    redo: any;
     drawnShapeHistory: drawDataHistory[];
     setDrawnShapeHistory: React.Dispatch<
         React.SetStateAction<drawDataHistory[]>
     >;
+    currentPool: TradeDataIF;
 }
 
 export default function Chart(props: propsIF) {
@@ -154,8 +157,11 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
+        undo,
+        redo,
         drawnShapeHistory,
         setDrawnShapeHistory,
+        currentPool,
     } = props;
 
     const {
@@ -176,6 +182,7 @@ export default function Chart(props: propsIF) {
         lastCandleDate: undefined,
         domainBoundry: undefined,
     });
+
     const {
         minRangePrice: minPrice,
         setMinRangePrice: setMinPrice,
@@ -285,8 +292,6 @@ export default function Chart(props: propsIF) {
     const [hoveredDrawnShape, setHoveredDrawnShape] = useState<
         selectedDrawnData | undefined
     >(undefined);
-
-    const { undo, redo } = useUndoRedo(drawnShapeHistory, setDrawnShapeHistory);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
@@ -2580,57 +2585,15 @@ export default function Chart(props: propsIF) {
             d3.select(d3CanvasMain.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
+
                     drawnShapeHistory?.forEach((item) => {
-                        if (item.type === 'Brush') {
-                            lineSeries(item?.data);
-                            if (
-                                (hoveredDrawnShape &&
-                                    hoveredDrawnShape.data.time ===
-                                        item.time) ||
-                                (selectedDrawnShape &&
-                                    selectedDrawnShape.data.time === item.time)
-                            ) {
-                                item.data.forEach((element) => {
-                                    if (
-                                        hoveredDrawnShape &&
-                                        hoveredDrawnShape.selectedCircle ===
-                                            element
-                                    ) {
-                                        if (!isUpdatingShape) {
-                                            selectedCircleSeries([element]);
-                                        }
-                                    } else {
-                                        circleSeries([element]);
-                                    }
-                                });
-                            }
-                        }
+                        const isShapeInCurrentPool =
+                            item.pool.tokenB === currentPool.tokenB &&
+                            item.pool.tokenA === currentPool.tokenA;
 
-                        if (item.type === 'Square') {
-                            item.data[1].ctx
-                                .xScale()
-                                .domain(scaleData.xScale.domain());
-
-                            const range = [
-                                scaleData?.xScale(item.data[0].x),
-                                scaleData.xScale(item.data[1].x),
-                            ];
-
-                            item.data[1].ctx.xScale().range(range);
-
-                            const bandData = {
-                                fromValue: item.data[0].y,
-                                toValue: item.data[1].y,
-                            } as bandLineData;
-
-                            item.data[1].ctx([bandData]);
-
-                            const lineOfBand = createPointsOfBandLine(
-                                item.data,
-                            );
-
-                            lineOfBand?.forEach((line) => {
-                                lineSeries(line);
+                        if (isShapeInCurrentPool) {
+                            if (item.type === 'Brush') {
+                                lineSeries(item?.data);
                                 if (
                                     (hoveredDrawnShape &&
                                         hoveredDrawnShape.data.time ===
@@ -2639,20 +2602,12 @@ export default function Chart(props: propsIF) {
                                         selectedDrawnShape.data.time ===
                                             item.time)
                                 ) {
-                                    line.forEach((element) => {
-                                        const selectedShape = selectedDrawnShape
-                                            ? selectedDrawnShape
-                                            : hoveredDrawnShape;
-
-                                        const selectedCircleIsActive =
-                                            selectedShape &&
-                                            selectedShape.selectedCircle &&
-                                            selectedShape.selectedCircle.x ===
-                                                element.x &&
-                                            selectedShape.selectedCircle.y ===
-                                                element.y;
-
-                                        if (selectedCircleIsActive) {
+                                    item.data.forEach((element) => {
+                                        if (
+                                            hoveredDrawnShape &&
+                                            hoveredDrawnShape.selectedCircle ===
+                                                element
+                                        ) {
                                             if (!isUpdatingShape) {
                                                 selectedCircleSeries([element]);
                                             }
@@ -2661,7 +2616,68 @@ export default function Chart(props: propsIF) {
                                         }
                                     });
                                 }
-                            });
+                            }
+
+                            if (item.type === 'Square') {
+                                item.data[1].ctx
+                                    .xScale()
+                                    .domain(scaleData.xScale.domain());
+
+                                const range = [
+                                    scaleData?.xScale(item.data[0].x),
+                                    scaleData.xScale(item.data[1].x),
+                                ];
+
+                                item.data[1].ctx.xScale().range(range);
+
+                                const bandData = {
+                                    fromValue: item.data[0].y,
+                                    toValue: item.data[1].y,
+                                } as bandLineData;
+
+                                item.data[1].ctx([bandData]);
+
+                                const lineOfBand = createPointsOfBandLine(
+                                    item.data,
+                                );
+
+                                lineOfBand?.forEach((line) => {
+                                    lineSeries(line);
+                                    if (
+                                        (hoveredDrawnShape &&
+                                            hoveredDrawnShape.data.time ===
+                                                item.time) ||
+                                        (selectedDrawnShape &&
+                                            selectedDrawnShape.data.time ===
+                                                item.time)
+                                    ) {
+                                        line.forEach((element) => {
+                                            const selectedShape =
+                                                selectedDrawnShape
+                                                    ? selectedDrawnShape
+                                                    : hoveredDrawnShape;
+
+                                            const selectedCircleIsActive =
+                                                selectedShape &&
+                                                selectedShape.selectedCircle &&
+                                                selectedShape.selectedCircle
+                                                    .x === element.x &&
+                                                selectedShape.selectedCircle
+                                                    .y === element.y;
+
+                                            if (selectedCircleIsActive) {
+                                                if (!isUpdatingShape) {
+                                                    selectedCircleSeries([
+                                                        element,
+                                                    ]);
+                                                }
+                                            } else {
+                                                circleSeries([element]);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
                         }
                     });
                 })
@@ -3115,6 +3131,7 @@ export default function Chart(props: propsIF) {
         diffHashSig(drawnShapeHistory),
         isLineDrag,
         period,
+        currentPool,
     ]);
 
     // mouseleave
@@ -3323,15 +3340,21 @@ export default function Chart(props: propsIF) {
         let resElement = undefined;
 
         drawnShapeHistory.forEach((element) => {
-            if (element.type === 'Brush') {
-                if (checkLineLocation(element.data, mouseX, mouseY)) {
-                    resElement = element;
-                }
-            }
+            const isShapeInCurrentPool =
+                element.pool.tokenB === currentPool.tokenB &&
+                element.pool.tokenA === currentPool.tokenA;
 
-            if (element.type === 'Square') {
-                if (checkRectLocation(element.data, mouseX, mouseY)) {
-                    resElement = element;
+            if (isShapeInCurrentPool) {
+                if (element.type === 'Brush') {
+                    if (checkLineLocation(element.data, mouseX, mouseY)) {
+                        resElement = element;
+                    }
+                }
+
+                if (element.type === 'Square') {
+                    if (checkRectLocation(element.data, mouseX, mouseY)) {
+                        resElement = element;
+                    }
                 }
             }
         });
@@ -3984,6 +4007,7 @@ export default function Chart(props: propsIF) {
                                 activeDrawingType={activeDrawingType}
                                 setActiveDrawingType={setActiveDrawingType}
                                 setSelectedDrawnShape={setSelectedDrawnShape}
+                                currentPool={currentPool}
                             />
                         )}
 
