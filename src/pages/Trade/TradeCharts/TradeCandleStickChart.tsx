@@ -32,11 +32,11 @@ import { LiquidityDataLocal } from './TradeCharts';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import {
     chartItemStates,
-    drawDataHistory,
     liquidityChartData,
     scaleData,
 } from '../../Chart/ChartUtils/chartUtils';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useUndoRedo } from '../../Chart/ChartUtils/useUndoRedo';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface propsIF {
@@ -104,6 +104,9 @@ function TradeCandleStickChart(props: propsIF) {
         (state) => state.graphData,
     );
 
+    const { undo, redo, drawnShapeHistory, setDrawnShapeHistory, currentPool } =
+        useUndoRedo();
+
     const tokenPair = useMemo(
         () => ({
             dataTokenA: tradeData.tokenA,
@@ -140,10 +143,6 @@ function TradeCandleStickChart(props: propsIF) {
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
-
-    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
-        drawDataHistory[]
-    >([]);
 
     useEffect(() => {
         setIsLoading(true);
@@ -830,8 +829,11 @@ function TradeCandleStickChart(props: propsIF) {
                         liquidityDepthScale={liquidityDepthScale}
                         candleTime={chartSettings.candleTime.global}
                         unparsedData={candleData}
+                        undo={undo}
+                        redo={redo}
                         drawnShapeHistory={drawnShapeHistory}
                         setDrawnShapeHistory={setDrawnShapeHistory}
+                        currentPool={currentPool}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

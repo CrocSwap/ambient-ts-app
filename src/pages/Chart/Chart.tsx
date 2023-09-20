@@ -19,6 +19,7 @@ import {
     setShouldLimitDirectionReverse,
     candleScale,
     candleDomain,
+    TradeDataIF,
 } from '../../utils/state/tradeDataSlice';
 
 import { PoolContext } from '../../contexts/PoolContext';
@@ -84,7 +85,6 @@ import {
     createLinearLineSeries,
     distanceToLine,
 } from './Draw/DrawCanvas/LinearLineSeries';
-import { useUndoRedo } from './ChartUtils/useUndoRedo';
 import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
 import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
@@ -126,10 +126,13 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
     candleTimeInSeconds: number;
+    undo: any;
+    redo: any;
     drawnShapeHistory: drawDataHistory[];
     setDrawnShapeHistory: React.Dispatch<
         React.SetStateAction<drawDataHistory[]>
     >;
+    currentPool: TradeDataIF;
 }
 
 export default function Chart(props: propsIF) {
@@ -154,8 +157,11 @@ export default function Chart(props: propsIF) {
         unparsedData,
         prevPeriod,
         candleTimeInSeconds,
+        undo,
+        redo,
         drawnShapeHistory,
         setDrawnShapeHistory,
+        currentPool,
     } = props;
 
     const {
@@ -176,8 +182,6 @@ export default function Chart(props: propsIF) {
         lastCandleDate: undefined,
         domainBoundry: undefined,
     });
-
-    const currentPool = useAppSelector((state) => state.tradeData);
 
     const {
         minRangePrice: minPrice,
@@ -288,8 +292,6 @@ export default function Chart(props: propsIF) {
     const [hoveredDrawnShape, setHoveredDrawnShape] = useState<
         selectedDrawnData | undefined
     >(undefined);
-
-    const { undo, redo } = useUndoRedo(drawnShapeHistory, setDrawnShapeHistory);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
