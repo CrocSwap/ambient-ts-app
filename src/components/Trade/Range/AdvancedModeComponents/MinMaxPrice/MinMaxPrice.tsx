@@ -18,6 +18,7 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { exponentialNumRegEx } from '../../../../../utils/regex/exports';
 import { FlexContainer, Text } from '../../../../../styled/Common';
 import { useTradeData } from '../../../../../App/hooks/useTradeData';
+import { RangeContext } from '../../../../../contexts/RangeContext';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -59,6 +60,14 @@ function MinMaxPrice(props: MinMaxPriceIF) {
     const {
         chainData: { gridSize: tickSize },
     } = useContext(CrocEnvContext);
+
+    // advanced mode display values for the DOM
+    // are these the same as `maxPrice` and `minPrice` already in this file?
+    // if yes, then why are we updating the relevant fields in the DOM with
+    // ... side effects instead of populating values directly into it?
+    const { minRangePrice, maxRangePrice } = useContext(RangeContext);
+    false && minRangePrice;
+    false && maxRangePrice;
 
     const { updateURL } = useTradeData();
 
