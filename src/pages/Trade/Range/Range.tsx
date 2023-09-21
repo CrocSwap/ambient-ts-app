@@ -696,6 +696,9 @@ function Range() {
                 }
             }
 
+            // what purpose do these values serve? data in the DOM? we have that
+            // ... defined and managed separately, why would there be a parallel
+            // ... value held in local state?
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
