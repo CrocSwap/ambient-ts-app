@@ -20,6 +20,11 @@ interface propsIF {
     decreaseTick: () => void;
 }
 
+// this component is only used for min and max prices for a range position in
+// ... advanced mode of the Range module, for some reason its value is set from
+// ... a `useEffect()` hook in Range.tsx, I have not yet determined if there's
+// ... a good reason to handle this with a side effect
+
 function PriceInput(props: propsIF) {
     const {
         disable,
