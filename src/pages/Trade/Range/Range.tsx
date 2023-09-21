@@ -666,17 +666,30 @@ function Range() {
                       lowGeometricDifferencePercentage,
                   );
 
+            // as far as I can tell this is the only logic in the app which updates
+            // values in the DOM for range low and high bounds in advance mode
+
+            // get range low bound input field, potentially undefined on first
+            // ... render or when the user is not in advanced mode, I'm not sure if
+            // ... we actually remove it from the DOM or simply toggle visibility
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
 
+            // check that low bound input field exists, execute if it does
             if (rangeLowBoundDisplayField) {
+                // manually set value of low bound in the DOM
+                // this is not good practice and should be refactored
                 rangeLowBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+
+                // repeat the same process for the high bound field in advanced mode
+                // why is this nested? is it to save compute resources by using first
+                // ... gate as a proxy or is there a deeper purpose to the logic? or
+                // ... it simply a bad copy and paste? IDK yet
                 const rangeHighBoundDisplayField = document.getElementById(
                     'max-price-input-quantity',
                 ) as HTMLInputElement;
-
                 if (rangeHighBoundDisplayField) {
                     rangeHighBoundDisplayField.value =
                         pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
