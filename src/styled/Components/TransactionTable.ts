@@ -199,7 +199,7 @@ export const RangeRow = styled(Row)<{
                 : ` grid-template-columns: 50px
                             minmax(80px, 1fr) minmax(100px, 1fr) minmax(125px, 1fr)
                             minmax(90px, 1fr) minmax(90px, 1fr) minmax(90px, 1fr) minmax(100px, 1fr)
-                            minmax(100px, 1fr) minmax(60px, 1fr) minmax(60px, 1fr) minmax(107px, 2fr)`
+                            minmax(100px, 1fr) minmax(60px, 1fr)  minmax(107px, 2fr)`
         };
         
         ${
