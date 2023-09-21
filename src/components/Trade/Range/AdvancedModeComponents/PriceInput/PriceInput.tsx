@@ -9,7 +9,7 @@ import {
     PriceInput as PriceInputStyled,
 } from '../../../../../styled/Components/TradeModules';
 
-interface priceInputProps {
+interface propsIF {
     disable?: boolean;
     fieldId: string | number;
     title: string;
@@ -20,7 +20,7 @@ interface priceInputProps {
     decreaseTick: () => void;
 }
 
-function PriceInput(props: priceInputProps) {
+function PriceInput(props: propsIF) {
     const {
         disable,
         fieldId,
