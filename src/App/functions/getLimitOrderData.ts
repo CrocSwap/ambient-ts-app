@@ -15,11 +15,13 @@ import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from './querySpotPrice';
+import { Provider } from '@ethersproject/providers';
 
 export const getLimitOrderData = async (
     order: LimitOrderServerIF,
     tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
+    provider: Provider,
     chainId: string,
     lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -41,16 +43,8 @@ export const getLimitOrderData = async (
         lastBlockNumber,
     );
 
-    const baseMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        order.base,
-        chainId,
-    );
-    const quoteMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        order.quote,
-        chainId,
-    );
+    const baseMetadata = cachedTokenDetails(provider, order.base, chainId);
+    const quoteMetadata = cachedTokenDetails(provider, order.quote, chainId);
 
     const ensRequest = cachedEnsResolve(order.user);
 
