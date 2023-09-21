@@ -9,23 +9,11 @@ import Button from '../../components/Form/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../utils/TransactionError';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+
 import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useAccount, useProvider } from 'wagmi';
@@ -39,6 +27,7 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { supportedNetworks } from '../../utils/networks';
+import { useApprove } from '../../App/functions/approve';
 import { useSendInit } from '../../App/hooks/useSendInit';
 
 // react functional component
@@ -54,16 +43,9 @@ export default function InitPool() {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const {
-        tokenAAllowance,
-        tokenBAllowance,
-        setRecheckTokenAApproval,
-        setRecheckTokenBApproval,
-    } = useContext(TradeTokenContext);
+    const { tokenAAllowance, tokenBAllowance } = useContext(TradeTokenContext);
     const { tokens } = useContext(TokenContext);
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
-
-    const dispatch = useAppDispatch();
 
     const { isConnected } = useAccount();
 
@@ -73,8 +55,6 @@ export default function InitPool() {
     // DO NOT combine these hooks with useMemo()
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
-
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState<
         number | undefined
@@ -187,63 +167,7 @@ export default function InitPool() {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
 
-    const approve = async (token: TokenIF) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(token.address).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${token.symbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used 'speed up' or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
-                }
-            }
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-            setRecheckTokenBApproval(true);
-        }
-    };
+    const { approve, isApprovalPending } = useApprove();
 
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
@@ -469,7 +393,7 @@ export default function InitPool() {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenA);
+                await approve(tokenA.address, tokenA.symbol);
             }}
             flat={true}
         />
@@ -484,7 +408,7 @@ export default function InitPool() {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenB);
+                await approve(tokenB.address, tokenB.symbol);
             }}
             flat={true}
         />
