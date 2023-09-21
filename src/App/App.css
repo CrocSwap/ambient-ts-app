@@ -76,7 +76,7 @@ a {
 input:disabled {
    
     color: var(--text3); 
-    cursor: not-allowed; 
+    cursor: default; 
   }
 
 body {

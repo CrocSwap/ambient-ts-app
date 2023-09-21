@@ -53,6 +53,9 @@ import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
 import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
+import InitSkeleton from './InitSkeleton';
+import InitConfirmation from './InitConfirmation';
+import MultiContentComponent from '../../components/Global/MultiStepTransaction/MultiContentComponent';
 
 // react functional component
 export default function InitPool() {
@@ -953,86 +956,98 @@ export default function InitPool() {
         }
     }, [erc20TokenWithDexBalance, poolExists]);
 
-    return (
-        <section className={styles.main}>
-            <div className={styles.outer_container}>
-                <div className={styles.gradient_container}>
-                    <div className={styles.main_container}>
-                        <header>
-                            <p />
-                            Initialize Pool
-                            <p />
-                        </header>
+    const [currentStep, setCurrentStep] = useState(0);
 
-                        <div className={styles.inner_container}>
-                            <div className={styles.left_container}>
-                                {simpleTokenSelect}
-                                {initPriceContainer}
-                                {collateralContent}
-                            </div>
-
-                            <div className={styles.right_container}>
-                                {mintInitialLiquidity}
-                                <div
-                                    className={
-                                        isRangeBoundsAndCollateralDisabled
-                                            ? styles.content_disabled
-                                            : ''
-                                    }
-                                >
-                                    <AdvancedModeToggle
-                                        advancedMode={advancedMode}
-                                    />
-                                </div>
-
-                                <RangeBounds
-                                    isRangeBoundsDisabled={
-                                        isRangeBoundsAndCollateralDisabled
-                                    }
-                                    {...rangeWidthProps}
-                                    {...rangePriceInfoProps}
-                                    {...minMaxPriceProps}
-                                    customSwitch={true}
-                                />
-
-                                {showErrorMessage ? (
-                                    <div style={{ padding: '0 40px' }}>
-                                        <WarningBox
-                                            details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
-                                        />
-                                    </div>
-                                ) : (
-                                    <div
-                                        className={
-                                            poolExists === true
-                                                ? styles.content_disabled
-                                                : ''
-                                        }
-                                    >
-                                        <InitPoolExtraInfo
-                                            initialPrice={parseFloat(
-                                                initialPriceDisplay.replaceAll(
-                                                    ',',
-                                                    '',
-                                                ),
-                                            )}
-                                            isDenomBase={isDenomBase}
-                                            initGasPriceinDollars={
-                                                initGasPriceinDollars
-                                            }
-                                            baseToken={baseToken}
-                                            quoteToken={quoteToken}
-                                            setIsDenomBase={setIsDenomBase}
-                                        />
-                                    </div>
-                                )}
-
-                                <ButtonToRender />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    const mainContent = (
+        <InitSkeleton
+            isConfirmation={false}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            title='Initialize Pool'
+        >
+            <div className={styles.left_container}>
+                {simpleTokenSelect}
+                {initPriceContainer}
+                {collateralContent}
             </div>
-        </section>
+
+            <div className={styles.right_container}>
+                {mintInitialLiquidity}
+                <div
+                    className={
+                        isRangeBoundsAndCollateralDisabled
+                            ? styles.content_disabled
+                            : ''
+                    }
+                >
+                    <AdvancedModeToggle advancedMode={advancedMode} />
+                </div>
+
+                <RangeBounds
+                    isRangeBoundsDisabled={isRangeBoundsAndCollateralDisabled}
+                    {...rangeWidthProps}
+                    {...rangePriceInfoProps}
+                    {...minMaxPriceProps}
+                    customSwitch={true}
+                />
+
+                {showErrorMessage ? (
+                    <div style={{ padding: '0 40px' }}>
+                        <WarningBox
+                            details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
+                        />
+                    </div>
+                ) : (
+                    <div
+                        className={
+                            poolExists === true ? styles.content_disabled : ''
+                        }
+                    >
+                        <InitPoolExtraInfo
+                            initialPrice={parseFloat(
+                                initialPriceDisplay.replaceAll(',', ''),
+                            )}
+                            isDenomBase={isDenomBase}
+                            initGasPriceinDollars={initGasPriceinDollars}
+                            baseToken={baseToken}
+                            quoteToken={quoteToken}
+                            setIsDenomBase={setIsDenomBase}
+                        />
+                    </div>
+                )}
+
+                <ButtonToRender />
+            </div>
+        </InitSkeleton>
+    );
+
+    const confirmationContent = (
+        <InitSkeleton
+            isConfirmation={true}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            title='Confirmation'
+        >
+            <InitConfirmation setCurrentStep={setCurrentStep} />
+        </InitSkeleton>
+    );
+
+    const settingsContent = (
+        <InitSkeleton
+            isConfirmation={true}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+            title='Settings'
+        >
+            <InitConfirmation setCurrentStep={setCurrentStep} />
+        </InitSkeleton>
+    );
+
+    return (
+        <MultiContentComponent
+            mainContent={mainContent}
+            settingsContent={settingsContent}
+            confirmationContent={confirmationContent}
+        />
     );
 }
