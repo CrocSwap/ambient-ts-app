@@ -186,14 +186,10 @@ export default function ExchangeBalance(props: propsIF) {
                 sendToAddress &&
                 isSendToAddressHex &&
                 sendToAddress.length === 42 &&
-                sendToAddress.startsWith('0x') &&
-                provider
+                sendToAddress.startsWith('0x')
             ) {
                 try {
-                    const ensName = await fetchEnsAddress(
-                        provider,
-                        sendToAddress,
-                    );
+                    const ensName = await fetchEnsAddress(sendToAddress);
                     if (ensName) {
                         setSecondaryEnsName(ensName);
                     } else setSecondaryEnsName(undefined);

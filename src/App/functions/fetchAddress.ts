@@ -1,12 +1,8 @@
 /* eslint-disable camelcase */
-import { ethers } from 'ethers';
 import { ANALYTICS_URL } from '../../constants';
-import { memoizeProviderFn } from './memoizePromiseFn';
+import { memoizePromiseFn } from './memoizePromiseFn';
 
-export const fetchEnsAddress = async (
-    _: ethers.providers.Provider,
-    address: string,
-) => {
+export const fetchEnsAddress = async (address: string) => {
     try {
         const response = await fetch(
             ANALYTICS_URL +
@@ -25,11 +21,8 @@ export const fetchEnsAddress = async (
     }
 };
 
-export type FetchAddrFn = (
-    provider: ethers.providers.Provider,
-    address: string,
-) => Promise<string | undefined>;
+export type FetchAddrFn = (address: string) => Promise<string | undefined>;
 
 export function memoizeFetchEnsAddress(): FetchAddrFn {
-    return memoizeProviderFn(fetchEnsAddress) as FetchAddrFn;
+    return memoizePromiseFn(fetchEnsAddress) as FetchAddrFn;
 }
