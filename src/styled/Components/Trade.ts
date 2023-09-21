@@ -74,6 +74,11 @@ export const ResizableContainer = styled(Resizable)<{
         background-color: var(--dark3);
         z-index: 99;
     }
+    
+    & > div:last-child > div:nth-child(2), & > div:last-child > div:nth-child(4) {
+        z-index: -1;
+        display: none;
+    }
     `}
 `;
 

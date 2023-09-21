@@ -63,6 +63,7 @@ function Reposition() {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        provider,
         chainData: { blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
@@ -422,7 +423,7 @@ function Reposition() {
         )
             .then((response) => response?.json())
             .then(async (json) => {
-                if (!crocEnv || !json?.data) {
+                if (!crocEnv || !provider || !json?.data) {
                     setCurrentBaseQtyDisplayTruncated('...');
                     setCurrentQuoteQtyDisplayTruncated('...');
                     return;
@@ -432,6 +433,7 @@ function Reposition() {
                     json.data as PositionServerIF,
                     tokens.tokenUniv,
                     crocEnv,
+                    provider,
                     position.chainId,
                     lastBlockNumber,
                     cachedFetchTokenPrice,
@@ -458,7 +460,7 @@ function Reposition() {
 
     useEffect(() => {
         fetchCurrentCollateral();
-    }, [lastBlockNumber, JSON.stringify(position)]);
+    }, [lastBlockNumber, JSON.stringify(position), !!crocEnv, !!provider]);
 
     const [newBaseQtyDisplay, setNewBaseQtyDisplay] = useState<string>('...');
     const [newQuoteQtyDisplay, setNewQuoteQtyDisplay] = useState<string>('...');
