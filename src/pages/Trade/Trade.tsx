@@ -275,6 +275,13 @@ function Trade() {
                         showResizeable={!isCandleDataNull}
                         enable={{
                             bottom: !isChartFullScreen,
+                            top: false,
+                            left: false,
+                            topLeft: false,
+                            bottomLeft: false,
+                            right: false,
+                            topRight: false,
+                            bottomRight: false,
                         }}
                         size={{
                             width: '100%',
