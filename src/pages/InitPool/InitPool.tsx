@@ -7,23 +7,11 @@ import Button from '../../components/Form/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../utils/TransactionError';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { useAccount, useProvider } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
@@ -56,8 +44,9 @@ import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
 import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
 import MultiContentComponent from '../../components/Global/MultiStepTransaction/MultiContentComponent';
+import { useSendInit } from '../../App/hooks/useSendInit';
 
-
+import { useApprove } from '../../App/functions/approve';
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
@@ -70,7 +59,7 @@ export default function InitPool() {
         ethMainnetUsdPrice,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
- const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { dexBalRange } = useContext(UserPreferenceContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -78,7 +67,6 @@ export default function InitPool() {
     const { tokens } = useContext(TokenContext);
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
-    const dispatch = useAppDispatch();
     // const handleToggle = () => dispatch(toggleAdvancedMode());
     const {
         tradeData: { advancedMode },
@@ -90,8 +78,8 @@ export default function InitPool() {
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
 
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
-    const [isInitPending, setIsInitPending] = useState(false);
+    const { approve, isApprovalPending } = useApprove();
+    // const [isInitPending, setIsInitPending] = useState(false);
 
     const [initialPriceDisplay, setInitialPriceDisplay] = useState<string>('');
 
@@ -116,8 +104,7 @@ export default function InitPool() {
         quoteTokenDexBalance,
         tokenAAllowance,
         tokenBAllowance,
-        setRecheckTokenAApproval,
-        setRecheckTokenBApproval,
+
         isTokenABase,
         baseTokenAddress,
     } = useTokenBalancesAndAllowances(baseToken, quoteToken);
@@ -303,7 +290,6 @@ export default function InitPool() {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
 
-
     const focusInput = () => {
         const inputField = document.getElementById(
             'initial-pool-price-quantity',
@@ -319,71 +305,12 @@ export default function InitPool() {
         return () => clearTimeout(timer);
     };
 
-    const approve = async (token: TokenIF) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(token.address).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${token.symbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used 'speed up' or something similar
-                // in their client, but we now have the updated info
-                //
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
-                }
-            }
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-            setRecheckTokenBApproval(true);
-        }
-    };
-
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
-    const { approve, isApprovalPending } = useApprove();
+    // const { approve, isApprovalPending } = useApprove();
 
     // hooks to generate navigation actions with pre-loaded paths
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    // const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
     const { sendInit, isInitPending } = useSendInit();
 
@@ -480,12 +407,10 @@ export default function InitPool() {
                     buttonContent = (
                         <Button
                             title='Confirm'
-
                             disabled={erc20TokenWithDexBalance !== undefined}
-                            action={sendInit}
+                            // action={sendInit}
 
                             action={() => sendInit(initialPriceInBaseDenom)}
-
                             flat={true}
                         />
                     );

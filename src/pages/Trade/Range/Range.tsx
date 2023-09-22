@@ -54,10 +54,8 @@ import {
 } from './rangeFunctions';
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import RangeBounds from '../../../components/Global/RangeBounds/RangeBounds';
-import { FlexContainer } from '../../../styled/Common';
-import { AdvancedModeSection } from '../../../styled/Components/TradeModules';
-import { useApprove } from '../../../App/functions/approve';
 
+import { useApprove } from '../../../App/functions/approve';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
