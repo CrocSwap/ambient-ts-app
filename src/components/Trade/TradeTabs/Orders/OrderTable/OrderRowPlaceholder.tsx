@@ -3,7 +3,6 @@ import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { OptionButton } from '../../../../Global/Button/OptionButton';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
-import styles from '../Orders.module.css';
 import { FiExternalLink } from 'react-icons/fi';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
@@ -11,6 +10,11 @@ import trimString from '../../../../../utils/functions/trimString';
 import { concPosSlot, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAccount } from 'wagmi';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import {
+    OrderRow,
+    RowItem,
+} from '../../../../../styled/Components/TransactionTable';
+import { FlexContainer } from '../../../../../styled/Common';
 
 interface PropsIF {
     transaction: {
@@ -34,13 +38,12 @@ interface PropsIF {
             gridSize?: number;
         };
     };
-    showColumns: boolean;
-    ipadView: boolean;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 // TODO: integrate into OrderRow
 export const OrderRowPlaceholder = (props: PropsIF) => {
-    const { transaction, showColumns, ipadView } = props;
+    const { transaction, tableView } = props;
 
     const { showAllData } = useContext(TradeTableContext);
     const { address: userAddress } = useAccount();
@@ -49,12 +52,6 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
     } = useContext(CrocEnvContext);
 
     const { isDenomBase } = useAppSelector((state) => state.tradeData);
-
-    const wallet = (
-        <p className={`${styles.id_style}`} style={{ textTransform: 'none' }}>
-            you
-        </p>
-    );
 
     const baseTokenCharacter = transaction.baseSymbol
         ? getUnicodeCharacter(transaction.baseSymbol)
@@ -79,10 +76,6 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
         transaction.details?.highTick ?? 0,
         transaction.details?.poolIdx ?? 0,
     ).toString();
-
-    const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
-
-    const id = <p className={`${styles.mono_font}`}>{posHashTruncated}</p>;
 
     const limitPrice =
         transaction.details &&
@@ -109,37 +102,43 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
         value: invLimitPriceDecimalCorrected,
     });
 
+    const id = (
+        <RowItem font='roboto'>
+            {trimString(posHash.toString(), 9, 0, '…')}
+        </RowItem>
+    );
+    const wallet = <p>you</p>;
     // TODO: use media queries and standardized styles
     return (
         <>
-            <ul
-                className={`${styles.row_placeholder} ${styles.row_container} ${
-                    showAllData && styles.border_left
-                }`}
+            <OrderRow
+                size={tableView}
+                user={showAllData}
+                placeholder
                 tabIndex={0}
             >
-                {!showColumns && (
-                    <li>
+                {tableView === 'large' && (
+                    <div>
                         <p>Now</p>
-                    </li>
+                    </div>
                 )}
-                {!showColumns && <li>{id}</li>}
-                {!showColumns && <li>{wallet}</li>}
-                {showColumns && (
-                    <li>
+                {tableView === 'large' && <div>{id}</div>}
+                {tableView === 'large' && <div>{wallet}</div>}
+                {tableView !== 'large' && (
+                    <div>
                         {id}
                         {wallet}
-                    </li>
+                    </div>
                 )}
-                {!ipadView && (
-                    <li className={styles.align_right}>
+                {tableView !== 'small' && (
+                    <FlexContainer justifyContent='flex-end'>
                         {isDenomBase
                             ? `${priceCharacter}${invLimitPriceDecimalCorrectedTruncated}`
                             : `${priceCharacter}${limitPriceDecimalCorrectedTruncated}`}
-                    </li>
+                    </FlexContainer>
                 )}
-                {!showColumns && (
-                    <li className={styles.align_center}>
+                {tableView === 'large' && (
+                    <FlexContainer justifyContent='center'>
                         {transaction.side === 'Claim'
                             ? 'Claim'
                             : transaction.side === 'Remove'
@@ -150,15 +149,19 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                                   transaction.details?.isBid === false)
                             ? 'Buy' + ` ${sideCharacter}`
                             : 'Sell' + ` ${sideCharacter}`}
-                    </li>
+                    </FlexContainer>
                 )}
-                {!showColumns && (
-                    <li className={styles.align_center}>{transaction.type}</li>
+                {tableView === 'large' && (
+                    <FlexContainer justifyContent='center'>
+                        {transaction.type}
+                    </FlexContainer>
                 )}
-                {showColumns && !ipadView && (
-                    <li
-                        className={styles.align_center}
-                        style={{ padding: '6px 0' }}
+                {tableView !== 'large' && (
+                    <FlexContainer
+                        flexDirection='column'
+                        alignItems='center'
+                        justifyContent='center'
+                        padding='6px 0'
                     >
                         <p>{transaction.type}</p>
                         <p>
@@ -173,41 +176,26 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                                 ? 'Buy' + ` ${sideCharacter}`
                                 : 'Sell' + ` ${sideCharacter}`}
                         </p>
-                    </li>
+                    </FlexContainer>
                 )}
-                {<li className={styles.align_right}>...</li>}
-                {<li className={styles.align_right}>...</li>}
-                {!showColumns && <li className={styles.align_right}>...</li>}
-                {!ipadView && (
-                    <li className={styles.align_center}>
-                        <div
-                            style={{
-                                width: '100%',
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                            }}
-                        >
-                            <OpenOrderStatus
-                                isFilled={false}
-                                isLimitOrderPartiallyFilled={false}
-                                fillPercentage={0}
-                            />
-                        </div>
-                    </li>
+                {<FlexContainer justifyContent='flex-end'>...</FlexContainer>}
+                {tableView !== 'small' && (
+                    <FlexContainer justifyContent='flex-end'>...</FlexContainer>
                 )}
-                <li
-                    data-label='menu'
-                    className={`${styles.menu} ${styles.align_right}`}
-                >
-                    <div
-                        style={{
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                        }}
-                    >
+                {tableView === 'large' && (
+                    <FlexContainer justifyContent='flex-end'>...</FlexContainer>
+                )}
+                {tableView !== 'small' && (
+                    <FlexContainer justifyContent='center'>
+                        <OpenOrderStatus
+                            isFilled={false}
+                            isLimitOrderPartiallyFilled={false}
+                            fillPercentage={0}
+                        />
+                    </FlexContainer>
+                )}
+                <FlexContainer justifyContent='flex-end' data-label='menu'>
+                    <FlexContainer fullWidth justifyContent='flex-end'>
                         <OptionButton
                             ariaLabel='Explorer'
                             onClick={() =>
@@ -226,9 +214,9 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
                                 </>
                             }
                         />
-                    </div>
-                </li>
-            </ul>
+                    </FlexContainer>
+                </FlexContainer>
+            </OrderRow>
         </>
     );
 };

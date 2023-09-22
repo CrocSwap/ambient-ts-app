@@ -7,12 +7,7 @@
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
-
-
-
 }
-
-
 
 .footer_item_container:hover {
     cursor: pointer;
@@ -26,7 +21,6 @@
     line-height: 22px;
     color: var(--text1);
 
-  
     gap: 4px;
 }
 
@@ -37,74 +31,66 @@
     color: var(--text2);
 }
 
-
-.mobile_version{
+.mobile_version {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     grid-gap: 20px;
     margin: 0 2rem;
-   
-
-
 }
 
-.started_button{
+.started_button {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     text-align: start;
-    color: var(--accent1)
-
+    color: var(--accent1);
 }
 
-.mobile_version .footer_item_container h3{
+.mobile_version .footer_item_container h3 {
     font-weight: 300;
-   
+
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-   
+
     display: flex;
     flex-direction: row;
     align-items: center;
-   
+
     justify-content: center;
     text-align: center;
-
-   
 }
 
-.started_button{
+.started_button {
     text-align: center;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }
 
-.mobile_version .footer_item_container p{
+.mobile_version .footer_item_container p {
     display: none;
 }
 
-.mobile_version .footer_item_container{
+.mobile_version .footer_item_container {
     text-align: center;
 }
 .container {
     width: 100%;
 
+    background: linear-gradient(
+            180deg,
+            #000000 0%,
+            rgba(0, 0, 0, 0) 40.39%,
+            rgba(0, 0, 0, 0) 68.28%,
+            #000000 100%
+        ),
+        url('../../assets/images/home/home3.png') no-repeat center center;
+    mix-blend-mode: lighten;
 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 
-
-    background: linear-gradient(180deg, #000000 0%, rgba(0, 0, 0, 0) 40.39%, rgba(0, 0, 0, 0) 68.28%, #000000 100%), url('../../assets/images/home/home3.png') no-repeat center center
-    ;
-mix-blend-mode: lighten;
-
-
--webkit-background-size: cover;
--moz-background-size: cover;
--o-background-size: cover;
-background-size: cover;
-
-
-background-position: top 30px right 0;
-
-
+    background-position: top 30px right 0;
 }
 
 .content {
@@ -138,14 +124,12 @@ background-position: top 30px right 0;
     }
 }
 
-@media only screen and (max-width: 768px){
-
- 
-    .content{
-       width: 100%;
+@media only screen and (max-width: 768px) {
+    .content {
+        width: 100%;
     }
 
-    .row{
+    .row {
         width: 100%;
         text-align: center;
         justify-content: center;
@@ -154,6 +138,4 @@ background-position: top 30px right 0;
     .footer_item_container {
         width: 100%;
     }
-
-   
 }

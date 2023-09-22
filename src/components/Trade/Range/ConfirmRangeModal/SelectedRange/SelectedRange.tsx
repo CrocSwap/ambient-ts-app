@@ -1,8 +1,9 @@
-import styles from './SelectedRange.module.css';
 import { memo, useContext, useState } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
+import { FlexContainer, Text } from '../../../../../styled/Common';
+import { SelectedRangeContainer } from '../../../../../styled/Components/TradeModules';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -60,27 +61,45 @@ function SelectedRange(props: propsIF) {
     const PriceRangeDisplay = (props: PriceRangeProps) => {
         const { title, value, tokens, currentToken } = props;
         return (
-            <div className={styles.price_range_container}>
-                <div
-                    className={styles.price_range_content}
-                    onClick={() => {
-                        setReverseDisplay(!reverseDisplay);
-                        setDenomInBase(!denomInBase);
-                    }}
+            <FlexContainer
+                fullWidth
+                flexDirection='column'
+                alignItems='center'
+                justifyContent='center'
+                background='dark2'
+                style={{
+                    borderRadius: 'var(--border-radius)',
+                    cursor: 'pointer',
+                }}
+                gap={4}
+                padding='8px'
+                onClick={() => {
+                    setReverseDisplay(!reverseDisplay);
+                    setDenomInBase(!denomInBase);
+                }}
+            >
+                <Text fontSize='body' color='text2'>
+                    {title}
+                </Text>
+                <Text fontSize='header2' color='text1'>
+                    {value}
+                </Text>
+                <Text fontSize='body' color='text2'>
+                    {tokens}
+                </Text>
+                <Text
+                    fontSize='body'
+                    color='accent5'
+                    style={{ textAlign: 'center' }}
                 >
-                    <p className={styles.price_range_title}>{title}</p>
-                    <p className={styles.price_range_amount}>{value}</p>
-                    <p className={styles.price_range_title}>{tokens}</p>
-                    <p className={styles.price_range_info}>
-                        Your position will be 100% {currentToken} at this price.
-                    </p>
-                </div>
-            </div>
+                    Your position will be 100% {currentToken} at this price.
+                </Text>
+            </FlexContainer>
         );
     };
 
     const selectedRangeDisplay = (
-        <div className={styles.selected_range_display}>
+        <SelectedRangeContainer margin='8px 0 0 0' gap={8}>
             <PriceRangeDisplay
                 title='Min Price'
                 value={minPrice}
@@ -101,14 +120,24 @@ function SelectedRange(props: propsIF) {
                 }
                 currentToken={reverseDisplay ? tokenB.symbol : tokenA.symbol}
             />
-        </div>
+        </SelectedRangeContainer>
     );
 
     const extraInfoData = (
-        <div className={styles.extra_info_container}>
-            <div className={styles.row}>
-                <p>Current Price</p>
-                <p
+        <FlexContainer
+            flexDirection='column'
+            gap={8}
+            padding='8px'
+            margin='8px 0 0 0'
+            style={{ border: '1px solid var(--dark3)', borderRadius: '4px' }}
+        >
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    Current Price
+                </Text>
+                <Text
+                    fontSize='body'
+                    color='text2'
                     onClick={() => {
                         setReverseDisplay(!reverseDisplay);
                         setDenomInBase(!denomInBase);
@@ -116,22 +145,24 @@ function SelectedRange(props: propsIF) {
                     style={{ cursor: 'pointer' }}
                 >
                     {displayPriceString}
-                </p>
-            </div>
-            <div className={styles.row}>
-                <p>Current Fee Rate</p>
-                <p>0.05%</p>
-            </div>
-        </div>
+                </Text>
+            </FlexContainer>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <Text fontSize='body' color='text2'>
+                    Current Fee Rate
+                </Text>
+                <Text fontSize='body' color='text2'>
+                    0.05%
+                </Text>
+            </FlexContainer>
+        </FlexContainer>
     );
 
     return (
-        <>
-            <div className={styles.selected_range}>
-                {!isAmbient ? selectedRangeDisplay : null}
-                <div style={{ padding: '0 1rem' }}>{extraInfoData}</div>
-            </div>
-        </>
+        <FlexContainer flexDirection='column' gap={8}>
+            {!isAmbient ? selectedRangeDisplay : null}
+            <div style={{ padding: '0 1rem' }}>{extraInfoData}</div>
+        </FlexContainer>
     );
 }
 

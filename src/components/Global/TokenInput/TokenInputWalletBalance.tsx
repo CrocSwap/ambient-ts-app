@@ -1,4 +1,3 @@
-import styles from './TokenInputWalletBalance.module.css';
 import ambientLogo from '../../../assets/images/icons/ambient_icon.png';
 import walletIcon from '../../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../../assets/images/icons/wallet-enabled.svg';
@@ -10,7 +9,9 @@ import IconWithTooltip from '../IconWithTooltip/IconWithTooltip';
 import ExchangeBalanceExplanation from '../Informational/ExchangeBalanceExplanation';
 import WalletBalanceExplanation from '../Informational/WalletBalanceExplanation';
 import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
-
+import { FlexContainer } from '../../../styled/Common';
+import { RefreshButton } from '../../../styled/Components/TradeModules';
+import { MaxButton } from '../../../styled/Components/Portfolio';
 interface PropsIF {
     isWithdraw: boolean;
     balance: string;
@@ -38,13 +39,23 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
 
-    const sellTokenLogoClassname = !isDexSelected
-        ? styles.grey_logo
-        : styles.enabled_logo;
-
     return (
-        <section className={styles.wallet_container}>
-            <div className={`${styles.balance_with_pointer}`}>
+        <FlexContainer
+            fullWidth
+            alignItems='center'
+            justifyContent='space-between'
+            gap={4}
+            fontSize='body'
+            color='text2'
+            padding='8px 16px 0px 16px'
+        >
+            <FlexContainer
+                role='button'
+                flexDirection='row'
+                alignItems='center'
+                gap={4}
+                fontSize='body'
+            >
                 <IconWithTooltip
                     title={`${
                         isWithdraw
@@ -54,7 +65,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                     placement='bottom'
                 >
                     <div
-                        className={`${styles.wallet_logo}`}
+                        style={{ paddingTop: '2px', cursor: 'pointer' }}
                         onClick={onToggleDex}
                     >
                         <img
@@ -74,7 +85,13 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                     placement='bottom'
                 >
                     <div
-                        className={`${styles.ambient_logo} ${sellTokenLogoClassname}`}
+                        style={{
+                            padding: '2px 4px 0 4px',
+                            filter: !isDexSelected
+                                ? 'grayscale(100%)'
+                                : 'contrast(1) brightness(1) saturate(1)',
+                            cursor: 'pointer',
+                        }}
                         onClick={onToggleDex}
                     >
                         <img src={ambientLogo} width='20' alt='surplus' />
@@ -144,8 +161,9 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                     enterDelay={700}
                     leaveDelay={200}
                 >
-                    <div
-                        className={styles.balance_column}
+                    <FlexContainer
+                        flexDirection='column'
+                        color='text1'
                         style={
                             onMaxButtonClick && parseFloat(balance) > 0
                                 ? { cursor: 'pointer' }
@@ -158,7 +176,7 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                         }}
                     >
                         <div>{balance}</div>
-                    </div>
+                    </FlexContainer>
                 </DefaultTooltip>
                 {onMaxButtonClick && parseFloat(balance) > 0 && (
                     <DefaultTooltip
@@ -196,24 +214,17 @@ export const TokenInputWalletBalance = (props: PropsIF) => {
                         enterDelay={700}
                         leaveDelay={200}
                     >
-                        <button
-                            className={`${styles.max_button} ${styles.max_button_enable}`}
-                            onClick={onMaxButtonClick}
-                        >
+                        <MaxButton width='25px' onClick={onMaxButtonClick}>
                             Max
-                        </button>
+                        </MaxButton>
                     </DefaultTooltip>
                 )}
-            </div>
+            </FlexContainer>
             {onRefresh && (
-                <button
-                    onClick={onRefresh}
-                    className={styles.refresh_button}
-                    aria-label='Refresh data'
-                >
+                <RefreshButton onClick={onRefresh} aria-label='Refresh data'>
                     <FiRefreshCw size={18} />
-                </button>
+                </RefreshButton>
             )}
-        </section>
+        </FlexContainer>
     );
 };

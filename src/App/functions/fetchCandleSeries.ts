@@ -60,6 +60,7 @@ export async function fetchCandleSeriesHybrid(
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDuration | undefined> {
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
@@ -71,6 +72,7 @@ export async function fetchCandleSeriesHybrid(
         nCandles,
         crocEnv,
         cachedFetchTokenPrice,
+        signal,
     );
 
     if (!candles) {
@@ -103,6 +105,7 @@ export async function fetchCandleSeriesHybrid(
             quoteTokenAddress,
             stitchTime.toString(),
             stitchN.toString(),
+            signal,
         );
 
         if (!uniCandles) {
@@ -134,6 +137,7 @@ export async function fetchCandleSeriesCroc(
     nCandles: number,
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
+    signal?: AbortSignal,
 ): Promise<CandlesByPoolAndDuration | undefined> {
     if (!isFetchEnabled) {
         return undefined;
@@ -158,7 +162,7 @@ export async function fetchCandleSeriesCroc(
         chainId: chainData.chainId,
     });
 
-    return fetch(candleSeriesEndpoint + '?' + reqOptions)
+    return fetch(candleSeriesEndpoint + '?' + reqOptions, { signal })
         .then((response) => response?.json())
         .then(async (json) => {
             if (!json?.data) {
@@ -312,6 +316,7 @@ async function fetchCandleSeriesUniswap(
     quoteTokenAddress: string,
     time: string,
     candleNeeded: string,
+    signal?: AbortSignal,
 ): Promise<CandleData[] | undefined | void> {
     const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
         translateMainnetForGraphcache(
@@ -348,6 +353,7 @@ async function fetchCandleSeriesUniswap(
                             poolStatsPoolIdxOverride:
                                 chainData.poolIndex.toString(),
                         }),
+                    { signal },
                 )
                     .then((response) => response?.json())
                     .then((json) => {

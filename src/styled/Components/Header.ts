@@ -1,6 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 
-import styled, { css } from 'styled-components';
+import styled, { css } from 'styled-components/macro';
 import { motion } from 'framer-motion';
 
 import { FlexContainer, GridContainer } from '../Common';

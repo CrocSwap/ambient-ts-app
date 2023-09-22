@@ -18,6 +18,7 @@ import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../contexts/ChartContext';
+import { FlexContainer } from '../../../styled/Common';
 
 type tabData = {
     label: string;
@@ -43,7 +44,6 @@ export default function TabComponent(props: TabPropsIF) {
         data,
         setSelectedInsideTab,
         rightTabOptions,
-        setShowPositionsOnlyToggle,
         isModalView = false,
         shouldSyncWithTradeModules = true,
         transparent = false,
@@ -86,18 +86,6 @@ export default function TabComponent(props: TabPropsIF) {
             (item) => item.label === selectedTab.label,
         );
         if (currentTabData) setSelectedTab(currentTabData);
-
-        if (
-            !currentTabData?.showRightSideOption &&
-            setShowPositionsOnlyToggle
-        ) {
-            setShowPositionsOnlyToggle(false);
-        } else if (
-            currentTabData?.showRightSideOption &&
-            setShowPositionsOnlyToggle
-        ) {
-            setShowPositionsOnlyToggle(true);
-        }
     }, [data, outsideControl]);
 
     function handleOutside2() {
@@ -125,7 +113,7 @@ export default function TabComponent(props: TabPropsIF) {
 
     function handleMobileMenuIcon(icon: string, label: string) {
         return (
-            <div className={styles.tab_iconf}>
+            <div className={styles.tab_icon_container}>
                 <DefaultTooltip
                     title={label}
                     placeholder={'bottom'}
@@ -152,7 +140,7 @@ export default function TabComponent(props: TabPropsIF) {
     const mobileView = useMediaQuery('(min-width: 800px)');
 
     const tabsWithRightOption = (
-        <div className={styles.tab_with_option_container}>
+        <FlexContainer alignItems='center' justifyContent='space-between'>
             <ul
                 className={`${styles.tab_ul_left}`}
                 aria-label='Navigation Tabs'
@@ -196,7 +184,7 @@ export default function TabComponent(props: TabPropsIF) {
                         {item.label === selectedTab.label && (
                             <div className={styles.underline} />
                         )}
-                        {item === selectedTab ? (
+                        {item.label === selectedTab.label ? (
                             <motion.div
                                 className={styles.underline}
                                 layoutId='underline'
@@ -208,7 +196,7 @@ export default function TabComponent(props: TabPropsIF) {
             <div className={styles.tap_option_right}>
                 {rightTabOptions ? rightOptionWithProps : null}
             </div>
-        </div>
+        </FlexContainer>
     );
 
     // TAB MENU WITHOUT ANY ITEMS ON THE RIGHT
