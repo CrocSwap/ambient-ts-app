@@ -197,14 +197,14 @@ export default function OrdersMenu(props: propsIF) {
             {(view3 || view2WithNoSidebar) && detailsButton}
             {minView && claimButton}
             {minView && removeButton}
-            {!isOwnerActiveAccount && copyButton}
+            {minView && copyButton}
         </div>
     );
 
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
-            {isOwnerActiveAccount && copyButton}
+            {!minView && copyButton}
             {!minView && removeButton}
             {!isAccountView && walletButton}
         </div>
