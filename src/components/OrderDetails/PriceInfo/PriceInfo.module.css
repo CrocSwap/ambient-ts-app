@@ -12,7 +12,6 @@
     gap: 4px;
 }
 
-
 /* TOKEN PAIR DETAILS */
 .token_pair_details {
     display: flex;
@@ -47,7 +46,6 @@
 .buy_content,
 .sell_content,
 .price_status_content {
-   
     padding: 8px;
 }
 .order_type,

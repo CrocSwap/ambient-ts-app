@@ -29,15 +29,12 @@ export default function Exchange(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { nativeToken, erc20Tokens } = useAppSelector(
-        (state) => state.userData.tokens,
+    const tokenBalances = useAppSelector(
+        (state) => state.userData.tokenBalances,
     );
-    const connectedUserTokens = [nativeToken]
-        .concat(erc20Tokens)
-        .filter((token) => token);
 
     const tokensToRender = connectedAccountActive
-        ? connectedUserTokens
+        ? tokenBalances
         : resolvedAddressTokens;
 
     function sequenceTokens(tkns: TokenIF[]) {
@@ -119,7 +116,9 @@ export default function Exchange(props: propsIF) {
         <div className={styles.container}>
             <ExchangeHeader />
             <div className={styles.item_container}>
-                {tokensToRender && tokensToRender.length > 0 ? (
+                {tokensToRender &&
+                tokensToRender.length > 0 &&
+                tokensToRender[0] !== undefined ? (
                     // values can be `undefined` but this fn will filter them out
                     sequenceTokens(tokensToRender as TokenIF[]).map((token) => (
                         <ExchangeCard

@@ -1,4 +1,3 @@
-
 .logout_button {
     cursor: pointer;
     width: 100%;
@@ -15,7 +14,8 @@
     border: solid 1px transparent;
 }
 
-.logout_button:hover, .logout_button:focus-visible {
+.logout_button:hover,
+.logout_button:focus-visible {
     color: var(--accent1);
     background: var(--dark2);
     border: solid 1px var(--accent1);

@@ -10,10 +10,11 @@ import { BiArrowBack } from 'react-icons/bi';
 import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
 import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
 
-import { motion } from 'framer-motion';
 import useChatApi from '../../Chat/Service/ChatApi';
 import { CHAT_BACKEND_URL, IS_LOCAL_ENV } from '../../../constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ProfileSettingsMotionContainer } from './ProfileSettings.styles';
+import { FlexContainer, Text } from '../../../styled/Common';
 
 const pageVariant3D = {
     initial: {
@@ -116,23 +117,24 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     }
 
     return (
-        <motion.div
+        <ProfileSettingsMotionContainer
             initial='initial'
             animate='in'
             exit='out'
             variants={pageVariant3D}
             transition={pageTransition}
-            className={styles.container}
         >
             <div
-                className={styles.back_button}
+                style={{ cursor: 'pointer' }}
                 onClick={() => setShowProfileSettings(false)}
             >
                 <BiArrowBack size={30} />
             </div>
-            <div className={styles.content}>
-                <div className={styles.settings_container}>
-                    <h3>Profile Settings</h3>
+            <FlexContainer justifyContent='center'>
+                <FlexContainer flexDirection='column' width='306px'>
+                    <Text fontWeight='300' fontSize='header1' color='text1'>
+                        Profile Settings
+                    </Text>
                     <section>
                         {nameDisplay}
                         {profilePicDisplay}
@@ -145,8 +147,8 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                     >
                         Save
                     </button>
-                </div>
-            </div>
-        </motion.div>
+                </FlexContainer>
+            </FlexContainer>
+        </ProfileSettingsMotionContainer>
     );
 }
