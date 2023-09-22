@@ -272,7 +272,7 @@ function Trade() {
                     overflow='hidden'
                 >
                     <ResizableContainer
-                        showResizeable={!isCandleDataNull}
+                        showResizeable={!isCandleDataNull && !isChartFullScreen}
                         enable={{
                             bottom: !isChartFullScreen,
                             top: false,
