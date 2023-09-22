@@ -340,6 +340,7 @@ export default function InitPool() {
                 console.error({ error });
                 // The user used 'speed up' or something similar
                 // in their client, but we now have the updated info
+                //
                 if (isTransactionReplacedError(error)) {
                     IS_LOCAL_ENV && console.debug('repriced');
                     dispatch(removePendingTx(error.hash));
