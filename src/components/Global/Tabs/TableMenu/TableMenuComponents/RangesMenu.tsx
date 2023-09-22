@@ -264,9 +264,6 @@ export default function RangesMenu(props: propsIF) {
         />
     );
 
-    const showCopyButtonOutsideDropdownMenu =
-        useMediaQuery('(min-width: 400px)');
-
     const rangesMenu = (
         <div className={styles.actions_menu}>
             {!view1 && showRepositionButton && repositionButton}
@@ -276,9 +273,7 @@ export default function RangesMenu(props: propsIF) {
                 addButton}
             {view3 && !isEmpty && removeButton}
             {view3 && !isEmpty && harvestButton}
-            {!userMatchesConnectedAccount &&
-                showCopyButtonOutsideDropdownMenu &&
-                copyButton}
+            {!userMatchesConnectedAccount && !view1 && copyButton}
         </div>
     );
 
@@ -293,6 +288,7 @@ export default function RangesMenu(props: propsIF) {
             {detailsButton}
             {!isAccountView && walletButton}
             {view1 && showRepositionButton && repositionButton}
+            {!userMatchesConnectedAccount && view1 && copyButton}
         </div>
     );
 
