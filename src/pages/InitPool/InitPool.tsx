@@ -57,6 +57,7 @@ import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
 import MultiContentComponent from '../../components/Global/MultiStepTransaction/MultiContentComponent';
 
+
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
@@ -69,8 +70,7 @@ export default function InitPool() {
         ethMainnetUsdPrice,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-
-    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+ const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { dexBalRange } = useContext(UserPreferenceContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -303,6 +303,7 @@ export default function InitPool() {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
 
+
     const focusInput = () => {
         const inputField = document.getElementById(
             'initial-pool-price-quantity',
@@ -379,78 +380,12 @@ export default function InitPool() {
 
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    const { approve, isApprovalPending } = useApprove();
 
-    const sendInit = () => {
-        if (initialPriceInBaseDenom) {
-            (async () => {
-                let tx;
-                try {
-                    setIsInitPending(true);
-                    tx = await crocEnv
-                        ?.pool(baseToken.address, quoteToken.address)
-                        .initPool(initialPriceInBaseDenom);
+    // hooks to generate navigation actions with pre-loaded paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
 
-                    if (tx) dispatch(addPendingTx(tx?.hash));
-                    if (tx?.hash)
-                        dispatch(
-                            addTransactionByType({
-                                txHash: tx.hash,
-                                txType: 'Init',
-                                txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
-                            }),
-                        );
-                    let receipt;
-                    try {
-                        if (tx) receipt = await tx.wait();
-                    } catch (e) {
-                        const error = e as TransactionError;
-                        console.error({ error });
-                        // The user used 'speed up' or something similar
-                        // in their client, but we now have the updated info
-                        if (isTransactionReplacedError(error)) {
-                            IS_LOCAL_ENV && console.debug('repriced');
-                            dispatch(removePendingTx(error.hash));
-
-                            const newTransactionHash = error.replacement.hash;
-                            dispatch(addPendingTx(newTransactionHash));
-
-                            //    setNewSwapTransactionHash(newTransactionHash);
-                            dispatch(
-                                updateTransactionHash({
-                                    oldHash: error.hash,
-                                    newHash: error.replacement.hash,
-                                }),
-                            );
-                            IS_LOCAL_ENV &&
-                                console.debug({ newTransactionHash });
-                            receipt = error.receipt;
-                        } else if (isTransactionFailedError(error)) {
-                            receipt = error.receipt;
-                        }
-                    }
-                    if (receipt) {
-                        dispatch(addReceipt(JSON.stringify(receipt)));
-                        dispatch(removePendingTx(receipt.transactionHash));
-                        linkGenPool.navigate({
-                            chain: chainId,
-                            tokenA: baseToken.address,
-                            tokenB: quoteToken.address,
-                        });
-                    }
-                } catch (error) {
-                    if (
-                        error.reason ===
-                        'sending a transaction requires a signer'
-                    ) {
-                        location.reload();
-                    }
-                    console.error({ error });
-                } finally {
-                    setIsInitPending(false);
-                }
-            })();
-        }
-    };
+    const { sendInit, isInitPending } = useSendInit();
 
     const placeholderText = `e.g. ${estimatedInitialPriceDisplay} (${
         isDenomBase ? baseToken.symbol : quoteToken.symbol
@@ -545,8 +480,12 @@ export default function InitPool() {
                     buttonContent = (
                         <Button
                             title='Confirm'
+
                             disabled={erc20TokenWithDexBalance !== undefined}
                             action={sendInit}
+
+                            action={() => sendInit(initialPriceInBaseDenom)}
+
                             flat={true}
                         />
                     );
@@ -577,7 +516,7 @@ export default function InitPool() {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenA);
+                await approve(tokenA.address, tokenA.symbol);
             }}
             flat={true}
         />
@@ -592,7 +531,7 @@ export default function InitPool() {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenB);
+                await approve(tokenB.address, tokenB.symbol);
             }}
             flat={true}
         />
