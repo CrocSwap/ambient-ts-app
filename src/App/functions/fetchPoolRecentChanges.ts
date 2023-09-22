@@ -7,6 +7,7 @@ import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { getTransactionData } from './getTransactionData';
 import { SpotPriceFn } from './querySpotPrice';
+import { Provider } from '@ethersproject/providers';
 
 interface argsIF {
     tokenList: TokenIF[];
@@ -24,6 +25,7 @@ interface argsIF {
     period?: number;
     time?: number;
     crocEnv: CrocEnv;
+    provider: Provider;
     lastBlockNumber: number;
     cachedFetchTokenPrice: TokenPriceFn;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -47,6 +49,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         period,
         time,
         crocEnv,
+        provider,
         lastBlockNumber,
         cachedFetchTokenPrice,
         cachedQuerySpotPrice,
@@ -105,6 +108,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                         tx,
                         tokenList,
                         crocEnv,
+                        provider,
                         chainId,
                         lastBlockNumber,
                         cachedFetchTokenPrice,
