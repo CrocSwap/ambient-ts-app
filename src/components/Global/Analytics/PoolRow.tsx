@@ -1,16 +1,14 @@
 import TokenIcon from '../TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
-import {
-    TableCell,
-    PoolNameWrapper,
-    TokenWrapper,
-    FlexCenter,
-    TableRow,
-    FlexEnd,
-    TradeButton,
-} from './Analytics.styles';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import {
+    PoolNameWrapper,
+    TradeButton,
+    TableRow,
+    TableCell,
+} from '../../../styled/Components/Analytics';
+import { FlexContainer } from '../../../styled/Common';
 
 interface propsIF {
     pool: PoolDataIF;
@@ -30,8 +28,12 @@ export default function PoolRow(props: propsIF) {
             onClick={() => goToMarket(pool.base.address, pool.quote.address)}
         >
             <TableCell>
-                <FlexCenter>
-                    <TokenWrapper>
+                <FlexContainer alignItems='center'>
+                    <FlexContainer
+                        alignItems='center'
+                        gap={4}
+                        style={{ flexShrink: 0 }}
+                    >
                         <TokenIcon
                             token={firstToken}
                             src={uriToHttp(firstToken.logoURI)}
@@ -44,9 +46,9 @@ export default function PoolRow(props: propsIF) {
                             alt={secondToken.symbol}
                             size='2xl'
                         />
-                    </TokenWrapper>
+                    </FlexContainer>
                     <PoolNameWrapper>{pool.name}</PoolNameWrapper>
-                </FlexCenter>
+                </FlexContainer>
             </TableCell>
             <TableCell hidden sm left>
                 <p>{pool.name}</p>
@@ -78,9 +80,13 @@ export default function PoolRow(props: propsIF) {
                 </p>
             </TableCell>
             <TableCell hidden sm>
-                <FlexEnd>
+                <FlexContainer
+                    fullHeight
+                    alignItems='center'
+                    justifyContent='flex-end'
+                >
                     <TradeButton>Trade</TradeButton>
-                </FlexEnd>
+                </FlexContainer>
             </TableCell>
         </TableRow>
     );

@@ -34,7 +34,6 @@
 .extra_details {
     border: 1px solid var(--border);
 
-   
     border-radius: var(--border-radius);
 
     color: var(--text2);
@@ -42,13 +41,13 @@
     line-height: var(--body-lh);
     display: flex;
     flex-direction: column;
-   justify-content: space-between;
+    justify-content: space-between;
 }
 
 .extra_row {
     display: flex;
     flex-direction: column;
-  
+
     justify-content: space-between;
     align-items: center;
 }

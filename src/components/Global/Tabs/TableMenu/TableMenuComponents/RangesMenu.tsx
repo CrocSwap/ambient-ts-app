@@ -30,6 +30,7 @@ import RangeActionModal from '../../../../RangeActionModal/RangeActionModal';
 import { useModal } from '../../../Modal/useModal';
 import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
 import { OptionButton } from '../../../Button/OptionButton';
+import { FlexContainer } from '../../../../../styled/Common';
 
 // interface for React functional component props
 interface propsIF {
@@ -70,7 +71,8 @@ export default function RangesMenu(props: propsIF) {
         setCurrentRangeInAdd,
     } = useContext(RangeContext);
     const { sidebar } = useContext(SidebarContext);
-    const { handlePulseAnimation } = useContext(TradeTableContext);
+    const { handlePulseAnimation, setActiveMobileComponent } =
+        useContext(TradeTableContext);
 
     const { isAmbient } = rangeDetailsProps;
 
@@ -132,6 +134,8 @@ export default function RangesMenu(props: propsIF) {
         userMatchesConnectedAccount && isUserLoggedIn;
 
     const handleCopyClick = () => {
+        setActiveMobileComponent('trade');
+
         dispatch(setRangeTicksCopied(true));
         handlePulseAnimation('range');
 
@@ -260,6 +264,9 @@ export default function RangesMenu(props: propsIF) {
         />
     );
 
+    const showCopyButtonOutsideDropdownMenu =
+        useMediaQuery('(min-width: 400px)');
+
     const rangesMenu = (
         <div className={styles.actions_menu}>
             {!view1 && showRepositionButton && repositionButton}
@@ -269,7 +276,9 @@ export default function RangesMenu(props: propsIF) {
                 addButton}
             {view3 && !isEmpty && removeButton}
             {view3 && !isEmpty && harvestButton}
-            {!userMatchesConnectedAccount && copyButton}
+            {!userMatchesConnectedAccount &&
+                showCopyButtonOutsideDropdownMenu &&
+                copyButton}
         </div>
     );
 
@@ -282,7 +291,7 @@ export default function RangesMenu(props: propsIF) {
             {!view3 && !isEmpty && harvestButton}
             {!view3 && !isEmpty && removeButton}
             {detailsButton}
-            {!userMatchesConnectedAccount && walletButton}
+            {!isAccountView && walletButton}
             {view1 && showRepositionButton && repositionButton}
         </div>
     );
@@ -320,8 +329,12 @@ export default function RangesMenu(props: propsIF) {
     }, [showDropdownMenu]);
 
     return (
-        <div onClick={(event) => event.stopPropagation()}>
-            <div className={styles.main_container}>
+        <FlexContainer justifyContent='flex-end'>
+            <div
+                onClick={(event) => event.stopPropagation()}
+                style={{ width: 'min-content', cursor: 'default' }}
+                className={styles.main_container}
+            >
                 {rangesMenu}
                 {dropdownRangesMenu}
             </div>
@@ -341,6 +354,6 @@ export default function RangesMenu(props: propsIF) {
                     {...rangeDetailsProps}
                 />
             )}
-        </div>
+        </FlexContainer>
     );
 }

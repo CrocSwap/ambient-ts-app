@@ -1,6 +1,5 @@
 import { memo } from 'react';
 import { AiOutlineShareAlt } from 'react-icons/ai';
-import ContentHeader from '../../Global/ContentHeader/ContentHeader';
 import TransactionSettingsModal, {
     TransactionModuleType,
 } from '../../Global/TransactionSettingsModal/TransactionSettingsModal';
@@ -14,7 +13,11 @@ import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { useModal } from '../../Global/Modal/useModal';
-import styles from './TradeModuleHeader.module.css';
+import {
+    HoverableIcon,
+    TradeModuleHeaderContainer,
+} from '../../../styled/Components/TradeModules';
+import { Text } from '../../../styled/Common';
 
 interface propsIF {
     slippage: SlippageMethodsIF;
@@ -40,13 +43,12 @@ function TradeModuleHeader(props: propsIF) {
 
     // TODO: refactor this into its own file
     const settingsSvg = (
-        <svg
+        <HoverableIcon
             width='14'
             height='14'
             viewBox='0 0 14 14'
             fill='none'
             xmlns='http://www.w3.org/2000/svg'
-            className={styles.hoverable_icon}
         >
             <rect
                 y='9.625'
@@ -65,15 +67,21 @@ function TradeModuleHeader(props: propsIF) {
             ></rect>
             <circle cx='12.25' cy='10.5' r='1.75' fill=''></circle>
             <circle cx='1.75' cy='3.5' r='1.75' fill=''></circle>
-        </svg>
+        </HoverableIcon>
     );
 
     return (
         <>
-            <div className={isSwapPage ? styles.swap_page_header : ''}>
-                <ContentHeader>
+            <div style={{ paddingBottom: isSwapPage ? '16px' : '' }}>
+                <TradeModuleHeaderContainer
+                    flexDirection='row'
+                    alignItems='center'
+                    justifyContent='space-between'
+                    fullWidth
+                    fontSize='header1'
+                    color='text2'
+                >
                     <AiOutlineShareAlt
-                        className={styles.share_button}
                         onClick={openShareModal}
                         id='share_button'
                         role='button'
@@ -82,21 +90,21 @@ function TradeModuleHeader(props: propsIF) {
                     />
 
                     {isSwapPage ? (
-                        <span className={styles.title}>Swap</span>
+                        <Text color='text1'>Swap</Text>
                     ) : (
-                        <div
-                            className={styles.token_info}
+                        <Text
+                            color='text1'
+                            fontSize='header1'
+                            role='button'
                             onClick={() => dispatch(toggleDidUserFlipDenom())}
                         >
                             {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                             {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
-                        </div>
+                        </Text>
                     )}
                     <IconWithTooltip title='Settings' placement='left'>
                         <div
                             onClick={openSettingsModal}
-                            className={`${styles.settings_container}
-                            ${styles.settings_icon}`}
                             id='settings_button'
                             role='button'
                             tabIndex={0}
@@ -105,7 +113,7 @@ function TradeModuleHeader(props: propsIF) {
                             {settingsSvg}
                         </div>
                     </IconWithTooltip>
-                </ContentHeader>
+                </TradeModuleHeaderContainer>
             </div>
             {isSettingsModalOpen && (
                 <TransactionSettingsModal

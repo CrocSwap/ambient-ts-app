@@ -129,7 +129,7 @@ export const useProcessOrder = (
             ? 'priceBuy'
             : 'priceSell';
 
-    const sideType = isAccountView
+    const sideType: 'sell' | 'buy' = isAccountView
         ? isBaseTokenMoneynessGreaterOrEqual
             ? isBid
                 ? 'buy'
