@@ -1,62 +1,59 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React from 'react';
+
+interface ContentItem {
+    label: string;
+    content: React.ReactNode;
+    key: string;
+}
 
 interface MultiContentComponentProps {
     mainContent: React.ReactNode;
     settingsContent: React.ReactNode;
     confirmationContent: React.ReactNode;
+    otherContents?: { title: string; content: React.ReactNode }[];
+    activeContent: string;
+    setActiveContent: (key: string) => void;
 }
-
-const ContentWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-`;
-
-const ButtonWrapper = styled.div`
-    display: flex;
-`;
-
-const Button = styled.button`
-    margin-right: 10px;
-`;
-
-interface ContentProps {
-    active: boolean;
-}
-
-const Content = styled.div<ContentProps>`
-    display: ${(props) => (props.active ? 'block' : 'none')};
-`;
 
 const MultiContentComponent: React.FC<MultiContentComponentProps> = ({
     mainContent,
     settingsContent,
     confirmationContent,
+    otherContents = [],
+    activeContent,
 }) => {
-    const [activeContent, setActiveContent] = useState('main');
+    const contentItems: ContentItem[] = [
+        { label: 'Main Content', content: mainContent, key: 'main' },
+        {
+            label: 'Settings Content',
+            content: settingsContent,
+            key: 'settings',
+        },
+        {
+            label: 'Confirmation Content',
+            content: confirmationContent,
+            key: 'confirmation',
+        },
+        ...(otherContents || []).map(({ title, content }, index) => ({
+            label: title || `Other Content ${index + 1}`,
+            content,
+            key: `other${index}`,
+        })),
+    ];
 
     return (
-        <ContentWrapper>
-            <ButtonWrapper>
-                <Button onClick={() => setActiveContent('main')}>
-                    Main Content
-                </Button>
-                <Button onClick={() => setActiveContent('settings')}>
-                    Settings Content
-                </Button>
-                <Button onClick={() => setActiveContent('confirmation')}>
-                    Confirmation Content
-                </Button>
-            </ButtonWrapper>
-            <Content active={activeContent === 'main'}>{mainContent}</Content>
-            <Content active={activeContent === 'settings'}>
-                {settingsContent}
-            </Content>
-            <Content active={activeContent === 'confirmation'}>
-                {confirmationContent}
-            </Content>
-        </ContentWrapper>
+        <>
+            {contentItems.map(({ content, key }) => (
+                <div
+                    key={key}
+                    style={{
+                        display: key === activeContent ? 'block' : 'none',
+                    }}
+                >
+                    {content}
+                </div>
+            ))}
+        </>
     );
 };
-
 export default MultiContentComponent;

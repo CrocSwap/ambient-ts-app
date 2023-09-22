@@ -1,6 +1,5 @@
 import styled from 'styled-components/macro';
 import Button from '../../components/Form/Button';
-import { Dispatch, SetStateAction } from 'react';
 
 const Wrapper = styled.div`
     border-radius: 8px;
@@ -24,7 +23,8 @@ const Description = styled.p`
 `;
 
 interface InitConfirmationProps {
-    setCurrentStep: Dispatch<SetStateAction<number>>;
+    activeContent: string;
+    setActiveContent: (key: string) => void;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -35,7 +35,10 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                 Are you sure you want to initialize this pool? This action
                 cannot be undone.
             </Description>
-            <Button title='Confirm' action={() => props.setCurrentStep(0)} />
+            <Button
+                title='Confirm'
+                action={() => props.setActiveContent('main')}
+            />
         </Wrapper>
     );
 }

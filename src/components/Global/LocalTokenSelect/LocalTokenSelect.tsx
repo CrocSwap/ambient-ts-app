@@ -8,6 +8,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
 
 import { useModal } from '../Modal/useModal';
+import { SoloTokenSelect } from '../TokenSelectContainer/SoloTokenSelect';
 
 const MainContainer = styled.button`
     background-color: var(--dark2);
@@ -85,6 +86,28 @@ function TokenSelectorPoolInit(props: propsIF) {
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
 
+    const isInit = location.pathname.startsWith('/initpool');
+
+    const modalOrNoModal = isInit ? (
+        <SoloTokenSelect
+            onClose={closeTokenSelect}
+            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+            isSingleToken={!tokenAorB}
+            tokenAorB={tokenAorB}
+            reverseTokens={reverseTokens}
+        />
+    ) : (
+        <SoloTokenSelectModal
+            onClose={closeTokenSelect}
+            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+            isSingleToken={!tokenAorB}
+            tokenAorB={tokenAorB}
+            reverseTokens={reverseTokens}
+        />
+    );
+
     return (
         <>
             <MainContainer onClick={openTokenSelect}>
@@ -102,18 +125,7 @@ function TokenSelectorPoolInit(props: propsIF) {
                 <RightContainer>{token?.name}</RightContainer>
             </MainContainer>
 
-            {isTokenSelectOpen && (
-                <SoloTokenSelectModal
-                    onClose={closeTokenSelect}
-                    showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                    setShowSoloSelectTokenButtons={
-                        setShowSoloSelectTokenButtons
-                    }
-                    isSingleToken={!tokenAorB}
-                    tokenAorB={tokenAorB}
-                    reverseTokens={reverseTokens}
-                />
-            )}
+            {isTokenSelectOpen && modalOrNoModal}
         </>
     );
 }

@@ -759,6 +759,8 @@ export default function InitPool() {
             </p>
         </TextOnlyTooltip>
     );
+
+    console.log({ tokenModalOpen });
     const simpleTokenSelect = (
         <div className={styles.local_token_container}>
             {newUrlTooltip}
@@ -956,13 +958,18 @@ export default function InitPool() {
         }
     }, [erc20TokenWithDexBalance, poolExists]);
 
-    const [currentStep, setCurrentStep] = useState(0);
+    const [activeContent, setActiveContent] = useState<string>('main');
+
+    const handleSetActiveContent = (newActiveContent: string) => {
+        setActiveContent(newActiveContent);
+    };
 
     const mainContent = (
         <InitSkeleton
+            isTokenModalOpen={tokenModalOpen}
             isConfirmation={false}
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
+            activeContent={activeContent}
+            setActiveContent={setActiveContent}
             title='Initialize Pool'
         >
             <div className={styles.left_container}>
@@ -1023,31 +1030,58 @@ export default function InitPool() {
 
     const confirmationContent = (
         <InitSkeleton
+            isTokenModalOpen={tokenModalOpen}
             isConfirmation={true}
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
+            activeContent={activeContent}
+            setActiveContent={setActiveContent}
             title='Confirmation'
         >
-            <InitConfirmation setCurrentStep={setCurrentStep} />
+            <InitConfirmation
+                activeContent={activeContent}
+                setActiveContent={setActiveContent}
+            />
         </InitSkeleton>
     );
 
     const settingsContent = (
         <InitSkeleton
+            isTokenModalOpen={tokenModalOpen}
             isConfirmation={true}
-            currentStep={currentStep}
-            setCurrentStep={setCurrentStep}
+            activeContent={activeContent}
+            setActiveContent={setActiveContent}
             title='Settings'
         >
-            <InitConfirmation setCurrentStep={setCurrentStep} />
+            <InitConfirmation
+                activeContent={activeContent}
+                setActiveContent={setActiveContent}
+            />
         </InitSkeleton>
     );
 
+    const exampleContent3 = (
+        <InitSkeleton
+            isTokenModalOpen={tokenModalOpen}
+            isConfirmation={true}
+            activeContent={activeContent}
+            setActiveContent={setActiveContent}
+            title='Example content 3'
+        >
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim,
+            doloremque?
+        </InitSkeleton>
+    );
+
+    const otherContents = [
+        { title: 'Example Content 3', content: exampleContent3 },
+    ];
     return (
         <MultiContentComponent
             mainContent={mainContent}
             settingsContent={settingsContent}
             confirmationContent={confirmationContent}
+            activeContent={activeContent}
+            setActiveContent={handleSetActiveContent}
+            otherContents={otherContents}
         />
     );
 }

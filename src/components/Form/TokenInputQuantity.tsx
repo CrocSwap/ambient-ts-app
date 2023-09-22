@@ -35,6 +35,7 @@ import {
     setLocalTokenA,
     setLocalTokenB,
 } from '../../utils/state/localPairDataSlice';
+import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
 
 interface propsIF {
     tokenAorB: 'A' | 'B' | null;
@@ -210,6 +211,29 @@ function TokenInputQuantity(props: propsIF) {
                 return input;
         }
     })();
+
+    const isInit = location.pathname.startsWith('/initpool');
+
+    const modalOrNoModal = isInit ? (
+        <SoloTokenSelect
+            onClose={closeTokenSelect}
+            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+            isSingleToken={!tokenAorB}
+            tokenAorB={tokenAorB}
+            reverseTokens={reverseTokens}
+        />
+    ) : (
+        <SoloTokenSelectModal
+            onClose={closeTokenSelect}
+            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+            isSingleToken={!tokenAorB}
+            tokenAorB={tokenAorB}
+            reverseTokens={reverseTokens}
+        />
+    );
+
     return (
         <FlexContainer flexDirection='column' color='text1' id={fieldId}>
             {label && (
@@ -254,18 +278,7 @@ function TokenInputQuantity(props: propsIF) {
             </TokenQuantityContainer>
 
             {includeWallet && includeWallet}
-            {isTokenSelectOpen && (
-                <SoloTokenSelectModal
-                    onClose={closeTokenSelect}
-                    showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                    setShowSoloSelectTokenButtons={
-                        setShowSoloSelectTokenButtons
-                    }
-                    isSingleToken={!tokenAorB}
-                    tokenAorB={tokenAorB}
-                    reverseTokens={reverseTokens}
-                />
-            )}
+            {isTokenSelectOpen && modalOrNoModal}
         </FlexContainer>
     );
 }

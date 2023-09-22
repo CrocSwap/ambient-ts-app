@@ -1,64 +1,21 @@
-.main {
-    height: calc(100vh - 4rem);
-
-    background: url('../../assets/images/backgrounds/background.png') no-repeat
-        center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    cursor: default;
-
-    width: 100vw;
-
-    display: flex;
-    justify-content: center;
-}
 
 
 
-.gradient_container{
-    background: var(--title-gradient);
-    padding: 1px;
-    border-radius: var(--border-radius);
-   
-}
 
-.main_container{
-    background: var(--dark1);
-    border-radius: var(--border-radius);
-    padding: 1rem;
-}
 
-.main_container header{
-    height: 41px;
 
-display: flex;
-flex-direction: row;
-align-items: center;
-justify-content: space-between;
 
-font-size: var(--header1-size);
-line-height: var(--header1-lh);
-font-weight: 200;
-color: var(--text1);
-}
-.outer_container{
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-}
 
 .left_container, .right_container{
     
-    padding: 0 8px;
+  
     display: flex;
     flex-direction: column;
     gap: 8px;
 
     display: grid;
    grid-template-rows: 100px 100px 1fr ;
+   
 }
 
 .right_container{

@@ -12,7 +12,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import styles from './SoloTokenSelectModal.module.css';
+import styles from './SoloTokenSelect.module.css';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -23,10 +23,10 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { handleWETH } from '../../../utils/data/handleWETH';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
-import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { supportedNetworks } from '../../../utils/networks';
+import { IoIosArrowBack } from 'react-icons/io';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -35,11 +35,9 @@ interface propsIF {
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
     onClose: () => void;
-
-    noModal?: boolean;
 }
 
-export const SoloTokenSelectModal = (props: propsIF) => {
+export const SoloTokenSelect = (props: propsIF) => {
     const {
         onClose,
         setShowSoloSelectTokenButtons,
@@ -253,97 +251,103 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
-    // We can fix this later to use a prop but right now, I am getting weird bugs with that approach -JR
+    const isInit = location.pathname.startsWith('/initpool');
 
     return (
-        <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>
-            <section className={styles.container}>
-                <div className={styles.input_control_container}>
-                    <input
-                        id='token_select_input_field'
-                        spellCheck='false'
-                        type='text'
-                        value={rawInput}
-                        onChange={(e) => setInput(e.target.value)}
-                        placeholder=' Search name or paste address'
-                        style={{
-                            color: showSoloSelectTokenButtons
-                                ? 'var(--text2)'
-                                : 'var(--text3)',
-                        }}
+        <section
+            className={styles.container}
+            style={{ margin: isInit ? '0 -1rem' : '' }}
+        >
+            <header className={styles.header}>
+                <IoIosArrowBack onClick={clearInputFieldAndCloseModal} />
+                <p>Select Token</p>
+                <p />
+            </header>
+            <div className={styles.input_control_container}>
+                <input
+                    id='token_select_input_field'
+                    spellCheck='false'
+                    type='text'
+                    value={rawInput}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder=' Search name or paste address'
+                    style={{
+                        color: showSoloSelectTokenButtons
+                            ? 'var(--text2)'
+                            : 'var(--text3)',
+                    }}
+                />
+                {validatedInput && (
+                    <button
+                        className={styles.clearButton}
+                        onClick={() => setInput('')}
+                        aria-label='Clear input'
+                        tabIndex={0}
+                    >
+                        Clear
+                    </button>
+                )}
+            </div>
+            <div style={{ padding: '1rem' }}>
+                {handleWETH.check(validatedInput) && (
+                    <WarningBox
+                        title=''
+                        details={handleWETH.message}
+                        noBackground
+                        button={
+                            <button
+                                onClick={() => {
+                                    try {
+                                        chooseToken(
+                                            tokens.getTokenByAddress(
+                                                supportedNetworks[chainId]
+                                                    .tokens.WETH,
+                                            ) as TokenIF,
+                                            false,
+                                        );
+                                    } catch (err) {
+                                        IS_LOCAL_ENV && console.warn(err);
+                                        onClose();
+                                    }
+                                }}
+                            >
+                                I understand, use WETH
+                            </button>
+                        }
                     />
-                    {validatedInput && (
-                        <button
-                            className={styles.clearButton}
-                            onClick={() => setInput('')}
-                            aria-label='Clear input'
-                            tabIndex={0}
-                        >
-                            Clear
-                        </button>
-                    )}
-                </div>
-                <div style={{ padding: '1rem' }}>
-                    {handleWETH.check(validatedInput) && (
-                        <WarningBox
-                            title=''
-                            details={handleWETH.message}
-                            noBackground
-                            button={
-                                <button
-                                    onClick={() => {
-                                        try {
-                                            chooseToken(
-                                                tokens.getTokenByAddress(
-                                                    supportedNetworks[chainId]
-                                                        .tokens.WETH,
-                                                ) as TokenIF,
-                                                false,
-                                            );
-                                        } catch (err) {
-                                            IS_LOCAL_ENV && console.warn(err);
-                                            onClose();
-                                        }
-                                    }}
-                                >
-                                    I understand, use WETH
-                                </button>
-                            }
+                )}
+            </div>
+            {handleWETH.check(validatedInput) &&
+                [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
+                    (token: TokenIF) => (
+                        <TokenSelect
+                            key={JSON.stringify(token)}
+                            token={token}
+                            chooseToken={chooseToken}
+                            fromListsText=''
                         />
-                    )}
-                </div>
-                {handleWETH.check(validatedInput) &&
-                    [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
-                        (token: TokenIF) => (
+                    ),
+                )}
+            {showSoloSelectTokenButtons ? (
+                <div className={styles.scrollable_container}>
+                    {removeWrappedNative(chainId, outputTokens)
+                        .slice(0, MAX_TOKEN_COUNT)
+                        .map((token: TokenIF) => (
                             <TokenSelect
                                 key={JSON.stringify(token)}
                                 token={token}
                                 chooseToken={chooseToken}
                                 fromListsText=''
                             />
-                        ),
-                    )}
-                {showSoloSelectTokenButtons ? (
-                    <div className={styles.scrollable_container}>
-                        {removeWrappedNative(chainId, outputTokens)
-                            .slice(0, MAX_TOKEN_COUNT)
-                            .map((token: TokenIF) => (
-                                <TokenSelect
-                                    key={JSON.stringify(token)}
-                                    token={token}
-                                    chooseToken={chooseToken}
-                                    fromListsText=''
-                                />
-                            ))}
-                    </div>
-                ) : (
-                    <SoloTokenImport
-                        customToken={customToken}
-                        chooseToken={chooseToken}
-                        chainId={chainId}
-                    />
-                )}
-            </section>
-        </Modal>
+                        ))}
+                </div>
+            ) : (
+                <SoloTokenImport
+                    customToken={customToken}
+                    chooseToken={chooseToken}
+                    chainId={chainId}
+                />
+            )}
+        </section>
     );
 };
