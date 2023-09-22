@@ -803,11 +803,11 @@ export default function InitPool() {
 
     const erc20TokenWithDexBalance = useMemo(() => {
         if (baseToken?.address !== ZERO_ADDRESS) {
-            if (baseTokenDexBalance !== '0.0') {
+            if (baseTokenDexBalance && baseTokenDexBalance !== '0.0') {
                 return baseToken;
             }
         }
-        if (quoteTokenDexBalance !== '0.0') {
+        if (quoteTokenDexBalance && quoteTokenDexBalance !== '0.0') {
             return quoteToken;
         }
         return undefined;
