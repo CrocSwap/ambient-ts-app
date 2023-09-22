@@ -309,14 +309,19 @@ const useChatSocket = (
     useEffect(() => {
         if (socketRef.current) {
             socketRef.current.on('message-deleted-listener', (data: any) => {
-                const newMessageList = messages.map((e) => {
-                    if (e._id == data._id) {
-                        return data;
-                    } else {
-                        return e;
-                    }
-                });
-                setMessages([...newMessageList]);
+                updateMessages(data);
+                // const newMessageList = messages.map((e) => {
+                //     if (e._id == data._id) {
+                //         return data;
+                //     } else {
+                //         return e;
+                //     }
+                // });
+                // setMessages([...newMessageList]);
+            });
+
+            socketRef.current.on('message-updated-listener', (data: any) => {
+                updateMessages(data);
             });
         }
     }, [messages]);
@@ -399,20 +404,32 @@ const useChatSocket = (
             body: JSON.stringify(payload),
         });
         const data = await response.json();
-        if (data && data.data && data.data.message) {
-            const msg = data.data.message;
-            const newMessageList = messages.map((e) => {
-                if (e._id == msg._id) {
-                    return msg;
-                } else {
-                    return e;
-                }
-            });
-            setMessages([...newMessageList]);
-        }
+        socketRef.current.emit('message-updated', { ...data.data.message });
+        // if (data && data.data && data.data.message) {
+        //     const msg = data.data.message;
+        //     const newMessageList = messages.map((e) => {
+        //         if (e._id == msg._id) {
+        //             return msg;
+        //         } else {
+        //             return e;
+        //         }
+        //     });
+        //     setMessages([...newMessageList]);
+        // }
 
         return data;
     }
+
+    const updateMessages = (message: any) => {
+        const newMessageList = messages.map((e) => {
+            if (e._id == message._id) {
+                return message;
+            } else {
+                return e;
+            }
+        });
+        setMessages([...newMessageList]);
+    };
 
     return {
         messages,

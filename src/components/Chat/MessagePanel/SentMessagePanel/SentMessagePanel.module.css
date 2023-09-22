@@ -741,7 +741,7 @@
     font-size: .9rem;
     cursor: pointer;
     border-radius: 0.9rem;
-    padding: 0.1rem;
+    /* padding: 0.05rem; */
 }
 
 .user_reacted{

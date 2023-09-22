@@ -567,7 +567,6 @@ function SentMessagePanel(props: SentMessageProps) {
         if (props.message.reactions != undefined) {
             props.message.reactions[reaction].map((user: string) => {
                 const userObj = props.userMap?.get(user);
-                console.log(userObj);
                 if (userObj) {
                     ret.push(getUserLabelForReactions(userObj));
                 }
@@ -936,7 +935,8 @@ function SentMessagePanel(props: SentMessageProps) {
                                                                 key={
                                                                     props
                                                                         .message
-                                                                        ._id
+                                                                        ._id +
+                                                                    reaction
                                                                 }
                                                                 className={`
                                                             ${
