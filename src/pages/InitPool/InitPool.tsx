@@ -110,13 +110,9 @@ export default function InitPool() {
     } = useTokenBalancesAndAllowances(baseToken, quoteToken);
 
     const isBaseTokenMoneynessGreaterOrEqual =
-        baseToken.address && quoteToken.address
-            ? getMoneynessRank(
-                  baseToken.address.toLowerCase() + '_' + chainId,
-              ) -
-                  getMoneynessRank(
-                      quoteToken.address.toLowerCase() + '_' + chainId,
-                  ) >=
+        baseToken.symbol && quoteToken.symbol
+            ? getMoneynessRank(baseToken.symbol) -
+                  getMoneynessRank(quoteToken.symbol) >=
               0
             : false;
 
