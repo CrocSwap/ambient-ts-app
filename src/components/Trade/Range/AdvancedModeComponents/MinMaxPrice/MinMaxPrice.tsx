@@ -74,7 +74,7 @@ function MinMaxPrice(props: MinMaxPriceIF) {
 
     const dispatch = useAppDispatch();
 
-    const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>): void => {
         if (evt) {
             const targetValue = evt.target.value.replaceAll(',', '');
             const input = targetValue.startsWith('.')
@@ -91,7 +91,7 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         }
     };
 
-    const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
+    const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>): void => {
         if (evt) {
             const targetValue = evt.target.value.replaceAll(',', '');
             const input = targetValue.startsWith('.')
