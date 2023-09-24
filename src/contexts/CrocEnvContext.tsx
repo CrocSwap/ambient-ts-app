@@ -73,16 +73,20 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     function createDefaultUrlParams(chainId: string): UrlRoutesTemplate {
         const [tokenA, tokenB]: [TokenIF, TokenIF] =
             getDefaultPairForChain(chainId);
+
+        // default URL params for swap and market modules
         const swapParams: swapParamsIF = {
             chain: chainId,
             tokenA: tokenA.address,
             tokenB: tokenB.address,
         };
 
+        // default URL params for the limit module
         const limitParams: limitParamsIF = {
             ...swapParams,
         };
 
+        // default URL params for the pool module
         const poolParams: poolParamsIF = {
             ...swapParams,
             lowTick: -1,
