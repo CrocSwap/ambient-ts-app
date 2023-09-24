@@ -267,9 +267,12 @@ function Range() {
     }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
     // if URL params are missing ticks, populate with default ticks values
+    // run when default values change (ie when they finish calculating)
     // not a great approach, since we may not be using these actively
     useEffect(() => {
+        // determine if either tick is missing from URL params
         const ticksMissing: boolean = !lowTickInParams || !highTickInParams;
+        // if either tick is missing, update URL string with default ticks
         ticksMissing && updateURL({
             update: [
                 ['lowTick', defaultLowTick],
