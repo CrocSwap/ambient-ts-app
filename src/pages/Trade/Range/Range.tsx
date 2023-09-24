@@ -223,6 +223,7 @@ function Range() {
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
+    // bool indicating presence of tick values in URL params
     const lowTickInParams: boolean = location.pathname.includes('lowTick');
     const highTickInParams: boolean = location.pathname.includes('highTick');
 
