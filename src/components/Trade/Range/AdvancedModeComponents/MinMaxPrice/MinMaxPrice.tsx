@@ -74,25 +74,6 @@ function MinMaxPrice(props: MinMaxPriceIF) {
 
     const dispatch = useAppDispatch();
 
-    const handleSetMinTarget = (minPriceInput: string) => {
-        setMinPriceInputString(minPriceInput);
-        if (!isDenomBase) {
-            setMaxPrice(parseFloat(minPriceInput));
-        } else {
-            setMinPrice(parseFloat(minPriceInput));
-        }
-    };
-
-    const handleSetMaxTarget = (maxPriceInput: string) => {
-        setMaxPriceInputString(maxPriceInput);
-
-        if (!isDenomBase) {
-            setMinPrice(parseFloat(maxPriceInput));
-        } else {
-            setMaxPrice(parseFloat(maxPriceInput));
-        }
-    };
-
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const targetValue = evt.target.value.replaceAll(',', '');
@@ -100,9 +81,13 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                 ? '0' + targetValue
                 : targetValue;
             const isValid = exponentialNumRegEx.test(input);
-
             if (isValid) {
-                handleSetMinTarget(targetValue);
+                setMinPriceInputString(targetValue);
+                if (!isDenomBase) {
+                    setMaxPrice(parseFloat(targetValue));
+                } else {
+                    setMinPrice(parseFloat(targetValue));
+                }
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
@@ -115,10 +100,14 @@ function MinMaxPrice(props: MinMaxPriceIF) {
             const input = targetValue.startsWith('.')
                 ? '0' + targetValue
                 : targetValue;
-
             const isValid = exponentialNumRegEx.test(input);
             if (isValid) {
-                handleSetMaxTarget(targetValue);
+                setMaxPriceInputString(targetValue);
+                if (!isDenomBase) {
+                    setMinPrice(parseFloat(targetValue));
+                } else {
+                    setMaxPrice(parseFloat(targetValue));
+                }
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
