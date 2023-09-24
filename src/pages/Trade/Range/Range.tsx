@@ -266,6 +266,18 @@ function Range() {
         return value;
     }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
+    // if URL params are missing ticks, populate with default ticks values
+    // not a great approach, since we may not be using these actively
+    useEffect(() => {
+        const ticksMissing: boolean = !lowTickInParams || !highTickInParams;
+        ticksMissing && updateURL({
+            update: [
+                ['lowTick', defaultLowTick],
+                ['highTick', defaultHighTick]
+            ]
+        });
+    }, [defaultLowTick, defaultHighTick]);
+
     const userPositions = graphData.positionsByUser.positions.filter(
         (x) => x.chainId === chainId,
     );
@@ -579,12 +591,6 @@ function Range() {
 
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
-
-            // update URL with new pinned tick values
-            // updateURL({update: [
-            //     ['lowTick', pinnedDisplayPrices.pinnedLowTick],
-            //     ['highTick', pinnedDisplayPrices.pinnedHighTick],
-            // ]});
 
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
@@ -953,11 +959,6 @@ function Range() {
         const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
         counter.current++;
-        // update URL with new tick values (rounded)
-        // updateURL({update: [
-        //     ['lowTick', roundDownTick(lowTick, gridSize)],
-        //     ['highTick', roundUpTick(highTick, gridSize)]
-        // ]});
 
         const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
             isDenomBase,

@@ -32,7 +32,6 @@ import { getFormattedNumber } from '../../functions/getFormattedNumber';
 import chainNumToString from '../../functions/chainNumToString';
 import {
     linkGenMethodsIF,
-    poolParamsIF,
     swapParamsIF,
     useLinkGen,
 } from '../../../utils/hooks/useLinkGen';
@@ -222,12 +221,6 @@ const PageHeader = function () {
         tokenB: tradeData.tokenB.address,
     };
 
-    const poolParams: poolParamsIF = {
-        ...swapParams,
-        lowTick: tradeData.advancedLowTick ?? 0,
-        highTick: tradeData.advancedHighTick ?? 0,
-    };
-
     interface linkDataIF {
         title: string;
         destination: string;
@@ -252,7 +245,7 @@ const PageHeader = function () {
         },
         {
             title: 'Pool',
-            destination: linkGenPool.getFullURL(poolParams),
+            destination: linkGenPool.getFullURL(swapParams),
             shouldDisplay: true,
         },
         {
