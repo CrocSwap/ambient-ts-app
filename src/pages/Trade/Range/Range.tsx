@@ -1,6 +1,6 @@
 import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 import { motion } from 'framer-motion';
-import { useContext, useState, useEffect, useMemo, memo, useRef } from 'react';
+import { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
@@ -269,17 +269,17 @@ function Range() {
     // if URL params are missing ticks, populate with default ticks values
     // run when default values change (ie when they finish calculating)
     // not a great approach, since we may not be using these actively
-    useEffect(() => {
-        // determine if either tick is missing from URL params
-        const ticksMissing: boolean = !lowTickInParams || !highTickInParams;
-        // if either tick is missing, update URL string with default ticks
-        ticksMissing && updateURL({
-            update: [
-                ['lowTick', defaultLowTick],
-                ['highTick', defaultHighTick]
-            ]
-        });
-    }, [defaultLowTick, defaultHighTick]);
+    // useEffect(() => {
+    //     // determine if either tick is missing from URL params
+    //     const ticksMissing: boolean = !lowTickInParams || !highTickInParams;
+    //     // if either tick is missing, update URL string with default ticks
+    //     ticksMissing && updateURL({
+    //         update: [
+    //             ['lowTick', defaultLowTick],
+    //             ['highTick', defaultHighTick]
+    //         ]
+    //     });
+    // }, [defaultLowTick, defaultHighTick]);
 
     const userPositions = graphData.positionsByUser.positions.filter(
         (x) => x.chainId === chainId,
@@ -554,6 +554,12 @@ function Range() {
             setIsAmbient(true);
             setRangeLowBoundNonDisplayPrice(0);
             setRangeHighBoundNonDisplayPrice(Infinity);
+            updateURL({
+                update: [
+                    ['lowTick', 0],
+                    ['highTick', 0]
+                ]
+            });
         } else if (advancedMode) {
             setIsAmbient(false);
         } else {
@@ -594,6 +600,13 @@ function Range() {
 
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+
+            updateURL({
+                update: [
+                    ['lowTick', pinnedDisplayPrices.pinnedLowTick],
+                    ['highTick', pinnedDisplayPrices.pinnedHighTick]
+                ]
+            });
 
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
@@ -657,6 +670,13 @@ function Range() {
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
+            updateURL({
+                update: [
+                    ['lowTick', pinnedDisplayPrices.pinnedLowTick],
+                    ['highTick', pinnedDisplayPrices.pinnedHighTick]
+                ]
+            });
+
             const highTickDiff =
                 pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
             const lowTickDiff =
@@ -672,19 +692,19 @@ function Range() {
                     : parseFloat(truncateDecimals(lowTickDiff / 100, 0));
             isDenomBase
                 ? setMaxPriceDifferencePercentage(
-                      -lowGeometricDifferencePercentage,
-                  )
+                    -lowGeometricDifferencePercentage,
+                )
                 : setMaxPriceDifferencePercentage(
-                      highGeometricDifferencePercentage,
-                  );
+                    highGeometricDifferencePercentage,
+                );
 
             isDenomBase
                 ? setMinPriceDifferencePercentage(
-                      -highGeometricDifferencePercentage,
-                  )
+                    -highGeometricDifferencePercentage,
+                )
                 : setMinPriceDifferencePercentage(
-                      lowGeometricDifferencePercentage,
-                  );
+                    lowGeometricDifferencePercentage,
+                );
 
             // as far as I can tell this is the only logic in the app which updates
             // values in the DOM for range low and high bounds in advance mode
@@ -931,8 +951,8 @@ function Range() {
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
-    const counter = useRef<number>(0);
-    useEffect(() => console.log(counter.current), [counter.current]);
+    // const counter = useRef<number>(0);
+    // useEffect(() => console.log(counter.current), [counter.current]);
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
@@ -961,7 +981,7 @@ function Range() {
         const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
         const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
-        counter.current++;
+        // counter.current++;
 
         const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
             isDenomBase,
