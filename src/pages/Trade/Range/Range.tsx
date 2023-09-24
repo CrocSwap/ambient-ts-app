@@ -60,6 +60,7 @@ import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIs
 import { FlexContainer } from '../../../styled/Common';
 import { AdvancedModeSection } from '../../../styled/Components/TradeModules';
 import { useApprove } from '../../../App/functions/approve';
+import { useTradeData } from '../../../App/hooks/useTradeData';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -101,6 +102,9 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+
+    const { updateURL } = useTradeData();
+
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const dispatch = useAppDispatch();
@@ -575,6 +579,12 @@ function Range() {
 
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+
+            // update URL with new pinned tick values
+            // updateURL({update: [
+            //     ['lowTick', pinnedDisplayPrices.pinnedLowTick],
+            //     ['highTick', pinnedDisplayPrices.pinnedHighTick],
+            // ]});
 
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),

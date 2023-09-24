@@ -1,5 +1,6 @@
 import {
     ChangeEvent,
+    FocusEvent,
     Dispatch,
     memo,
     SetStateAction,
@@ -166,6 +167,24 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         dispatch(setAdvancedHighTick(updatedTick));
     };
 
+    const blurLowBoundInput = (
+        event: FocusEvent<HTMLInputElement, Element>,
+    ): void => {
+        isDenomBase
+            ? handleMinPriceChangeEvent(event)
+            : handleMaxPriceChangeEvent(event);
+        lowBoundOnBlur();
+    };
+
+    const blurHighBoundInput = (
+        event: FocusEvent<HTMLInputElement, Element>,
+    ): void => {
+        isDenomBase
+            ? handleMaxPriceChangeEvent(event)
+            : handleMinPriceChangeEvent(event);
+        highBoundOnBlur();
+    };
+
     return (
         <FlexContainer flexDirection='column' gap={4}>
             <FlexContainer
@@ -181,12 +200,7 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     title='Min Price'
                     percentageDifference={minPricePercentage}
                     handleChangeEvent={() => undefined}
-                    onBlur={(event) => {
-                        !isDenomBase
-                            ? handleMaxPriceChangeEvent(event)
-                            : handleMinPriceChangeEvent(event);
-                        lowBoundOnBlur();
-                    }}
+                    onBlur={blurLowBoundInput}
                     increaseTick={
                         !isDenomBase ? increaseLowTick : decreaseHighTick
                     }
@@ -199,12 +213,7 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     title='Max Price'
                     percentageDifference={maxPricePercentage}
                     handleChangeEvent={() => undefined}
-                    onBlur={(event) => {
-                        !isDenomBase
-                            ? handleMinPriceChangeEvent(event)
-                            : handleMaxPriceChangeEvent(event);
-                        highBoundOnBlur();
-                    }}
+                    onBlur={blurHighBoundInput}
                     increaseTick={
                         !isDenomBase ? increaseHighTick : decreaseLowTick
                     }
