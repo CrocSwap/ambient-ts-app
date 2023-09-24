@@ -152,7 +152,7 @@ export default function OrdersSearchResults(props: propsIF) {
                     fontSize='body'
                     color='text2'
                 >
-                    No Orders Found
+                    No Limit Orders Found
                 </FlexContainer>
             )}
         </FlexContainer>
