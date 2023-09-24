@@ -223,16 +223,16 @@ function Range() {
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    const ticksInParams =
-        location.pathname.includes('lowTick') &&
-        location.pathname.includes('highTick');
+    const lowTickInParams: boolean = location.pathname.includes('lowTick');
+    const highTickInParams: boolean = location.pathname.includes('highTick');
+
     const shouldResetAdvancedLowTick =
-        !ticksInParams &&
+        !lowTickInParams &&
         (advancedLowTick === 0 ||
             advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
     const shouldResetAdvancedHighTick =
-        !ticksInParams &&
+        !highTickInParams &&
         (advancedHighTick === 0 ||
             advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
