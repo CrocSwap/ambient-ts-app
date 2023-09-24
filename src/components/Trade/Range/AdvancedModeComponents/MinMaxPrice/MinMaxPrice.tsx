@@ -114,13 +114,6 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         }
     };
 
-    const disableInputContent = (
-        <Text fontSize='body' color='negative'>
-            Invalid range selected. The min price must be lower than the max
-            price.
-        </Text>
-    );
-
     useEffect(() => {
         if (maxPrice !== undefined && minPrice !== undefined) {
             const high = maxPrice;
@@ -215,7 +208,12 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     }
                 />
             </FlexContainer>
-            {disable && disableInputContent}
+            {disable && (
+                <Text fontSize='body' color='negative'>
+                    Invalid range selected. The min price must be lower than the
+                    max price.
+                </Text>
+            )}
         </FlexContainer>
     );
 }
