@@ -167,21 +167,25 @@ function MinMaxPrice(props: MinMaxPriceIF) {
         dispatch(setAdvancedHighTick(updatedTick));
     };
 
+    // event handler for blurring the `Min Price` input field
     const blurLowBoundInput = (
         event: FocusEvent<HTMLInputElement, Element>,
     ): void => {
         isDenomBase
             ? handleMinPriceChangeEvent(event)
             : handleMaxPriceChangeEvent(event);
+        // flip an arbitrary bool in local state of `Range.tsx`
         lowBoundOnBlur();
     };
 
+    // event handler for blurring the `Max Price` input field
     const blurHighBoundInput = (
         event: FocusEvent<HTMLInputElement, Element>,
     ): void => {
         isDenomBase
             ? handleMaxPriceChangeEvent(event)
             : handleMinPriceChangeEvent(event);
+        // flip an arbitrary bool in local state of `Range.tsx`
         highBoundOnBlur();
     };
 
