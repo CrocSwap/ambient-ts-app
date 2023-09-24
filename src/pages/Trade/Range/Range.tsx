@@ -236,9 +236,10 @@ function Range() {
         (advancedHighTick === 0 ||
             advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
+
     // default low tick to seed in the DOM (range lower value)
-    const defaultLowTick = useMemo(() => {
-        const value = shouldResetAdvancedLowTick
+    const defaultLowTick = useMemo<number>(() => {
+        const value: number = shouldResetAdvancedLowTick
             ? roundDownTick(
                   currentPoolPriceTick +
                       DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
@@ -247,9 +248,10 @@ function Range() {
             : advancedLowTick;
         return value;
     }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
+
     // default high tick to seed in the DOM (range upper value)
-    const defaultHighTick = useMemo(() => {
-        const value = shouldResetAdvancedHighTick
+    const defaultHighTick = useMemo<number>(() => {
+        const value: number = shouldResetAdvancedHighTick
             ? roundUpTick(
                   currentPoolPriceTick +
                       DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
