@@ -83,11 +83,8 @@ function MinMaxPrice(props: MinMaxPriceIF) {
             const isValid = exponentialNumRegEx.test(input);
             if (isValid) {
                 setMinPriceInputString(targetValue);
-                if (!isDenomBase) {
-                    setMaxPrice(parseFloat(targetValue));
-                } else {
-                    setMinPrice(parseFloat(targetValue));
-                }
+                const targetAsFloat: number = parseFloat(targetValue)
+                isDenomBase ? setMinPrice(targetAsFloat) : setMaxPrice(targetAsFloat);
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
@@ -103,11 +100,8 @@ function MinMaxPrice(props: MinMaxPriceIF) {
             const isValid = exponentialNumRegEx.test(input);
             if (isValid) {
                 setMaxPriceInputString(targetValue);
-                if (!isDenomBase) {
-                    setMinPrice(parseFloat(targetValue));
-                } else {
-                    setMaxPrice(parseFloat(targetValue));
-                }
+                const targetAsFloat: number = parseFloat(targetValue);
+                isDenomBase ? setMaxPrice(targetAsFloat) : setMinPrice(targetAsFloat);
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
@@ -188,10 +182,10 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     handleChangeEvent={() => undefined}
                     onBlur={blurLowBoundInput}
                     increaseTick={
-                        !isDenomBase ? increaseLowTick : decreaseHighTick
+                        isDenomBase ? decreaseHighTick : increaseLowTick
                     }
                     decreaseTick={
-                        !isDenomBase ? decreaseLowTick : increaseHighTick
+                        isDenomBase ? increaseHighTick : decreaseLowTick
                     }
                 />
                 <PriceInput
@@ -201,10 +195,10 @@ function MinMaxPrice(props: MinMaxPriceIF) {
                     handleChangeEvent={() => undefined}
                     onBlur={blurHighBoundInput}
                     increaseTick={
-                        !isDenomBase ? increaseHighTick : decreaseLowTick
+                        isDenomBase ? decreaseLowTick : increaseHighTick
                     }
                     decreaseTick={
-                        !isDenomBase ? decreaseHighTick : increaseLowTick
+                        isDenomBase ? increaseLowTick : decreaseHighTick
                     }
                 />
             </FlexContainer>
