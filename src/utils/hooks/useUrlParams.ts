@@ -71,9 +71,9 @@ export const useUrlParams = (
             case 'swap':
             case 'market':
             case 'limit':
+            case 'pool':
                 paramsForPage = globalParams;
                 break;
-            case 'pool':
             case 'initpool':
                 paramsForPage = globalParams.concat(['lowTick', 'highTick']);
                 break;
