@@ -89,6 +89,7 @@ export default function Limit() {
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
     const { limitTickFromParams, updateURL } = useTradeData();
+    console.log({limitTickFromParams});
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
@@ -153,12 +154,6 @@ export default function Limit() {
             maximumFractionDigits: 2,
         },
     );
-
-    useEffect(() => {
-        if (limitTickFromParams && limitTick === undefined) {
-            dispatch(setLimitTick(limitTickFromParams));
-        }
-    }, [limitTickFromParams, limitTick === undefined]);
 
     useEffect(() => {
         (async () => {

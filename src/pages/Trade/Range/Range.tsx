@@ -43,6 +43,7 @@ import {
     setAdvancedHighTick,
     setIsLinesSwitched,
     setIsTokenAPrimaryRange,
+    setAdvancedMode
 } from '../../../utils/state/tradeDataSlice';
 import {
     TransactionError,
@@ -61,9 +62,9 @@ import { FlexContainer } from '../../../styled/Common';
 import { AdvancedModeSection } from '../../../styled/Components/TradeModules';
 import { useApprove } from '../../../App/functions/approve';
 import { useTradeData } from '../../../App/hooks/useTradeData';
-
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
+const TICK_GRID_RADIUS = 10000;
 
 function Range() {
     const {
@@ -234,13 +235,13 @@ function Range() {
     const shouldResetAdvancedLowTick =
         !lowTickInParams &&
         (advancedLowTick === 0 ||
-            advancedHighTick > currentPoolPriceTick + 100000 ||
-            advancedLowTick < currentPoolPriceTick - 100000);
+            advancedHighTick > currentPoolPriceTick + TICK_GRID_RADIUS ||
+            advancedLowTick < currentPoolPriceTick - TICK_GRID_RADIUS);
     const shouldResetAdvancedHighTick =
         !highTickInParams &&
         (advancedHighTick === 0 ||
-            advancedHighTick > currentPoolPriceTick + 100000 ||
-            advancedLowTick < currentPoolPriceTick - 100000);
+            advancedHighTick > currentPoolPriceTick + TICK_GRID_RADIUS ||
+            advancedLowTick < currentPoolPriceTick - TICK_GRID_RADIUS);
 
     // default low tick to seed in the DOM (range lower value)
     const defaultLowTick = useMemo<number>(() => {
@@ -265,21 +266,6 @@ function Range() {
             : advancedHighTick;
         return value;
     }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
-
-    // if URL params are missing ticks, populate with default ticks values
-    // run when default values change (ie when they finish calculating)
-    // not a great approach, since we may not be using these actively
-    // useEffect(() => {
-    //     // determine if either tick is missing from URL params
-    //     const ticksMissing: boolean = !lowTickInParams || !highTickInParams;
-    //     // if either tick is missing, update URL string with default ticks
-    //     ticksMissing && updateURL({
-    //         update: [
-    //             ['lowTick', defaultLowTick],
-    //             ['highTick', defaultHighTick]
-    //         ]
-    //     });
-    // }, [defaultLowTick, defaultHighTick]);
 
     const userPositions = graphData.positionsByUser.positions.filter(
         (x) => x.chainId === chainId,
@@ -548,6 +534,12 @@ function Range() {
         defaultHighTick,
         isDenomBase,
     ]);
+    useEffect(() => {
+        const url = window.location.pathname;
+        if (url.includes('lowTick') && url.includes('highTick')) {
+            dispatch(setAdvancedMode(true));
+        }
+    }, []);
 
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
@@ -572,7 +564,7 @@ function Range() {
                 return;
             const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
             const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-
+console.log({rangeWidthPercentage, currentPoolPriceTick});
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,
                 baseTokenDecimals,

@@ -109,8 +109,8 @@ function Trade() {
 
     const poolParams: poolParamsIF = {
         ...marketParams,
-        lowTick: advancedLowTick ?? 0,
-        highTick: advancedHighTick ?? 0,
+        lowTick: advancedLowTick,
+        highTick: advancedHighTick,
     };
 
     interface routeIF {

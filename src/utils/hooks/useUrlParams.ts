@@ -309,6 +309,7 @@ export const useUrlParams = (
             });
 
             processOptParam('highTick', async (tick: string) => {
+                // console.log('woo');
                 dispatch(setAdvancedHighTick(parseInt(tick)));
             });
 
