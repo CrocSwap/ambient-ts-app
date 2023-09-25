@@ -599,7 +599,17 @@ function Range() {
     useEffect(() => {
         handleRangeButtonMessageTokenA(tokenAInputQty);
         handleRangeButtonMessageTokenB(tokenBInputQty);
-    }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
+    }, [
+        isQtyEntered,
+        isPoolInitialized,
+        isInvalidRange,
+        poolPriceNonDisplay,
+        isWithdrawTokenAFromDexChecked,
+        tokenABalance,
+        tokenADexBalance,
+        tokenBBalance,
+        tokenBDexBalance,
+    ]);
 
     useEffect(() => {
         if (isTokenAInputDisabled) dispatch(setIsTokenAPrimaryRange(false));
