@@ -440,6 +440,12 @@ function Range() {
         },
     );
 
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
+    const isTokenBWalletBalanceSufficient =
+        parseFloat(tokenBBalance) >= tokenBQtyCoveredByWalletBalance;
+
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
@@ -1105,9 +1111,9 @@ function Range() {
     };
 
     const handleRangeButtonMessageTokenA = (tokenAAmount: string) => {
-        if (poolPriceNonDisplay === 0) {
+        if (!isPoolInitialized) {
             setTokenAAllowed(false);
-            setRangeButtonErrorMessage('Invalid Token Pair');
+            setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (
             (isNaN(parseFloat(tokenAAmount)) ||
                 parseFloat(tokenAAmount) <= 0) &&
@@ -1115,8 +1121,6 @@ function Range() {
         ) {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
-        } else if (!isPoolInitialized) {
-            setRangeButtonErrorMessage('Pool Not Initialized');
         } else {
             if (isWithdrawTokenAFromDexChecked) {
                 if (
@@ -1144,9 +1148,9 @@ function Range() {
     };
 
     const handleRangeButtonMessageTokenB = (tokenBAmount: string) => {
-        if (poolPriceNonDisplay === 0) {
+        if (!isPoolInitialized) {
             setTokenBAllowed(false);
-            setRangeButtonErrorMessage('Invalid Token Pair');
+            setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (
             (isNaN(parseFloat(tokenBAmount)) ||
                 parseFloat(tokenBAmount) <= 0) &&
@@ -1419,8 +1423,9 @@ function Range() {
                 ) : undefined
             }
             approveButton={
-                poolPriceNonDisplay !== 0 &&
+                isPoolInitialized &&
                 parseFloat(tokenAInputQty) > 0 &&
+                isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient ? (
                     <Button
                         title={
@@ -1434,8 +1439,9 @@ function Range() {
                         }}
                         flat={true}
                     />
-                ) : poolPriceNonDisplay !== 0 &&
+                ) : isPoolInitialized &&
                   parseFloat(tokenBInputQty) > 0 &&
+                  isTokenBWalletBalanceSufficient &&
                   !isTokenBAllowanceSufficient ? (
                     <Button
                         title={
