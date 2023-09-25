@@ -621,7 +621,6 @@ export default function InitPool() {
         </TextOnlyTooltip>
     );
 
-    console.log({ tokenModalOpen });
     const simpleTokenSelect = (
         <div className={styles.local_token_container}>
             {newUrlTooltip}

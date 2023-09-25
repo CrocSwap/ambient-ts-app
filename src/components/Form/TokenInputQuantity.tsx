@@ -10,8 +10,6 @@ import {
 } from 'react';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
-import { exponentialNumRegEx } from '../../utils/regex/exports';
-
 import uriToHttp from '../../utils/functions/uriToHttp';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import Spinner from '../Global/Spinner/Spinner';
@@ -118,14 +116,9 @@ function TokenInputQuantity(props: propsIF) {
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         const isPrecisionGreaterThanDecimals =
             precisionOfInput(event.target.value) > token.decimals;
-
-        if (
-            !isPrecisionGreaterThanDecimals &&
-            (event.target.value === '' ||
-                exponentialNumRegEx.test(event.target.value))
-        ) {
-            handleTokenInputEvent(value);
-            setDisplayValue(value);
+        if (!isPrecisionGreaterThanDecimals && !isNaN(+event.target.value)) {
+            handleTokenInputEvent(event.target.value);
+            setDisplayValue(event.target.value);
         }
     };
 
