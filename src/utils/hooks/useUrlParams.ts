@@ -35,7 +35,7 @@ const validParams = [
 ] as const;
 
 // type generated as a union of all string literals in `validParams`
-type validParamsType = typeof validParams[number];
+export type validParamsType = typeof validParams[number];
 
 export interface updatesIF {
     update?: Array<[validParamsType, string | number]>;
@@ -43,6 +43,7 @@ export interface updatesIF {
 }
 
 interface urlParamsMethodsIF {
+    urlParamMap: Map<validParamsType, string>;
     updateURL: (changes: updatesIF) => void;
 }
 
@@ -328,6 +329,7 @@ export const useUrlParams = (
     ]);
 
     return {
+        urlParamMap,
         updateURL,
     };
 };

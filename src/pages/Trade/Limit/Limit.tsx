@@ -88,8 +88,7 @@ export default function Limit() {
         limitTickCopied,
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
-    const { limitTickFromParams, updateURL } = useTradeData();
-    console.log({limitTickFromParams});
+    const { updateURL } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(

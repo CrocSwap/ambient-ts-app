@@ -1,11 +1,12 @@
 import { useOutletContext } from 'react-router-dom';
 import { TradeDataIF } from '../../utils/state/tradeDataSlice';
-import { updatesIF } from '../../utils/hooks/useUrlParams';
+import { updatesIF, validParamsType } from '../../utils/hooks/useUrlParams';
 
 type ContextType = {
     tradeData: TradeDataIF;
     navigationMenu: JSX.Element;
     limitTickFromParams: number | null;
+    urlParamMap: Map<validParamsType, string>;
     updateURL: (changes: updatesIF) => void;
 };
 

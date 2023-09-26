@@ -14,14 +14,14 @@ import { FlexContainer } from '../../../styled/Common';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // interface for React functional component props
-interface RangeWidthPropsIF {
+interface propsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 // React functional component
-function RangeWidth(props: RangeWidthPropsIF) {
+function RangeWidth(props: propsIF) {
     const {
         rangeWidthPercentage,
         setRangeWidthPercentage,
@@ -106,7 +106,6 @@ function RangeWidth(props: RangeWidthPropsIF) {
                 >
                     50%
                 </Chip>
-
                 <Chip
                     variant={
                         rangeWidthPercentage === 100 ? 'filled' : 'secondary'

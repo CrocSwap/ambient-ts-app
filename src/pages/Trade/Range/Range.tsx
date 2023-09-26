@@ -104,7 +104,7 @@ function Range() {
         UserPreferenceContext,
     );
 
-    const { updateURL } = useTradeData();
+    const { urlParamMap, updateURL } = useTradeData();
 
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
@@ -473,7 +473,6 @@ function Range() {
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
-            // dispatch(setRangeModuleTriggered(true));
             setSimpleRangeWidth(rangeWidthPercentage);
         }
     }, [rangeWidthPercentage]);
@@ -534,11 +533,21 @@ function Range() {
         defaultHighTick,
         isDenomBase,
     ]);
+
+    // throw app into advanced mode if the URL has ticks specified
+    // I hate putting this in a side effect but we're stuck with it
     useEffect(() => {
-        const url = window.location.pathname;
-        if (url.includes('lowTick') && url.includes('highTick')) {
+        // get values for `lowTick` and `highTick` from URL params
+        // will be `undefined` if params are missing from URL
+        const lt: string|undefined = urlParamMap.get('lowTick');
+        const ht: string|undefined = urlParamMap.get('lowTick');
+        // logic router for URL params values
+        // both ticks '0' denotes an Ambient range
+        if (lt === '0' && ht === '0') {
+            setSimpleRangeWidth(100);
+        } else if (lt && ht) {
             dispatch(setAdvancedMode(true));
-        }
+        };
     }, []);
 
     useEffect(() => {
@@ -564,7 +573,7 @@ function Range() {
                 return;
             const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
             const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-console.log({rangeWidthPercentage, currentPoolPriceTick});
+
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,
                 baseTokenDecimals,
@@ -1242,6 +1251,23 @@ console.log({rangeWidthPercentage, currentPoolPriceTick});
         needConfirmTokenA && tokens.acknowledge(tokenA);
         needConfirmTokenB && tokens.acknowledge(tokenB);
     };
+
+    // // fn to update the width of range (balanced mode) from buttons
+    // function updateRangeWithButton(value: 5 | 10 | 25 | 50 | 100): void {
+    //     // convert the numerical input to a string
+    //     const valueString: string = value.toString();
+    //     // locate the range adjustment slider in the DOM
+    //     const inputSlider: HTMLElement | null =
+    //         document.getElementById('input-slider-range');
+    //     // set the range adjustment slider to the value provided in args
+    //     if (inputSlider) {
+    //         (inputSlider as HTMLInputElement).value = valueString;
+    //     }
+    //     // set the input value to two decimals of precision
+    //     const truncatedValue: string = truncateDecimals(value, 2);
+    //     // convert input value to a float and update range width
+    //     setRangeWidthPercentage(parseFloat(truncatedValue));
+    // }
 
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
