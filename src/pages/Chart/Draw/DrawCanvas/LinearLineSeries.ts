@@ -5,10 +5,13 @@ import { lineData } from '../../ChartUtils/chartUtils';
 export function createLinearLineSeries(
     xScale: d3.ScaleLinear<number, number>,
     yScale: d3.ScaleLinear<number, number>,
+    denomInBase: boolean,
 ) {
     return d3fc
         .seriesCanvasLine()
-        .mainValue((d: lineData) => d.y)
+        .mainValue((d: lineData) =>
+            denomInBase === d.denomInBase ? d.y : 1 / d.y,
+        )
         .crossValue((d: lineData) => d.x)
         .curve(d3.curveBundle)
         .xScale(xScale)

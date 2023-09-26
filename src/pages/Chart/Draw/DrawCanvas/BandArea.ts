@@ -5,13 +5,18 @@ import { bandLineData, lineData } from '../../ChartUtils/chartUtils';
 export function createBandArea(
     xScale: d3.ScaleLinear<number, number>,
     yScale: d3.ScaleLinear<number, number>,
+    denomInBase: boolean,
 ) {
     return d3fc
         .annotationCanvasBand()
         .xScale(xScale)
         .yScale(yScale)
-        .fromValue((d: bandLineData) => d.fromValue)
-        .toValue((d: bandLineData) => d.toValue)
+        .fromValue((d: bandLineData) =>
+            denomInBase === d.denomInBase ? d.fromValue : 1 / d.fromValue,
+        )
+        .toValue((d: bandLineData) =>
+            denomInBase === d.denomInBase ? d.toValue : 1 / d.toValue,
+        )
         .decorate((context: CanvasRenderingContext2D) => {
             context.fillStyle = 'rgba(41,98,255,0.15)';
         });
@@ -25,20 +30,20 @@ export function createPointsOfBandLine(data: lineData[]) {
 
     const lineOfBand = [
         [
-            { x: startX, y: startY },
-            { x: startX, y: endY },
+            { x: startX, y: startY, denomInBase: data[0].denomInBase },
+            { x: startX, y: endY, denomInBase: data[1].denomInBase },
         ],
         [
-            { x: startX, y: startY },
-            { x: endX, y: startY },
+            { x: startX, y: startY, denomInBase: data[0].denomInBase },
+            { x: endX, y: startY, denomInBase: data[0].denomInBase },
         ],
         [
-            { x: endX, y: endY },
-            { x: endX, y: startY },
+            { x: endX, y: endY, denomInBase: data[1].denomInBase },
+            { x: endX, y: startY, denomInBase: data[0].denomInBase },
         ],
         [
-            { x: endX, y: endY },
-            { x: startX, y: endY },
+            { x: endX, y: endY, denomInBase: data[1].denomInBase },
+            { x: startX, y: endY, denomInBase: data[1].denomInBase },
         ],
     ];
 
