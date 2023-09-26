@@ -100,6 +100,13 @@
   padding: 0 1rem;
   
 }
+
+.right_container_mobile{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+   
+}
   
 @media only screen and (min-width: 768px) {
 
@@ -114,4 +121,15 @@
   
 }
 
+}
+@media only screen and (max-width: 768px) {
+.content_disabled{
+    display: none;
+}
+
+.right_container, .left_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
 }

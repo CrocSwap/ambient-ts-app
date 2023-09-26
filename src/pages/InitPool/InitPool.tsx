@@ -47,6 +47,7 @@ import MultiContentComponent from '../../components/Global/MultiStepTransaction/
 import { useSendInit } from '../../App/hooks/useSendInit';
 
 import { useApprove } from '../../App/functions/approve';
+import { useMediaQuery } from '@material-ui/core';
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
@@ -733,7 +734,13 @@ export default function InitPool() {
             setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked);
         }
     };
+    const showMobileVersion = useMediaQuery('(max-width: 768px)');
+
     const [isMintLiq, setIsMinLiq] = useState(true);
+    useEffect(() => {
+        setIsMinLiq(true);
+        if (showMobileVersion) setIsMinLiq(false);
+    }, [showMobileVersion]);
 
     const isRangeBoundsAndCollateralDisabled =
         poolExists === true || !isMintLiq;
@@ -824,6 +831,8 @@ export default function InitPool() {
         setActiveContent(newActiveContent);
     };
 
+    const hideContentOnMobile = !isMintLiq && showMobileVersion;
+
     const mainContent = (
         <InitSkeleton
             isTokenModalOpen={tokenModalOpen}
@@ -835,11 +844,12 @@ export default function InitPool() {
             <div className={styles.left_container}>
                 {simpleTokenSelect}
                 {initPriceContainer}
+                {showMobileVersion && mintInitialLiquidity}
                 {collateralContent}
             </div>
 
             <div className={styles.right_container}>
-                {mintInitialLiquidity}
+                {!showMobileVersion && mintInitialLiquidity}
                 <div
                     className={
                         isRangeBoundsAndCollateralDisabled
@@ -850,16 +860,25 @@ export default function InitPool() {
                     <AdvancedModeToggle advancedMode={advancedMode} />
                 </div>
 
-                <RangeBounds
-                    isRangeBoundsDisabled={isRangeBoundsAndCollateralDisabled}
-                    {...rangeWidthProps}
-                    {...rangePriceInfoProps}
-                    {...minMaxPriceProps}
-                    customSwitch={true}
-                />
-
+                {!hideContentOnMobile && (
+                    <RangeBounds
+                        isRangeBoundsDisabled={
+                            isRangeBoundsAndCollateralDisabled
+                        }
+                        {...rangeWidthProps}
+                        {...rangePriceInfoProps}
+                        {...minMaxPriceProps}
+                        customSwitch={true}
+                    />
+                )}
                 {showErrorMessage ? (
-                    <div style={{ padding: '0 40px' }}>
+                    <div
+                        style={{
+                            padding: hideContentOnMobile
+                                ? '20px 40px'
+                                : '0 40px',
+                        }}
+                    >
                         <WarningBox
                             details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
                         />
@@ -882,8 +901,11 @@ export default function InitPool() {
                         />
                     </div>
                 )}
-
-                <ButtonToRender />
+                <FlexContainer
+                    justifyContent={showMobileVersion ? 'center' : ''}
+                >
+                    <ButtonToRender />
+                </FlexContainer>
             </div>
         </InitSkeleton>
     );
