@@ -2623,6 +2623,10 @@ export default function Chart(props: propsIF) {
                                     .xScale()
                                     .domain(scaleData.xScale.domain());
 
+                                item.data[1].ctx
+                                    .yScale()
+                                    .domain(scaleData.yScale.domain());
+
                                 const range = [
                                     scaleData?.xScale(item.data[0].x),
                                     scaleData.xScale(item.data[1].x),
@@ -2700,6 +2704,7 @@ export default function Chart(props: propsIF) {
         hoveredDrawnShape,
         selectedDrawnShape,
         isUpdatingShape,
+        period,
     ]);
 
     useEffect(() => {
