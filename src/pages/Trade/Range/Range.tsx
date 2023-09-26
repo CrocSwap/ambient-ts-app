@@ -605,6 +605,7 @@ function Range() {
         isInvalidRange,
         poolPriceNonDisplay,
         isWithdrawTokenAFromDexChecked,
+        isWithdrawTokenBFromDexChecked,
         tokenABalance,
         tokenADexBalance,
         tokenBBalance,
