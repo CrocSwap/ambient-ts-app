@@ -89,7 +89,7 @@ import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
 import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
-
+import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
 interface propsIF {
     isTokenABase: boolean;
     liquidityData: liquidityChartData | undefined;
@@ -126,8 +126,8 @@ interface propsIF {
     unparsedData: CandlesByPoolAndDuration;
     prevPeriod: number;
     candleTimeInSeconds: number;
-    undo: any;
-    redo: any;
+    undo: () => void;
+    redo: () => void;
     drawnShapeHistory: drawDataHistory[];
     setDrawnShapeHistory: React.Dispatch<
         React.SetStateAction<drawDataHistory[]>
@@ -4123,6 +4123,13 @@ export default function Chart(props: propsIF) {
                     </div>
                 </div>
             </d3fc-group>
+
+            <FloatingToolbar
+                selectedDrawnShape={selectedDrawnShape}
+                mainCanvasBoundingClientRect={mainCanvasBoundingClientRect}
+                setDrawnShapeHistory={setDrawnShapeHistory}
+                setSelectedDrawnShape={setSelectedDrawnShape}
+            />
 
             {scaleData && (
                 <CSSTransition
