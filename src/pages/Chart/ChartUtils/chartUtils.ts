@@ -28,14 +28,18 @@ declare global {
 export const defaultCandleBandwith = 5;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type lineData = { x: number; y: number; ctx: any };
+export type lineData = { x: number; y: number; ctx: any; denomInBase: boolean };
 export type drawDataHistory = {
     data: lineData[];
     type: string;
     time: number;
     pool: TradeDataIF;
 };
-export type bandLineData = { fromValue: number; toValue: number };
+export type bandLineData = {
+    fromValue: number;
+    toValue: number;
+    denomInBase: boolean;
+};
 export type selectedDrawnData = {
     data: drawDataHistory;
     selectedCircle: lineData | undefined;

@@ -28,6 +28,7 @@ interface DrawCanvasProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
+    denomInBase: any;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -43,6 +44,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         setActiveDrawingType,
         setSelectedDrawnShape,
         currentPool,
+        denomInBase,
     } = props;
 
     const circleSeries = createCircle(
@@ -50,11 +52,13 @@ function DrawCanvas(props: DrawCanvasProps) {
         scaleData?.yScale,
         50,
         1,
+        denomInBase,
     );
 
     const lineSeries = createLinearLineSeries(
         scaleData?.xScale,
         scaleData?.yScale,
+        denomInBase,
     );
 
     function createScaleForBandArea(x: number, x2: number) {
@@ -146,6 +150,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     x: valueX,
                     y: valueY,
                     ctx: undefined,
+                    denomInBase: denomInBase,
                 });
             }
 
@@ -178,6 +183,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                 const bandArea = createBandArea(
                     newBandScale,
                     scaleData?.yScale,
+                    denomInBase,
                 );
 
                 bandArea
@@ -188,6 +194,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     x: valueX,
                     y: valueY,
                     ctx: bandArea,
+                    denomInBase: denomInBase,
                 };
 
                 isDrawing = false;
@@ -229,7 +236,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                 scaleData.xScale.invert(offsetX),
             );
 
-            const bandArea = createBandArea(newBandScale, scaleData?.yScale);
+            const bandArea = createBandArea(
+                newBandScale,
+                scaleData?.yScale,
+                denomInBase,
+            );
 
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
@@ -238,12 +249,14 @@ function DrawCanvas(props: DrawCanvasProps) {
                     x: valueX,
                     y: valueY,
                     ctx: bandArea,
+                    denomInBase: denomInBase,
                 });
             } else {
                 tempLineData[1] = {
                     x: valueX,
                     y: valueY,
                     ctx: bandArea,
+                    denomInBase: denomInBase,
                 };
             }
 
@@ -282,7 +295,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [diffHashSig(lineData), lineSeries]);
+    }, [diffHashSig(lineData), lineSeries, denomInBase]);
 
     useEffect(() => {
         const canvas = d3
@@ -303,6 +316,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     const bandData = {
                         fromValue: lineData[0].y,
                         toValue: lineData[1].y,
+                        denomInBase: denomInBase,
                     } as bandLineData;
 
                     const lineOfBand = createPointsOfBandLine(lineData);
@@ -321,7 +335,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [diffHashSig(lineData)]);
+    }, [diffHashSig(lineData), denomInBase]);
 
     return <d3fc-canvas ref={d3DrawCanvas} />;
 }
