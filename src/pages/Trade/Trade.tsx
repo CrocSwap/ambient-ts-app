@@ -79,14 +79,7 @@ function Trade() {
     } = useContext(TradeTableContext);
 
     const { tradeData } = useAppSelector((state) => state);
-    const {
-        tokenA,
-        tokenB,
-        isDenomBase,
-        limitTick,
-        advancedLowTick,
-        advancedHighTick,
-    } = tradeData;
+    const { tokenA, tokenB, isDenomBase, limitTick } = tradeData;
     const provider = useProvider();
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
@@ -109,8 +102,6 @@ function Trade() {
 
     const poolParams: poolParamsIF = {
         ...marketParams,
-        lowTick: advancedLowTick,
-        highTick: advancedHighTick,
     };
 
     interface routeIF {
