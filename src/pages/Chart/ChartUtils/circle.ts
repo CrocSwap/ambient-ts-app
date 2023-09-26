@@ -14,6 +14,7 @@ export function createCircle(
     yScale: any,
     size: number,
     lineWidth: number,
+    denomInBase: boolean,
     isSelected = false,
 ) {
     return d3fc
@@ -21,7 +22,9 @@ export function createCircle(
         .xScale(xScale)
         .yScale(yScale)
         .crossValue((d: lineData) => d.x)
-        .mainValue((d: lineData) => d.y)
+        .mainValue((d: lineData) =>
+            denomInBase === d.denomInBase ? d.y : 1 / d.y,
+        )
         .size(size)
         .type(d3.symbolCircle)
         .decorate((context: any) => {
@@ -38,11 +41,12 @@ export function checkCricleLocation(
     mouseX: number,
     mouseY: number,
     scaleData: scaleData,
+    denomInBase: boolean,
 ) {
     const circleDiameter = Math.sqrt(selectedCircleSize / Math.PI);
     let result = undefined;
 
-    const data = createCirclePoints(element);
+    const data = createCirclePoints(element, denomInBase);
 
     if (data && scaleData) {
         for (let i = 0; i < data.length; i++) {
@@ -60,7 +64,7 @@ export function checkCricleLocation(
     return result;
 }
 
-function createCirclePoints(element: drawDataHistory) {
+function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
     if (element.type === 'Brush') {
         const data: lineData[] = [];
 
@@ -78,10 +82,10 @@ function createCirclePoints(element: drawDataHistory) {
         const endY = element.data[1].y;
 
         const data: lineData[] = [
-            { x: startX, y: startY, ctx: undefined },
-            { x: startX, y: endY, ctx: undefined },
-            { x: endX, y: startY, ctx: undefined },
-            { x: endX, y: endY, ctx: undefined },
+            { x: startX, y: startY, ctx: undefined, denomInBase: denomInBase },
+            { x: startX, y: endY, ctx: undefined, denomInBase: denomInBase },
+            { x: endX, y: startY, ctx: undefined, denomInBase: denomInBase },
+            { x: endX, y: endY, ctx: undefined, denomInBase: denomInBase },
         ];
 
         return data;

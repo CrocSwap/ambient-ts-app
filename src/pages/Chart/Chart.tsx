@@ -2564,6 +2564,7 @@ export default function Chart(props: propsIF) {
         scaleData?.yScale,
         60,
         0.5,
+        denomInBase,
     );
 
     const selectedCircleSeries = createCircle(
@@ -2571,6 +2572,7 @@ export default function Chart(props: propsIF) {
         scaleData?.yScale,
         80,
         0.5,
+        denomInBase,
         true,
     );
 
@@ -2637,6 +2639,7 @@ export default function Chart(props: propsIF) {
                                 const bandData = {
                                     fromValue: item.data[0].y,
                                     toValue: item.data[1].y,
+                                    denomInBase: denomInBase,
                                 } as bandLineData;
 
                                 item.data[1].ctx([bandData]);
@@ -2704,6 +2707,7 @@ export default function Chart(props: propsIF) {
         hoveredDrawnShape,
         selectedDrawnShape,
         isUpdatingShape,
+        denomInBase,
         period,
     ]);
 
@@ -3370,6 +3374,7 @@ export default function Chart(props: propsIF) {
                 mouseX,
                 mouseY,
                 scaleData,
+                denomInBase,
             );
 
             setHoveredDrawnShape({
@@ -3836,11 +3841,12 @@ export default function Chart(props: propsIF) {
             const lineSeries = createLinearLineSeries(
                 scaleData?.xScale,
                 scaleData?.yScale,
+                denomInBase,
             );
 
             setLineSeries(() => lineSeries);
         }
-    }, [scaleData]);
+    }, [scaleData, denomInBase]);
 
     const rangeCanvasProps = {
         scaleData: scaleData,
@@ -4013,6 +4019,7 @@ export default function Chart(props: propsIF) {
                                 setActiveDrawingType={setActiveDrawingType}
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 currentPool={currentPool}
+                                denomInBase={denomInBase}
                             />
                         )}
 
