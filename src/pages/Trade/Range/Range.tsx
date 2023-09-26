@@ -237,25 +237,28 @@ function Range() {
             advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
     // default low tick to seed in the DOM (range lower value)
-    const defaultLowTick = useMemo(() => {
-        const value = shouldResetAdvancedLowTick
-            ? roundDownTick(
-                  currentPoolPriceTick +
-                      DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
-                  gridSize,
-              )
-            : advancedLowTick;
+    const defaultLowTick = useMemo<number>(() => {
+        const value: number =
+            shouldResetAdvancedLowTick || advancedLowTick === 0
+                ? roundDownTick(
+                      currentPoolPriceTick +
+                          DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedLowTick;
         return value;
     }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
+
     // default high tick to seed in the DOM (range upper value)
-    const defaultHighTick = useMemo(() => {
-        const value = shouldResetAdvancedHighTick
-            ? roundUpTick(
-                  currentPoolPriceTick +
-                      DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
-                  gridSize,
-              )
-            : advancedHighTick;
+    const defaultHighTick = useMemo<number>(() => {
+        const value: number =
+            shouldResetAdvancedHighTick || advancedHighTick === 0
+                ? roundUpTick(
+                      currentPoolPriceTick +
+                          DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedHighTick;
         return value;
     }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
