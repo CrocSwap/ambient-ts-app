@@ -1,7 +1,6 @@
 import { drawDataHistory } from './chartUtils';
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { TradeDataIF } from '../../../utils/state/tradeDataSlice';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
@@ -26,6 +25,14 @@ export function useUndoRedo() {
 
     const currentPool = useAppSelector((state) => state.tradeData);
 
+    const actionKey = useMemo(() => {
+        return {
+            poolIndex: poolIndex,
+            tokenA: currentPool.tokenA,
+            tokenB: currentPool.tokenB,
+        };
+    }, [poolIndex, currentPool]);
+
     function undo() {
         if (drawnShapeHistory.length > 0) {
             const firstIndexOfSelected = drawnShapeHistory.findLastIndex(
@@ -36,29 +43,10 @@ export function useUndoRedo() {
 
             const lastAction = drawnShapeHistory[firstIndexOfSelected];
 
-            if (
-                !drawActionStack.has({
-                    poolIndex: poolIndex,
-                    tokenA: currentPool.tokenA,
-                    tokenB: currentPool.tokenB,
-                })
-            ) {
-                drawActionStack.set(
-                    {
-                        poolIndex: poolIndex,
-                        tokenA: currentPool.tokenA,
-                        tokenB: currentPool.tokenB,
-                    },
-                    [lastAction],
-                );
+            if (!drawActionStack.has(actionKey)) {
+                drawActionStack.set(actionKey, [lastAction]);
             } else {
-                drawActionStack
-                    .get({
-                        poolIndex: poolIndex,
-                        tokenA: currentPool.tokenA,
-                        tokenB: currentPool.tokenB,
-                    })
-                    ?.push(lastAction);
+                drawActionStack.get(actionKey)?.push(lastAction);
             }
 
             setDrawnShapeHistory((prev) =>
@@ -68,25 +56,15 @@ export function useUndoRedo() {
             );
         }
     }
-
     function redo() {
-        if (
-            drawActionStack.has({
-                poolIndex: poolIndex,
-                tokenA: currentPool.tokenA,
-                tokenB: currentPool.tokenB,
-            })
-        ) {
-            const action = drawActionStack
-                .get({
-                    poolIndex: poolIndex,
-                    tokenA: currentPool.tokenA,
-                    tokenB: currentPool.tokenB,
-                })
-                ?.pop();
+        if (drawActionStack.has(actionKey)) {
+            const actionList = drawActionStack.get(actionKey);
 
-            if (action) {
-                setDrawnShapeHistory((prev) => [...prev, action]);
+            if (actionList && actionList.length > 0) {
+                const action = actionList.pop();
+                if (action) {
+                    setDrawnShapeHistory((prev) => [...prev, ...[action]]);
+                }
             }
         }
     }
