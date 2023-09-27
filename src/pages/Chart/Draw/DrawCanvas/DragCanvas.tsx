@@ -76,7 +76,6 @@ export default function DragCanvas(props: DragCanvasProps) {
             ];
             drawnShapeHistory[index].data = lastData;
             hoveredDrawnShape.data.data = lastData;
-            drawActionStack.get(actionKey)?.push(drawnShapeHistory[index]);
 
             render();
         }
@@ -96,24 +95,6 @@ export default function DragCanvas(props: DragCanvasProps) {
         previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
         previosData[lastDataIndex].y = scaleData.yScale.invert(offsetY);
         drawnShapeHistory[index].data = previosData;
-
-        drawActionStack.get(actionKey)?.push({
-            data: [
-                {
-                    x: previosData[0].x,
-                    y: previosData[0].y,
-                    ctx: previosData[0].ctx,
-                },
-                {
-                    x: previosData[1].x,
-                    y: previosData[1].y,
-                    ctx: previosData[1].ctx,
-                },
-            ],
-            type: drawnShapeHistory[index].type,
-            time: drawnShapeHistory[index].time,
-            pool: drawnShapeHistory[index].pool,
-        });
     }
 
     function updateDrawRect(
@@ -186,7 +167,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         let tempMovemementX = 0;
         let tempMovemementY = 0;
         let rectDragDirection = '';
-
+        let isDragging = false;
         const dragDrawnShape = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
             .on('start', (event) => {
@@ -274,12 +255,40 @@ export default function DragCanvas(props: DragCanvasProps) {
                             event.sourceEvent.touches[0].clientY -
                             canvasRect?.top;
                     }
+
+                    isDragging = true;
                 });
             })
             .on('end', () => {
                 tempMovemementX = 0;
                 tempMovemementY = 0;
                 setIsUpdatingShape(false);
+
+                const tempLastData = drawnShapeHistory.find(
+                    (item) => hoveredDrawnShape?.data.time === item.time,
+                );
+
+                if (tempLastData && isDragging) {
+                    drawActionStack.get(actionKey)?.push({
+                        data: [
+                            {
+                                x: tempLastData.data[0].x,
+                                y: tempLastData.data[0].y,
+                                ctx: tempLastData.data[0].ctx,
+                            },
+                            {
+                                x: tempLastData.data[1].x,
+                                y: tempLastData.data[1].y,
+                                ctx: tempLastData.data[1].ctx,
+                            },
+                        ],
+                        type: tempLastData.type,
+                        time: tempLastData.time,
+                        pool: tempLastData.pool,
+                    });
+                }
+
+                isDragging = false;
             });
 
         if (d3DragCanvas.current) {

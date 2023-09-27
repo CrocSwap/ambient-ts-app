@@ -79,11 +79,11 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     }, [floatingDivRef, selectedDrawnShape]);
 
     const deleteDrawnShape = () => {
-        // setDrawnShapeHistory((item: drawDataHistory[]) => {
-        //     return item.filter((i) => i.time !== selectedDrawnShape?.data.time);
-        // });
         deleteItem(selectedDrawnShape?.data);
-        // setSelectedDrawnShape(undefined);
+        setDrawnShapeHistory((item: drawDataHistory[]) => {
+            return item.filter((i) => i.time !== selectedDrawnShape?.data.time);
+        });
+        setSelectedDrawnShape(undefined);
     };
 
     useEffect(() => {

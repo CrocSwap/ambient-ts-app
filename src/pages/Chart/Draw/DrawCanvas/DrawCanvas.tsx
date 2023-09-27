@@ -211,8 +211,45 @@ function DrawCanvas(props: DrawCanvasProps) {
                             selectedCircle: undefined,
                         });
 
-                        drawActionStack.set(actionKey, [endPoint]);
-
+                        if (!drawActionStack.has(actionKey)) {
+                            drawActionStack.set(actionKey, [
+                                {
+                                    data: [
+                                        {
+                                            x: tempLineData[0].x,
+                                            y: tempLineData[0].y,
+                                            ctx: tempLineData[0].ctx,
+                                        },
+                                        {
+                                            x: tempLineData[1].x,
+                                            y: tempLineData[1].y,
+                                            ctx: tempLineData[1].ctx,
+                                        },
+                                    ],
+                                    type: activeDrawingType,
+                                    time: endPoint.time,
+                                    pool: endPoint.pool,
+                                },
+                            ]);
+                        } else {
+                            drawActionStack.get(actionKey)?.push({
+                                data: [
+                                    {
+                                        x: tempLineData[0].x,
+                                        y: tempLineData[0].y,
+                                        ctx: tempLineData[0].ctx,
+                                    },
+                                    {
+                                        x: tempLineData[1].x,
+                                        y: tempLineData[1].y,
+                                        ctx: tempLineData[1].ctx,
+                                    },
+                                ],
+                                type: activeDrawingType,
+                                time: endPoint.time,
+                                pool: endPoint.pool,
+                            });
+                        }
                         return [...prevData, endPoint];
                     }
                     return prevData;
