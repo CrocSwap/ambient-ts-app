@@ -3,6 +3,8 @@ import { FlexContainer, Text } from '../../../styled/Common';
 import Modal from '../Modal/Modal';
 import { useModal } from '../Modal/useModal';
 import PositionResetCard from './PositionResetCard';
+// import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAccount } from 'wagmi';
 
 // interface PositionResetPropsIF {
 //     isPositionResetModalOpen: boolean;
@@ -10,9 +12,13 @@ import PositionResetCard from './PositionResetCard';
 export default function PositionReset() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
+    // const graphData = useAppSelector((state) => state?.graphData);
+    // const userPositions = graphData?.positionsByUser?.positions;
+    const { address } = useAccount();
+
     useEffect(() => {
-        openModal();
-    }, []);
+        if (address) openModal();
+    }, [address]);
 
     const positions = [1, 2, 3];
 

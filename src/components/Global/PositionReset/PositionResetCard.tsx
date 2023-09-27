@@ -4,29 +4,30 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../TokenIcon/TokenIcon';
 
 import styled from 'styled-components';
+
+const ResetButton = styled.div`
+    cursor: pointer;
+    height: 23px;
+    line-height: var(--body-lh);
+    font-size: var(--body-size);
+    white-space: nowrap;
+    padding: 5px 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--accent1);
+    border: 1px solid var(--accent1);
+    border-radius: 50px;
+    transition: all var(--animation-speed) ease-in-out;
+    z-index: 2;
+
+    &:hover {
+        color: var(--dark1);
+        background: var(--accent1);
+    }
+`;
+
 export default function PositionResetCard() {
-    const ResetButton = styled.div`
-        cursor: pointer;
-        height: 23px;
-        line-height: var(--body-lh);
-        font-size: var(--body-size);
-        white-space: nowrap;
-        padding: 5px 8px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        color: var(--accent1);
-        border: 1px solid var(--accent1);
-        border-radius: 50px;
-        transition: all var(--animation-speed) ease-in-out;
-        z-index: 2;
-
-        &:hover {
-            color: var(--dark1);
-            background: var(--accent1);
-        }
-    `;
-
     const shouldInvertDisplay = false;
     const tradeData = useAppSelector((state) => state.tradeData);
     const tokenA = shouldInvertDisplay ? tradeData.tokenB : tradeData.tokenA;
