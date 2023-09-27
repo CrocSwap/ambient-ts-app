@@ -5,6 +5,7 @@ import { useModal } from '../Modal/useModal';
 import PositionResetCard from './PositionResetCard';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useAccount } from 'wagmi';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 // interface PositionResetPropsIF {
 //     isPositionResetModalOpen: boolean;
@@ -12,20 +13,23 @@ import { useAccount } from 'wagmi';
 export default function PositionReset() {
     const [isModalOpen, openModal, closeModal] = useModal();
 
-    // const graphData = useAppSelector((state) => state?.graphData);
-    // const userPositions = graphData?.positionsByUser?.positions;
+    const graphData = useAppSelector((state) => state?.graphData);
+    const userPositions = graphData?.positionsByUser?.positions?.slice(0, 3);
+
     const { address } = useAccount();
 
     useEffect(() => {
         if (address) openModal();
     }, [address]);
 
-    const positions = [1, 2, 3];
-
     const positionsDisplay = (
-        <FlexContainer gap={10} flexDirection='column'>
-            {positions.map((position, idx) => (
-                <PositionResetCard key={idx} />
+        <FlexContainer
+            gap={10}
+            flexDirection='column'
+            style={{ maxHeight: '120px', overflowY: 'scroll' }}
+        >
+            {userPositions?.map((position, idx) => (
+                <PositionResetCard key={idx} position={position} />
             ))}
         </FlexContainer>
     );

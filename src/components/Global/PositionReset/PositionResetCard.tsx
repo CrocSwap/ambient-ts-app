@@ -1,9 +1,21 @@
+// import { CrocEnv } from '@crocswap-libs/sdk';
 import { FlexContainer, GridContainer, Text } from '../../../styled/Common';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useProcessRange } from '../../../utils/hooks/useProcessRange';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import TokenIcon from '../TokenIcon/TokenIcon';
 
 import styled from 'styled-components';
+// import { IS_LOCAL_ENV } from '../../../constants';
+// import { dispatch } from 'd3';
+// import { addPendingTx, addPositionPendingUpdate, addReceipt, addTransactionByType, removePendingTx, removePositionPendingUpdate, updateTransactionHash } from '../../../utils/state/receiptDataSlice';
+// import { TransactionError, isTransactionFailedError, isTransactionReplacedError } from '../../../utils/TransactionError';
+// import { isStablePair } from '../../../utils/data/stablePairs';
+// import { useContext, useState } from 'react';
+// import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
+// import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
+// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 const ResetButton = styled.div`
     cursor: pointer;
@@ -26,26 +38,69 @@ const ResetButton = styled.div`
         background: var(--accent1);
     }
 `;
+// Fill in first 3 position and call harvest function.
 
-export default function PositionResetCard() {
+interface PositionResetCardIF {
+    position: PositionIF;
+}
+
+export default function PositionResetCard(props: PositionResetCardIF) {
+    const { position } = props;
+    const { addressCurrent: userAddress } = useAppSelector(
+        (state) => state.userData,
+    );
     const shouldInvertDisplay = false;
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const {
+        quoteTokenLogo,
+        baseTokenLogo,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        ambientOrMin,
+        ambientOrMax,
+        // baseTokenAddress,
+        // quoteTokenAddress,
+    } = useProcessRange(position, userAddress);
     const tokenA = shouldInvertDisplay ? tradeData.tokenB : tradeData.tokenA;
     const tokenB = !shouldInvertDisplay ? tradeData.tokenB : tradeData.tokenA;
+
+    // const {
+    //     crocEnv,
+    //     provider,
+    //     chainData: { chainId, poolIndex },
+    //     ethMainnetUsdPrice,
+    // } = useContext(CrocEnvContext);
+
+    // const { mintSlippage, dexBalRange } = useContext(UserPreferenceContext);
+
+    // const isPairStable: boolean = isStablePair(
+    //     baseTokenAddress,
+    //     quoteTokenAddress,
+    //     chainId,
+    // );
+
+    // const persistedSlippage: number = isPairStable
+    //     ? mintSlippage.stable
+    //     : mintSlippage.volatile;
+
+    //     const [showConfirmation, setShowConfirmation] = useState(false);
+    //     const [newTransactionHash, setNewTransactionHash] = useState('');
+    //     const [txErrorCode, setTxErrorCode] = useState('');
 
     const tokensDisplay = (
         <FlexContainer gap={8} flexDirection='row'>
             <TokenIcon
                 token={tokenA}
                 size='2xl'
-                src={uriToHttp(tokenA.logoURI)}
-                alt={tokenA.symbol}
+                src={uriToHttp(baseTokenLogo)}
+                alt={baseTokenSymbol}
             />
             <TokenIcon
                 token={tokenB}
                 size='2xl'
-                src={uriToHttp(tokenB.logoURI)}
-                alt={tokenB.symbol}
+                src={uriToHttp(quoteTokenLogo)}
+                alt={quoteTokenSymbol}
             />
         </FlexContainer>
     );
@@ -68,7 +123,7 @@ export default function PositionResetCard() {
                     textAlign: 'center',
                 }}
             >
-                Pool
+                {`${baseTokenSymbol} / ${quoteTokenSymbol}`}
             </Text>
             <Text
                 tabIndex={0}
@@ -80,7 +135,7 @@ export default function PositionResetCard() {
                     textAlign: 'end',
                 }}
             >
-                Min
+                {ambientOrMin}
             </Text>
             <Text
                 tabIndex={0}
@@ -92,7 +147,7 @@ export default function PositionResetCard() {
                     textAlign: 'end',
                 }}
             >
-                Min
+                {ambientOrMax}
             </Text>
             <ResetButton>Reset</ResetButton>
         </GridContainer>
