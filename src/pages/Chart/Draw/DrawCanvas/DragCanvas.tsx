@@ -5,6 +5,7 @@ import {
     scaleData,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
+import { useUndoRedo } from '../../ChartUtils/useUndoRedo';
 
 interface DragCanvasProps {
     scaleData: scaleData;
@@ -21,6 +22,8 @@ interface DragCanvasProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
+    drawActionStack: any;
+    actionKey: any;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -36,6 +39,8 @@ export default function DragCanvas(props: DragCanvasProps) {
         canUserDragDrawnShape,
         setCrossHairDataFunc,
         setSelectedDrawnShape,
+        drawActionStack,
+        actionKey,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,6 +76,7 @@ export default function DragCanvas(props: DragCanvasProps) {
             ];
             drawnShapeHistory[index].data = lastData;
             hoveredDrawnShape.data.data = lastData;
+            drawActionStack.get(actionKey)?.push(drawnShapeHistory[index]);
 
             render();
         }
@@ -86,9 +92,28 @@ export default function DragCanvas(props: DragCanvasProps) {
         const lastDataIndex = previosData.findIndex(
             (item) => item === hoveredDrawnShape?.selectedCircle,
         );
+
         previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
         previosData[lastDataIndex].y = scaleData.yScale.invert(offsetY);
         drawnShapeHistory[index].data = previosData;
+
+        drawActionStack.get(actionKey)?.push({
+            data: [
+                {
+                    x: previosData[0].x,
+                    y: previosData[0].y,
+                    ctx: previosData[0].ctx,
+                },
+                {
+                    x: previosData[1].x,
+                    y: previosData[1].y,
+                    ctx: previosData[1].ctx,
+                },
+            ],
+            type: drawnShapeHistory[index].type,
+            time: drawnShapeHistory[index].time,
+            pool: drawnShapeHistory[index].pool,
+        });
     }
 
     function updateDrawRect(

@@ -133,6 +133,9 @@ interface propsIF {
         React.SetStateAction<drawDataHistory[]>
     >;
     currentPool: TradeDataIF;
+    drawActionStack: any;
+    actionKey: any;
+    deleteItem: any;
 }
 
 export default function Chart(props: propsIF) {
@@ -162,6 +165,9 @@ export default function Chart(props: propsIF) {
         drawnShapeHistory,
         setDrawnShapeHistory,
         currentPool,
+        drawActionStack,
+        actionKey,
+        deleteItem,
     } = props;
 
     const {
@@ -4008,6 +4014,8 @@ export default function Chart(props: propsIF) {
                                 setActiveDrawingType={setActiveDrawingType}
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 currentPool={currentPool}
+                                drawActionStack={drawActionStack}
+                                actionKey={actionKey}
                             />
                         )}
 
@@ -4022,6 +4030,8 @@ export default function Chart(props: propsIF) {
                                 setCrossHairDataFunc={setCrossHairDataFunc}
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 setIsUpdatingShape={setIsUpdatingShape}
+                                drawActionStack={drawActionStack}
+                                actionKey={actionKey}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
@@ -4129,6 +4139,9 @@ export default function Chart(props: propsIF) {
                 mainCanvasBoundingClientRect={mainCanvasBoundingClientRect}
                 setDrawnShapeHistory={setDrawnShapeHistory}
                 setSelectedDrawnShape={setSelectedDrawnShape}
+                drawActionStack={drawActionStack}
+                actionKey={actionKey}
+                deleteItem={deleteItem}
             />
 
             {scaleData && (

@@ -28,6 +28,8 @@ interface DrawCanvasProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
+    drawActionStack: any;
+    actionKey: any;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -43,6 +45,8 @@ function DrawCanvas(props: DrawCanvasProps) {
         setActiveDrawingType,
         setSelectedDrawnShape,
         currentPool,
+        drawActionStack,
+        actionKey,
     } = props;
 
     const circleSeries = createCircle(
@@ -206,6 +210,8 @@ function DrawCanvas(props: DrawCanvasProps) {
                             data: endPoint,
                             selectedCircle: undefined,
                         });
+
+                        drawActionStack.set(actionKey, [endPoint]);
 
                         return [...prevData, endPoint];
                     }
