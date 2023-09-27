@@ -45,6 +45,7 @@ import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
+import PositionReset from '../components/Global/PositionReset/PositionReset';
 
 /** ***** React Function *******/
 export default function App() {
@@ -284,6 +285,7 @@ export default function App() {
             <GlobalPopup />
             <SnackbarComponent />
             {isWagmiModalOpen && <WalletModalWagmi />}
+            {<PositionReset />}
         </>
     );
 }
