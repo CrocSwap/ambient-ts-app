@@ -1,10 +1,10 @@
 import { drawDataHistory } from './chartUtils';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
-interface actionKeyIF {
+export interface actionKeyIF {
     poolIndex: number;
     tokenA: TokenIF;
     tokenB: TokenIF;
@@ -28,31 +28,33 @@ export function useUndoRedo() {
     const currentPool = useAppSelector((state) => state.tradeData);
 
     const actionKey = useMemo(() => {
-        return {
+        const newActionKey = {
             poolIndex: poolIndex,
             tokenA: currentPool.tokenA,
             tokenB: currentPool.tokenB,
         };
-    }, [poolIndex, currentPool]);
+        let existingKey = null;
 
-    function deleteItem(item: any) {
+        for (const k of drawActionStack.keys()) {
+            if (JSON.stringify(k) === JSON.stringify(newActionKey)) {
+                existingKey = k;
+                break;
+            }
+        }
+
+        if (existingKey) {
+            return existingKey;
+        }
+
+        return newActionKey;
+    }, [poolIndex, currentPool.tokenA, currentPool.tokenB]);
+
+    function deleteItem(item: drawDataHistory) {
         const actionList = drawActionStack.get(actionKey);
         if (actionList) {
             const findItem = actionList.find(
                 (i) => JSON.stringify(i) === JSON.stringify(item),
             );
-
-            // drawActionStack
-            //         .get(actionKey)
-            //         ?.push(undoStack[undoStack.length - 1]);
-
-            // const lastActions = actionList.filter((i) => JSON.stringify(i) !== JSON.stringify(item));
-
-            // drawActionStack.set(actionKey, lastActions);
-
-            // setDrawnShapeHistory((_item: drawDataHistory[]) => {
-            //     return _item.filter((i) => i.time !== item.time);
-            // });
 
             if (findItem) {
                 const tempHistoryData = {
@@ -78,7 +80,6 @@ export function useUndoRedo() {
         undoStack.push(item);
     }
     function undo() {
-        // if (drawnShapeHistory.length > 0) {
         const actionList = drawActionStack.get(actionKey);
 
         if (actionList) {
@@ -111,14 +112,21 @@ export function useUndoRedo() {
 
                         return updatedHistory;
                     });
+                } else {
+                    const lastAction = actionList.find(
+                        (item) => item.time === action.time,
+                    );
+                    if (lastAction) {
+                        setDrawnShapeHistory((prevHistory) => [
+                            ...prevHistory,
+                            lastAction,
+                        ]);
+                    }
                 }
             }
-            // else {
-            //     redo();
-            // }
         }
-        // }
     }
+
     function redo() {
         if (drawActionStack.has(actionKey)) {
             if (undoStack.length > 0) {

@@ -90,6 +90,8 @@ import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { actionKeyIF } from './ChartUtils/useUndoRedo';
 interface propsIF {
     isTokenABase: boolean;
     liquidityData: liquidityChartData | undefined;
@@ -133,9 +135,13 @@ interface propsIF {
         React.SetStateAction<drawDataHistory[]>
     >;
     currentPool: TradeDataIF;
-    drawActionStack: any;
-    actionKey: any;
-    deleteItem: any;
+    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
+    actionKey: {
+        poolIndex: number;
+        tokenA: TokenIF;
+        tokenB: TokenIF;
+    };
+    deleteItem: (item: drawDataHistory) => void;
 }
 
 export default function Chart(props: propsIF) {
@@ -4139,8 +4145,6 @@ export default function Chart(props: propsIF) {
                 mainCanvasBoundingClientRect={mainCanvasBoundingClientRect}
                 setDrawnShapeHistory={setDrawnShapeHistory}
                 setSelectedDrawnShape={setSelectedDrawnShape}
-                drawActionStack={drawActionStack}
-                actionKey={actionKey}
                 deleteItem={deleteItem}
             />
 

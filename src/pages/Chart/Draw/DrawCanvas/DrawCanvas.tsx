@@ -14,6 +14,8 @@ import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';
 import { TradeDataIF } from '../../../../utils/state/tradeDataSlice';
+import { actionKeyIF } from '../../ChartUtils/useUndoRedo';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -28,8 +30,12 @@ interface DrawCanvasProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
-    drawActionStack: any;
-    actionKey: any;
+    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
+    actionKey: {
+        poolIndex: number;
+        tokenA: TokenIF;
+        tokenB: TokenIF;
+    };
 }
 
 function DrawCanvas(props: DrawCanvasProps) {

@@ -5,7 +5,8 @@ import {
     scaleData,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
-import { useUndoRedo } from '../../ChartUtils/useUndoRedo';
+import { actionKeyIF } from '../../ChartUtils/useUndoRedo';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface DragCanvasProps {
     scaleData: scaleData;
@@ -22,8 +23,12 @@ interface DragCanvasProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
-    drawActionStack: any;
-    actionKey: any;
+    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
+    actionKey: {
+        poolIndex: number;
+        tokenA: TokenIF;
+        tokenB: TokenIF;
+    };
 }
 
 export default function DragCanvas(props: DragCanvasProps) {

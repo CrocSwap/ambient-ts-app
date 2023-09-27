@@ -22,9 +22,7 @@ interface FloatingToolbarProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
-    drawActionStack: any;
-    actionKey: any;
-    deleteItem: any;
+    deleteItem: (item: drawDataHistory) => void;
 }
 function FloatingToolbar(props: FloatingToolbarProps) {
     const {
@@ -32,8 +30,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         selectedDrawnShape,
         setDrawnShapeHistory,
         setSelectedDrawnShape,
-        drawActionStack,
-        actionKey,
         deleteItem,
     } = props;
     const floatingDivRef = useRef<HTMLDivElement>(null);
@@ -79,11 +75,15 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     }, [floatingDivRef, selectedDrawnShape]);
 
     const deleteDrawnShape = () => {
-        deleteItem(selectedDrawnShape?.data);
-        setDrawnShapeHistory((item: drawDataHistory[]) => {
-            return item.filter((i) => i.time !== selectedDrawnShape?.data.time);
-        });
-        setSelectedDrawnShape(undefined);
+        if (selectedDrawnShape?.data) {
+            deleteItem(selectedDrawnShape?.data);
+            setDrawnShapeHistory((item: drawDataHistory[]) => {
+                return item.filter(
+                    (i) => i.time !== selectedDrawnShape?.data.time,
+                );
+            });
+            setSelectedDrawnShape(undefined);
+        }
     };
 
     useEffect(() => {
