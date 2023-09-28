@@ -1,6 +1,5 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { ZERO_ADDRESS } from '../../../../constants';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';

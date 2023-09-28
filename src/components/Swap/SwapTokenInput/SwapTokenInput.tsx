@@ -1,4 +1,4 @@
-import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { CrocImpact } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     SetStateAction,
@@ -10,7 +10,6 @@ import {
 } from 'react';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { ZERO_ADDRESS } from '../../../constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
