@@ -7,10 +7,7 @@ import {
     setCanvasResolution,
 } from '../ChartUtils/chartUtils';
 import { IS_LOCAL_ENV } from '../../../constants';
-import {
-    diffHashSig,
-    diffHashSigScaleData,
-} from '../../../utils/functions/diffHashSig';
+import { diffHashSigScaleData } from '../../../utils/functions/diffHashSig';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
@@ -30,7 +27,6 @@ interface candlePropsIF {
 
 export default function CandleChart(props: candlePropsIF) {
     const {
-        chartItemStates,
         setBandwidth,
         scaleData,
         selectedDate,
