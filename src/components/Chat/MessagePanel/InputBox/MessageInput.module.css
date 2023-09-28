@@ -17,6 +17,22 @@
     position: relative;
     bottom: 0;
 }
+.message_input_field{
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+    border-color: transparent;
+    color: var(--text1);
+    background-color: transparent;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
 
 .input_box_not_allowed {
     display: flex;

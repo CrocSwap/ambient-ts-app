@@ -11,6 +11,7 @@ interface propsIF {
     deleteMsgFromList: any;
     id: string;
     isModerator: boolean;
+    isUsersMessage: boolean;
 }
 export default function Menu(props: propsIF) {
     const { deleteMessage } = useChatApi();
@@ -45,9 +46,14 @@ export default function Menu(props: propsIF) {
         },
     ];
 
+    const filteredOptions =
+        !props.isUsersMessage && !props.isModerator
+            ? options.filter((option) => option.label !== 'Delete')
+            : options;
+
     return (
         <div className={styles.dropdown_item}>
-            {options.map((option, index) => {
+            {filteredOptions.map((option, index) => {
                 return (
                     <>
                         <div
