@@ -11,6 +11,7 @@ import { IS_LOCAL_ENV } from '../constants';
 import { slippage } from '../utils/data/slippage';
 import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
+import { supportedNetworks } from '../utils/networks';
 import { setDenomInBase } from '../utils/state/tradeDataSlice';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
@@ -71,15 +72,32 @@ export const UserPreferenceContextProvider = (props: {
         [...Object.values(userPreferencesProps)],
     );
 
-    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(
-        () =>
-            getMoneynessRank(baseTokenAddress.toLowerCase() + '_' + chainId) -
-                getMoneynessRank(
-                    quoteTokenAddress.toLowerCase() + '_' + chainId,
-                ) >=
-            0,
-        [baseTokenAddress, quoteTokenAddress, chainId],
-    );
+    const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
+        const network = supportedNetworks[chainId];
+        if (baseTokenAddress && quoteTokenAddress && network) {
+            const baseTokenSymbol = Object.keys(network.tokens).find(
+                (key) =>
+                    network.tokens[
+                        key as keyof typeof network.tokens
+                    ].toLowerCase() === baseTokenAddress.toLowerCase(),
+            );
+            const quoteTokenSymbol = Object.keys(network.tokens).find(
+                (key) =>
+                    network.tokens[
+                        key as keyof typeof network.tokens
+                    ].toLowerCase() === quoteTokenAddress.toLowerCase(),
+            );
+
+            if (baseTokenSymbol && quoteTokenSymbol) {
+                return (
+                    getMoneynessRank(baseTokenSymbol) -
+                        getMoneynessRank(quoteTokenSymbol) >=
+                    0
+                );
+            }
+        }
+        return false;
+    }, [baseTokenAddress, quoteTokenAddress, chainId]);
     function updateDenomIsInBase() {
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default

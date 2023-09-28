@@ -35,8 +35,6 @@
 .divider {
     height: 1px;
     margin: 1rem 0;
-
-   
 }
 .info_text {
     display: flex;
@@ -60,7 +58,6 @@
     flex-direction: column;
     gap: 4px;
     align-items: center;
-    
 }
 
 .min_max_price p {
@@ -84,7 +81,7 @@
 .max_price {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    font-weight: 200;
+    font-weight: 300;
     letter-spacing: -0.02em;
 }
 
@@ -112,7 +109,6 @@
     font-weight: 300;
 }
 .tx_details {
-   
     /* cursor: pointer; */
     display: flex;
     flex-direction: column;

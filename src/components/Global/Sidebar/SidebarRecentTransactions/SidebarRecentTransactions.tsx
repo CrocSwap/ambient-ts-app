@@ -15,13 +15,12 @@ import {
     useLinkGen,
     linkGenMethodsIF,
 } from '../../../../utils/hooks/useLinkGen';
+import { FlexContainer } from '../../../../styled/Common';
 import {
-    SidebarPoolsListContainer,
-    SidebarPoolsListHeader,
-    SidebarPoolsListHeaderContainer,
-    SidebarPoolsListItemsContainer,
-    SidebarPoolsListViewMoreContainer,
-} from '../../../../styled/Sidebar';
+    HeaderGrid,
+    ItemsContainer,
+    ViewMoreFlex,
+} from '../../../../styled/Components/Sidebar';
 
 interface propsIF {
     mostRecentTransactions: TransactionIF[];
@@ -69,11 +68,19 @@ export default function SidebarRecentTransactions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setShowAllData(false);
         setCurrentTxActiveInTransactions(tx.txId);
-        linkGenMarket.navigate({
-            chain: chainId,
-            tokenA: tx.base,
-            tokenB: tx.quote,
-        });
+        linkGenMarket.navigate(
+            tx.isBuy
+                ? {
+                      chain: chainId,
+                      tokenA: tx.base,
+                      tokenB: tx.quote,
+                  }
+                : {
+                      chain: chainId,
+                      tokenA: tx.quote,
+                      tokenB: tx.base,
+                  },
+        );
     };
 
     const handleViewMoreClick = (): void => {
@@ -84,13 +91,15 @@ export default function SidebarRecentTransactions(props: propsIF) {
     };
 
     return (
-        <SidebarPoolsListContainer>
-            <SidebarPoolsListHeaderContainer>
-                <SidebarPoolsListHeader>Pool</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>Type</SidebarPoolsListHeader>
-                <SidebarPoolsListHeader>Value</SidebarPoolsListHeader>
-            </SidebarPoolsListHeaderContainer>
-            <SidebarPoolsListItemsContainer>
+        <FlexContainer flexDirection='column' fontSize='body' fullHeight>
+            <HeaderGrid numCols={3} color='text2' padding='4px 0'>
+                {['Pool', 'Type', 'Value'].map((item) => (
+                    <FlexContainer key={item} justifyContent='center'>
+                        {item}
+                    </FlexContainer>
+                ))}
+            </HeaderGrid>
+            <ItemsContainer>
                 {mostRecentTransactions.map((tx: TransactionIF) => (
                     <SidebarRecentTransactionsCard
                         key={
@@ -102,13 +111,15 @@ export default function SidebarRecentTransactions(props: propsIF) {
                     />
                 ))}
                 {isUserConnected && (
-                    <SidebarPoolsListViewMoreContainer
+                    <ViewMoreFlex
+                        justifyContent='center'
+                        color='accent4'
                         onClick={handleViewMoreClick}
                     >
                         View More
-                    </SidebarPoolsListViewMoreContainer>
+                    </ViewMoreFlex>
                 )}
-            </SidebarPoolsListItemsContainer>
-        </SidebarPoolsListContainer>
+            </ItemsContainer>
+        </FlexContainer>
     );
 }

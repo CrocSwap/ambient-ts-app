@@ -1,5 +1,4 @@
 /* eslint-disable no-irregular-whitespace */
-import styles from './Transactions.module.css';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -10,7 +9,6 @@ import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { useSortedTxs } from '../useSortedTxs';
 import NoTableData from '../NoTableData/NoTableData';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import usePagination from '../../../Global/Pagination/usePagination';
 import { RowsPerPageDropdown } from '../../../Global/Pagination/RowsPerPageDropdown';
@@ -26,6 +24,13 @@ import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV } from '../../../../constants';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { TransactionRowPlaceholder } from './TransactionsTable/TransactionRowPlaceholder';
+import { SidebarContext } from '../../../../contexts/SidebarContext';
+import {
+    TransactionRow as TransactionRowStyled,
+    ViewMoreButton,
+} from '../../../../styled/Components/TransactionTable';
+import { FlexContainer, Text } from '../../../../styled/Common';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -34,6 +39,7 @@ interface propsIF {
     isAccountView: boolean; // when viewing from /account: fullscreen and not paginated
     setSelectedDate?: Dispatch<number | undefined>;
     setSelectedInsideTab?: Dispatch<number>;
+    fullLayoutActive?: boolean;
 }
 function Transactions(props: propsIF) {
     const {
@@ -43,6 +49,7 @@ function Transactions(props: propsIF) {
         setSelectedDate,
         setSelectedInsideTab,
         isAccountView,
+        fullLayoutActive,
     } = props;
 
     const {
@@ -56,21 +63,20 @@ function Transactions(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings, tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
+        provider,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
-    const {
-        showAllData: showAllDataSelection,
-        tradeTableState,
-        toggleTradeTable,
-    } = useContext(TradeTableContext);
+    const { showAllData: showAllDataSelection, toggleTradeTable } =
+        useContext(TradeTableContext);
+    const { setOutsideControl } = useContext(TradeTableContext);
+    const { tokens } = useContext(TokenContext);
+
     const {
         sidebar: { isOpen: isSidebarOpen },
     } = useContext(SidebarContext);
-    const { setOutsideControl } = useContext(TradeTableContext);
-    const { tokens } = useContext(TokenContext);
 
     const candleTime = chartSettings.candleTime.global;
 
@@ -84,6 +90,9 @@ function Transactions(props: propsIF) {
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { transactionsByType, pendingTransactions } = useAppSelector(
+        (state) => state.receiptData,
+    );
 
     const selectedBase = tradeData.baseToken.address;
     const selectedQuote = tradeData.quoteToken.address;
@@ -132,6 +141,10 @@ function Transactions(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (!isCandleSelected) setIsLoading(true);
+    }, [isCandleSelected]);
+
+    useEffect(() => {
         if (isAccountView && connectedAccountActive)
             setIsLoading(
                 graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
@@ -148,6 +161,7 @@ function Transactions(props: propsIF) {
             );
         else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
     }, [
+        isCandleSelected,
         showAllData,
         connectedAccountActive,
         graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
@@ -156,25 +170,48 @@ function Transactions(props: propsIF) {
         graphData?.dataLoadingStatus.isCandleDataLoading,
     ]);
 
-    const shouldDisplayNoTableData = !isLoading && !transactionData.length;
+    const relevantTransactionsByType = transactionsByType.filter(
+        (tx) =>
+            tx.txAction &&
+            pendingTransactions.includes(tx.txHash) &&
+            tx.txDetails?.baseAddress.toLowerCase() ===
+                tradeData.baseToken.address.toLowerCase() &&
+            tx.txDetails?.quoteAddress.toLowerCase() ===
+                tradeData.quoteToken.address.toLowerCase() &&
+            tx.txDetails?.poolIdx === poolIndex,
+    );
+
+    const shouldDisplayNoTableData =
+        !isLoading &&
+        !transactionData.length &&
+        (relevantTransactionsByType.length === 0 ||
+            pendingTransactions.length === 0);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
         useSortedTxs('time', transactionData);
 
-    const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-    const showTimestamp = useMediaQuery('(min-width: 1000px)');
+    // TODO: Use these as media width constants
+    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
 
-    const showColumns = isAccountView
-        ? isSidebarOpen
-            ? useMediaQuery('(max-width: 1850px)')
-            : useMediaQuery('(max-width: 1500px)')
-        : isSidebarOpen
-        ? useMediaQuery('(max-width: 1850px)')
-        : useMediaQuery('(max-width: 1600px)');
+    const tableView =
+        isSmallScreen ||
+        (isAccountView &&
+            !isLargeScreen &&
+            isSidebarOpen &&
+            fullLayoutActive === false)
+            ? 'small'
+            : (!isSmallScreen && !isLargeScreen) ||
+              (isAccountView &&
+                  isLargeScreen &&
+                  isSidebarOpen &&
+                  fullLayoutActive === false)
+            ? 'medium'
+            : 'large';
 
     const getCandleData = () =>
         crocEnv &&
+        provider &&
         fetchPoolRecentChanges({
             tokenList: tokens.tokenUniv,
             base: selectedBase,
@@ -190,6 +227,7 @@ function Transactions(props: propsIF) {
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
+            provider,
             lastBlockNumber,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -201,7 +239,10 @@ function Transactions(props: propsIF) {
                 if (selectedCandleChangesJson) {
                     const selectedCandleChangesWithoutFills =
                         selectedCandleChangesJson.filter((tx) => {
-                            if (tx.changeType !== 'fill') {
+                            if (
+                                tx.changeType !== 'fill' &&
+                                tx.changeType !== 'cross'
+                            ) {
                                 return true;
                             } else {
                                 return false;
@@ -222,12 +263,20 @@ function Transactions(props: propsIF) {
             isCandleSelected &&
             candleTime.time &&
             filter?.time &&
-            crocEnv
+            crocEnv &&
+            provider
         ) {
             setIsLoading(true);
             getCandleData();
         }
-    }, [isServerEnabled, isCandleSelected, filter?.time, candleTime.time]);
+    }, [
+        isServerEnabled,
+        isCandleSelected,
+        filter?.time,
+        candleTime.time,
+        !!crocEnv,
+        !!provider,
+    ]);
 
     // update candle transactions on last block num change
     useEffect(() => {
@@ -237,10 +286,11 @@ function Transactions(props: propsIF) {
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
+    // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (
         <>
             <p>ID</p>
-            <p>Wallet</p>
+            Wallet
         </>
     );
     const sideType = (
@@ -254,7 +304,7 @@ function Transactions(props: propsIF) {
         {
             name: 'Timestamp',
             className: '',
-            show: showTimestamp,
+            show: tableView === 'large',
 
             slug: 'time',
             sortable: true,
@@ -262,54 +312,53 @@ function Transactions(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isAccountView && showPair,
+            show: isAccountView,
             slug: 'pool',
             sortable: true,
         },
         {
             name: 'ID',
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Wallet',
-            show: !showColumns && !isAccountView,
+            show: tableView === 'large' && !isAccountView,
             slug: 'wallet',
             sortable: true,
         },
         {
             name: walID,
-            show: showColumns,
+            show: tableView !== 'large',
             slug: 'walletid',
             sortable: !isAccountView,
             alignCenter: false,
         },
         {
             name: 'Price',
-            show: !ipadView,
+            show: tableView !== 'small',
             slug: 'price',
             sortable: false,
             alignRight: true,
         },
         {
             name: 'Side',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'side',
             sortable: false,
             alignCenter: true,
         },
         {
             name: 'Type',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'type',
             sortable: false,
             alignCenter: true,
         },
         {
             name: sideType,
-            show: showColumns && !ipadView,
+            show: tableView !== 'large',
             slug: 'sidetype',
             sortable: false,
             alignCenter: true,
@@ -323,29 +372,28 @@ function Transactions(props: propsIF) {
         },
         {
             name: isAccountView ? <></> : `${baseTokenSymbol}ㅤㅤ`,
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
-            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
-            show: !showColumns,
+            name: isAccountView ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added to offset token logo
+            show: tableView === 'large',
             slug: quoteTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
-            name: 'Tokensㅤㅤ',
-            show: !isAccountView && showColumns,
+            name: 'Tokens',
+            show: !isAccountView && tableView === 'medium',
             slug: 'tokens',
             sortable: false,
             alignRight: true,
         },
         {
-            name: <>Tokensㅤㅤ</>,
-            show: isAccountView && showColumns,
+            name: <>Tokens</>,
+            show: isAccountView && tableView === 'medium',
             slug: 'tokens',
             sortable: false,
             alignRight: true,
@@ -358,12 +406,8 @@ function Transactions(props: propsIF) {
         },
     ];
 
-    const headerStyle = isAccountView
-        ? styles.portfolio_header
-        : styles.trade_header;
-
     const headerColumnsDisplay = (
-        <ul className={`${styles.header} ${headerStyle}`}>
+        <TransactionRowStyled size={tableView} header account={isAccountView}>
             {headerColumns.map((header, idx) => (
                 <TransactionHeader
                     key={idx}
@@ -374,7 +418,7 @@ function Transactions(props: propsIF) {
                     header={header}
                 />
             ))}
-        </ul>
+        </TransactionRowStyled>
     );
 
     const [page, setPage] = useState(1);
@@ -422,40 +466,45 @@ function Transactions(props: propsIF) {
     const footerDisplay = rowsPerPage > 0 &&
         ((isAccountView && transactionData.length > 10) ||
             (!isAccountView && tradePageCheck)) && (
-            <div className={styles.footer}>
-                <div className={styles.footer_content}>
-                    <RowsPerPageDropdown
-                        rowsPerPage={rowsPerPage}
-                        onChange={handleChangeRowsPerPage}
-                        itemCount={sortedTransactions.length}
-                        setCurrentPage={setCurrentPage}
-                        resetPageToFirst={resetPageToFirst}
-                    />
-                    <Pagination
-                        count={count}
-                        page={page}
-                        shape='circular'
-                        color='secondary'
-                        onChange={handleChange}
-                        showFirstButton
-                        showLastButton
-                        size={sPagination ? 'small' : 'medium'}
-                    />
-                    <p
-                        className={styles.showing_text}
-                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</p>
-                </div>
-            </div>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='center'
+                gap={isSmallScreen ? 4 : 8}
+                margin='16px auto'
+                background='dark1'
+            >
+                <RowsPerPageDropdown
+                    rowsPerPage={rowsPerPage}
+                    onChange={handleChangeRowsPerPage}
+                    itemCount={sortedTransactions.length}
+                    setCurrentPage={setCurrentPage}
+                    resetPageToFirst={resetPageToFirst}
+                />
+                <Pagination
+                    count={count}
+                    page={page}
+                    shape='circular'
+                    color='secondary'
+                    onChange={handleChange}
+                    showFirstButton
+                    showLastButton
+                    size={sPagination ? 'small' : 'medium'}
+                />
+                {!isSmallScreen && (
+                    <Text
+                        fontSize='mini'
+                        color='text2'
+                        style={{ whiteSpace: 'nowrap' }}
+                    >{` ${showingFrom} - ${showingTo} of ${totalItems}`}</Text>
+                )}
+            </FlexContainer>
         );
 
     const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
         <TransactionRow
             key={idx}
             tx={tx}
-            ipadView={ipadView}
-            showColumns={showColumns}
-            showTimestamp={showTimestamp}
-            showPair={showPair}
+            tableView={tableView}
             isAccountView={isAccountView}
         />
     ));
@@ -463,10 +512,7 @@ function Transactions(props: propsIF) {
         <TransactionRow
             key={idx}
             tx={tx}
-            ipadView={ipadView}
-            showColumns={showColumns}
-            showTimestamp={showTimestamp}
-            showPair={showPair}
+            tableView={tableView}
             isAccountView={isAccountView}
         />
     ));
@@ -504,9 +550,6 @@ function Transactions(props: propsIF) {
         !isAccountView &&
         sortedRowItemContent.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
 
-    const gridTxStyle =
-        showViewMoreButton && isCandleSelected ? styles.show_more_grid : '';
-
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
             setSelectedDate={setSelectedDate}
@@ -514,31 +557,127 @@ function Transactions(props: propsIF) {
             isAccountView={isAccountView}
         />
     ) : (
-        <div onKeyDown={handleKeyDownViewTransaction} className={gridTxStyle}>
+        <FlexContainer
+            flexDirection='column'
+            onKeyDown={handleKeyDownViewTransaction}
+        >
             <ul ref={listRef} id='current_row_scroll'>
+                {!isAccountView &&
+                    pendingTransactions.length > 0 &&
+                    relevantTransactionsByType.reverse().map((tx, idx) => {
+                        if (tx.txAction !== 'Reposition')
+                            return (
+                                <TransactionRowPlaceholder
+                                    key={idx}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: tx.txAction,
+                                        type: tx.txType,
+                                        action: tx.txAction,
+                                        details: tx.txDetails,
+                                    }}
+                                    tableView={tableView}
+                                />
+                            );
+                        return (
+                            <>
+                                <TransactionRowPlaceholder
+                                    key={idx + 'sell'}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: 'Sell',
+                                        type: 'Market',
+                                        action: tx.txAction,
+                                        details: {
+                                            baseSymbol:
+                                                tx.txDetails?.baseSymbol ??
+                                                '...',
+                                            quoteSymbol:
+                                                tx.txDetails?.quoteSymbol ??
+                                                '...',
+                                            baseTokenDecimals:
+                                                tx.txDetails?.baseTokenDecimals,
+                                            quoteTokenDecimals:
+                                                tx.txDetails
+                                                    ?.quoteTokenDecimals,
+                                            lowTick: tx.txDetails?.lowTick,
+                                            highTick: tx.txDetails?.highTick,
+                                            gridSize: tx.txDetails?.gridSize,
+                                        },
+                                    }}
+                                    tableView={tableView}
+                                />
+                                <TransactionRowPlaceholder
+                                    key={idx + 'add'}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: 'Add',
+                                        type: 'Range',
+                                        action: tx.txAction,
+                                        details: {
+                                            baseSymbol:
+                                                tx.txDetails?.baseSymbol ??
+                                                '...',
+                                            quoteSymbol:
+                                                tx.txDetails?.quoteSymbol ??
+                                                '...',
+                                            baseTokenDecimals:
+                                                tx.txDetails?.baseTokenDecimals,
+                                            quoteTokenDecimals:
+                                                tx.txDetails
+                                                    ?.quoteTokenDecimals,
+                                            lowTick: tx.txDetails?.lowTick,
+                                            highTick: tx.txDetails?.highTick,
+                                            gridSize: tx.txDetails?.gridSize,
+                                        },
+                                    }}
+                                    tableView={tableView}
+                                />
+                                <TransactionRowPlaceholder
+                                    key={idx + 'remove'}
+                                    transaction={{
+                                        hash: tx.txHash,
+                                        side: 'Remove',
+                                        type: 'Range',
+                                        action: tx.txAction,
+                                        details: {
+                                            baseSymbol:
+                                                tx.txDetails?.baseSymbol ??
+                                                '...',
+                                            quoteSymbol:
+                                                tx.txDetails?.quoteSymbol ??
+                                                '...',
+                                            baseTokenDecimals:
+                                                tx.txDetails?.baseTokenDecimals,
+                                            quoteTokenDecimals:
+                                                tx.txDetails
+                                                    ?.quoteTokenDecimals,
+                                            lowTick: tx.txDetails?.lowTick,
+                                            highTick: tx.txDetails?.highTick,
+                                            gridSize: tx.txDetails?.gridSize,
+                                        },
+                                    }}
+                                    tableView={tableView}
+                                />
+                            </>
+                        );
+                    })}
                 {currentRowItemContent}
             </ul>
             {showViewMoreButton && (
-                <div className={styles.view_more_container}>
-                    <button
-                        className={styles.view_more_button}
-                        onClick={() => toggleTradeTable()}
-                    >
+                <FlexContainer
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='8px'
+                >
+                    <ViewMoreButton onClick={() => toggleTradeTable()}>
                         View More
-                    </button>
-                </div>
+                    </ViewMoreButton>
+                </FlexContainer>
             )}
             {/* Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render */}
-        </div>
+        </FlexContainer>
     );
-
-    const mobileView = useMediaQuery('(max-width: 1200px)');
-
-    useEffect(() => {
-        if (mobileView) {
-            toggleTradeTable();
-        }
-    }, [mobileView]);
 
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
@@ -548,17 +687,11 @@ function Transactions(props: propsIF) {
         }
     }, [isTradeTableExpanded]);
 
-    const portfolioPageFooter = props.isAccountView ? '1rem 0' : '';
-
     return (
-        <div
-            className={`${styles.main_list_container} ${
-                isTradeTableExpanded && styles.main_list_expanded
-            }`}
-        >
+        <FlexContainer flexDirection='column' fullHeight>
             <div>{headerColumnsDisplay}</div>
 
-            <div className={styles.table_content}>
+            <div style={{ flex: 1, overflow: 'auto' }}>
                 {isLoading ? (
                     <Spinner size={100} bg='var(--dark1)' centered />
                 ) : (
@@ -566,8 +699,8 @@ function Transactions(props: propsIF) {
                 )}
             </div>
 
-            <div style={{ margin: portfolioPageFooter }}>{footerDisplay}</div>
-        </div>
+            {footerDisplay}
+        </FlexContainer>
     );
 }
 

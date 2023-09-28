@@ -2,7 +2,6 @@ import styles from './RangeActionModal.module.css';
 import RemoveRangeWidth from './RemoveRangeWidth/RemoveRangeWidth';
 import RangeActionTokenHeader from './RangeActionTokenHeader/RangeActionTokenHeader';
 import RemoveRangeInfo from './RangeActionInfo/RemoveRangeInfo';
-import RangeActionButton from './RangeActionButton/RangeActionButton';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { PositionIF } from '../../utils/interfaces/exports';
@@ -12,7 +11,7 @@ import {
     concPosSlot,
     CrocPositionView,
 } from '@crocswap-libs/sdk';
-import Button from '../Global/Button/Button';
+import Button from '../Form/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import {
@@ -22,18 +21,15 @@ import {
     addTransactionByType,
     removePendingTx,
     removePositionPendingUpdate,
+    updateTransactionHash,
 } from '../../utils/state/receiptDataSlice';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
-import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../Global/TransactionException/TransactionException';
 import { isStablePair } from '../../utils/data/stablePairs';
-import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
@@ -44,10 +40,14 @@ import { PositionServerIF } from '../../utils/interfaces/PositionIF';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import HarvestPositionInfo from './RangeActionInfo/HarvestPositionInfo';
-import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
+import ModalHeader from '../Global/ModalHeader/ModalHeader';
+import { RangeModalActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
+import Modal from '../Global/Modal/Modal';
+import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface propsIF {
-    type: 'Remove' | 'Harvest';
+    type: RangeModalActionType;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     isPositionInRange: boolean;
@@ -58,7 +58,8 @@ interface propsIF {
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
     position: PositionIF;
-    handleModalClose: () => void;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function RangeActionModal(props: propsIF) {
@@ -67,8 +68,9 @@ export default function RangeActionModal(props: propsIF) {
         position,
         baseTokenAddress,
         quoteTokenAddress,
-        handleModalClose,
         isAmbient,
+        isOpen,
+        onClose,
     } = props;
 
     const { lastBlockNumber, gasPriceInGwei } = useContext(ChainDataContext);
@@ -81,6 +83,7 @@ export default function RangeActionModal(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        provider,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
@@ -108,22 +111,19 @@ export default function RangeActionModal(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const positionsPendingUpdate = useAppSelector(
-        (state) => state.receiptData,
-    ).positionsPendingUpdate;
-
     const [removalGasPriceinDollars, setRemovalGasPriceinDollars] = useState<
         string | undefined
     >();
 
-    const averageGasUnitsForRemovalTx = type === 'Remove' ? 94500 : 92500;
+    const averageGasUnitsForRemovalTxInGasDrops =
+        type === 'Remove' ? 94500 : 92500;
     const numGweiInWei = 1e-9;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageGasUnitsForRemovalTx *
+                averageGasUnitsForRemovalTxInGasDrops *
                 numGweiInWei *
                 ethMainnetUsdPrice;
 
@@ -198,11 +198,12 @@ export default function RangeActionModal(props: propsIF) {
                     .then((response) => response.json())
                     .then((json) => json?.data)
                     .then(async (data: PositionServerIF) => {
-                        if (data && crocEnv) {
+                        if (data && crocEnv && provider) {
                             const position = await getPositionData(
                                 data,
                                 tokens.tokenUniv,
                                 crocEnv,
+                                provider,
                                 chainId,
                                 lastBlockNumber,
                                 cachedFetchTokenPrice,
@@ -317,10 +318,10 @@ export default function RangeActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation) {
+        if (!showConfirmation || !isOpen) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txErrorCode, isOpen]);
 
     const posHash =
         position.positionType === 'ambient'
@@ -338,9 +339,6 @@ export default function RangeActionModal(props: propsIF) {
                   position.askTick,
                   poolIndex,
               );
-
-    const isPositionPendingUpdate =
-        positionsPendingUpdate.indexOf(posHash as string) > -1;
 
     const isPairStable: boolean = isStablePair(
         baseTokenAddress,
@@ -375,6 +373,7 @@ export default function RangeActionModal(props: propsIF) {
                         surplus: dexBalRange.outputToDexBal.isEnabled,
                     });
                     IS_LOCAL_ENV && console.debug(tx?.hash);
+                    dispatch(addPendingTx(tx?.hash));
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
                     if (
@@ -393,6 +392,7 @@ export default function RangeActionModal(props: propsIF) {
                         lowLimit,
                         highLimit,
                     ]);
+                    dispatch(addPendingTx(tx?.hash));
                     IS_LOCAL_ENV && console.debug(tx?.hash);
                     setNewTransactionHash(tx?.hash);
                 } catch (error) {
@@ -418,13 +418,6 @@ export default function RangeActionModal(props: propsIF) {
                 IS_LOCAL_ENV && console.debug(tx?.hash);
                 dispatch(addPendingTx(tx?.hash));
                 setNewTransactionHash(tx?.hash);
-                if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
-                        }),
-                    );
             } catch (error) {
                 if (
                     error.reason === 'sending a transaction requires a signer'
@@ -432,7 +425,6 @@ export default function RangeActionModal(props: propsIF) {
                     location.reload();
                 }
                 console.error({ error });
-                dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
@@ -440,6 +432,29 @@ export default function RangeActionModal(props: propsIF) {
             IS_LOCAL_ENV &&
                 console.debug('unsupported position type for removal');
         }
+
+        if (tx?.hash)
+            dispatch(
+                addTransactionByType({
+                    txHash: tx.hash,
+                    txAction: 'Remove',
+                    txType: 'Range',
+                    txDescription: `Remove Range ${position.baseSymbol}+${position.quoteSymbol}`,
+                    txDetails: {
+                        baseAddress: position.base,
+                        quoteAddress: position.quote,
+                        poolIdx: poolIndex,
+                        baseSymbol: position.baseSymbol,
+                        quoteSymbol: position.quoteSymbol,
+                        baseTokenDecimals: position.baseDecimals,
+                        quoteTokenDecimals: position.quoteDecimals,
+                        isAmbient: isAmbient,
+                        lowTick: position.bidTick,
+                        highTick: position.askTick,
+                        gridSize: lookupChain(position.chainId).gridSize,
+                    },
+                }),
+            );
 
         let receipt;
 
@@ -456,6 +471,12 @@ export default function RangeActionModal(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
                 IS_LOCAL_ENV && console.debug({ newTransactionHash });
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
@@ -497,7 +518,23 @@ export default function RangeActionModal(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
+                            txAction: 'Harvest',
+                            txType: 'Range',
+                            txDescription: `Harvest Rewards ${position.baseSymbol}+${position.quoteSymbol}`,
+                            txDetails: {
+                                baseAddress: position.base,
+                                quoteAddress: position.quote,
+                                poolIdx: poolIndex,
+                                baseSymbol: position.baseSymbol,
+                                quoteSymbol: position.quoteSymbol,
+                                baseTokenDecimals: position.baseDecimals,
+                                quoteTokenDecimals: position.quoteDecimals,
+                                isAmbient: isAmbient,
+                                lowTick: position.bidTick,
+                                highTick: position.askTick,
+                                gridSize: lookupChain(position.chainId)
+                                    .gridSize,
+                            },
                         }),
                     );
             } catch (error) {
@@ -530,6 +567,12 @@ export default function RangeActionModal(props: propsIF) {
                 const newTransactionHash = error.replacement.hash;
                 setNewTransactionHash(newTransactionHash);
                 dispatch(addPendingTx(newTransactionHash));
+                dispatch(
+                    updateTransactionHash({
+                        oldHash: error.hash,
+                        newHash: error.replacement.hash,
+                    }),
+                );
             } else if (isTransactionFailedError(error)) {
                 receipt = error.receipt;
             }
@@ -542,62 +585,6 @@ export default function RangeActionModal(props: propsIF) {
             dispatch(removePositionPendingUpdate(posHash as string));
         }
     };
-
-    const transactionDenied = (
-        <TransactionDenied resetConfirmation={resetConfirmation} />
-    );
-
-    const transactionSuccess = (
-        <TxSubmittedSimplify
-            hash={newTransactionHash}
-            content={`${
-                type === 'Remove' ? 'Removal' : 'Harvest'
-            } Transaction Successfully Submitted!`}
-        />
-    );
-
-    const transactionPending = (
-        <WaitingConfirmation
-            content={`Submitting ${
-                type === 'Remove' ? 'removal' : 'harvest'
-            } transaction for ${position.baseSymbol} and ${
-                position.quoteSymbol
-            }.`}
-        />
-    );
-
-    const [currentConfirmationData, setCurrentConfirmationData] =
-        useState(transactionPending);
-
-    const transactionApproved = newTransactionHash !== '';
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
-
-    const transactionException = (
-        <TransactionException resetConfirmation={resetConfirmation} />
-    );
-
-    function handleConfirmationChange(): void {
-        setCurrentConfirmationData(transactionPending);
-
-        if (transactionApproved) {
-            setCurrentConfirmationData(transactionSuccess);
-        } else if (isTransactionDenied) {
-            setCurrentConfirmationData(transactionDenied);
-        } else if (isTransactionException) {
-            setCurrentConfirmationData(transactionException);
-        }
-    }
-
-    useEffect(() => {
-        handleConfirmationChange();
-    }, [
-        transactionApproved,
-        newTransactionHash,
-        txErrorCode,
-        showConfirmation,
-        isTransactionDenied,
-    ]);
 
     const baseRemovalNum =
         (((posLiqBaseDecimalCorrected || 0) +
@@ -620,31 +607,6 @@ export default function RangeActionModal(props: propsIF) {
         feeLiqBaseDecimalCorrected !== undefined
             ? ((feeLiqQuoteDecimalCorrected || 0) * removalPercentage) / 100
             : undefined;
-
-    const confirmationContent = (
-        <div className={styles.confirmation_container}>
-            <SimpleModalHeader
-                onClose={handleModalClose}
-                title={
-                    showSettings
-                        ? `${
-                              type === 'Remove' ? 'Remove Position' : 'Harvest'
-                          } Settings`
-                        : type === 'Remove'
-                        ? 'Remove Position'
-                        : 'Harvest Confirmation'
-                }
-                onBackButton={() => {
-                    resetConfirmation();
-                    setShowSettings(false);
-                }}
-                showBackButton={showSettings}
-            />
-            <div className={styles.confirmation_content}>
-                {currentConfirmationData}
-            </div>
-        </div>
-    );
 
     const [currentSlippage, setCurrentSlippage] =
         useState<number>(persistedSlippage);
@@ -669,24 +631,40 @@ export default function RangeActionModal(props: propsIF) {
                     flat
                     disabled={!(currentSlippage > 0)}
                 />
-            ) : isPositionPendingUpdate ? (
-                <RangeActionButton
-                    onClick={type === 'Remove' ? removeFn : harvestFn}
-                    disabled={true}
-                    title='Position Update Pending…'
+            ) : showConfirmation ? (
+                <SubmitTransaction
+                    type='Range'
+                    newTransactionHash={newTransactionHash}
+                    txErrorCode={txErrorCode}
+                    resetConfirmation={resetConfirmation}
+                    sendTransaction={type === 'Remove' ? removeFn : harvestFn}
+                    transactionPendingDisplayString={
+                        'Submitting transaction...'
+                    }
+                    disableSubmitAgain
                 />
             ) : (
-                <RangeActionButton
-                    onClick={type === 'Remove' ? removeFn : harvestFn}
+                <Button
+                    title={
+                        !(
+                            (type === 'Remove'
+                                ? liquidityToBurn === undefined ||
+                                  liquidityToBurn.isZero()
+                                : !areFeesAvailableToWithdraw) || showSettings
+                        )
+                            ? type === 'Remove'
+                                ? 'Remove Liquidity'
+                                : 'Harvest Fees'
+                            : '...'
+                    }
                     disabled={
                         (type === 'Remove'
                             ? liquidityToBurn === undefined ||
                               liquidityToBurn.isZero()
                             : !areFeesAvailableToWithdraw) || showSettings
                     }
-                    title={
-                        type === 'Remove' ? 'Remove Liquidity' : 'Harvest Fees'
-                    }
+                    action={type === 'Remove' ? removeFn : harvestFn}
+                    flat
                 />
             )}
         </div>
@@ -714,6 +692,8 @@ export default function RangeActionModal(props: propsIF) {
                     quoteTokenLogoURI={props.quoteTokenLogoURI}
                     showSettings={showSettings}
                     setShowSettings={setShowSettings}
+                    baseTokenAddress={baseTokenAddress}
+                    quoteTokenAddress={quoteTokenAddress}
                 />
             </div>
             <div>
@@ -774,18 +754,17 @@ export default function RangeActionModal(props: propsIF) {
         </>
     );
 
-    if (showConfirmation) return confirmationContent;
     return (
-        <>
-            <SimpleModalHeader
-                onClose={handleModalClose}
+        <Modal usingCustomHeader onClose={onClose}>
+            <ModalHeader
+                onClose={onClose}
                 title={
                     showSettings
                         ? `${
-                              type === 'Remove' ? 'Remove Position' : 'Harvest'
+                              type === 'Remove' ? 'Remove Liquidity' : 'Harvest'
                           } Settings`
                         : type === 'Remove'
-                        ? 'Remove Position'
+                        ? 'Remove Liquidity'
                         : 'Harvest Confirmation'
                 }
                 onBackButton={() => {
@@ -800,6 +779,6 @@ export default function RangeActionModal(props: propsIF) {
                     {buttonToDisplay}
                 </div>
             </div>
-        </>
+        </Modal>
     );
 }

@@ -1,5 +1,7 @@
-import styles from './TokensArrow.module.css';
-// import { useState } from 'react';
+import {
+    TokenArrow,
+    TokenArrowButton,
+} from '../../../styled/Components/TradeModules';
 interface TokensArrowPropsIF {
     onlyDisplay?: boolean;
     onClick?: () => void;
@@ -7,27 +9,22 @@ interface TokensArrowPropsIF {
 }
 export default function TokensArrow(props: TokensArrowPropsIF) {
     const { onlyDisplay, disabled, onClick } = props;
-
     return (
-        <button
+        <TokenArrowButton
+            onlyDisplay={!!onlyDisplay}
+            disabled={!!disabled}
             tabIndex={onlyDisplay ? -1 : 0}
-            className={`${styles.container} ${
-                onlyDisplay && styles.display_container
-            }`}
             aria-label='Reverse tokens'
-            style={{
-                cursor: disabled ? 'wait' : onlyDisplay ? 'default' : 'pointer',
-            }}
-            // style={{ transform: rotate, transition: 'all 0.2s linear' }}
             onClick={onClick}
         >
-            <svg
+            <TokenArrow
+                onlyDisplay={!!onlyDisplay}
+                disabled={!!disabled}
                 width='24'
                 height='15'
                 viewBox='0 0 24 15'
                 fill='none'
                 xmlns='http://www.w3.org/2000/svg'
-                className={styles.token_arrow}
             >
                 <path
                     d='M2.82 0.000312805L12 9.16031L21.18 0.000312805L24 2.82031L12 14.8203L0 2.82031L2.82 0.000312805Z'
@@ -47,9 +44,7 @@ export default function TokensArrow(props: TokensArrowPropsIF) {
                         <stop offset='1' stopColor='#7371FC' />
                     </linearGradient>
                 </defs>
-            </svg>
-
-            {/* {rotateSvgs} */}
-        </button>
+            </TokenArrow>
+        </TokenArrowButton>
     );
 }

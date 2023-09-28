@@ -10,7 +10,6 @@
     gap: 4px;
 }
 
-
 /* TOKEN PAIR DETAILS */
 .token_pair_details {
     display: flex;
@@ -44,7 +43,6 @@
 .earned_container,
 .price_status_content,
 .value_content {
-   
     padding: 8px;
 }
 .value_content,
@@ -100,7 +98,7 @@
 }
 
 .price_status_content h2 {
-    font-weight: 200;
+    font-weight: 300;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
 }

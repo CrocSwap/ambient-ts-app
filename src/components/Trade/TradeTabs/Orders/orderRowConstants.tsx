@@ -1,20 +1,22 @@
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { TextOnlyTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
-import styles from './Orders.module.css';
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
+import { useContext } from 'react';
+import { TokenContext } from '../../../../contexts/TokenContext';
+import { RowItem } from '../../../../styled/Components/TransactionTable';
+import { FlexContainer, Text } from '../../../../styled/Common';
 
-interface Props {
+interface propsIF {
     posHashTruncated: string;
     posHash: string;
-    sellOrderStyle: string;
     usdValue: string;
-    usernameStyle: string;
+    usernameColor: 'accent1' | 'accent2' | 'text1';
     userNameToDisplay: string;
     baseTokenLogo: string;
     quoteTokenLogo: string;
@@ -22,9 +24,13 @@ interface Props {
     quoteTokenSymbol: string;
     baseDisplay: string;
     quoteDisplay: string;
+    originalPositionLiqBase: string;
+    originalPositionLiqQuote: string;
+    expectedPositionLiqBase: string;
+    expectedPositionLiqQuote: string;
     priceStyle: string;
     elapsedTimeString: string;
-    sideType: string;
+    sideType: 'sell' | 'buy';
     sideCharacter: string;
     limitOrder: LimitOrderIF;
     priceCharacter: string;
@@ -32,12 +38,15 @@ interface Props {
     truncatedDisplayPrice: string | undefined;
     isOwnerActiveAccount: boolean;
     isAccountView: boolean;
+    ensName: string | null;
     isOrderFilled: boolean;
+    isLimitOrderPartiallyFilled: boolean;
+    fillPercentage: number;
     handleCopyPosHash: () => void;
-    handleRowMouseDown: () => void;
-    handleRowMouseOut: () => void;
     handleWalletLinkClick: () => void;
     handleWalletCopy: () => void;
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
 }
 
 // * This file contains constants used in the rendering of order rows in the order table.
@@ -45,15 +54,14 @@ interface Props {
 // * By extracting the constants into a separate file, we can keep the main component file clean and easier to read/maintain.
 
 // * To use these constants in a component, simply import them from this file and reference them as needed.
-export const orderRowConstants = (props: Props) => {
+export const orderRowConstants = (props: propsIF) => {
     const {
         posHashTruncated,
-
+        ensName,
         posHash,
         handleCopyPosHash,
-        sellOrderStyle,
         usdValue,
-        usernameStyle,
+        usernameColor,
         userNameToDisplay,
         limitOrder,
         handleWalletCopy,
@@ -63,23 +71,31 @@ export const orderRowConstants = (props: Props) => {
         isOwnerActiveAccount,
         baseTokenSymbol,
         quoteTokenSymbol,
-        baseDisplay,
-        quoteDisplay,
         elapsedTimeString,
         isAccountView,
         priceCharacter,
-        priceStyle,
         truncatedDisplayPrice,
         truncatedDisplayPriceDenomByMoneyness,
         sideType,
         sideCharacter,
         isOrderFilled,
-
-        handleRowMouseDown,
-        handleRowMouseOut,
+        baseTokenAddress,
+        quoteTokenAddress,
+        isLimitOrderPartiallyFilled,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
+        fillPercentage,
     } = props;
 
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
+
+    const phoneScreen = useMediaQuery('(max-width: 600px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
     const tradeLinkPath =
@@ -91,103 +107,118 @@ export const orderRowConstants = (props: Props) => {
         );
 
     const IDWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p
-                    className={styles.id_tooltip_style}
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    {posHash}
-                    <FiCopy
-                        style={{ cursor: 'pointer' }}
-                        onClick={handleCopyPosHash}
-                    />
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                data-label='id'
-                className={`${styles.base_color} ${styles.hover_style} ${styles.mono_font}`}
+        <RowItem hover data-label='id' role='button' tabIndex={0}>
+            <TextOnlyTooltip
+                interactive
+                title={
+                    <FlexContainer
+                        justifyContent='center'
+                        background='dark3'
+                        color='text1'
+                        padding='12px'
+                        gap={8}
+                        rounded
+                        font='roboto'
+                        role='button'
+                        style={{ width: '440px', cursor: 'default' }}
+                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+                            event.stopPropagation()
+                        }
+                    >
+                        {posHash}
+                        <FiCopy
+                            size={'12px'}
+                            style={{ cursor: 'pointer' }}
+                            onClick={handleCopyPosHash}
+                        />
+                    </FlexContainer>
+                }
+                placement={'right'}
+                enterDelay={750}
+                leaveDelay={0}
             >
-                {posHashTruncated}
-            </p>
-        </TextOnlyTooltip>
+                <Text font='roboto'>{posHashTruncated}</Text>
+            </TextOnlyTooltip>
+        </RowItem>
     );
 
     const ValueWithTooltip = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <RowItem
+            justifyContent='flex-end'
+            type={sideType}
             data-label='value'
-            className={sellOrderStyle}
-            style={{ textAlign: 'right' }}
             tabIndex={0}
         >
             {' '}
             {usdValue}
-        </li>
+        </RowItem>
     );
 
     const actualWalletWithTooltip = (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <div
-                    className={styles.wallet_tooltip_div}
-                    onClick={(event) => event.stopPropagation()}
-                >
-                    <p className={styles.wallet_tooltip_p}>
-                        <span
+        <RowItem
+            data-label='wallet'
+            style={ensName ? { textTransform: 'lowercase' } : undefined}
+        >
+            <TextOnlyTooltip
+                interactive
+                title={
+                    <FlexContainer
+                        justifyContent='center'
+                        background='dark3'
+                        color='text1'
+                        padding='12px'
+                        gap={8}
+                        rounded
+                        font='roboto'
+                        role='button'
+                        style={{ width: '316px' }}
+                        onClick={(event: React.MouseEvent<HTMLDivElement>) =>
+                            event.stopPropagation()
+                        }
+                    >
+                        <Text
+                            font='roboto'
                             onClick={handleWalletLinkClick}
                             style={{ cursor: 'pointer' }}
                         >
                             {limitOrder.user}
-                        </span>
+                        </Text>
                         <FiCopy
-                            style={{ cursor: 'pointer' }}
                             size={'12px'}
                             onClick={() => handleWalletCopy()}
                         />
 
                         <FiExternalLink
-                            style={{ cursor: 'pointer' }}
                             size={'12px'}
                             onClick={handleWalletLinkClick}
                         />
-                    </p>
-                </div>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <p
-                data-label='wallet'
-                className={`${usernameStyle} ${styles.mono_font}`}
-                style={{ textTransform: 'lowercase' }}
+                    </FlexContainer>
+                }
+                placement={'right'}
+                enterDelay={750}
+                leaveDelay={0}
             >
-                {userNameToDisplay}
-            </p>
-        </TextOnlyTooltip>
+                <Text
+                    font={usernameColor === 'text1' ? 'roboto' : undefined}
+                    color={usernameColor}
+                >
+                    {userNameToDisplay}
+                </Text>
+            </TextOnlyTooltip>
+        </RowItem>
     );
 
     const walletWithoutTooltip = (
-        <p
-            // onClick={handleWalletClick}
-
+        <RowItem
+            hover
+            color={usernameColor}
+            font={usernameColor === 'text1' ? 'roboto' : undefined}
             data-label='wallet'
-            className={`${usernameStyle} ${styles.hover_style}`}
             style={{ textTransform: 'lowercase' }}
             tabIndex={0}
-            onMouseOver={handleRowMouseDown}
-            onMouseOut={handleRowMouseOut}
         >
             {userNameToDisplay}
-        </p>
+        </RowItem>
     );
 
     const walletWithTooltip = isOwnerActiveAccount
@@ -196,6 +227,7 @@ export const orderRowConstants = (props: Props) => {
 
     const baseTokenLogoComponent = (
         <TokenIcon
+            token={baseToken}
             src={baseTokenLogo}
             alt={baseTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
@@ -203,6 +235,7 @@ export const orderRowConstants = (props: Props) => {
     );
     const quoteTokenLogoComponent = (
         <TokenIcon
+            token={quoteToken}
             src={quoteTokenLogo}
             alt={quoteTokenSymbol}
             size={phoneScreen ? 'xxs' : smallScreen ? 'xs' : 'm'}
@@ -210,113 +243,110 @@ export const orderRowConstants = (props: Props) => {
     );
 
     const tokenPair = (
-        <li
+        <div
             className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
             data-label='tokens'
             onClick={(event) => event.stopPropagation()}
         >
             <NavLink to={tradeLinkPath}>
                 {baseTokenSymbol} / {quoteTokenSymbol}
             </NavLink>
-        </li>
+        </div>
     );
 
     const baseQtyDisplayWithTooltip = (
-        <li
-            data-label={baseTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
+        <div data-label={baseTokenSymbol} className='base_color' tabIndex={0}>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='flex-end'
+                gap={4}
             >
-                {baseDisplay}
+                {limitOrder.isBid
+                    ? originalPositionLiqBase
+                    : expectedPositionLiqBase}
                 {baseTokenLogoComponent}
-            </div>
-        </li>
+            </FlexContainer>
+        </div>
     );
 
     const quoteQtyDisplayWithTooltip = (
-        <li
-            data-label={quoteTokenSymbol}
-            className='base_color'
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            tabIndex={0}
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    gap: '4px',
-                    textAlign: 'right',
-                }}
+        <div data-label={quoteTokenSymbol} className='base_color' tabIndex={0}>
+            <FlexContainer
+                alignItems='center'
+                justifyContent='flex-end'
+                gap={4}
             >
-                {quoteDisplay}
+                {limitOrder.isBid
+                    ? expectedPositionLiqQuote
+                    : originalPositionLiqQuote}
                 {quoteTokenLogoComponent}
-            </div>
-        </li>
+            </FlexContainer>
+        </div>
     );
 
-    const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
-        <TextOnlyTooltip
-            interactive
-            title={
-                <p className={styles.order_tooltip}>
-                    {moment(limitOrder.latestUpdateTime * 1000).format(
-                        'MM/DD/YYYY HH:mm',
-                    )}
-                </p>
-            }
-            placement={'right'}
-            enterDelay={750}
-            leaveDelay={0}
-        >
-            <li
-                style={{ textTransform: 'lowercase' }}
-                onMouseEnter={handleRowMouseDown}
-                onMouseLeave={handleRowMouseOut}
-            >
-                <p className='base_color'>{elapsedTimeString}</p>
-            </li>
-        </TextOnlyTooltip>
-    ) : (
-        <li
-            style={{ textTransform: 'lowercase' }}
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-        >
-            <p className='base_color'>{elapsedTimeString}</p>
-        </li>
+    const OrderTimeWithTooltip = (
+        <RowItem gap={4}>
+            <>
+                {limitOrder.latestUpdateTime ? (
+                    <TextOnlyTooltip
+                        interactive
+                        title={
+                            <FlexContainer
+                                fullWidth
+                                justifyContent='center'
+                                background='dark3'
+                                color='text1'
+                                padding='12px'
+                                gap={8}
+                                rounded
+                                role='button'
+                                onClick={(
+                                    event: React.MouseEvent<HTMLDivElement>,
+                                ) => event.stopPropagation()}
+                            >
+                                {moment(
+                                    limitOrder.latestUpdateTime * 1000,
+                                ).format('MM/DD/YYYY HH:mm')}
+                            </FlexContainer>
+                        }
+                        placement={'right'}
+                        enterDelay={750}
+                        leaveDelay={0}
+                    >
+                        <div style={{ textTransform: 'lowercase' }}>
+                            <Text
+                                style={{ textTransform: 'lowercase' }}
+                                tabIndex={0}
+                            >
+                                {elapsedTimeString}
+                            </Text>
+                        </div>
+                    </TextOnlyTooltip>
+                ) : (
+                    <div style={{ textTransform: 'lowercase' }}>
+                        <p className='base_color'>{elapsedTimeString}</p>
+                    </div>
+                )}
+            </>
+        </RowItem>
     );
     const txIdColumnComponent = (
-        <li>
+        <div>
             {IDWithTooltip}
             {walletWithTooltip}
-        </li>
+        </div>
     );
 
     const priceDisplay = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <RowItem
+            flexDirection='column'
+            alignItems='flex-end'
+            justifyContent='center'
+            type={sideType}
             data-label='price'
-            className={priceStyle + ' ' + sellOrderStyle}
-            style={{ textAlign: 'right' }}
         >
             {(
-                <p className={`${styles.align_right} `}>
+                <p>
                     <span>{priceCharacter}</span>
                     <span>
                         {isAccountView
@@ -325,92 +355,79 @@ export const orderRowConstants = (props: Props) => {
                     </span>
                 </p>
             ) || '…'}
-        </li>
+        </RowItem>
     );
 
     const typeDisplay = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            data-label='type'
-            className={sellOrderStyle}
-            style={{ textAlign: 'center' }}
-        >
+        <RowItem justifyContent='center' type={sideType} data-label='type'>
             Limit
-        </li>
+        </RowItem>
     );
 
     const sideDisplay = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            data-label='side'
-            className={sellOrderStyle}
-            style={{ textAlign: 'center' }}
-        >
+        <RowItem type={sideType} justifyContent='center' data-label='side'>
             {`${sideType} ${sideCharacter}`}
-        </li>
+        </RowItem>
     );
 
     const sideTypeColumn = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <RowItem
+            flexDirection='column'
+            type={sideType}
             data-label='side-type'
-            className={sellOrderStyle}
             style={{ textAlign: 'center' }}
         >
             <p>Limit</p>
             <p>{`${sideType} ${sideCharacter}`}</p>
-        </li>
+        </RowItem>
     );
 
     const tokensColumn = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
+        <div
             data-label={baseTokenSymbol + quoteTokenSymbol}
             className='base_color'
         >
-            <div
-                className={styles.token_qty}
+            <FlexContainer
+                justifyContent='flex-end'
+                alignItems='center'
+                gap={4}
                 style={{
                     whiteSpace: 'nowrap',
                 }}
             >
-                {' '}
-                {baseDisplay} {baseTokenLogoComponent}
-            </div>
+                {limitOrder.isBid
+                    ? originalPositionLiqBase
+                    : expectedPositionLiqBase}
+                {baseTokenLogoComponent}
+            </FlexContainer>
 
-            <div
-                className={styles.token_qty}
+            <FlexContainer
+                justifyContent='flex-end'
+                alignItems='center'
+                gap={4}
                 style={{
                     whiteSpace: 'nowrap',
                 }}
             >
                 {' '}
-                {quoteDisplay}
+                {limitOrder.isBid
+                    ? expectedPositionLiqQuote
+                    : originalPositionLiqQuote}
                 {quoteTokenLogoComponent}
-            </div>
-        </li>
+            </FlexContainer>
+        </div>
     );
 
     const statusDisplay = (
-        <li
-            onMouseEnter={handleRowMouseDown}
-            onMouseLeave={handleRowMouseOut}
-            data-label='status'
-        >
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <OpenOrderStatus isFilled={isOrderFilled} />
-            </div>
-        </li>
+        <div data-label='status'>
+            <FlexContainer justifyContent='center' alignItems='center'>
+                <OpenOrderStatus
+                    isFilled={isOrderFilled}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
+                    fillPercentage={fillPercentage}
+                />
+            </FlexContainer>
+        </div>
     );
 
     return {

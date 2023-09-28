@@ -1,42 +1,29 @@
-import { useEffect, useRef, useState, useContext, memo } from 'react';
+import { useEffect, useRef, useContext, memo } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
-import styles from '../Ranges.module.css';
-
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
-import RangeDetails from '../../../../RangeDetails/RangeDetails';
-
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import rangeRowConstants from '../rangeRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { RangeContext } from '../../../../../contexts/RangeContext';
+import { useModal } from '../../../../Global/Modal/useModal';
+import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
+import { RangeRow as RangeRowStyled } from '../../../../../styled/Components/TransactionTable';
 
 interface propsIF {
-    showPair: boolean;
-    ipadView: boolean;
-    showColumns: boolean;
     position: PositionIF;
     rank?: number;
     isAccountView: boolean;
     isLeaderboard?: boolean;
+    tableView: 'small' | 'medium' | 'large';
 }
 
 function RangesRow(props: propsIF) {
+    const { tableView, position, isAccountView, isLeaderboard } = props;
     const {
-        ipadView,
-        showColumns,
-        showPair,
-        position,
-        isAccountView,
-        isLeaderboard,
-    } = props;
-    const {
-        globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -47,6 +34,9 @@ function RangesRow(props: propsIF) {
 
     const { currentRangeInReposition, currentRangeInAdd } =
         useContext(RangeContext);
+
+    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+        useModal();
 
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
@@ -82,6 +72,8 @@ function RangesRow(props: propsIF) {
         maxRangeDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         elapsedTimeString,
+        baseTokenAddress,
+        quoteTokenAddress,
     } = useProcessRange(position, userAddress, isAccountView);
 
     const rangeDetailsProps = {
@@ -117,26 +109,10 @@ function RangesRow(props: propsIF) {
         isPositionInRange: isPositionInRange,
     };
 
-    const openDetailsModal = () => {
-        IS_LOCAL_ENV && console.debug({ position });
-        openGlobalModal(
-            <RangeDetails
-                position={position}
-                {...rangeDetailsProps}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-            />,
-        );
-    };
-
     const positionDomId =
         position.firstMintTx === currentPositionActive
             ? `position-${position.firstMintTx}`
             : '';
-
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
 
     const activePositionRef = useRef(null);
 
@@ -177,27 +153,12 @@ function RangesRow(props: propsIF) {
         position.firstMintTx === currentPositionActive ? scrollToDiv() : null;
     }, [currentPositionActive]);
 
-    const userPositionStyle =
-        userNameToDisplay === 'You' && showAllData ? styles.border_left : null;
-
-    const usernameStyle =
-        isOwnerActiveAccount && (showAllData || isLeaderboard)
-            ? 'owned_tx_contrast'
+    const usernameColor: 'text1' | 'accent1' | 'accent2' =
+        isOwnerActiveAccount && showAllData
+            ? 'accent2'
             : ensName || userNameToDisplay === 'You'
-            ? 'gradient_text'
-            : 'username_base_color';
-
-    const activePositionStyle =
-        position.firstMintTx === currentPositionActive ||
-        position.positionId === currentRangeInReposition ||
-        position.positionId === currentRangeInAdd
-            ? styles.active_position_style
-            : '';
-
-    const [highlightRow, setHighlightRow] = useState(false);
-    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
-    const handleRowMouseDown = () => setHighlightRow(true);
-    const handleRowMouseOut = () => setHighlightRow(false);
+            ? 'accent1'
+            : 'text1';
 
     function handleWalletLinkClick() {
         if (!isAccountView)
@@ -212,8 +173,6 @@ function RangesRow(props: propsIF) {
             );
     }
 
-    // eslint-disable-next-line
-    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isAccountView) {
             const accountUrl = `/${
@@ -231,43 +190,40 @@ function RangesRow(props: propsIF) {
         posHashTruncated,
         usdValue,
         openDetailsModal,
-        handleRowMouseDown,
-        handleRowMouseOut,
         handleWalletLinkClick,
         handleWalletCopy,
         ownerId,
+        ensName,
         userNameToDisplay,
         isOwnerActiveAccount,
-        usernameStyle,
+        usernameColor,
         baseTokenLogo,
         quoteTokenLogo,
         position,
         baseTokenSymbol,
         quoteTokenSymbol,
         isLeaderboard,
-        showColumns,
         rank: props.rank,
         elapsedTimeString,
-
         maxRangeDenomByMoneyness,
         isAccountView,
         isAmbient,
-
         minRangeDenomByMoneyness,
         ambientOrMin,
         ambientOrMax,
         sideCharacter,
-        ipadView,
         apyString,
         apyClassname,
         isPositionInRange,
+        baseTokenAddress,
+        quoteTokenAddress,
     };
 
     const {
         valueWithTooltip,
         walletWithTooltip,
         tokenPair,
-        idOrNull,
+        IDWithTooltip,
         rankingOrNull,
         baseQtyDisplayWithTooltip,
         quoteQtyDisplayWithTooltip,
@@ -275,8 +231,7 @@ function RangesRow(props: propsIF) {
         txIdColumnComponent,
         fullScreenMinDisplay,
         fullScreenMaxDisplay,
-        columnNonAmbientPrice,
-        columnAmbientPrice,
+        priceDisplay,
         tokenValues,
         apyDisplay,
         rangeDisplay,
@@ -292,37 +247,59 @@ function RangesRow(props: propsIF) {
 
     return (
         <>
-            <ul
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+            <RangeRowStyled
+                size={tableView}
+                account={isAccountView}
+                leaderboard={isLeaderboard}
+                active={
+                    position.firstMintTx === currentPositionActive ||
+                    position.positionId === currentRangeInReposition ||
+                    position.positionId === currentRangeInAdd
+                }
+                user={userNameToDisplay === 'You' && showAllData}
                 onClick={handleRowClick}
                 id={positionDomId}
                 ref={currentPositionActive ? activePositionRef : null}
-                style={{ backgroundColor: highlightStyle }}
             >
-                {rankingOrNull}
-                {showPair && rangeTimeWithTooltip}
-                {isAccountView && showPair && tokenPair}
-                {idOrNull}
-                {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
-                {showColumns && txIdColumnComponent}
-                {!showColumns && fullScreenMinDisplay}
-                {!showColumns && fullScreenMaxDisplay}
-                {columnNonAmbientPrice}
-                {columnAmbientPrice}
+                {tableView === 'large' && rankingOrNull}
+                {tableView === 'large' && rangeTimeWithTooltip}
+                {isAccountView && tokenPair}
+                {!isLeaderboard && tableView === 'large' && (
+                    <div>{IDWithTooltip}</div>
+                )}
+                {tableView === 'large' && !isAccountView && (
+                    <div>{walletWithTooltip}</div>
+                )}
+                {tableView !== 'large' && txIdColumnComponent}
+                {tableView === 'large' && fullScreenMinDisplay}
+                {tableView === 'large' && fullScreenMaxDisplay}
+                {tableView === 'medium' && priceDisplay}
                 {valueWithTooltip}
-                {!showColumns && baseQtyDisplayWithTooltip}
-                {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && !phoneScreen && tokenValues}
+                {tableView === 'large' && baseQtyDisplayWithTooltip}
+                {tableView === 'large' && quoteQtyDisplayWithTooltip}
+                {tableView === 'medium' && tokenValues}
                 {apyDisplay}
                 {rangeDisplay}
-                <li data-label='menu' className={styles.menu}>
+                <div data-label='menu'>
                     <RangesMenu
                         {...rangeMenuProps}
                         isEmpty={position.totalValueUSD === 0}
                         handleAccountClick={handleAccountClick}
+                        isAccountView={isAccountView}
                     />
-                </li>
-            </ul>
+                </div>
+            </RangeRowStyled>
+            {isDetailsModalOpen && (
+                <RangeDetailsModal
+                    position={position}
+                    {...rangeDetailsProps}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    onClose={closeDetailsModal}
+                />
+            )}
         </>
     );
 }

@@ -2,11 +2,12 @@ import { SortedPoolMethodsIF, sortType } from './useSortedPools';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { HeaderItem } from './TopPools';
 import {
-    TableHeadWrapper,
-    TableHeadRow,
-    TableHeaderCell,
     LabelWrapper,
-} from './Analytics.styles';
+    TableHeaderCell,
+    TableHeadRow,
+    TableHeadWrapper,
+} from '../../../styled/Components/Analytics';
+
 const TableHead = ({
     headerItems,
     sortedPools,

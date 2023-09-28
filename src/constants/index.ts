@@ -15,7 +15,7 @@ export const POOL_HIDE = [
 
 // allow a local environment variable to be defined in [app_repo]/.env.local to set a name for dev environment
 // NOTE: we use 'main' for staging (testnet) and 'production' for mainnet app. All other names are treated as 'local'
-export type AppEnvironment = 'local' | 'main' | 'production';
+export type AppEnvironment = 'local' | 'testnet' | 'production';
 export const BRANCH_NAME =
     process.env.REACT_APP_BRANCH_NAME !== undefined
         ? process.env.REACT_APP_BRANCH_NAME.toLowerCase()
@@ -25,6 +25,9 @@ export const APP_ENVIRONMENT: AppEnvironment =
     (BRANCH_NAME as AppEnvironment) || 'local';
 
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
+
+export const ANALYTICS_URL =
+    'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
 
 export const GRAPHCACHE_URL =
     process.env.REACT_APP_GRAPHCACHE_URL || 'https://ambindexer.net';
@@ -75,6 +78,10 @@ export const LS_KEY_SUBCHART_SETTINGS = 'subchart_settings';
 // Icon archive
 export const ETH_ICON_URL =
     'https://icons.iconarchive.com/icons/cjdowner/cryptocurrency-flat/1024/Ethereum-ETH-icon.png';
+
+// Modal IDS
+export const GLOBAL_MODAL_PORTAL_ID = 'ambient_global_modal_portal';
+export const GLOBAL_MODAL_COMPONENT_ID = 'Modal_Global';
 
 // Allowed links
 export const CROCODILE_LABS_LINKS = [

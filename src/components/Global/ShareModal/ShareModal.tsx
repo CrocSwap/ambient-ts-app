@@ -1,12 +1,18 @@
-import styles from './ShareModal.module.css';
 import { FiCopy } from 'react-icons/fi';
-import { useContext, useState } from 'react';
+import { ChangeEvent, useContext, useState } from 'react';
 import { FaDiscord, FaTelegram, FaFacebook } from 'react-icons/fa';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { useLocation } from 'react-router-dom';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { DISCORD_LINK } from '../../../constants';
+import Modal from '../Modal/Modal';
+import { FlexContainer, Text } from '../../../styled/Common';
+import {
+    IconButton,
+    ShareUrl,
+    ShareItem,
+} from '../../../styled/Components/TradeModules';
 
 interface SocialLinkPropsIF {
     // eslint-disable-next-line
@@ -20,20 +26,23 @@ function SocialLink(props: SocialLinkPropsIF) {
     const ariaLabel = `share swap on ${name}`;
 
     return (
-        <a
+        <ShareItem
             target='_blank'
             rel='noreferrer'
             href={link}
-            className={styles.social_link_container}
             aria-label={ariaLabel}
             tabIndex={0}
         >
             {icon}
             {name}
-        </a>
+        </ShareItem>
     );
 }
-export default function ShareModal() {
+
+interface propsIF {
+    onClose: () => void;
+}
+export default function ShareModal({ onClose }: propsIF) {
     const location = useLocation();
     // const currentUrl = location.href
     const currentPathname = location.pathname;
@@ -83,7 +92,7 @@ export default function ShareModal() {
     }
 
     const shareIconsContent = (
-        <section className={styles.share_links_container}>
+        <FlexContainer alignItems='center' gap={4}>
             {socialLinksData.map((link, idx) => (
                 <SocialLink
                     name={link.name}
@@ -92,31 +101,39 @@ export default function ShareModal() {
                     key={idx}
                 />
             ))}
-        </section>
+        </FlexContainer>
     );
 
     return (
-        <div className={styles.option_control_container}>
-            {shareIconsContent}
+        <Modal title='Share' onClose={onClose}>
+            <FlexContainer flexDirection='column' gap={8} padding='16px'>
+                {shareIconsContent}
 
-            <p className={styles.control_title}>URL:</p>
-            <p className={styles.url_link}>
-                <input
-                    type='text'
-                    placeholder={`${linkToShare}`}
-                    disabled={true}
-                    onChange={(e) => setLinkToShare(e?.target.value)}
-                />
-
-                <button
-                    onClick={handleCopyAddress}
-                    className={styles.copy_button}
-                    tabIndex={0}
-                    aria-label='Copy to clipboard'
+                <Text color='text2'>URL:</Text>
+                <FlexContainer
+                    fullWidth
+                    alignItems='center'
+                    gap={8}
+                    color='text2'
                 >
-                    <FiCopy size={25} />
-                </button>
-            </p>
-        </div>
+                    <ShareUrl
+                        type='text'
+                        placeholder={`${linkToShare}`}
+                        disabled={true}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                            setLinkToShare(e?.target.value)
+                        }
+                    />
+
+                    <IconButton
+                        onClick={handleCopyAddress}
+                        tabIndex={0}
+                        aria-label='Copy to clipboard'
+                    >
+                        <FiCopy size={25} />
+                    </IconButton>
+                </FlexContainer>
+            </FlexContainer>
+        </Modal>
     );
 }

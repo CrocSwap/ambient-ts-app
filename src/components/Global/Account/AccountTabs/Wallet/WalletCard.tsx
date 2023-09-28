@@ -1,8 +1,7 @@
-import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import styles from './WalletCard.module.css';
 import { useContext, useEffect, useState } from 'react';
-import { ETH_ICON_URL, ZERO_ADDRESS } from '../../../../../constants';
+import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../../../contexts/TokenContext';
@@ -10,9 +9,11 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
+import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
+import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {
-    token?: TokenIF;
+    token: TokenIF;
     cachedFetchTokenPrice: TokenPriceFn;
 }
 
@@ -48,19 +49,20 @@ export default function WalletCard(props: propsIF) {
     useEffect(() => {
         (async () => {
             try {
-                const tokenAddress = tokenMapKey.split('_')[0];
-                const chain = tokenMapKey.split('_')[1];
-                const isChainMainnet = chain === '0x1';
-                const mainnetAddress =
-                    isChainMainnet && tokenAddress !== ZERO_ADDRESS
-                        ? tokenMapKey.split('_')[0]
-                        : testTokenMap.get(tokenMapKey)?.split('_')[0];
-                if (mainnetAddress) {
-                    const price = await cachedFetchTokenPrice(
-                        mainnetAddress,
-                        '0x1',
-                    );
-                    if (price) setTokenPrice(price);
+                if (tokenFromMap?.symbol) {
+                    const mainnetAddress =
+                        ethereumMainnet.tokens[
+                            tokenFromMap?.symbol as keyof typeof ethereumMainnet.tokens
+                        ];
+                    if (mainnetAddress) {
+                        const price = await cachedFetchTokenPrice(
+                            mainnetAddress === ZERO_ADDRESS
+                                ? ethereumMainnet.tokens['WETH']
+                                : mainnetAddress,
+                            ethereumMainnet.chainId,
+                        );
+                        if (price) setTokenPrice(price);
+                    }
                 }
             } catch (err) {
                 console.error(err);
@@ -70,18 +72,19 @@ export default function WalletCard(props: propsIF) {
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    const walletBalanceNum = token?.walletBalanceDisplay
-        ? parseFloat(token?.walletBalanceDisplay)
-        : 0;
+    const walletBalanceDisplay = token.walletBalance
+        ? toDisplayQty(token.walletBalance, token.decimals)
+        : undefined;
 
-    const walletBalanceTruncated =
-        token && token.walletBalanceDisplayTruncated && walletBalanceNum !== 0
-            ? token.walletBalanceDisplayTruncated
-            : '0';
+    const walletBalanceDisplayNum = walletBalanceDisplay
+        ? parseFloat(walletBalanceDisplay)
+        : undefined;
 
-    const tokenImageSrc =
-        tokenFromMap?.logoURI ?? token?.logoURI ?? ETH_ICON_URL;
-    const tokenImageAlt = tokenFromMap?.symbol ?? token?.symbol ?? '???';
+    const walletBalanceTruncated = walletBalanceDisplayNum
+        ? getFormattedNumber({
+              value: walletBalanceDisplayNum,
+          })
+        : '0';
 
     const iconAndSymbolWithTooltip = (
         <DefaultTooltip
@@ -95,11 +98,14 @@ export default function WalletCard(props: propsIF) {
         >
             <div className={styles.token_icon}>
                 <TokenIcon
-                    src={uriToHttp(tokenImageSrc)}
-                    alt={tokenImageAlt}
+                    token={token}
+                    src={uriToHttp(token.logoURI)}
+                    alt={token.symbol ?? 'unknown token'}
                     size='2xl'
                 />
-                <p className={styles.token_key}>{tokenImageAlt}</p>
+                <p className={styles.token_key}>
+                    {token.symbol ?? 'unknown token'}
+                </p>
             </div>
         </DefaultTooltip>
     );
@@ -130,7 +136,7 @@ export default function WalletCard(props: propsIF) {
             {tokenInfo}
             <p className={styles.value}>
                 {getFormattedNumber({
-                    value: tokenUsdPrice * walletBalanceNum,
+                    value: tokenUsdPrice * (walletBalanceDisplayNum ?? 0),
                     isUSD: true,
                 })}
             </p>

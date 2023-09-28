@@ -10,10 +10,10 @@
 }
 
 .container {
-    width: 100%; 
+    width: 100%;
     max-width: 800px;
     height: 80%;
-    
+
     overflow: auto;
     margin: 5% auto;
 
@@ -32,7 +32,7 @@
 
     font-family: 'Lexend Deca';
     font-style: normal;
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;

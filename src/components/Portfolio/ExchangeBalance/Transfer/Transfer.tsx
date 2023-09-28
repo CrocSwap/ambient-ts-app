@@ -1,11 +1,8 @@
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/exports';
-import styles from './Transfer.module.css';
-import TransferAddressInput from './TransferAddressInput/TransferAddressInput';
-import TransferButton from './TransferButton/TransferButton';
-import TransferCurrencySelector from './TransferCurrencySelector/TransferCurrencySelector';
+import Button from '../../../Form/Button';
+import TransferAddressInput from './TransferAddressInput';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import {
     Dispatch,
     SetStateAction,
@@ -14,26 +11,35 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 // import { setToken } from '../../../../utils/state/temp';
+import { BigNumber } from 'ethers';
+import { FaGasPump } from 'react-icons/fa';
+import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import useDebounce from '../../../../App/hooks/useDebounce';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
+import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import {
+    GasPump,
+    SVGContainer,
+    MaxButton,
+} from '../../../../styled/Components/Portfolio';
+import {
+    TransactionError,
+    isTransactionFailedError,
+    isTransactionReplacedError,
+} from '../../../../utils/TransactionError';
+import { checkBlacklist } from '../../../../utils/data/blacklist';
 import {
     addPendingTx,
     addReceipt,
     addTransactionByType,
     removePendingTx,
+    updateTransactionHash,
 } from '../../../../utils/state/receiptDataSlice';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../../../utils/TransactionError';
-import { BigNumber } from 'ethers';
-import { checkBlacklist } from '../../../../utils/data/blacklist';
-import { FaGasPump } from 'react-icons/fa';
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../../constants';
-import useDebounce from '../../../../App/hooks/useDebounce';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
-import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import CurrencySelector from '../../../Form/CurrencySelector';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -43,7 +49,7 @@ interface propsIF {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
-    openTokenModal: () => void;
+    setTokenModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Transfer(props: propsIF) {
@@ -55,7 +61,7 @@ export default function Transfer(props: propsIF) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
-        openTokenModal,
+        setTokenModalOpen,
     } = props;
     const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
 
@@ -189,7 +195,8 @@ export default function Transfer(props: propsIF) {
                     dispatch(
                         addTransactionByType({
                             txHash: tx.hash,
-                            txType: `Transfer ${selectedToken.symbol}`,
+                            txType: 'Transfer',
+                            txDescription: `Transfer ${selectedToken.symbol}`,
                         }),
                     );
                 let receipt;
@@ -207,30 +214,14 @@ export default function Transfer(props: propsIF) {
                         const newTransactionHash = error.replacement.hash;
                         dispatch(addPendingTx(newTransactionHash));
 
+                        dispatch(
+                            updateTransactionHash({
+                                oldHash: error.hash,
+                                newHash: error.replacement.hash,
+                            }),
+                        );
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
-
-                        //  if (newTransactionHash) {
-                        //      fetch(
-                        //          newSwapCacheEndpoint +
-                        //              new URLSearchParams({
-                        //                  tx: newTransactionHash,
-                        //                  user: account ?? '',
-                        //                  base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                        //                  quote: isSellTokenBase
-                        //                      ? buyTokenAddress
-                        //                      : sellTokenAddress,
-                        //                  poolIdx: (await env.context).chain.poolIndex.toString(),
-                        //                  isBuy: isSellTokenBase.toString(),
-                        //                  inBaseQty: inBaseQty.toString(),
-                        //                  qty: crocQty.toString(),
-                        //                  override: 'false',
-                        //                  chainId: chainId,
-                        //                  limitPrice: '0',
-                        //                  minOut: '0',
-                        //              }),
-                        //      );
-                        //  }
                     } else if (isTransactionFailedError(error)) {
                         console.error({ error });
                         receipt = error.receipt;
@@ -263,17 +254,16 @@ export default function Transfer(props: propsIF) {
     const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
 
     const resolvedAddressOrNull = isResolvedAddressDifferent ? (
-        <div className={styles.info_text_non_clickable}>
+        <Text fontSize='body' color='text2'>
             Resolved Destination Address:
-            <div className={styles.hex_address}>{resolvedAddress}</div>
-        </div>
+            <p style={{ userSelect: 'all' }}>{resolvedAddress}</p>
+        </Text>
     ) : null;
 
     const secondaryEnsOrNull = secondaryEnsName ? (
-        <div className={styles.info_text_non_clickable}>
+        <Text fontSize='body' color='text2'>
             Destination ENS Address: {secondaryEnsName}
-            {/* <div className={styles.hex_address}>{secondaryEnsName}</div> */}
-        </div>
+        </Text>
     ) : null;
 
     const resetTransferQty = () => {
@@ -293,8 +283,6 @@ export default function Transfer(props: propsIF) {
         if (isTokenDexBalanceGreaterThanZero) {
             setTransferQtyNonDisplay(tokenDexBalance);
 
-            // if (transferInput && tokenExchangeDepositsDisplay)
-            //     transferInput.value = tokenExchangeDepositsDisplay;
             if (tokenExchangeDepositsDisplay)
                 setInputValue(tokenExchangeDepositsDisplay);
         }
@@ -306,8 +294,8 @@ export default function Transfer(props: propsIF) {
 
     const isTokenEth = selectedToken.address === ZERO_ADDRESS;
 
-    const averageGasUnitsForEthTransfer = 45000;
-    const averageGasUnitsForErc20Transfer = 45000;
+    const averageGasUnitsForEthTransferInGasDrops = 45000;
+    const averageGasUnitsForErc20TransferInGasDrops = 45000;
     const gweiInWei = 1e-9;
 
     // calculate price of gas for exchange balance transfer
@@ -318,8 +306,8 @@ export default function Transfer(props: propsIF) {
                 gweiInWei *
                 ethMainnetUsdPrice *
                 (isTokenEth
-                    ? averageGasUnitsForEthTransfer
-                    : averageGasUnitsForErc20Transfer);
+                    ? averageGasUnitsForEthTransferInGasDrops
+                    : averageGasUnitsForErc20TransferInGasDrops);
 
             setTransferGasPriceinDollars(
                 getFormattedNumber({
@@ -331,59 +319,49 @@ export default function Transfer(props: propsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
 
     return (
-        <div className={styles.deposit_container}>
-            <div className={styles.info_text_non_clickable}>
+        <FlexContainer flexDirection='column' gap={16} padding={'16px'}>
+            <Text fontSize='body' color='text2'>
                 Transfer deposited collateral to another deposit account:
-            </div>
+            </Text>
             <TransferAddressInput
                 fieldId='exchange-balance-transfer-address'
                 setTransferToAddress={setSendToAddress}
                 sendToAddress={sendToAddress}
                 disable={isAddressFieldDisabled}
             />
-            <TransferCurrencySelector
-                fieldId='exchange-balance-transfer'
-                onClick={() => openTokenModal()}
+            <CurrencySelector
                 selectedToken={selectedToken}
-                setTransferQty={setTransferQtyNonDisplay}
+                setQty={setTransferQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 disable={isCurrencyFieldDisabled}
+                setTokenModalOpen={setTokenModalOpen}
             />
-            <div className={styles.additional_info}>
-                <div
-                    className={`${styles.available_container} ${styles.info_text_non_clickable}`}
-                >
-                    <div className={styles.available_text}>Available:</div>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <FlexContainer fontSize='body' color='text2' gap={6}>
+                    <Text color='text1'>Available:</Text>
                     {tokenDexBalanceTruncated || '...'}
-                    <button
-                        className={`${styles.max_button} ${
-                            tokenDexBalance !== '0' && styles.max_button_enabled
-                        }`}
-                        onClick={handleBalanceClick}
-                        disabled={tokenDexBalance === '0'}
-                    >
-                        Max
-                    </button>
-                </div>
-                <div className={styles.gas_pump}>
-                    <div className={styles.svg_container}>
+                    {tokenDexBalance !== '0' && (
+                        <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
+                    )}
+                </FlexContainer>
+                <GasPump>
+                    <SVGContainer>
                         <FaGasPump size={12} />{' '}
-                    </div>
+                    </SVGContainer>
                     {transferGasPriceinDollars
                         ? transferGasPriceinDollars
                         : '…'}
-                </div>
-            </div>
+                </GasPump>
+            </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
-            <TransferButton
-                onClick={() => {
-                    transferFn();
-                }}
+            <Button
+                title={buttonMessage}
+                action={transferFn}
                 disabled={isButtonDisabled}
-                buttonMessage={buttonMessage}
+                flat={true}
             />
-        </div>
+        </FlexContainer>
     );
 }

@@ -1,4 +1,3 @@
-import styles from '../SidebarSearchResults.module.css';
 import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import PoolSearchResult from './PoolSearchResult';
@@ -11,6 +10,12 @@ import {
 } from '../../../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
 import checkPoolForWETH from '../../../../functions/checkPoolForWETH';
+import {
+    FlexContainer,
+    GridContainer,
+    Text,
+} from '../../../../../styled/Common';
+import { ResultsContainer } from '../../../../../styled/Components/Sidebar';
 
 interface propsIF {
     searchedPools: PoolIF[];
@@ -21,7 +26,7 @@ interface propsIF {
 export default function PoolsSearchResults(props: propsIF) {
     const { searchedPools, cachedPoolStatsFetch, cachedFetchTokenPrice } =
         props;
-    const { tokenA } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
     const {
         crocEnv,
         chainData: { chainId },
@@ -33,10 +38,16 @@ export default function PoolsSearchResults(props: propsIF) {
     // fn to handle user clicks on `<PoolLI />` instances
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
         // reorganize base and quote tokens as tokenA and tokenB
+
         const [addrTokenA, addrTokenB] =
-            baseAddr.toLowerCase() === tokenA.address.toLowerCase()
+            tokenA.address.toLowerCase() === baseAddr.toLowerCase()
                 ? [baseAddr, quoteAddr]
-                : [quoteAddr, baseAddr];
+                : tokenA.address.toLowerCase() === quoteAddr.toLowerCase()
+                ? [quoteAddr, baseAddr]
+                : tokenB.address.toLowerCase() === baseAddr.toLowerCase()
+                ? [quoteAddr, baseAddr]
+                : [baseAddr, quoteAddr];
+
         // navigate user to the new appropriate URL path
         linkGenMarket.navigate({
             chain: chainId,
@@ -46,16 +57,39 @@ export default function PoolsSearchResults(props: propsIF) {
     };
 
     return (
-        <div>
-            <h4 className={styles.card_title}>Pools</h4>
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='flex-start'
+            gap={8}
+        >
+            <Text fontWeight='500' fontSize='body' color='accent5'>
+                Pools
+            </Text>
             {searchedPools.length ? (
-                <>
-                    <header className={styles.header}>
-                        <div>Pool</div>
-                        <div>Volume</div>
-                        <div>TVL</div>
-                    </header>
-                    <ol className={styles.main_result_container}>
+                <FlexContainer flexDirection='column' fullWidth>
+                    <GridContainer
+                        numCols={3}
+                        fullWidth
+                        fontWeight='300'
+                        fontSize='body'
+                        color='text2'
+                        style={{ borderBottom: '1px solid var(--dark3)' }}
+                        padding='0 0 4px 0'
+                    >
+                        {['Pool', 'Volume', 'TVL'].map((item, idx) => (
+                            <Text
+                                key={idx}
+                                fontWeight='300'
+                                fontSize='body'
+                                color='text2'
+                                align='center'
+                            >
+                                {item}
+                            </Text>
+                        ))}
+                    </GridContainer>
+                    <ResultsContainer flexDirection='column'>
                         {searchedPools
                             .filter(
                                 (pool: PoolIF) =>
@@ -77,11 +111,17 @@ export default function PoolsSearchResults(props: propsIF) {
                                     crocEnv={crocEnv}
                                 />
                             ))}
-                    </ol>
-                </>
+                    </ResultsContainer>
+                </FlexContainer>
             ) : (
-                <h5 className={styles.not_found_text}>No Pools Found</h5>
+                <FlexContainer
+                    margin='0 8px 96px 8px'
+                    fontSize='body'
+                    color='text2'
+                >
+                    No Pools Found
+                </FlexContainer>
             )}
-        </div>
+        </FlexContainer>
     );
 }

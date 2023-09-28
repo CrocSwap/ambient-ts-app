@@ -1,6 +1,6 @@
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../App/functions/getPoolStats';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { usePoolStats } from '../../../App/hooks/usePoolStats';
 import { useContext, useMemo } from 'react';
@@ -12,8 +12,8 @@ import {
     pageNames,
 } from '../../../utils/hooks/useLinkGen';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
-import SidebarPoolsListItemContainer from '../../../styled/Sidebar/SidebarPoolsListItemContainer';
-import SidebarPoolsListItemColumn from '../../../styled/Sidebar/SidebarPoolsListItemColumn';
+import { ItemContainer } from '../../../styled/Components/Sidebar';
+import { FlexContainer } from '../../../styled/Common';
 
 interface propsIF {
     pool: PoolIF;
@@ -62,29 +62,43 @@ export default function PoolsListItem(props: propsIF) {
         return output as pageNames;
     }, [pathname]);
 
-    const { tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);
 
     const [addrTokenA, addrTokenB] =
-        tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
+        tokenA.address.toLowerCase() === pool.base.address.toLowerCase()
+            ? [pool.base.address, pool.quote.address]
+            : tokenA.address.toLowerCase() === pool.quote.address.toLowerCase()
+            ? [pool.quote.address, pool.base.address]
+            : tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
             ? [pool.quote.address, pool.base.address]
             : [pool.base.address, pool.quote.address];
 
     return (
-        <SidebarPoolsListItemContainer
+        <ItemContainer
+            as={Link}
             to={linkGenMarket.getFullURL({
                 chain: chainId,
                 tokenA: addrTokenA,
                 tokenB: addrTokenB,
             })}
+            numCols={3}
+            color='text2'
         >
-            <SidebarPoolsListItemColumn>
-                {pool.base.symbol} / {pool.quote.symbol}
-            </SidebarPoolsListItemColumn>
-            <SidebarPoolsListItemColumn>{volume}</SidebarPoolsListItemColumn>
-            <SidebarPoolsListItemColumn>{tvl}</SidebarPoolsListItemColumn>
-        </SidebarPoolsListItemContainer>
+            {[`${pool.base.symbol} / ${pool.quote.symbol}`, volume, tvl].map(
+                (item, idx) => (
+                    <FlexContainer
+                        key={idx}
+                        justifyContent='center'
+                        alignItems='center'
+                        padding='4px'
+                    >
+                        {item}
+                    </FlexContainer>
+                ),
+            )}
+        </ItemContainer>
     );
 }

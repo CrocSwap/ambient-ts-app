@@ -59,10 +59,10 @@ text.y_axis {
 }
 
 .annotation-line > .line {
-    stroke: rgba(235, 235, 255, 0.4);
+    stroke: var(--text2);
     stroke-width: 3;
     stroke-dasharray: 16 16;
-    border: 2px dashed rgba(235, 235, 255, 0.4);
+    border: 2px dashed var(--text2);
 }
 
 .annotation-line > .order_sell {
@@ -79,19 +79,19 @@ text.y_axis {
     border: 2px dashed var(--accent1);
 }
 
-.annotation-line > .marketLine {
-    stroke: rgba(235, 235, 255, 0.4);
+.annotation-line>.marketLine {
+    stroke: var(--text2);
     stroke-width: 1;
     stroke-dasharray: 4 2;
     stroke-opacity: 0.4;
-    border: 2px dashed rgba(235, 235, 255, 0.4);
+    border: 2px dashed var(--text2);
 }
 
 .annotation-line > .ghostline {
-    stroke: rgba(235, 235, 255, 0.4);
+    stroke: var(--text2);
     stroke-width: 1;
     stroke-opacity: 0.5;
-    border: 1px rgba(235, 235, 255, 0.4);
+    border: 1px var(--text2);
 }
 
 .candlestick .down {
@@ -282,12 +282,13 @@ label {
     box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.47);
 }
 
-@media (max-width: 1200px) and (min-width: 700px) {
-    #d3fc_group {
-        height: 90%;
-        padding: 1%;
-    }
+#d3fc_group {
+    height: 100%;
+    /* padding: 1%; */
+    display: block;
+}
 
+@media (max-width: 1200px) and (min-width: 700px) {
     .popup {
         top: 50% !important;
         padding: 5px;
@@ -303,10 +304,6 @@ label {
 }
 
 @media only screen and (max-width: 700px) {
-    #d3fc_group {
-        height: 85%;
-        padding: 0px 5% 0px 0px;
-    }
 
     .popup {
         font-size: medium;
@@ -315,12 +312,6 @@ label {
     }
 }
 
-@media only screen and (max-width: 580px) {
-    #d3fc_group {
-        height: 85%;
-        padding: 0px 5% 0px 0px;
-    }
-}
 
 @media (max-width: 800px) and (min-width: 500px) {
     .chart_grid {
@@ -333,3 +324,16 @@ label {
         height: 85%;
     }
 }
+
+/*  SUBCHART  */
+
+#fee_rate_chart,
+#tvl_chart {
+    display: grid;
+    grid-template-rows: 0px auto 1fr auto;
+    grid-template-columns: auto 1fr auto minmax(1em, max-content);
+    height: 20%;
+    min-height: 3rem;
+}
+
+/* SUBCHART END */

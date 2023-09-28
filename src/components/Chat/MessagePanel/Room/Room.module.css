@@ -34,7 +34,7 @@
 
     font-family: 'Lexend Deca';
     font-style: normal;
-    font-weight: 200;
+    font-weight: 300;
     font-size: 15px;
     line-height: 12px;
 
@@ -59,7 +59,7 @@
 
     font-family: 'Lexend Deca';
     font-style: normal;
-    font-weight: 200;
+    font-weight: 300;
     font-size: 15px;
     line-height: 12px;
 
@@ -70,7 +70,7 @@
     letter-spacing: -0.02em;
 
     /* text/grey light */
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 
     /* Inside auto layout */
     flex: none;
@@ -107,7 +107,7 @@
     background: white;
     box-shadow: 3px 3px 10px 6px rgba(0, 0, 0, 0.06);
     font-weight: 500;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
     width: 95%;
     text-align: center;
 }
@@ -125,14 +125,14 @@
     align-items: center;
     cursor: pointer;
     justify-content: space-between;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
     border-radius: 4px;
 }
 
 .star_icon_selected_room {
     height: 20px;
     width: 20px;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
     pointer-events: none;
 }
 
@@ -144,7 +144,7 @@
     align-items: center;
     gap: 4px;
     transition: all 0.2s;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -162,7 +162,7 @@
     align-items: center;
     gap: 4px;
     transition: all 0.2s;
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text2);
 
     font-size: var(--body-size);
     line-height: var(--body-lh);

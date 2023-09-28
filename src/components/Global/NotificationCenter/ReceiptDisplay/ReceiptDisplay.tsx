@@ -1,7 +1,6 @@
 import styles from './ReceiptDisplay.module.css';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 import { MdErrorOutline } from 'react-icons/md';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import trimString from '../../../../utils/functions/trimString';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { motion } from 'framer-motion';
@@ -9,9 +8,11 @@ import { VscClose } from 'react-icons/vsc';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { removeReceipt } from '../../../../utils/state/receiptDataSlice';
 import { getChainExplorer } from '../../../../utils/data/chains';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { ChainDataContext } from '../../../../contexts/ChainDataContext';
+import Spinner from '../../Spinner/Spinner';
+import { useProvider } from 'wagmi';
+import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
@@ -24,14 +25,12 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const { status, hash, txBlockNumber, txType } = props;
     const {
         chainData: { chainId },
+        crocEnv,
     } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
 
-    const pending = (
-        <div className={styles.pending}>
-            <AiOutlineLoading3Quarters />
-        </div>
-    );
+    const { cachedFetchBlockTime } = useContext(CachedDataContext);
+
+    const pending = <Spinner size={30} bg={'var(--dark2)'} weight={2} />;
     const failed = <MdErrorOutline size={30} color='#7371fc ' />;
     const success = <IoMdCheckmarkCircleOutline size={30} color='#7371fc ' />;
 
@@ -59,8 +58,22 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
 
     const dispatch = useAppDispatch();
 
-    const elapsedTimeInSecondsNum = txBlockNumber
-        ? (lastBlockNumber - txBlockNumber) * 13.75 // 13.75 seconds average between blocks
+    const [blockTime, setBlockTime] = useState<number | undefined>();
+
+    const provider = useProvider();
+
+    useEffect(() => {
+        (async () => {
+            const blockTime =
+                crocEnv && txBlockNumber
+                    ? await cachedFetchBlockTime(provider, txBlockNumber)
+                    : undefined;
+            if (blockTime) setBlockTime(blockTime);
+        })();
+    }, [provider, txBlockNumber]);
+
+    const elapsedTimeInSecondsNum = blockTime
+        ? Date.now() / 1000 - blockTime
         : undefined;
 
     const elapsedTimeString =
@@ -72,11 +85,11 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                 : elapsedTimeInSecondsNum < 3600
                 ? `${Math.floor(elapsedTimeInSecondsNum / 60)} minutes ago `
                 : elapsedTimeInSecondsNum < 7200
-                ? '1 hour '
+                ? '1 hour ago'
                 : elapsedTimeInSecondsNum < 86400
                 ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hours ago `
                 : elapsedTimeInSecondsNum < 172800
-                ? '1 day '
+                ? '1 day ago'
                 : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago `
             : 'Pending...';
 

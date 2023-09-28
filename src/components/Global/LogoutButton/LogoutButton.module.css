@@ -1,0 +1,22 @@
+.logout_button {
+    cursor: pointer;
+    width: 100%;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text1);
+    border: none;
+    outline: none;
+    transition: all var(--animation-speed) ease-in-out;
+    background: var(--accent1);
+    padding: 6px 8px;
+    gap: 4px;
+    border-radius: var(--border-radius);
+    border: solid 1px transparent;
+}
+
+.logout_button:hover,
+.logout_button:focus-visible {
+    color: var(--accent1);
+    background: var(--dark2);
+    border: solid 1px var(--accent1);
+}

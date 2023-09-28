@@ -2,8 +2,13 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
-
-type TradeTableState = 'Expanded' | 'Collapsed' | undefined;
+import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
+import { useAccount } from 'wagmi';
+import {
+    resetConnectedUserDataLoadingStatus,
+    resetPoolDataLoadingStatus,
+} from '../utils/state/graphDataSlice';
+import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -15,8 +20,6 @@ interface TradeTableContextIF {
     setCurrentPositionActive: (val: string) => void;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: (val: string) => void;
-    tradeTableState: TradeTableState;
-    setTradeTableState: (val: TradeTableState) => void;
     toggleTradeTable: () => void;
     toggleTradeTableCollapse: () => void;
     showAllData: boolean;
@@ -26,6 +29,9 @@ interface TradeTableContextIF {
     outsideControl: boolean;
     setOutsideControl: (val: boolean) => void;
     handlePulseAnimation: (type: 'swap' | 'limitOrder' | 'range') => void;
+
+    activeMobileComponent: string;
+    setActiveMobileComponent: (val: string) => void;
 }
 
 export const TradeTableContext = createContext<TradeTableContextIF>(
@@ -35,8 +41,10 @@ export const TradeTableContext = createContext<TradeTableContextIF>(
 export const TradeTableContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { isCandleSelected } = useContext(CandleContext);
+    const { isCandleSelected, isCandleDataNull } = useContext(CandleContext);
     const { setChartHeight, chartHeights } = useContext(ChartContext);
+
+    const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { pathname: currentLocation } = useLocation();
 
@@ -44,8 +52,7 @@ export const TradeTableContextProvider = (props: {
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] =
         useState('');
     const [currentPositionActive, setCurrentPositionActive] = useState('');
-    const [tradeTableState, setTradeTableState] =
-        useState<TradeTableState>(undefined);
+
     const [isTradeTableMinimized, setIsTradeTableMinimized] = useState(false);
 
     const [showSwapPulseAnimation, setShowSwapPulseAnimation] = useState(false);
@@ -55,6 +62,18 @@ export const TradeTableContextProvider = (props: {
         useState(false);
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
+    const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
+
+    const { isConnected } = useAccount();
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (!isConnected) {
+            dispatch(resetPoolDataLoadingStatus());
+            dispatch(resetConnectedUserDataLoadingStatus());
+            setShowAllData(true);
+        }
+    }, [isConnected]);
 
     const tradeTableContext = {
         showAllData,
@@ -63,33 +82,25 @@ export const TradeTableContextProvider = (props: {
         setCurrentTxActiveInTransactions,
         currentPositionActive,
         setCurrentPositionActive,
-        tradeTableState,
-        setTradeTableState,
         // chartHeight is a minimum of 4 when closed since the resizable selector is 4px in height
         toggleTradeTable: () => {
-            if (!tradeTableState) {
-                if (chartHeights.current > chartHeights.default) {
-                    setChartHeight(chartHeights.default);
-                } else {
-                    setChartHeight(4);
-                    setTradeTableState('Expanded');
-                }
+            if (
+                chartHeights.current > chartHeights.min &&
+                chartHeights.current < chartHeights.max
+            ) {
+                setChartHeight(chartHeights.min);
             } else {
-                setChartHeight(chartHeights.default);
-                setTradeTableState(undefined);
+                setChartHeight(chartHeights.saved);
             }
         },
         toggleTradeTableCollapse: () => {
-            if (!tradeTableState) {
-                if (chartHeights.current < chartHeights.default) {
-                    setChartHeight(chartHeights.default);
-                } else {
-                    setChartHeight(chartHeights.max);
-                    setTradeTableState('Collapsed');
-                }
+            if (
+                chartHeights.current > chartHeights.min &&
+                chartHeights.current < chartHeights.max
+            ) {
+                setChartHeight(chartHeights.max);
             } else {
-                setChartHeight(chartHeights.default);
-                setTradeTableState(undefined);
+                setChartHeight(chartHeights.saved);
             }
         },
         isTradeTableMinimized,
@@ -102,6 +113,8 @@ export const TradeTableContextProvider = (props: {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
+        activeMobileComponent,
+        setActiveMobileComponent,
     };
 
     function handlePulseAnimation(type: 'swap' | 'limitOrder' | 'range') {
@@ -156,6 +169,21 @@ export const TradeTableContextProvider = (props: {
             toggleTradeTabBasedOnRoute();
     }, [location.pathname]);
 
+    const resetTable = () => {
+        if (
+            chartHeights.saved > chartHeights.min &&
+            chartHeights.saved < chartHeights.max
+        ) {
+            setChartHeight(chartHeights.saved);
+        }
+    };
+    useEffect(() => {
+        if (isCandleDataNull && isPoolInitialized) {
+            setChartHeight(chartHeights.min);
+        } else {
+            resetTable();
+        }
+    }, [isCandleDataNull, isPoolInitialized]);
     return (
         <TradeTableContext.Provider value={tradeTableContext}>
             {props.children}

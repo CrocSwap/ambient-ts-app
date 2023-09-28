@@ -5,39 +5,34 @@ import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-import Button from '../../components/Global/Button/Button';
+import Button from '../../components/Form/Button';
 
 // START: Import Local Files
 import styles from './InitPool.module.css';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-} from '../../utils/state/receiptDataSlice';
-import {
-    isTransactionFailedError,
-    isTransactionReplacedError,
-    TransactionError,
-} from '../../utils/TransactionError';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+
 import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
-import { useAccount } from 'wagmi';
+import { useAccount, useProvider } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
+import { TokenContext } from '../../contexts/TokenContext';
+import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
+import { supportedNetworks } from '../../utils/networks';
+import { useApprove } from '../../App/functions/approve';
+import { useSendInit } from '../../App/hooks/useSendInit';
 
 // react functional component
 export default function InitPool() {
+    const provider = useProvider();
     const {
         wagmiModal: { open: openWagmiModalWallet },
     } = useContext(AppStateContext);
@@ -48,14 +43,9 @@ export default function InitPool() {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
-    const {
-        tokenAAllowance,
-        tokenBAllowance,
-        setRecheckTokenAApproval,
-        setRecheckTokenBApproval,
-    } = useContext(TradeTokenContext);
-
-    const dispatch = useAppDispatch();
+    const { tokenAAllowance, tokenBAllowance } = useContext(TradeTokenContext);
+    const { tokens } = useContext(TokenContext);
+    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const { isConnected } = useAccount();
 
@@ -65,9 +55,6 @@ export default function InitPool() {
     // DO NOT combine these hooks with useMemo()
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
-
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
-    const [isInitPending, setIsInitPending] = useState(false);
 
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState<
         number | undefined
@@ -107,21 +94,21 @@ export default function InitPool() {
 
     useEffect(() => {
         (async () => {
-            const mainnetBase = getMainnetEquivalent(
+            const mainnetBase = getMainnetAddress(
                 baseToken.address,
-                chainId,
+                supportedNetworks[chainId],
             );
-            const mainnetQuote = getMainnetEquivalent(
+            const mainnetQuote = getMainnetAddress(
                 quoteToken.address,
-                chainId,
+                supportedNetworks[chainId],
             );
             const basePricePromise = cachedFetchTokenPrice(
-                mainnetBase.token,
-                mainnetBase.chainId,
+                mainnetBase,
+                chainId,
             );
             const quotePricePromise = cachedFetchTokenPrice(
-                mainnetQuote.token,
-                mainnetQuote.chainId,
+                mainnetQuote,
+                chainId,
             );
 
             const basePrice = (await basePricePromise)?.usdPrice || 2000;
@@ -161,8 +148,12 @@ export default function InitPool() {
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const averageInitCostInGasDrops = 157922;
             const gasPriceInDollarsNum =
-                gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
+                gasPriceInGwei *
+                averageInitCostInGasDrops *
+                1e-9 *
+                ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
                 getFormattedNumber({
@@ -176,125 +167,12 @@ export default function InitPool() {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
 
-    const approve = async (token: TokenIF) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(token.address).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: `Approval of ${token.symbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used 'speed up' or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
-                }
-            }
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-            setRecheckTokenBApproval(true);
-        }
-    };
+    const { approve, isApprovalPending } = useApprove();
 
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
-    const sendInit = () => {
-        if (initialPriceInBaseDenom) {
-            (async () => {
-                let tx;
-                try {
-                    setIsInitPending(true);
-                    tx = await crocEnv
-                        ?.pool(baseToken.address, quoteToken.address)
-                        .initPool(initialPriceInBaseDenom);
-
-                    if (tx) dispatch(addPendingTx(tx?.hash));
-                    if (tx?.hash)
-                        dispatch(
-                            addTransactionByType({
-                                txHash: tx.hash,
-                                txType: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
-                            }),
-                        );
-                    let receipt;
-                    try {
-                        if (tx) receipt = await tx.wait();
-                    } catch (e) {
-                        const error = e as TransactionError;
-                        console.error({ error });
-                        // The user used 'speed up' or something similar
-                        // in their client, but we now have the updated info
-                        if (isTransactionReplacedError(error)) {
-                            IS_LOCAL_ENV && console.debug('repriced');
-                            dispatch(removePendingTx(error.hash));
-
-                            const newTransactionHash = error.replacement.hash;
-                            dispatch(addPendingTx(newTransactionHash));
-
-                            //    setNewSwapTransactionHash(newTransactionHash);
-                            IS_LOCAL_ENV &&
-                                console.debug({ newTransactionHash });
-                            receipt = error.receipt;
-                        } else if (isTransactionFailedError(error)) {
-                            receipt = error.receipt;
-                        }
-                    }
-                    if (receipt) {
-                        dispatch(addReceipt(JSON.stringify(receipt)));
-                        dispatch(removePendingTx(receipt.transactionHash));
-                        linkGenPool.navigate({
-                            chain: chainId,
-                            tokenA: baseToken.address,
-                            tokenB: quoteToken.address,
-                        });
-                    }
-                } catch (error) {
-                    if (
-                        error.reason ===
-                        'sending a transaction requires a signer'
-                    ) {
-                        location.reload();
-                    }
-                    console.error({ error });
-                } finally {
-                    setIsInitPending(false);
-                }
-            })();
-        }
-    };
+    const { sendInit, isInitPending } = useSendInit();
 
     const placeholderText = `e.g. ${estimatedInitialPriceDisplay} (${
         isDenomBase ? baseToken.symbol : quoteToken.symbol
@@ -441,7 +319,11 @@ export default function InitPool() {
                 } else {
                     // Display confirm button for final step
                     buttonContent = (
-                        <Button title='Confirm' action={sendInit} flat={true} />
+                        <Button
+                            title='Confirm'
+                            action={() => sendInit(initialPriceInBaseDenom)}
+                            flat={true}
+                        />
                     );
                 }
                 break;
@@ -465,6 +347,7 @@ export default function InitPool() {
         <div className={styles.pool_display}>
             <div>
                 <TokenIcon
+                    token={tokenA}
                     src={uriToHttp(tokenA.logoURI)}
                     alt={tokenA.symbol}
                     size='2xl'
@@ -479,6 +362,7 @@ export default function InitPool() {
         <div className={styles.pool_display}>
             <div>
                 <TokenIcon
+                    token={tokenB}
                     src={uriToHttp(tokenB.logoURI)}
                     alt={tokenB.symbol}
                     size='2xl'
@@ -509,7 +393,7 @@ export default function InitPool() {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenA);
+                await approve(tokenA.address, tokenA.symbol);
             }}
             flat={true}
         />
@@ -524,7 +408,7 @@ export default function InitPool() {
             }
             disabled={isApprovalPending}
             action={async () => {
-                await approve(tokenB);
+                await approve(tokenB.address, tokenB.symbol);
             }}
             flat={true}
         />

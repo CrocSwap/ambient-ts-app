@@ -157,14 +157,12 @@ function ChatPanel(props: propsIF) {
         });
     }
 
-    // eslint-disable-next-line
-    function closeOnEscapeKeyDown(e: any) {
-        if ((e.charCode || e.keyCode) === 27) setIsChatOpen(false);
+    function closeOnEscapeKeyDown(e: KeyboardEvent) {
+        if (e.code === 'Escape') setIsChatOpen(false);
     }
 
-    // eslint-disable-next-line
-    function openChatPanel(e: any) {
-        if (e.keyCode === 67 && e.ctrlKey && e.altKey) {
+    function openChatPanel(e: KeyboardEvent) {
+        if (e.code === 'KeyC' && e.ctrlKey && e.altKey) {
             setIsChatOpen(!isChatOpen);
         }
     }

@@ -1,7 +1,7 @@
 import styles from './SoloTokenImport.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import Button from '../../Global/Button/Button';
+import Button from '../../Form/Button';
 import DividerDark from '../DividerDark/DividerDark';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TokenIcon from '../TokenIcon/TokenIcon';
@@ -42,6 +42,7 @@ export default function SoloTokenImport(props: propsIF) {
             <div className={styles.token_display}>
                 <div>
                     <TokenIcon
+                        token={customToken}
                         src={uriToHttp(customToken.logoURI)}
                         alt={customToken.symbol}
                         size='2xl'
