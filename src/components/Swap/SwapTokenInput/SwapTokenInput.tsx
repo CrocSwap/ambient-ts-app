@@ -31,7 +31,7 @@ import {
     setIsTokenAPrimaryRange,
     setLimitTick,
 } from '../../../utils/state/tradeDataSlice';
-import TokenInput from '../../Global/TokenInput/TokenInput';
+import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 
 interface propsIF {
@@ -331,7 +331,7 @@ function SwapTokenInput(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='swap_sell'
                 tokenAorB='A'
                 token={tokenA}
@@ -363,7 +363,7 @@ function SwapTokenInput(props: propsIF) {
                     onClick={reverseTokens}
                 />
             </FlexContainer>
-            <TokenInput
+            <TokenInputWithWalletBalance
                 fieldId='swap_buy'
                 tokenAorB='B'
                 token={tokenB}

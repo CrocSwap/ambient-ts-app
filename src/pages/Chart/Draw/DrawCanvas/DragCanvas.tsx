@@ -5,6 +5,8 @@ import {
     scaleData,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
+import { actionKeyIF } from '../../ChartUtils/useUndoRedo';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface DragCanvasProps {
     scaleData: scaleData;
@@ -21,6 +23,12 @@ interface DragCanvasProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
+    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
+    actionKey: {
+        poolIndex: number;
+        tokenA: TokenIF;
+        tokenB: TokenIF;
+    };
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -36,6 +44,8 @@ export default function DragCanvas(props: DragCanvasProps) {
         canUserDragDrawnShape,
         setCrossHairDataFunc,
         setSelectedDrawnShape,
+        drawActionStack,
+        actionKey,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -86,6 +96,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         const lastDataIndex = previosData.findIndex(
             (item) => item === hoveredDrawnShape?.selectedCircle,
         );
+
         previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
         previosData[lastDataIndex].y = scaleData.yScale.invert(offsetY);
         drawnShapeHistory[index].data = previosData;
@@ -161,7 +172,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         let tempMovemementX = 0;
         let tempMovemementY = 0;
         let rectDragDirection = '';
-
+        let isDragging = false;
         const dragDrawnShape = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
             .on('start', (event) => {
@@ -249,12 +260,40 @@ export default function DragCanvas(props: DragCanvasProps) {
                             event.sourceEvent.touches[0].clientY -
                             canvasRect?.top;
                     }
+
+                    isDragging = true;
                 });
             })
             .on('end', () => {
                 tempMovemementX = 0;
                 tempMovemementY = 0;
                 setIsUpdatingShape(false);
+
+                const tempLastData = drawnShapeHistory.find(
+                    (item) => hoveredDrawnShape?.data.time === item.time,
+                );
+
+                if (tempLastData && isDragging) {
+                    drawActionStack.get(actionKey)?.push({
+                        data: [
+                            {
+                                x: tempLastData.data[0].x,
+                                y: tempLastData.data[0].y,
+                                ctx: tempLastData.data[0].ctx,
+                            },
+                            {
+                                x: tempLastData.data[1].x,
+                                y: tempLastData.data[1].y,
+                                ctx: tempLastData.data[1].ctx,
+                            },
+                        ],
+                        type: tempLastData.type,
+                        time: tempLastData.time,
+                        pool: tempLastData.pool,
+                    });
+                }
+
+                isDragging = false;
             });
 
         if (d3DragCanvas.current) {

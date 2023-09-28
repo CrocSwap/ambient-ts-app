@@ -104,8 +104,16 @@ function TradeCandleStickChart(props: propsIF) {
         (state) => state.graphData,
     );
 
-    const { undo, redo, drawnShapeHistory, setDrawnShapeHistory, currentPool } =
-        useUndoRedo();
+    const {
+        undo,
+        redo,
+        drawnShapeHistory,
+        setDrawnShapeHistory,
+        currentPool,
+        drawActionStack,
+        actionKey,
+        deleteItem,
+    } = useUndoRedo();
 
     const tokenPair = useMemo(
         () => ({
@@ -831,9 +839,12 @@ function TradeCandleStickChart(props: propsIF) {
                         unparsedData={candleData}
                         undo={undo}
                         redo={redo}
+                        drawActionStack={drawActionStack}
                         drawnShapeHistory={drawnShapeHistory}
                         setDrawnShapeHistory={setDrawnShapeHistory}
                         currentPool={currentPool}
+                        actionKey={actionKey}
+                        deleteItem={deleteItem}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />

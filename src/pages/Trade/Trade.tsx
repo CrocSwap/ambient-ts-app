@@ -64,8 +64,12 @@ function Trade() {
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const { tokens } = useContext(TokenContext);
-    const { setOutsideControl, setSelectedOutsideTab } =
-        useContext(TradeTableContext);
+    const {
+        setOutsideControl,
+        setSelectedOutsideTab,
+        activeMobileComponent,
+        setActiveMobileComponent,
+    } = useContext(TradeTableContext);
 
     const routes = [
         {
@@ -105,8 +109,6 @@ function Trade() {
             ))}
         </SelectorContainer>
     );
-
-    const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -270,9 +272,16 @@ function Trade() {
                     overflow='hidden'
                 >
                     <ResizableContainer
-                        showResizeable={!isCandleDataNull}
+                        showResizeable={!isCandleDataNull && !isChartFullScreen}
                         enable={{
                             bottom: !isChartFullScreen,
+                            top: false,
+                            left: false,
+                            topLeft: false,
+                            bottomLeft: false,
+                            right: false,
+                            topRight: false,
+                            bottomRight: false,
                         }}
                         size={{
                             width: '100%',
@@ -317,6 +326,7 @@ function Trade() {
                                         : tradeData.baseToken
                                 }
                                 isCandleDataNull
+                                isTableExpanded={tradeTableState == 'Expanded'}
                             />
                         )}
                         {!showNoChartData && isPoolInitialized && (

@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-import { OptionButton } from '../../../../Global/Button/OptionButton';
+import { Chip } from '../../../../Form/Chip';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import { FiExternalLink } from 'react-icons/fi';
 import { getPinnedPriceValuesFromTicks } from '../../../../../pages/Trade/Range/rangeFunctions';
@@ -201,24 +201,22 @@ export const RangesRowPlaceholder = (props: PropsIF) => {
                 }
                 <FlexContainer justifyContent='flex-end' data-label='menu'>
                     <FlexContainer fullWidth justifyContent='flex-end'>
-                        <OptionButton
+                        <Chip
                             ariaLabel='Explorer'
                             onClick={() =>
                                 window.open(
                                     `${blockExplorer}tx/${transaction.hash}`,
                                 )
                             }
-                            content={
-                                <>
-                                    Explorer
-                                    <FiExternalLink
-                                        size={15}
-                                        color='white'
-                                        style={{ marginLeft: '.5rem' }}
-                                    />
-                                </>
-                            }
-                        />
+                        >
+                            {' '}
+                            Explorer
+                            <FiExternalLink
+                                size={15}
+                                color='white'
+                                style={{ marginLeft: '.5rem' }}
+                            />
+                        </Chip>
                     </FlexContainer>
                 </FlexContainer>
             </RangeRow>

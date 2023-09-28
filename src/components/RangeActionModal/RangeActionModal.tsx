@@ -11,7 +11,7 @@ import {
     concPosSlot,
     CrocPositionView,
 } from '@crocswap-libs/sdk';
-import Button from '../Global/Button/Button';
+import Button from '../Form/Button';
 import RangeActionSettings from './RangeActionSettings/RangeActionSettings';
 import ExtraControls from './RangeActionExtraControls/RangeActionExtraControls';
 import {
@@ -83,6 +83,7 @@ export default function RangeActionModal(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        provider,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
@@ -197,11 +198,12 @@ export default function RangeActionModal(props: propsIF) {
                     .then((response) => response.json())
                     .then((json) => json?.data)
                     .then(async (data: PositionServerIF) => {
-                        if (data && crocEnv) {
+                        if (data && crocEnv && provider) {
                             const position = await getPositionData(
                                 data,
                                 tokens.tokenUniv,
                                 crocEnv,
+                                provider,
                                 chainId,
                                 lastBlockNumber,
                                 cachedFetchTokenPrice,

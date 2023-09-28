@@ -42,6 +42,7 @@ export default function TransactionDetailsModal(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         crocEnv,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -70,7 +71,7 @@ export default function TransactionDetailsModal(props: propsIF) {
         )
             .then((response) => response?.json())
             .then(async (json) => {
-                if (!crocEnv || !json?.data) {
+                if (!crocEnv || !provider || !json?.data) {
                     return;
                 }
 
@@ -79,6 +80,7 @@ export default function TransactionDetailsModal(props: propsIF) {
                     positionPayload,
                     tokens.tokenUniv,
                     crocEnv,
+                    provider,
                     chainId,
                     lastBlockNumber,
                     cachedFetchTokenPrice,
@@ -94,7 +96,7 @@ export default function TransactionDetailsModal(props: propsIF) {
                 );
             })
             .catch(console.error);
-    }, [lastBlockNumber, crocEnv, chainId]);
+    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
 
     const [showSettings, setShowSettings] = useState(false);
     const [showShareComponent, setShowShareComponent] = useState(true);

@@ -31,12 +31,8 @@ export const useProcessRange = (
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            getMoneynessRank(
-                position.base.toLowerCase() + '_' + position.chainId,
-            ) -
-                getMoneynessRank(
-                    position.quote.toLowerCase() + '_' + position.chainId,
-                ) >=
+            getMoneynessRank(position.baseSymbol) -
+                getMoneynessRank(position.quoteSymbol) >=
             0,
         [position.base, position.base, position.chainId],
     );

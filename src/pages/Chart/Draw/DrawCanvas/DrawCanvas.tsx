@@ -14,6 +14,8 @@ import { createCircle } from '../../ChartUtils/circle';
 import { createLinearLineSeries } from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';
 import { TradeDataIF } from '../../../../utils/state/tradeDataSlice';
+import { actionKeyIF } from '../../ChartUtils/useUndoRedo';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface DrawCanvasProps {
     scaleData: scaleData;
@@ -28,6 +30,12 @@ interface DrawCanvasProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
+    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
+    actionKey: {
+        poolIndex: number;
+        tokenA: TokenIF;
+        tokenB: TokenIF;
+    };
     denomInBase: any;
 }
 
@@ -44,6 +52,8 @@ function DrawCanvas(props: DrawCanvasProps) {
         setActiveDrawingType,
         setSelectedDrawnShape,
         currentPool,
+        drawActionStack,
+        actionKey,
         denomInBase,
     } = props;
 
@@ -214,6 +224,45 @@ function DrawCanvas(props: DrawCanvasProps) {
                             selectedCircle: undefined,
                         });
 
+                        if (!drawActionStack.has(actionKey)) {
+                            drawActionStack.set(actionKey, [
+                                {
+                                    data: [
+                                        {
+                                            x: tempLineData[0].x,
+                                            y: tempLineData[0].y,
+                                            ctx: tempLineData[0].ctx,
+                                        },
+                                        {
+                                            x: tempLineData[1].x,
+                                            y: tempLineData[1].y,
+                                            ctx: tempLineData[1].ctx,
+                                        },
+                                    ],
+                                    type: activeDrawingType,
+                                    time: endPoint.time,
+                                    pool: endPoint.pool,
+                                },
+                            ]);
+                        } else {
+                            drawActionStack.get(actionKey)?.push({
+                                data: [
+                                    {
+                                        x: tempLineData[0].x,
+                                        y: tempLineData[0].y,
+                                        ctx: tempLineData[0].ctx,
+                                    },
+                                    {
+                                        x: tempLineData[1].x,
+                                        y: tempLineData[1].y,
+                                        ctx: tempLineData[1].ctx,
+                                    },
+                                ],
+                                type: activeDrawingType,
+                                time: endPoint.time,
+                                pool: endPoint.pool,
+                            });
+                        }
                         return [...prevData, endPoint];
                     }
                     return prevData;

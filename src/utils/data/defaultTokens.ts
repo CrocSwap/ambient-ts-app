@@ -1,5 +1,5 @@
 import { TokenIF } from '../interfaces/TokenIF';
-import { ChainIdType } from './chains';
+import { supportedNetworks } from '../networks';
 
 export const mainnetETH = {
     address: '0x0000000000000000000000000000000000000000',
@@ -177,22 +177,8 @@ export const defaultTokens: TokenIF[] = [
 ];
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
-    const normChainId = chainId.toLowerCase();
-    if (normChainId in DEFAULT_PAIRS_BY_CHAIN) {
-        const lookup = DEFAULT_PAIRS_BY_CHAIN[normChainId as ChainIdType];
-        return [lookup.A, lookup.B];
-    }
-
-    console.warn(
-        'No default pair found for chain ',
-        normChainId,
-        ' defaulting to Goerli',
-    );
-    return [goerliETH, goerliUSDC];
+    return [
+        supportedNetworks[chainId].defaultPair[0],
+        supportedNetworks[chainId].defaultPair[1],
+    ];
 }
-
-const DEFAULT_PAIRS_BY_CHAIN = {
-    '0x1': { A: mainnetETH, B: mainnetUSDC },
-    '0x5': { A: goerliETH, B: goerliUSDC },
-    '0x66eed': { A: arbGoerliETH, B: arbGoerliUSDC },
-};

@@ -1,6 +1,3 @@
-import styles from './Deposit.module.css';
-import DepositButton from './DepositButton/DepositButton';
-import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySelector';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
@@ -34,6 +31,14 @@ import useDebounce from '../../../../App/hooks/useDebounce';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import Button from '../../../Form/Button';
+import CurrencySelector from '../../../Form/CurrencySelector';
+import {
+    SVGContainer,
+    MaxButton,
+} from '../../../../styled/Components/Portfolio';
+import { useApprove } from '../../../../App/functions/approve';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -61,6 +66,7 @@ export default function Deposit(props: propsIF) {
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
+    const { approve, isApprovalPending } = useApprove();
 
     const dispatch = useAppDispatch();
 
@@ -121,7 +127,7 @@ export default function Deposit(props: propsIF) {
             tokenAllowance && isDepositQtyValid && !!depositQtyNonDisplay
                 ? BigNumber.from(tokenAllowance).gte(depositQtyNonDisplay)
                 : false,
-        [tokenAllowance, isDepositQtyValid],
+        [tokenAllowance, isDepositQtyValid, depositQtyNonDisplay],
     );
 
     const isWalletBalanceSufficientToCoverGas = useMemo(() => {
@@ -145,10 +151,13 @@ export default function Deposit(props: propsIF) {
                   ).gte(BigNumber.from(0))
                 ? true
                 : false,
-        [tokenWalletBalanceAdjustedNonDisplayString, isDepositQtyValid],
+        [
+            tokenWalletBalanceAdjustedNonDisplayString,
+            isDepositQtyValid,
+            depositQtyNonDisplay,
+        ],
     );
 
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isDepositPending, setIsDepositPending] = useState(false);
 
     useEffect(() => {
@@ -284,66 +293,12 @@ export default function Deposit(props: propsIF) {
         if (depositQtyNonDisplay) await deposit(depositQtyNonDisplay);
     };
 
-    const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${selectedToken.symbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && 'repriced';
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-
-                    IS_LOCAL_ENV && { newTransactionHash };
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    console.error({ error });
-                    receipt = error.receipt;
-                }
-            }
-
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAllowance(true);
-        }
-    };
-
     const approvalFn = async () => {
-        await approve(selectedToken.address);
+        await approve(
+            selectedToken.address,
+            selectedToken.symbol,
+            setRecheckTokenAllowance,
+        );
     };
 
     const resetDepositQty = () => {
@@ -398,49 +353,51 @@ export default function Deposit(props: propsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice, isTokenEth]);
 
     return (
-        <div className={styles.deposit_container}>
-            <div className={styles.info_text_non_clickable}>
+        <FlexContainer flexDirection='column' gap={16} padding={'16px'}>
+            <Text fontSize='body' color='text2'>
                 Deposit collateral for future trading at lower gas costs:
-            </div>
-            <DepositCurrencySelector
+            </Text>
+            <CurrencySelector
                 disable={isCurrencyFieldDisabled}
                 selectedToken={selectedToken}
-                setDepositQty={setDepositQtyNonDisplay}
+                setQty={setDepositQtyNonDisplay}
                 inputValue={inputValue}
                 setInputValue={setInputValue}
                 setTokenModalOpen={setTokenModalOpen}
             />
-            <div className={styles.additional_info}>
-                <div
-                    className={`${styles.available_container} ${styles.info_text_non_clickable}`}
-                >
-                    <div className={styles.available_text}>Available:</div>
+            <FlexContainer justifyContent='space-between' alignItems='center'>
+                <FlexContainer fontSize='body' color='text2' gap={6}>
+                    <Text color='text1'>Available:</Text>
                     {tokenWalletBalanceTruncated || '...'}
-                    <button
-                        className={`${styles.max_button} ${
-                            isWalletBalanceSufficientToCoverDeposit &&
-                            styles.max_button_enabled
-                        }`}
-                        onClick={handleBalanceClick}
-                        disabled={!isWalletBalanceSufficientToCoverDeposit}
-                    >
-                        Max
-                    </button>
-                </div>
-                <div className={styles.gas_pump}>
-                    <div className={styles.svg_container}>
-                        <FaGasPump size={12} />{' '}
-                    </div>
+                    {tokenWalletBalance !== '0' && (
+                        <MaxButton
+                            onClick={handleBalanceClick}
+                            disabled={!isWalletBalanceSufficientToCoverDeposit}
+                        >
+                            Max
+                        </MaxButton>
+                    )}
+                </FlexContainer>
+                <FlexContainer
+                    alignItems='center'
+                    justifyContent='flex-end'
+                    color='text2'
+                    fontSize='body'
+                >
+                    <SVGContainer>
+                        <FaGasPump size={12} />
+                    </SVGContainer>
                     {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
-                </div>
-            </div>
-            <DepositButton
-                onClick={() => {
+                </FlexContainer>
+            </FlexContainer>
+            <Button
+                title={buttonMessage}
+                action={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();
                 }}
                 disabled={isButtonDisabled}
-                buttonMessage={buttonMessage}
+                flat={true}
             />
-        </div>
+        </FlexContainer>
     );
 }

@@ -1,5 +1,5 @@
 import styles from './TransactionFailed.module.css';
-import Button from '../../../../Global/Button/Button';
+import Button from '../../../../Form/Button';
 import { CircleLoaderFailed } from '../../../../Global/LoadingAnimations/CircleLoader/CircleLoader';
 
 interface PropsIF {

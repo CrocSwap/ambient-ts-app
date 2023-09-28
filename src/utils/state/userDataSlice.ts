@@ -9,15 +9,10 @@ export interface userData {
     ensNameCurrent: string | undefined;
     ensOrAddressTruncated: string | undefined;
     isUserIdle: boolean;
-    tokens: tokenData;
+    tokenBalances: TokenIF[] | undefined;
     recentTokens: TokenIF[] | undefined;
     secondaryImageData: string[];
     resolvedAddress: string | undefined;
-}
-
-export interface tokenData {
-    nativeToken: TokenIF | undefined;
-    erc20Tokens: TokenIF[] | undefined;
 }
 
 const initialState: userData = {
@@ -28,10 +23,7 @@ const initialState: userData = {
     ensNameCurrent: undefined,
     ensOrAddressTruncated: undefined,
     isUserIdle: false,
-    tokens: {
-        nativeToken: undefined,
-        erc20Tokens: undefined,
-    },
+    tokenBalances: undefined,
     recentTokens: undefined,
     secondaryImageData: [],
     resolvedAddress: undefined,
@@ -71,84 +63,52 @@ export const userDataSlice = createSlice({
         setIsUserIdle: (state, action: PayloadAction<boolean>) => {
             state.isUserIdle = action.payload;
         },
-        setNativeToken: (state, action: PayloadAction<TokenIF>) => {
-            state.tokens.nativeToken = action.payload;
+        // for replacing user's wallet balances for all tokens
+        setTokenBalances: (state, action: PayloadAction<TokenIF[]>) => {
+            state.tokenBalances = action.payload;
         },
-        updateNativeTokenWalletBalance: (
+        // for one-off token wallet/dex balance update after transaction
+        setTokenBalance: (
             state,
             action: PayloadAction<{
-                walletBalance: string;
-                walletBalanceDisplay: string;
-                walletBalanceDisplayTruncated: string;
+                tokenAddress: string;
+                walletBalance?: string | undefined;
+                dexBalance?: string | undefined;
             }>,
         ) => {
-            if (!state.tokens.nativeToken) return;
-            state.tokens.nativeToken.walletBalance =
-                action.payload.walletBalance;
-            state.tokens.nativeToken.walletBalanceDisplay =
-                action.payload.walletBalanceDisplay;
-            state.tokens.nativeToken.walletBalanceDisplayTruncated =
-                action.payload.walletBalanceDisplayTruncated;
-        },
-        updateNativeTokenDexBalance: (
-            state,
-            action: PayloadAction<{
-                dexBalance: string;
-                dexBalanceDisplay: string;
-                dexBalanceDisplayTruncated: string;
-            }>,
-        ) => {
-            if (!state.tokens.nativeToken) return;
-            state.tokens.nativeToken.dexBalance = action.payload.dexBalance;
-            state.tokens.nativeToken.dexBalanceDisplay =
-                action.payload.dexBalanceDisplay;
-            state.tokens.nativeToken.dexBalanceDisplayTruncated =
-                action.payload.dexBalanceDisplayTruncated;
-        },
-        updateErc20TokenWalletBalance: (
-            state,
-            action: PayloadAction<{
-                indexOfExistingErc20Token: number;
-                walletBalance: string;
-                walletBalanceDisplay: string;
-                walletBalanceDisplayTruncated: string;
-            }>,
-        ) => {
-            if (!state.tokens.erc20Tokens) return;
-            const index = action.payload.indexOfExistingErc20Token;
-            state.tokens.erc20Tokens[index].walletBalance =
-                action.payload.walletBalance;
-            state.tokens.erc20Tokens[index].walletBalanceDisplay =
-                action.payload.walletBalanceDisplay;
-            state.tokens.erc20Tokens[index].walletBalanceDisplayTruncated =
-                action.payload.walletBalanceDisplayTruncated;
-        },
-        updateErc20TokenDexBalance: (
-            state,
-            action: PayloadAction<{
-                indexOfExistingErc20Token: number;
-                dexBalance: string;
-                dexBalanceDisplay: string;
-                dexBalanceDisplayTruncated: string;
-            }>,
-        ) => {
-            if (!state.tokens.erc20Tokens) return;
-            const index = action.payload.indexOfExistingErc20Token;
-            state.tokens.erc20Tokens[index].dexBalance =
-                action.payload.dexBalance;
-            state.tokens.erc20Tokens[index].dexBalanceDisplay =
-                action.payload.dexBalanceDisplay;
-            state.tokens.erc20Tokens[index].dexBalanceDisplayTruncated =
-                action.payload.dexBalanceDisplayTruncated;
-        },
-        setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
-            state.tokens.erc20Tokens = action.payload;
+            const tokenIndex = state.tokenBalances?.findIndex(
+                (token) =>
+                    token.address.toLowerCase() ===
+                    action.payload.tokenAddress.toLowerCase(),
+            );
+            if (
+                action.payload.walletBalance &&
+                state.tokenBalances &&
+                tokenIndex &&
+                tokenIndex !== -1
+            ) {
+                state.tokenBalances[tokenIndex] = {
+                    ...state.tokenBalances[tokenIndex],
+                    walletBalance: action.payload.walletBalance,
+                };
+            }
+            if (
+                action.payload.dexBalance &&
+                state.tokenBalances &&
+                tokenIndex &&
+                tokenIndex !== -1
+            ) {
+                state.tokenBalances[tokenIndex] = {
+                    ...state.tokenBalances[tokenIndex],
+                    dexBalance: action.payload.dexBalance,
+                };
+            }
         },
         setRecentTokens: (state, action: PayloadAction<TokenIF[]>) => {
             state.recentTokens = action.payload;
         },
         resetTokenData: (state) => {
-            state.tokens = initialState.tokens;
+            state.tokenBalances = initialState.tokenBalances;
             state.recentTokens = initialState.recentTokens;
         },
         resetUserAddresses: (state) => {
@@ -182,13 +142,9 @@ export const {
     setEnsNameCurrent,
     setEnsOrAddressTruncated,
     setIsUserIdle,
-    setNativeToken,
-    setErc20Tokens,
+    setTokenBalances,
+    setTokenBalance,
     setRecentTokens,
-    updateNativeTokenWalletBalance,
-    updateNativeTokenDexBalance,
-    updateErc20TokenWalletBalance,
-    updateErc20TokenDexBalance,
     resetTokenData,
     resetUserAddresses,
     setSecondaryImageDataRedux,

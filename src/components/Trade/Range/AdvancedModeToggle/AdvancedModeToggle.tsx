@@ -1,6 +1,6 @@
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleAdvancedMode } from '../../../../utils/state/tradeDataSlice';
-import Toggle from '../../../Global/Toggle/Toggle';
+import Toggle from '../../../Form/Toggle';
 import { memo } from 'react';
 import { FlexContainer, Text } from '../../../../styled/Common';
 
