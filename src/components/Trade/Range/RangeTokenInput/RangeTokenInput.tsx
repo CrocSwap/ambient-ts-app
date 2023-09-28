@@ -26,6 +26,7 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import { InputDisabledText } from '../../../../styled/Components/TradeModules';
 
 interface propsIF {
+    hidePlus?: boolean;
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
     tokenBInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
     isAmbient: boolean;
@@ -60,6 +61,7 @@ function RangeTokenInput(props: propsIF) {
             tokenB: handleTokenBButtonMessage,
         },
         toggleDexSelection,
+        hidePlus,
     } = props;
 
     const {
@@ -222,19 +224,21 @@ function RangeTokenInput(props: propsIF) {
                     isTokenAInputDisabled ? disabledContent : undefined
                 }
             />
-            <FlexContainer
-                fullWidth
-                justifyContent='center'
-                alignItems='center'
-                padding='0 0 8px 0'
-            >
-                <img
-                    style={{ cursor: 'default !important' }}
-                    src={tokenArrow}
-                    height={28}
-                    alt='plus sign'
-                />
-            </FlexContainer>
+            {!hidePlus && (
+                <FlexContainer
+                    fullWidth
+                    justifyContent='center'
+                    alignItems='center'
+                    padding='0 0 8px 0'
+                >
+                    <img
+                        style={{ cursor: 'default !important' }}
+                        src={tokenArrow}
+                        height={28}
+                        alt='plus sign'
+                    />
+                </FlexContainer>
+            )}
             <TokenInputWithWalletBalance
                 fieldId='range_B'
                 tokenAorB='B'

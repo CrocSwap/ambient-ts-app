@@ -34,7 +34,6 @@ import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
 
 import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
-import InitTokenInput from './InitTokenInput/InitTokenInput';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
 import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
@@ -48,6 +47,7 @@ import { useSendInit } from '../../App/hooks/useSendInit';
 
 import { useApprove } from '../../App/functions/approve';
 import { useMediaQuery } from '@material-ui/core';
+import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
@@ -99,15 +99,12 @@ export default function InitPool() {
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const {
-        baseTokenBalance,
-        quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
         tokenAAllowance,
         tokenBAllowance,
 
         isTokenABase,
-        baseTokenAddress,
     } = useTokenBalancesAndAllowances(baseToken, quoteToken);
 
     const isBaseTokenMoneynessGreaterOrEqual =
@@ -717,14 +714,6 @@ export default function InitPool() {
             </section>
         </div>
     );
-    const handleBaseCollateralChange = (input: string) => {
-        setBaseCollateral(input);
-        // rest of code here
-    };
-    const handleQuoteCollateralChange = (input: string) => {
-        setQuoteCollateral(input);
-        // rest of code here
-    };
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (tokenAorB === 'A') {
@@ -753,18 +742,15 @@ export default function InitPool() {
                 <p className={styles.label_title}>Collateral</p>
             </FlexContainer>
 
-            <InitTokenInput
-                tokenA={tokenA}
-                tokenB={tokenB}
-                baseTokenAddress={baseTokenAddress}
-                tokenABalance={baseTokenBalance}
-                tokenBBalance={quoteTokenBalance}
-                tokenADexBalance={baseTokenDexBalance}
-                tokenBDexBalance={quoteTokenDexBalance}
-                isWithdrawTokenAFromDexChecked={false}
-                isWithdrawTokenBFromDexChecked={false}
-                handleTokenAChangeEvent={handleBaseCollateralChange}
-                handleTokenBChangeEvent={handleQuoteCollateralChange}
+            <RangeTokenInput
+                hidePlus
+                isAmbient={isAmbient}
+                depositSkew={0}
+                isWithdrawFromDexChecked={{
+                    tokenA: isWithdrawTokenAFromDexChecked,
+                    tokenB: isWithdrawTokenBFromDexChecked,
+                }}
+                isOutOfRange={false}
                 tokenAInputQty={{
                     value: baseCollateral,
                     set: setBaseCollateral,
@@ -774,8 +760,18 @@ export default function InitPool() {
                     set: setQuoteCollateral,
                 }}
                 toggleDexSelection={toggleDexSelection}
-                disabled={poolExists === true}
-                reverseTokens={() => console.log('reversed')}
+                handleButtonMessage={{
+                    tokenA: () => {
+                        console.log('TODO: handleRangeButtonMessageTokenA');
+                    },
+                    tokenB: () => {
+                        console.log('TODO: handleRangeButtonMessageTokenB');
+                    },
+                }}
+                isInputDisabled={{
+                    tokenA: !!poolExists,
+                    tokenB: !!poolExists,
+                }}
             />
         </div>
     );
