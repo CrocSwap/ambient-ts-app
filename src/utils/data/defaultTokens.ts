@@ -1,5 +1,5 @@
 import { TokenIF } from '../interfaces/TokenIF';
-import { ChainIdType } from './chains';
+import { supportedNetworks } from '../networks';
 
 export const mainnetETH = {
     address: '0x0000000000000000000000000000000000000000',
@@ -56,6 +56,16 @@ export const mainnetDAI = {
     symbol: 'DAI',
 };
 
+export const mainnetUSDT = {
+    address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+    chainId: 1,
+    decimals: 6,
+    fromList: 'https://tokens.coingecko.com/uniswap/all.json',
+    logoURI: 'https://assets.coingecko.com/coins/images/325/thumb/Tether.png',
+    name: 'Tether',
+    symbol: 'USDT',
+};
+
 export const goerliETH = {
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -87,6 +97,16 @@ export const goerliDAI = {
     logoURI:
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
     fromList: '/ambient-token-list.json',
+};
+
+export const goerliUSDT = {
+    name: 'Tether',
+    address: '0x509ee0d083ddf8ac028f2a56731412edd63223b9',
+    symbol: 'USDT',
+    decimals: 6,
+    chainId: 5,
+    logoURI: 'https://assets.coingecko.com/coins/images/325/thumb/Tether.png',
+    fromList: '',
 };
 
 export const goerliWBTC = {
@@ -157,22 +177,8 @@ export const defaultTokens: TokenIF[] = [
 ];
 
 export function getDefaultPairForChain(chainId: string): [TokenIF, TokenIF] {
-    const normChainId = chainId.toLowerCase();
-    if (normChainId in DEFAULT_PAIRS_BY_CHAIN) {
-        const lookup = DEFAULT_PAIRS_BY_CHAIN[normChainId as ChainIdType];
-        return [lookup.A, lookup.B];
-    }
-
-    console.warn(
-        'No default pair found for chain ',
-        normChainId,
-        ' defaulting to Goerli',
-    );
-    return [goerliETH, goerliUSDC];
+    return [
+        supportedNetworks[chainId].defaultPair[0],
+        supportedNetworks[chainId].defaultPair[1],
+    ];
 }
-
-const DEFAULT_PAIRS_BY_CHAIN = {
-    '0x1': { A: mainnetUSDC, B: mainnetETH },
-    '0x5': { A: goerliUSDC, B: goerliETH },
-    '0x66eed': { A: arbGoerliUSDC, B: arbGoerliETH },
-};

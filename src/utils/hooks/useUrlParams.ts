@@ -142,27 +142,6 @@ export const useUrlParams = (
         }
     }
 
-    async function processTokenAddr(
-        tokenAddrA: string,
-        tokenAddrB: string,
-        chainToUse: string,
-    ) {
-        const tokenPair = await resolveTokenData(
-            tokenAddrA,
-            tokenAddrB,
-            chainToUse,
-        );
-
-        // If both tokens are valid and have data for this chain, use those
-        // Otherwise fallback to the chain's default pair.
-        if (tokenPair) {
-            dispatch(setTokenA(tokenPair[0]));
-            dispatch(setTokenB(tokenPair[1]));
-        } else {
-            processDefaultTokens(chainToUse);
-        }
-    }
-
     async function resolveTokenData(
         addrA: string,
         addrB: string,
@@ -190,7 +169,33 @@ export const useUrlParams = (
         dispatch(setTokenB(dfltB));
     }
 
-    useEffect(() => {
+    useEffect((): (() => void) => {
+        let flag = true;
+
+        const processTokenAddr = async (
+            tokenAddrA: string,
+            tokenAddrB: string,
+            chainToUse: string,
+        ) => {
+            const tokenPair = await resolveTokenData(
+                tokenAddrA,
+                tokenAddrB,
+                chainToUse,
+            );
+
+            // prevent race condition involving lookup and fetching contract
+            if (!flag) return;
+
+            // If both tokens are valid and have data for this chain, use those
+            // Otherwise fallback to the chain's default pair.
+            if (tokenPair && tokenPair[0].decimals && tokenPair[1].decimals) {
+                dispatch(setTokenA(tokenPair[0]));
+                dispatch(setTokenB(tokenPair[1]));
+            } else {
+                processDefaultTokens(chainToUse);
+            }
+        };
+
         try {
             const chainToUse = urlParamMap.get('chain') || dfltChainId;
 
@@ -221,5 +226,8 @@ export const useUrlParams = (
         } catch (error) {
             console.error({ error });
         }
+        return () => {
+            flag = false;
+        };
     }, [tokensOnChain.length, ...dependencies.map((x) => urlParamMap.get(x))]);
 };

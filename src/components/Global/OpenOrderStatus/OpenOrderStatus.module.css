@@ -15,6 +15,23 @@
     border: 1px solid var(--positive);
 }
 
+.circular_progress {
+    display: block;
+    transform: rotate(-90deg);
+}
+
+.circle_background {
+    fill: none;
+    stroke: var(--text2);
+}
+
+.circle_fill {
+    fill: none;
+    stroke: var(--positive);
+    stroke-linecap: round;
+    transform-origin: center;
+    transition: stroke-dashoffset 0.3s;
+}
 /* Desktop screen Sizes */
 @media only screen and (min-width: 992px) {
     .filled,

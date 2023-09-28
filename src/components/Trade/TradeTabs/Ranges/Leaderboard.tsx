@@ -1,11 +1,7 @@
-/* eslint-disable no-irregular-whitespace */
-// todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
-
 // START: Import React and Dongles
 import { useContext, useEffect, useState, memo } from 'react';
 
 // START: Import Local Files
-import styles from './Ranges.module.css';
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -13,15 +9,16 @@ import { useSortedPositions } from '../useSortedPositions';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
+import { ChartContext } from '../../../../contexts/ChartContext';
+import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
+import { FlexContainer } from '../../../../styled/Common';
 
 // react functional component
 function Leaderboard() {
-    const { tradeTableState, showAllData } = useContext(TradeTableContext);
-    const {
-        sidebar: { isOpen: isSidebarOpen },
-    } = useContext(SidebarContext);
+    const { showAllData } = useContext(TradeTableContext);
+
+    const { tradeTableState } = useContext(ChartContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state?.userData,
@@ -62,8 +59,24 @@ function Leaderboard() {
     const usePaginateDataOrNull =
         tradeTableState === 'Expanded' ? currentRangess : sortedPositions;
 
+    // TODO: Use these as media width constants
+    const isSmallScreen = useMediaQuery('(max-width: 600px)');
+    const isLargeScreen = useMediaQuery('(min-width: 1600px)');
+
+    const tableView = isSmallScreen
+        ? 'small'
+        : !isSmallScreen && !isLargeScreen
+        ? 'medium'
+        : 'large';
+
     const footerDisplay = (
-        <div className={styles.footer}>
+        <FlexContainer
+            alignItems='center'
+            justifyContent='center'
+            gap={isSmallScreen ? 4 : 8}
+            margin='16px auto'
+            background='dark1'
+        >
             {tradeTableState === 'Expanded' && sortedPositions.length > 30 && (
                 <Pagination
                     itemsPerPage={rangesPerPage}
@@ -72,28 +85,16 @@ function Leaderboard() {
                     currentPage={currentPage}
                 />
             )}
-        </div>
+        </FlexContainer>
     );
-
-    // ----------------------
-
-    // const sidebarOpen = false;
-
-    const ipadView = useMediaQuery('(max-width: 580px)');
-    const showPair = useMediaQuery('(min-width: 768px)') || !isSidebarOpen;
-
-    const showColumns = useMediaQuery('(max-width: 1900px)');
-    const phoneScreen = useMediaQuery('(max-width: 500px)');
-
-    // const showColumns = sidebarOpen || desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
     const walID = (
         <>
-            <p>ID</p>
-            <p>Wallet</p>
+            <p>Position ID</p>
+            Wallet
         </>
     );
     const minMax = (
@@ -110,43 +111,36 @@ function Leaderboard() {
     );
     const headerColumns = [
         {
-            name: 'Last Updated',
-            className: '',
-            show: showColumns,
-            slug: 'time',
-            sortable: false,
-        },
-        {
             name: 'Rank',
             className: 'ID',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'id',
             sortable: false,
         },
         {
             name: 'Last Updated',
             className: '',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'time',
             sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'wallet',
             sortable: false,
         },
         {
             name: walID,
             className: 'wallet_id',
-            show: showColumns,
+            show: tableView !== 'large',
             slug: 'walletid',
             sortable: true,
         },
         {
             name: 'Min',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'min',
             sortable: false,
             alignRight: true,
@@ -154,7 +148,7 @@ function Leaderboard() {
         {
             name: 'Max',
             className: 'side',
-            show: !showColumns,
+            show: tableView === 'large',
             slug: 'max',
             sortable: false,
             alignRight: true,
@@ -163,7 +157,7 @@ function Leaderboard() {
         {
             name: minMax,
             className: 'side_type',
-            show: showColumns && !ipadView,
+            show: tableView === 'medium',
             slug: 'minMax',
             sortable: false,
             alignRight: true,
@@ -178,16 +172,14 @@ function Leaderboard() {
         },
         {
             name: `${baseTokenSymbol}`,
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: baseTokenSymbol,
             sortable: false,
             alignRight: true,
         },
         {
             name: `${quoteTokenSymbol}`,
-
-            show: !showColumns,
+            show: tableView === 'large',
             slug: quoteTokenSymbol,
             sortable: false,
             alignRight: true,
@@ -195,7 +187,7 @@ function Leaderboard() {
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns && !phoneScreen,
+            show: tableView === 'medium',
             slug: 'tokens',
             sortable: false,
             alignRight: true,
@@ -210,7 +202,6 @@ function Leaderboard() {
         },
         {
             name: 'Status',
-            // name: ' ',
             className: '',
             show: true,
             slug: 'status',
@@ -225,7 +216,7 @@ function Leaderboard() {
         },
     ];
     const headerColumnsDisplay = (
-        <ul className={styles.header}>
+        <RangeRowStyled size={tableView} leaderboard header>
             {headerColumns.map((header, idx) => (
                 <RangeHeader
                     key={idx}
@@ -236,7 +227,7 @@ function Leaderboard() {
                     header={header}
                 />
             ))}
-        </ul>
+        </RangeRowStyled>
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
@@ -247,22 +238,18 @@ function Leaderboard() {
                     (posId) => posId === position.positionId,
                 ) + 1
             }
-            ipadView={ipadView}
-            showColumns={showColumns}
             isAccountView={false}
             isLeaderboard={true}
-            showPair={showPair}
+            tableView={tableView}
         />
     ));
 
     return (
-        <section
-            className={`${styles.leaderboard} ${styles.main_list_container}`}
-        >
+        <FlexContainer flexDirection='column' fullHeight>
             <div>{headerColumnsDisplay}</div>
-            <div className={styles.table_content}>{rowItemContent}</div>
+            <div style={{ flex: 1, overflow: 'auto' }}>{rowItemContent}</div>
             <div>{footerDisplay}</div>
-        </section>
+        </FlexContainer>
     );
 }
 

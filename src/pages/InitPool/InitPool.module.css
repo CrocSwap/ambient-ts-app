@@ -40,7 +40,7 @@
 .top_content header h1 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    font-weight: 200;
+    font-weight: 300;
     color: var(--text1);
     text-transform: capitalize;
     text-align: center;
@@ -86,14 +86,14 @@
     color: var(--text1);
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    font-weight: 200;
+    font-weight: 300;
 }
 
 .pool_display p {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text3);
-    font-weight: 200;
+    font-weight: 300;
 }
 .pool_price_container {
     display: flex;
@@ -113,7 +113,7 @@
 .currency_quantity {
     width: 100%;
 
-    font-weight: 200;
+    font-weight: 300;
     height: 31px;
     padding: 4px 16px;
 
@@ -134,7 +134,7 @@
 
 .currency_quantity::placeholder {
     color: var(--text3);
-    font-weight: 200;
+    font-weight: 300;
     font-size: 18px;
     line-height: 22px;
 }

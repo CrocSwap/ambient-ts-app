@@ -1,9 +1,8 @@
 import { Dispatch, memo, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import { IS_LOCAL_ENV } from '../../../../../constants';
-import styles from '../Ranges.module.css';
-import { useMediaQuery } from '@material-ui/core';
 import { RangeSortType } from '../../useSortedPositions';
+import { FlexContainer, Text } from '../../../../../styled/Common';
 
 interface propsIF {
     header: {
@@ -51,41 +50,47 @@ function RangeHeader(props: propsIF) {
 
     const arrow = useMemo(() => {
         if (sortable) {
-            if (sortBy !== slug.toLowerCase()) {
-                return <BsSortDown style={{ opacity: '0' }} />;
-            } else if (!reverseSort) {
-                return <BsSortDown />;
-            } else if (reverseSort) {
-                return <BsSortUpAlt />;
-            } else {
-                return <BsSortDown style={{ opacity: '0' }} />;
+            if (sortBy === slug.toLowerCase()) {
+                if (!reverseSort) {
+                    return <BsSortDown />;
+                } else if (reverseSort) {
+                    return <BsSortUpAlt />;
+                }
             }
+            return undefined;
         }
     }, [sortBy, reverseSort, slug, sortable]);
-
-    const activeSortStyle =
-        sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
-
-    const fixedHeight = useMediaQuery('(max-width: 1900px)')
-        ? { height: 24 }
-        : {};
 
     return (
         <>
             {show && (
-                <li
+                <FlexContainer
+                    fullWidth
+                    alignItems='center'
+                    justifyContent={
+                        alignRight
+                            ? 'flex-end'
+                            : alignCenter
+                            ? 'center'
+                            : 'flex-start'
+                    }
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
                     onClick={() => handleClick(slug as RangeSortType)}
-                    className={`
-                    ${activeSortStyle}
-                    ${alignRight && styles.align_right}
-                    ${alignCenter && styles.align_center}
-                    `}
                 >
-                    <div style={fixedHeight}>
+                    <Text
+                        fontSize='mini'
+                        color='text2'
+                        align={
+                            alignRight
+                                ? 'right'
+                                : alignCenter
+                                ? 'center'
+                                : 'left'
+                        }
+                    >
                         {name} {arrow}
-                    </div>
-                </li>
+                    </Text>
+                </FlexContainer>
             )}
         </>
     );

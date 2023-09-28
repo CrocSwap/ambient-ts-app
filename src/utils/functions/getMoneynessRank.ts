@@ -1,4 +1,6 @@
-export const getMoneynessRank = (addressWithChain: string): number => {
+import { Tokens } from '../interfaces/NetworkIF';
+
+export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 
         This 'moneyness' rank is intended to reflect an average user's expectation 
         of default price denomination, e.g. the price of the ETH/USDC pool should be 
@@ -13,52 +15,18 @@ export const getMoneynessRank = (addressWithChain: string): number => {
         but otherwise arbitrary.
     */
 
-    const goerliUSDC = '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c_0x5';
-    const goerliDAI = '0xdc31ee1784292379fbb2964b3b9c4124d8f89c60_0x5';
-    const goerliWBTC = '0xc04b0d3107736c32e19f1c62b2af67be61d63a05_0x5';
-    const goerliETH = '0x0000000000000000000000000000000000000000_0x5';
-    const arbGoerliETH = '0x0000000000000000000000000000000000000000_0x66eed';
-    const arbGoerliUSDC = '0xc944b73fba33a773a4a07340333a3184a70af1ae_0x66eed';
+    const moneynessRank: { [K in keyof Tokens]: number } = {
+        USDC: 100,
+        DAI: 90,
+        USDT: 80,
+        FRAX: 70,
+        WBTC: 60,
+        ETH: 50,
+        UNI: 0,
+        WETH: 0,
+        PEPE: 0,
+    };
 
-    const ethUSDC =
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48_0x1'.toLowerCase();
-    const ethDAI =
-        '0x6b175474e89094c44da98b954eedeac495271d0f_0x1'.toLowerCase();
-    const ethWBTC =
-        '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599_0x1'.toLowerCase();
-    const ethETH =
-        '0x0000000000000000000000000000000000000000_0x1'.toLowerCase();
-    const ethUSDT =
-        '0xdAC17F958D2ee523a2206206994597C13D831ec7_0x1'.toLowerCase();
-    const ethFRAX =
-        '0x853d955aCEf822Db058eb8505911ED77F175b99e_0x1'.toLowerCase();
-    const ethSWETH =
-        '0xf951e335afb289353dc249e82926178eac7ded78_0x1'.toLowerCase();
-
-    const usdcMoneynessRank = 100;
-    const daiMoneynessRank = 90;
-    const usdtMoneynessRank = 80;
-    const fraxMoneynessRank = 70;
-    const wbtcMoneynessRank = 60;
-    const ethMoneynessRank = 50;
-    const swethMoneynessRank = 40;
-
-    const moneynessMap = new Map<string, number>([
-        [ethUSDC, usdcMoneynessRank],
-        [ethDAI, daiMoneynessRank],
-        [ethUSDT, usdtMoneynessRank],
-        [ethFRAX, fraxMoneynessRank],
-        [ethWBTC, wbtcMoneynessRank],
-        [ethETH, ethMoneynessRank],
-        [ethSWETH, swethMoneynessRank],
-        [goerliUSDC, usdcMoneynessRank],
-        [arbGoerliUSDC, usdcMoneynessRank],
-        [goerliDAI, daiMoneynessRank],
-        [goerliWBTC, wbtcMoneynessRank],
-        [goerliETH, ethMoneynessRank],
-        [arbGoerliETH, ethMoneynessRank],
-    ]);
-
-    const rank = moneynessMap.get(addressWithChain.toLowerCase()) || 0;
+    const rank = moneynessRank[tokenSymbol as keyof Tokens] ?? 0;
     return rank;
 };

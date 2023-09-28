@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useContext } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
-import styles from './Account.module.css';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
@@ -12,40 +11,26 @@ import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import trimString from '../../../../utils/functions/trimString';
-import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { ExchangeBalanceModal } from '../ExchangeBalanceModal/ExchangeBalanceModal';
-import { getFormattedNumber } from '../../../functions/getFormattedNumber';
+import { ExchangeBalanceDropdown } from '../ExchangeBalanceDropdown/ExchangeBalanceDropdown';
+import {
+    TitleGradientButton,
+    WalletName,
+} from '../../../../styled/Components/Header';
+import { FlexContainer } from '../../../../styled/Common';
 
 interface propsIF {
-    nativeBalance: string | undefined;
     accountAddress: string;
     accountAddressFull: string;
     clickLogout: () => void;
     ensName: string;
-    walletDropdownTokenData:
-        | {
-              logo: string;
-              symbol: string;
-              value: string | undefined;
-              amount: string | undefined;
-          }[]
-        | null;
-    openWagmiModal: () => void;
 }
 
 export default function Account(props: propsIF) {
-    const {
-        nativeBalance,
-        clickLogout,
-        ensName,
-        walletDropdownTokenData,
-        openWagmiModal,
-    } = props;
+    const { clickLogout, ensName } = props;
 
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
     const { connector, isConnected } = useAccount();
 
     const isUserLoggedIn = isConnected;
@@ -68,32 +53,11 @@ export default function Account(props: propsIF) {
         !isUserLoggedIn ? setShowWalletDropdown(false) : null;
     }, [isUserLoggedIn]);
 
-    const walletWrapperStyle = showWalletDropdown
-        ? styles.wallet_wrapper_active
-        : styles.wallet_wrapper;
     const walletDropdownItemRef = useRef<HTMLDivElement>(null);
     const clickOutsideHandler = () => {
         setShowWalletDropdown(false);
     };
     UseOnClickOutside(walletDropdownItemRef, clickOutsideHandler);
-
-    const ethMainnetUsdValue =
-        ethMainnetUsdPrice !== undefined && nativeBalance !== undefined
-            ? ethMainnetUsdPrice * parseFloat(nativeBalance.replaceAll(',', ''))
-            : undefined;
-
-    const ethMainnetUsdValueTruncated = getFormattedNumber({
-        value: ethMainnetUsdValue,
-        minFracDigits: 2,
-        maxFracDigits: 2,
-    });
-
-    const ethQuantityInWalletAndDeposits =
-        nativeBalance === undefined
-            ? undefined
-            : parseFloat(nativeBalance) === 0
-            ? '0.00'
-            : nativeBalance;
 
     const ariaLabel =
         'You are currently on a focus mode on the account dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
@@ -109,22 +73,20 @@ export default function Account(props: propsIF) {
     }, [isEscapePressed]);
     const walletDisplay = (
         <section
-            className={styles.wallet_display}
+            style={{ position: 'relative', fontSize: '16px' }}
             ref={walletDropdownItemRef}
             aria-label={mainAriaLabel}
         >
-            <button
+            <TitleGradientButton
                 tabIndex={0}
-                className={`${styles.title_gradient} `}
                 onClick={() => setShowWalletDropdown(!showWalletDropdown)}
                 aria-label={ariaLabel}
             >
                 <MdAccountBalanceWallet color='var(--text1)' />
-                <p className={styles.wallet_name}>
+                <WalletName>
                     {connectedEnsOrAddressTruncated || '...'}
-                </p>
-            </button>
-
+                </WalletName>
+            </TitleGradientButton>
             {showWalletDropdown ? (
                 <WalletDropdown
                     ensName={ensName !== '' ? ensName : ''}
@@ -132,21 +94,7 @@ export default function Account(props: propsIF) {
                     handleCopyAddress={handleCopyAddress}
                     connectorName={connector?.name}
                     clickLogout={clickLogout}
-                    walletWrapperStyle={walletWrapperStyle}
-                    ethAmount={
-                        isUserLoggedIn
-                            ? nativeBalance
-                                ? 'Ξ ' + ethQuantityInWalletAndDeposits
-                                : '...'
-                            : ''
-                    }
-                    ethValue={
-                        ethMainnetUsdValueTruncated !== undefined
-                            ? `${ethMainnetUsdValueTruncated}`
-                            : undefined
-                    }
                     accountAddressFull={props.accountAddressFull}
-                    walletDropdownTokenData={walletDropdownTokenData}
                     clickOutsideHandler={clickOutsideHandler}
                 />
             ) : null}
@@ -154,9 +102,14 @@ export default function Account(props: propsIF) {
     );
 
     return (
-        <div className={styles.account_container}>
+        <FlexContainer
+            justifyContent='flex-end'
+            rounded
+            gap={8}
+            overflow='visible'
+        >
             {isUserLoggedIn && walletDisplay}
-            {isConnected && <ExchangeBalanceModal />}
+            {isConnected && <ExchangeBalanceDropdown />}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}
@@ -166,9 +119,8 @@ export default function Account(props: propsIF) {
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
-                    openWagmiModal={openWagmiModal}
                 />
             </NavItem>
-        </div>
+        </FlexContainer>
     );
 }

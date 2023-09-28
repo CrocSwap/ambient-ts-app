@@ -1,31 +1,25 @@
-import styles from '../Orders.module.css';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
-import OrderDetails from '../../../../OrderDetails/OrderDetails';
-
-import { memo, useContext, useEffect, useRef, useState } from 'react';
-
+import OrderDetailsModal from '../../../../OrderDetails/OrderDetailsModal/OrderDetailsModal';
+import { memo, useContext, useEffect, useRef } from 'react';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
-import { IS_LOCAL_ENV } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { orderRowConstants } from '../orderRowConstants';
 import { AppStateContext } from '../../../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
-
+import { useModal } from '../../../../Global/Modal/useModal';
+import { OrderRow as OrderRowStyled } from '../../../../../styled/Components/TransactionTable';
 interface propsIF {
-    showColumns: boolean;
-    ipadView: boolean;
     limitOrder: LimitOrderIF;
-    showPair: boolean;
     isAccountView: boolean;
+    tableView: 'small' | 'medium' | 'large';
 }
+
 function OrderRow(props: propsIF) {
-    const { showColumns, ipadView, showPair, limitOrder, isAccountView } =
-        props;
+    const { tableView, limitOrder, isAccountView } = props;
     const {
-        globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const {
@@ -50,8 +44,8 @@ function OrderRow(props: propsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
-
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         truncatedDisplayPrice,
         sideType,
         usdValue,
@@ -59,14 +53,23 @@ function OrderRow(props: propsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
-
+        fillPercentage,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
         elapsedTimeString,
+        baseTokenAddress,
+        quoteTokenAddress,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
     } = useProcessOrder(limitOrder, userAddress, isAccountView);
+
+    const [isDetailsModalOpen, openDetailsModal, closeDetailsModal] =
+        useModal();
 
     const orderMenuProps = {
         isOwnerActiveAccount: isOwnerActiveAccount,
@@ -92,33 +95,13 @@ function OrderRow(props: propsIF) {
 
     const priceStyle = 'base_color';
 
-    const sellOrderStyle = sideType === 'sell' ? 'order_sell' : 'order_buy';
-
-    const usernameStyle =
+    const usernameColor: 'text1' | 'accent1' | 'accent2' =
         isOwnerActiveAccount && showAllData
-            ? 'owned_tx_contrast'
+            ? 'accent2'
             : ensName || userNameToDisplay === 'You'
-            ? 'gradient_text'
-            : 'username_base_color';
-    // eslint-disable-next-line
-    const userPositionStyle =
-        userNameToDisplay === 'You' && showAllData
-            ? `${styles.border_left} ${sideType}_style`
-            : null;
+            ? 'accent1'
+            : 'text1';
 
-    const openDetailsModal = () => {
-        IS_LOCAL_ENV && console.debug({ limitOrder });
-
-        openGlobalModal(
-            <OrderDetails
-                limitOrder={limitOrder}
-                isBaseTokenMoneynessGreaterOrEqual={
-                    isBaseTokenMoneynessGreaterOrEqual
-                }
-                isAccountView={isAccountView}
-            />,
-        );
-    };
     const orderDomId =
         limitOrder.limitOrderId === currentPositionActive
             ? `order-${limitOrder.limitOrderId}`
@@ -146,15 +129,6 @@ function OrderRow(props: propsIF) {
             : null;
     }, [currentPositionActive]);
 
-    const activePositionStyle =
-        limitOrder.limitOrderId === currentPositionActive
-            ? styles.active_position_style
-            : '';
-
-    const [highlightRow, setHighlightRow] = useState(false);
-    const highlightStyle = highlightRow ? 'var(--dark2)' : '';
-    const handleRowMouseDown = () => setHighlightRow(true);
-    const handleRowMouseOut = () => setHighlightRow(false);
     const [_, copy] = useCopyToClipboard();
 
     function handleWalletCopy() {
@@ -180,8 +154,6 @@ function OrderRow(props: propsIF) {
             );
     }
 
-    // eslint-disable-next-line
-    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
     const handleAccountClick = () => {
         if (!isAccountView) {
             const accountUrl = `/${
@@ -196,13 +168,11 @@ function OrderRow(props: propsIF) {
     const orderRowConstantsProps = {
         posHashTruncated,
         openDetailsModal,
-        handleRowMouseDown,
-        handleRowMouseOut,
         posHash,
+        ensName,
         handleCopyPosHash,
-        sellOrderStyle,
         usdValue,
-        usernameStyle,
+        usernameColor,
         userNameToDisplay,
         limitOrder,
         handleWalletCopy,
@@ -223,6 +193,14 @@ function OrderRow(props: propsIF) {
         sideType,
         sideCharacter,
         isOrderFilled,
+        baseTokenAddress,
+        quoteTokenAddress,
+        isLimitOrderPartiallyFilled,
+        originalPositionLiqBase,
+        originalPositionLiqQuote,
+        expectedPositionLiqBase,
+        expectedPositionLiqQuote,
+        fillPercentage,
     };
 
     const {
@@ -249,7 +227,8 @@ function OrderRow(props: propsIF) {
         setCurrentPositionActive('');
         openDetailsModal();
     }
-    const handleKeyPress: React.KeyboardEventHandler<HTMLUListElement> = (
+
+    const handleKeyPress: React.KeyboardEventHandler<HTMLDivElement> = (
         event,
     ) => {
         if (event.key === 'Enter') {
@@ -261,32 +240,35 @@ function OrderRow(props: propsIF) {
 
     return (
         <>
-            <ul
-                className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle} row_container_global`}
+            <OrderRowStyled
+                size={tableView}
+                account={isAccountView}
+                active={limitOrder.limitOrderId === currentPositionActive}
+                user={userNameToDisplay === 'You' && showAllData}
                 id={orderDomId}
-                style={{ backgroundColor: highlightStyle }}
                 onClick={handleRowClick}
                 ref={currentPositionActive ? activePositionRef : null}
                 tabIndex={0}
                 onKeyDown={handleKeyPress}
             >
-                {!showColumns && OrderTimeWithTooltip}
-                {isAccountView && showPair && tokenPair}
-                {!showColumns && <li>{IDWithTooltip}</li>}
-                {!showColumns && !isAccountView && <li>{walletWithTooltip}</li>}
-                {showColumns && txIdColumnComponent}
-                {!ipadView && priceDisplay}
-                {!showColumns && sideDisplay}
-                {!showColumns && typeDisplay}
-                {showColumns && !ipadView && sideTypeColumn}
-
+                {tableView === 'large' && OrderTimeWithTooltip}
+                {isAccountView && tokenPair}
+                {tableView === 'large' && <div>{IDWithTooltip}</div>}
+                {tableView === 'large' && !isAccountView && (
+                    <div>{walletWithTooltip}</div>
+                )}
+                {tableView !== 'large' && txIdColumnComponent}
+                {tableView !== 'small' && priceDisplay}
+                {tableView === 'large' && sideDisplay}
+                {tableView === 'large' && typeDisplay}
+                {tableView !== 'large' && sideTypeColumn}
                 {ValueWithTooltip}
-                {!showColumns && baseQtyDisplayWithTooltip}
-                {!showColumns && quoteQtyDisplayWithTooltip}
-                {showColumns && tokensColumn}
-                {!ipadView && statusDisplay}
+                {tableView === 'large' && baseQtyDisplayWithTooltip}
+                {tableView === 'large' && quoteQtyDisplayWithTooltip}
+                {tableView === 'medium' && tokensColumn}
+                {tableView !== 'small' && statusDisplay}
 
-                <li data-label='menu' className={styles.menu}>
+                <div data-label='menu'>
                     <OrdersMenu
                         limitOrder={limitOrder}
                         {...orderMenuProps}
@@ -296,8 +278,18 @@ function OrderRow(props: propsIF) {
                         isAccountView={isAccountView}
                         handleAccountClick={handleAccountClick}
                     />
-                </li>
-            </ul>
+                </div>
+            </OrderRowStyled>
+            {isDetailsModalOpen && (
+                <OrderDetailsModal
+                    limitOrder={limitOrder}
+                    isBaseTokenMoneynessGreaterOrEqual={
+                        isBaseTokenMoneynessGreaterOrEqual
+                    }
+                    isAccountView={isAccountView}
+                    onClose={closeDetailsModal}
+                />
+            )}
         </>
     );
 }

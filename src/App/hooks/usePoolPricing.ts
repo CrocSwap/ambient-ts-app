@@ -76,6 +76,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     // Reset pricing states that require asynchronous updates when pool changes
     useEffect(() => {
         setPoolPriceDisplay(0);
+        setIsPoolInitialized(undefined);
         dispatch(setPrimaryQuantityRange(''));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1

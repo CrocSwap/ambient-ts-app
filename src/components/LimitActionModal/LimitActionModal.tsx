@@ -1,6 +1,5 @@
 import { BigNumber } from 'ethers';
 import { useState, useEffect, useContext } from 'react';
-import styles from './LimitActionModal.module.css';
 import { IS_LOCAL_ENV } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
@@ -11,32 +10,35 @@ import {
     addTransactionByType,
     removePendingTx,
     addReceipt,
+    updateTransactionHash,
 } from '../../utils/state/receiptDataSlice';
 import {
     TransactionError,
     isTransactionReplacedError,
     isTransactionFailedError,
 } from '../../utils/TransactionError';
-import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
-import TransactionException from '../Global/TransactionException/TransactionException';
-import TxSubmittedSimplify from '../Global/TransactionSubmitted/TxSubmiitedSimplify';
-import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
-import LimitActionButton from './LimitActionButton/LimitActionButton';
 import LimitActionInfo from './LimitActionInfo/LimitActionInfo';
 import LimitActionSettings from './LimitActionSettings/LimitActionSettings';
 import LimitActionTokenHeader from './LimitActionTokenHeader/LimitActionTokenHeader';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { CrocPositionView } from '@crocswap-libs/sdk';
-import SimpleModalHeader from '../Global/SimpleModal/SimpleModalHeader/SimpleModalHeader';
+import ModalHeader from '../Global/ModalHeader/ModalHeader';
+import { LimitActionType } from '../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
+import Modal from '../Global/Modal/Modal';
+import SubmitTransaction from '../Trade/TradeModules/SubmitTransaction/SubmitTransaction';
+import Button from '../Form/Button';
+import styles from './LimitActionModal.module.css';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
-    type: 'Remove' | 'Claim';
+    type: LimitActionType;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 export default function LimitActionModal(props: propsIF) {
-    const { limitOrder, type } = props;
+    const { limitOrder, type, isOpen, onClose } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -44,6 +46,7 @@ export default function LimitActionModal(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isOrderFilled,
+        isLimitOrderPartiallyFilled,
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
@@ -52,10 +55,18 @@ export default function LimitActionModal(props: propsIF) {
         quoteDisplay,
         truncatedDisplayPrice,
         initialTokenQty,
+        baseTokenAddress,
+        quoteTokenAddress,
+        fillPercentage,
     } = useProcessOrder(limitOrder, userAddress);
 
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
-    const { gasPriceInGwei } = useContext(ChainDataContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { poolIndex },
+    } = useContext(CrocEnvContext);
+
+    const { gasPriceInGwei, lastBlockNumber } = useContext(ChainDataContext);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newTxHash, setNewTxHash] = useState('');
@@ -67,8 +78,6 @@ export default function LimitActionModal(props: propsIF) {
         BigNumber | undefined
     >();
 
-    const { lastBlockNumber } = useContext(ChainDataContext);
-
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewTxHash('');
@@ -76,10 +85,10 @@ export default function LimitActionModal(props: propsIF) {
     };
 
     useEffect(() => {
-        if (!showConfirmation) {
+        if (!showConfirmation || !isOpen) {
             resetConfirmation();
         }
-    }, [txErrorCode]);
+    }, [txErrorCode, isOpen]);
 
     const updateLiq = async () => {
         try {
@@ -108,14 +117,15 @@ export default function LimitActionModal(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const averageGasUnitsForHarvestTx = type === 'Remove' ? 90069 : 68309;
+    const averageGasUnitsForHarvestTxInGasDrops =
+        type === 'Remove' ? 90069 : 68309;
     const numGweiInWei = 1e-9;
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
-                averageGasUnitsForHarvestTx *
+                averageGasUnitsForHarvestTxInGasDrops *
                 numGweiInWei *
                 ethMainnetUsdPrice;
 
@@ -148,7 +158,22 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
+                                txAction: 'Remove',
+                                txType: 'Limit',
+                                txDescription: `Remove ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol} Limit`,
+                                txDetails: {
+                                    baseAddress: limitOrder.base,
+                                    quoteAddress: limitOrder.quote,
+                                    poolIdx: poolIndex,
+                                    baseSymbol: limitOrder.baseSymbol,
+                                    quoteSymbol: limitOrder.quoteSymbol,
+                                    baseTokenDecimals: limitOrder.baseDecimals,
+                                    quoteTokenDecimals:
+                                        limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
+                                },
                             }),
                         );
                 } else {
@@ -162,7 +187,22 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
+                                txAction: 'Remove',
+                                txType: 'Limit',
+                                txDescription: `Remove ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol} Limit`,
+                                txDetails: {
+                                    baseAddress: limitOrder.base,
+                                    quoteAddress: limitOrder.quote,
+                                    poolIdx: poolIndex,
+                                    baseSymbol: limitOrder.baseSymbol,
+                                    quoteSymbol: limitOrder.quoteSymbol,
+                                    baseTokenDecimals: limitOrder.baseDecimals,
+                                    quoteTokenDecimals:
+                                        limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
+                                },
                             }),
                         );
                 }
@@ -190,6 +230,12 @@ export default function LimitActionModal(props: propsIF) {
                     dispatch(removePendingTx(error.hash));
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && { newTransactionHash };
                     receipt = error.receipt;
@@ -231,7 +277,22 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
+                                txAction: 'Claim',
+                                txType: 'Limit',
+                                txDescription: `Claim Limit ${limitOrder.baseSymbol}→${limitOrder.quoteSymbol}`,
+                                txDetails: {
+                                    baseAddress: limitOrder.base,
+                                    quoteAddress: limitOrder.quote,
+                                    poolIdx: poolIndex,
+                                    baseSymbol: limitOrder.baseSymbol,
+                                    quoteSymbol: limitOrder.quoteSymbol,
+                                    baseTokenDecimals: limitOrder.baseDecimals,
+                                    quoteTokenDecimals:
+                                        limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
+                                },
                             }),
                         );
                 } else {
@@ -245,7 +306,22 @@ export default function LimitActionModal(props: propsIF) {
                         dispatch(
                             addTransactionByType({
                                 txHash: tx.hash,
-                                txType: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
+                                txAction: 'Claim',
+                                txType: 'Limit',
+                                txDescription: `Claim Limit ${limitOrder.quoteSymbol}→${limitOrder.baseSymbol}`,
+                                txDetails: {
+                                    baseAddress: limitOrder.base,
+                                    quoteAddress: limitOrder.quote,
+                                    poolIdx: poolIndex,
+                                    baseSymbol: limitOrder.baseSymbol,
+                                    quoteSymbol: limitOrder.quoteSymbol,
+                                    baseTokenDecimals: limitOrder.baseDecimals,
+                                    quoteTokenDecimals:
+                                        limitOrder.quoteDecimals,
+                                    lowTick: limitOrder.bidTick,
+                                    highTick: limitOrder.askTick,
+                                    isBid: limitOrder.isBid,
+                                },
                             }),
                         );
                 }
@@ -272,6 +348,12 @@ export default function LimitActionModal(props: propsIF) {
                     dispatch(removePendingTx(error.hash));
                     const newTransactionHash = error.replacement.hash;
                     dispatch(addPendingTx(newTransactionHash));
+                    dispatch(
+                        updateTransactionHash({
+                            oldHash: error.hash,
+                            newHash: error.replacement.hash,
+                        }),
+                    );
                     setNewTxHash(newTransactionHash);
                     IS_LOCAL_ENV && console.debug({ newTransactionHash });
                     receipt = error.receipt;
@@ -287,48 +369,6 @@ export default function LimitActionModal(props: propsIF) {
             }
         }
     };
-
-    // ----------------------------CONFIRMATION JSX------------------------------
-
-    const transactionSuccess = (
-        <TxSubmittedSimplify
-            hash={newTxHash}
-            content={
-                type === 'Remove'
-                    ? 'Removal Transaction Successfully Submitted'
-                    : 'Claim Transaction Successfully Submitted'
-            }
-        />
-    );
-
-    const transactionPending = (
-        <WaitingConfirmation content='Please check your wallet for notifications' />
-    );
-
-    const [currentConfirmationData, setCurrentConfirmationData] =
-        useState(transactionPending);
-
-    const transactionApproved = newTxHash !== '';
-    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
-    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
-
-    const transactionException = (
-        <TransactionException resetConfirmation={resetConfirmation} />
-    );
-
-    function handleConfirmationChange() {
-        setCurrentConfirmationData(transactionPending);
-
-        if (transactionApproved) {
-            setCurrentConfirmationData(transactionSuccess);
-        } else if (isTransactionDenied) {
-            setCurrentConfirmationData(
-                <TransactionDenied resetConfirmation={resetConfirmation} />,
-            );
-        } else if (isTransactionException) {
-            setCurrentConfirmationData(transactionException);
-        }
-    }
 
     const limitInfoProps =
         type === 'Remove'
@@ -371,78 +411,60 @@ export default function LimitActionModal(props: propsIF) {
                   networkFee,
               };
 
-    useEffect(() => {
-        handleConfirmationChange();
-    }, [
-        transactionApproved,
-        newTxHash,
-        txErrorCode,
-        showConfirmation,
-        isTransactionDenied,
-    ]);
-
-    const confirmationContent = (
-        <>
-            <SimpleModalHeader
-                title={
-                    type === 'Remove'
-                        ? 'Remove Limit Order Confirmation'
-                        : 'Claim Limit Order Confirmation'
-                }
-            />
-            <div className={styles.confirmation_container}>
-                <div className={styles.confirmation_content}>
-                    {currentConfirmationData}
-                </div>
-            </div>
-        </>
-    );
-    // ----------------------------END OF CONFIRMATION JSX------------------------------
-
-    const showSettingsOrMainContent = showSettings ? (
+    return showSettings ? (
         <LimitActionSettings
             showSettings={showSettings}
             setShowSettings={setShowSettings}
             onBackClick={resetConfirmation}
         />
     ) : (
-        <>
-            <SimpleModalHeader
-                title={
-                    showConfirmation
-                        ? ''
-                        : type === 'Remove'
-                        ? 'Remove Limit Order'
-                        : 'Claim Limit Order '
-                }
-            />
-            <div style={{ padding: '1rem ' }}>
+        <Modal usingCustomHeader onClose={onClose}>
+            <ModalHeader title={`${type} Limit Order`} onClose={onClose} />
+            <div className={styles.main_content_container}>
                 <LimitActionTokenHeader
                     isDenomBase={isDenomBase}
                     isOrderFilled={isOrderFilled}
+                    baseTokenAddress={baseTokenAddress}
+                    quoteTokenAddress={quoteTokenAddress}
+                    isLimitOrderPartiallyFilled={isLimitOrderPartiallyFilled}
                     baseTokenSymbol={baseTokenSymbol}
                     quoteTokenSymbol={quoteTokenSymbol}
                     baseTokenLogoURI={baseTokenLogo}
                     quoteTokenLogoURI={quoteTokenLogo}
+                    fillPercentage={fillPercentage}
                 />
-                <div style={{ padding: '0 8px' }}>
+                <div className={styles.info_container}>
                     <LimitActionInfo {...limitInfoProps} />
-                    <LimitActionButton
-                        onClick={type === 'Remove' ? removeFn : claimFn}
-                        disabled={currentLiquidity === undefined}
-                        title={
-                            type === 'Remove'
-                                ? 'Remove Limit Order'
-                                : 'Claim Limit Order'
-                        }
-                    />
+                    {showConfirmation ? (
+                        <SubmitTransaction
+                            type='Limit'
+                            newTransactionHash={newTxHash}
+                            txErrorCode={txErrorCode}
+                            resetConfirmation={resetConfirmation}
+                            sendTransaction={
+                                type === 'Remove' ? removeFn : claimFn
+                            }
+                            transactionPendingDisplayString={
+                                'Submitting transaction...'
+                            }
+                            disableSubmitAgain
+                        />
+                    ) : (
+                        <Button
+                            title={
+                                !currentLiquidity
+                                    ? '...'
+                                    : type === 'Remove'
+                                    ? 'Remove Limit Order'
+                                    : 'Claim Limit Order'
+                            }
+                            disabled={!currentLiquidity}
+                            action={type === 'Remove' ? removeFn : claimFn}
+                            flat={true}
+                        />
+                    )}
                 </div>
             </div>
-        </>
+        </Modal>
     );
-
-    // --------------------------------------------------------------------------------------
-
-    if (showConfirmation) return confirmationContent;
-    return <>{showSettingsOrMainContent}</>;
 }

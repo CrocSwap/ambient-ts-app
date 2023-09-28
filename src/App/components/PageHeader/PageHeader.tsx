@@ -1,19 +1,17 @@
 import { useEffect, useState, memo, useContext, useCallback } from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { motion, AnimateSharedLayout } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
+import { AnimateSharedLayout } from 'framer-motion';
 import Account from './Account/Account';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
-import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-import logo from '../../../assets/images/logos/ambient_logo.png';
-import logoText from '../../../assets/images/logos/logo_text.png';
+import logo from '../../../assets/images/logos/logo_mark.svg';
+import mainLogo from '../../../assets/images/logos/large.svg';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
 import { useAccount, useDisconnect, useEnsName, useSwitchNetwork } from 'wagmi';
-import { TokenIF } from '../../../utils/interfaces/exports';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import { formSlugForPairParams } from '../../functions/urlSlugs';
@@ -32,16 +30,32 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
+import {
+    HeaderClasses,
+    LogoContainer,
+    LogoText,
+    NavigationLink,
+    PrimaryHeader,
+    PrimaryNavigation,
+    RightSide,
+    TradeNowDiv,
+    UnderlinedMotionDiv,
+} from '../../../styled/Components/Header';
+import { FlexContainer } from '../../../styled/Common';
+import Button from '../../../components/Form/Button';
+import { version as appVersion } from '../../../../package.json';
 
 const PageHeader = function () {
-    const {
-        wagmiModal: { open: openWagmiModal },
-    } = useContext(AppStateContext);
     const {
         crocEnv,
         setCrocEnv,
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
+
+    const {
+        wagmiModal: { open: openWagmiModal },
+    } = useContext(AppStateContext);
+
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
     const { setShowAllData } = useContext(TradeTableContext);
@@ -63,9 +77,6 @@ const PageHeader = function () {
 
     const accountAddress =
         isConnected && address ? trimString(address, 6, 6) : '';
-    const userData = useAppSelector((state) => state.userData);
-
-    const connectedUserNativeToken = userData.tokens.nativeToken;
 
     const dispatch = useAppDispatch();
     const { disconnect } = useDisconnect();
@@ -84,71 +95,22 @@ const PageHeader = function () {
         disconnect();
     }, []);
 
-    const formatTokenData = (data: TokenIF[] | undefined) => {
-        if (!data) return null;
-
-        // Filter data to only contain USDC and DAI tokens
-        const filteredData = data.filter((token) => {
-            const address = token.address;
-            return address === '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c';
-        });
-
-        // We want usdc first and dai second
-        const sortedData = filteredData.sort((a, b) => {
-            if (a.address === '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c') {
-                return -1;
-            } else if (
-                b.address === '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c'
-            ) {
-                return 1;
-            } else if (
-                a.address === '0xdc31ee1784292379fbb2964b3b9c4124d8f89c60'
-            ) {
-                return -1;
-            } else if (
-                b.address === '0xdc31ee1784292379fbb2964b3b9c4124d8f89c60'
-            ) {
-                return 1;
-            } else {
-                return 0;
-            }
-        });
-
-        const result = sortedData.map((obj) => ({
-            logo: obj.logoURI,
-            symbol: obj.symbol,
-            value: obj.walletBalanceDisplayTruncated,
-            amount: obj.combinedBalanceDisplayTruncated,
-        }));
-
-        return result;
-    };
-
-    const walletDropdownTokenData = formatTokenData(
-        userData.tokens.erc20Tokens,
-    );
-
     const accountProps = {
-        nativeBalance:
-            connectedUserNativeToken?.combinedBalanceDisplayTruncated,
         accountAddress: accountAddress,
         accountAddressFull: isConnected && address ? address : '',
         ensName: ensName || '',
         isUserLoggedIn: isConnected,
         clickLogout: clickLogout,
-        walletDropdownTokenData,
-        openWagmiModal: openWagmiModal,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
 
     const connectWagmiButton = (
-        <button
-            className={styles.authenticate_button}
-            style={!desktopScreen ? { width: '140px' } : undefined}
-            onClick={() => openWagmiModal()}
-        >
-            {desktopScreen ? 'Connect Wallet' : 'Connect'}
-        </button>
+        <Button
+            title={desktopScreen ? 'Connect Wallet' : 'Connect'}
+            action={openWagmiModal}
+            thin
+            flat
+        ></Button>
     );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
@@ -237,7 +199,7 @@ const PageHeader = function () {
             document.title = '404 ~ Ambient';
         } else {
             document.title =
-                'Ambient | A New Zero-to-One Decentralized Trading Protocol';
+                'Ambient | Zero-to-One Decentralized Trading Protocol';
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
@@ -289,21 +251,21 @@ const PageHeader = function () {
         if (linkDestination.includes('/trade')) {
             if (linkDestination.includes('/pool')) {
                 return locationPathname.includes('/trade/pool')
-                    ? styles.active
-                    : styles.inactive;
+                    ? HeaderClasses.active
+                    : HeaderClasses.inactive;
             } else {
                 return locationPathname.includes(tradeDestination)
-                    ? styles.active
-                    : styles.inactive;
+                    ? HeaderClasses.active
+                    : HeaderClasses.inactive;
             }
         } else if (linkDestination.includes('/swap')) {
             return locationPathname.includes('/swap')
-                ? styles.active
-                : styles.inactive;
+                ? HeaderClasses.active
+                : HeaderClasses.inactive;
         } else {
             return locationPathname === linkDestination
-                ? styles.active
-                : styles.inactive;
+                ? HeaderClasses.active
+                : HeaderClasses.inactive;
         }
     }
 
@@ -320,14 +282,13 @@ const PageHeader = function () {
     }
     const routeDisplay = (
         <AnimateSharedLayout>
-            <nav
-                className={styles.primary_navigation}
+            <PrimaryNavigation
                 id='primary_navigation'
-                data-visible={mobileNavToggle}
+                dataVisible={mobileNavToggle}
             >
                 {linkData.map((link, idx) =>
                     link.shouldDisplay ? (
-                        <Link
+                        <NavigationLink
                             tabIndex={0}
                             className={isActive(
                                 link.destination,
@@ -341,16 +302,11 @@ const PageHeader = function () {
                             {isUnderlined(
                                 link.destination,
                                 location.pathname,
-                            ) && (
-                                <motion.div
-                                    className={styles.underline}
-                                    layoutId='underline'
-                                />
-                            )}
-                        </Link>
+                            ) && <UnderlinedMotionDiv layoutId='underline' />}
+                        </NavigationLink>
                     ) : null,
                 )}
-            </nav>
+            </PrimaryNavigation>
         </AnimateSharedLayout>
     );
 
@@ -376,57 +332,52 @@ const PageHeader = function () {
     }, []);
 
     return (
-        <header
+        <PrimaryHeader
             data-testid={'page-header'}
-            className={`${styles.primary_header} ${
-                location.pathname === '/' && styles.fixed
-            }`}
+            fixed={location.pathname === '/'}
         >
-            <Link to='/' className={styles.logo_container} aria-label='Home'>
-                <img src={logo} alt='ambient' className={styles.logo} />
-                {desktopScreen && (
-                    <img
-                        src={logoText}
-                        alt='ambient'
-                        className={styles.logo_text}
-                    />
-                )}
-            </Link>
+            <div>
+                <LogoContainer to='/' aria-label='Home'>
+                    {desktopScreen ? (
+                        <img src={mainLogo} alt='ambient' />
+                    ) : (
+                        <LogoText src={logo} alt='ambient' />
+                    )}
+                </LogoContainer>
+            </div>
+
             {routeDisplay}
-            <div className={styles.right_side}>
+            <RightSide>
                 {show ? (
-                    <div
-                        style={{
-                            width: '380px',
-                            display: 'flex',
-                            justifyContent: 'flex-end',
-                            alignItems: 'center',
-                            padding: '0 1rem',
-                        }}
-                    >
-                        <TradeNowButton inNav />{' '}
-                    </div>
+                    <TradeNowDiv justifyContent='flex-end' alignItems='center'>
+                        <TradeNowButton inNav />
+                    </TradeNowDiv>
                 ) : (
                     <div>
-                        <div className={styles.account}>
-                            <div className={styles.branch_name}>
-                                {APP_ENVIRONMENT !== 'local' &&
-                                APP_ENVIRONMENT !== 'production' ? (
-                                    <div className={styles.branch}>
-                                        {BRANCH_NAME}{' '}
-                                        <BiGitBranch color='yellow' />
-                                    </div>
+                        <FlexContainer
+                            alignItems='center'
+                            gap={8}
+                            overflow='visible'
+                        >
+                            <FlexContainer fontSize='body' color={'orange'}>
+                                {APP_ENVIRONMENT !== 'production' ? (
+                                    <FlexContainer alignItems='center' gap={4}>
+                                        {`${BRANCH_NAME} - v${appVersion}`}
+                                        {APP_ENVIRONMENT !== 'testnet' && (
+                                            <BiGitBranch color='yellow' />
+                                        )}
+                                    </FlexContainer>
                                 ) : null}
-                            </div>
+                            </FlexContainer>
                             <NetworkSelector switchNetwork={switchNetwork} />
                             {!isConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />
-                        </div>
+                        </FlexContainer>
                     </div>
                 )}
-            </div>
-        </header>
+            </RightSide>
+        </PrimaryHeader>
     );
 };
 

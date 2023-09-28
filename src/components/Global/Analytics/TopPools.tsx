@@ -6,16 +6,15 @@ import { SortedPoolMethodsIF, useSortedPools } from './useSortedPools';
 import TableHead from './TableHead';
 import checkPoolForWETH from '../../../App/functions/checkPoolForWETH';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
+import Spinner from '../Spinner/Spinner';
 import {
-    FlexContainer,
     ScrollableContainer,
     ShadowBox,
+    SpinnerContainer,
     Table,
     TableBody,
-    SpinnerContainer,
-} from './Analytics.styles';
-import Spinner from '../Spinner/Spinner';
-
+} from '../../../styled/Components/Analytics';
+import { FlexContainer } from '../../../styled/Common';
 export interface HeaderItem {
     label: string;
     hidden: boolean;
@@ -46,9 +45,6 @@ function TopPools(props: propsIF) {
 
     // logic to take raw pool list and sort them based on user input
     const sortedPools: SortedPoolMethodsIF = useSortedPools(allPools);
-
-    // number of pools to show in the DOM
-    const POOL_COUNT = 20;
 
     // !important:  any changes to `sortable` values must be accompanied by an update
     // !important:  ... to the type definition `sortType` in `useSortedPools.ts`
@@ -99,7 +95,7 @@ function TopPools(props: propsIF) {
     ];
 
     return (
-        <FlexContainer>
+        <FlexContainer fullHeight fullWidth>
             <ScrollableContainer>
                 <ShadowBox>
                     <Table>
@@ -114,7 +110,6 @@ function TopPools(props: propsIF) {
                                         (pool: PoolIF) =>
                                             !checkPoolForWETH(pool, chainId),
                                     )
-                                    .slice(0, POOL_COUNT)
                                     .map((pool: PoolDataIF, idx: number) => (
                                         <PoolRow
                                             key={JSON.stringify(pool) + idx}
@@ -123,7 +118,12 @@ function TopPools(props: propsIF) {
                                         />
                                     ))
                             ) : (
-                                <SpinnerContainer>
+                                <SpinnerContainer
+                                    fullHeight
+                                    fullWidth
+                                    alignItems='center'
+                                    justifyContent='center'
+                                >
                                     <Spinner
                                         size={100}
                                         bg='var(--dark1)'

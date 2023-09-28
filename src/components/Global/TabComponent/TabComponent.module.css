@@ -1,10 +1,10 @@
 .tab_window {
     width: 100%;
     height: 100%;
-    background: var(--dark1);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    border-radius: var(--border-radius);
 }
 
 .tab_nav {
@@ -68,6 +68,7 @@
 .menu_content li.selected,
 .tab_ul_left li.selected {
     color: var(--accent1);
+
 }
 
 .tab_ul_left li {
@@ -97,6 +98,7 @@
 .selected button {
     color: var(--accent1);
     font-size: 15px;
+    white-space: nowrap;
 }
 
 .non_selected button {
@@ -131,6 +133,19 @@
     display: none;
 }
 
+.tab_icon_container{
+
+    background: var(--dark3);
+    padding: 4px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+}
+
+.tab_icon_container:hover{
+    cursor: pointer;
+    background: var(--dark2);
+    transition: all var(--animation-speed) ease-in-out;
+}
 .tab_icon {
     display: flex;
 }
@@ -143,7 +158,7 @@
     border-bottom: 1px solid var(--text1);
 }
 @media (min-width: 800px) {
-    .tab_icon {
+     .tab_icon_container {
         display: none;
     }
 }

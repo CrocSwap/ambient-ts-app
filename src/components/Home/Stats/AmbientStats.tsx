@@ -6,7 +6,15 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import styles from './Stats.module.css';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { Fade } from 'react-reveal';
+import {
+    HomeContent,
+    HomeTitle,
+    StatContainer,
+    StatCardContainer,
+    StatValue,
+} from '../../../styled/Components/Home';
 
 interface StatCardProps {
     title: string;
@@ -17,16 +25,25 @@ function StatCard(props: StatCardProps) {
     const { title, value } = props;
     const ariaDescription = `${title} is ${value}`;
     return (
-        <li
-            className={styles.stat_card_container}
+        <StatCardContainer
+            flexDirection='column'
+            justifyContent='center'
+            gap={8}
+            alignItems='center'
+            background='dark2'
             aria-label={ariaDescription}
             tabIndex={0}
         >
-            <div className={styles.title} style={{ fontWeight: '100' }}>
-                {title}
-            </div>
-            <div className={styles.value}>{value}</div>
-        </li>
+            <HomeTitle style={{ fontWeight: '100' }}>{title}</HomeTitle>
+            <StatValue
+                fontWeight='300'
+                fontSize='header2'
+                color='text1'
+                font='mono'
+            >
+                {value}
+            </StatValue>
+        </StatCardContainer>
     );
 }
 
@@ -98,20 +115,41 @@ export default function Stats() {
             value: totalFeesString ? totalFeesString : '…',
         },
     ];
-    return (
-        <div className={styles.container}>
-            <div
-                className={styles.title}
-                aria-label='Ambient Finance Stats'
-                tabIndex={0}
-            >
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+
+    const mobileWrapper = (
+        <Fade up>
+            <HomeTitle aria-label='Ambient Finance Stats' tabIndex={0}>
                 Ambient Finance Stats
-            </div>
-            <ul className={styles.content}>
+            </HomeTitle>
+            <HomeContent>
                 {statCardData.map((card, idx) => (
                     <StatCard key={idx} title={card.title} value={card.value} />
                 ))}
-            </ul>
-        </div>
+            </HomeContent>
+        </Fade>
+    );
+
+    return (
+        <StatContainer flexDirection='column' gap={16} padding='16px 0'>
+            {showMobileVersion ? (
+                mobileWrapper
+            ) : (
+                <>
+                    <HomeTitle aria-label='Ambient Finance Stats' tabIndex={0}>
+                        Ambient Finance Stats
+                    </HomeTitle>
+                    <HomeContent>
+                        {statCardData.map((card, idx) => (
+                            <StatCard
+                                key={idx}
+                                title={card.title}
+                                value={card.value}
+                            />
+                        ))}
+                    </HomeContent>
+                </>
+            )}
+        </StatContainer>
     );
 }

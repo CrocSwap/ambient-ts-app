@@ -38,7 +38,7 @@
     position: relative;
     /* max-height: 80vh; */
     color: var(--text1);
-    top: 1rem;
+    top: 20%;
 
     /* min-height: 80vh; */
 }
@@ -52,7 +52,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-weight: 200;
+    font-weight: 300;
     text-transform: capitalize;
     font-size: 14px;
     color: var(--text1);
@@ -62,14 +62,14 @@
 .modal_header h2 {
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
-    font-weight: 200;
+    font-weight: 300;
     color: var(--text1);
     padding-left: 27px;
 }
 
 .modal_content {
     /* padding: 20px; */
-    background: var(--dark2);
+    background: var(--dark1);
     border-radius: var(--border-radius);
 
     /* min-height: 250px; */
@@ -85,7 +85,6 @@
 
 @media only screen and (min-width: 500px) {
     .modal_body {
-        top: 10rem;
         min-width: 400px;
     }
 }

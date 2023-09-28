@@ -1,15 +1,14 @@
 import TokenIcon from '../TokenIcon/TokenIcon';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { PoolDataIF } from '../../../contexts/ExploreContext';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import {
-    TableCell,
     PoolNameWrapper,
-    TokenWrapper,
-    FlexCenter,
-    TableRow,
-    FlexEnd,
     TradeButton,
-} from './Analytics.styles';
+    TableRow,
+    TableCell,
+} from '../../../styled/Components/Analytics';
+import { FlexContainer } from '../../../styled/Common';
 
 interface propsIF {
     pool: PoolDataIF;
@@ -19,31 +18,37 @@ interface propsIF {
 export default function PoolRow(props: propsIF) {
     const { pool, goToMarket } = props;
 
-    const [firstLogoURI, secondLogoURI]: [string, string] =
+    const [firstToken, secondToken]: [TokenIF, TokenIF] =
         pool.moneyness.base < pool.moneyness.quote
-            ? [pool.base.logoURI, pool.quote.logoURI]
-            : [pool.quote.logoURI, pool.base.logoURI];
+            ? [pool.base, pool.quote]
+            : [pool.quote, pool.base];
 
     return (
         <TableRow
             onClick={() => goToMarket(pool.base.address, pool.quote.address)}
         >
             <TableCell>
-                <FlexCenter>
-                    <TokenWrapper>
+                <FlexContainer alignItems='center'>
+                    <FlexContainer
+                        alignItems='center'
+                        gap={4}
+                        style={{ flexShrink: 0 }}
+                    >
                         <TokenIcon
-                            src={uriToHttp(firstLogoURI)}
-                            alt={'logo for token'}
+                            token={firstToken}
+                            src={uriToHttp(firstToken.logoURI)}
+                            alt={firstToken.symbol}
                             size='2xl'
                         />
                         <TokenIcon
-                            src={uriToHttp(secondLogoURI)}
-                            alt={'logo for token'}
+                            token={secondToken}
+                            src={uriToHttp(secondToken.logoURI)}
+                            alt={secondToken.symbol}
                             size='2xl'
                         />
-                    </TokenWrapper>
+                    </FlexContainer>
                     <PoolNameWrapper>{pool.name}</PoolNameWrapper>
-                </FlexCenter>
+                </FlexContainer>
             </TableCell>
             <TableCell hidden sm left>
                 <p>{pool.name}</p>
@@ -52,7 +57,7 @@ export default function PoolRow(props: propsIF) {
                 <p>{pool.displayPrice ?? '...'}</p>
             </TableCell>
             <TableCell>
-                <p>{!pool.tvl ? '...' : pool.tvlStr}</p>
+                <p>{!pool.tvl || pool.tvl < 0 ? '...' : pool.tvlStr}</p>
             </TableCell>
             <TableCell>
                 <p>{pool.volumeStr || '...'}</p>
@@ -75,9 +80,13 @@ export default function PoolRow(props: propsIF) {
                 </p>
             </TableCell>
             <TableCell hidden sm>
-                <FlexEnd>
+                <FlexContainer
+                    fullHeight
+                    alignItems='center'
+                    justifyContent='flex-end'
+                >
                     <TradeButton>Trade</TradeButton>
-                </FlexEnd>
+                </FlexContainer>
             </TableCell>
         </TableRow>
     );

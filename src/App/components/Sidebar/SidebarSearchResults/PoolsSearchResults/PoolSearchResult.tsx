@@ -1,9 +1,9 @@
-import styles from '../SidebarSearchResults.module.css';
 import { PoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 import { TokenPriceFn } from '../../../../functions/fetchTokenPrice';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { usePoolStats } from '../../../../hooks/usePoolStats';
+import { Results } from '../../../../../styled/Components/Sidebar';
 
 interface propsIF {
     pool: PoolIF;
@@ -32,8 +32,13 @@ export default function PoolSearchResult(props: propsIF) {
     );
 
     return (
-        <li
-            className={styles.card_container}
+        <Results
+            numCols={3}
+            fullWidth
+            fontWeight='300'
+            fontSize='body'
+            color='text2'
+            padding='4px'
             onClick={() => handleClick(pool.base.address, pool.quote.address)}
         >
             <p>
@@ -41,6 +46,6 @@ export default function PoolSearchResult(props: propsIF) {
             </p>
             <p style={{ textAlign: 'center' }}>{volume}</p>
             <p style={{ textAlign: 'center' }}>{tvl}</p>
-        </li>
+        </Results>
     );
 }

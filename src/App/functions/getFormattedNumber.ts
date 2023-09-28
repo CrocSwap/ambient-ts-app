@@ -1,6 +1,4 @@
 import numbro from 'numbro';
-import { precisionOfInput } from './getPrecisionOfInput';
-import truncateDecimals from '../../utils/data/truncateDecimals';
 
 type FormatParams = {
     value?: number;
@@ -21,12 +19,12 @@ type FormatParams = {
 export function getFormattedNumber({
     value,
     nullDisplay = '…',
-    zeroDisplay = '0.00',
+    isUSD = false,
+    zeroDisplay = isUSD ? '$0.00' : '0.00',
     prefix = '',
     suffix = '',
     minFracDigits = 2,
     maxFracDigits = 2,
-    isUSD = false,
     isInput = false,
     isTvl = false,
     isToken = false,
@@ -50,10 +48,9 @@ export function getFormattedNumber({
     } else if (isToken) {
         if (isNaN(value)) {
             valueString = '';
-        } else if (precisionOfInput(value.toString()) <= maxFracDigits) {
-            valueString = value.toString();
         } else {
-            valueString = truncateDecimals(value, maxFracDigits);
+            // handle scientific notation
+            valueString = (+value).toString();
         }
     } else if (isInput) {
         removeCommas = true;

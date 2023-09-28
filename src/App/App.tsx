@@ -14,6 +14,7 @@ import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import Home from '../pages/Home/Home';
 import Portfolio from '../pages/Portfolio/Portfolio';
+import TradeSwap from '../pages/Trade/Swap/Swap';
 import Limit from '../pages/Trade/Limit/Limit';
 import Range from '../pages/Trade/Range/Range';
 import Swap from '../pages/Swap/Swap';
@@ -28,7 +29,6 @@ import SidebarFooter from '../components/Global/Sidebar/SidebarFooter/SidebarFoo
 /** * **** Import Local Files *******/
 import './App.css';
 import { IS_LOCAL_ENV } from '../constants';
-import GlobalModal from './components/GlobalModal/GlobalModal';
 import ChatPanel from '../components/Chat/ChatPanel';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
@@ -43,6 +43,8 @@ import { ChartContext } from '../contexts/ChartContext';
 import PrivacyPolicy from '../pages/PrivacyPolicy/PrivacyPolicy';
 import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
 import Explore from '../pages/Explore/Explore';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
+import { FlexContainer } from '../styled/Common';
 
 /** ***** React Function *******/
 export default function App() {
@@ -57,6 +59,7 @@ export default function App() {
             isEnabled: isChatEnabled,
         },
         theme: { selected: selectedTheme },
+        wagmiModal: { isOpen: isWagmiModalOpen },
     } = useContext(AppStateContext);
     const { isChainSupported, defaultUrlParams } = useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
@@ -143,10 +146,15 @@ export default function App() {
             }
         }
     }, [isEscapePressed]);
+    const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     return (
         <>
-            <div className={containerStyle} data-theme={selectedTheme}>
+            <FlexContainer
+                flexDirection='column'
+                className={containerStyle}
+                data-theme={selectedTheme}
+            >
                 {!isChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
@@ -178,7 +186,7 @@ export default function App() {
                             />
                             <Route
                                 path='market/:params'
-                                element={<Swap isOnTradeRoute={true} />}
+                                element={<TradeSwap isOnTradeRoute={true} />}
                             />
                             <Route
                                 path='limit'
@@ -234,13 +242,10 @@ export default function App() {
                             }
                         />
                         <Route path='initpool/:params' element={<InitPool />} />
-                        <Route
-                            path='account'
-                            element={<Portfolio userAccount={true} />}
-                        />
+                        <Route path='account' element={<Portfolio />} />
                         <Route
                             path='account/:address'
-                            element={<Portfolio userAccount={false} />}
+                            element={<Portfolio />}
                         />
 
                         <Route
@@ -256,10 +261,7 @@ export default function App() {
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
-                        <Route
-                            path='/:address'
-                            element={<Portfolio userAccount={false} />}
-                        />
+                        <Route path='/:address' element={<Portfolio />} />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'
@@ -267,7 +269,7 @@ export default function App() {
                         />
                     </Routes>
                 </section>
-            </div>
+            </FlexContainer>
             <div className='footer_container'>
                 {currentLocation !== '/' &&
                     currentLocation !== '/404' &&
@@ -275,12 +277,13 @@ export default function App() {
                     currentLocation !== '/privacy' &&
                     !currentLocation.includes('/chat') &&
                     isChatEnabled && <ChatPanel isFullScreen={false} />}
+                {showMobileVersion && currentLocation !== '/' && (
+                    <SidebarFooter />
+                )}
             </div>
-            <SidebarFooter />
-            <GlobalModal />
             <GlobalPopup />
             <SnackbarComponent />
-            <WalletModalWagmi />
+            {isWagmiModalOpen && <WalletModalWagmi />}
         </>
     );
 }

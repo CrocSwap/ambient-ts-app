@@ -1,4 +1,4 @@
-import React, {
+import {
     Dispatch,
     SetStateAction,
     useContext,
@@ -9,12 +9,12 @@ import styles from './ProfileSettings.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
 import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
-// import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 
-import { motion } from 'framer-motion';
 import useChatApi from '../../Chat/Service/ChatApi';
 import { CHAT_BACKEND_URL, IS_LOCAL_ENV } from '../../../constants';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { ProfileSettingsMotionContainer } from './ProfileSettings.styles';
+import { FlexContainer, Text } from '../../../styled/Common';
 
 const pageVariant3D = {
     initial: {
@@ -48,7 +48,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     const [id, setId] = useState('');
     const { setShowProfileSettings } = props;
     const {
-        globalModal: { open: openGlobalModal },
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
     const host = CHAT_BACKEND_URL;
@@ -61,16 +60,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                 value={name}
                 placeholder={name ? name : 'Name'}
             />
-        </div>
-    );
-
-    const nftModalContent = (
-        <div className={styles.nft_modal_container}>
-            {/* {imageData.length ? (
-                imageData.map((img) => <img key={img} src={img} alt='' />)
-            ) : (
-                <h1>No nfts to display</h1>
-            )} */}
         </div>
     );
 
@@ -87,29 +76,6 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
         </div>
     );
 
-    const nftsPlaceholder = (
-        <>
-            {Array(3)
-                .fill(null)
-                .map((i) => (
-                    <div
-                        className={styles.no_image}
-                        onClick={() => openGlobalModal(nftModalContent, 'NFTs')}
-                        key={i}
-                    />
-                ))}
-        </>
-    );
-
-    false && nftsPlaceholder;
-    const nftsDisplay = (
-        <div className={styles.row}>
-            <h4>NFTs</h4>
-            <div className={styles.nft_container}>
-                {/* {imageData.length ? nfts : nftsPlaceholder} */}
-            </div>
-        </div>
-    );
     const themeDisplay = (
         <div className={styles.row}>
             <h4>Theme</h4>
@@ -151,27 +117,27 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     }
 
     return (
-        <motion.div
+        <ProfileSettingsMotionContainer
             initial='initial'
             animate='in'
             exit='out'
             variants={pageVariant3D}
             transition={pageTransition}
-            className={styles.container}
         >
             <div
-                className={styles.back_button}
+                style={{ cursor: 'pointer' }}
                 onClick={() => setShowProfileSettings(false)}
             >
                 <BiArrowBack size={30} />
             </div>
-            <div className={styles.content}>
-                <div className={styles.settings_container}>
-                    <h3>Profile Settings</h3>
+            <FlexContainer justifyContent='center'>
+                <FlexContainer flexDirection='column' width='306px'>
+                    <Text fontWeight='300' fontSize='header1' color='text1'>
+                        Profile Settings
+                    </Text>
                     <section>
                         {nameDisplay}
                         {profilePicDisplay}
-                        {nftsDisplay}
                         {themeDisplay}
                         {skinDisplay}
                     </section>
@@ -181,8 +147,8 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                     >
                         Save
                     </button>
-                </div>
-            </div>
-        </motion.div>
+                </FlexContainer>
+            </FlexContainer>
+        </ProfileSettingsMotionContainer>
     );
 }

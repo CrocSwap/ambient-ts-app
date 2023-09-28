@@ -14,10 +14,10 @@ import {
 } from '../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
-import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 import moment from 'moment';
 import leaderboard from '../../../assets/images/leaderboard.svg';
+import infoSvg from '../../../assets/images/info.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTx.svg';
@@ -43,7 +43,9 @@ import { ChartContext } from '../../../contexts/ChartContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { AppStateContext } from '../../../contexts/AppStateContext';
-
+import { FlexContainer } from '../../../styled/Common';
+import { ClearButton } from '../../../styled/Components/TransactionTable';
+import TableInfo from '../TableInfo/TableInfo';
 interface propsIF {
     filter: CandleData | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
@@ -56,8 +58,6 @@ interface propsIF {
     hasInitialized: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     unselectCandle: () => void;
-    isCandleArrived: boolean;
-    setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
 }
 
 function TradeTabs2(props: propsIF) {
@@ -70,14 +70,12 @@ function TradeTabs2(props: propsIF) {
         hasInitialized,
         setHasInitialized,
         unselectCandle,
-        isCandleArrived,
-        setIsCandleDataArrived,
     } = props;
 
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { chartSettings } = useContext(ChartContext);
+    const { chartSettings, tradeTableState } = useContext(ChartContext);
 
     const candleTime = chartSettings.candleTime.global;
 
@@ -91,6 +89,7 @@ function TradeTabs2(props: propsIF) {
 
     const {
         crocEnv,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -103,7 +102,6 @@ function TradeTabs2(props: propsIF) {
         setShowAllData,
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
-        tradeTableState,
         outsideControl,
         selectedOutsideTab,
     } = useContext(TradeTableContext);
@@ -254,7 +252,13 @@ function TradeTabs2(props: propsIF) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (userAddress && isServerEnabled && !showAllData && crocEnv) {
+        if (
+            userAddress &&
+            isServerEnabled &&
+            !showAllData &&
+            crocEnv &&
+            provider
+        ) {
             try {
                 fetchUserRecentChanges({
                     tokenList: tokens.tokenUniv,
@@ -267,6 +271,7 @@ function TradeTabs2(props: propsIF) {
                     ensResolution: true,
                     n: 100, // fetch last 100 changes,
                     crocEnv,
+                    provider,
                     lastBlockNumber,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -288,7 +293,14 @@ function TradeTabs2(props: propsIF) {
                 console.error;
             }
         }
-    }, [isServerEnabled, userAddress, showAllData, lastBlockNumWait]);
+    }, [
+        isServerEnabled,
+        userAddress,
+        showAllData,
+        lastBlockNumWait,
+        !!crocEnv,
+        !!provider,
+    ]);
 
     // -------------------------------DATA-----------------------------------------
     // Props for <Ranges/> React Element
@@ -312,16 +324,10 @@ function TradeTabs2(props: propsIF) {
         isAccountView: false,
     };
 
-    const [showPositionsOnlyToggle, setShowPositionsOnlyToggle] =
-        useState(true);
-
     const positionsOnlyToggleProps = {
         setTransactionFilter,
-        showPositionsOnlyToggle,
         changeState,
         setSelectedDate,
-        isCandleArrived,
-        setIsCandleDataArrived,
         setHasUserSelectedViewAll,
     };
 
@@ -360,6 +366,13 @@ function TradeTabs2(props: propsIF) {
                   icon: leaderboard,
                   showRightSideOption: false,
               },
+              {
+                  label: 'Info',
+                  content: <TableInfo />,
+                  icon: infoSvg,
+                  showRightSideOption: false,
+                  //   onClick: handleChartHeightOnInfo,
+              },
           ];
 
     // -------------------------------END OF DATA-----------------------------------------
@@ -371,19 +384,23 @@ function TradeTabs2(props: propsIF) {
     };
 
     const clearButtonOrNull = isCandleSelected ? (
-        <button
-            className={styles.option_button}
-            onClick={() => unselectCandle()}
-        >
-            Clear
-        </button>
+        <ClearButton onClick={() => unselectCandle()}>Clear</ClearButton>
     ) : null;
 
     const utcDiff = moment().utcOffset();
     const utcDiffHours = Math.floor(utcDiff / 60);
 
     const selectedMessageContent = (
-        <div className={styles.show_tx_message}>
+        <FlexContainer
+            fullWidth
+            alignItems='center'
+            justifyContent='center'
+            gap={4}
+            padding='4px 0'
+            background='dark1'
+            color='text2'
+            fontSize='body'
+        >
             <DefaultTooltip
                 interactive
                 title={
@@ -427,19 +444,30 @@ function TradeTabs2(props: propsIF) {
             </DefaultTooltip>
 
             {clearButtonOrNull}
-        </div>
+        </FlexContainer>
     );
 
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
-        <div ref={tabComponentRef} className={styles.trade_tab_container}>
-            <div
-                className={
-                    tradeTableState !== 'Expanded'
-                        ? styles.round_container
-                        : styles.flex_column
-                }
+        <FlexContainer
+            ref={tabComponentRef}
+            fullWidth
+            fullHeight
+            padding='8px'
+            style={{ position: 'relative' }}
+        >
+            <FlexContainer
+                flexDirection='column'
+                fullHeight
+                fullWidth
+                overflow={tradeTableState !== 'Expanded' ? 'hidden' : 'visible'}
+                style={{
+                    borderRadius:
+                        tradeTableState !== 'Expanded'
+                            ? 'var(--border-radius)'
+                            : '',
+                }}
             >
                 {isCandleSelected ? selectedMessageContent : null}
                 <TabComponent
@@ -448,10 +476,9 @@ function TradeTabs2(props: propsIF) {
                         <PositionsOnlyToggle {...positionsOnlyToggleProps} />
                     }
                     setSelectedInsideTab={setSelectedInsideTab}
-                    setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
                 />
-            </div>
-        </div>
+            </FlexContainer>
+        </FlexContainer>
     );
 }
 

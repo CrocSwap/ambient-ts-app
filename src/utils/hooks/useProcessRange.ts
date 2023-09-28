@@ -9,6 +9,7 @@ import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { getAddress } from 'ethers/lib/utils.js';
 
 export const useProcessRange = (
     position: PositionIF,
@@ -30,12 +31,8 @@ export const useProcessRange = (
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            getMoneynessRank(
-                position.base.toLowerCase() + '_' + position.chainId,
-            ) -
-                getMoneynessRank(
-                    position.quote.toLowerCase() + '_' + position.chainId,
-                ) >=
+            getMoneynessRank(position.baseSymbol) -
+                getMoneynessRank(position.quoteSymbol) >=
             0,
         [position.base, position.base, position.chainId],
     );
@@ -70,8 +67,7 @@ export const useProcessRange = (
     const isAmbient = position.positionType === 'ambient';
 
     const ensName = position.ensResolution ? position.ensResolution : null;
-    const ownerId =
-        position.user.length === 40 ? '0x' + position.user : position.user;
+    const ownerId = position.user ? getAddress(position.user) : position.user;
 
     const isOwnerActiveAccount =
         position.user.toLowerCase() === account?.toLowerCase();
@@ -199,11 +195,12 @@ export const useProcessRange = (
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
 
     const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 15
-            ? trimString(ensName, 9, 3, '…')
+        ? ensName.length > 16
+            ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 7, 4, '…');
-    const posHashTruncated = trimString(posHash.toString(), 6, 4, '…');
+        : trimString(ownerId, 5, 4, '…');
+
+    const posHashTruncated = trimString(posHash.toString(), 9, 0, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'
@@ -290,5 +287,7 @@ export const useProcessRange = (
         width,
         blockExplorer,
         elapsedTimeString,
+        baseTokenAddress: position.base,
+        quoteTokenAddress: position.quote,
     };
 };

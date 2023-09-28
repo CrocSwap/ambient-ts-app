@@ -16,17 +16,20 @@ import {
 import isJsonString from '../utils/functions/isJsonString';
 import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
+import { supportedNetworks } from '../utils/networks';
 import { setLastBlock } from '../utils/state/graphDataSlice';
-import { setNativeToken, setErc20Tokens } from '../utils/state/userDataSlice';
+import { setTokenBalances } from '../utils/state/userDataSlice';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
+import { Client } from '@covalenthq/client-sdk';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
     setGasPriceinGwei: Dispatch<SetStateAction<number | undefined>>;
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
+    client: Client;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -36,13 +39,12 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const {
-        cachedFetchErc20TokenBalances,
-        cachedFetchNativeTokenBalance,
-        cachedTokenDetails,
-    } = useContext(CachedDataContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, provider } = useContext(CrocEnvContext);
+    const { cachedFetchTokenBalances, cachedTokenDetails } =
+        useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
+
+    const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
 
     const dispatch = useAppDispatch();
     const { address: userAddress, isConnected } = useAccount();
@@ -55,6 +57,7 @@ export const ChainDataContextProvider = (props: {
         setLastBlockNumber,
         gasPriceInGwei,
         setGasPriceinGwei,
+        client,
     };
 
     async function pollBlockNum(): Promise<void> {
@@ -142,22 +145,17 @@ export const ChainDataContextProvider = (props: {
         }
     }, [lastNewHeadMessage]);
 
+    const fetchGasPrice = async () => {
+        const newGasPrice = await supportedNetworks[
+            chainData.chainId
+        ].getGasPriceInGwei(provider);
+        if (gasPriceInGwei !== newGasPrice) {
+            setGasPriceinGwei(newGasPrice);
+        }
+    };
+
     useEffect(() => {
-        fetch(
-            'https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=KNJM7A9ST1Q1EESYXPPQITIP7I8EFSY456',
-        )
-            .then((response) => response.json())
-            .then((response) => {
-                if (response.result.ProposeGasPrice) {
-                    const newGasPrice = parseInt(
-                        response.result.ProposeGasPrice,
-                    );
-                    if (gasPriceInGwei !== newGasPrice) {
-                        setGasPriceinGwei(newGasPrice);
-                    }
-                }
-            })
-            .catch(console.error);
+        fetchGasPrice();
     }, [lastBlockNumber]);
 
     // prevents useEffect below from triggering every block update
@@ -171,28 +169,16 @@ export const ChainDataContextProvider = (props: {
                 console.debug('fetching native token and erc20 token balances');
             if (crocEnv && isConnected && userAddress && chainData.chainId) {
                 try {
-                    const newNativeToken: TokenIF =
-                        await cachedFetchNativeTokenBalance(
-                            userAddress,
-                            chainData.chainId,
-                            everyEigthBlock,
-                            crocEnv,
-                        );
-
-                    dispatch(setNativeToken(newNativeToken));
-                } catch (error) {
-                    console.error({ error });
-                }
-                try {
-                    const erc20Results: TokenIF[] =
-                        await cachedFetchErc20TokenBalances(
+                    const tokenBalances: TokenIF[] =
+                        await cachedFetchTokenBalances(
                             userAddress,
                             chainData.chainId,
                             everyEigthBlock,
                             cachedTokenDetails,
                             crocEnv,
+                            client,
                         );
-                    const erc20TokensWithLogos = erc20Results.map((token) => {
+                    const tokensWithLogos = tokenBalances.map((token) => {
                         const oldToken: TokenIF | undefined =
                             tokens.getTokenByAddress(token.address);
                         const newToken = { ...token };
@@ -201,8 +187,9 @@ export const ChainDataContextProvider = (props: {
                         return newToken;
                     });
 
-                    dispatch(setErc20Tokens(erc20TokensWithLogos));
+                    dispatch(setTokenBalances(tokensWithLogos));
                 } catch (error) {
+                    dispatch(setTokenBalances([]));
                     console.error({ error });
                 }
             }

@@ -1,20 +1,33 @@
-import styles from './WalletDropdown.module.css';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { CgProfile } from 'react-icons/cg';
-import { NavLink } from 'react-router-dom';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import {
-    getChainExplorer,
-    mktDataChainId,
-} from '../../../../../utils/data/chains';
-import { useContext, useEffect, useState } from 'react';
+import { getChainExplorer } from '../../../../../utils/data/chains';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
-import { USDC } from '../../../../../utils/tokens/exports';
-import { tokenData } from '../../../../../utils/state/userDataSlice';
+
 import { getFormattedNumber } from '../../../../functions/getFormattedNumber';
+import { LogoutButton } from '../../../../../components/Global/LogoutButton/LogoutButton';
+import {
+    NameDisplay,
+    WalletDisplay,
+    CopyButton,
+    TokenContainer,
+    LogoName,
+    TokenAmount,
+    ActionsContainer,
+    NameDisplayContainer,
+    WalletContent,
+    WalletWrapper,
+    AccountLink,
+} from '../../../../../styled/Components/Header';
+import { FlexContainer } from '../../../../../styled/Common';
+import { ZERO_ADDRESS } from '../../../../../constants';
+import { BigNumber } from 'ethers';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -23,18 +36,7 @@ interface WalletDropdownPropsIF {
     clickOutsideHandler: () => void;
     connectorName: string | undefined;
     clickLogout: () => void;
-    walletWrapperStyle: string;
     accountAddressFull: string;
-    ethAmount: string;
-    ethValue: string | undefined;
-    walletDropdownTokenData:
-        | {
-              logo: string;
-              symbol: string;
-              value: string | undefined;
-              amount: string | undefined;
-          }[]
-        | null;
 }
 
 interface TokenAmountDisplayPropsIF {
@@ -52,25 +54,27 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         clickOutsideHandler,
         connectorName,
         clickLogout,
-        walletWrapperStyle,
         accountAddressFull,
-        ethAmount,
-        ethValue,
     } = props;
     const {
+        selectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const tokenDataFromRTK: tokenData = useAppSelector(
-        (state) => state.userData.tokens,
+    const tokenBalances: TokenIF[] | undefined = useAppSelector(
+        (state) => state.userData.tokenBalances,
     );
-    const erc20Tokens: TokenIF[] = tokenDataFromRTK.erc20Tokens ?? [];
-    const usdcAddr: string = USDC[chainId as '0x1'];
-    const usdcData: TokenIF | undefined = erc20Tokens.find(
-        (tkn: TokenIF) =>
-            tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
-            tkn.chainId === parseInt(chainId),
-    );
+    const nativeData: TokenIF | undefined =
+        tokenBalances &&
+        tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
+    const usdcAddr: string = selectedNetwork.tokens.USDC;
+    const usdcData: TokenIF | undefined = useMemo(() => {
+        return tokenBalances?.find(
+            (tkn: TokenIF) =>
+                tkn.address.toLowerCase() === usdcAddr.toLowerCase() &&
+                tkn.chainId === parseInt(chainId),
+        );
+    }, [tokenBalances]);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
     const blockExplorer = getChainExplorer(chainId);
@@ -79,88 +83,159 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         const { logo, symbol, amount, value } = props;
         const ariaLabel = `Current amount of ${symbol} in your wallet is ${amount} or ${value} dollars`;
         return (
-            <section
-                className={styles.token_container}
-                tabIndex={0}
-                aria-label={ariaLabel}
-            >
-                <div className={styles.logo_name}>
+            <TokenContainer tabIndex={0} aria-label={ariaLabel}>
+                <LogoName alignItems='center' gap={4}>
                     <img src={logo} alt='' />
                     <h3>{symbol}</h3>
-                </div>
-                <div className={styles.token_amount}>
+                </LogoName>
+                <TokenAmount gap={4} flexDirection={'column'}>
                     <h3>{amount}</h3>
-                    <h6>{value !== undefined ? '$' + value : '...'}</h6>
-                </div>
-            </section>
+                    <h6>{value !== undefined ? value : '...'}</h6>
+                </TokenAmount>
+            </TokenContainer>
         );
     }
 
-    let usdcBalForDOM: string;
-    if (tokenDataFromRTK.erc20Tokens) {
-        usdcBalForDOM = usdcData?.combinedBalanceDisplayTruncated ?? '0.00';
-    } else {
-        usdcBalForDOM = '…';
-    }
-
-    const [usdcVal, setUsdcVal] = useState<string | undefined>();
+    const [usdcBalanceForDom, setUsdcBalanceForDom] = useState<
+        string | undefined
+    >();
+    const [usdcUsdValueForDom, setUsdcUsdValueForDom] = useState<
+        string | undefined
+    >();
     useEffect(() => {
-        if (tokenDataFromRTK.erc20Tokens === undefined) {
-            setUsdcVal(undefined);
+        if (usdcData === undefined) {
+            setUsdcUsdValueForDom(undefined);
+            setUsdcBalanceForDom(undefined);
             return;
         }
-        const usdBal: number = parseFloat(
-            usdcData?.combinedBalanceDisplay ?? '0.00',
-        );
+        const usdcCombinedBalance =
+            usdcData.walletBalance !== undefined
+                ? BigNumber.from(usdcData.walletBalance)
+                      .add(BigNumber.from(usdcData.dexBalance ?? '0'))
+                      .toString()
+                : undefined;
+        const usdcCombinedBalanceDisplay =
+            usdcData && usdcCombinedBalance
+                ? toDisplayQty(usdcCombinedBalance, usdcData.decimals)
+                : undefined;
+        const usdcCombinedBalanceDisplayNum = usdcCombinedBalanceDisplay
+            ? parseFloat(usdcCombinedBalanceDisplay ?? '0')
+            : undefined;
+
+        const usdcCombinedBalanceDisplayTruncated =
+            usdcCombinedBalanceDisplayNum !== 0
+                ? getFormattedNumber({
+                      value: usdcCombinedBalanceDisplayNum,
+                  })
+                : '0.00';
+
+        setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
+
         Promise.resolve(
             cachedFetchTokenPrice(
-                USDC[mktDataChainId(chainId) as '0x1'],
-                chainId,
+                ethereumMainnet.tokens.USDC,
+                ethereumMainnet.chainId,
             ),
         ).then((price) => {
             if (price?.usdPrice !== undefined) {
                 const usdValueNum: number =
-                    (price && price?.usdPrice * usdBal) ?? 0;
+                    (price &&
+                        price?.usdPrice *
+                            (usdcCombinedBalanceDisplayNum ?? 0)) ??
+                    0;
                 const usdValueTruncated = getFormattedNumber({
                     value: usdValueNum,
-                    minFracDigits: 2,
-                    maxFracDigits: 2,
+                    isUSD: true,
                 });
-                setUsdcVal(usdValueTruncated);
+                setUsdcUsdValueForDom(usdValueTruncated);
             } else {
-                setUsdcVal(undefined);
+                setUsdcUsdValueForDom(undefined);
             }
         });
-    }, [chainId, JSON.stringify(tokenDataFromRTK)]);
+    }, [chainId, JSON.stringify(usdcData)]);
+
+    const { ethMainnetUsdPrice } = useContext(CrocEnvContext);
+
+    const nativeCombinedBalance =
+        nativeData?.walletBalance !== undefined
+            ? BigNumber.from(nativeData.walletBalance)
+                  .add(BigNumber.from(nativeData.dexBalance ?? '0'))
+                  .toString()
+            : undefined;
+    const nativeCombinedBalanceDisplay =
+        nativeData && nativeCombinedBalance
+            ? toDisplayQty(nativeCombinedBalance, nativeData.decimals)
+            : undefined;
+    const nativeCombinedBalanceDisplayNum = nativeCombinedBalanceDisplay
+        ? parseFloat(nativeCombinedBalanceDisplay ?? '0')
+        : undefined;
+    const nativeCombinedBalanceTruncated =
+        nativeCombinedBalanceDisplayNum !== undefined
+            ? getFormattedNumber({
+                  value: nativeCombinedBalanceDisplayNum,
+              })
+            : undefined;
+
+    const ethMainnetUsdValue =
+        ethMainnetUsdPrice !== undefined &&
+        nativeCombinedBalanceDisplayNum !== undefined
+            ? ethMainnetUsdPrice * nativeCombinedBalanceDisplayNum
+            : undefined;
+
+    const nativeTokenMainnetUsdValueTruncated =
+        ethMainnetUsdValue !== undefined
+            ? ethMainnetUsdValue
+                ? getFormattedNumber({
+                      value: ethMainnetUsdValue,
+                      isUSD: true,
+                  })
+                : '$0.00'
+            : undefined;
 
     const tokensData = [
         {
-            symbol: 'ETH',
-            amount: ethAmount,
-            value: ethValue,
+            symbol: nativeData?.symbol || 'ETH',
+            amount: nativeCombinedBalanceTruncated
+                ? nativeData?.symbol === 'ETH'
+                    ? 'Ξ ' + nativeCombinedBalanceTruncated
+                    : nativeCombinedBalanceTruncated
+                : '...',
+            value: nativeTokenMainnetUsdValueTruncated,
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
         },
         {
             symbol: 'USDC',
-            amount: usdcBalForDOM,
-            value: usdcVal,
+            amount: nativeCombinedBalanceTruncated
+                ? parseFloat(usdcBalanceForDom ?? '0') === 0
+                    ? '0.00'
+                    : usdcBalanceForDom
+                : '...',
+            value: nativeCombinedBalanceTruncated
+                ? parseFloat(usdcUsdValueForDom ?? '0') === 0
+                    ? '$0.00'
+                    : usdcUsdValueForDom
+                : '...',
             logo: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
     ];
 
     return (
-        <div
-            className={walletWrapperStyle}
+        <WalletWrapper
+            flexDirection='column'
+            justifyContent='space-between'
+            gap={16}
+            rounded
             tabIndex={0}
             aria-label={`Wallet menu for ${ensName ? ensName : accountAddress}`}
         >
-            <div className={styles.name_display_container}>
+            <NameDisplayContainer gap={4} alignItems='center'>
                 <Jazzicon
                     diameter={50}
                     seed={jsNumberForAddress(accountAddressFull.toLowerCase())}
                 />
-                <div className={styles.name_display_content}>
-                    <div className={styles.name_display}>
+
+                <FlexContainer alignItems='center' flexDirection='column'>
+                    <NameDisplay gap={16} alignItems='center'>
                         <h2>{ensName !== '' ? ensName : accountAddress}</h2>
                         <a
                             target='_blank'
@@ -170,33 +245,36 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                         >
                             <FiExternalLink />
                         </a>
-                        <button
+                        <CopyButton
                             onClick={handleCopyAddress}
-                            className={styles.copy_button}
                             aria-label='Copy address to clipboard'
                         >
                             <FiCopy />
-                        </button>
-                    </div>
-                    <div className={styles.wallet_display}>
+                        </CopyButton>
+                    </NameDisplay>
+                    <WalletDisplay gap={16} alignItems='center'>
                         <p>{connectorName}</p>
                         <p>{props.accountAddress}</p>
-                    </div>
-                </div>
-            </div>
-            <section className={styles.wallet_content}>
+                    </WalletDisplay>
+                </FlexContainer>
+            </NameDisplayContainer>
+            <WalletContent>
                 {tokensData.map((tokenData) => (
                     <TokenAmountDisplay
-                        amount={tokenData.amount}
+                        amount={
+                            tokenData.amount !== undefined
+                                ? tokenData.amount
+                                : '…'
+                        }
                         value={tokenData.value}
                         symbol={tokenData.symbol}
                         logo={tokenData.logo}
                         key={JSON.stringify(tokenData)}
                     />
                 ))}
-            </section>
-            <div className={styles.actions_container}>
-                <NavLink
+            </WalletContent>
+            <ActionsContainer numCols={2} gap={16} fullWidth={true}>
+                <AccountLink
                     to={'/account'}
                     aria-label='Go to the account page '
                     tabIndex={0}
@@ -204,9 +282,9 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
                 >
                     <CgProfile />
                     My Account
-                </NavLink>
-                <button onClick={clickLogout}>Logout</button>
-            </div>
-        </div>
+                </AccountLink>
+                <LogoutButton onClick={clickLogout} />
+            </ActionsContainer>
+        </WalletWrapper>
     );
 }

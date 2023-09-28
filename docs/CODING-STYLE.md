@@ -17,6 +17,7 @@ Please follow these items as close to as possible for your PR. Please add a desc
 - [ ] Has commented-out code been deleted or marked with a note to request preservation?
 - [ ] Does error handling use `console.warn` or `console.error` for handled and unhandled exceptions, respectively? Does this logging reference the generating file?
 - [ ] Have console commands been restricted with environmental variables (eg, dev environment only) as appropriate?
+- [ ] Are keyboard events tracked with `e.key` or `e.code` instead of `e.charCode` or `e.keyCode`?
 
 #### TypeScript
 - [ ] Are all functions given a typed return?

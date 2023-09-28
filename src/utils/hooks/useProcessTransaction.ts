@@ -5,9 +5,15 @@ import { getMoneynessRank } from '../functions/getMoneynessRank';
 import { TransactionIF } from '../../utils/interfaces/exports';
 import { getChainExplorer } from '../data/chains';
 import moment from 'moment';
-import styles from '../../components/Trade/TradeTabs/Transactions/Transactions.module.css';
 import { getElapsedTime } from '../../App/functions/getElapsedTime';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
+import { getAddress } from 'ethers/lib/utils.js';
+import {
+    toDisplayPrice,
+    priceHalfAboveTick,
+    priceHalfBelowTick,
+} from '@crocswap-libs/sdk';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 export const useProcessTransaction = (
     tx: TransactionIF,
@@ -20,15 +26,14 @@ export const useProcessTransaction = (
     const isDenomBase = tradeData.isDenomBase;
 
     const txHash = tx.txHash;
-    const ownerId = tx.user;
+    const ownerId = tx.user ? getAddress(tx.user) : '';
+
     const ensName = tx.ensResolution ? tx.ensResolution : null;
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
-    // const baseAddress = tradeData.baseToken.address;
-    // const quoteAddress = tradeData.quoteToken.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
@@ -37,9 +42,7 @@ export const useProcessTransaction = (
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
     const isBaseTokenMoneynessGreaterOrEqual =
-        getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
-            getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
-        0;
+        getMoneynessRank(tx.baseSymbol) - getMoneynessRank(tx.quoteSymbol) >= 0;
 
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;
@@ -65,6 +68,9 @@ export const useProcessTransaction = (
     let truncatedLowDisplayPriceDenomByMoneyness;
     let truncatedHighDisplayPriceDenomByMoneyness;
 
+    let estimatedQuoteFlowDisplay;
+    let estimatedBaseFlowDisplay;
+
     let baseFlowDisplay;
     let quoteFlowDisplay;
 
@@ -77,6 +83,29 @@ export const useProcessTransaction = (
     const quoteTokenCharacter = tx.quoteSymbol
         ? getUnicodeCharacter(tx.quoteSymbol)
         : '';
+
+    const limitTick = tx.isBid ? tx.askTick : tx.bidTick;
+
+    const gridSize = lookupChain(tx.chainId).gridSize;
+
+    const priceHalfAbove = toDisplayPrice(
+        priceHalfAboveTick(limitTick, gridSize),
+        tx.baseDecimals,
+        tx.quoteDecimals,
+    );
+    const priceHalfBelow = toDisplayPrice(
+        priceHalfBelowTick(limitTick, gridSize),
+        tx.baseDecimals,
+        tx.quoteDecimals,
+    );
+
+    const middlePriceDisplayNum = isDenomBase
+        ? tx.isBid
+            ? 1 / priceHalfBelow
+            : 1 / priceHalfAbove
+        : tx.isBid
+        ? priceHalfBelow
+        : priceHalfAbove;
 
     if (tx.entityType === 'limitOrder') {
         if (tx.limitPriceDecimalCorrected && tx.invLimitPriceDecimalCorrected) {
@@ -181,6 +210,11 @@ export const useProcessTransaction = (
             value: baseFlowAbsNum,
             zeroDisplay: '0',
         });
+
+        estimatedQuoteFlowDisplay = getFormattedNumber({
+            value: baseFlowAbsNum * middlePriceDisplayNum,
+            zeroDisplay: '0',
+        });
     }
     if (
         tx.quoteFlowDecimalCorrected !== undefined &&
@@ -192,6 +226,10 @@ export const useProcessTransaction = (
 
         quoteFlowDisplay = getFormattedNumber({
             value: quoteFlowAbsNum,
+            zeroDisplay: '0',
+        });
+        estimatedBaseFlowDisplay = getFormattedNumber({
+            value: quoteFlowAbsNum / middlePriceDisplayNum,
             zeroDisplay: '0',
         });
     }
@@ -207,6 +245,8 @@ export const useProcessTransaction = (
         tx.entityType === 'liqchange'
             ? tx.changeType === 'burn'
                 ? 'remove'
+                : tx.changeType === 'harvest'
+                ? 'harvest'
                 : 'add'
             : tx.entityType === 'limitOrder'
             ? tx.changeType === 'mint'
@@ -254,8 +294,6 @@ export const useProcessTransaction = (
             ? 'limit'
             : 'market';
 
-    const sideTypeStyle = `${sideType}_style`;
-
     const usdValueNum = tx.totalValueUSD;
     const totalFlowUSDNum = tx.totalValueUSD;
     const totalFlowAbsNum =
@@ -284,12 +322,12 @@ export const useProcessTransaction = (
     // --------------------------------------------------------
 
     const ensNameOrOwnerTruncated = ensName
-        ? ensName.length > 13
-            ? trimString(ensName, 8, 4, '…')
+        ? ensName.length > 16
+            ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 8, 4, '…');
+        : trimString(ownerId, 5, 4, '…');
 
-    const txHashTruncated = trimString(txHash, 6, 4, '…');
+    const txHashTruncated = trimString(txHash, 9, 0, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'
@@ -320,30 +358,27 @@ export const useProcessTransaction = (
         : quoteTokenCharacter;
 
     // -----------------------------------------------
-    const valueArrows = tx.entityType !== 'liqchange';
 
     const positiveArrow = '↑';
     const negativeArrow = '↓';
 
-    const isSellQtyZero =
-        (isBuy && tx.baseFlow === 0) || (!isBuy && tx.quoteFlow === 0);
-    const isBuyQtyZero =
-        (!isBuy && tx.baseFlow === 0) || (isBuy && tx.quoteFlow === 0);
-    const isOrderRemove =
+    const isLimitRemove =
         tx.entityType === 'limitOrder' && sideType === 'remove';
 
-    const positiveDisplayStyle =
-        baseQuantityDisplay === '0' ||
+    const valueArrows = tx.entityType !== 'liqchange' && !isLimitRemove;
+
+    const positiveDisplayColor =
+        (!isBuy ? baseQuantityDisplay === '0' : quoteQuantityDisplay === '0') ||
         !valueArrows ||
-        (isOrderRemove ? isSellQtyZero : isBuyQtyZero)
-            ? styles.light_grey
-            : styles.positive_value;
-    const negativeDisplayStyle =
-        quoteQuantityDisplay === '0' ||
+        isLimitRemove
+            ? 'text1'
+            : 'positive';
+    const negativeDisplayColor =
+        (isBuy ? baseQuantityDisplay === '0' : quoteQuantityDisplay === '0') ||
         !valueArrows ||
-        (isOrderRemove ? isBuyQtyZero : isSellQtyZero)
-            ? styles.light_grey
-            : styles.negative_value;
+        isLimitRemove
+            ? 'text1'
+            : 'negative';
 
     // if (!tx) return null;
     return {
@@ -362,17 +397,20 @@ export const useProcessTransaction = (
         truncatedHighDisplayPrice,
         truncatedLowDisplayPriceDenomByMoneyness,
         truncatedHighDisplayPriceDenomByMoneyness,
+        middlePriceDisplayNum,
+        estimatedBaseFlowDisplay,
+        estimatedQuoteFlowDisplay,
         // Transaction type and side data
         sideType,
         transactionTypeSide,
         type,
-        sideTypeStyle,
+        isLimitRemove,
 
         sideCharacter,
         priceCharacter,
         isBuy,
-        positiveDisplayStyle,
-        negativeDisplayStyle,
+        positiveDisplayColor,
+        negativeDisplayColor,
 
         // Value data
         usdValue,

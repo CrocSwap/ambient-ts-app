@@ -1,12 +1,16 @@
-import { motion } from 'framer-motion';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import styles from './NetworkSelector.module.css';
 import DropdownMenu2 from '../../../../components/Global/DropdownMenu2/DropdownMenu2';
 import { ItemEnterAnimation } from '../../../../utils/others/FramerMotionAnimations';
 import { getSupportedChainIds } from '../../../../utils/data/chains';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-
+import {
+    MenuContent,
+    ChainNameStatus,
+    NetworkItem,
+    DropdownMenuContainer,
+} from '../../../../styled/Components/Header';
+import { supportedNetworks } from '../../../../utils/networks';
 interface NetworkSelectorPropsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
@@ -14,6 +18,7 @@ interface NetworkSelectorPropsIF {
 export default function NetworkSelector(props: NetworkSelectorPropsIF) {
     const { switchNetwork } = props;
     const {
+        setSelectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -23,25 +28,19 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
 
     const dropdownAriaDescription = 'Dropdown menu for networks.';
     const networkMenuContent = (
-        <ul
-            className={styles.menu_content}
-            tabIndex={0}
-            aria-label={dropdownAriaDescription}
-        >
+        <MenuContent tabIndex={0} aria-label={dropdownAriaDescription}>
             {chains.map((chain, idx) => (
-                <motion.li
-                    onClick={() =>
-                        switchNetwork
-                            ? switchNetwork(parseInt(chain.chainId))
-                            : null
-                    }
+                <NetworkItem
+                    onClick={() => {
+                        switchNetwork && switchNetwork(parseInt(chain.chainId));
+                        setSelectedNetwork(supportedNetworks[chain.chainId]);
+                    }}
                     key={chain.chainId}
-                    className={styles.network_item}
                     custom={idx}
                     variants={ItemEnterAnimation}
                     tabIndex={0}
                 >
-                    <div className={styles.chain_name_status} tabIndex={0}>
+                    <ChainNameStatus tabIndex={0}>
                         <img
                             src={chain.logoUrl}
                             alt={chain.displayName}
@@ -50,16 +49,20 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                             style={{ borderRadius: '50%' }}
                         />
                         {chain.displayName}
-                    </div>
-                </motion.li>
+                    </ChainNameStatus>
+                </NetworkItem>
             ))}
-        </ul>
+        </MenuContent>
     );
 
     return (
         <>
-            <div className={styles.selector_select_container}>
-                <div className={styles.dropdown_menu_container}>
+            <div style={{ position: 'relative' }}>
+                <DropdownMenuContainer
+                    justifyContent='center'
+                    alignItems='center'
+                    gap={4}
+                >
                     <DropdownMenu2
                         marginTop={'50px'}
                         titleWidth={'80px'}
@@ -68,7 +71,7 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
                     >
                         {networkMenuContent}
                     </DropdownMenu2>
-                </div>
+                </DropdownMenuContainer>
             </div>
         </>
     );

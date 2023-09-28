@@ -1,5 +1,3 @@
-import styles from './ExchangeBalance.module.css';
-
 import Deposit from './Deposit/Deposit';
 import Withdraw from './Withdraw/Withdraw';
 import Transfer from './Transfer/Transfer';
@@ -9,7 +7,6 @@ import transferImage from '../../../assets/images/sidebarImages/transfer.svg';
 import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
-import { motion } from 'framer-motion';
 import {
     SetStateAction,
     Dispatch,
@@ -23,23 +20,27 @@ import { fetchEnsAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import {
-    setErc20Tokens,
-    setNativeToken,
-} from '../../../utils/state/userDataSlice';
-import { useDispatch } from 'react-redux';
-import { TokenContext } from '../../../contexts/TokenContext';
-import { SoloTokenSelect } from '../../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import { AppStateContext } from '../../../contexts/AppStateContext';
+    useAppDispatch,
+    useAppSelector,
+} from '../../../utils/hooks/reduxToolkit';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { setTokenBalance } from '../../../utils/state/userDataSlice';
+
+import { FlexContainer } from '../../../styled/Common';
+
+import {
+    PortfolioControlContainer,
+    PortfolioInfoText,
+    PortfolioMotionContainer,
+    PortfolioMotionSubContainer,
+} from '../../../styled/Components/Portfolio';
 
 interface propsIF {
     fullLayoutActive: boolean;
     setFullLayoutActive: Dispatch<SetStateAction<boolean>>;
+    setTokenModalOpen?: Dispatch<SetStateAction<boolean>>;
     isModalView?: boolean;
-    setIsTokenModalOpen?: (val: boolean) => void;
 }
 
 export default function ExchangeBalance(props: propsIF) {
@@ -47,10 +48,10 @@ export default function ExchangeBalance(props: propsIF) {
         fullLayoutActive,
         setFullLayoutActive,
         isModalView = false,
-        setIsTokenModalOpen,
+        setTokenModalOpen = () => null,
     } = props;
 
-    const { mainnetProvider } = useContext(CrocEnvContext);
+    const { provider } = useContext(CrocEnvContext);
 
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
@@ -58,26 +59,10 @@ export default function ExchangeBalance(props: propsIF) {
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
-    const dispatch = useDispatch();
+    const dispatchRTK = useAppDispatch();
 
-    const {
-        crocEnv,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
-    const {
-        cachedFetchErc20TokenBalances,
-        cachedFetchNativeTokenBalance,
-        cachedTokenDetails,
-    } = useContext(CachedDataContext);
-    const { addTokenInfo, setInput } = useContext(TokenContext);
-    const {
-        globalModal: { open: openGlobalModal, close: closeGlobalModal, isOpen },
-    } = useContext(AppStateContext);
-
-    const closeModalCustom = () => {
-        setInput('');
-    };
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
@@ -92,8 +77,6 @@ export default function ExchangeBalance(props: propsIF) {
     const [resolvedAddress, setResolvedAddress] = useState<
         string | undefined
     >();
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
-        useState(true);
 
     const isSendToAddressEns = sendToAddress?.endsWith('.eth');
     const isSendToAddressHex =
@@ -112,7 +95,16 @@ export default function ExchangeBalance(props: propsIF) {
             crocEnv
                 .token(selectedToken.address)
                 .wallet(userAddress)
-                .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
+
+                .then((bal: BigNumber) => {
+                    setTokenWalletBalance(bal.toString());
+                    dispatchRTK(
+                        setTokenBalance({
+                            tokenAddress: selectedToken.address,
+                            walletBalance: bal.toString(),
+                        }),
+                    );
+                })
                 .catch(console.error);
 
             crocEnv
@@ -120,41 +112,15 @@ export default function ExchangeBalance(props: propsIF) {
                 .balance(userAddress)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
+                    dispatchRTK(
+                        setTokenBalance({
+                            tokenAddress: selectedToken.address,
+                            dexBalance: bal.toString(),
+                        }),
+                    );
                 })
                 .catch(console.error);
         }
-
-        if (recheckTokenBalances) {
-            (async () => {
-                if (userAddress) {
-                    const newNativeToken: TokenIF =
-                        await cachedFetchNativeTokenBalance(
-                            userAddress,
-                            chainId,
-                            lastBlockNumber,
-                            crocEnv,
-                        );
-
-                    dispatch(setNativeToken(newNativeToken));
-
-                    const erc20Results: TokenIF[] =
-                        await cachedFetchErc20TokenBalances(
-                            userAddress,
-                            chainId,
-                            lastBlockNumber,
-                            cachedTokenDetails,
-                            crocEnv,
-                        );
-                    const erc20TokensWithLogos = erc20Results.map((token) =>
-                        addTokenInfo(token),
-                    );
-
-                    dispatch(setErc20Tokens(erc20TokensWithLogos));
-                }
-            })();
-        }
-
-        setRecheckTokenBalances(false);
     }, [
         crocEnv,
         selectedToken.address,
@@ -187,8 +153,8 @@ export default function ExchangeBalance(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            if (sendToAddress && isSendToAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(
+            if (sendToAddress && isSendToAddressEns && provider) {
+                const newResolvedAddress = await provider.resolveName(
                     sendToAddress,
                 );
 
@@ -207,12 +173,7 @@ export default function ExchangeBalance(props: propsIF) {
                 setResolvedAddress(undefined);
             }
         })();
-    }, [
-        sendToAddress,
-        isSendToAddressHex,
-        isSendToAddressEns,
-        mainnetProvider,
-    ]);
+    }, [sendToAddress, isSendToAddressHex, isSendToAddressEns, provider]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState<
         string | undefined
@@ -225,15 +186,10 @@ export default function ExchangeBalance(props: propsIF) {
                 sendToAddress &&
                 isSendToAddressHex &&
                 sendToAddress.length === 42 &&
-                sendToAddress.startsWith('0x') &&
-                mainnetProvider
+                sendToAddress.startsWith('0x')
             ) {
                 try {
-                    const ensName = await fetchEnsAddress(
-                        mainnetProvider,
-                        sendToAddress,
-                        '0x1',
-                    );
+                    const ensName = await fetchEnsAddress(sendToAddress);
                     if (ensName) {
                         setSecondaryEnsName(ensName);
                     } else setSecondaryEnsName(undefined);
@@ -247,32 +203,6 @@ export default function ExchangeBalance(props: propsIF) {
         })();
     }, [sendToAddress, isSendToAddressHex]);
 
-    // Needed to disable clicks outside ExchangeBalanceModal if dismissing TokenSelectionModal via GlobalModal's close()
-    useEffect(() => {
-        if (!isOpen) setIsTokenModalOpen && setIsTokenModalOpen(false);
-    }, [isOpen]);
-
-    // Needed to disable clicks outside ExchangeBalanceModal properly if dismissing TokenSelectionModal via selecting a token
-    const closeTokenSelectionModal = () => {
-        setIsTokenModalOpen && setIsTokenModalOpen(false);
-        closeGlobalModal();
-    };
-
-    const openTokenSelectionModal = () => {
-        setIsTokenModalOpen && setIsTokenModalOpen(true);
-        openGlobalModal(
-            <SoloTokenSelect
-                modalCloseCustom={closeModalCustom}
-                closeModal={closeTokenSelectionModal}
-                showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-                setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
-                isSingleToken={true}
-                tokenAorB={null}
-            />,
-            'Select Token',
-        );
-    };
-
     const accountData = [
         {
             label: 'Deposit',
@@ -283,8 +213,8 @@ export default function ExchangeBalance(props: propsIF) {
                     tokenWalletBalance={tokenWalletBalance}
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
-                    openTokenModal={openTokenSelectionModal}
                     selectedTokenDecimals={selectedTokenDecimals}
+                    setTokenModalOpen={setTokenModalOpen}
                 />
             ),
             icon: depositImage,
@@ -300,7 +230,7 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
-                    openTokenModal={openTokenSelectionModal}
+                    setTokenModalOpen={setTokenModalOpen}
                 />
             ),
             icon: withdrawImage,
@@ -316,7 +246,7 @@ export default function ExchangeBalance(props: propsIF) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
-                    openTokenModal={openTokenSelectionModal}
+                    setTokenModalOpen={setTokenModalOpen}
                 />
             ),
             icon: transferImage,
@@ -324,8 +254,7 @@ export default function ExchangeBalance(props: propsIF) {
     ];
 
     const exchangeControl = (
-        <section
-            className={styles.control_container}
+        <PortfolioControlContainer
             onClick={() => setFullLayoutActive(!fullLayoutActive)}
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
@@ -336,34 +265,40 @@ export default function ExchangeBalance(props: propsIF) {
                     width='20px'
                 />
             </IconWithTooltip>
-            {/* { fullLayoutActive && <p>Exchange Balance</p>} */}
-        </section>
+        </PortfolioControlContainer>
     );
-
-    // const titleOpacity = fullLayoutActive ? '0' : '1';
 
     const columnView = useMediaQuery('(max-width: 1200px)');
 
-    const restrictWidth =
-        !isModalView && useMediaQuery('screen and (min-width: 1200px)');
-    const restrictWidthStyle = restrictWidth
-        ? `${styles.container_restrict_width}`
-        : '';
-
     return (
         <>
-            <motion.main
+            <PortfolioMotionContainer
                 animate={
                     columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'
                 }
-                style={{ width: '100%' }}
-                className={`${styles.container} ${restrictWidthStyle}`}
+                fullWidth
+                flexDirection='column'
+                alignItems='center'
+                background='dark1'
+                rounded
+                fullHeight
+                desktop={{ maxWidth: '400px%' }}
             >
-                <motion.div className={styles.main_container}>
-                    {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
-                    Exchange Balance
-                </div> */}
-                    <div className={styles.tabs_container}>
+                <PortfolioMotionSubContainer
+                    fullHeight
+                    fullWidth
+                    alignItems='center'
+                    rounded
+                    id='subcont'
+                >
+                    <FlexContainer
+                        fullHeight
+                        fullWidth
+                        rounded
+                        background='dark1'
+                        justifyContent='center'
+                        position='relative'
+                    >
                         {(!fullLayoutActive || columnView || isModalView) && (
                             <TabComponent
                                 data={accountData}
@@ -373,18 +308,16 @@ export default function ExchangeBalance(props: propsIF) {
                             />
                         )}
                         {!isModalView && exchangeControl}
-                    </div>
-                </motion.div>
+                    </FlexContainer>
+                </PortfolioMotionSubContainer>
                 {(!fullLayoutActive || columnView || isModalView) && (
-                    <section>
-                        <div className={styles.info_text}>
-                            Collateral deposited into the Ambient Finance
-                            exchange can be traded at lower gas costs.
-                            Collateral can be withdrawn at any time.
-                        </div>
-                    </section>
+                    <PortfolioInfoText>
+                        Collateral deposited into the Ambient Finance exchange
+                        can be traded at lower gas costs. Collateral can be
+                        withdrawn at any time.
+                    </PortfolioInfoText>
                 )}
-            </motion.main>
+            </PortfolioMotionContainer>
         </>
     );
 }
