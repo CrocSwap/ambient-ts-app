@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FlexContainer, Text } from '../../../styled/Common';
 import Modal from '../Modal/Modal';
 import { useModal } from '../Modal/useModal';
@@ -13,6 +13,9 @@ import Toggle from '../../Form/Toggle';
 // }
 export default function PositionReset() {
     const [isModalOpen, openModal, closeModal] = useModal();
+    const [doNotShowPositionReset, setDoNotShowPositionReset] = useState(
+        localStorage.getItem('doNotShowPositionReset') === 'true',
+    );
 
     const graphData = useAppSelector((state) => state?.graphData);
     const userPositions = graphData?.positionsByUser?.positions?.slice(0, 3);
@@ -39,9 +42,9 @@ export default function PositionReset() {
         </FlexContainer>
     );
 
-    const doNotShowPositionReset = localStorage.getItem(
-        'doNotShowPositionReset',
-    );
+    useEffect(() => {
+        console.log({ doNotShowPositionReset });
+    }, [doNotShowPositionReset]);
 
     const dismissToggle = (
         <FlexContainer
@@ -62,19 +65,9 @@ export default function PositionReset() {
                 Do not show me this again.
             </Text>
             <Toggle
-                isOn={doNotShowPositionReset === 'true'}
+                isOn={doNotShowPositionReset}
                 handleToggle={() => {
-                    if (doNotShowPositionReset === 'true') {
-                        localStorage.setItem('doNotShowPositionReset', 'false');
-                        console.log(
-                            'The doNotShowPositionReset value has been set to false in localStorage',
-                        );
-                    } else {
-                        localStorage.setItem('doNotShowPositionReset', 'true');
-                        console.log(
-                            'The doNotShowPositionReset value has been set to true in localStorage',
-                        );
-                    }
+                    setDoNotShowPositionReset(!doNotShowPositionReset);
                 }}
                 id='do_not_show_positions_toggle'
                 disabled={false}
