@@ -57,8 +57,6 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                 flexDirection='column'
                 outline='accent1'
                 tablet={{ margin: '64px 0 0 0' }}
-                // maxWidth='800px'
-                // minHeight='481px'
             >
                 <FlexContainer
                     rounded
