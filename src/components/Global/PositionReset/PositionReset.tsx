@@ -26,6 +26,10 @@ export default function PositionReset() {
         if (address) openModal();
     }, [address]);
 
+    useEffect(() => {
+        if (doNotShowPositionReset) closeModal();
+    }, []);
+
     const positionsDisplay = (
         <FlexContainer
             gap={10}
@@ -78,7 +82,7 @@ export default function PositionReset() {
         </FlexContainer>
     );
 
-    if (!isModalOpen || doNotShowPositionReset) return null;
+    if (!isModalOpen) return null;
     return (
         <Modal onClose={closeModal} title='Reset Position'>
             <FlexContainer
