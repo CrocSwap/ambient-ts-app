@@ -1,4 +1,5 @@
 // import { CrocEnv } from '@crocswap-libs/sdk';
+import { Skeleton } from '@mui/material';
 import { FlexContainer, GridContainer, Text } from '../../../styled/Common';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -42,10 +43,11 @@ const ResetButton = styled.div`
 
 interface PositionResetCardIF {
     position: PositionIF;
+    isLoading: boolean;
 }
 
 export default function PositionResetCard(props: PositionResetCardIF) {
-    const { position } = props;
+    const { position, isLoading } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -104,6 +106,17 @@ export default function PositionResetCard(props: PositionResetCardIF) {
             />
         </FlexContainer>
     );
+
+    if (isLoading)
+        return (
+            <Skeleton
+                variant='rectangular'
+                width={'100%'}
+                height={40}
+                sx={{ bgcolor: 'var(--dark2)' }}
+                animation='wave'
+            />
+        );
 
     return (
         <GridContainer

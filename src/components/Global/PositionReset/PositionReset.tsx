@@ -29,12 +29,17 @@ export default function PositionReset() {
             style={{ maxHeight: '120px', overflowY: 'scroll' }}
         >
             {userPositions?.map((position, idx) => (
-                <PositionResetCard key={idx} position={position} />
+                <PositionResetCard
+                    key={idx}
+                    position={position}
+                    isLoading={userPositions.length < 1}
+                />
             ))}
         </FlexContainer>
     );
 
     if (!isModalOpen) return null;
+    if (!userPositions.length) return <>LOADING</>;
     return (
         <Modal onClose={closeModal} title='Reset Position'>
             <FlexContainer
