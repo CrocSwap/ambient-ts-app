@@ -59,9 +59,7 @@ interface MessageInputProps {
 export default function MessageInput(props: MessageInputProps) {
     const inputRef = useRef<HTMLInputElement | null>(null);
     const [cursorPosition, setCursorPosition] = useState<number | null>(null);
-    const [lastCursorPosition, setLastCursorPosition] = useState<number | null>(
-        null,
-    );
+
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
@@ -90,16 +88,31 @@ export default function MessageInput(props: MessageInputProps) {
         if (inputRef.current) {
             const emoji = emojiObject.emoji;
             const currentMessage = message;
-            const cursorPosition = inputRef.current.selectionStart as number;
-            console.log(inputRef.current.selectionStart);
+
+            const selectionStart = inputRef.current.selectionStart as number;
+
+            // Create the new message by inserting the emoji at the selection start position
             const newMessage =
-                currentMessage.substring(0, cursorPosition) +
+                currentMessage.slice(0, selectionStart) +
                 emoji +
-                currentMessage.substring(cursorPosition);
+                currentMessage.slice(selectionStart);
 
             if (newMessage.length <= 140) {
                 setMessage(newMessage);
                 setInputLength(newMessage.length);
+
+                // Calculate the new cursor position after emoji insertion
+                const newCursorPosition = selectionStart + emoji.length;
+
+                // Update the input value and set the cursor position
+                inputRef.current.value = newMessage;
+                inputRef.current.setSelectionRange(
+                    newCursorPosition,
+                    newCursorPosition,
+                );
+
+                // Ensure the cursor remains active by focusing on the input element
+                inputRef.current.focus();
             } else {
                 props.setShowPopUp(true);
                 props.setPopUpText(
@@ -142,13 +155,10 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     useEffect(() => {
-        if (inputRef.current) {
-            inputRef.current.focus();
-            inputRef.current.selectionStart = 0;
-            inputRef.current.selectionEnd = message.length;
-            setCursorPosition(message.length);
+        if (inputRef.current !== null && cursorPosition !== null) {
+            inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
         }
-    }, []);
+    }, [cursorPosition]);
 
     const handleSendMessageButton = () => {
         if (message === '') {
@@ -174,6 +184,29 @@ export default function MessageInput(props: MessageInputProps) {
         setMessage(e.target.value);
         setInputLength(e.target.value.length);
         setCursorPosition(e.target.selectionStart);
+    };
+
+    const handleInputClick = (e: any) => {
+        // Update cursor position when the user clicks inside the input field
+        if (inputRef.current) {
+            setCursorPosition(inputRef.current.selectionStart);
+        }
+    };
+
+    const getEffectiveCursorPosition = () => {
+        if (cursorPosition === null) {
+            return null;
+        }
+        const currentMessage = message.slice(0, cursorPosition);
+        const emojiCount = (currentMessage.match(/[\uD800-\uDFFF]/g) || [])
+            .length;
+        return cursorPosition - emojiCount;
+    };
+
+    const isEmoji = (char: any) => {
+        // You can implement a more comprehensive check for emojis
+        // For simplicity, this example only checks for surrogate pairs
+        return /[\uD800-\uDFFF]/.test(char);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -257,23 +290,40 @@ export default function MessageInput(props: MessageInputProps) {
                 setInputLength(e.target.value.length);
             });
         } else if (e.key === 'ArrowRight') {
-            const cursorPosition = e.target.selectionStart;
+            if (cursorPosition !== null && cursorPosition < message.length) {
+                setCursorPosition((prevCursorPosition) => {
+                    let newPosition = prevCursorPosition ?? +1;
 
-            // Move the cursor one position to the right
-            e.target.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
+                    // Check if the next character is an emoji (multi-char)
+                    while (
+                        newPosition < message.length &&
+                        isEmoji(message.charAt(newPosition))
+                    ) {
+                        newPosition++;
+                    }
 
-            // Update the input length
+                    return newPosition <= message.length
+                        ? newPosition
+                        : message.length;
+                });
+            }
             setInputLength(e.target.value.length);
         } else if (e.key === 'ArrowLeft') {
-            e.preventDefault();
+            if (cursorPosition !== null && cursorPosition > 0) {
+                setCursorPosition((prevCursorPosition) => {
+                    let newPosition = prevCursorPosition ?? -1;
 
-            // Get the current cursor position
-            const cursorPosition = e.target.selectionStart;
+                    // Check if the previous character is an emoji (multi-char)
+                    while (
+                        newPosition >= 0 &&
+                        isEmoji(message.charAt(newPosition))
+                    ) {
+                        newPosition--;
+                    }
 
-            // Move the cursor one position to the left
-            e.target.setSelectionRange(cursorPosition - 1, cursorPosition - 1);
-
-            // Update the input length
+                    return newPosition >= 0 ? newPosition : 0;
+                });
+            }
             setInputLength(e.target.value.length);
         } else {
             setInputLength(e.target.value.length);
@@ -457,7 +507,8 @@ export default function MessageInput(props: MessageInputProps) {
                             onKeyDown={_handleKeyDown}
                             onInput={handleInputChange}
                             value={message}
-                            onChange={onChangeMessage}
+                            onChange={handleInputChange}
+                            onClick={handleInputClick}
                             autoComplete={'off'}
                             tabIndex={-1}
                             autoFocus={props.appPage}
