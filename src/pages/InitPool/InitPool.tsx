@@ -736,14 +736,10 @@ export default function InitPool() {
     };
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
-    const [isMintLiq, setIsMinLiq] = useState(true);
-    useEffect(() => {
-        setIsMinLiq(true);
-        if (showMobileVersion) setIsMinLiq(false);
-    }, [showMobileVersion]);
+    const [isMintLiqEnabled, setIsMintLiqEnabled] = useState(true);
 
     const isRangeBoundsAndCollateralDisabled =
-        poolExists === true || !isMintLiq;
+        poolExists === true || !isMintLiqEnabled;
 
     const collateralContent = (
         <div
@@ -794,9 +790,9 @@ export default function InitPool() {
 
             <Toggle
                 id='init_mint_liq'
-                isOn={isMintLiq}
+                isOn={isMintLiqEnabled}
                 disabled={poolExists === true}
-                handleToggle={() => setIsMinLiq(!isMintLiq)}
+                handleToggle={() => setIsMintLiqEnabled(!isMintLiqEnabled)}
             />
         </FlexContainer>
     );
@@ -831,7 +827,7 @@ export default function InitPool() {
         setActiveContent(newActiveContent);
     };
 
-    const hideContentOnMobile = !isMintLiq && showMobileVersion;
+    const hideContentOnMobile = !isMintLiqEnabled && showMobileVersion;
 
     const mainContent = (
         <InitSkeleton
