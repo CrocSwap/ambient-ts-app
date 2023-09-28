@@ -884,7 +884,7 @@ export default function InitPool() {
                         />
                     </div>
                 ) : (
-                    <FlexContainer blur={!!poolExists}>
+                    <FlexContainer blur={!!poolExists} justifyContent='center'>
                         <InitPoolExtraInfo
                             initialPrice={parseFloat(
                                 initialPriceDisplay.replaceAll(',', ''),
