@@ -66,6 +66,7 @@ function Transactions(props: propsIF) {
     const { chartSettings, tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
+        provider,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { showAllData: showAllDataSelection, toggleTradeTable } =
@@ -210,6 +211,7 @@ function Transactions(props: propsIF) {
 
     const getCandleData = () =>
         crocEnv &&
+        provider &&
         fetchPoolRecentChanges({
             tokenList: tokens.tokenUniv,
             base: selectedBase,
@@ -225,6 +227,7 @@ function Transactions(props: propsIF) {
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
+            provider,
             lastBlockNumber,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -260,12 +263,20 @@ function Transactions(props: propsIF) {
             isCandleSelected &&
             candleTime.time &&
             filter?.time &&
-            crocEnv
+            crocEnv &&
+            provider
         ) {
             setIsLoading(true);
             getCandleData();
         }
-    }, [isServerEnabled, isCandleSelected, filter?.time, candleTime.time]);
+    }, [
+        isServerEnabled,
+        isCandleSelected,
+        filter?.time,
+        candleTime.time,
+        !!crocEnv,
+        !!provider,
+    ]);
 
     // update candle transactions on last block num change
     useEffect(() => {

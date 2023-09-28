@@ -1,6 +1,6 @@
 {
     "name": "ambient-ts-app",
-    "version": "1.4.0",
+    "version": "1.6.0",
     "private": true,
     "dependencies": {
         "@covalenthq/client-sdk": "^0.2.6",
@@ -29,7 +29,7 @@
         "moment": "^2.29.4",
         "moralis": "^2.11.0",
         "numbro": "^2.3.6",
-        "re-resizable": "^6.9.9",
+        "re-resizable": "^6.6.11",
         "react": "^18.1.0",
         "react-dom": "^18.1.0",
         "react-i18next": "^11.18.3",

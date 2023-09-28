@@ -38,7 +38,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, provider, chainData } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         baseToken: { address: baseTokenAddress, decimals: baseTokenDecimals },
@@ -112,7 +112,6 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     // Asynchronously query the APY and volatility estimates from the backend
     useEffect(() => {
         (async () => {
-            const provider = (await crocEnv?.context)?.provider;
             if (
                 crocEnv &&
                 provider &&
@@ -124,6 +123,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
                     baseTokenAddress,
                     quoteTokenAddress,
                     crocEnv,
+                    provider,
                     lastBlockNumber,
                 );
 
@@ -136,7 +136,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         quoteTokenAddress,
         chainData.chainId,
         chainData.poolIndex,
-        crocEnv,
+        !!crocEnv,
+        !!provider,
     ]);
 
     return (
