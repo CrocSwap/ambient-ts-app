@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import DoNotShowPositionReset from '../../components/Global/SettingsComponents/DoNotShowPositionReset';
+import { Text } from '../../styled/Common';
 
 const Container = styled.div`
     width: 100%;
@@ -10,6 +11,9 @@ const Container = styled.div`
 
     display: flex;
     justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 `;
 const TogglesContainer = styled.div`
     width: 100%;
@@ -24,6 +28,9 @@ const TogglesContainer = styled.div`
 export default function Settings() {
     return (
         <Container>
+            <Text fontSize='header2' color='accent5'>
+                APP SETTINGS
+            </Text>
             <TogglesContainer>
                 <DoNotShowPositionReset />
             </TogglesContainer>
