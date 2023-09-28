@@ -6,7 +6,6 @@ import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitP
 import Button from '../../components/Form/Button';
 
 // START: Import Local Files
-import styles from './InitPool.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
@@ -27,7 +26,7 @@ import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 // import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
-import { FlexContainer } from '../../styled/Common';
+import { FlexContainer, Text } from '../../styled/Common';
 import Toggle from '../../components/Form/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../contexts/TokenContext';
@@ -48,6 +47,7 @@ import { useSendInit } from '../../App/hooks/useSendInit';
 
 import { useApprove } from '../../App/functions/approve';
 import { useMediaQuery } from '@material-ui/core';
+import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
@@ -598,7 +598,11 @@ export default function InitPool() {
         <TextOnlyTooltip
             interactive
             title={
-                <p
+                <Text
+                    fontSize='body'
+                    color='accent1'
+                    align='left'
+                    cursor='pointer'
                     onClick={() =>
                         goToNewUrlParams(
                             chainId,
@@ -606,24 +610,23 @@ export default function InitPool() {
                             tokenB.address,
                         )
                     }
-                    className={styles.gen_link}
                 >
                     {` Trade ${tokenA.symbol} / ${tokenB.symbol}`}{' '}
                     <FiExternalLink color='var(--accent6)' />
-                </p>
+                </Text>
             }
             placement={'right'}
             enterDelay={750}
             leaveDelay={0}
         >
-            <p className={styles.label_title} style={{ width: '80px' }}>
+            <Text fontSize='body' color='text2' style={{ width: '80px' }}>
                 Select Tokens
-            </p>
+            </Text>
         </TextOnlyTooltip>
     );
 
     const simpleTokenSelect = (
-        <div className={styles.local_token_container}>
+        <FlexContainer flexDirection='column' gap={8}>
             {newUrlTooltip}
             <LocalTokenSelect
                 tokenAorB={'A'}
@@ -635,7 +638,7 @@ export default function InitPool() {
                 token={tokenB}
                 setTokenModalOpen={setTokenModalOpen}
             />
-        </div>
+        </FlexContainer>
     );
     const [isLoading, setIsLoading] = useState(false);
     const [isEditEnabled, setIsEditEnabled] = useState(false);
@@ -676,13 +679,16 @@ export default function InitPool() {
     };
 
     const initPriceContainer = (
-        <div
-            className={`${styles.pool_price_container} ${
-                poolExists === true && styles.content_disabled
-            }`}
+        <FlexContainer
+            flexDirection='column'
+            gap={10}
+            justifyContent='center'
+            blur={!!poolExists}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
-                <p className={styles.label_title}>Initial Price</p>
+                <Text fontSize='body' color='text2'>
+                    Initial Price
+                </Text>
 
                 <FlexContainer gap={8}>
                     <LuEdit2 size={20} onClick={() => openEditMode()} />
@@ -694,14 +700,19 @@ export default function InitPool() {
                 onDoubleClick={() => openEditMode()}
             >
                 {isLoading ? (
-                    <div className={styles.circular_progress}>
+                    <FlexContainer
+                        height='31px'
+                        background='dark2'
+                        alignItems='center'
+                        padding='0 16px'
+                    >
+                        {' '}
                         <Spinner size={24} bg='var(--dark2)' weight={2} />
-                    </div>
+                    </FlexContainer>
                 ) : (
-                    <input
+                    <CurrencyQuantityInput
                         disabled={!isEditEnabled}
                         id='initial-pool-price-quantity'
-                        className={`${styles.currency_quantity} `}
                         placeholder={placeholderText}
                         type='string'
                         onChange={handleInitialPriceInputChange}
@@ -715,7 +726,7 @@ export default function InitPool() {
                     />
                 )}
             </section>
-        </div>
+        </FlexContainer>
     );
     const handleBaseCollateralChange = (input: string) => {
         setBaseCollateral(input);
@@ -742,15 +753,16 @@ export default function InitPool() {
         poolExists === true || !isMintLiqEnabled;
 
     const collateralContent = (
-        <div
-            className={`${styles.collateral_container} ${
-                isRangeBoundsAndCollateralDisabled
-                    ? styles.content_disabled
-                    : ''
-            }`}
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='center'
+            gap={10}
+            blur={isRangeBoundsAndCollateralDisabled}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
-                <p className={styles.label_title}>Collateral</p>
+                <Text fontSize='body' color='text2'>
+                    Collateral
+                </Text>
             </FlexContainer>
 
             <InitTokenInput
@@ -777,17 +789,18 @@ export default function InitPool() {
                 disabled={poolExists === true}
                 reverseTokens={() => console.log('reversed')}
             />
-        </div>
+        </FlexContainer>
     );
 
     const mintInitialLiquidity = (
         <FlexContainer
             flexDirection='row'
             justifyContent='space-between'
-            className={poolExists && styles.content_disabled}
+            blur={!!poolExists}
         >
-            <p className={styles.label_title}>Mint Initial Liquidity</p>
-
+            <Text fontSize='body' color='text2'>
+                Mint Initial Liquidity
+            </Text>
             <Toggle
                 id='init_mint_liq'
                 isOn={isMintLiqEnabled}
@@ -837,24 +850,19 @@ export default function InitPool() {
             setActiveContent={setActiveContent}
             title='Initialize Pool'
         >
-            <div className={styles.left_container}>
+            {/* Left */}
+            <FlexContainer padding='0 8px' flexDirection='column' gap={8}>
                 {simpleTokenSelect}
                 {initPriceContainer}
                 {showMobileVersion && mintInitialLiquidity}
                 {collateralContent}
-            </div>
+            </FlexContainer>
 
-            <div className={styles.right_container}>
+            <FlexContainer padding='0 8px' flexDirection='column' gap={8}>
                 {!showMobileVersion && mintInitialLiquidity}
-                <div
-                    className={
-                        isRangeBoundsAndCollateralDisabled
-                            ? styles.content_disabled
-                            : ''
-                    }
-                >
+                <FlexContainer blur={isRangeBoundsAndCollateralDisabled}>
                     <AdvancedModeToggle advancedMode={advancedMode} />
-                </div>
+                </FlexContainer>
 
                 {!hideContentOnMobile && (
                     <RangeBounds
@@ -880,11 +888,7 @@ export default function InitPool() {
                         />
                     </div>
                 ) : (
-                    <div
-                        className={
-                            poolExists === true ? styles.content_disabled : ''
-                        }
-                    >
+                    <FlexContainer blur={!!poolExists}>
                         <InitPoolExtraInfo
                             initialPrice={parseFloat(
                                 initialPriceDisplay.replaceAll(',', ''),
@@ -895,14 +899,14 @@ export default function InitPool() {
                             quoteToken={quoteToken}
                             setIsDenomBase={setIsDenomBase}
                         />
-                    </div>
+                    </FlexContainer>
                 )}
                 <FlexContainer
                     justifyContent={showMobileVersion ? 'center' : ''}
                 >
                     <ButtonToRender />
                 </FlexContainer>
-            </div>
+            </FlexContainer>
         </InitSkeleton>
     );
 
