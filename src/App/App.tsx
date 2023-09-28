@@ -46,6 +46,7 @@ import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
 import PositionReset from '../components/Global/PositionReset/PositionReset';
+import Settings from '../pages/Settings/Settings';
 
 /** ***** React Function *******/
 export default function App() {
@@ -77,6 +78,7 @@ export default function App() {
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
         currentLocation !== '/404' &&
+        currentLocation !== '/settings' &&
         currentLocation !== '/terms' &&
         currentLocation !== '/privacy' &&
         !currentLocation.includes('/chat') &&
@@ -86,7 +88,9 @@ export default function App() {
             <Sidebar />
         );
 
-    const sidebarDislayStyle = isSidebarOpen
+    const sidebarDislayStyle = !sidebarRender
+        ? ''
+        : isSidebarOpen
         ? 'sidebar_content_layout'
         : 'sidebar_content_layout_close';
 
@@ -264,6 +268,8 @@ export default function App() {
                         )}
                         <Route path='/:address' element={<Portfolio />} />
                         <Route path='/404' element={<NotFound />} />
+                        <Route path='settings' element={<Settings />} />
+
                         <Route
                             path='*'
                             element={<Navigate to='/404' replace />}

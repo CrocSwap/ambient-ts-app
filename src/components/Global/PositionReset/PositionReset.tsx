@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { FlexContainer, Text } from '../../../styled/Common';
 import Modal from '../Modal/Modal';
 import { useModal } from '../Modal/useModal';
@@ -6,16 +6,15 @@ import PositionResetCard from './PositionResetCard';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useAccount } from 'wagmi';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import Toggle from '../../Form/Toggle';
+import DoNotShowPositionReset from '../SettingsComponents/DoNotShowPositionReset';
 
 // interface PositionResetPropsIF {
 //     isPositionResetModalOpen: boolean;
 // }
 export default function PositionReset() {
     const [isModalOpen, openModal, closeModal] = useModal();
-    const [doNotShowPositionReset, setDoNotShowPositionReset] = useState(
-        localStorage.getItem('doNotShowPositionReset') === 'true',
-    );
+    const doNotShowPositionReset =
+        localStorage.getItem('doNotShowPositionReset') === 'true';
 
     const graphData = useAppSelector((state) => state?.graphData);
     const userPositions = graphData?.positionsByUser?.positions?.slice(0, 3);
@@ -43,42 +42,6 @@ export default function PositionReset() {
                     isLoading={userPositions.length < 1}
                 />
             ))}
-        </FlexContainer>
-    );
-
-    useEffect(() => {
-        localStorage.setItem(
-            'doNotShowPositionReset',
-            doNotShowPositionReset.toString(),
-        );
-    }, [doNotShowPositionReset]);
-
-    const dismissToggle = (
-        <FlexContainer
-            justifyContent='space-between'
-            alignItems='center'
-            style={{ cursor: 'pointer', padding: '1rem' }}
-        >
-            <Text
-                tabIndex={0}
-                fontWeight='300'
-                color='negative'
-                style={{
-                    fontSize: 'var(--body-size)',
-                    lineHeight: 'var(--body-lh)',
-                    textAlign: 'center',
-                }}
-            >
-                Do not show me this again.
-            </Text>
-            <Toggle
-                isOn={doNotShowPositionReset}
-                handleToggle={() => {
-                    setDoNotShowPositionReset(!doNotShowPositionReset);
-                }}
-                id='do_not_show_positions_toggle'
-                disabled={false}
-            />
         </FlexContainer>
     );
 
@@ -135,7 +98,7 @@ export default function PositionReset() {
                     your exchange balance for these positions.
                 </Text>
 
-                {dismissToggle}
+                <DoNotShowPositionReset />
             </FlexContainer>
         </Modal>
     );
