@@ -2,7 +2,7 @@ import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
 import { motion } from 'framer-motion';
 import { useContext, useState, useEffect, useMemo, memo } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
-import Button from '../../../components/Global/Button/Button';
+import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import MinMaxPrice from '../../../components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice';
 import AdvancedModeToggle from '../../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
@@ -10,7 +10,7 @@ import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import RangePriceInfo from '../../../components/Trade/Range/RangePriceInfo/RangePriceInfo';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
-import RangeWidth from '../../../components/Trade/Range/RangeWidth/RangeWidth';
+import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import TradeModuleHeader from '../../../components/Trade/TradeModules/TradeModuleHeader';
 import { TradeModuleSkeleton } from '../../../components/Trade/TradeModules/TradeModuleSkeleton';
@@ -59,6 +59,7 @@ import {
 import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
 import { FlexContainer } from '../../../styled/Common';
 import { AdvancedModeSection } from '../../../styled/Components/TradeModules';
+import { useApprove } from '../../../App/functions/approve';
 
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -88,8 +89,6 @@ function Range() {
         baseToken: { address: baseTokenAddress },
         tokenAAllowance,
         tokenBAllowance,
-        setRecheckTokenAApproval,
-        setRecheckTokenBApproval,
         baseToken: {
             balance: baseTokenBalance,
             dexBalance: baseTokenDexBalance,
@@ -182,7 +181,6 @@ function Range() {
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
 
@@ -239,25 +237,28 @@ function Range() {
             advancedHighTick > currentPoolPriceTick + 100000 ||
             advancedLowTick < currentPoolPriceTick - 100000);
     // default low tick to seed in the DOM (range lower value)
-    const defaultLowTick = useMemo(() => {
-        const value = shouldResetAdvancedLowTick
-            ? roundDownTick(
-                  currentPoolPriceTick +
-                      DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
-                  gridSize,
-              )
-            : advancedLowTick;
+    const defaultLowTick = useMemo<number>(() => {
+        const value: number =
+            shouldResetAdvancedLowTick || advancedLowTick === 0
+                ? roundDownTick(
+                      currentPoolPriceTick +
+                          DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedLowTick;
         return value;
     }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
+
     // default high tick to seed in the DOM (range upper value)
-    const defaultHighTick = useMemo(() => {
-        const value = shouldResetAdvancedHighTick
-            ? roundUpTick(
-                  currentPoolPriceTick +
-                      DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
-                  gridSize,
-              )
-            : advancedHighTick;
+    const defaultHighTick = useMemo<number>(() => {
+        const value: number =
+            shouldResetAdvancedHighTick || advancedHighTick === 0
+                ? roundUpTick(
+                      currentPoolPriceTick +
+                          DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedHighTick;
         return value;
     }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
@@ -1181,62 +1182,7 @@ function Range() {
         }
     };
 
-    const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${tokenSymbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    receipt = error.receipt;
-                }
-            }
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-            setRecheckTokenBApproval(true);
-        }
-    };
+    const { approve, isApprovalPending } = useApprove();
 
     // logic to acknowledge one or both tokens as necessary
     const ackAsNeeded = (): void => {

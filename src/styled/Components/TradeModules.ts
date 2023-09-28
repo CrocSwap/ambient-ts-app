@@ -1,5 +1,6 @@
 import styled from 'styled-components/macro';
-import { FlexContainer, GridContainer, PulseAnimation, Text } from '../Common';
+import { FlexContainer, GridContainer, Text } from '../Common';
+import { AnimationProps, Animations } from '../Animations';
 
 export const SelectorContainer = styled(FlexContainer)`
     border-radius: var(--border-radius);
@@ -130,7 +131,7 @@ export const ShareItem = styled.a`
 `;
 
 export const TokenArrowButton = styled.button<{
-    display: boolean;
+    onlyDisplay: boolean;
     disabled: boolean;
 }>`
     display: flex;
@@ -147,7 +148,7 @@ export const TokenArrowButton = styled.button<{
     border: none;
     background: transparent;
 
-    cursor: ${({ display }) => (display ? 'default' : 'pointer')};
+    cursor: ${({ onlyDisplay }) => (onlyDisplay ? 'default' : 'pointer')};
 
     ${({ disabled }) => disabled && 'cursor: wait !important; '}
 
@@ -164,8 +165,8 @@ export const TokenArrowButton = styled.button<{
                 -ms-transform: rotate(180deg);
                 transform: rotate(180deg);
 
-                ${({ display }) =>
-                    display &&
+                ${({ onlyDisplay }) =>
+                    onlyDisplay &&
                     `
                     transform: none;
                     cursor: unset !important;
@@ -181,7 +182,10 @@ export const TokenArrowButton = styled.button<{
     }
 `;
 
-export const TokenArrow = styled.svg<{ display: boolean; disabled: boolean }>`
+export const TokenArrow = styled.svg<{
+    onlyDisplay: boolean;
+    disabled: boolean;
+}>`
     background-color: transparent;
     transition: 0.7s;
     -webkit-transition: 0.7s;
@@ -246,15 +250,14 @@ export const TokenQuantityInput = styled.input`
     }
 `;
 
-export const TokenQuantityContainer = styled.div<{ showPulse: boolean }>`
+export const TokenQuantityContainer = styled.div<AnimationProps>`
     border-radius: var(--border-radius);
     background-color: var(--dark2);
     min-height: 40px;
 
     display: grid;
     grid-template-columns: 1fr 145px;
-
-    ${({ showPulse }) => showPulse && PulseAnimation}
+    ${Animations}
 `;
 
 export const TokenSelectButton = styled.button`
@@ -278,25 +281,6 @@ export const TokenSelectButton = styled.button`
 
     &:focus-visible {
         border: 1px solid var(--text1);
-    }
-`;
-
-export const MaxButton = styled.button`
-    cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text1);
-    outline: none;
-    border: none;
-    background: transparent;
-
-    width: 25px;
-    max-height: 20px;
-    transition: all var(--animation-speed) ease-in-out;
-    border-radius: 4px;
-
-    &:hover {
-        color: var(--accent1);
     }
 `;
 
@@ -421,12 +405,6 @@ export const SubmitTransactionExtraButton = styled.button`
     &:hover {
         color: var(--accent5);
     }
-`;
-
-export const PulseAnimationContainer = styled(FlexContainer)<{
-    showPulse: boolean;
-}>`
-    ${({ showPulse }) => showPulse && PulseAnimation}
 `;
 
 export const LimitRateButtonContainer = styled(FlexContainer)<{

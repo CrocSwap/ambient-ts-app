@@ -1,7 +1,7 @@
 import { PoolDataIF } from '../../contexts/ExploreContext';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { WETH } from '../../utils/tokens/WETH';
+import { supportedNetworks } from '../../utils/networks';
 
 // fn to determine if the pool in question has WETH
 export default function checkPoolForWETH(
@@ -9,7 +9,7 @@ export default function checkPoolForWETH(
     chainId: string,
 ): boolean {
     // check for a canonical WETH address on the current chain
-    const addrWETH: string = WETH[chainId as keyof typeof WETH];
+    const addrWETH: string = supportedNetworks[chainId].tokens.WETH;
     // if found then check if either token is WETH
     const checkWETH = (tkn: TokenIF): boolean => {
         return addrWETH

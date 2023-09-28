@@ -5,10 +5,10 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
 
 // START: Import Other Local Files
-import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-
+import { PortfolioBannerRectangleContainer } from '../../../styled/Components/Portfolio';
+import accountImage from '../../../assets/images/backgrounds/account_image.svg';
 interface propsIF {
     ensName: string;
     resolvedAddress: string;
@@ -41,7 +41,9 @@ export default function PortfolioBanner(props: propsIF) {
             : null;
 
     return (
-        <div className={styles.rectangle_container}>
+        <PortfolioBannerRectangleContainer
+            style={{ backgroundImage: `url(${accountImage})` }}
+        >
             <PortfolioBannerAccount
                 ensName={ensName}
                 ensNameAvailable={ensNameAvailable}
@@ -49,6 +51,6 @@ export default function PortfolioBanner(props: propsIF) {
                 truncatedAccountAddress={truncatedAccountAddress}
                 jazziconsToDisplay={jazziconsToDisplay}
             />
-        </div>
+        </PortfolioBannerRectangleContainer>
     );
 }

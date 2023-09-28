@@ -33,7 +33,6 @@
 
     /* colors */
     --blur-bg: rgba(14, 19, 26, 0.5);
-    
 
     --text1: #f0f0f8;
     --text2: #8b98a5;
@@ -63,6 +62,9 @@
     --grey-light-border: 1px solid var(--text2);
     --navbar-border: transparent;
     --dark-border: 0.2px solid #010101;
+
+    /* transitions */
+    --transition: all var(--animation-speed) ease-in-out;
 
     /* animations */
     --animation-speed: 300ms;

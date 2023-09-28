@@ -11,14 +11,14 @@ export default function TokensArrow(props: TokensArrowPropsIF) {
     const { onlyDisplay, disabled, onClick } = props;
     return (
         <TokenArrowButton
-            display={!!onlyDisplay}
+            onlyDisplay={!!onlyDisplay}
             disabled={!!disabled}
             tabIndex={onlyDisplay ? -1 : 0}
             aria-label='Reverse tokens'
             onClick={onClick}
         >
             <TokenArrow
-                display={!!onlyDisplay}
+                onlyDisplay={!!onlyDisplay}
                 disabled={!!disabled}
                 width='24'
                 height='15'

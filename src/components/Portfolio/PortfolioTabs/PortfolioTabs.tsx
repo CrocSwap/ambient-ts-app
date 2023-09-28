@@ -11,7 +11,6 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
 
 // START: Import Local Files
-import styles from './PortfolioTabs.module.css';
 import {
     useAppDispatch,
     useAppSelector,
@@ -41,6 +40,7 @@ import { PositionServerIF } from '../../../utils/interfaces/PositionIF';
 import { LimitOrderServerIF } from '../../../utils/interfaces/LimitOrderIF';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
+import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
 
 // interface for React functional component props
 interface propsIF {
@@ -68,6 +68,7 @@ export default function PortfolioTabs(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -114,13 +115,14 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
-                if (userPositions && crocEnv) {
+                if (userPositions && crocEnv && provider) {
                     Promise.all(
                         userPositions.map((position: PositionServerIF) => {
                             return getPositionData(
                                 position,
                                 tokens.tokenUniv,
                                 crocEnv,
+                                provider,
                                 chainId,
                                 lastBlockNumber,
                                 cachedFetchTokenPrice,
@@ -159,7 +161,7 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userLimitOrderStates = json?.data;
-                if (userLimitOrderStates && crocEnv) {
+                if (userLimitOrderStates && crocEnv && provider) {
                     Promise.all(
                         userLimitOrderStates.map(
                             (limitOrder: LimitOrderServerIF) => {
@@ -167,6 +169,7 @@ export default function PortfolioTabs(props: propsIF) {
                                     limitOrder,
                                     tokens.tokenUniv,
                                     crocEnv,
+                                    provider,
                                     chainId,
                                     lastBlockNumber,
                                     cachedFetchTokenPrice,
@@ -191,7 +194,7 @@ export default function PortfolioTabs(props: propsIF) {
             });
 
     const getLookupUserTransactions = async (accountToSearch: string) => {
-        if (crocEnv) {
+        if (crocEnv && provider) {
             fetchUserRecentChanges({
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
@@ -203,6 +206,7 @@ export default function PortfolioTabs(props: propsIF) {
                 ensResolution: true,
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
+                provider,
                 lastBlockNumber: lastBlockNumber,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,
@@ -251,6 +255,7 @@ export default function PortfolioTabs(props: propsIF) {
         lastBlockNumber,
         !!tokens.tokenUniv,
         !!crocEnv,
+        !!provider,
     ]);
 
     const activeAccountPositionData = connectedAccountActive
@@ -375,7 +380,7 @@ export default function PortfolioTabs(props: propsIF) {
     ];
 
     return (
-        <div className={styles.tabs_container}>
+        <PortfolioTabsPortfolioTabsContainer>
             <TabComponent
                 data={
                     connectedAccountActive
@@ -384,6 +389,6 @@ export default function PortfolioTabs(props: propsIF) {
                 }
                 rightTabOptions={false}
             />
-        </div>
+        </PortfolioTabsPortfolioTabsContainer>
     );
 }

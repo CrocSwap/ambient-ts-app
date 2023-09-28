@@ -7,18 +7,21 @@ import {
     tickToPrice,
     toDisplayPrice,
 } from '@crocswap-libs/sdk';
-import { getMainnetEquivalent } from '../../utils/data/testTokenMap';
+import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { LimitOrderIF, TokenIF } from '../../utils/interfaces/exports';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
+import { supportedNetworks } from '../../utils/networks';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from './querySpotPrice';
+import { Provider } from '@ethersproject/providers';
 
 export const getLimitOrderData = async (
     order: LimitOrderServerIF,
     tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
+    provider: Provider,
     chainId: string,
     lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -40,35 +43,23 @@ export const getLimitOrderData = async (
         lastBlockNumber,
     );
 
-    const baseMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        order.base,
-        chainId,
-    );
-    const quoteMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        order.quote,
-        chainId,
-    );
+    const baseMetadata = cachedTokenDetails(provider, order.base, chainId);
+    const quoteMetadata = cachedTokenDetails(provider, order.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(
-        (await crocEnv.context).provider,
-        order.user,
-        '0x1',
-    );
+    const ensRequest = cachedEnsResolve(order.user);
 
     newOrder.ensResolution = (await ensRequest) ?? '';
 
-    const basePricedToken = getMainnetEquivalent(baseTokenAddress, chainId);
-    const basePricePromise = cachedFetchTokenPrice(
-        basePricedToken.token,
-        basePricedToken.chainId,
+    const basePricedToken = getMainnetAddress(
+        baseTokenAddress,
+        supportedNetworks[chainId],
     );
-    const quotePricedToken = getMainnetEquivalent(quoteTokenAddress, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(
-        quotePricedToken.token,
-        quotePricedToken.chainId,
+    const basePricePromise = cachedFetchTokenPrice(basePricedToken, chainId);
+    const quotePricedToken = getMainnetAddress(
+        quoteTokenAddress,
+        supportedNetworks[chainId],
     );
+    const quotePricePromise = cachedFetchTokenPrice(quotePricedToken, chainId);
 
     const DEFAULT_DECIMALS = 18;
     const baseTokenDecimals =
