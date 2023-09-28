@@ -116,6 +116,7 @@ function TokenInputQuantity(props: propsIF) {
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         const isPrecisionGreaterThanDecimals =
             precisionOfInput(event.target.value) > token.decimals;
+        if (event.target.value === '.') event.target.value = '0.';
         if (!isPrecisionGreaterThanDecimals && !isNaN(+event.target.value)) {
             handleTokenInputEvent(event.target.value);
             setDisplayValue(event.target.value);
