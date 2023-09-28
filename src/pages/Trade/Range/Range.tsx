@@ -1,9 +1,12 @@
-import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, useMemo, memo } from 'react';
+import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
+import { useCreateRangePosition } from '../../../App/hooks/useCreateRangePosition';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import RangeBounds from '../../../components/Global/RangeBounds/RangeBounds';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
@@ -28,32 +31,18 @@ import {
 } from '../../../utils/hooks/reduxToolkit';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import {
-    addPendingTx,
-    addTransactionByType,
-    removePendingTx,
-    addReceipt,
-    updateTransactionHash,
-} from '../../../utils/state/receiptDataSlice';
-import {
-    setAdvancedLowTick,
     setAdvancedHighTick,
+    setAdvancedLowTick,
     setIsLinesSwitched,
     setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
-import {
-    TransactionError,
-    isTransactionReplacedError,
-    isTransactionFailedError,
-} from '../../../utils/TransactionError';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import {
+    getPinnedPriceValuesFromDisplayPrices,
+    getPinnedPriceValuesFromTicks,
     roundDownTick,
     roundUpTick,
-    getPinnedPriceValuesFromTicks,
-    getPinnedPriceValuesFromDisplayPrices,
 } from './rangeFunctions';
-import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
-import RangeBounds from '../../../components/Global/RangeBounds/RangeBounds';
 
 import { useApprove } from '../../../App/functions/approve';
 
@@ -62,8 +51,7 @@ const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
 function Range() {
     const {
-        crocEnv,
-        chainData: { chainId, gridSize, poolIndex },
+        chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -82,17 +70,15 @@ function Range() {
     } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
     const {
-        baseToken: { address: baseTokenAddress },
         tokenAAllowance,
         tokenBAllowance,
-        baseToken: {
-            balance: baseTokenBalance,
-            dexBalance: baseTokenDexBalance,
-        },
-        quoteToken: {
-            balance: quoteTokenBalance,
-            dexBalance: quoteTokenDexBalance,
-        },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenABase,
+        baseToken: { decimals: baseTokenDecimals },
+        quoteToken: { decimals: quoteTokenDecimals },
     } = useContext(TradeTokenContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
@@ -189,12 +175,6 @@ function Range() {
         string | undefined
     >();
 
-    const isTokenABase = tokenA.address === baseTokenAddress;
-    const tokenADecimals = tokenA.decimals;
-    const tokenBDecimals = tokenB.decimals;
-    const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
-    const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
@@ -285,14 +265,6 @@ function Range() {
         ],
     );
 
-    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
-    const tokenADexBalance = isTokenABase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
-    const tokenBDexBalance = isTokenABase
-        ? quoteTokenDexBalance
-        : baseTokenDexBalance;
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
     const tokenBSurplusMinusTokenBRemainderNum =
@@ -960,129 +932,27 @@ function Range() {
         setTxErrorCode('');
         setNewRangeTransactionHash('');
     };
-
+    const { createRangePosition } = useCreateRangePosition();
     const sendTransaction = async () => {
-        if (!crocEnv) return;
-
-        resetConfirmation();
-        setShowConfirmation(true);
-
-        const pool = crocEnv.pool(tokenA.address, tokenB.address);
-
-        const spot = await pool.displayPrice();
-
-        const minPrice = spot * (1 - slippageTolerancePercentage / 100);
-        const maxPrice = spot * (1 + slippageTolerancePercentage / 100);
-
-        let tx;
-        try {
-            tx = await (isAmbient
-                ? isTokenAPrimaryRange
-                    ? pool.mintAmbientQuote(
-                          isTokenAInputDisabled ? 0 : tokenAInputQty,
-                          [minPrice, maxPrice],
-                          {
-                              surplus: [
-                                  isWithdrawTokenAFromDexChecked,
-                                  isWithdrawTokenBFromDexChecked,
-                              ],
-                          },
-                      )
-                    : pool.mintAmbientBase(
-                          isTokenBInputDisabled ? 0 : tokenBInputQty,
-                          [minPrice, maxPrice],
-                          {
-                              surplus: [
-                                  isWithdrawTokenAFromDexChecked,
-                                  isWithdrawTokenBFromDexChecked,
-                              ],
-                          },
-                      )
-                : isTokenAPrimaryRange
-                ? pool.mintRangeQuote(
-                      isTokenAInputDisabled ? 0 : tokenAInputQty,
-                      [defaultLowTick, defaultHighTick],
-                      [minPrice, maxPrice],
-                      {
-                          surplus: [
-                              isWithdrawTokenAFromDexChecked,
-                              isWithdrawTokenBFromDexChecked,
-                          ],
-                      },
-                  )
-                : pool.mintRangeBase(
-                      isTokenBInputDisabled ? 0 : tokenBInputQty,
-                      [defaultLowTick, defaultHighTick],
-                      [minPrice, maxPrice],
-                      {
-                          surplus: [
-                              isWithdrawTokenAFromDexChecked,
-                              isWithdrawTokenBFromDexChecked,
-                          ],
-                      },
-                  ));
-            setNewRangeTransactionHash(tx?.hash);
-            dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txAction: 'Add',
-                        txType: 'Range',
-                        txDescription: isAdd
-                            ? `Add to Range ${tokenA.symbol}+${tokenB.symbol}`
-                            : `Create Range ${tokenA.symbol}+${tokenB.symbol}`,
-                        txDetails: {
-                            baseAddress: baseToken.address,
-                            quoteAddress: quoteToken.address,
-                            poolIdx: poolIndex,
-                            baseSymbol: baseToken.symbol,
-                            quoteSymbol: quoteToken.symbol,
-                            baseTokenDecimals: baseTokenDecimals,
-                            quoteTokenDecimals: quoteTokenDecimals,
-                            isAmbient: isAmbient,
-                            lowTick: defaultLowTick,
-                            highTick: defaultHighTick,
-                            gridSize: gridSize,
-                        },
-                    }),
-                );
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-            setTxErrorCode(error?.code);
-        }
-
-        let receipt;
-        try {
-            if (tx) receipt = await tx.wait();
-        } catch (e) {
-            const error = e as TransactionError;
-            console.error({ error });
-            // The user used "speed up" or something similar
-            // in their client, but we now have the updated info
-            if (isTransactionReplacedError(error)) {
-                IS_LOCAL_ENV && console.debug('repriced');
-                dispatch(removePendingTx(error.hash));
-                const newTransactionHash = error.replacement.hash;
-                dispatch(addPendingTx(newTransactionHash));
-                dispatch(
-                    updateTransactionHash({
-                        oldHash: error.hash,
-                        newHash: error.replacement.hash,
-                    }),
-                );
-                setNewRangeTransactionHash(newTransactionHash);
-            } else if (isTransactionFailedError(error)) {
-                receipt = error.receipt;
-            }
-        }
-        if (receipt) {
-            dispatch(addReceipt(JSON.stringify(receipt)));
-            dispatch(removePendingTx(receipt.transactionHash));
-        }
+        createRangePosition({
+            slippageTolerancePercentage,
+            isAmbient,
+            tokenAInputQty: isTokenAInputDisabled
+                ? 0
+                : parseFloat(tokenAInputQty),
+            tokenBInputQty: isTokenBInputDisabled
+                ? 0
+                : parseFloat(tokenBInputQty),
+            isWithdrawTokenAFromDexChecked,
+            isWithdrawTokenBFromDexChecked,
+            defaultLowTick,
+            defaultHighTick,
+            isAdd,
+            setNewRangeTransactionHash,
+            setTxErrorCode,
+            resetConfirmation,
+            setShowConfirmation,
+        });
     };
 
     const handleModalOpen = () => {
