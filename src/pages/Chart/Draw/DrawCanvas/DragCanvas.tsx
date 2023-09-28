@@ -29,6 +29,7 @@ interface DragCanvasProps {
         tokenA: TokenIF;
         tokenB: TokenIF;
     };
+    denomInBase: boolean;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -46,6 +47,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         setSelectedDrawnShape,
         drawActionStack,
         actionKey,
+        denomInBase,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,6 +68,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             movemementY,
                     ),
                     ctx: hoveredDrawnShape.data?.data[0].ctx,
+                    denomInBase: denomInBase,
                 },
                 {
                     x: scaleData.xScale.invert(
@@ -77,6 +80,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             movemementY,
                     ),
                     ctx: hoveredDrawnShape.data?.data[1].ctx,
+                    denomInBase: denomInBase,
                 },
             ];
             drawnShapeHistory[index].data = lastData;
@@ -136,6 +140,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 x: newX,
                 y: newY,
                 ctx: undefined,
+                denomInBase: denomInBase,
             };
         }
     }
@@ -280,11 +285,13 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 x: tempLastData.data[0].x,
                                 y: tempLastData.data[0].y,
                                 ctx: tempLastData.data[0].ctx,
+                                denomInBase: denomInBase,
                             },
                             {
                                 x: tempLastData.data[1].x,
                                 y: tempLastData.data[1].y,
                                 ctx: tempLastData.data[1].ctx,
+                                denomInBase: denomInBase,
                             },
                         ],
                         type: tempLastData.type,

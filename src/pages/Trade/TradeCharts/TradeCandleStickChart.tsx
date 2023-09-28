@@ -103,6 +103,7 @@ function TradeCandleStickChart(props: propsIF) {
     const { liquidityData: unparsedLiquidityData } = useAppSelector(
         (state) => state.graphData,
     );
+    const denominationsInBase = tradeData.isDenomBase;
 
     const {
         undo,
@@ -113,7 +114,7 @@ function TradeCandleStickChart(props: propsIF) {
         drawActionStack,
         actionKey,
         deleteItem,
-    } = useUndoRedo();
+    } = useUndoRedo(denominationsInBase);
 
     const tokenPair = useMemo(
         () => ({
@@ -129,7 +130,6 @@ function TradeCandleStickChart(props: propsIF) {
     );
     const { poolPriceNonDisplay } = tradeData;
 
-    const denominationsInBase = tradeData.isDenomBase;
     const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
 
     const poolPriceDisplay = poolPriceWithoutDenom

@@ -10,7 +10,7 @@ export interface actionKeyIF {
     tokenB: TokenIF;
 }
 
-export function useUndoRedo() {
+export function useUndoRedo(denomInBase: boolean) {
     const [drawnShapeHistory, setDrawnShapeHistory] = useState<
         drawDataHistory[]
     >([]);
@@ -63,11 +63,13 @@ export function useUndoRedo() {
                             x: 0,
                             y: 0,
                             ctx: findItem.data[0].ctx,
+                            denomInBase: denomInBase,
                         },
                         {
                             x: 0,
                             y: 0,
                             ctx: findItem.data[1].ctx,
+                            denomInBase: denomInBase,
                         },
                     ],
                     type: findItem.type,

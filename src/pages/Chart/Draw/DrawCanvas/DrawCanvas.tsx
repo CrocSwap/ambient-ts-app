@@ -36,7 +36,7 @@ interface DrawCanvasProps {
         tokenA: TokenIF;
         tokenB: TokenIF;
     };
-    denomInBase: any;
+    denomInBase: boolean;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -232,11 +232,13 @@ function DrawCanvas(props: DrawCanvasProps) {
                                             x: tempLineData[0].x,
                                             y: tempLineData[0].y,
                                             ctx: tempLineData[0].ctx,
+                                            denomInBase: denomInBase,
                                         },
                                         {
                                             x: tempLineData[1].x,
                                             y: tempLineData[1].y,
                                             ctx: tempLineData[1].ctx,
+                                            denomInBase: denomInBase,
                                         },
                                     ],
                                     type: activeDrawingType,
@@ -251,11 +253,13 @@ function DrawCanvas(props: DrawCanvasProps) {
                                         x: tempLineData[0].x,
                                         y: tempLineData[0].y,
                                         ctx: tempLineData[0].ctx,
+                                        denomInBase: denomInBase,
                                     },
                                     {
                                         x: tempLineData[1].x,
                                         y: tempLineData[1].y,
                                         ctx: tempLineData[1].ctx,
+                                        denomInBase: denomInBase,
                                     },
                                 ],
                                 type: activeDrawingType,

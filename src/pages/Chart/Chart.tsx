@@ -4104,6 +4104,7 @@ export default function Chart(props: propsIF) {
                                 setIsUpdatingShape={setIsUpdatingShape}
                                 drawActionStack={drawActionStack}
                                 actionKey={actionKey}
+                                denomInBase={denomInBase}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
