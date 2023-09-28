@@ -21,6 +21,7 @@ interface DragCanvasProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
+    denomInBase: boolean;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -36,6 +37,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         canUserDragDrawnShape,
         setCrossHairDataFunc,
         setSelectedDrawnShape,
+        denomInBase,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -56,6 +58,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             movemementY,
                     ),
                     ctx: hoveredDrawnShape.data?.data[0].ctx,
+                    denomInBase: denomInBase,
                 },
                 {
                     x: scaleData.xScale.invert(
@@ -67,6 +70,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             movemementY,
                     ),
                     ctx: hoveredDrawnShape.data?.data[1].ctx,
+                    denomInBase: denomInBase,
                 },
             ];
             drawnShapeHistory[index].data = lastData;
@@ -125,6 +129,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                 x: newX,
                 y: newY,
                 ctx: undefined,
+                denomInBase: denomInBase,
             };
         }
     }

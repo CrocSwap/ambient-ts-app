@@ -69,6 +69,7 @@ import {
     lineData,
     lineValue,
     liquidityChartData,
+    orderHistory,
     renderCanvasArray,
     renderSubchartCrCanvas,
     scaleData,
@@ -85,10 +86,15 @@ import {
     createLinearLineSeries,
     distanceToLine,
 } from './Draw/DrawCanvas/LinearLineSeries';
-import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
+import {
+    createPointsOfBandLine,
+    isPointInRect,
+} from './Draw/DrawCanvas/BandArea';
 import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
+import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
+import { formatDollarAmount } from '../../utils/numbers';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -227,7 +233,15 @@ export default function Chart(props: propsIF) {
     const lineSellColor = 'rgba(115, 113, 252)';
     const lineBuyColor = 'rgba(205, 193, 255)';
 
-    const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
+    const {
+        showFeeRate,
+        showTvl,
+        showVolume,
+        liqMode,
+        showSwap,
+        showLiquidity,
+        showHistorical,
+    } = props.chartItemStates;
 
     const poolPriceDisplay = poolPriceWithoutDenom
         ? isDenomBase && poolPriceWithoutDenom
@@ -292,6 +306,25 @@ export default function Chart(props: propsIF) {
     const [hoveredDrawnShape, setHoveredDrawnShape] = useState<
         selectedDrawnData | undefined
     >(undefined);
+
+    const [hoveredOrderHistory, setHoveredOrderHistory] =
+        useState<orderHistory>({
+            tsStart: new Date(),
+            tsEnd: new Date(),
+            orderPrice: 0,
+            orderPriceCompleted: 0,
+            orderType: '',
+            orderDirection: '',
+            orderStatus: '',
+            orderDolarAmount: 0,
+            tokenA: '',
+            tokenAAmount: 0,
+            tokenB: '',
+            tokenBAmount: 0,
+        });
+
+    const [isHoveredOrderHistory, setIsHoveredOrderHistory] =
+        useState<boolean>(false);
 
     const mobileView = useMediaQuery('(max-width: 600px)');
 
@@ -3388,6 +3421,60 @@ export default function Chart(props: propsIF) {
             setHoveredDrawnShape(undefined);
         }
     };
+
+    const orderHistoryHoverStatus = (mouseX: number, mouseY: number) => {
+        let resElement: any = undefined;
+
+        if (scaleData) {
+            orderData.forEach((element) => {
+                const lineLocation = [
+                    {
+                        x: element.tsStart.getTime() * 1000,
+                        y: element.orderPrice,
+                        ctx: undefined,
+                        denomInBase: denomInBase,
+                    },
+                    {
+                        x: element.tsEnd.getTime() * 1000,
+                        y: element.orderPriceCompleted,
+                        ctx: undefined,
+                        denomInBase: denomInBase,
+                    },
+                ];
+
+                if (element.orderType === 'history') {
+                    if (checkLineLocation(lineLocation, mouseX, mouseY)) {
+                        resElement = element;
+                    }
+                }
+
+                if (element.orderType === 'liquidity') {
+                    if (
+                        isPointInRect(
+                            scaleData?.xScale.invert(mouseX),
+                            scaleData?.yScale.invert(mouseY),
+                            element.tsStart.getTime() * 1000,
+                            element.orderPrice,
+                            element.tsEnd.getTime() * 1000,
+                            element.orderPriceCompleted,
+                        )
+                    ) {
+                        resElement = element;
+                    }
+                }
+
+                if (resElement && scaleData) {
+                    setHoveredOrderHistory(() => {
+                        return resElement;
+                    });
+                    setIsHoveredOrderHistory(true);
+                } else {
+                    setIsHoveredOrderHistory(false);
+                }
+            });
+        }
+    };
+
     const candleOrVolumeDataHoverStatus = (mouseX: number, mouseY: number) => {
         const lastDate = scaleData?.xScale.invert(
             mouseX + bandwidth / 2,
@@ -3681,6 +3768,7 @@ export default function Chart(props: propsIF) {
                 setIsOnCandleOrVolumeMouseLocation(isHoverCandleOrVolumeData);
 
                 drawnShapesHoverStatus(offsetX, offsetY);
+                orderHistoryHoverStatus(offsetX, offsetY);
             }
         }
     };
@@ -3926,6 +4014,50 @@ export default function Chart(props: propsIF) {
         isChartZoom,
         selectedDrawnShape,
     };
+    const orderData = [
+        {
+            tsEnd: new Date(1695722406),
+            tsStart: new Date(1695654300),
+            orderPrice: 1646,
+            orderPriceCompleted: 1646.94,
+            orderType: 'swap',
+            orderDirection: 'orderSell',
+            orderStatus: 'completed',
+            orderDolarAmount: 22300,
+            tokenA: 'ETH',
+            tokenAAmount: 1.36,
+            tokenB: 'USDT',
+            tokenBAmount: 22300,
+        },
+        {
+            tsEnd: new Date(1695842406),
+            tsStart: new Date(1695774300),
+            orderPrice: 1646,
+            orderPriceCompleted: 1646,
+            orderType: 'history',
+            orderDirection: 'orderBuy',
+            orderStatus: 'pending',
+            orderDolarAmount: 18250,
+            tokenA: 'ETH',
+            tokenAAmount: 1.11,
+            tokenB: 'USDT',
+            tokenBAmount: 18250,
+        },
+        {
+            tsEnd: new Date(1695773406),
+            tsStart: new Date(1695694300),
+            orderPrice: 1645,
+            orderPriceCompleted: 1645.7,
+            orderType: 'liquidity',
+            orderDirection: 'range',
+            orderStatus: 'completed',
+            orderDolarAmount: 15230,
+            tokenA: 'ETH',
+            tokenAAmount: 0.56,
+            tokenB: 'USDT',
+            tokenBAmount: 15230,
+        },
+    ];
 
     return (
         <div
@@ -3987,6 +4119,20 @@ export default function Chart(props: propsIF) {
                                 }
                             />
                         )}
+
+                        {(showSwap || showLiquidity || showHistorical) &&
+                            scaleData && (
+                                <OrderHistoryCanvas
+                                    scaleData={scaleData}
+                                    denomInBase={denomInBase}
+                                    showSwap={showSwap}
+                                    showLiquidity={showLiquidity}
+                                    showHistorical={showHistorical}
+                                    orderData={orderData}
+                                    hoveredOrderHistory={hoveredOrderHistory}
+                                />
+                            )}
+
                         <d3fc-canvas
                             ref={d3CanvasCrosshair}
                             className='cr-canvas'
@@ -4034,6 +4180,7 @@ export default function Chart(props: propsIF) {
                                 setCrossHairDataFunc={setCrossHairDataFunc}
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 setIsUpdatingShape={setIsUpdatingShape}
+                                denomInBase={denomInBase}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
@@ -4162,6 +4309,95 @@ export default function Chart(props: propsIF) {
                             Click any other price candle or volume bar to view
                             transactions
                         </div>
+                    </div>
+                </CSSTransition>
+            )}
+            {scaleData && (
+                <CSSTransition
+                    in={isHoveredOrderHistory}
+                    timeout={500}
+                    classNames='orderHistoryTooltip'
+                    unmountOnExit
+                >
+                    <div
+                        className='orderHistoryDiv'
+                        style={{
+                            fontSize: '13px',
+                            top: scaleData.yScale(
+                                Math.max(
+                                    hoveredOrderHistory.orderPriceCompleted,
+                                    hoveredOrderHistory.orderPrice,
+                                ) -
+                                    Math.abs(
+                                        hoveredOrderHistory.orderPriceCompleted -
+                                            hoveredOrderHistory.orderPrice,
+                                    ) /
+                                        2,
+                            ),
+                            left:
+                                scaleData?.xScale(
+                                    hoveredOrderHistory?.tsEnd.getTime() * 1000,
+                                ) +
+                                bandwidth * 2,
+                        }}
+                    >
+                        <div className='orderHistoryHeader'>
+                            <div
+                                style={{
+                                    color:
+                                        hoveredOrderHistory.orderType ===
+                                        'liquidity'
+                                            ? 'rgba(95, 255, 242, 0.7)'
+                                            : '#7371fc',
+                                }}
+                            >
+                                {hoveredOrderHistory.orderType === 'liquidity'
+                                    ? 'Range'
+                                    : (hoveredOrderHistory.orderDirection.includes(
+                                          'Buy',
+                                      )
+                                          ? 'Buy'
+                                          : 'Sell') + ': '}
+                            </div>
+                            {hoveredOrderHistory.orderType !== 'liquidity' && (
+                                <div>
+                                    {hoveredOrderHistory.tokenAAmount +
+                                        ' ' +
+                                        hoveredOrderHistory.tokenA}
+                                </div>
+                            )}{' '}
+                        </div>
+                        {hoveredOrderHistory.orderType === 'liquidity' && (
+                            <div
+                                style={{
+                                    color: '#f0f0f8',
+                                    fontSize: '16px',
+                                }}
+                            >
+                                {hoveredOrderHistory?.orderPrice +
+                                    ' - ' +
+                                    hoveredOrderHistory?.orderPriceCompleted}
+                            </div>
+                        )}{' '}
+                        <div>
+                            {hoveredOrderHistory.orderType === 'history' && (
+                                <div>
+                                    {hoveredOrderHistory?.orderStatus.includes(
+                                        'pending',
+                                    )
+                                        ? 'Pending...'
+                                        : hoveredOrderHistory.orderType}
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            {formatDollarAmount(
+                                hoveredOrderHistory.orderDolarAmount,
+                            )}
+                        </div>
+                        {!hoveredOrderHistory?.orderStatus.includes(
+                            'pending',
+                        ) && <div>0xAbCd...1425</div>}
                     </div>
                 </CSSTransition>
             )}

@@ -6,6 +6,7 @@ export function createBandArea(
     xScale: d3.ScaleLinear<number, number>,
     yScale: d3.ScaleLinear<number, number>,
     denomInBase: boolean,
+    color = 'rgba(41,98,255,0.15)',
 ) {
     return d3fc
         .annotationCanvasBand()
@@ -18,7 +19,7 @@ export function createBandArea(
             denomInBase === d.denomInBase ? d.toValue : 1 / d.toValue,
         )
         .decorate((context: CanvasRenderingContext2D) => {
-            context.fillStyle = 'rgba(41,98,255,0.15)';
+            context.fillStyle = color;
         });
 }
 
@@ -48,4 +49,30 @@ export function createPointsOfBandLine(data: lineData[]) {
     ];
 
     return lineOfBand;
+}
+
+export function isPointInRect(
+    x: number,
+    y: number,
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+) {
+    const rightLineBorder = Math.max(startX, endX);
+    const leftLineBorder = Math.min(startX, endX);
+
+    const toptLineBorder = Math.max(startY, endY);
+    const bottLineBorder = Math.min(startY, endY);
+
+    if (
+        x > leftLineBorder &&
+        x < rightLineBorder &&
+        y < toptLineBorder &&
+        y > bottLineBorder
+    ) {
+        return true;
+    }
+
+    return false;
 }

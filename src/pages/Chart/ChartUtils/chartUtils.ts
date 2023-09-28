@@ -76,6 +76,9 @@ export type chartItemStates = {
     showVolume: boolean;
     showFeeRate: boolean;
     liqMode: string;
+    showSwap: boolean;
+    showLiquidity: boolean;
+    showHistorical: boolean;
 };
 
 export type lineValue = {
@@ -91,6 +94,21 @@ export interface SubChartValue {
 export type zoomUtils = {
     zoom: d3.ZoomBehavior<Element, unknown>;
     xAxisZoom: d3.ZoomBehavior<Element, unknown>;
+};
+
+export type orderHistory = {
+    tsStart: Date;
+    tsEnd: Date;
+    orderPrice: number;
+    orderPriceCompleted: number;
+    orderType: string;
+    orderDirection: string;
+    orderStatus: string;
+    orderDolarAmount: number;
+    tokenA: string;
+    tokenAAmount: number;
+    tokenB: string;
+    tokenBAmount: number;
 };
 
 export function setCanvasResolution(canvas: HTMLCanvasElement) {

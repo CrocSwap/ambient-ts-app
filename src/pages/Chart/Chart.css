@@ -80,7 +80,7 @@ text.y_axis {
     border: 2px dashed var(--accent1);
 }
 
-.annotation-line>.marketLine {
+.annotation-line > .marketLine {
     stroke: var(--text2);
     stroke-width: 1;
     stroke-dasharray: 4 2;
@@ -241,6 +241,52 @@ label {
     font-size: 12px;
 }
 
+.orderHistoryDiv {
+    position: absolute;
+    text-align: center;
+    cursor: pointer;
+    pointer-events: none;
+
+    background: rgba(36, 47, 63, 0.8);
+    padding: 3px 8px 3px 8px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 4px;
+    box-shadow: 0 8px 32px 0 var(--dark1);
+    min-width: 120px;
+    line-height: 1.3;
+}
+
+.orderHistoryTooltip-enter {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.orderHistoryTooltip-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.orderHistoryTooltip-exit {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.orderHistoryTooltip-exit-active {
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.orderHistoryHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    color: #f0f0f8;
+    font-size: 16px;
+}
+
 .lastCandleDiv {
     position: absolute;
     text-align: center;
@@ -305,14 +351,12 @@ label {
 }
 
 @media only screen and (max-width: 700px) {
-
     .popup {
         font-size: medium;
         width: 80%;
         top: 49%;
     }
 }
-
 
 @media (max-width: 800px) and (min-width: 500px) {
     .chart_grid {

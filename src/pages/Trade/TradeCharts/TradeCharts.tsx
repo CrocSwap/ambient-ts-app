@@ -19,13 +19,17 @@ import TutorialOverlay from '../../../components/Global/TutorialOverlay/Tutorial
 import { tradeChartTutorialSteps } from '../../../utils/tutorial/TradeChart';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { ChartContext } from '../../../contexts/ChartContext';
-import { LS_KEY_SUBCHART_SETTINGS } from '../../../constants';
+import {
+    LS_KEY_ORDER_HISTORY_SETTINGS,
+    LS_KEY_SUBCHART_SETTINGS,
+} from '../../../constants';
 import { getLocalStorageItem } from '../../../utils/functions/getLocalStorageItem';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import { TradeChartsHeader } from './TradeChartsHeader/TradeChartsHeader';
 import { FlexContainer } from '../../../styled/Common';
 import { MainContainer } from '../../../styled/Components/Chart';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
+import OrderHistoryDisplay from './TradeChartsComponents/OrderHistoryDisplay';
 
 // interface for React functional component props
 interface propsIF {
@@ -102,6 +106,14 @@ function TradeCharts(props: propsIF) {
         getLocalStorageItem(LS_KEY_SUBCHART_SETTINGS) ?? '{}',
     );
 
+    const orderHistoryState: {
+        isSwapOrderHistoryEnabled: boolean;
+        isLiquidityOrderHistoryEnabled: boolean;
+        isHistoricalOrderHistoryEnabled: boolean;
+    } | null = JSON.parse(
+        getLocalStorageItem(LS_KEY_ORDER_HISTORY_SETTINGS) ?? '{}',
+    );
+
     const [showTvl, setShowTvl] = useState(
         subchartState?.isTvlSubchartEnabled ?? false,
     );
@@ -111,6 +123,15 @@ function TradeCharts(props: propsIF) {
     const [showVolume, setShowVolume] = useState(
         subchartState?.isVolumeSubchartEnabled ?? true,
     );
+    const [showSwap, setShowSwap] = useState(
+        orderHistoryState?.isSwapOrderHistoryEnabled ?? false,
+    );
+    const [showLiquidity, setShowLiquidity] = useState(
+        orderHistoryState?.isLiquidityOrderHistoryEnabled ?? false,
+    );
+    const [showHistorical, setShowHistorical] = useState(
+        orderHistoryState?.isHistoricalOrderHistoryEnabled ?? false,
+    );
 
     const chartItemStates = useMemo(() => {
         return {
@@ -118,6 +139,9 @@ function TradeCharts(props: propsIF) {
             showTvl,
             showVolume,
             liqMode: chartSettings.poolOverlay.overlay,
+            showSwap,
+            showLiquidity,
+            showHistorical,
         };
     }, [
         isMarketOrLimitModule,
@@ -125,6 +149,9 @@ function TradeCharts(props: propsIF) {
         showTvl,
         showVolume,
         showFeeRate,
+        showSwap,
+        showLiquidity,
+        showHistorical,
     ]);
 
     // END OF CHART SETTINGS------------------------------------------------------------
@@ -159,6 +186,16 @@ function TradeCharts(props: propsIF) {
                     showVolume={showVolume}
                     showTvl={showTvl}
                     showFeeRate={showFeeRate}
+                />
+            </div>
+            <div>
+                <OrderHistoryDisplay
+                    setShowHistorical={setShowHistorical}
+                    setShowSwap={setShowSwap}
+                    setShowLiquidity={setShowLiquidity}
+                    showLiquidity={showLiquidity}
+                    showHistorical={showHistorical}
+                    showSwap={showSwap}
                 />
             </div>
             <div>
