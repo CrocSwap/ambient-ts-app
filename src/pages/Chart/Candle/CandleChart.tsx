@@ -79,7 +79,7 @@ export default function CandleChart(props: candlePropsIF) {
                 ]);
             }
         }
-    }, [diffHashSig(chartItemStates), tradeTableState, lastCandleData]);
+    }, [tradeTableState, lastCandleData]);
 
     useEffect(() => {
         renderCanvasArray([d3CanvasCandle]);
