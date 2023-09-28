@@ -43,7 +43,10 @@ export default function PositionReset() {
     );
 
     useEffect(() => {
-        console.log({ doNotShowPositionReset });
+        localStorage.setItem(
+            'doNotShowPositionReset',
+            doNotShowPositionReset.toString(),
+        );
     }, [doNotShowPositionReset]);
 
     const dismissToggle = (
@@ -75,7 +78,7 @@ export default function PositionReset() {
         </FlexContainer>
     );
 
-    if (!isModalOpen) return null;
+    if (!isModalOpen || doNotShowPositionReset) return null;
     return (
         <Modal onClose={closeModal} title='Reset Position'>
             <FlexContainer
