@@ -9,6 +9,7 @@ import {
     SetStateAction,
     useContext,
     useEffect,
+    useRef,
     useState,
 } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
@@ -56,6 +57,11 @@ interface MessageInputProps {
 }
 
 export default function MessageInput(props: MessageInputProps) {
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    const [cursorPosition, setCursorPosition] = useState<number | null>(null);
+    const [lastCursorPosition, setLastCursorPosition] = useState<number | null>(
+        null,
+    );
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
@@ -72,7 +78,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [mentPanelActive, setMentPanelActive] = useState(false);
     const [mentPanelQueryStr, setMentPanelQueryStr] = useState('');
     const [possibleMentUser, setPossibleMentUser] = useState<User | null>(null);
-    const [isExceedingMaxLength, setIsExceedingMaxLength] = useState(false);
+    const [inputLength, setInputLength] = useState(0);
     const [mentUser, setMentUser] = useState<User | null>(null);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
@@ -80,18 +86,27 @@ export default function MessageInput(props: MessageInputProps) {
 
     const isRoomAdmins = roomId === 'Admins';
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleEmojiClick = (event: any, emoji: any) => {
-        let msg = message;
-        msg += emoji.emoji;
-        setMessage(msg);
-        // if(msg.length >= 140)
-        // {
-        //     event.preventDefault(); // Prevent further input when the limit is reached
-        //     props.setShowPopUp(true);
-        //     props.setPopUpText('Maximum length exceeded (140 characters limit).');
+    const handleEmojiClick = (event: any, emojiObject: any) => {
+        if (inputRef.current) {
+            const emoji = emojiObject.emoji;
+            const currentMessage = message;
+            const cursorPosition = inputRef.current.selectionStart as number;
+            console.log(inputRef.current.selectionStart);
+            const newMessage =
+                currentMessage.substring(0, cursorPosition) +
+                emoji +
+                currentMessage.substring(cursorPosition);
 
-        // }
+            if (newMessage.length <= 140) {
+                setMessage(newMessage);
+                setInputLength(newMessage.length);
+            } else {
+                props.setShowPopUp(true);
+                props.setPopUpText(
+                    'Maximum length exceeded (140 characters limit).',
+                );
+            }
+        }
     };
 
     const handleEmojiPickerHideShow = () => {
@@ -126,6 +141,15 @@ export default function MessageInput(props: MessageInputProps) {
         messageInputText();
     }, [isConnected, address]);
 
+    useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+            inputRef.current.selectionStart = 0;
+            inputRef.current.selectionEnd = message.length;
+            setCursorPosition(message.length);
+        }
+    }, []);
+
     const handleSendMessageButton = () => {
         if (message === '') {
             return;
@@ -144,6 +168,12 @@ export default function MessageInput(props: MessageInputProps) {
             dontShowEmojiPanel();
             props.setShowPopUp(false);
         }
+    };
+
+    const handleInputChange = (e: any) => {
+        setMessage(e.target.value);
+        setInputLength(e.target.value.length);
+        setCursorPosition(e.target.selectionStart);
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -210,13 +240,43 @@ export default function MessageInput(props: MessageInputProps) {
                     ],
                 );
             }
-        } else if (e.key !== 'Backspace' && e.target.value.length >= 140) {
+        } else if (
+            e.key !== 'Backspace' &&
+            e.key !== 'ArrowRight' &&
+            e.key !== 'ArrowLeft' &&
+            e.target.value.length >= 140
+        ) {
             props.setShowPopUp(true);
             props.setShowPopUp(true);
             props.setPopUpText(
                 'Maximum length exceeded (140 characters limit).',
             );
             e.preventDefault(); // Prevent further input when the limit is reached
+        } else if (e.key === 'Delete') {
+            setTimeout(() => {
+                setInputLength(e.target.value.length);
+            });
+        } else if (e.key === 'ArrowRight') {
+            const cursorPosition = e.target.selectionStart;
+
+            // Move the cursor one position to the right
+            e.target.setSelectionRange(cursorPosition + 1, cursorPosition + 1);
+
+            // Update the input length
+            setInputLength(e.target.value.length);
+        } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+
+            // Get the current cursor position
+            const cursorPosition = e.target.selectionStart;
+
+            // Move the cursor one position to the left
+            e.target.setSelectionRange(cursorPosition - 1, cursorPosition - 1);
+
+            // Update the input length
+            setInputLength(e.target.value.length);
+        } else {
+            setInputLength(e.target.value.length);
         }
     };
 
@@ -398,13 +458,18 @@ export default function MessageInput(props: MessageInputProps) {
                                     : styles.input_text
                             }
                             onKeyDown={_handleKeyDown}
+                            onInput={handleInputChange}
                             value={message}
                             onChange={onChangeMessage}
                             autoComplete={'off'}
                             tabIndex={-1}
                             autoFocus={props.appPage}
                             maxLength={140}
+                            ref={inputRef}
                         />
+                        <div className={styles.message_input_field}>
+                            {inputLength}/140
+                        </div>
 
                         <BsEmojiSmile
                             className={

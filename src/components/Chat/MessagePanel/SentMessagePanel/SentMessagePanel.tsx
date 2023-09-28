@@ -874,6 +874,10 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 }
                                                 id={props.message._id}
                                                 isModerator={props.isModerator}
+                                                isUsersMessage={
+                                                    props.message.sender ===
+                                                    props.currentUser
+                                                }
                                             />
                                         </div>
                                     ) : (
