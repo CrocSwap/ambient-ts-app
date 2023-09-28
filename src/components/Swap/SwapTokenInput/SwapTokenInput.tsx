@@ -70,15 +70,14 @@ function SwapTokenInput(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const {
-        baseToken: {
-            balance: baseTokenBalance,
-            dexBalance: baseTokenDexBalance,
-        },
-        quoteToken: {
-            balance: quoteTokenBalance,
-            dexBalance: quoteTokenDexBalance,
-        },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenAEth: isSellTokenEth,
+        isTokenBEth: isBuyTokenEth,
     } = useContext(TradeTokenContext);
+
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
 
     const dispatch = useAppDispatch();
@@ -98,24 +97,6 @@ function SwapTokenInput(props: propsIF) {
 
     const [lastInput, setLastInput] = useState<string | undefined>();
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
-
-    const isSellTokenEth = tokenA.address === ZERO_ADDRESS;
-    const isBuyTokenEth = tokenB.address === ZERO_ADDRESS;
-    const sortedTokens = sortBaseQuoteTokens(tokenA.address, tokenB.address);
-    const isSellTokenBase = tokenA.address === sortedTokens[0];
-
-    const tokenABalance = isSellTokenBase
-        ? baseTokenBalance
-        : quoteTokenBalance;
-    const tokenBBalance = isSellTokenBase
-        ? quoteTokenBalance
-        : baseTokenBalance;
-    const tokenADexBalance = isSellTokenBase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
-    const tokenBDexBalance = isSellTokenBase
-        ? quoteTokenDexBalance
-        : baseTokenDexBalance;
 
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastInput = useDebounce(lastInput, 750);

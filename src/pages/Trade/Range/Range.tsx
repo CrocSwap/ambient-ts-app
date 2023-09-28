@@ -1,9 +1,12 @@
-import { concDepositSkew, capitalConcFactor } from '@crocswap-libs/sdk';
-import { useContext, useState, useEffect, useMemo, memo } from 'react';
+import { capitalConcFactor, concDepositSkew } from '@crocswap-libs/sdk';
+import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import Button from '../../../components/Form/Button';
 import { useModal } from '../../../components/Global/Modal/useModal';
 
+import { useCreateRangePosition } from '../../../App/hooks/useCreateRangePosition';
+import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
+import RangeBounds from '../../../components/Global/RangeBounds/RangeBounds';
 import ConfirmRangeModal from '../../../components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal';
 import RangeExtraInfo from '../../../components/Trade/Range/RangeExtraInfo/RangeExtraInfo';
 import RangeTokenInput from '../../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
@@ -28,33 +31,18 @@ import {
 } from '../../../utils/hooks/reduxToolkit';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import {
-    addPendingTx,
-    addTransactionByType,
-    removePendingTx,
-    addReceipt,
-    updateTransactionHash,
-} from '../../../utils/state/receiptDataSlice';
-import {
-    setAdvancedLowTick,
     setAdvancedHighTick,
+    setAdvancedLowTick,
     setIsLinesSwitched,
     setIsTokenAPrimaryRange,
 } from '../../../utils/state/tradeDataSlice';
-import {
-    TransactionError,
-    isTransactionReplacedError,
-    isTransactionFailedError,
-} from '../../../utils/TransactionError';
 import { rangeTutorialSteps } from '../../../utils/tutorial/Range';
 import {
+    getPinnedPriceValuesFromDisplayPrices,
+    getPinnedPriceValuesFromTicks,
     roundDownTick,
     roundUpTick,
-    getPinnedPriceValuesFromTicks,
-    getPinnedPriceValuesFromDisplayPrices,
 } from './rangeFunctions';
-import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIsPoolInitialized';
-import RangeBounds from '../../../components/Global/RangeBounds/RangeBounds';
-import { useCreateRangePosition } from '../../../App/hooks/useCreateRangePosition';
 
 import { useApprove } from '../../../App/functions/approve';
 
@@ -63,8 +51,7 @@ const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
 function Range() {
     const {
-        crocEnv,
-        chainData: { chainId, gridSize, poolIndex },
+        chainData: { chainId, gridSize },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
@@ -83,17 +70,15 @@ function Range() {
     } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);
     const {
-        baseToken: { address: baseTokenAddress },
         tokenAAllowance,
         tokenBAllowance,
-        baseToken: {
-            balance: baseTokenBalance,
-            dexBalance: baseTokenDexBalance,
-        },
-        quoteToken: {
-            balance: quoteTokenBalance,
-            dexBalance: quoteTokenDexBalance,
-        },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenABase,
+        baseToken: { decimals: baseTokenDecimals },
+        quoteToken: { decimals: quoteTokenDecimals },
     } = useContext(TradeTokenContext);
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
@@ -190,12 +175,6 @@ function Range() {
         string | undefined
     >();
 
-    const isTokenABase = tokenA.address === baseTokenAddress;
-    const tokenADecimals = tokenA.decimals;
-    const tokenBDecimals = tokenB.decimals;
-    const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
-    const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
@@ -286,14 +265,6 @@ function Range() {
         ],
     );
 
-    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
-    const tokenADexBalance = isTokenABase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
-    const tokenBDexBalance = isTokenABase
-        ? quoteTokenDexBalance
-        : baseTokenDexBalance;
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAInputQty || '0');
     const tokenBSurplusMinusTokenBRemainderNum =

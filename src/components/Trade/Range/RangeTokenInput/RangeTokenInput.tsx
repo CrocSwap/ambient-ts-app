@@ -68,15 +68,13 @@ function RangeTokenInput(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { isPoolInitialized } = useContext(PoolContext);
     const {
-        baseToken: {
-            address: baseTokenAddress,
-            balance: baseTokenBalance,
-            dexBalance: baseTokenDexBalance,
-        },
-        quoteToken: {
-            balance: quoteTokenBalance,
-            dexBalance: quoteTokenDexBalance,
-        },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenABase,
+        isTokenAEth,
+        isTokenBEth,
     } = useContext(TradeTokenContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
@@ -94,19 +92,6 @@ function RangeTokenInput(props: propsIF) {
         poolPriceNonDisplay,
         rangeTicksCopied,
     } = useAppSelector((state) => state.tradeData);
-
-    const isTokenABase = tokenA.address === baseTokenAddress;
-    const isTokenAEth = tokenA.address === ZERO_ADDRESS;
-    const isTokenBEth = tokenB.address === ZERO_ADDRESS;
-
-    const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
-    const tokenADexBalance = isTokenABase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
-    const tokenBDexBalance = isTokenABase
-        ? quoteTokenDexBalance
-        : baseTokenDexBalance;
 
     useEffect(() => {
         if (isPoolInitialized) {
