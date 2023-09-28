@@ -2670,10 +2670,7 @@ export default function Chart(props: propsIF) {
                                 marketPrice,
                             );
 
-                            const bufferForRange = Math.abs(
-                                (low - high) /
-                                    (simpleRangeWidth !== 100 ? 6 : 90),
-                            );
+                            const bufferForRange = Math.abs((low - high) / 6);
 
                             const domain = [
                                 Math.min(low, high) - bufferForRange,
@@ -2702,10 +2699,7 @@ export default function Chart(props: propsIF) {
                                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                             );
 
-                            const bufferForRange = Math.abs(
-                                (low - high) /
-                                    (simpleRangeWidth !== 100 ? 6 : 90),
-                            );
+                            const bufferForRange = Math.abs((low - high) / 90);
 
                             const domain = [
                                 Math.min(low, high) - bufferForRange,
