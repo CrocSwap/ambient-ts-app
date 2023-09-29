@@ -27,6 +27,7 @@ export const APP_ENVIRONMENT: AppEnvironment =
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
 export const ANALYTICS_URL =
+    process.env.ANALYTICS_URL ||
     'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
 
 export const GRAPHCACHE_URL =
