@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
@@ -69,7 +68,6 @@ function RangeTokenInput(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { isPoolInitialized } = useContext(PoolContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -96,10 +94,10 @@ function RangeTokenInput(props: propsIF) {
     } = useAppSelector((state) => state.tradeData);
 
     useEffect(() => {
-        if (isPoolInitialized) {
+        if (poolPriceNonDisplay) {
             updateTokenQty();
         }
-    }, [isPoolInitialized, depositSkew, tokenA.address]);
+    }, [poolPriceNonDisplay, depositSkew, tokenA.address]);
 
     useEffect(() => {
         handleTokenAButtonMessage(tokenAInputQty);
