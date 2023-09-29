@@ -615,7 +615,7 @@ function Swap(props: propsIF) {
                     updateURL({
                         update: [
                             ['chain', 19],
-                            ['lowTick', 85],
+                            ['width', 85],
                         ],
                         delete: ['limitTick'],
                     })

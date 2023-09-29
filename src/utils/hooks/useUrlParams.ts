@@ -29,9 +29,8 @@ const validParams = [
     'chain',
     'tokenA',
     'tokenB',
-    'lowTick',
-    'highTick',
     'limitTick',
+    'width'
 ] as const;
 
 // type generated as a union of all string literals in `validParams`
@@ -73,10 +72,8 @@ export const useUrlParams = (
             case 'market':
             case 'limit':
             case 'pool':
-                paramsForPage = globalParams;
-                break;
             case 'initpool':
-                paramsForPage = globalParams.concat(['lowTick', 'highTick']);
+                paramsForPage = globalParams;
                 break;
             // all non-parameterized URL pathways
             default:
@@ -297,6 +294,15 @@ export const useUrlParams = (
                 dispatch(setChainId(chainToUse));
             }
 
+            if (urlParamMap.has('width')) {
+                const w: string = urlParamMap.get('width') as string;
+                if (w.includes('-')) {
+                    const ticks = w.split('-').map((elem: string) => parseInt(elem));
+                    dispatch(setAdvancedLowTick(ticks[0]));
+                    dispatch(setAdvancedHighTick(ticks[1]));
+                }
+            }
+
             const tokenA = urlParamMap.get('tokenA');
             const tokenB = urlParamMap.get('tokenB');
             if (tokenA && tokenB) {
@@ -304,15 +310,6 @@ export const useUrlParams = (
             } else {
                 processDefaultTokens(chainToUse);
             }
-
-            processOptParam('lowTick', async (tick: string) => {
-                dispatch(setAdvancedLowTick(parseInt(tick)));
-            });
-
-            processOptParam('highTick', async (tick: string) => {
-                // console.log('woo');
-                dispatch(setAdvancedHighTick(parseInt(tick)));
-            });
 
             processOptParam('limitTick', async (tick: string) => {
                 dispatch(setLimitTick(parseInt(tick)));

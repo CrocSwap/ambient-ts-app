@@ -539,13 +539,12 @@ function Range() {
     useEffect(() => {
         // get values for `lowTick` and `highTick` from URL params
         // will be `undefined` if params are missing from URL
-        const lt: string|undefined = urlParamMap.get('lowTick');
-        const ht: string|undefined = urlParamMap.get('lowTick');
+        const width: string|undefined = urlParamMap.get('width');
         // logic router for URL params values
         // both ticks '0' denotes an Ambient range
-        if (lt === '0' && ht === '0') {
+        if (width === '100') {
             setSimpleRangeWidth(100);
-        } else if (lt && ht) {
+        } else if (width && width.includes('-')) {
             dispatch(setAdvancedMode(true));
         };
     }, []);
@@ -555,12 +554,7 @@ function Range() {
             setIsAmbient(true);
             setRangeLowBoundNonDisplayPrice(0);
             setRangeHighBoundNonDisplayPrice(Infinity);
-            updateURL({
-                update: [
-                    ['lowTick', 0],
-                    ['highTick', 0]
-                ]
-            });
+            updateURL({ update: [['width', 100]] });
         } else if (advancedMode) {
             setIsAmbient(false);
         } else {
@@ -604,8 +598,7 @@ function Range() {
 
             updateURL({
                 update: [
-                    ['lowTick', pinnedDisplayPrices.pinnedLowTick],
-                    ['highTick', pinnedDisplayPrices.pinnedHighTick]
+                    ['width', pinnedDisplayPrices.pinnedLowTick + '-' + pinnedDisplayPrices.pinnedHighTick]
                 ]
             });
 
@@ -673,8 +666,7 @@ function Range() {
 
             updateURL({
                 update: [
-                    ['lowTick', pinnedDisplayPrices.pinnedLowTick],
-                    ['highTick', pinnedDisplayPrices.pinnedHighTick]
+                    ['width', pinnedDisplayPrices.pinnedLowTick + '-' + pinnedDisplayPrices.pinnedHighTick]
                 ]
             });
 
