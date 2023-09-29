@@ -16,7 +16,6 @@ import styles from './SoloTokenSelectModal.module.css';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useProvider } from 'wagmi';
 import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
@@ -50,6 +49,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
+        provider,
     } = useContext(CrocEnvContext);
 
     const {
@@ -71,8 +71,6 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
-
-    const provider = useProvider();
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {

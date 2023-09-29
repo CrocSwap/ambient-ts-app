@@ -164,6 +164,10 @@ function Swap(props: propsIF) {
             ? tokenASurplusMinusTokenARemainderNum * -1
             : 0
         : parseFloat(sellQtyString || '0');
+
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
@@ -577,6 +581,7 @@ function Swap(props: propsIF) {
             }
             approveButton={
                 isPoolInitialized &&
+                isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient &&
                 parseFloat(sellQtyString) > 0 &&
                 sellQtyString !== 'Infinity' ? (
