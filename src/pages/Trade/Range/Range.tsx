@@ -1098,6 +1098,7 @@ function Range() {
                     <RangeTokenInput
                         isAmbient={isAmbient}
                         depositSkew={depositSkew}
+                        poolPriceNonDisplay={poolPriceNonDisplay}
                         isWithdrawFromDexChecked={{
                             tokenA: isWithdrawTokenAFromDexChecked,
                             tokenB: isWithdrawTokenBFromDexChecked,

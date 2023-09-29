@@ -31,6 +31,7 @@ interface propsIF {
     tokenBInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
     isAmbient: boolean;
     depositSkew: number;
+    poolPriceNonDisplay: number;
     isOutOfRange: boolean;
     isWithdrawFromDexChecked: { tokenA: boolean; tokenB: boolean };
     isInputDisabled: { tokenA: boolean; tokenB: boolean };
@@ -47,6 +48,7 @@ function RangeTokenInput(props: propsIF) {
         tokenBInputQty: { value: tokenBInputQty, set: setTokenBInputQty },
         isAmbient,
         depositSkew,
+        poolPriceNonDisplay,
         isOutOfRange,
         isWithdrawFromDexChecked: {
             tokenA: isWithdrawTokenAFromDexChecked,
@@ -90,7 +92,6 @@ function RangeTokenInput(props: propsIF) {
         tokenB,
         isTokenAPrimary,
         isTokenAPrimaryRange,
-        poolPriceNonDisplay,
         rangeTicksCopied,
     } = useAppSelector((state) => state.tradeData);
 

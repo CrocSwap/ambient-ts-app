@@ -65,6 +65,7 @@ import {
     setAdvancedLowTick,
     setAdvancedHighTick,
 } from '../../utils/state/tradeDataSlice';
+import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
@@ -159,6 +160,7 @@ export default function InitPool() {
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
     }, [crocEnv, sessionReceipts.length, baseToken, quoteToken]);
+    const [isAmbient, setIsAmbient] = useState(false);
 
     const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
         useState(0);
@@ -381,6 +383,39 @@ export default function InitPool() {
 
     const gridSize = lookupChain(chainId).gridSize;
 
+    const selectedPoolNonDisplayPrice = useMemo(() => {
+        const selectedPriceInBaseDenom = isDenomBase
+            ? 1 / parseFloat(initialPriceDisplay)
+            : parseFloat(initialPriceDisplay);
+        const priceNonDisplayNum = fromDisplayPrice(
+            selectedPriceInBaseDenom,
+            baseToken.decimals,
+            quoteToken.decimals,
+        );
+        return priceNonDisplayNum;
+    }, [isDenomBase, baseToken, quoteToken, initialPriceDisplay]);
+
+    const depositSkew = useMemo(
+        () =>
+            concDepositSkew(
+                selectedPoolNonDisplayPrice ?? 0,
+                rangeLowBoundNonDisplayPrice,
+                rangeHighBoundNonDisplayPrice,
+            ),
+        [
+            selectedPoolNonDisplayPrice,
+            rangeLowBoundNonDisplayPrice,
+            rangeHighBoundNonDisplayPrice,
+        ],
+    );
+
+    // console.log({
+    //     depositSkew,
+    //     selectedPoolNonDisplayPrice,
+    //     rangeLowBoundNonDisplayPrice,
+    //     rangeHighBoundNonDisplayPrice,
+    // });
+
     const selectedPoolPriceTick = useMemo(() => {
         if (!initialPriceDisplay) return 0;
         // TODO: confirm this logic,epecially isMinPrice
@@ -434,7 +469,63 @@ export default function InitPool() {
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
+
     const [showConfirmation, setShowConfirmation] = useState(false);
+
+    useEffect(() => {
+        if (!isAmbient) {
+            if (isTokenABase) {
+                if (defaultHighTick < selectedPoolPriceTick) {
+                    setIsTokenBInputDisabled(true);
+                    if (defaultHighTick > defaultLowTick) {
+                        setIsTokenAInputDisabled(false);
+                    } else setIsTokenAInputDisabled(true);
+                } else if (defaultLowTick > selectedPoolPriceTick) {
+                    setIsTokenAInputDisabled(true);
+                    if (defaultLowTick < defaultHighTick) {
+                        setIsTokenBInputDisabled(false);
+                    } else setIsTokenBInputDisabled(true);
+                } else {
+                    setIsTokenAInputDisabled(false);
+                    setIsTokenBInputDisabled(false);
+                }
+            } else {
+                if (defaultHighTick < selectedPoolPriceTick) {
+                    setIsTokenAInputDisabled(true);
+                    if (defaultHighTick > defaultLowTick) {
+                        setIsTokenBInputDisabled(false);
+                    } else setIsTokenBInputDisabled(true);
+                } else if (defaultLowTick > selectedPoolPriceTick) {
+                    setIsTokenBInputDisabled(true);
+                    if (defaultLowTick < defaultHighTick) {
+                        setIsTokenAInputDisabled(false);
+                    } else setIsTokenBInputDisabled(true);
+                } else {
+                    setIsTokenBInputDisabled(false);
+                    setIsTokenAInputDisabled(false);
+                }
+            }
+        } else {
+            setIsTokenBInputDisabled(false);
+            setIsTokenAInputDisabled(false);
+        }
+    }, [
+        isAmbient,
+        isTokenABase,
+        selectedPoolPriceTick,
+        defaultLowTick,
+        defaultHighTick,
+        isDenomBase,
+    ]);
+
+    useEffect(() => {
+        console.log({
+            newRangeTransactionHash,
+            txErrorCode,
+            showConfirmation,
+            depositSkew,
+        });
+    }, [newRangeTransactionHash, txErrorCode, showConfirmation, depositSkew]);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -464,7 +555,7 @@ export default function InitPool() {
             setShowConfirmation,
         };
         console.log(params);
-        // createRangePosition(params);
+        createRangePosition(params);
     };
 
     const ButtonToRender = () => {
@@ -630,7 +721,6 @@ export default function InitPool() {
         | undefined
     >();
     // eslint-disable-next-line
-    const [isAmbient, setIsAmbient] = useState(false);
     // eslint-disable-next-line
     const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] =
         useState('');
@@ -955,7 +1045,8 @@ export default function InitPool() {
             <RangeTokenInput
                 hidePlus
                 isAmbient={isAmbient}
-                depositSkew={0}
+                depositSkew={depositSkew}
+                poolPriceNonDisplay={selectedPoolNonDisplayPrice}
                 isWithdrawFromDexChecked={{
                     tokenA: isWithdrawTokenAFromDexChecked,
                     tokenB: isWithdrawTokenBFromDexChecked,
