@@ -250,8 +250,6 @@ export default function rangeRowConstants(props: propsIF) {
         chain: position.chainId,
         tokenA: position.quote,
         tokenB: position.base,
-        lowTick: position.askTick,
-        highTick: position.bidTick,
     };
 
     const tokenPair = (

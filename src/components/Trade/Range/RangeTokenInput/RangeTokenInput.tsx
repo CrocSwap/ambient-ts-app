@@ -94,8 +94,6 @@ function RangeTokenInput(props: propsIF) {
         isTokenAPrimaryRange,
         poolPriceNonDisplay,
         rangeTicksCopied,
-        advancedLowTick,
-        advancedHighTick,
     } = useAppSelector((state) => state.tradeData);
 
     const isTokenABase = tokenA.address === baseTokenAddress;
@@ -177,8 +175,6 @@ function RangeTokenInput(props: propsIF) {
                 chain: chainId,
                 tokenA: tokenB.address,
                 tokenB: tokenA.address,
-                lowTick: advancedHighTick,
-                highTick: advancedLowTick,
             };
             // navigate user to pool page with URL params defined above
             linkGenPool.navigate(poolLinkParams);

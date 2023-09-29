@@ -43,8 +43,6 @@ export const useRepoExitPath = (): string => {
             chain: findParam('chain'),
             tokenA: findParam('tokenA'),
             tokenB: findParam('tokenB'),
-            lowTick: 0,
-            highTick: 0,
         };
         // generate and return nav path
         return linkGenPool.getFullURL(poolLinkParams);

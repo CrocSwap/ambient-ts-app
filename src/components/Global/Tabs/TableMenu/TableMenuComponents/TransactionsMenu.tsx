@@ -175,8 +175,6 @@ export default function TransactionsMenu(props: propsIF) {
                     chain: chainId,
                     tokenA: tx.isBid ? tx.base : tx.quote,
                     tokenB: tx.isBid ? tx.quote : tx.base,
-                    lowTick: tx.bidTick.toString(),
-                    highTick: tx.askTick.toString(),
                 });
                 break;
             case 'limitOrder':

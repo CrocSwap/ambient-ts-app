@@ -96,14 +96,12 @@ export default function PositionsSearchResults(props: propsIF) {
         setSelectedOutsideTab(2);
         setCurrentPositionActive(position.lastMintTx);
         setShowAllData(false);
-        const { base, quote, bidTick, askTick } = position;
+        const { base, quote } = position;
         // URL params for link to pool page
         const poolLinkParams: poolParamsIF = {
             chain: chainId,
             tokenA: base,
             tokenB: quote,
-            lowTick: bidTick,
-            highTick: askTick,
         };
         // navigate user to `/trade/pool` with defined URL params
         linkGenPool.navigate(poolLinkParams);
