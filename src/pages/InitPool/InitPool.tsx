@@ -6,7 +6,7 @@ import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitP
 import Button from '../../components/Form/Button';
 
 // START: Import Local Files
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
@@ -51,6 +51,7 @@ import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeT
 import { useCreateRangePosition } from '../../App/hooks/useCreateRangePosition';
 import { isStablePair } from '../../utils/data/stablePairs';
 import {
+    getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
     roundDownTick,
     roundUpTick,
@@ -60,6 +61,10 @@ import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
     DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
 } from '../Trade/Range/Range';
+import {
+    setAdvancedLowTick,
+    setAdvancedHighTick,
+} from '../../utils/state/tradeDataSlice';
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
@@ -154,6 +159,11 @@ export default function InitPool() {
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
     }, [crocEnv, sessionReceipts.length, baseToken, quoteToken]);
+
+    const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
+        useState(0);
+    const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] =
+        useState(0);
 
     const updateEstimatedInitialPrice = async () => {
         const mainnetBase =
@@ -661,6 +671,70 @@ export default function InitPool() {
         useState(false);
     const [minPrice, setMinPrice] = useState(10);
     const [maxPrice, setMaxPrice] = useState(100);
+
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (rangeWidthPercentage === 100 && !advancedMode) {
+            setIsAmbient(true);
+            setRangeLowBoundNonDisplayPrice(0);
+            setRangeHighBoundNonDisplayPrice(Infinity);
+        } else if (advancedMode) {
+            setIsAmbient(false);
+        } else {
+            setIsAmbient(false);
+            if (
+                Math.abs(currentPoolPriceTick) === Infinity ||
+                Math.abs(currentPoolPriceTick) === 0
+            )
+                return;
+            const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+            const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                isDenomBase,
+                baseToken.decimals,
+                quoteToken.decimals,
+                lowTick,
+                highTick,
+                gridSize,
+            );
+
+            setPinnedDisplayPrices(pinnedDisplayPrices);
+
+            setRangeLowBoundNonDisplayPrice(
+                pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+            );
+            setRangeHighBoundNonDisplayPrice(
+                pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+            );
+
+            setPinnedMinPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+            );
+            setPinnedMaxPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            );
+
+            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
+            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+
+            setMaxPrice(
+                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+            );
+            setMinPrice(
+                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+            );
+        }
+    }, [
+        rangeWidthPercentage,
+        advancedMode,
+        isDenomBase,
+        currentPoolPriceTick,
+        baseToken.address + quoteToken.address,
+        baseToken.decimals,
+        quoteToken.decimals,
+    ]);
 
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
