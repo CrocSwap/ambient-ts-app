@@ -43,7 +43,6 @@ import {
     setAdvancedHighTick,
     setIsLinesSwitched,
     setIsTokenAPrimaryRange,
-    setAdvancedMode
 } from '../../../utils/state/tradeDataSlice';
 import {
     TransactionError,
@@ -61,10 +60,9 @@ import { useSimulatedIsPoolInitialized } from '../../../App/hooks/useSimulatedIs
 import { FlexContainer } from '../../../styled/Common';
 import { AdvancedModeSection } from '../../../styled/Components/TradeModules';
 import { useApprove } from '../../../App/functions/approve';
-import { useTradeData } from '../../../App/hooks/useTradeData';
+
 const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
-const TICK_GRID_RADIUS = 10000;
 
 function Range() {
     const {
@@ -103,9 +101,6 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
-
-    const { urlParamMap, updateURL } = useTradeData();
-
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const dispatch = useAppDispatch();
@@ -228,42 +223,42 @@ function Range() {
             ? 0
             : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    // bool indicating presence of tick values in URL params
-    const lowTickInParams: boolean = location.pathname.includes('lowTick');
-    const highTickInParams: boolean = location.pathname.includes('highTick');
-
+    const ticksInParams =
+        location.pathname.includes('lowTick') &&
+        location.pathname.includes('highTick');
     const shouldResetAdvancedLowTick =
-        !lowTickInParams &&
+        !ticksInParams &&
         (advancedLowTick === 0 ||
-            advancedHighTick > currentPoolPriceTick + TICK_GRID_RADIUS ||
-            advancedLowTick < currentPoolPriceTick - TICK_GRID_RADIUS);
+            advancedHighTick > currentPoolPriceTick + 100000 ||
+            advancedLowTick < currentPoolPriceTick - 100000);
     const shouldResetAdvancedHighTick =
-        !highTickInParams &&
+        !ticksInParams &&
         (advancedHighTick === 0 ||
-            advancedHighTick > currentPoolPriceTick + TICK_GRID_RADIUS ||
-            advancedLowTick < currentPoolPriceTick - TICK_GRID_RADIUS);
-
+            advancedHighTick > currentPoolPriceTick + 100000 ||
+            advancedLowTick < currentPoolPriceTick - 100000);
     // default low tick to seed in the DOM (range lower value)
     const defaultLowTick = useMemo<number>(() => {
-        const value: number = shouldResetAdvancedLowTick
-            ? roundDownTick(
-                  currentPoolPriceTick +
-                      DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
-                  gridSize,
-              )
-            : advancedLowTick;
+        const value: number =
+            shouldResetAdvancedLowTick || advancedLowTick === 0
+                ? roundDownTick(
+                      currentPoolPriceTick +
+                          DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedLowTick;
         return value;
     }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo<number>(() => {
-        const value: number = shouldResetAdvancedHighTick
-            ? roundUpTick(
-                  currentPoolPriceTick +
-                      DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
-                  gridSize,
-              )
-            : advancedHighTick;
+        const value: number =
+            shouldResetAdvancedHighTick || advancedHighTick === 0
+                ? roundUpTick(
+                      currentPoolPriceTick +
+                          DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedHighTick;
         return value;
     }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
@@ -448,6 +443,12 @@ function Range() {
         },
     );
 
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
+    const isTokenBWalletBalanceSufficient =
+        parseFloat(tokenBBalance) >= tokenBQtyCoveredByWalletBalance;
+
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
@@ -473,6 +474,7 @@ function Range() {
 
     useEffect(() => {
         if (simpleRangeWidth !== rangeWidthPercentage) {
+            // dispatch(setRangeModuleTriggered(true));
             setSimpleRangeWidth(rangeWidthPercentage);
         }
     }, [rangeWidthPercentage]);
@@ -534,27 +536,11 @@ function Range() {
         isDenomBase,
     ]);
 
-    // throw app into advanced mode if the URL has ticks specified
-    // I hate putting this in a side effect but we're stuck with it
-    useEffect(() => {
-        // get values for `lowTick` and `highTick` from URL params
-        // will be `undefined` if params are missing from URL
-        const width: string|undefined = urlParamMap.get('width');
-        // logic router for URL params values
-        // both ticks '0' denotes an Ambient range
-        if (width === '100') {
-            setSimpleRangeWidth(100);
-        } else if (width && width.includes('-')) {
-            dispatch(setAdvancedMode(true));
-        };
-    }, []);
-
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
             setRangeLowBoundNonDisplayPrice(0);
             setRangeHighBoundNonDisplayPrice(Infinity);
-            updateURL({ update: [['width', 100]] });
         } else if (advancedMode) {
             setIsAmbient(false);
         } else {
@@ -596,12 +582,6 @@ function Range() {
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
-            updateURL({
-                update: [
-                    ['width', pinnedDisplayPrices.pinnedLowTick + '-' + pinnedDisplayPrices.pinnedHighTick]
-                ]
-            });
-
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
@@ -622,7 +602,18 @@ function Range() {
     useEffect(() => {
         handleRangeButtonMessageTokenA(tokenAInputQty);
         handleRangeButtonMessageTokenB(tokenBInputQty);
-    }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
+    }, [
+        isQtyEntered,
+        isPoolInitialized,
+        isInvalidRange,
+        poolPriceNonDisplay,
+        isWithdrawTokenAFromDexChecked,
+        isWithdrawTokenBFromDexChecked,
+        tokenABalance,
+        tokenADexBalance,
+        tokenBBalance,
+        tokenBDexBalance,
+    ]);
 
     useEffect(() => {
         if (isTokenAInputDisabled) dispatch(setIsTokenAPrimaryRange(false));
@@ -664,12 +655,6 @@ function Range() {
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
-            updateURL({
-                update: [
-                    ['width', pinnedDisplayPrices.pinnedLowTick + '-' + pinnedDisplayPrices.pinnedHighTick]
-                ]
-            });
-
             const highTickDiff =
                 pinnedDisplayPrices.pinnedHighTick - currentPoolPriceTick;
             const lowTickDiff =
@@ -685,53 +670,37 @@ function Range() {
                     : parseFloat(truncateDecimals(lowTickDiff / 100, 0));
             isDenomBase
                 ? setMaxPriceDifferencePercentage(
-                    -lowGeometricDifferencePercentage,
-                )
+                      -lowGeometricDifferencePercentage,
+                  )
                 : setMaxPriceDifferencePercentage(
-                    highGeometricDifferencePercentage,
-                );
+                      highGeometricDifferencePercentage,
+                  );
 
             isDenomBase
                 ? setMinPriceDifferencePercentage(
-                    -highGeometricDifferencePercentage,
-                )
+                      -highGeometricDifferencePercentage,
+                  )
                 : setMinPriceDifferencePercentage(
-                    lowGeometricDifferencePercentage,
-                );
+                      lowGeometricDifferencePercentage,
+                  );
 
-            // as far as I can tell this is the only logic in the app which updates
-            // values in the DOM for range low and high bounds in advance mode
-
-            // get range low bound input field, potentially undefined on first
-            // ... render or when the user is not in advanced mode, I'm not sure if
-            // ... we actually remove it from the DOM or simply toggle visibility
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
 
-            // check that low bound input field exists, execute if it does
             if (rangeLowBoundDisplayField) {
-                // manually set value of low bound in the DOM
-                // this is not good practice and should be refactored
                 rangeLowBoundDisplayField.value =
                     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
-
-                // repeat the same process for the high bound field in advanced mode
-                // why is this nested? is it to save compute resources by using first
-                // ... gate as a proxy or is there a deeper purpose to the logic? or
-                // ... it simply a bad copy and paste? IDK yet
                 const rangeHighBoundDisplayField = document.getElementById(
                     'max-price-input-quantity',
                 ) as HTMLInputElement;
+
                 if (rangeHighBoundDisplayField) {
                     rangeHighBoundDisplayField.value =
                         pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
                 }
             }
 
-            // what purpose do these values serve? data in the DOM? we have that
-            // ... defined and managed separately, why would there be a parallel
-            // ... value held in local state?
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
             );
@@ -944,9 +913,6 @@ function Range() {
         }
     }, [rangeHighBoundFieldBlurred, chartTriggeredBy]);
 
-    // const counter = useRef<number>(0);
-    // useEffect(() => console.log(counter.current), [counter.current]);
-
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const averageRangeCostInGasDrops = 140000;
@@ -973,8 +939,6 @@ function Range() {
             return;
         const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
         const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-
-        // counter.current++;
 
         const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
             isDenomBase,
@@ -1161,9 +1125,9 @@ function Range() {
     };
 
     const handleRangeButtonMessageTokenA = (tokenAAmount: string) => {
-        if (poolPriceNonDisplay === 0) {
+        if (!isPoolInitialized) {
             setTokenAAllowed(false);
-            setRangeButtonErrorMessage('Invalid Token Pair');
+            setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (
             (isNaN(parseFloat(tokenAAmount)) ||
                 parseFloat(tokenAAmount) <= 0) &&
@@ -1171,8 +1135,6 @@ function Range() {
         ) {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
-        } else if (!isPoolInitialized) {
-            setRangeButtonErrorMessage('Pool Not Initialized');
         } else {
             if (isWithdrawTokenAFromDexChecked) {
                 if (
@@ -1200,9 +1162,9 @@ function Range() {
     };
 
     const handleRangeButtonMessageTokenB = (tokenBAmount: string) => {
-        if (poolPriceNonDisplay === 0) {
+        if (!isPoolInitialized) {
             setTokenBAllowed(false);
-            setRangeButtonErrorMessage('Invalid Token Pair');
+            setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (
             (isNaN(parseFloat(tokenBAmount)) ||
                 parseFloat(tokenBAmount) <= 0) &&
@@ -1243,23 +1205,6 @@ function Range() {
         needConfirmTokenA && tokens.acknowledge(tokenA);
         needConfirmTokenB && tokens.acknowledge(tokenB);
     };
-
-    // // fn to update the width of range (balanced mode) from buttons
-    // function updateRangeWithButton(value: 5 | 10 | 25 | 50 | 100): void {
-    //     // convert the numerical input to a string
-    //     const valueString: string = value.toString();
-    //     // locate the range adjustment slider in the DOM
-    //     const inputSlider: HTMLElement | null =
-    //         document.getElementById('input-slider-range');
-    //     // set the range adjustment slider to the value provided in args
-    //     if (inputSlider) {
-    //         (inputSlider as HTMLInputElement).value = valueString;
-    //     }
-    //     // set the input value to two decimals of precision
-    //     const truncatedValue: string = truncateDecimals(value, 2);
-    //     // convert input value to a float and update range width
-    //     setRangeWidthPercentage(parseFloat(truncatedValue));
-    // }
 
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
@@ -1492,8 +1437,9 @@ function Range() {
                 ) : undefined
             }
             approveButton={
-                poolPriceNonDisplay !== 0 &&
+                isPoolInitialized &&
                 parseFloat(tokenAInputQty) > 0 &&
+                isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient ? (
                     <Button
                         title={
@@ -1507,8 +1453,9 @@ function Range() {
                         }}
                         flat={true}
                     />
-                ) : poolPriceNonDisplay !== 0 &&
+                ) : isPoolInitialized &&
                   parseFloat(tokenBInputQty) > 0 &&
+                  isTokenBWalletBalanceSufficient &&
                   !isTokenBAllowanceSufficient ? (
                     <Button
                         title={

@@ -4,8 +4,6 @@ import { useAppDispatch } from './reduxToolkit';
 import {
     setTokenA,
     setTokenB,
-    setAdvancedLowTick,
-    setAdvancedHighTick,
     setLimitTick,
     setChainId,
 } from '../state/tradeDataSlice';
@@ -30,7 +28,6 @@ const validParams = [
     'tokenA',
     'tokenB',
     'limitTick',
-    'width'
 ] as const;
 
 // type generated as a union of all string literals in `validParams`
@@ -292,15 +289,6 @@ export const useUrlParams = (
             if (urlParamMap.has('chain')) {
                 switchNetwork && switchNetwork(parseInt(chainToUse));
                 dispatch(setChainId(chainToUse));
-            }
-
-            if (urlParamMap.has('width')) {
-                const w: string = urlParamMap.get('width') as string;
-                if (w.includes('-')) {
-                    const ticks = w.split('-').map((elem: string) => parseInt(elem));
-                    dispatch(setAdvancedLowTick(ticks[0]));
-                    dispatch(setAdvancedHighTick(ticks[1]));
-                }
             }
 
             const tokenA = urlParamMap.get('tokenA');

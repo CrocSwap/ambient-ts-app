@@ -89,8 +89,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         // default URL params for the pool module
         const poolParams: poolParamsIF = {
             ...swapParams,
-            // lowTick: -1,
-            // highTick: 1,
         };
 
         return {
@@ -172,7 +170,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         setNewCrocEnv();
     }, [
-        // signerStatus === 'success',
         crocEnv === undefined,
         chainData.chainId,
         signer,
