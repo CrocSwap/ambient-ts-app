@@ -48,6 +48,18 @@ import { useApprove } from '../../App/functions/approve';
 import { useMediaQuery } from '@material-ui/core';
 import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
+import { useCreateRangePosition } from '../../App/hooks/useCreateRangePosition';
+import { isStablePair } from '../../utils/data/stablePairs';
+import {
+    getPinnedTickFromDisplayPrice,
+    roundDownTick,
+    roundUpTick,
+} from '../Trade/Range/rangeFunctions';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import {
+    DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
+    DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
+} from '../Trade/Range/Range';
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
@@ -61,7 +73,7 @@ export default function InitPool() {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { dexBalRange } = useContext(UserPreferenceContext);
+    const { dexBalRange, mintSlippage } = useContext(UserPreferenceContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay } = useContext(PoolContext);
 
@@ -70,7 +82,7 @@ export default function InitPool() {
 
     // const handleToggle = () => dispatch(toggleAdvancedMode());
     const {
-        tradeData: { advancedMode },
+        tradeData: { advancedMode, advancedHighTick, advancedLowTick },
     } = useAppSelector((state) => state);
 
     const { isConnected } = useAccount();
@@ -343,6 +355,108 @@ export default function InitPool() {
         }
     };
 
+    // Begin Range Logic
+    const { createRangePosition } = useCreateRangePosition();
+    // TODO: implement disabling logic when range is out of bounds
+    const [isTokenAInputDisabled, setIsTokenAInputDisabled] = useState(false);
+    const [isTokenBInputDisabled, setIsTokenBInputDisabled] = useState(false);
+
+    const slippageTolerancePercentage = isStablePair(
+        tokenA.address,
+        tokenB.address,
+        chainId,
+    )
+        ? mintSlippage.stable
+        : mintSlippage.volatile;
+
+    const gridSize = lookupChain(chainId).gridSize;
+
+    const currentPoolPriceTick = useMemo(() => {
+        if (!initialPriceInBaseDenom) return 0;
+        // TODO: confirm this logic,epecially isMinPrice
+        return getPinnedTickFromDisplayPrice(
+            true, // because we are using intialPriceInBaseDenom
+            baseToken.decimals,
+            quoteToken.decimals,
+            true,
+            initialPriceInBaseDenom.toString(),
+            gridSize,
+        );
+    }, [initialPriceInBaseDenom, baseToken, quoteToken, gridSize]);
+
+    // default low tick to seed in the DOM (range lower value)
+
+    const shouldResetAdvancedLowTick =
+        advancedLowTick === 0 ||
+        advancedHighTick > currentPoolPriceTick + 100000 ||
+        advancedLowTick < currentPoolPriceTick - 100000;
+    const shouldResetAdvancedHighTick =
+        advancedHighTick === 0 ||
+        advancedHighTick > currentPoolPriceTick + 100000 ||
+        advancedLowTick < currentPoolPriceTick - 100000;
+    // Tick functions modified from normal range
+    // default low tick to seed in the DOM (range lower value)
+    // initialPriceInBaseDenom
+    const defaultLowTick = useMemo<number>(() => {
+        const value: number =
+            shouldResetAdvancedLowTick || advancedLowTick === 0
+                ? roundDownTick(
+                      currentPoolPriceTick +
+                          DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedLowTick;
+        return value;
+    }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
+
+    // default high tick to seed in the DOM (range upper value)
+    const defaultHighTick = useMemo<number>(() => {
+        const value: number =
+            shouldResetAdvancedHighTick || advancedHighTick === 0
+                ? roundUpTick(
+                      currentPoolPriceTick +
+                          DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedHighTick;
+        return value;
+    }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
+
+    const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState('');
+    const [showConfirmation, setShowConfirmation] = useState(false);
+
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode('');
+        setNewRangeTransactionHash('');
+    };
+
+    // Next step - understand how sider affects these params
+    const sendRangePosition = async () => {
+        const params = {
+            slippageTolerancePercentage,
+            isAmbient,
+            tokenAInputQty: isTokenAInputDisabled
+                ? 0
+                : parseFloat(baseCollateral),
+            tokenBInputQty: isTokenBInputDisabled
+                ? 0
+                : parseFloat(quoteCollateral),
+            isWithdrawTokenAFromDexChecked,
+            isWithdrawTokenBFromDexChecked,
+            defaultLowTick,
+            defaultHighTick,
+            isAdd: false, // Always false for init
+            setNewRangeTransactionHash,
+            setTxErrorCode,
+            resetConfirmation,
+            setShowConfirmation,
+        };
+        console.log(params);
+        // createRangePosition(params);
+    };
+
     const ButtonToRender = () => {
         let buttonContent;
 
@@ -399,14 +513,24 @@ export default function InitPool() {
                 } else {
                     // Display confirm button for final step
                     buttonContent = (
-                        <Button
-                            title='Confirm'
-                            disabled={erc20TokenWithDexBalance !== undefined}
-                            // action={sendInit}
-
-                            action={() => sendInit(initialPriceInBaseDenom)}
-                            flat={true}
-                        />
+                        <FlexContainer flexDirection='column'>
+                            <Button
+                                title='Confirm'
+                                disabled={
+                                    erc20TokenWithDexBalance !== undefined
+                                }
+                                action={() => sendInit(initialPriceInBaseDenom)}
+                                flat={true}
+                            />
+                            <Button
+                                title='Create Range Position'
+                                disabled={
+                                    erc20TokenWithDexBalance !== undefined
+                                }
+                                action={() => sendRangePosition()}
+                                flat={true}
+                            />
+                        </FlexContainer>
                     );
                 }
                 break;

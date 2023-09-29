@@ -46,8 +46,8 @@ import {
 
 import { useApprove } from '../../../App/functions/approve';
 
-const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
-const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
+export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
+export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
 function Range() {
     const {
@@ -241,6 +241,7 @@ function Range() {
     const userPositions = graphData.positionsByUser.positions.filter(
         (x) => x.chainId === chainId,
     );
+    // Represents whether user is adding to an existing range position
     const isAdd = useMemo(
         () =>
             userPositions.length > 0 &&
