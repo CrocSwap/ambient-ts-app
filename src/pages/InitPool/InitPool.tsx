@@ -381,29 +381,29 @@ export default function InitPool() {
 
     const gridSize = lookupChain(chainId).gridSize;
 
-    const currentPoolPriceTick = useMemo(() => {
-        if (!initialPriceInBaseDenom) return 0;
+    const selectedPoolPriceTick = useMemo(() => {
+        if (!initialPriceDisplay) return 0;
         // TODO: confirm this logic,epecially isMinPrice
         return getPinnedTickFromDisplayPrice(
-            true, // because we are using intialPriceInBaseDenom
+            isDenomBase,
             baseToken.decimals,
             quoteToken.decimals,
             true,
-            initialPriceInBaseDenom.toString(),
+            initialPriceDisplay,
             gridSize,
         );
-    }, [initialPriceInBaseDenom, baseToken, quoteToken, gridSize]);
+    }, [initialPriceDisplay, isDenomBase, baseToken, quoteToken, gridSize]);
 
     // default low tick to seed in the DOM (range lower value)
 
     const shouldResetAdvancedLowTick =
         advancedLowTick === 0 ||
-        advancedHighTick > currentPoolPriceTick + 100000 ||
-        advancedLowTick < currentPoolPriceTick - 100000;
+        advancedHighTick > selectedPoolPriceTick + 100000 ||
+        advancedLowTick < selectedPoolPriceTick - 100000;
     const shouldResetAdvancedHighTick =
         advancedHighTick === 0 ||
-        advancedHighTick > currentPoolPriceTick + 100000 ||
-        advancedLowTick < currentPoolPriceTick - 100000;
+        advancedHighTick > selectedPoolPriceTick + 100000 ||
+        advancedLowTick < selectedPoolPriceTick - 100000;
     // Tick functions modified from normal range
     // default low tick to seed in the DOM (range lower value)
     // initialPriceInBaseDenom
@@ -411,26 +411,26 @@ export default function InitPool() {
         const value: number =
             shouldResetAdvancedLowTick || advancedLowTick === 0
                 ? roundDownTick(
-                      currentPoolPriceTick +
+                      selectedPoolPriceTick +
                           DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
                       gridSize,
                   )
                 : advancedLowTick;
         return value;
-    }, [advancedLowTick, currentPoolPriceTick, shouldResetAdvancedLowTick]);
+    }, [advancedLowTick, selectedPoolPriceTick, shouldResetAdvancedLowTick]);
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo<number>(() => {
         const value: number =
             shouldResetAdvancedHighTick || advancedHighTick === 0
                 ? roundUpTick(
-                      currentPoolPriceTick +
+                      selectedPoolPriceTick +
                           DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
                       gridSize,
                   )
                 : advancedHighTick;
         return value;
-    }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
+    }, [advancedHighTick, selectedPoolPriceTick, shouldResetAdvancedHighTick]);
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -684,12 +684,12 @@ export default function InitPool() {
         } else {
             setIsAmbient(false);
             if (
-                Math.abs(currentPoolPriceTick) === Infinity ||
-                Math.abs(currentPoolPriceTick) === 0
+                Math.abs(selectedPoolPriceTick) === Infinity ||
+                Math.abs(selectedPoolPriceTick) === 0
             )
                 return;
-            const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-            const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+            const lowTick = selectedPoolPriceTick - rangeWidthPercentage * 100;
+            const highTick = selectedPoolPriceTick + rangeWidthPercentage * 100;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,
@@ -730,7 +730,7 @@ export default function InitPool() {
         rangeWidthPercentage,
         advancedMode,
         isDenomBase,
-        currentPoolPriceTick,
+        selectedPoolPriceTick,
         baseToken.address + quoteToken.address,
         baseToken.decimals,
         quoteToken.decimals,
@@ -741,7 +741,7 @@ export default function InitPool() {
         setRangeWidthPercentage: setRangeWidthPercentage,
         setRescaleRangeBoundariesWithSlider:
             setRescaleRangeBoundariesWithSlider,
-        inputId: 'init_pool_slider',
+        inputId: 'input-slider-range',
     };
 
     const rangePriceInfoProps = {
