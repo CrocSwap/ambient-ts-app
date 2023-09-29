@@ -141,6 +141,9 @@ export default function Limit() {
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
     // TODO: @Emily refactor this to take a token data object
     // values if either token needs to be confirmed before transacting
     const needConfirmTokenA = !tokens.verify(tokenA.address);
@@ -725,7 +728,9 @@ export default function Limit() {
                 ) : undefined
             }
             approveButton={
+                isPoolInitialized &&
                 !isTokenAAllowanceSufficient &&
+                isTokenAWalletBalanceSufficient &&
                 parseFloat(tokenAInputQty) > 0 ? (
                     <Button
                         title={

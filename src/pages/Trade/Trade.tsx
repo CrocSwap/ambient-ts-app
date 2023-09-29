@@ -23,7 +23,6 @@ import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChartContext } from '../../contexts/ChartContext';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
-import { useProvider } from 'wagmi';
 import { TokenContext } from '../../contexts/TokenContext';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
@@ -49,6 +48,7 @@ const TRADE_CHART_MIN_HEIGHT = 175;
 function Trade() {
     const {
         chainData: { chainId },
+        provider,
     } = useContext(CrocEnvContext);
     const { setIsCandleSelected, isCandleDataNull } = useContext(CandleContext);
 
@@ -86,7 +86,6 @@ function Trade() {
         },
     ];
 
-    const provider = useProvider();
     const { params } = useParams();
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
