@@ -514,7 +514,6 @@ function Range() {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
-            updatePinnedDisplayPrices();
             if (
                 Math.abs(currentPoolPriceTick) === Infinity ||
                 Math.abs(currentPoolPriceTick) === 0
@@ -899,51 +898,6 @@ function Range() {
             );
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
-
-    const updatePinnedDisplayPrices = () => {
-        if (
-            Math.abs(currentPoolPriceTick) === Infinity ||
-            Math.abs(currentPoolPriceTick) === 0
-        )
-            return;
-        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-
-        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-            isDenomBase,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            lowTick,
-            highTick,
-            gridSize,
-        );
-
-        setPinnedDisplayPrices(pinnedDisplayPrices);
-
-        setRangeLowBoundNonDisplayPrice(
-            pinnedDisplayPrices.pinnedMinPriceNonDisplay,
-        );
-        setRangeHighBoundNonDisplayPrice(
-            pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-        );
-
-        setPinnedMinPriceDisplayTruncated(
-            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-        );
-        setPinnedMaxPriceDisplayTruncated(
-            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-        );
-
-        dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-        dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
-
-        setMaxPrice(
-            parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
-        );
-        setMinPrice(
-            parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
-        );
-    };
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
