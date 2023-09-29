@@ -20,6 +20,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
+import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
 interface MessageInputProps {
     currentUser: string;
     message?: Message;
@@ -181,15 +182,27 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const handleInputChange = (e: any) => {
-        setMessage(e.target.value);
-        setInputLength(e.target.value.length);
+        const newMessage = e.target.value;
+        setMessage(newMessage);
+        setInputLength(newMessage.length);
         setCursorPosition(e.target.selectionStart);
+
+        // Check if the message length is less than or equal to 140 characters,
+        // and hide the pop-up message if it was shown previously
+        if (newMessage.length <= 140) {
+            props.setShowPopUp(false);
+        }
     };
 
     const handleInputClick = (e: any) => {
         // Update cursor position when the user clicks inside the input field
         if (inputRef.current) {
             setCursorPosition(inputRef.current.selectionStart);
+        }
+    };
+    const handleInputDoubleClick = () => {
+        if (inputRef.current) {
+            inputRef.current.select();
         }
     };
 
@@ -509,15 +522,20 @@ export default function MessageInput(props: MessageInputProps) {
                             value={message}
                             onChange={handleInputChange}
                             onClick={handleInputClick}
+                            onDoubleClick={handleInputDoubleClick}
                             autoComplete={'off'}
                             tabIndex={-1}
                             autoFocus={props.appPage}
                             maxLength={140}
                             ref={inputRef}
                         />
-                        <div className={styles.message_input_field}>
-                            {inputLength}/140
-                        </div>
+                        {inputLength >= 100 && (
+                            <div className={styles.message_input_field}>
+                                <CircularProgressBar
+                                    fillPercentage={inputLength / 1.4}
+                                />
+                            </div>
+                        )}
 
                         <BsEmojiSmile
                             className={
