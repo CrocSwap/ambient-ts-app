@@ -46,8 +46,8 @@ import {
 
 import { useApprove } from '../../../App/functions/approve';
 
-const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
-const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
+export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
+export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
 
 function Range() {
     const {
@@ -241,6 +241,7 @@ function Range() {
     const userPositions = graphData.positionsByUser.positions.filter(
         (x) => x.chainId === chainId,
     );
+    // Represents whether user is adding to an existing range position
     const isAdd = useMemo(
         () =>
             userPositions.length > 0 &&
@@ -513,7 +514,6 @@ function Range() {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
-            updatePinnedDisplayPrices();
             if (
                 Math.abs(currentPoolPriceTick) === Infinity ||
                 Math.abs(currentPoolPriceTick) === 0
@@ -899,50 +899,7 @@ function Range() {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    const updatePinnedDisplayPrices = () => {
-        if (
-            Math.abs(currentPoolPriceTick) === Infinity ||
-            Math.abs(currentPoolPriceTick) === 0
-        )
-            return;
-        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
-        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
-
-        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-            isDenomBase,
-            baseTokenDecimals,
-            quoteTokenDecimals,
-            lowTick,
-            highTick,
-            gridSize,
-        );
-
-        setPinnedDisplayPrices(pinnedDisplayPrices);
-
-        setRangeLowBoundNonDisplayPrice(
-            pinnedDisplayPrices.pinnedMinPriceNonDisplay,
-        );
-        setRangeHighBoundNonDisplayPrice(
-            pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
-        );
-
-        setPinnedMinPriceDisplayTruncated(
-            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-        );
-        setPinnedMaxPriceDisplayTruncated(
-            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-        );
-
-        dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-        dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
-
-        setMaxPrice(
-            parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
-        );
-        setMinPrice(
-            parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
-        );
-    };
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -951,6 +908,10 @@ function Range() {
     };
     const { createRangePosition } = useCreateRangePosition();
     const sendTransaction = async () => {
+        if (!crocEnv) return;
+        const pool = crocEnv.pool(tokenA.address, tokenB.address);
+
+        const poolPrice = await pool.displayPrice();
         createRangePosition({
             slippageTolerancePercentage,
             isAmbient,
@@ -969,6 +930,7 @@ function Range() {
             setTxErrorCode,
             resetConfirmation,
             setShowConfirmation,
+            poolPrice,
         });
     };
 
@@ -1143,6 +1105,7 @@ function Range() {
                     <RangeTokenInput
                         isAmbient={isAmbient}
                         depositSkew={depositSkew}
+                        poolPriceNonDisplay={poolPriceNonDisplay}
                         isWithdrawFromDexChecked={{
                             tokenA: isWithdrawTokenAFromDexChecked,
                             tokenB: isWithdrawTokenBFromDexChecked,

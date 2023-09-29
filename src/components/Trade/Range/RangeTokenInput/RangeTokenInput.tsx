@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useContext, useEffect, memo } from 'react';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
-import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { TradeTokenContext } from '../../../../contexts/TradeTokenContext';
 import { calculateSecondaryDepositQty } from '../../../../utils/functions/calculateSecondaryDepositQty';
@@ -31,6 +30,7 @@ interface propsIF {
     tokenBInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
     isAmbient: boolean;
     depositSkew: number;
+    poolPriceNonDisplay: number;
     isOutOfRange: boolean;
     isWithdrawFromDexChecked: { tokenA: boolean; tokenB: boolean };
     isInputDisabled: { tokenA: boolean; tokenB: boolean };
@@ -47,6 +47,7 @@ function RangeTokenInput(props: propsIF) {
         tokenBInputQty: { value: tokenBInputQty, set: setTokenBInputQty },
         isAmbient,
         depositSkew,
+        poolPriceNonDisplay,
         isOutOfRange,
         isWithdrawFromDexChecked: {
             tokenA: isWithdrawTokenAFromDexChecked,
@@ -67,7 +68,6 @@ function RangeTokenInput(props: propsIF) {
     const {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
-    const { isPoolInitialized } = useContext(PoolContext);
     const {
         tokenABalance,
         tokenBBalance,
@@ -90,15 +90,14 @@ function RangeTokenInput(props: propsIF) {
         tokenB,
         isTokenAPrimary,
         isTokenAPrimaryRange,
-        poolPriceNonDisplay,
         rangeTicksCopied,
     } = useAppSelector((state) => state.tradeData);
 
     useEffect(() => {
-        if (isPoolInitialized) {
+        if (poolPriceNonDisplay) {
             updateTokenQty();
         }
-    }, [isPoolInitialized, depositSkew, tokenA.address]);
+    }, [poolPriceNonDisplay, depositSkew, tokenA.address]);
 
     useEffect(() => {
         handleTokenAButtonMessage(tokenAInputQty);
