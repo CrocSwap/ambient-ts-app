@@ -553,6 +553,7 @@ export default function InitPool() {
             setTxErrorCode,
             resetConfirmation,
             setShowConfirmation,
+            poolPrice: selectedPoolNonDisplayPrice,
         };
         console.log(params);
         createRangePosition(params);
@@ -620,15 +621,20 @@ export default function InitPool() {
                                 disabled={
                                     erc20TokenWithDexBalance !== undefined
                                 }
-                                action={() => sendInit(initialPriceInBaseDenom)}
-                                flat={true}
-                            />
-                            <Button
-                                title='Create Range Position'
-                                disabled={
-                                    erc20TokenWithDexBalance !== undefined
+                                action={
+                                    isMintLiqEnabled
+                                        ? async () => {
+                                              console.log(
+                                                  'initializing and minting',
+                                              );
+                                              sendInit(initialPriceInBaseDenom);
+                                              await sendRangePosition();
+                                          }
+                                        : () => {
+                                              console.log('initializing');
+                                              sendInit(initialPriceInBaseDenom);
+                                          }
                                 }
-                                action={() => sendRangePosition()}
                                 flat={true}
                             />
                         </FlexContainer>
