@@ -111,7 +111,7 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
     const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
 
     return (
-        <div style={{ padding: '0 40px' }}>
+        <div style={{ padding: '0 40px', width: '100%' }}>
             {/* <div
                 className={styles.extra_info_content}
                 onClick={() => setShowExtraDetails(!showExtraDetails)}

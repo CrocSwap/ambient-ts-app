@@ -1,8 +1,9 @@
 import React from 'react';
 import styled, { css } from 'styled-components/macro';
-import { HoverableIcon } from '../../styled/Components/TradeModules';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
-import { FlexContainer } from '../../styled/Common';
+import { FlexContainer, Text } from '../../styled/Common';
+import styles from '../../components/Home/Landing/BackgroundImages.module.css';
+import { SettingsSvg } from '../../assets/images/icons/settingsSvg';
 
 interface InitSkeletonProps {
     children: React.ReactNode;
@@ -15,75 +16,6 @@ interface InitSkeletonProps {
 interface InnerContainerProps {
     isConfirmation: boolean;
 }
-
-interface MainContainerProps {
-    isTokenModalOpen: boolean;
-}
-const Main = styled.section`
-    height: calc(100vh - 4rem);
-    overflow: hidden;
-
-    background: url('../../assets/images/backgrounds/background.png') no-repeat
-        center center fixed;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    cursor: default;
-
-    width: 100vw;
-
-    display: flex;
-    justify-content: center;
-
-    & header {
-        height: 41px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        font-size: var(--header1-size);
-        line-height: var(--header1-lh);
-        font-weight: 200;
-        color: var(--text1);
-    }
-`;
-
-const OuterContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-`;
-
-const GradientContainer = styled.div`
-    background: var(--title-gradient);
-    padding: 1px;
-    border-radius: var(--border-radius);
-
-    @media only screen and (min-width: 768px) {
-        margin-top: 64px;
-    }
-`;
-const MainContainer = styled.div<MainContainerProps>`
-    background: var(--dark1);
-
-    border-radius: var(--border-radius);
-    position: relative;
-    padding: 1rem;
-    transition: all var(--animation-speed) ease-in-out;
-
-    header {
-        height: 41px;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        font-size: var(--header1-size);
-        line-height: var(--header1-lh);
-        font-weight: 200;
-        color: var(--text1);
-    }
-`;
 
 const InnerContainer = styled.div<InnerContainerProps>`
     ${(props) =>
@@ -105,71 +37,66 @@ const InnerContainer = styled.div<InnerContainerProps>`
 `;
 
 export default function InitSkeleton(props: InitSkeletonProps) {
-    const {
-        children,
-        isConfirmation,
-        isTokenModalOpen,
-        setActiveContent,
-        title,
-    } = props;
-
-    const settingsSvg = (
-        <HoverableIcon
-            width='14'
-            height='14'
-            viewBox='0 0 14 14'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-            onClick={() => setActiveContent('settings')}
-        >
-            <rect
-                y='9.625'
-                width='8.75'
-                height='1.75'
-                rx='0.875'
-                fill=''
-            ></rect>
-            <rect
-                x='5.25'
-                y='2.625'
-                width='8.75'
-                height='1.75'
-                rx='0.875'
-                fill=''
-            ></rect>
-            <circle cx='12.25' cy='10.5' r='1.75' fill=''></circle>
-            <circle cx='1.75' cy='3.5' r='1.75' fill=''></circle>
-        </HoverableIcon>
-    );
+    const { children, isConfirmation, setActiveContent, title } = props;
 
     const showSettings = title === 'Initialize Pool';
 
     return (
-        <Main>
-            <OuterContainer>
-                <GradientContainer>
-                    <MainContainer isTokenModalOpen={isTokenModalOpen}>
-                        <header>
-                            <p />
-
+        <FlexContainer
+            width='100vw'
+            height='100vh'
+            justifyContent='center'
+            alignItems='flex-start'
+            className={styles.background}
+        >
+            <FlexContainer
+                background='dark1'
+                rounded
+                padding='16px'
+                textAlign='center'
+                flexDirection='column'
+                outline='accent1'
+                tablet={{ margin: '64px 0 0 0' }}
+            >
+                <FlexContainer
+                    rounded
+                    background='dark1'
+                    position='relative'
+                    padding={'16px'}
+                    transition
+                    flexDirection='column'
+                >
+                    <FlexContainer height='41px'>
+                        <p />
+                        <Text
+                            fontSize='header1'
+                            margin='auto'
+                            fontWeight={'200'}
+                        >
                             {title}
-
-                            <FlexContainer gap={8} alignItems='center'>
-                                {showSettings ? settingsSvg : <p />}
-                                <IoIosCheckmarkCircle
-                                    onClick={() =>
-                                        setActiveContent('confirmation')
-                                    }
+                        </Text>
+                        <FlexContainer
+                            gap={8}
+                            alignItems='center'
+                            fontSize='header1'
+                        >
+                            {showSettings ? (
+                                <SettingsSvg
+                                    onClick={() => setActiveContent('settings')}
                                 />
-                            </FlexContainer>
-                        </header>
-
-                        <InnerContainer isConfirmation={isConfirmation}>
-                            {children}
-                        </InnerContainer>
-                    </MainContainer>
-                </GradientContainer>
-            </OuterContainer>
-        </Main>
+                            ) : (
+                                <p />
+                            )}
+                            <IoIosCheckmarkCircle
+                                onClick={() => setActiveContent('confirmation')}
+                            />
+                        </FlexContainer>
+                    </FlexContainer>
+                    <InnerContainer isConfirmation={isConfirmation}>
+                        {children}
+                    </InnerContainer>
+                </FlexContainer>
+            </FlexContainer>
+        </FlexContainer>
     );
 }

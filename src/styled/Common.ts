@@ -46,15 +46,22 @@ type textColors =
     | 'white'
     | 'orange';
 
+type backgrounds = 'dark1' | 'dark2' | 'dark3' | 'dark4' | 'title-gradient';
 interface ColorProps {
     color?: textColors;
-    background?: 'dark1' | 'dark2' | 'dark3' | 'dark4' | 'title-gradient';
+    background?: backgrounds;
 }
 
 export const Color = css<ColorProps>`
     ${({ color }) => (color ? `color: var(--${color});` : '')}
     ${({ background }) =>
         background ? `background-color: var(--${background});` : ''}
+`;
+
+export const Blur = css<{ blur: boolean }>`
+    pointer-events: none;
+    opacity: 0.2;
+    filter: blur(2px);
 `;
 
 interface PaddingProps {
@@ -72,43 +79,6 @@ export const Margin = css<MarginProps>`
 `;
 
 //   ------------------------------ DISPLAY ---------------------------------------
-
-// Define the prop types for the GridContainer
-interface GridProps {
-    numCols?: number;
-    numRows?: number;
-    gap?: number;
-    height?: number;
-    fullWidth?: boolean;
-    customRows?: string;
-    customCols?: string;
-}
-const Grid = css<GridProps>`
-    display: grid;
-    grid-template-columns: ${({ numCols, customCols }) =>
-        customCols ? customCols : numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
-    grid-template-rows: ${({ numRows, customRows }) =>
-        customRows ? customRows : numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
-    gap: ${({ gap }) => (gap ? `${gap}px` : '4px')};
-    ${({ height }) => (height ? `height: ${height}px;` : '')}
-`;
-export const GridContainer = styled.div<
-    GridProps &
-        FontProps &
-        FontSizeProps &
-        FontWeightProps &
-        ColorProps &
-        PaddingProps &
-        MarginProps
->`
-    ${Grid}
-    ${Font}
-    ${FontSize}
-    ${FontWeight}
-    ${Color}
-    ${Padding}
-    ${Margin}
-`;
 
 // Define the prop types for the FlexContainer
 export interface FlexProps {
@@ -138,7 +108,7 @@ export interface ContainerProps {
     overflowY?: overflowTypes;
     overflowX?: overflowTypes;
 
-    background?: string;
+    background?: backgrounds;
     rounded?: boolean;
     position?: 'relative' | 'absolute' | 'fixed';
     hideScrollbar?: boolean;
@@ -150,6 +120,11 @@ export interface ContainerProps {
     zIndex?: number;
     minHeight?: string;
     maxHeight?: string;
+    blur?: boolean;
+    grow?: boolean;
+
+    margin?: string;
+    padding?: string;
 }
 
 export const hideScrollbarCss = css`
@@ -164,6 +139,8 @@ export const ContainerStyles = (props: ContainerProps) => {
     const {
         transition,
         cursor,
+        width,
+        height,
         fullWidth,
         fullHeight,
         justifyContent,
@@ -184,8 +161,14 @@ export const ContainerStyles = (props: ContainerProps) => {
         zIndex,
         minHeight,
         maxHeight,
+        blur,
+        grow,
+        margin,
+        padding,
     } = props;
     return `
+        ${width ? `width: ${width};` : ''}
+        ${height ? `height: ${height};` : ''}
         ${fullWidth ? 'width: 100%;' : ''}
         ${fullHeight ? 'height: 100%;' : ''}
         ${justifyContent ? `justify-content: ${justifyContent};` : ''}
@@ -200,16 +183,21 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${overflow ? `overflow: ${overflow};` : ''}
         ${overflowX ? `overflow-x: ${overflowX};` : ''}
         ${overflowY ? `overflow-y: ${overflowY};` : ''}
-        ${background ? `background: ${background};` : ''}
+        ${background ? `background: var(--${background});` : ''}
         ${rounded ? 'border-radius: var(--border-radius);' : ''}
         ${maxWidth ? `max-width: ${maxWidth};` : ''}
         ${zIndex ? `z-index: ${zIndex};` : ''}
 
         ${transition ? 'transition: var(--transition);' : ''}
         ${cursor ? `cursor: ${cursor};` : ''}
-        ${outline ? `outline: 1px solid ${outline};` : ''}
+        ${outline ? `outline: 1px solid var(--${outline});` : ''}
         ${minHeight ? `min-height: ${minHeight};` : ''}
         ${maxHeight ? `max-height: ${maxHeight};` : ''}
+        ${blur ? Blur : ''}
+        ${grow ? 'flex-grow: 1;' : ''}
+
+        ${padding ? `padding: ${padding};` : ''}
+        ${margin ? `margin: ${margin};` : ''}
     `;
 };
 
@@ -256,7 +244,10 @@ export const Text = styled.span<
     FontProps &
         FontSizeProps &
         ColorProps &
-        FontWeightProps & { align?: string } & MarginProps &
+        FontWeightProps & {
+            align?: string;
+            cursor?: 'pointer' | 'default';
+        } & MarginProps &
         PaddingProps
 >`
     ${Font}
@@ -315,8 +306,6 @@ export const FlexContainer = styled.div<
         FontSizeProps &
         FontWeightProps &
         ColorProps &
-        PaddingProps &
-        MarginProps &
         ContainerProps &
         BreakpointProps &
         AnimationProps
@@ -332,3 +321,37 @@ export const FlexContainer = styled.div<
     ${Breakpoint}
     ${Animations}
 `;
+
+// Define the prop types for the GridContainer
+interface GridProps {
+    numCols?: number;
+    numRows?: number;
+    customRows?: string;
+    customCols?: string;
+}
+const Grid = css<GridProps>`
+    display: grid;
+    grid-template-columns: ${({ numCols, customCols }) =>
+        customCols ? customCols : numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
+    grid-template-rows: ${({ numRows, customRows }) =>
+        customRows ? customRows : numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
+`;
+export const GridContainer = styled.div<
+    GridProps &
+        ContainerProps &
+        FontProps &
+        FontSizeProps &
+        FontWeightProps &
+        ColorProps
+>`
+    ${Grid}
+    ${WrappedContainerStyles}
+    ${Font}
+    ${FontSize}
+    ${FontWeight}
+    ${Color}
+
+
+    ${({ gap }) => (gap ? `gap: ${gap};` : 'gap: 4px;')}})}
+`;
+// TODO: Would be better if no default height were provided

@@ -74,10 +74,9 @@ a {
 }
 
 input:disabled {
-   
-    color: var(--text3); 
-    cursor: default; 
-  }
+    color: var(--text3);
+    cursor: default;
+}
 
 body {
     overflow-x: hidden;
@@ -272,7 +271,8 @@ input[type='number'] {
     }
 
     .content-container {
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         height: 100vh;
 
         background: var(--dark1);

@@ -503,3 +503,23 @@ export const SelectedRangeContainer = styled(GridContainer)`
         grid-template-columns: 1fr 1fr;
     }
 `;
+
+// TODO: there exists a similarly named component in portfolio components
+// Should determine whether two separate components are needed
+export const CurrencyQuantityInput = styled.input`
+    width: 100%;
+    font-weight: 300;
+    height: 31px;
+    padding: 4px 16px;
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--text1);
+    text-align: start;
+    border: none;
+    border-radius: var(--border-radius);
+    outline: 0;
+    background-color: var(--dark2);
+    background-clip: padding-box;
+    transition: border-color var(--animation-speed) ease-in-out,
+        box-shadow var(--animation-speed) ease-in-out;
+`;
