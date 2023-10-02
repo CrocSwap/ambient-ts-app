@@ -3,13 +3,7 @@ import { Link } from 'react-router-dom';
 import { FlexContainer, GridContainer, Text } from '../Common';
 import { AnimationProps, Animations } from '../Animations';
 
-export const SelectorContainer = styled(FlexContainer)`
-    border-radius: var(--border-radius);
-    margin-bottom: 16px;
-    height: 25px;
-`;
-
-export const TradeModuleLink = styled(Link)<{isActive: boolean}>`
+export const TradeModuleLink = styled(Link)<{ isActive: boolean }>`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,12 +11,12 @@ export const TradeModuleLink = styled(Link)<{isActive: boolean}>`
     width: 116px;
     height: 25px;
     font-size: 18px;
-    background: ${({ isActive }) => (isActive ? 'var(--accent1)' : 'var(--dark2)')};
+    background: ${({ isActive }) =>
+        isActive ? 'var(--accent1)' : 'var(--dark2)'};
     border-radius: var(--border-radius);
     transition: all var(--animation-speed) ease-in-out;
     & a:hover {
         background: var(--accent1);
-        color: var(--text1);
     }
 `;
 

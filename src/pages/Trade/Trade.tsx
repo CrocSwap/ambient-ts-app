@@ -44,10 +44,7 @@ import {
     TradeDropdownButton,
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
-import {
-    SelectorContainer,
-    TradeModuleLink,
-} from '../../styled/Components/TradeModules';
+import { TradeModuleLink } from '../../styled/Components/TradeModules';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -132,8 +129,15 @@ function Trade() {
 
     const tradeTableRef = useRef<HTMLDivElement>(null);
 
-    const navigationMenu = (
-        <SelectorContainer as='nav' justifyContent='center' alignItems='center' gap={8}>
+    const navigationMenu: JSX.Element = (
+        <FlexContainer
+            as='nav'
+            justifyContent='center'
+            alignItems='center'
+            gap={8}
+            margin='0 0 16px 0'
+            height='25px'
+        >
             {routes.map((route: routeIF) => (
                 <TradeModuleLink
                     key={JSON.stringify(route)}
@@ -143,7 +147,7 @@ function Trade() {
                     {route.name}
                 </TradeModuleLink>
             ))}
-        </SelectorContainer>
+        </FlexContainer>
     );
 
     const [hasInitialized, setHasInitialized] = useState(false);
