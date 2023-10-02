@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
-import { FlexContainer, Text } from '../../styled/Common';
+import { FlexContainer, FlexHeader, Text } from '../../styled/Common';
 import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 import { SettingsSvg } from '../../assets/images/icons/settingsSvg';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
@@ -244,7 +244,7 @@ export default function ExampleForm(props: Props) {
                     flexDirection='column'
                 >
                     {/* Header */}
-                    <FlexContainer height='41px'>
+                    <FlexHeader height='41px'>
                         <p />
                         <Text
                             fontSize='header1'
@@ -263,7 +263,7 @@ export default function ExampleForm(props: Props) {
                             <p />
                             <IoIosCheckmarkCircle />
                         </FlexContainer>
-                    </FlexContainer>
+                    </FlexHeader>
                     {/* Body */}
                     <FlexContainer gap={16}>
                         {LeftSide}

@@ -83,32 +83,6 @@ interface GridProps {
     customRows?: string;
     customCols?: string;
 }
-const Grid = css<GridProps>`
-    display: grid;
-    grid-template-columns: ${({ numCols, customCols }) =>
-        customCols ? customCols : numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
-    grid-template-rows: ${({ numRows, customRows }) =>
-        customRows ? customRows : numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
-    gap: ${({ gap }) => (gap ? `${gap}px` : '4px')};
-    ${({ height }) => (height ? `height: ${height}px;` : '')}
-`;
-export const GridContainer = styled.div<
-    GridProps &
-        FontProps &
-        FontSizeProps &
-        FontWeightProps &
-        ColorProps &
-        PaddingProps &
-        MarginProps
->`
-    ${Grid}
-    ${Font}
-    ${FontSize}
-    ${FontWeight}
-    ${Color}
-    ${Padding}
-    ${Margin}
-`;
 
 // Define the prop types for the FlexContainer
 export interface FlexProps {
@@ -327,3 +301,58 @@ export const FlexContainer = styled.div<
     ${Breakpoint}
     ${Animations}
 `;
+export const FlexHeader = styled.header<
+    FlexProps &
+        FontProps &
+        FontSizeProps &
+        FontWeightProps &
+        ColorProps &
+        ContainerProps &
+        BreakpointProps &
+        AnimationProps
+>`
+    ${Flex}
+    ${Font}
+    ${FontSize}
+    ${FontWeight}
+    ${Color}
+    ${Padding}
+    ${Margin}
+    ${WrappedContainerStyles}
+    ${Breakpoint}
+    ${Animations}
+`;
+
+// Define the prop types for the GridContainer
+interface GridProps {
+    numCols?: number;
+    numRows?: number;
+    customRows?: string;
+    customCols?: string;
+}
+const Grid = css<GridProps>`
+    display: grid;
+    grid-template-columns: ${({ numCols, customCols }) =>
+        customCols ? customCols : numCols ? `repeat(${numCols}, 1fr)` : 'auto'};
+    grid-template-rows: ${({ numRows, customRows }) =>
+        customRows ? customRows : numRows ? `repeat(${numRows}, 1fr)` : 'auto'};
+`;
+export const GridContainer = styled.div<
+    GridProps &
+        ContainerProps &
+        FontProps &
+        FontSizeProps &
+        FontWeightProps &
+        ColorProps
+>`
+    ${Grid}
+    ${WrappedContainerStyles}
+    ${Font}
+    ${FontSize}
+    ${FontWeight}
+    ${Color}
+
+
+    ${({ gap }) => (gap ? `gap: ${gap};` : 'gap: 4px;')}})}
+`;
+// TODO: Would be better if no default height were provided
