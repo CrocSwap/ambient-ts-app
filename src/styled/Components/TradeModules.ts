@@ -22,20 +22,22 @@ export const SelectorContainer = styled(FlexContainer)`
 
         transition: all var(--animation-speed) ease-in-out;
     }
+`;
 
-    & a[class='active'],
+interface SelectorWrapperProps {
+    isActive?: boolean;
+}
+
+export const SelectorWrapper = styled.div<SelectorWrapperProps>`
+    color: var(--text1);
+    width: 116.67px;
+    height: 25px;
+    background: ${props => (props.isActive ? 'var(--accent1)' : 'var(--dark2)')};
+    border-radius: var(--border-radius);
     & a:hover {
         background: var(--accent1);
         color: var(--text1);
     }
-`;
-
-export const SelectorWrapper = styled.div`
-    color: var(--text1);
-    width: 116.67px;
-    height: 25px;
-    background: var(--dark2);
-    border-radius: var(--border-radius);
 `;
 
 export const WarningContainer = styled(FlexContainer)`

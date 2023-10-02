@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, Link } from 'react-router-dom';
 import { NumberSize } from 're-resizable';
 import {
     useEffect,
@@ -105,20 +105,24 @@ function Trade() {
 
     interface routeIF {
         path: string;
+        baseURL: string;
         name: string;
     }
 
     const routes: routeIF[] = [
         {
             path: linkGenMarket.getFullURL(marketParams),
+            baseURL: linkGenMarket.baseURL,
             name: 'Swap',
         },
         {
             path: linkGenLimit.getFullURL(limitParams),
+            baseURL: linkGenLimit.baseURL,
             name: 'Limit',
         },
         {
             path: linkGenPool.getFullURL(poolParams),
+            baseURL: linkGenPool.baseURL,
             name: 'Pool',
         },
     ];
@@ -130,9 +134,12 @@ function Trade() {
 
     const navigationMenu = (
         <SelectorContainer justifyContent='center' alignItems='center' gap={8}>
-            {routes.map((route, idx) => (
-                <SelectorWrapper key={idx}>
-                    <NavLink to={route.path}>{route.name}</NavLink>
+            {routes.map((route: routeIF) => (
+                <SelectorWrapper
+                    key={JSON.stringify(route)}
+                    isActive={location.pathname.includes(route.baseURL)}
+                >
+                    <Link to={route.path}>{route.name}</Link>
                 </SelectorWrapper>
             ))}
         </SelectorContainer>
