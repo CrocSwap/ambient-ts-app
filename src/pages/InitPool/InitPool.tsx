@@ -555,7 +555,7 @@ export default function InitPool() {
             setShowConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
         };
-        console.log(params);
+        console.log('Debug, calling createRangePosition', params);
         createRangePosition(params);
     };
 
@@ -627,8 +627,10 @@ export default function InitPool() {
                                               console.log(
                                                   'initializing and minting',
                                               );
-                                              sendInit(initialPriceInBaseDenom);
-                                              await sendRangePosition();
+                                              sendInit(
+                                                  initialPriceInBaseDenom,
+                                                  sendRangePosition,
+                                              );
                                           }
                                         : () => {
                                               console.log('initializing');

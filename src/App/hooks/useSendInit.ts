@@ -16,90 +16,88 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
 export function useSendInit() {
     const dispatch = useAppDispatch();
-    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    // TODO: move to confirm component
+    // const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
     const [isInitPending, setIsInitPending] = useState(false);
-    const {
-        crocEnv,
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
+    const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         tradeData: { baseToken, quoteToken },
     } = useAppSelector((state) => state);
-    const sendInit = (initialPriceInBaseDenom: number | undefined) => {
+    const sendInit = async (
+        initialPriceInBaseDenom: number | undefined,
+        cb?: () => void,
+    ) => {
         if (initialPriceInBaseDenom) {
-            (async () => {
-                let tx;
-                try {
-                    setIsInitPending(true);
-                    tx = await crocEnv
-                        ?.pool(baseToken.address, quoteToken.address)
-                        .initPool(initialPriceInBaseDenom);
+            let tx;
+            try {
+                setIsInitPending(true);
+                tx = await crocEnv
+                    ?.pool(baseToken.address, quoteToken.address)
+                    .initPool(initialPriceInBaseDenom);
 
-                    if (tx) dispatch(addPendingTx(tx?.hash));
-                    if (tx?.hash)
+                if (tx) dispatch(addPendingTx(tx?.hash));
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Init',
+                            txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                        }),
+                    );
+                let receipt;
+                try {
+                    if (tx) receipt = await tx.wait();
+                } catch (e) {
+                    const error = e as TransactionError;
+                    console.error({ error });
+                    // The user used 'speed up' or something similar
+                    // in their client, but we now have the updated info
+                    if (isTransactionReplacedError(error)) {
+                        IS_LOCAL_ENV && console.debug('repriced');
+                        dispatch(removePendingTx(error.hash));
+
+                        const newTransactionHash = error.replacement.hash;
+                        dispatch(addPendingTx(newTransactionHash));
+
+                        //    setNewSwapTransactionHash(newTransactionHash);
                         dispatch(
-                            addTransactionByType({
-                                txHash: tx.hash,
-                                txType: 'Init',
-                                txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                            updateTransactionHash({
+                                oldHash: error.hash,
+                                newHash: error.replacement.hash,
                             }),
                         );
-                    let receipt;
-                    try {
-                        if (tx) receipt = await tx.wait();
-                    } catch (e) {
-                        const error = e as TransactionError;
-                        console.error({ error });
-                        // The user used 'speed up' or something similar
-                        // in their client, but we now have the updated info
-                        if (isTransactionReplacedError(error)) {
-                            IS_LOCAL_ENV && console.debug('repriced');
-                            dispatch(removePendingTx(error.hash));
-
-                            const newTransactionHash = error.replacement.hash;
-                            dispatch(addPendingTx(newTransactionHash));
-
-                            //    setNewSwapTransactionHash(newTransactionHash);
-                            dispatch(
-                                updateTransactionHash({
-                                    oldHash: error.hash,
-                                    newHash: error.replacement.hash,
-                                }),
-                            );
-                            IS_LOCAL_ENV &&
-                                console.debug({ newTransactionHash });
-                            receipt = error.receipt;
-                        } else if (isTransactionFailedError(error)) {
-                            receipt = error.receipt;
-                        }
+                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                        receipt = error.receipt;
+                    } else if (isTransactionFailedError(error)) {
+                        receipt = error.receipt;
                     }
-                    if (receipt) {
-                        dispatch(addReceipt(JSON.stringify(receipt)));
-                        dispatch(removePendingTx(receipt.transactionHash));
-                        linkGenPool.navigate({
-                            chain: chainId,
-                            tokenA: baseToken.address,
-                            tokenB: quoteToken.address,
-                        });
-                    }
-                } catch (error) {
-                    if (
-                        error.reason ===
-                        'sending a transaction requires a signer'
-                    ) {
-                        location.reload();
-                    }
-                    console.error({ error });
-                } finally {
-                    setIsInitPending(false);
                 }
-            })();
+                if (receipt) {
+                    dispatch(addReceipt(JSON.stringify(receipt)));
+                    dispatch(removePendingTx(receipt.transactionHash));
+                    // TODO: move this to the confirm component
+                    // linkGenPool.navigate({
+                    //     chain: chainId,
+                    //     tokenA: baseToken.address,
+                    //     tokenB: quoteToken.address,
+                    // });
+                    if (cb) cb();
+                }
+            } catch (error) {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
+                    location.reload();
+                }
+                console.error({ error });
+            } finally {
+                setIsInitPending(false);
+            }
         }
     };
     return { sendInit, isInitPending };
