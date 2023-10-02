@@ -66,6 +66,7 @@ import {
     setAdvancedHighTick,
 } from '../../utils/state/tradeDataSlice';
 import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
+import truncateDecimals from '../../utils/data/truncateDecimals';
 // react functional component
 export default function InitPool() {
     const provider = useProvider();
@@ -135,6 +136,8 @@ export default function InitPool() {
             : false;
 
     const [isDenomBase, setIsDenomBase] = useState(false);
+
+    const gridSize = lookupChain(chainId).gridSize;
 
     useEffect(() => {
         setIsDenomBase(!isBaseTokenMoneynessGreaterOrEqual);
@@ -254,6 +257,143 @@ export default function InitPool() {
     useEffect(() => {
         handleDisplayUpdate();
     }, [isDenomBase]);
+
+    const selectedPoolPriceTick = useMemo(() => {
+        if (!initialPriceDisplay) return 0;
+        // TODO: confirm this logic,epecially isMinPrice
+        return getPinnedTickFromDisplayPrice(
+            isDenomBase,
+            baseToken.decimals,
+            quoteToken.decimals,
+            true,
+            initialPriceDisplay,
+            gridSize,
+        );
+    }, [initialPriceDisplay, isDenomBase, baseToken, quoteToken, gridSize]);
+
+    const shouldResetAdvancedLowTick =
+        advancedLowTick === 0 ||
+        advancedHighTick > selectedPoolPriceTick + 100000 ||
+        advancedLowTick < selectedPoolPriceTick - 100000;
+    const shouldResetAdvancedHighTick =
+        advancedHighTick === 0 ||
+        advancedHighTick > selectedPoolPriceTick + 100000 ||
+        advancedLowTick < selectedPoolPriceTick - 100000;
+
+    const defaultLowTick = useMemo<number>(() => {
+        const value: number =
+            shouldResetAdvancedLowTick || advancedLowTick === 0
+                ? roundDownTick(
+                      selectedPoolPriceTick +
+                          DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedLowTick;
+        return value;
+    }, [advancedLowTick, selectedPoolPriceTick, shouldResetAdvancedLowTick]);
+
+    // default high tick to seed in the DOM (range upper value)
+    const defaultHighTick = useMemo<number>(() => {
+        const value: number =
+            shouldResetAdvancedHighTick || advancedHighTick === 0
+                ? roundUpTick(
+                      selectedPoolPriceTick +
+                          DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
+                      gridSize,
+                  )
+                : advancedHighTick;
+        return value;
+    }, [advancedHighTick, selectedPoolPriceTick, shouldResetAdvancedHighTick]);
+
+    useEffect(() => {
+        if (advancedMode) {
+            const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                isDenomBase,
+                baseToken.decimals,
+                quoteToken.decimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            );
+            setRangeLowBoundNonDisplayPrice(
+                pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+            );
+            setRangeHighBoundNonDisplayPrice(
+                pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+            );
+
+            setPinnedMinPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+            );
+            setPinnedMaxPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            );
+
+            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
+            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+
+            const highTickDiff =
+                pinnedDisplayPrices.pinnedHighTick - selectedPoolPriceTick;
+            const lowTickDiff =
+                pinnedDisplayPrices.pinnedLowTick - selectedPoolPriceTick;
+
+            const highGeometricDifferencePercentage =
+                Math.abs(highTickDiff) < 200
+                    ? parseFloat(truncateDecimals(highTickDiff / 100, 2))
+                    : parseFloat(truncateDecimals(highTickDiff / 100, 0));
+            const lowGeometricDifferencePercentage =
+                Math.abs(lowTickDiff) < 200
+                    ? parseFloat(truncateDecimals(lowTickDiff / 100, 2))
+                    : parseFloat(truncateDecimals(lowTickDiff / 100, 0));
+            isDenomBase
+                ? setMaxPriceDifferencePercentage(
+                      -lowGeometricDifferencePercentage,
+                  )
+                : setMaxPriceDifferencePercentage(
+                      highGeometricDifferencePercentage,
+                  );
+
+            isDenomBase
+                ? setMinPriceDifferencePercentage(
+                      -highGeometricDifferencePercentage,
+                  )
+                : setMinPriceDifferencePercentage(
+                      lowGeometricDifferencePercentage,
+                  );
+
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+
+            if (rangeLowBoundDisplayField) {
+                rangeLowBoundDisplayField.value =
+                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+                const rangeHighBoundDisplayField = document.getElementById(
+                    'max-price-input-quantity',
+                ) as HTMLInputElement;
+
+                if (rangeHighBoundDisplayField) {
+                    rangeHighBoundDisplayField.value =
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+                }
+            }
+
+            setMaxPrice(
+                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+            );
+            setMinPrice(
+                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+            );
+        }
+    }, [
+        selectedPoolPriceTick,
+        defaultLowTick,
+        defaultHighTick,
+        isDenomBase,
+        baseToken.decimals,
+        quoteToken.decimals,
+        advancedMode,
+    ]);
 
     const handleDisplayUpdate = () => {
         if (initialPriceDisplay) {
@@ -383,8 +523,6 @@ export default function InitPool() {
         ? mintSlippage.stable
         : mintSlippage.volatile;
 
-    const gridSize = lookupChain(chainId).gridSize;
-
     const selectedPoolNonDisplayPrice = useMemo(() => {
         const selectedPriceInBaseDenom = isDenomBase
             ? 1 / parseFloat(initialPriceDisplay)
@@ -418,56 +556,9 @@ export default function InitPool() {
     //     rangeHighBoundNonDisplayPrice,
     // });
 
-    const selectedPoolPriceTick = useMemo(() => {
-        if (!initialPriceDisplay) return 0;
-        // TODO: confirm this logic,epecially isMinPrice
-        return getPinnedTickFromDisplayPrice(
-            isDenomBase,
-            baseToken.decimals,
-            quoteToken.decimals,
-            true,
-            initialPriceDisplay,
-            gridSize,
-        );
-    }, [initialPriceDisplay, isDenomBase, baseToken, quoteToken, gridSize]);
-
-    // default low tick to seed in the DOM (range lower value)
-
-    const shouldResetAdvancedLowTick =
-        advancedLowTick === 0 ||
-        advancedHighTick > selectedPoolPriceTick + 100000 ||
-        advancedLowTick < selectedPoolPriceTick - 100000;
-    const shouldResetAdvancedHighTick =
-        advancedHighTick === 0 ||
-        advancedHighTick > selectedPoolPriceTick + 100000 ||
-        advancedLowTick < selectedPoolPriceTick - 100000;
     // Tick functions modified from normal range
     // default low tick to seed in the DOM (range lower value)
     // initialPriceInBaseDenom
-    const defaultLowTick = useMemo<number>(() => {
-        const value: number =
-            shouldResetAdvancedLowTick || advancedLowTick === 0
-                ? roundDownTick(
-                      selectedPoolPriceTick +
-                          DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
-                      gridSize,
-                  )
-                : advancedLowTick;
-        return value;
-    }, [advancedLowTick, selectedPoolPriceTick, shouldResetAdvancedLowTick]);
-
-    // default high tick to seed in the DOM (range upper value)
-    const defaultHighTick = useMemo<number>(() => {
-        const value: number =
-            shouldResetAdvancedHighTick || advancedHighTick === 0
-                ? roundUpTick(
-                      selectedPoolPriceTick +
-                          DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
-                      gridSize,
-                  )
-                : advancedHighTick;
-        return value;
-    }, [advancedHighTick, selectedPoolPriceTick, shouldResetAdvancedHighTick]);
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
@@ -560,7 +651,7 @@ export default function InitPool() {
             setShowConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
         };
-        console.log(params);
+        console.log('Debug, calling createRangePosition', params);
         createRangePosition(params);
     };
 
@@ -569,8 +660,7 @@ export default function InitPool() {
     const sendTransaction = isMintLiqEnabled
         ? async () => {
               console.log('initializing and minting');
-              sendInit(initialPriceInBaseDenom);
-              await sendRangePosition();
+              sendInit(initialPriceInBaseDenom, sendRangePosition);
           }
         : () => {
               console.log('initializing');
@@ -703,7 +793,7 @@ export default function InitPool() {
 
     // See Range.tsx line 81
     const [rangeWidthPercentage, setRangeWidthPercentage] =
-        useState<number>(23);
+        useState<number>(10);
     const [
         // eslint-disable-next-line
         rescaleRangeBoundariesWithSlider,
@@ -864,8 +954,8 @@ export default function InitPool() {
         isDenomBase: isDenomBase,
         highBoundOnBlur: () => setRangeHighBoundFieldBlurred(true),
         lowBoundOnBlur: () => setRangeLowBoundFieldBlurred(true),
-        rangeLowTick: 0,
-        rangeHighTick: 10,
+        rangeLowTick: defaultLowTick,
+        rangeHighTick: defaultHighTick,
         disable: false,
         maxPrice: maxPrice,
         minPrice: minPrice,

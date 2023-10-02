@@ -46,7 +46,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
         <BoxContainer>
             <FeaturedBoxInnerContainer>
                 <FlexCenter>
-                    <TokenIcon token={token} size={'3xl'} />
+                    <TokenIcon token={token} alt={token.symbol} size={'3xl'} />
                     <TokenSymbol>{token.symbol}</TokenSymbol>
                     <TokenName>{token.name}</TokenName>
                 </FlexCenter>
