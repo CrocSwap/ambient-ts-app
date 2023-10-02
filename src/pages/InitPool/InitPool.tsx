@@ -12,7 +12,7 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { AppStateContext } from '../../contexts/AppStateContext';
-import { useAccount, useProvider } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
@@ -69,13 +69,12 @@ import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 // react functional component
 export default function InitPool() {
-    const provider = useProvider();
-
     const {
         wagmiModal: { open: openWagmiModalWallet },
     } = useContext(AppStateContext);
     const {
         crocEnv,
+        provider,
         ethMainnetUsdPrice,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
