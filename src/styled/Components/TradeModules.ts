@@ -1,4 +1,5 @@
 import styled from 'styled-components/macro';
+import { Link } from 'react-router-dom';
 import { FlexContainer, GridContainer, Text } from '../Common';
 import { AnimationProps, Animations } from '../Animations';
 
@@ -11,7 +12,6 @@ export const SelectorContainer = styled(FlexContainer)`
         display: flex;
         justify-content: center;
         align-items: center;
-
         border-radius: var(--border-radius);
         font-style: normal;
         font-weight: 300;
@@ -19,20 +19,15 @@ export const SelectorContainer = styled(FlexContainer)`
         line-height: 22px;
         letter-spacing: -0.02em;
         color: var(--text1);
-
         transition: all var(--animation-speed) ease-in-out;
     }
 `;
 
-interface SelectorWrapperProps {
-    isActive?: boolean;
-}
-
-export const SelectorWrapper = styled.div<SelectorWrapperProps>`
+export const TradeModuleLink = styled(Link)<{isActive: boolean}>`
     color: var(--text1);
     width: 116.67px;
     height: 25px;
-    background: ${props => (props.isActive ? 'var(--accent1)' : 'var(--dark2)')};
+    background: ${({ isActive }) => (isActive ? 'var(--accent1)' : 'var(--dark2)')};
     border-radius: var(--border-radius);
     & a:hover {
         background: var(--accent1);

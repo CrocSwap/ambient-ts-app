@@ -47,6 +47,7 @@ import { Direction } from 're-resizable/lib/resizer';
 import {
     SelectorWrapper,
     SelectorContainer,
+    TradeModuleLink,
 } from '../../styled/Components/TradeModules';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
@@ -135,12 +136,13 @@ function Trade() {
     const navigationMenu = (
         <SelectorContainer justifyContent='center' alignItems='center' gap={8}>
             {routes.map((route: routeIF) => (
-                <SelectorWrapper
+                <TradeModuleLink
                     key={JSON.stringify(route)}
+                    to={route.path}
                     isActive={location.pathname.includes(route.baseURL)}
                 >
-                    <Link to={route.path}>{route.name}</Link>
-                </SelectorWrapper>
+                    {route.name}
+                </TradeModuleLink>
             ))}
         </SelectorContainer>
     );
