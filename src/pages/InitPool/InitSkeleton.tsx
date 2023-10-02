@@ -1,9 +1,9 @@
 import React from 'react';
 import styled, { css } from 'styled-components/macro';
-import { IoIosCheckmarkCircle } from 'react-icons/io';
 import { FlexContainer, Text } from '../../styled/Common';
 import styles from '../../components/Home/Landing/BackgroundImages.module.css';
-import { SettingsSvg } from '../../assets/images/icons/settingsSvg';
+
+import { MdArrowBackIosNew } from 'react-icons/md';
 
 interface InitSkeletonProps {
     children: React.ReactNode;
@@ -18,6 +18,7 @@ interface InnerContainerProps {
 }
 
 const InnerContainer = styled.div<InnerContainerProps>`
+    height: 100%;
     ${(props) =>
         props.isConfirmation
             ? css`
@@ -37,9 +38,14 @@ const InnerContainer = styled.div<InnerContainerProps>`
 `;
 
 export default function InitSkeleton(props: InitSkeletonProps) {
-    const { children, isConfirmation, setActiveContent, title } = props;
+    const { children, isConfirmation, setActiveContent, title, activeContent } =
+        props;
 
-    const showSettings = title === 'Initialize Pool';
+    function handleBack() {
+        if (activeContent === 'confirmation') {
+            setActiveContent('main');
+        } else return;
+    }
 
     return (
         <FlexContainer
@@ -57,17 +63,21 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                 flexDirection='column'
                 outline='accent1'
                 tablet={{ margin: '64px 0 0 0' }}
+                style={{ height: '462px' }}
             >
                 <FlexContainer
                     rounded
                     background='dark1'
                     position='relative'
-                    padding={'16px'}
+                    style={{ height: '100%' }}
                     transition
                     flexDirection='column'
                 >
-                    <FlexContainer height='41px'>
-                        <p />
+                    <FlexContainer height='41px' alignItems='center'>
+                        <MdArrowBackIosNew
+                            style={{ cursor: 'pointer' }}
+                            onClick={handleBack}
+                        />
                         <Text
                             fontSize='header1'
                             margin='auto'
@@ -75,7 +85,7 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                         >
                             {title}
                         </Text>
-                        <FlexContainer
+                        {/* <FlexContainer
                             gap={8}
                             alignItems='center'
                             fontSize='header1'
@@ -90,7 +100,7 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                             <IoIosCheckmarkCircle
                                 onClick={() => setActiveContent('confirmation')}
                             />
-                        </FlexContainer>
+                        </FlexContainer> */}
                     </FlexContainer>
                     <InnerContainer isConfirmation={isConfirmation}>
                         {children}

@@ -1,6 +1,6 @@
-import VerticalStepper from '../../components/Global/MultiStepTransaction/VerticalStepper';
 import { useState } from 'react';
 import { FlexContainer } from '../../styled/Common';
+import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
 
 export default function TestPage() {
     const [activeStep, setActiveStep] = useState(0);
@@ -59,7 +59,8 @@ export default function TestPage() {
         <FlexContainer flexDirection='row' justifyContent='space-around'>
             {questionContent}
 
-            <VerticalStepper
+            <StepperComponent
+                orientation='vertical'
                 steps={[
                     { label: 'Question 1' },
                     { label: 'Question 2' },
