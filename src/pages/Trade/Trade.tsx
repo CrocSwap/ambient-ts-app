@@ -45,7 +45,6 @@ import {
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
 import {
-    SelectorWrapper,
     SelectorContainer,
     TradeModuleLink,
 } from '../../styled/Components/TradeModules';
