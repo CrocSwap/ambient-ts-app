@@ -1,44 +1,226 @@
 import styled from 'styled-components/macro';
 import Button from '../../components/Form/Button';
+import { useEffect, useState } from 'react';
+import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
+import SelectedRange from '../../components/Trade/Range/ConfirmRangeModal/SelectedRange/SelectedRange';
+import { FlexContainer, GridContainer, Text } from '../../styled/Common';
+import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
+import { FeeTierDisplay } from '../../styled/Components/TradeModules';
+import uriToHttp from '../../utils/functions/uriToHttp';
+import { TokenIF } from '../../utils/interfaces/TokenIF';
 
 const Wrapper = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
     border-radius: 8px;
-    padding: 24px;
-    max-width: 400px;
-    margin: 0 auto;
+
     text-align: center;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-`;
-
-const Title = styled.h2`
-    font-size: 24px;
-    margin-bottom: 16px;
-    color: #333;
-`;
-
-const Description = styled.p`
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 24px;
+    padding-top: 64px;
 `;
 
 interface InitConfirmationProps {
     activeContent: string;
     setActiveContent: (key: string) => void;
+    sendTx: () => void;
+    transactionApproved: boolean;
+    isTransactionDenied: boolean;
+    isTransactionException: boolean;
+    tokenA: TokenIF;
+    tokenB: TokenIF;
+    isAmbient: boolean;
+    isTokenABase: boolean;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
+    const {
+        sendTx,
+        transactionApproved,
+        isTransactionDenied,
+        isTransactionException,
+        tokenA,
+        tokenB,
+        isAmbient,
+        isTokenABase,
+    } = props;
+    const [isConfirmed, setIsConfirmed] = useState(false);
+    const [activeStep, setActiveStep] = useState(0);
+
+    const tokenAQty = '';
+    const tokenBQty = '';
+
+    const tokenACharacter = '';
+    const tokenBCharacter = '';
+
+    const pinnedMinPriceDisplayTruncatedInBase = '1234';
+    const pinnedMinPriceDisplayTruncatedInQuote = '1234';
+    const pinnedMaxPriceDisplayTruncatedInBase = '1234';
+    const pinnedMaxPriceDisplayTruncatedInQuote = '1234';
+
+    // Simulation
+    // eslint-disable-next-line
+    const [isApproved, setIsApproved] = useState<boolean | null>(null);
+    const [isError, setIsError] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [fakeHash, setFakeHash] = useState<string | null>(null);
+
+    const handleClick = () => {
+        setIsError(false);
+        setIsConfirmed(true);
+
+        setTimeout(() => {
+            const userResponse = prompt('Do you approve? (y/n)');
+
+            if (userResponse !== null) {
+                const normalizedResponse = userResponse.toLowerCase();
+
+                if (normalizedResponse === 'y') {
+                    setIsApproved(true);
+                    setActiveStep(1);
+                    setTimeout(() => {
+                        setFakeHash('newhash');
+                    }, 2000);
+                } else if (normalizedResponse === 'n') {
+                    setIsApproved(false);
+                    setIsError(true);
+                    setErrorMessage('Transaction denied in wallet.');
+                } else {
+                    alert('Please enter either "y" or "n".');
+                }
+            }
+        }, 1000); // 2 seconds delay
+    };
+
+    useEffect(() => {
+        if (fakeHash) {
+            setActiveStep(2);
+        }
+    });
+    // End of simulation
+
+    const poolTokenDisplay = (
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='space-between'
+            alignItems='center'
+            style={{
+                margin: '0 auto',
+                height: '100%',
+                paddingTop: '32px',
+            }}
+        >
+            <div>
+                <FeeTierDisplay>
+                    <GridContainer gap={12}>
+                        <FlexContainer justifyContent='space-between'>
+                            <FlexContainer alignItems='center' gap={8}>
+                                <TokenIcon
+                                    token={tokenA}
+                                    src={uriToHttp(tokenA.logoURI)}
+                                    alt={tokenA.symbol}
+                                    size='m'
+                                />
+                                <Text fontSize='body'>
+                                    {' '}
+                                    Pooled {tokenA.symbol}
+                                </Text>
+                            </FlexContainer>
+                            <Text fontSize='body'>
+                                {tokenAQty !== ''
+                                    ? tokenACharacter + tokenAQty
+                                    : '0'}
+                            </Text>
+                        </FlexContainer>
+                        <FlexContainer justifyContent='space-between'>
+                            <FlexContainer alignItems='center' gap={8}>
+                                <TokenIcon
+                                    token={tokenB}
+                                    src={uriToHttp(tokenB.logoURI)}
+                                    alt={tokenB.symbol}
+                                    size='m'
+                                />
+                                <Text fontSize='body'>
+                                    {' '}
+                                    Pooled {tokenB.symbol}
+                                </Text>
+                            </FlexContainer>
+                            <Text fontSize='body'>
+                                {tokenBQty ? tokenBCharacter + tokenBQty : '0'}
+                            </Text>
+                        </FlexContainer>
+                    </GridContainer>
+                </FeeTierDisplay>
+                {isAmbient || (
+                    <SelectedRange
+                        isTokenABase={isTokenABase}
+                        isAmbient={isAmbient}
+                        pinnedMinPriceDisplayTruncatedInBase={
+                            pinnedMinPriceDisplayTruncatedInBase
+                        }
+                        pinnedMinPriceDisplayTruncatedInQuote={
+                            pinnedMinPriceDisplayTruncatedInQuote
+                        }
+                        pinnedMaxPriceDisplayTruncatedInBase={
+                            pinnedMaxPriceDisplayTruncatedInBase
+                        }
+                        pinnedMaxPriceDisplayTruncatedInQuote={
+                            pinnedMaxPriceDisplayTruncatedInQuote
+                        }
+                    />
+                )}
+            </div>
+            <Button flat title='SEND TO METAMASK' action={handleClick} />
+        </FlexContainer>
+    );
+
+    console.log({
+        transactionApproved,
+        isTransactionDenied,
+        isTransactionException,
+    });
+
+    // eslint-disable-next-line
+    function handleConfirmed() {
+        setIsConfirmed(true);
+        sendTx();
+    }
+
+    const steps = [{ label: 'Sign tx' }, { label: 'Confirming tx' }];
+    if (!isConfirmed) return poolTokenDisplay;
+
     return (
         <Wrapper>
-            <Title>ETH/ UNI</Title>
-            <Description>
-                Are you sure you want to initialize this pool? This action
-                cannot be undone.
-            </Description>
-            <Button
-                title='Confirm'
-                action={() => props.setActiveContent('main')}
+            <StepperComponent
+                orientation='vertical'
+                steps={steps}
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                isError={isError}
+                errorDisplay={
+                    isError && (
+                        <Text
+                            fontWeight='300'
+                            fontSize='body'
+                            color='other-red'
+                            align='center'
+                        >
+                            {errorMessage}
+                        </Text>
+                    )
+                }
             />
+            {isError && <Button title='Try Again' action={handleClick} flat />}
+            {activeStep === steps.length && (
+                <Button
+                    title='View Pool'
+                    action={() => console.log('yes')}
+                    flat
+                />
+            )}
         </Wrapper>
     );
 }

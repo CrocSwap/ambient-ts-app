@@ -31,6 +31,7 @@ export function useSendInit() {
     const {
         tradeData: { baseToken, quoteToken },
     } = useAppSelector((state) => state);
+
     const sendInit = (initialPriceInBaseDenom: number | undefined) => {
         if (initialPriceInBaseDenom) {
             (async () => {

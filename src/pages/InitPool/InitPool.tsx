@@ -100,6 +100,8 @@ export default function InitPool() {
     const { approve, isApprovalPending } = useApprove();
     // const [isInitPending, setIsInitPending] = useState(false);
 
+    console.log({ approve, isApprovalPending });
+
     const [initialPriceDisplay, setInitialPriceDisplay] = useState<string>('');
 
     const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState<
@@ -471,6 +473,9 @@ export default function InitPool() {
     const [txErrorCode, setTxErrorCode] = useState('');
 
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const transactionApproved = newRangeTransactionHash !== '';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
     useEffect(() => {
         if (!isAmbient) {
@@ -559,6 +564,18 @@ export default function InitPool() {
         createRangePosition(params);
     };
 
+    const [isMintLiqEnabled, setIsMintLiqEnabled] = useState(true);
+
+    const sendTransaction = isMintLiqEnabled
+        ? async () => {
+              console.log('initializing and minting');
+              sendInit(initialPriceInBaseDenom);
+              await sendRangePosition();
+          }
+        : () => {
+              console.log('initializing');
+              sendInit(initialPriceInBaseDenom);
+          };
     const ButtonToRender = () => {
         let buttonContent;
 
@@ -615,29 +632,12 @@ export default function InitPool() {
                 } else {
                     // Display confirm button for final step
                     buttonContent = (
-                        <FlexContainer flexDirection='column'>
-                            <Button
-                                title='Confirm'
-                                disabled={
-                                    erc20TokenWithDexBalance !== undefined
-                                }
-                                action={
-                                    isMintLiqEnabled
-                                        ? async () => {
-                                              console.log(
-                                                  'initializing and minting',
-                                              );
-                                              sendInit(initialPriceInBaseDenom);
-                                              await sendRangePosition();
-                                          }
-                                        : () => {
-                                              console.log('initializing');
-                                              sendInit(initialPriceInBaseDenom);
-                                          }
-                                }
-                                flat={true}
-                            />
-                        </FlexContainer>
+                        <Button
+                            title='Confirm'
+                            disabled={erc20TokenWithDexBalance !== undefined}
+                            action={() => setActiveContent('confirmation')}
+                            flat={true}
+                        />
                     );
                 }
                 break;
@@ -1030,8 +1030,6 @@ export default function InitPool() {
     };
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
-    const [isMintLiqEnabled, setIsMintLiqEnabled] = useState(true);
-
     const isRangeBoundsAndCollateralDisabled =
         poolExists === true || !isMintLiqEnabled;
 
@@ -1142,7 +1140,12 @@ export default function InitPool() {
             title='Initialize Pool'
         >
             {/* Left */}
-            <FlexContainer padding='0 8px' flexDirection='column' gap={8}>
+            <FlexContainer
+                padding='0 8px'
+                flexDirection='column'
+                gap={8}
+                justifyContent='space-between'
+            >
                 {simpleTokenSelect}
                 {initPriceContainer}
                 {showMobileVersion && mintInitialLiquidity}
@@ -1192,14 +1195,24 @@ export default function InitPool() {
                         />
                     </FlexContainer>
                 )}
-                <FlexContainer
-                    justifyContent={showMobileVersion ? 'center' : ''}
-                >
-                    <ButtonToRender />
-                </FlexContainer>
+
+                <ButtonToRender />
             </FlexContainer>
         </InitSkeleton>
     );
+
+    const initConfirmationProps = {
+        activeContent,
+        setActiveContent,
+        sendTx: sendTransaction,
+        transactionApproved,
+        isTransactionDenied,
+        isTransactionException,
+        tokenA,
+        tokenB,
+        isAmbient,
+        isTokenABase,
+    };
 
     const confirmationContent = (
         <InitSkeleton
@@ -1207,12 +1220,9 @@ export default function InitPool() {
             isConfirmation={true}
             activeContent={activeContent}
             setActiveContent={setActiveContent}
-            title='Confirmation'
+            title='Initialize Pool'
         >
-            <InitConfirmation
-                activeContent={activeContent}
-                setActiveContent={setActiveContent}
-            />
+            <InitConfirmation {...initConfirmationProps} />
         </InitSkeleton>
     );
 
@@ -1224,10 +1234,7 @@ export default function InitPool() {
             setActiveContent={setActiveContent}
             title='Settings'
         >
-            <InitConfirmation
-                activeContent={activeContent}
-                setActiveContent={setActiveContent}
-            />
+            <InitConfirmation {...initConfirmationProps} />
         </InitSkeleton>
     );
 
@@ -1248,13 +1255,15 @@ export default function InitPool() {
         { title: 'Example Content 3', content: exampleContent3 },
     ];
     return (
-        <MultiContentComponent
-            mainContent={mainContent}
-            settingsContent={settingsContent}
-            confirmationContent={confirmationContent}
-            activeContent={activeContent}
-            setActiveContent={handleSetActiveContent}
-            otherContents={otherContents}
-        />
+        <>
+            <MultiContentComponent
+                mainContent={mainContent}
+                settingsContent={settingsContent}
+                confirmationContent={confirmationContent}
+                activeContent={activeContent}
+                setActiveContent={handleSetActiveContent}
+                otherContents={otherContents}
+            />
+        </>
     );
 }

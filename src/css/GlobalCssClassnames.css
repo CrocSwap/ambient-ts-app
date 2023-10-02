@@ -184,6 +184,14 @@ aside.emoji-picker-react {
     color: var(--title-gradient) !important;
 }
 
+.css-14sza3e-MuiStepLabel-root{
+    padding: 0;
+    gap: 32px;
+}
+
+.css-8t49rw-MuiStepConnector-line{
+    border-color: var(--accent1) !important;
+}
 .icon_hover:hover{
     color: var(--accent1) !important;
     cursor: pointer;

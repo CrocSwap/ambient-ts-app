@@ -28,6 +28,8 @@ function SelectedRange(props: propsIF) {
         (state) => state.tradeData,
     );
 
+    const isInitPage = location.pathname.startsWith('/init');
+
     const reverseDisplayDefault =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
@@ -133,7 +135,7 @@ function SelectedRange(props: propsIF) {
         >
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
-                    Current Price
+                    {isInitPage ? 'Initial Price' : 'Current Price'}
                 </Text>
                 <Text
                     fontSize='body'
@@ -149,7 +151,7 @@ function SelectedRange(props: propsIF) {
             </FlexContainer>
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
-                    Current Fee Rate
+                    {isInitPage ? 'Initial Fee Rate' : 'Current Fee Rate'}
                 </Text>
                 <Text fontSize='body' color='text2'>
                     0.05%
