@@ -6,29 +6,20 @@ import { AnimationProps, Animations } from '../Animations';
 export const SelectorContainer = styled(FlexContainer)`
     border-radius: var(--border-radius);
     margin-bottom: 16px;
-
-    & a {
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: var(--border-radius);
-        font-style: normal;
-        font-weight: 300;
-        font-size: 18px;
-        line-height: 22px;
-        letter-spacing: -0.02em;
-        color: var(--text1);
-        transition: all var(--animation-speed) ease-in-out;
-    }
+    height: 25px;
 `;
 
 export const TradeModuleLink = styled(Link)<{isActive: boolean}>`
+    display: flex;
+    justify-content: center;
+    align-items: center;
     color: var(--text1);
-    width: 116.67px;
+    width: 116px;
     height: 25px;
+    font-size: 18px;
     background: ${({ isActive }) => (isActive ? 'var(--accent1)' : 'var(--dark2)')};
     border-radius: var(--border-radius);
+    transition: all var(--animation-speed) ease-in-out;
     & a:hover {
         background: var(--accent1);
         color: var(--text1);

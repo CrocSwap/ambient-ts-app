@@ -133,7 +133,7 @@ function Trade() {
     const tradeTableRef = useRef<HTMLDivElement>(null);
 
     const navigationMenu = (
-        <SelectorContainer justifyContent='center' alignItems='center' gap={8}>
+        <SelectorContainer as='nav' justifyContent='center' alignItems='center' gap={8}>
             {routes.map((route: routeIF) => (
                 <TradeModuleLink
                     key={JSON.stringify(route)}
