@@ -631,7 +631,15 @@ export default function RangeActionModal(props: propsIF) {
                 />
             ) : showConfirmation ? (
                 <SubmitTransaction
-                    type='Range'
+                    type={
+                        type === 'Harvest'
+                            ? !areFeesAvailableToWithdraw
+                                ? 'Reset'
+                                : 'Harvest'
+                            : type === 'Remove'
+                            ? 'Remove'
+                            : 'Range'
+                    }
                     newTransactionHash={newTransactionHash}
                     txErrorCode={txErrorCode}
                     resetConfirmation={resetConfirmation}
@@ -653,13 +661,15 @@ export default function RangeActionModal(props: propsIF) {
                             ? type === 'Remove'
                                 ? 'Remove Liquidity'
                                 : 'Harvest Fees'
+                            : type === 'Harvest'
+                            ? 'Reset'
                             : '...'
                     }
                     disabled={
-                        (type === 'Remove'
-                            ? liquidityToBurn === undefined ||
-                              liquidityToBurn.isZero()
-                            : !areFeesAvailableToWithdraw) || showSettings
+                        (type === 'Remove' &&
+                            (liquidityToBurn === undefined ||
+                                liquidityToBurn.isZero())) ||
+                        showSettings
                     }
                     action={type === 'Remove' ? removeFn : harvestFn}
                     flat
