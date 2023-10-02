@@ -35,7 +35,6 @@ export const SelectorWrapper = styled.div`
     width: 116.67px;
     height: 25px;
     background: var(--dark2);
-
     border-radius: var(--border-radius);
 `;
 

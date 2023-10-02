@@ -59,7 +59,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         (state) => state.userData,
     );
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
-    const navigationMenu = !isSwapPage ? useTradeData().navigationMenu : null;
+    const { navigationMenu } = useTradeData();
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -111,7 +111,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             )}{' '}
             <ContentContainer isOnTradeRoute={!isSwapPage}>
                 {header}
-                {navigationMenu}
+                {isSwapPage || navigationMenu}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
