@@ -671,12 +671,6 @@ export default function RangeActionModal(props: propsIF) {
                                 liquidityToBurn.isZero())) ||
                         showSettings
                     }
-                    // disabled={
-                    //     (type === 'Remove'
-                    //         ? liquidityToBurn === undefined ||
-                    //           liquidityToBurn.isZero()
-                    //         : !areFeesAvailableToWithdraw) || showSettings
-                    // }
                     action={type === 'Remove' ? removeFn : harvestFn}
                     flat
                 />
