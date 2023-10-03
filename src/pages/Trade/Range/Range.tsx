@@ -45,6 +45,8 @@ import {
 } from './rangeFunctions';
 
 import { useApprove } from '../../../App/functions/approve';
+import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeButtonMessage';
+import { useRangeInputDisable } from './useRangeInputDisable';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -107,17 +109,14 @@ function Range() {
         graphData,
     } = useAppSelector((state) => state);
 
-    const [tokenAAllowed, setTokenAAllowed] = useState<boolean>(false);
-    const [tokenBAllowed, setTokenBAllowed] = useState<boolean>(false);
-    const [isTokenAInputDisabled, setIsTokenAInputDisabled] = useState(false);
-    const [isTokenBInputDisabled, setIsTokenBInputDisabled] = useState(false);
-
+    // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
         isTokenAPrimaryRange ? primaryQuantityRange : '',
     );
     const [tokenBInputQty, setTokenBInputQty] = useState<string>(
         !isTokenAPrimaryRange ? primaryQuantityRange : '',
     );
+
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(simpleRangeWidth);
     const [isAmbient, setIsAmbient] = useState(false);
@@ -168,8 +167,6 @@ function Range() {
 
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState('');
-    const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
-        useState<string>('');
 
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<
         string | undefined
@@ -459,52 +456,15 @@ function Range() {
         }
     }, [isAdd]);
 
-    useEffect(() => {
-        if (!isAmbient) {
-            if (isTokenABase) {
-                if (defaultHighTick < currentPoolPriceTick) {
-                    setIsTokenBInputDisabled(true);
-                    if (defaultHighTick > defaultLowTick) {
-                        setIsTokenAInputDisabled(false);
-                    } else setIsTokenAInputDisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
-                    setIsTokenAInputDisabled(true);
-                    if (defaultLowTick < defaultHighTick) {
-                        setIsTokenBInputDisabled(false);
-                    } else setIsTokenBInputDisabled(true);
-                } else {
-                    setIsTokenAInputDisabled(false);
-                    setIsTokenBInputDisabled(false);
-                }
-            } else {
-                if (defaultHighTick < currentPoolPriceTick) {
-                    setIsTokenAInputDisabled(true);
-                    if (defaultHighTick > defaultLowTick) {
-                        setIsTokenBInputDisabled(false);
-                    } else setIsTokenBInputDisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
-                    setIsTokenBInputDisabled(true);
-                    if (defaultLowTick < defaultHighTick) {
-                        setIsTokenAInputDisabled(false);
-                    } else setIsTokenBInputDisabled(true);
-                } else {
-                    setIsTokenBInputDisabled(false);
-                    setIsTokenAInputDisabled(false);
-                }
-            }
-        } else {
-            setIsTokenBInputDisabled(false);
-            setIsTokenAInputDisabled(false);
-        }
-    }, [
-        isAmbient,
-        isTokenABase,
-        currentPoolPriceTick,
-        defaultLowTick,
-        defaultHighTick,
-        isDenomBase,
-    ]);
-
+    const { isTokenAInputDisabled, isTokenBInputDisabled } =
+        useRangeInputDisable(
+            isAmbient,
+            isTokenABase,
+            currentPoolPriceTick,
+            defaultLowTick,
+            defaultHighTick,
+            isDenomBase,
+        );
     useEffect(() => {
         if (rangeWidthPercentage === 100 && !advancedMode) {
             setIsAmbient(true);
@@ -565,22 +525,6 @@ function Range() {
         baseToken.address + quoteToken.address,
         baseTokenDecimals,
         quoteTokenDecimals,
-    ]);
-
-    useEffect(() => {
-        handleRangeButtonMessageTokenA(tokenAInputQty);
-        handleRangeButtonMessageTokenB(tokenBInputQty);
-    }, [
-        isQtyEntered,
-        isPoolInitialized,
-        isInvalidRange,
-        poolPriceNonDisplay,
-        isWithdrawTokenAFromDexChecked,
-        isWithdrawTokenBFromDexChecked,
-        tokenABalance,
-        tokenADexBalance,
-        tokenBBalance,
-        tokenBDexBalance,
     ]);
 
     useEffect(() => {
@@ -949,79 +893,30 @@ function Range() {
         }
     };
 
-    const handleRangeButtonMessageTokenA = (tokenAAmount: string) => {
-        if (!isPoolInitialized) {
-            setTokenAAllowed(false);
-            setRangeButtonErrorMessage('Pool Not Initialized');
-        } else if (
-            (isNaN(parseFloat(tokenAAmount)) ||
-                parseFloat(tokenAAmount) <= 0) &&
-            !isTokenAInputDisabled
-        ) {
-            setTokenAAllowed(false);
-            setRangeButtonErrorMessage('Enter an Amount');
-        } else {
-            if (isWithdrawTokenAFromDexChecked) {
-                if (
-                    parseFloat(tokenAAmount) >
-                    parseFloat(tokenADexBalance) + parseFloat(tokenABalance)
-                ) {
-                    setTokenAAllowed(false);
-                    setRangeButtonErrorMessage(
-                        `${tokenA.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
-                    );
-                } else {
-                    setTokenAAllowed(true);
-                }
-            } else {
-                if (parseFloat(tokenAAmount) > parseFloat(tokenABalance)) {
-                    setTokenAAllowed(false);
-                    setRangeButtonErrorMessage(
-                        `${tokenA.symbol} Amount Exceeds Wallet Balance`,
-                    );
-                } else {
-                    setTokenAAllowed(true);
-                }
-            }
-        }
-    };
-
-    const handleRangeButtonMessageTokenB = (tokenBAmount: string) => {
-        if (!isPoolInitialized) {
-            setTokenBAllowed(false);
-            setRangeButtonErrorMessage('Pool Not Initialized');
-        } else if (
-            (isNaN(parseFloat(tokenBAmount)) ||
-                parseFloat(tokenBAmount) <= 0) &&
-            !isTokenBInputDisabled
-        ) {
-            setTokenBAllowed(false);
-            setRangeButtonErrorMessage('Enter an Amount');
-        } else {
-            if (isWithdrawTokenBFromDexChecked) {
-                if (
-                    parseFloat(tokenBAmount) >
-                    parseFloat(tokenBDexBalance) + parseFloat(tokenBBalance)
-                ) {
-                    setTokenBAllowed(false);
-                    setRangeButtonErrorMessage(
-                        `${tokenB.symbol} Amount Exceeds Combined Wallet and Exchange Balance`,
-                    );
-                } else {
-                    setTokenBAllowed(true);
-                }
-            } else {
-                if (parseFloat(tokenBAmount) > parseFloat(tokenBBalance)) {
-                    setTokenBAllowed(false);
-                    setRangeButtonErrorMessage(
-                        `${tokenB.symbol} Amount Exceeds Wallet Balance`,
-                    );
-                } else {
-                    setTokenBAllowed(true);
-                }
-            }
-        }
-    };
+    const {
+        tokenAllowed: tokenAAllowed,
+        rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
+    } = useHandleRangeButtonMessage(
+        tokenA,
+        tokenAInputQty,
+        tokenABalance,
+        tokenADexBalance,
+        isTokenAInputDisabled,
+        isWithdrawTokenAFromDexChecked,
+        isPoolInitialized,
+    );
+    const {
+        tokenAllowed: tokenBAllowed,
+        rangeButtonErrorMessage: rangeButtonErrorMessageTokenB,
+    } = useHandleRangeButtonMessage(
+        tokenB,
+        tokenBInputQty,
+        tokenBBalance,
+        tokenBDexBalance,
+        isTokenBInputDisabled,
+        isWithdrawTokenBFromDexChecked,
+        isPoolInitialized,
+    );
 
     const { approve, isApprovalPending } = useApprove();
 
@@ -1117,10 +1012,6 @@ function Range() {
                             set: setTokenBInputQty,
                         }}
                         toggleDexSelection={toggleDexSelection}
-                        handleButtonMessage={{
-                            tokenA: handleRangeButtonMessageTokenA,
-                            tokenB: handleRangeButtonMessageTokenB,
-                        }}
                         isInputDisabled={{
                             tokenA: isTokenAInputDisabled,
                             tokenB: isTokenBInputDisabled,
@@ -1188,7 +1079,8 @@ function Range() {
                                               isAmbient ? 'Ambient' : ''
                                           } Liquidity`
                                     : 'Confirm'
-                                : rangeButtonErrorMessage
+                                : rangeButtonErrorMessageTokenA ||
+                                  rangeButtonErrorMessageTokenB
                             : 'Acknowledge'
                     }
                     action={
