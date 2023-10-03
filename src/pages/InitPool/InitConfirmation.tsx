@@ -34,6 +34,9 @@ interface InitConfirmationProps {
     tokenB: TokenIF;
     isAmbient: boolean;
     isTokenABase: boolean;
+    isTxCompleted: boolean;
+    errorCode?: string;
+    handleNavigation: () => void;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -46,6 +49,9 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         tokenB,
         isAmbient,
         isTokenABase,
+        errorCode,
+        isTxCompleted,
+        handleNavigation,
     } = props;
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
@@ -60,47 +66,6 @@ export default function InitConfirmation(props: InitConfirmationProps) {
     const pinnedMinPriceDisplayTruncatedInQuote = '1234';
     const pinnedMaxPriceDisplayTruncatedInBase = '1234';
     const pinnedMaxPriceDisplayTruncatedInQuote = '1234';
-
-    // Simulation
-    // eslint-disable-next-line
-    const [isApproved, setIsApproved] = useState<boolean | null>(null);
-    const [isError, setIsError] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [fakeHash, setFakeHash] = useState<string | null>(null);
-
-    const handleClick = () => {
-        setIsError(false);
-        setIsConfirmed(true);
-
-        setTimeout(() => {
-            const userResponse = prompt('Do you approve? (y/n)');
-
-            if (userResponse !== null) {
-                const normalizedResponse = userResponse.toLowerCase();
-
-                if (normalizedResponse === 'y') {
-                    setIsApproved(true);
-                    setActiveStep(1);
-                    setTimeout(() => {
-                        setFakeHash('newhash');
-                    }, 2000);
-                } else if (normalizedResponse === 'n') {
-                    setIsApproved(false);
-                    setIsError(true);
-                    setErrorMessage('Transaction denied in wallet.');
-                } else {
-                    alert('Please enter either "y" or "n".');
-                }
-            }
-        }, 1000); // 2 seconds delay
-    };
-
-    useEffect(() => {
-        if (fakeHash) {
-            setActiveStep(2);
-        }
-    });
-    // End of simulation
 
     const poolTokenDisplay = (
         <FlexContainer
@@ -173,7 +138,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                     />
                 )}
             </div>
-            <Button flat title='SEND TO METAMASK' action={handleClick} />
+            <Button flat title='SEND TO METAMASK' action={handleConfirmed} />
         </FlexContainer>
     );
 
@@ -184,14 +149,39 @@ export default function InitConfirmation(props: InitConfirmationProps) {
     });
 
     // eslint-disable-next-line
+
     function handleConfirmed() {
         setIsConfirmed(true);
         sendTx();
     }
 
-    const steps = [{ label: 'Sign tx' }, { label: 'Confirming tx' }];
-    if (!isConfirmed) return poolTokenDisplay;
+    const steps = [
+        { label: 'Waiting for confirmation' },
+        {
+            label: `Submitting pool initialization for ${tokenA.symbol} / ${tokenB.symbol}`,
+        },
+    ];
 
+    useEffect(() => {
+        setActiveStep(0);
+        if (transactionApproved) {
+            setActiveStep(1);
+        }
+        if (isTxCompleted) {
+            setActiveStep(2);
+        }
+    }, [transactionApproved, isTxCompleted]);
+
+    const isError = isTransactionDenied || isTransactionException;
+    const errorMessage = isError
+        ? isTransactionDenied
+            ? 'Transaction denied in wallet.'
+            : isTransactionException
+            ? `oh oh there is a problem initiating this pool. ${errorCode}. Please try again.`
+            : ''
+        : '';
+
+    if (!isConfirmed) return poolTokenDisplay;
     return (
         <Wrapper>
             <StepperComponent
@@ -212,14 +202,24 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                         </Text>
                     )
                 }
+                completedDisplay={
+                    isError && (
+                        <Text
+                            fontWeight='300'
+                            fontSize='body'
+                            color='other-green'
+                            align='center'
+                        >
+                            {`Pool initialization for ${tokenA.symbol} / ${tokenB.symbol} completed`}
+                        </Text>
+                    )
+                }
             />
-            {isError && <Button title='Try Again' action={handleClick} flat />}
+            {isError && (
+                <Button title='Try Again' action={handleConfirmed} flat />
+            )}
             {activeStep === steps.length && (
-                <Button
-                    title='View Pool'
-                    action={() => console.log('yes')}
-                    flat
-                />
+                <Button title='View Pool' action={handleNavigation} flat />
             )}
         </Wrapper>
     );

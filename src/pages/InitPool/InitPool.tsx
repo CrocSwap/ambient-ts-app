@@ -42,7 +42,6 @@ import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
 import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
 import MultiContentComponent from '../../components/Global/MultiStepTransaction/MultiContentComponent';
-import { useSendInit } from '../../App/hooks/useSendInit';
 
 import { useApprove } from '../../App/functions/approve';
 import { useMediaQuery } from '@material-ui/core';
@@ -67,6 +66,18 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
 import truncateDecimals from '../../utils/data/truncateDecimals';
+import {
+    addPendingTx,
+    addReceipt,
+    addTransactionByType,
+    removePendingTx,
+    updateTransactionHash,
+} from '../../utils/state/receiptDataSlice';
+import {
+    TransactionError,
+    isTransactionFailedError,
+    isTransactionReplacedError,
+} from '../../utils/TransactionError';
 // react functional component
 export default function InitPool() {
     const {
@@ -466,12 +477,13 @@ export default function InitPool() {
 
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
-    // const { approve, isApprovalPending } = useApprove();
 
-    // hooks to generate navigation actions with pre-loaded paths
-    // const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-
-    const { sendInit, isInitPending } = useSendInit();
+    const handleNavigation = () =>
+        linkGenPool.navigate({
+            chain: chainId,
+            tokenA: tokenA.address,
+            tokenB: tokenB.address,
+        });
 
     const placeholderText = `e.g. ${estimatedInitialPriceDisplay} (${
         isDenomBase ? baseToken.symbol : quoteToken.symbol
@@ -559,13 +571,99 @@ export default function InitPool() {
     // default low tick to seed in the DOM (range lower value)
     // initialPriceInBaseDenom
 
-    const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
+    const [newRangeTransactionHash, setNewRangeTransactionHash] = useState<
+        undefined | string
+    >('');
     const [txErrorCode, setTxErrorCode] = useState('');
+    const [isInitPending, setIsInitPending] = useState(false);
+    const [isTxCompleted, setIsTxCompleted] = useState(false);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const transactionApproved = newRangeTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setTxErrorCode('');
+        setNewRangeTransactionHash('');
+        setIsTxCompleted(false);
+    };
+
+    useEffect(() => {
+        setNewRangeTransactionHash('');
+    }, [baseToken.address + quoteToken.address]);
+
+    async function sendInit(
+        initialPriceInBaseDenom: number | undefined,
+        cb?: () => void,
+    ) {
+        resetConfirmation();
+
+        if (initialPriceInBaseDenom) {
+            let tx;
+            try {
+                setIsInitPending(true);
+                tx = await crocEnv
+                    ?.pool(baseToken.address, quoteToken.address)
+                    .initPool(initialPriceInBaseDenom);
+
+                setNewRangeTransactionHash(tx?.hash);
+                if (tx) dispatch(addPendingTx(tx?.hash));
+                if (tx?.hash)
+                    dispatch(
+                        addTransactionByType({
+                            txHash: tx.hash,
+                            txType: 'Init',
+                            txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
+                        }),
+                    );
+                let receipt;
+                try {
+                    if (tx) receipt = await tx.wait();
+                } catch (e) {
+                    const error = e as TransactionError;
+                    console.error({ error });
+                    if (isTransactionReplacedError(error)) {
+                        IS_LOCAL_ENV && console.debug('repriced');
+                        dispatch(removePendingTx(error.hash));
+
+                        const newTransactionHash = error.replacement.hash;
+                        dispatch(addPendingTx(newTransactionHash));
+
+                        dispatch(
+                            updateTransactionHash({
+                                oldHash: error.hash,
+                                newHash: error.replacement.hash,
+                            }),
+                        );
+                        setNewRangeTransactionHash(newTransactionHash);
+
+                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
+                        receipt = error.receipt;
+                    } else if (isTransactionFailedError(error)) {
+                        receipt = error.receipt;
+                    }
+                }
+                if (receipt) {
+                    dispatch(addReceipt(JSON.stringify(receipt)));
+                    dispatch(removePendingTx(receipt.transactionHash));
+                    if (cb) cb();
+                    setIsTxCompleted(true);
+                }
+            } catch (error) {
+                if (
+                    error.reason === 'sending a transaction requires a signer'
+                ) {
+                    location.reload();
+                }
+                console.error({ error });
+                setTxErrorCode(error?.code);
+            } finally {
+                setIsInitPending(false);
+            }
+        }
+    }
 
     useEffect(() => {
         if (!isAmbient) {
@@ -622,12 +720,6 @@ export default function InitPool() {
         });
     }, [newRangeTransactionHash, txErrorCode, showConfirmation, depositSkew]);
 
-    const resetConfirmation = () => {
-        setShowConfirmation(false);
-        setTxErrorCode('');
-        setNewRangeTransactionHash('');
-    };
-
     // Next step - understand how sider affects these params
     const sendRangePosition = async () => {
         const params = {
@@ -665,6 +757,7 @@ export default function InitPool() {
               console.log('initializing');
               sendInit(initialPriceInBaseDenom);
           };
+
     const ButtonToRender = () => {
         let buttonContent;
 
@@ -1301,6 +1394,9 @@ export default function InitPool() {
         tokenB,
         isAmbient,
         isTokenABase,
+        errorCode: txErrorCode,
+        isTxCompleted,
+        handleNavigation,
     };
 
     const confirmationContent = (
