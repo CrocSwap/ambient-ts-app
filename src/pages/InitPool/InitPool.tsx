@@ -50,6 +50,7 @@ import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { useCreateRangePosition } from '../../App/hooks/useCreateRangePosition';
 import {
+    getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
     roundDownTick,
     roundUpTick,
@@ -264,6 +265,176 @@ export default function InitPool() {
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
     }, [crocEnv, sessionReceipts.length, baseToken, quoteToken]);
+
+    useEffect(() => {
+        if (rangeHighBoundFieldBlurred) {
+            const rangeHighBoundDisplayField = document.getElementById(
+                'max-price-input-quantity',
+            ) as HTMLInputElement;
+
+            const targetMaxValue = maxPrice;
+            const targetMinValue = minPrice;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                isDenomBase,
+                baseToken.decimals,
+                quoteToken.decimals,
+                targetMinValue?.toString() ?? '0',
+                targetMaxValue?.toString() ?? '0',
+                gridSize,
+            );
+
+            isDenomBase
+                ? setRangeLowBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+                  )
+                : setRangeHighBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+                  );
+
+            isDenomBase
+                ? setMinPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                      ),
+                  )
+                : setMaxPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                      ),
+                  );
+
+            isDenomBase
+                ? dispatch(
+                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
+                  )
+                : dispatch(
+                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
+                  );
+
+            const highGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedHighTick -
+                        selectedPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            const lowGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedLowTick -
+                        selectedPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            isDenomBase
+                ? setMaxPriceDifferencePercentage(
+                      -lowGeometricDifferencePercentage,
+                  )
+                : setMaxPriceDifferencePercentage(
+                      highGeometricDifferencePercentage,
+                  );
+
+            setPinnedMaxPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            );
+
+            if (rangeHighBoundDisplayField) {
+                rangeHighBoundDisplayField.value =
+                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+            } else {
+                IS_LOCAL_ENV && console.debug('high bound field not found');
+            }
+
+            setRangeHighBoundFieldBlurred(false);
+        }
+    }, [rangeHighBoundFieldBlurred]);
+
+    useEffect(() => {
+        if (rangeLowBoundFieldBlurred) {
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+
+            const targetMinValue = minPrice;
+            const targetMaxValue = maxPrice;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                isDenomBase,
+                baseToken.decimals,
+                quoteToken.decimals,
+                targetMinValue?.toString() ?? '0',
+                targetMaxValue?.toString() ?? '0',
+                gridSize,
+            );
+
+            !isDenomBase
+                ? setRangeLowBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+                  )
+                : setRangeHighBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+                  );
+
+            !isDenomBase
+                ? dispatch(
+                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
+                  )
+                : dispatch(
+                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
+                  );
+
+            !isDenomBase
+                ? setMinPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                      ),
+                  )
+                : setMaxPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                      ),
+                  );
+
+            const highGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedHighTick -
+                        selectedPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            const lowGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedLowTick -
+                        selectedPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            isDenomBase
+                ? setMinPriceDifferencePercentage(
+                      -highGeometricDifferencePercentage,
+                  )
+                : setMinPriceDifferencePercentage(
+                      lowGeometricDifferencePercentage,
+                  );
+
+            setPinnedMinPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+            );
+
+            if (rangeLowBoundDisplayField) {
+                rangeLowBoundDisplayField.value =
+                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+            } else {
+                IS_LOCAL_ENV && console.debug('low bound field not found');
+            }
+
+            setRangeLowBoundFieldBlurred(false);
+        }
+    }, [rangeLowBoundFieldBlurred]);
 
     const erc20TokenWithDexBalance = useMemo(() => {
         if (baseToken?.address !== ZERO_ADDRESS) {
@@ -654,7 +825,7 @@ export default function InitPool() {
         useRangeInputDisable(
             isAmbient,
             isTokenABase,
-            selectedPoolPriceTick, // Took place of: currentPoolPriceTick,
+            selectedPoolPriceTick, // Took place of: selectedPoolPriceTick,
             defaultLowTick,
             defaultHighTick,
             isDenomBase,
