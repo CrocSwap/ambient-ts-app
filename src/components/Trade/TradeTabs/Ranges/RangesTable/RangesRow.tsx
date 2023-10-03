@@ -22,7 +22,7 @@ interface propsIF {
 }
 
 function RangesRow(props: propsIF) {
-    const { tableView, position, isAccountView, isLeaderboard } = props;
+    const { tableView, position, isAccountView, isLeaderboard, rank } = props;
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
@@ -92,8 +92,8 @@ function RangesRow(props: propsIF) {
         baseTokenLogoURI: position.baseTokenLogoURI,
         quoteTokenLogoURI: position.quoteTokenLogoURI,
         isDenomBase: isDenomBase,
-        baseTokenAddress: props.position.base,
-        quoteTokenAddress: props.position.quote,
+        baseTokenAddress: position.base,
+        quoteTokenAddress: position.quote,
         positionApy: position.apy,
         minRangeDenomByMoneyness: minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness: maxRangeDenomByMoneyness,
@@ -105,7 +105,7 @@ function RangesRow(props: propsIF) {
         isPositionEmpty: isPositionEmpty,
         positionData: position,
         position: position,
-        isAccountView: props.isAccountView,
+        isAccountView: isAccountView,
         isPositionInRange: isPositionInRange,
     };
 
@@ -203,7 +203,7 @@ function RangesRow(props: propsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isLeaderboard,
-        rank: props.rank,
+        rank: rank,
         elapsedTimeString,
         maxRangeDenomByMoneyness,
         isAccountView,
@@ -238,7 +238,7 @@ function RangesRow(props: propsIF) {
     } = rangeRowConstants(rangeRowConstantsProps);
 
     function handleRowClick() {
-        if (position.firstMintTx === currentPositionActive) {
+        if (position?.firstMintTx === currentPositionActive) {
             return;
         }
         setCurrentPositionActive('');
