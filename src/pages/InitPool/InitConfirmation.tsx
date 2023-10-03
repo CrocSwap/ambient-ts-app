@@ -142,11 +142,11 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         </FlexContainer>
     );
 
-    console.log({
-        transactionApproved,
-        isTransactionDenied,
-        isTransactionException,
-    });
+    // console.log({
+    //     transactionApproved,
+    //     isTransactionDenied,
+    //     isTransactionException,
+    // });
 
     // eslint-disable-next-line
 

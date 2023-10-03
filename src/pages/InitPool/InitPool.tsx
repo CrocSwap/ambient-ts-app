@@ -940,6 +940,7 @@ export default function InitPool() {
         isTokenAInputDisabled,
         isWithdrawTokenAFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        isMintLiqEnabled,
     );
     const {
         tokenAllowed: tokenBAllowed,
@@ -952,6 +953,7 @@ export default function InitPool() {
         isTokenBInputDisabled,
         isWithdrawTokenBFromDexChecked,
         true, // hardcode pool initialized since we will be initializing it on confirm
+        isMintLiqEnabled,
     );
 
     useEffect(() => {

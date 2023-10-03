@@ -9,6 +9,7 @@ export function useHandleRangeButtonMessage(
     isTokenInputDisabled: boolean,
     isWithdrawTokenFromDexChecked: boolean,
     isPoolInitialized: boolean,
+    isMintLiqEnabled = true,
 ) {
     const { tokenAllowed, rangeButtonErrorMessage } = useMemo(() => {
         // console.log('Token Amount: ', token.symbol, { tokenAmount, token });
@@ -16,6 +17,8 @@ export function useHandleRangeButtonMessage(
         let rangeButtonErrorMessage = '';
         if (!isPoolInitialized) {
             rangeButtonErrorMessage = 'Pool Not Initialized';
+        } else if (!isMintLiqEnabled) {
+            tokenAllowed = true;
         } else if (
             (isNaN(parseFloat(tokenAmount)) || parseFloat(tokenAmount) <= 0) &&
             !isTokenInputDisabled
@@ -44,6 +47,7 @@ export function useHandleRangeButtonMessage(
             rangeButtonErrorMessage,
         };
     }, [
+        isMintLiqEnabled,
         tokenAmount,
         tokenBalance,
         tokenDexBalance,
