@@ -48,10 +48,9 @@ import { useMediaQuery } from '@material-ui/core';
 import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { useCreateRangePosition } from '../../App/hooks/useCreateRangePosition';
-import { isStablePair } from '../../utils/data/stablePairs';
 import {
+    getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
-    getPinnedTickFromDisplayPrice,
     roundDownTick,
     roundUpTick,
 } from '../Trade/Range/rangeFunctions';
@@ -78,6 +77,9 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../utils/TransactionError';
+import { useHandleRangeButtonMessage } from '../../App/hooks/useHandleRangeButtonMessage';
+import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 // react functional component
 export default function InitPool() {
     const {
@@ -90,44 +92,45 @@ export default function InitPool() {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { dexBalRange, mintSlippage } = useContext(UserPreferenceContext);
+    const { dexBalRange } = useContext(UserPreferenceContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay } = useContext(PoolContext);
 
     const { tokens } = useContext(TokenContext);
+    const {
+        // Question: should these come from useTokenBalancesAndAllowances
+        // tokenAAllowance,
+        // tokenBAllowance,
+        // isTokenABase,
+
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+    } = useContext(TradeTokenContext);
+
+    const { sessionReceipts } = useAppSelector((state) => state.receiptData);
+    const {
+        tradeData: { tokenA, tokenB, baseToken, quoteToken },
+    } = useAppSelector((state) => state);
+
+    useEffect(() => {
+        setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);
+    }, [tokenADexBalance]);
+
+    useEffect(() => {
+        setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
+    }, [tokenBDexBalance]);
+
     useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
-    // const handleToggle = () => dispatch(toggleAdvancedMode());
     const {
         tradeData: { advancedMode, advancedHighTick, advancedLowTick },
     } = useAppSelector((state) => state);
 
     const { isConnected } = useAccount();
 
-    // DO NOT combine these hooks with useMemo()
-    // the useMemo() hook does NOT respect asynchronicity
-    const [poolExists, setPoolExists] = useState<boolean | null>(null);
-
     const { approve, isApprovalPending } = useApprove();
-    // const [isInitPending, setIsInitPending] = useState(false);
-
-    console.log({ approve, isApprovalPending });
-
-    const [initialPriceDisplay, setInitialPriceDisplay] = useState<string>('');
-
-    const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState<
-        number | undefined
-    >();
-
-    const [estimatedInitialPriceDisplay, setEstimatedInitialPriceDisplay] =
-        useState<string>('0');
-    // const [initialPriceForDOM, setInitialPriceForDOM] = useState<string>('');
-
-    const { sessionReceipts } = useAppSelector((state) => state.receiptData);
-    const {
-        tradeData: { tokenA, tokenB, baseToken, quoteToken },
-    } = useAppSelector((state) => state);
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const {
         baseTokenDexBalance,
@@ -146,6 +149,100 @@ export default function InitPool() {
             : false;
 
     const [isDenomBase, setIsDenomBase] = useState(false);
+    // DO NOT combine these hooks with useMemo()
+    // the useMemo() hook does NOT respect asynchronicity
+    const [poolExists, setPoolExists] = useState<boolean | null>(null);
+
+    const [activeContent, setActiveContent] = useState<string>('main');
+    const [showErrorMessage, setShowErrorMessage] = useState(false);
+    const [isMintLiqEnabled, setIsMintLiqEnabled] = useState(true);
+    // TODO: this could probably be refacted into a useMemo
+    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] =
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
+    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
+        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
+
+    const [initialPriceDisplay, setInitialPriceDisplay] = useState<string>('');
+
+    const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState<
+        number | undefined
+    >();
+
+    const [estimatedInitialPriceDisplay, setEstimatedInitialPriceDisplay] =
+        useState<string>('0');
+
+    const [isAmbient, setIsAmbient] = useState(false);
+
+    const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
+        useState(0);
+    const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] =
+        useState(0);
+    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
+        useState(false);
+    const [initGasPriceinDollars, setInitGasPriceinDollars] = useState<
+        string | undefined
+    >();
+
+    // eslint-disable-next-line
+    const [tokenModalOpen, setTokenModalOpen] = useState(false);
+    // eslint-disable-next-line
+    const [baseCollateral, setBaseCollateral] = useState<string>('');
+    // eslint-disable-next-line
+    const [quoteCollateral, setQuoteCollateral] = useState<string>('');
+
+    // See Range.tsx line 81
+    const [rangeWidthPercentage, setRangeWidthPercentage] =
+        useState<number>(10);
+    const [
+        // eslint-disable-next-line
+        rescaleRangeBoundariesWithSlider,
+        setRescaleRangeBoundariesWithSlider,
+    ] = useState(false);
+
+    // eslint-disable-next-line
+    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
+        | {
+              pinnedMinPriceDisplay: string;
+              pinnedMaxPriceDisplay: string;
+              pinnedMinPriceDisplayTruncated: string;
+              pinnedMaxPriceDisplayTruncated: string;
+              pinnedMinPriceDisplayTruncatedWithCommas: string;
+              pinnedMaxPriceDisplayTruncatedWithCommas: string;
+              pinnedLowTick: number;
+              pinnedHighTick: number;
+              pinnedMinPriceNonDisplay: number;
+              pinnedMaxPriceNonDisplay: number;
+          }
+        | undefined
+    >();
+    // eslint-disable-next-line
+    // eslint-disable-next-line
+    const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] =
+        useState('');
+    // eslint-disable-next-line
+    const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] =
+        useState('');
+
+    // Min Max Price
+    const [minPriceInputString, setMinPriceInputString] = useState<string>('');
+    const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
+    // eslint-disable-next-line
+    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
+        useState(-10);
+    // eslint-disable-next-line
+    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
+        useState(10);
+    // eslint-disable-next-line
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
+        useState(false);
+    // eslint-disable-next-line
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
+        useState(false);
+    const [minPrice, setMinPrice] = useState(10);
+    const [maxPrice, setMaxPrice] = useState(100);
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [isEditEnabled, setIsEditEnabled] = useState(false);
 
     const gridSize = lookupChain(chainId).gridSize;
 
@@ -175,12 +272,188 @@ export default function InitPool() {
         // re-run hook if a new crocEnv is created
         // this will happen if the user switches chains
     }, [crocEnv, sessionReceipts.length, baseToken, quoteToken]);
-    const [isAmbient, setIsAmbient] = useState(false);
 
-    const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] =
-        useState(0);
-    const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] =
-        useState(0);
+    useEffect(() => {
+        if (rangeHighBoundFieldBlurred) {
+            const rangeHighBoundDisplayField = document.getElementById(
+                'max-price-input-quantity',
+            ) as HTMLInputElement;
+
+            const targetMaxValue = maxPrice;
+            const targetMinValue = minPrice;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                isDenomBase,
+                baseToken.decimals,
+                quoteToken.decimals,
+                targetMinValue?.toString() ?? '0',
+                targetMaxValue?.toString() ?? '0',
+                gridSize,
+            );
+
+            isDenomBase
+                ? setRangeLowBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+                  )
+                : setRangeHighBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+                  );
+
+            isDenomBase
+                ? setMinPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                      ),
+                  )
+                : setMaxPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                      ),
+                  );
+
+            isDenomBase
+                ? dispatch(
+                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
+                  )
+                : dispatch(
+                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
+                  );
+
+            const highGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedHighTick -
+                        selectedPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            const lowGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedLowTick -
+                        selectedPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            isDenomBase
+                ? setMaxPriceDifferencePercentage(
+                      -lowGeometricDifferencePercentage,
+                  )
+                : setMaxPriceDifferencePercentage(
+                      highGeometricDifferencePercentage,
+                  );
+
+            setPinnedMaxPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            );
+
+            if (rangeHighBoundDisplayField) {
+                rangeHighBoundDisplayField.value =
+                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated;
+            } else {
+                IS_LOCAL_ENV && console.debug('high bound field not found');
+            }
+
+            setRangeHighBoundFieldBlurred(false);
+        }
+    }, [rangeHighBoundFieldBlurred]);
+
+    useEffect(() => {
+        if (rangeLowBoundFieldBlurred) {
+            const rangeLowBoundDisplayField = document.getElementById(
+                'min-price-input-quantity',
+            ) as HTMLInputElement;
+
+            const targetMinValue = minPrice;
+            const targetMaxValue = maxPrice;
+
+            const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                isDenomBase,
+                baseToken.decimals,
+                quoteToken.decimals,
+                targetMinValue?.toString() ?? '0',
+                targetMaxValue?.toString() ?? '0',
+                gridSize,
+            );
+
+            !isDenomBase
+                ? setRangeLowBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMinPriceNonDisplay,
+                  )
+                : setRangeHighBoundNonDisplayPrice(
+                      pinnedDisplayPrices.pinnedMaxPriceNonDisplay,
+                  );
+
+            !isDenomBase
+                ? dispatch(
+                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
+                  )
+                : dispatch(
+                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
+                  );
+
+            !isDenomBase
+                ? setMinPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                      ),
+                  )
+                : setMaxPrice(
+                      parseFloat(
+                          pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                      ),
+                  );
+
+            const highGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedHighTick -
+                        selectedPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            const lowGeometricDifferencePercentage = parseFloat(
+                truncateDecimals(
+                    (pinnedDisplayPrices.pinnedLowTick -
+                        selectedPoolPriceTick) /
+                        100,
+                    0,
+                ),
+            );
+            isDenomBase
+                ? setMinPriceDifferencePercentage(
+                      -highGeometricDifferencePercentage,
+                  )
+                : setMinPriceDifferencePercentage(
+                      lowGeometricDifferencePercentage,
+                  );
+
+            setPinnedMinPriceDisplayTruncated(
+                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+            );
+
+            if (rangeLowBoundDisplayField) {
+                rangeLowBoundDisplayField.value =
+                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated;
+            } else {
+                IS_LOCAL_ENV && console.debug('low bound field not found');
+            }
+
+            setRangeLowBoundFieldBlurred(false);
+        }
+    }, [rangeLowBoundFieldBlurred]);
+
+    const erc20TokenWithDexBalance = useMemo(() => {
+        if (baseToken?.address !== ZERO_ADDRESS) {
+            if (baseTokenDexBalance && baseTokenDexBalance !== '0.0') {
+                return baseToken;
+            }
+        }
+        if (quoteTokenDexBalance && quoteTokenDexBalance !== '0.0') {
+            return quoteToken;
+        }
+        return undefined;
+    }, [baseToken, quoteToken, baseTokenDexBalance, quoteTokenDexBalance]);
 
     const updateEstimatedInitialPrice = async () => {
         const mainnetBase =
@@ -268,18 +541,20 @@ export default function InitPool() {
         handleDisplayUpdate();
     }, [isDenomBase]);
 
-    const selectedPoolPriceTick = useMemo(() => {
-        if (!initialPriceDisplay) return 0;
-        // TODO: confirm this logic,epecially isMinPrice
-        return getPinnedTickFromDisplayPrice(
-            isDenomBase,
+    const selectedPoolNonDisplayPrice = useMemo(() => {
+        const selectedPriceInBaseDenom = isDenomBase
+            ? 1 / parseFloat(initialPriceDisplay)
+            : parseFloat(initialPriceDisplay);
+        const priceNonDisplayNum = fromDisplayPrice(
+            selectedPriceInBaseDenom,
             baseToken.decimals,
             quoteToken.decimals,
-            true,
-            initialPriceDisplay,
-            gridSize,
         );
-    }, [initialPriceDisplay, isDenomBase, baseToken, quoteToken, gridSize]);
+        return priceNonDisplayNum;
+    }, [isDenomBase, baseToken, quoteToken, initialPriceDisplay]);
+
+    const selectedPoolPriceTick =
+        Math.log(selectedPoolNonDisplayPrice) / Math.log(1.0001);
 
     const shouldResetAdvancedLowTick =
         advancedLowTick === 0 ||
@@ -425,12 +700,6 @@ export default function InitPool() {
         }
     };
 
-    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] =
-        useState(false);
-    const [initGasPriceinDollars, setInitGasPriceinDollars] = useState<
-        string | undefined
-    >();
-
     useEffect(() => {
         const timer = setTimeout(() => {
             setConnectButtonDelayElapsed(true);
@@ -522,29 +791,14 @@ export default function InitPool() {
 
     // Begin Range Logic
     const { createRangePosition } = useCreateRangePosition();
-    // TODO: implement disabling logic when range is out of bounds
-    const [isTokenAInputDisabled, setIsTokenAInputDisabled] = useState(false);
-    const [isTokenBInputDisabled, setIsTokenBInputDisabled] = useState(false);
 
-    const slippageTolerancePercentage = isStablePair(
-        tokenA.address,
-        tokenB.address,
-        chainId,
-    )
-        ? mintSlippage.stable
-        : mintSlippage.volatile;
-
-    const selectedPoolNonDisplayPrice = useMemo(() => {
-        const selectedPriceInBaseDenom = isDenomBase
-            ? 1 / parseFloat(initialPriceDisplay)
-            : parseFloat(initialPriceDisplay);
-        const priceNonDisplayNum = fromDisplayPrice(
-            selectedPriceInBaseDenom,
-            baseToken.decimals,
-            quoteToken.decimals,
-        );
-        return priceNonDisplayNum;
-    }, [isDenomBase, baseToken, quoteToken, initialPriceDisplay]);
+    // const slippageTolerancePercentage = isStablePair(
+    //     tokenA.address,
+    //     tokenB.address,
+    //     chainId,
+    // )
+    //     ? mintSlippage.stable
+    //     : mintSlippage.volatile;
 
     const depositSkew = useMemo(
         () =>
@@ -665,51 +919,40 @@ export default function InitPool() {
         }
     }
 
-    useEffect(() => {
-        if (!isAmbient) {
-            if (isTokenABase) {
-                if (defaultHighTick < selectedPoolPriceTick) {
-                    setIsTokenBInputDisabled(true);
-                    if (defaultHighTick > defaultLowTick) {
-                        setIsTokenAInputDisabled(false);
-                    } else setIsTokenAInputDisabled(true);
-                } else if (defaultLowTick > selectedPoolPriceTick) {
-                    setIsTokenAInputDisabled(true);
-                    if (defaultLowTick < defaultHighTick) {
-                        setIsTokenBInputDisabled(false);
-                    } else setIsTokenBInputDisabled(true);
-                } else {
-                    setIsTokenAInputDisabled(false);
-                    setIsTokenBInputDisabled(false);
-                }
-            } else {
-                if (defaultHighTick < selectedPoolPriceTick) {
-                    setIsTokenAInputDisabled(true);
-                    if (defaultHighTick > defaultLowTick) {
-                        setIsTokenBInputDisabled(false);
-                    } else setIsTokenBInputDisabled(true);
-                } else if (defaultLowTick > selectedPoolPriceTick) {
-                    setIsTokenBInputDisabled(true);
-                    if (defaultLowTick < defaultHighTick) {
-                        setIsTokenAInputDisabled(false);
-                    } else setIsTokenBInputDisabled(true);
-                } else {
-                    setIsTokenBInputDisabled(false);
-                    setIsTokenAInputDisabled(false);
-                }
-            }
-        } else {
-            setIsTokenBInputDisabled(false);
-            setIsTokenAInputDisabled(false);
-        }
-    }, [
-        isAmbient,
-        isTokenABase,
-        selectedPoolPriceTick,
-        defaultLowTick,
-        defaultHighTick,
-        isDenomBase,
-    ]);
+    const { isTokenAInputDisabled, isTokenBInputDisabled } =
+        useRangeInputDisable(
+            isAmbient,
+            isTokenABase,
+            selectedPoolPriceTick, // Took place of: selectedPoolPriceTick,
+            defaultLowTick,
+            defaultHighTick,
+            isDenomBase,
+        );
+
+    const {
+        tokenAllowed: tokenAAllowed,
+        rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
+    } = useHandleRangeButtonMessage(
+        tokenA,
+        baseCollateral,
+        tokenABalance,
+        tokenADexBalance,
+        isTokenAInputDisabled,
+        isWithdrawTokenAFromDexChecked,
+        true, // hardcode pool initialized since we will be initializing it on confirm
+    );
+    const {
+        tokenAllowed: tokenBAllowed,
+        rangeButtonErrorMessage: rangeButtonErrorMessageTokenB,
+    } = useHandleRangeButtonMessage(
+        tokenB,
+        quoteCollateral,
+        tokenBBalance,
+        tokenBDexBalance,
+        isTokenBInputDisabled,
+        isWithdrawTokenBFromDexChecked,
+        true, // hardcode pool initialized since we will be initializing it on confirm
+    );
 
     useEffect(() => {
         console.log({
@@ -723,7 +966,7 @@ export default function InitPool() {
     // Next step - understand how sider affects these params
     const sendRangePosition = async () => {
         const params = {
-            slippageTolerancePercentage,
+            slippageTolerancePercentage: 3,
             isAmbient,
             tokenAInputQty: isTokenAInputDisabled
                 ? 0
@@ -745,8 +988,6 @@ export default function InitPool() {
         console.log('Debug, calling createRangePosition', params);
         createRangePosition(params);
     };
-
-    const [isMintLiqEnabled, setIsMintLiqEnabled] = useState(true);
 
     const sendTransaction = isMintLiqEnabled
         ? async () => {
@@ -812,15 +1053,8 @@ export default function InitPool() {
                         />
                     );
                 } else {
+                    buttonContent = confirmButton;
                     // Display confirm button for final step
-                    buttonContent = (
-                        <Button
-                            title='Confirm'
-                            disabled={erc20TokenWithDexBalance !== undefined}
-                            action={() => setActiveContent('confirmation')}
-                            flat={true}
-                        />
-                    );
                 }
                 break;
 
@@ -838,7 +1072,33 @@ export default function InitPool() {
 
         return buttonContent;
     };
+    const confirmButton = useMemo(() => {
+        const tokenInputValid = tokenAAllowed && tokenBAllowed;
 
+        const disabled =
+            erc20TokenWithDexBalance !== undefined || !tokenInputValid;
+        const title = !tokenInputValid
+            ? rangeButtonErrorMessageTokenA || rangeButtonErrorMessageTokenB
+            : 'Confirm';
+        return (
+            <Button
+                title={title}
+                disabled={disabled}
+                action={() => setActiveContent('confirmation')}
+                flat={true}
+            />
+        );
+    }, [
+        tokenAAllowed,
+        tokenBAllowed,
+        erc20TokenWithDexBalance,
+        rangeButtonErrorMessageTokenA,
+        rangeButtonErrorMessageTokenB,
+        initialPriceInBaseDenom,
+        isMintLiqEnabled,
+        sendRangePosition,
+        sendInit,
+    ]);
     const tokenAApprovalButton = (
         <Button
             title={
@@ -869,52 +1129,6 @@ export default function InitPool() {
         />
     );
 
-    // Newwwwww Init code
-
-    // eslint-disable-next-line
-    const [tokenModalOpen, setTokenModalOpen] = useState(false);
-    // eslint-disable-next-line
-    const [baseCollateral, setBaseCollateral] = useState<string>('');
-    // eslint-disable-next-line
-    const [quoteCollateral, setQuoteCollateral] = useState<string>('');
-
-    const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] =
-        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
-    const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
-        useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
-
-    // See Range.tsx line 81
-    const [rangeWidthPercentage, setRangeWidthPercentage] =
-        useState<number>(10);
-    const [
-        // eslint-disable-next-line
-        rescaleRangeBoundariesWithSlider,
-        setRescaleRangeBoundariesWithSlider,
-    ] = useState(false);
-
-    // eslint-disable-next-line
-    const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
-        | {
-              pinnedMinPriceDisplay: string;
-              pinnedMaxPriceDisplay: string;
-              pinnedMinPriceDisplayTruncated: string;
-              pinnedMaxPriceDisplayTruncated: string;
-              pinnedMinPriceDisplayTruncatedWithCommas: string;
-              pinnedMaxPriceDisplayTruncatedWithCommas: string;
-              pinnedLowTick: number;
-              pinnedHighTick: number;
-              pinnedMinPriceNonDisplay: number;
-              pinnedMaxPriceNonDisplay: number;
-          }
-        | undefined
-    >();
-    // eslint-disable-next-line
-    // eslint-disable-next-line
-    const [pinnedMinPriceDisplayTruncated, setPinnedMinPriceDisplayTruncated] =
-        useState('');
-    // eslint-disable-next-line
-    const [pinnedMaxPriceDisplayTruncated, setPinnedMaxPriceDisplayTruncated] =
-        useState('');
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
     const maxPriceDisplay = isAmbient
         ? 'Infinity'
@@ -931,24 +1145,6 @@ export default function InitPool() {
         : !isTokenABase
         ? getUnicodeCharacter(tokenB.symbol)
         : getUnicodeCharacter(tokenA.symbol);
-
-    // Min Max Price
-    const [minPriceInputString, setMinPriceInputString] = useState<string>('');
-    const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
-    // eslint-disable-next-line
-    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
-        useState(-10);
-    // eslint-disable-next-line
-    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
-        useState(10);
-    // eslint-disable-next-line
-    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
-        useState(false);
-    // eslint-disable-next-line
-    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
-        useState(false);
-    const [minPrice, setMinPrice] = useState(10);
-    const [maxPrice, setMaxPrice] = useState(100);
 
     const dispatch = useAppDispatch();
 
@@ -1113,8 +1309,6 @@ export default function InitPool() {
             />
         </FlexContainer>
     );
-    const [isLoading, setIsLoading] = useState(false);
-    const [isEditEnabled, setIsEditEnabled] = useState(false);
 
     const handleRefresh = () => {
         setIsLoading(true);
@@ -1212,8 +1406,7 @@ export default function InitPool() {
     };
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
-    const isRangeBoundsAndCollateralDisabled =
-        poolExists === true || !isMintLiqEnabled;
+    const isRangeBoundsAndCollateralDisabled = poolExists || !isMintLiqEnabled;
 
     const collateralContent = (
         <FlexContainer
@@ -1247,17 +1440,9 @@ export default function InitPool() {
                     set: setQuoteCollateral,
                 }}
                 toggleDexSelection={toggleDexSelection}
-                handleButtonMessage={{
-                    tokenA: () => {
-                        console.log('TODO: handleRangeButtonMessageTokenA');
-                    },
-                    tokenB: () => {
-                        console.log('TODO: handleRangeButtonMessageTokenB');
-                    },
-                }}
                 isInputDisabled={{
-                    tokenA: !!poolExists,
-                    tokenB: !!poolExists,
+                    tokenA: isTokenAInputDisabled,
+                    tokenB: isTokenBInputDisabled,
                 }}
             />
         </FlexContainer>
@@ -1281,20 +1466,6 @@ export default function InitPool() {
         </FlexContainer>
     );
 
-    const [showErrorMessage, setShowErrorMessage] = useState(false);
-
-    const erc20TokenWithDexBalance = useMemo(() => {
-        if (baseToken?.address !== ZERO_ADDRESS) {
-            if (baseTokenDexBalance && baseTokenDexBalance !== '0.0') {
-                return baseToken;
-            }
-        }
-        if (quoteTokenDexBalance && quoteTokenDexBalance !== '0.0') {
-            return quoteToken;
-        }
-        return undefined;
-    }, [baseToken, quoteToken, baseTokenDexBalance, quoteTokenDexBalance]);
-
     useEffect(() => {
         if (poolExists) {
             setShowErrorMessage(false);
@@ -1304,8 +1475,6 @@ export default function InitPool() {
             setShowErrorMessage(false);
         }
     }, [erc20TokenWithDexBalance, poolExists]);
-
-    const [activeContent, setActiveContent] = useState<string>('main');
 
     const handleSetActiveContent = (newActiveContent: string) => {
         setActiveContent(newActiveContent);
