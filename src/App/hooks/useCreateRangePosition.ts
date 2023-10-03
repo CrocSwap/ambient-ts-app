@@ -60,7 +60,6 @@ export function useCreateRangePosition() {
         setTxErrorCode: (s: string) => void;
         resetConfirmation: () => void;
         setShowConfirmation: (s: boolean) => void;
-        poolPrice: number;
     }) => {
         const {
             slippageTolerancePercentage,
@@ -76,7 +75,6 @@ export function useCreateRangePosition() {
             setTxErrorCode,
             resetConfirmation,
             setShowConfirmation,
-            poolPrice,
         } = params;
 
         if (!crocEnv) return;
@@ -85,6 +83,8 @@ export function useCreateRangePosition() {
         setShowConfirmation(true);
 
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
+
+        const poolPrice = await pool.displayPrice();
 
         const minPrice = poolPrice * (1 - slippageTolerancePercentage / 100);
         const maxPrice = poolPrice * (1 + slippageTolerancePercentage / 100);

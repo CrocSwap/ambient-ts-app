@@ -39,9 +39,9 @@ interface InitConfirmationProps {
 export default function InitConfirmation(props: InitConfirmationProps) {
     const {
         sendTx,
-        transactionApproved,
-        isTransactionDenied,
-        isTransactionException,
+        // transactionApproved,
+        // isTransactionDenied,
+        // isTransactionException,
         tokenA,
         tokenB,
         isAmbient,
@@ -173,15 +173,9 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                     />
                 )}
             </div>
-            <Button flat title='SEND TO METAMASK' action={handleClick} />
+            <Button flat title='SEND TO METAMASK' action={handleConfirmed} />
         </FlexContainer>
     );
-
-    console.log({
-        transactionApproved,
-        isTransactionDenied,
-        isTransactionException,
-    });
 
     // eslint-disable-next-line
     function handleConfirmed() {

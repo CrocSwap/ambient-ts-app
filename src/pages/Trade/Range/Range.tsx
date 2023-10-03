@@ -909,9 +909,7 @@ function Range() {
     const { createRangePosition } = useCreateRangePosition();
     const sendTransaction = async () => {
         if (!crocEnv) return;
-        const pool = crocEnv.pool(tokenA.address, tokenB.address);
 
-        const poolPrice = await pool.displayPrice();
         createRangePosition({
             slippageTolerancePercentage,
             isAmbient,
@@ -930,7 +928,6 @@ function Range() {
             setTxErrorCode,
             resetConfirmation,
             setShowConfirmation,
-            poolPrice,
         });
     };
 

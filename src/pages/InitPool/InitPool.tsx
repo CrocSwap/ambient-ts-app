@@ -49,7 +49,6 @@ import { useMediaQuery } from '@material-ui/core';
 import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { useCreateRangePosition } from '../../App/hooks/useCreateRangePosition';
-import { isStablePair } from '../../utils/data/stablePairs';
 import {
     getPinnedPriceValuesFromTicks,
     getPinnedTickFromDisplayPrice,
@@ -79,7 +78,7 @@ export default function InitPool() {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
-    const { dexBalRange, mintSlippage } = useContext(UserPreferenceContext);
+    const { dexBalRange } = useContext(UserPreferenceContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay } = useContext(PoolContext);
 
@@ -100,7 +99,7 @@ export default function InitPool() {
     const { approve, isApprovalPending } = useApprove();
     // const [isInitPending, setIsInitPending] = useState(false);
 
-    console.log({ approve, isApprovalPending });
+    // console.log({ approve, isApprovalPending });
 
     const [initialPriceDisplay, setInitialPriceDisplay] = useState<string>('');
 
@@ -514,13 +513,13 @@ export default function InitPool() {
     const [isTokenAInputDisabled, setIsTokenAInputDisabled] = useState(false);
     const [isTokenBInputDisabled, setIsTokenBInputDisabled] = useState(false);
 
-    const slippageTolerancePercentage = isStablePair(
-        tokenA.address,
-        tokenB.address,
-        chainId,
-    )
-        ? mintSlippage.stable
-        : mintSlippage.volatile;
+    // const slippageTolerancePercentage = isStablePair(
+    //     tokenA.address,
+    //     tokenB.address,
+    //     chainId,
+    // )
+    //     ? mintSlippage.stable
+    //     : mintSlippage.volatile;
 
     const selectedPoolNonDisplayPrice = useMemo(() => {
         const selectedPriceInBaseDenom = isDenomBase
@@ -631,7 +630,7 @@ export default function InitPool() {
     // Next step - understand how sider affects these params
     const sendRangePosition = async () => {
         const params = {
-            slippageTolerancePercentage,
+            slippageTolerancePercentage: 3,
             isAmbient,
             tokenAInputQty: isTokenAInputDisabled
                 ? 0
