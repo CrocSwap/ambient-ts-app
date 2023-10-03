@@ -956,11 +956,6 @@ export default function InitPool() {
         isMintLiqEnabled,
     );
 
-    console.log({
-        rangeButtonErrorMessageTokenA,
-        rangeButtonErrorMessageTokenB,
-    });
-
     useEffect(() => {
         console.log({
             newRangeTransactionHash,
@@ -1414,13 +1409,7 @@ export default function InitPool() {
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const isRangeBoundsAndCollateralDisabled =
-        poolExists ||
-        !isMintLiqEnabled ||
-        (!isMintLiqEnabled &&
-            rangeButtonErrorMessageTokenA.toLowerCase() ===
-                'enter an amount') ||
-        (!isMintLiqEnabled &&
-            rangeButtonErrorMessageTokenB.toLowerCase() === 'enter an amount');
+        poolExists || !isMintLiqEnabled || !selectedPoolNonDisplayPrice;
 
     const collateralContent = (
         <FlexContainer
