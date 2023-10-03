@@ -88,7 +88,7 @@ export default function Limit() {
         limitTickCopied,
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
-    const { updateURL } = useTradeData();
+    const { urlParamMap, updateURL } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
@@ -414,15 +414,17 @@ export default function Limit() {
         try {
             if (!crocEnv) return;
             if (!limitTick) return;
-
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
 
+            const tknA: string = urlParamMap.get('tokenA') as string;
+            const tknB: string = urlParamMap.get('tokenB') as string;
+
             const testOrder = isTokenAPrimary
-                ? crocEnv.sell(tokenA.address, 0)
-                : crocEnv.buy(tokenB.address, 0);
+                ? crocEnv.sell(tknA, 0)
+                : crocEnv.buy(tknB, 0);
 
             const ko = testOrder.atLimit(
-                isTokenAPrimary ? tokenB.address : tokenA.address,
+                isTokenAPrimary ? tknB : tknA,
                 limitTick,
             );
 
@@ -556,8 +558,8 @@ export default function Limit() {
                 `Limit ${
                     (isSellTokenBase && !isDenomBase) ||
                     (!isSellTokenBase && isDenomBase)
-                        ? 'Above Maximum'
-                        : 'Below Minimum'
+                        ? 'Above Max'
+                        : 'Below Min'
                 }  Price`,
             );
         } else {

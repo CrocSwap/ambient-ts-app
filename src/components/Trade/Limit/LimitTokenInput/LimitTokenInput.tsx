@@ -189,7 +189,6 @@ function LimitTokenInput(props: propsIF) {
                     ? limitTickDisplayPrice * inputNum
                     : (1 / limitTickDisplayPrice) * inputNum;
             }
-
             handleLimitButtonMessage(rawTokenAQty);
         } else {
             if (!isDenomBase) {
@@ -202,7 +201,6 @@ function LimitTokenInput(props: propsIF) {
                     ? limitTickDisplayPrice * parseFloat(primaryQuantity)
                     : (1 / limitTickDisplayPrice) * parseFloat(primaryQuantity);
             }
-
             handleLimitButtonMessage(rawTokenAQty);
         }
         const truncatedTokenAQty = rawTokenAQty
