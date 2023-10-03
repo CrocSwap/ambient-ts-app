@@ -1416,8 +1416,11 @@ export default function InitPool() {
     const isRangeBoundsAndCollateralDisabled =
         poolExists ||
         !isMintLiqEnabled ||
-        rangeButtonErrorMessageTokenA.toLowerCase() === 'enter an amount' ||
-        rangeButtonErrorMessageTokenB.toLowerCase() === 'enter an amount';
+        (!isMintLiqEnabled &&
+            rangeButtonErrorMessageTokenA.toLowerCase() ===
+                'enter an amount') ||
+        (!isMintLiqEnabled &&
+            rangeButtonErrorMessageTokenB.toLowerCase() === 'enter an amount');
 
     const collateralContent = (
         <FlexContainer
