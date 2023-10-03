@@ -11,7 +11,7 @@ export function useHandleRangeButtonMessage(
     isPoolInitialized: boolean,
 ) {
     const { tokenAllowed, rangeButtonErrorMessage } = useMemo(() => {
-        console.log('Token Amount: ', token.symbol, { tokenAmount, token });
+        // console.log('Token Amount: ', token.symbol, { tokenAmount, token });
         let tokenAllowed = false;
         let rangeButtonErrorMessage = '';
         if (!isPoolInitialized) {

@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react';
 export function useRangeInputDisable(
     isAmbient: boolean,
     isTokenABase: boolean,
-    defaultHighTick: number,
     currentPoolPriceTick: number,
     defaultLowTick: number,
+    defaultHighTick: number,
     isDenomBase: boolean,
 ) {
     const [isTokenAInputDisabled, setIsTokenAInputDisabled] = useState(false);

@@ -51,7 +51,6 @@ import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeT
 import { useCreateRangePosition } from '../../App/hooks/useCreateRangePosition';
 import {
     getPinnedPriceValuesFromTicks,
-    getPinnedTickFromDisplayPrice,
     roundDownTick,
     roundUpTick,
 } from '../Trade/Range/rangeFunctions';
@@ -185,7 +184,7 @@ export default function InitPool() {
 
     // See Range.tsx line 81
     const [rangeWidthPercentage, setRangeWidthPercentage] =
-        useState<number>(23);
+        useState<number>(10);
     const [
         // eslint-disable-next-line
         rescaleRangeBoundariesWithSlider,
@@ -364,18 +363,20 @@ export default function InitPool() {
         handleDisplayUpdate();
     }, [isDenomBase]);
 
-    const selectedPoolPriceTick = useMemo(() => {
-        if (!initialPriceDisplay) return 0;
-        // TODO: confirm this logic,epecially isMinPrice
-        return getPinnedTickFromDisplayPrice(
-            isDenomBase,
+    const selectedPoolNonDisplayPrice = useMemo(() => {
+        const selectedPriceInBaseDenom = isDenomBase
+            ? 1 / parseFloat(initialPriceDisplay)
+            : parseFloat(initialPriceDisplay);
+        const priceNonDisplayNum = fromDisplayPrice(
+            selectedPriceInBaseDenom,
             baseToken.decimals,
             quoteToken.decimals,
-            true,
-            initialPriceDisplay,
-            gridSize,
         );
-    }, [initialPriceDisplay, isDenomBase, baseToken, quoteToken, gridSize]);
+        return priceNonDisplayNum;
+    }, [isDenomBase, baseToken, quoteToken, initialPriceDisplay]);
+
+    const selectedPoolPriceTick =
+        Math.log(selectedPoolNonDisplayPrice) / Math.log(1.0001);
 
     const shouldResetAdvancedLowTick =
         advancedLowTick === 0 ||
@@ -620,18 +621,6 @@ export default function InitPool() {
     //     ? mintSlippage.stable
     //     : mintSlippage.volatile;
 
-    const selectedPoolNonDisplayPrice = useMemo(() => {
-        const selectedPriceInBaseDenom = isDenomBase
-            ? 1 / parseFloat(initialPriceDisplay)
-            : parseFloat(initialPriceDisplay);
-        const priceNonDisplayNum = fromDisplayPrice(
-            selectedPriceInBaseDenom,
-            baseToken.decimals,
-            quoteToken.decimals,
-        );
-        return priceNonDisplayNum;
-    }, [isDenomBase, baseToken, quoteToken, initialPriceDisplay]);
-
     const depositSkew = useMemo(
         () =>
             concDepositSkew(
@@ -660,11 +649,12 @@ export default function InitPool() {
     const transactionApproved = newRangeTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
+
     const { isTokenAInputDisabled, isTokenBInputDisabled } =
         useRangeInputDisable(
             isAmbient,
             isTokenABase,
-            selectedPoolNonDisplayPrice, // Took place of: currentPoolPriceTick,
+            selectedPoolPriceTick, // Took place of: currentPoolPriceTick,
             defaultLowTick,
             defaultHighTick,
             isDenomBase,
