@@ -629,6 +629,11 @@ function SentMessagePanel(props: SentMessageProps) {
             }
 
             ${hasSeparator ? styles.has_separator : ''}
+            ${
+                props.message.mentionedWalletID === props.address
+                    ? styles.reader_mentioned
+                    : ''
+            }
             
             `}
             // style={messageStyle()}
