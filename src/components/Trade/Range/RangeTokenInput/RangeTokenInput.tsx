@@ -34,10 +34,6 @@ interface propsIF {
     isOutOfRange: boolean;
     isWithdrawFromDexChecked: { tokenA: boolean; tokenB: boolean };
     isInputDisabled: { tokenA: boolean; tokenB: boolean };
-    handleButtonMessage: {
-        tokenA: (tokenAmount: string) => void;
-        tokenB: (tokenAmount: string) => void;
-    };
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
 }
 
@@ -56,10 +52,6 @@ function RangeTokenInput(props: propsIF) {
         isInputDisabled: {
             tokenA: isTokenAInputDisabled,
             tokenB: isTokenBInputDisabled,
-        },
-        handleButtonMessage: {
-            tokenA: handleTokenAButtonMessage,
-            tokenB: handleTokenBButtonMessage,
         },
         toggleDexSelection,
         hidePlus,
@@ -99,11 +91,6 @@ function RangeTokenInput(props: propsIF) {
         }
     }, [poolPriceNonDisplay, depositSkew, tokenA.address]);
 
-    useEffect(() => {
-        handleTokenAButtonMessage(tokenAInputQty);
-        handleTokenBButtonMessage(tokenBInputQty);
-    }, [isWithdrawTokenAFromDexChecked, isWithdrawTokenBFromDexChecked]);
-
     const resetTokenQuantities = () => {
         setTokenAInputQty('');
         setTokenBInputQty('');
@@ -140,13 +127,6 @@ function RangeTokenInput(props: propsIF) {
             setTokenAInputQty(truncatedTokenQty);
             setTokenBInputQty(inputValue);
         }
-
-        handleTokenAButtonMessage(
-            primaryToken === 'A' ? inputValue : truncatedTokenQty,
-        );
-        handleTokenBButtonMessage(
-            primaryToken === 'A' ? truncatedTokenQty : inputValue,
-        );
     };
 
     const reverseTokens = (): void => {
