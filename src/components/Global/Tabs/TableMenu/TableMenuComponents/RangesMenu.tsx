@@ -317,13 +317,17 @@ export default function RangesMenu(props: propsIF) {
     >();
 
     useEffect(() => {
-        if (
-            !cachedPosition ||
-            position.positionId === cachedPosition.positionId
-        ) {
-            setCachedPosition({ ...position } as PositionIF);
+        if (isRangeActionModalOpen || isRangeDetailsModalOpen) {
+            if (
+                !cachedPosition ||
+                position.positionId === cachedPosition.positionId
+            ) {
+                setCachedPosition({ ...position } as PositionIF);
+            }
+        } else {
+            setCachedPosition(undefined);
         }
-    }, [position]);
+    }, [isRangeActionModalOpen, isRangeDetailsModalOpen, position]);
 
     return (
         <FlexContainer justifyContent='flex-end'>
