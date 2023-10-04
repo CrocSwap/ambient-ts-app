@@ -19,7 +19,14 @@ import {
 import { FlexContainer } from '../../../../styled/Common';
 
 interface propsIF {
-    type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
+    type:
+        | 'Swap'
+        | 'Limit'
+        | 'Range'
+        | 'Reposition'
+        | 'Remove'
+        | 'Harvest'
+        | 'Reset';
     newTransactionHash: string;
     txErrorCode: string;
     resetConfirmation: () => void;

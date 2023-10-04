@@ -1,7 +1,6 @@
 import { CrocImpact } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, memo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useProvider } from 'wagmi';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../../App/hooks/useTradeData';
@@ -54,6 +53,7 @@ function Swap(props: propsIF) {
         crocEnv,
         chainData: { chainId, poolIndex },
         nativeTokenUsdPrice,
+        provider,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
@@ -75,7 +75,6 @@ function Swap(props: propsIF) {
     );
 
     const dispatch = useAppDispatch();
-    const provider = useProvider();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -168,6 +167,10 @@ function Swap(props: propsIF) {
             ? tokenASurplusMinusTokenARemainderNum * -1
             : 0
         : parseFloat(sellQtyString || '0');
+
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
@@ -573,6 +576,7 @@ function Swap(props: propsIF) {
             }
             approveButton={
                 isPoolInitialized &&
+                isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient &&
                 parseFloat(sellQtyString) > 0 &&
                 sellQtyString !== 'Infinity' ? (

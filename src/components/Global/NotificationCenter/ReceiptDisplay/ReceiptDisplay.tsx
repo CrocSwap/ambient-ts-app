@@ -11,7 +11,6 @@ import { getChainExplorer } from '../../../../utils/data/chains';
 import { useContext, useEffect, useState } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import Spinner from '../../Spinner/Spinner';
-import { useProvider } from 'wagmi';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 
 interface ReceiptDisplayPropsIF {
@@ -25,7 +24,7 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     const { status, hash, txBlockNumber, txType } = props;
     const {
         chainData: { chainId },
-        crocEnv,
+        provider,
     } = useContext(CrocEnvContext);
 
     const { cachedFetchBlockTime } = useContext(CachedDataContext);
@@ -60,12 +59,10 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
 
     const [blockTime, setBlockTime] = useState<number | undefined>();
 
-    const provider = useProvider();
-
     useEffect(() => {
         (async () => {
             const blockTime =
-                crocEnv && txBlockNumber
+                provider && txBlockNumber
                     ? await cachedFetchBlockTime(provider, txBlockNumber)
                     : undefined;
             if (blockTime) setBlockTime(blockTime);

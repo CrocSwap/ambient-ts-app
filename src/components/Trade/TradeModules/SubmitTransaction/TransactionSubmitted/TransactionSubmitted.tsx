@@ -8,7 +8,14 @@ import { useLocation } from 'react-router-dom';
 import { getChainExplorer } from '../../../../../utils/data/chains';
 
 interface PropsIF {
-    type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
+    type:
+        | 'Swap'
+        | 'Limit'
+        | 'Range'
+        | 'Reposition'
+        | 'Remove'
+        | 'Harvest'
+        | 'Reset';
     hash: string;
     tokenBAddress: string;
     tokenBSymbol: string;
@@ -98,6 +105,14 @@ export default function TransactionSubmitted(props: PropsIF) {
                       }`
                     : type === 'Reposition'
                     ? `Reposition ${
+                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                      }`
+                    : type === 'Reset'
+                    ? `Reset ${
+                          isConfirmed ? 'Confirmed' : 'Successfully Submitted'
+                      }`
+                    : type === 'Remove'
+                    ? `Removal ${
                           isConfirmed ? 'Confirmed' : 'Successfully Submitted'
                       }`
                     : `Swap Transaction ${
