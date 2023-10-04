@@ -558,8 +558,8 @@ export default function Limit() {
                 `Limit ${
                     (isSellTokenBase && !isDenomBase) ||
                     (!isSellTokenBase && isDenomBase)
-                        ? 'Above Max'
-                        : 'Below Min'
+                        ? 'Above Maximum'
+                        : 'Below Minimum'
                 }  Price`,
             );
         } else {
