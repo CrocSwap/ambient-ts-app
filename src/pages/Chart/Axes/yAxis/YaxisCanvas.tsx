@@ -816,8 +816,9 @@ function YAxisCanvas(props: yAxisIF) {
                 d3.select(d3Yaxis.current).on('.drag', null);
             }
             if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
+                (location.pathname.includes('pool') ||
+                    location.pathname.includes('reposition')) &&
+                !isLineDrag
             ) {
                 d3.select(d3Yaxis.current).call(dragRange);
             }
