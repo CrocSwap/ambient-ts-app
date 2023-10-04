@@ -106,6 +106,11 @@ function Trade() {
         name: string;
     }
 
+    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [selectedDate, setSelectedDate] = useState<number | undefined>();
+
+    const tradeTableRef = useRef<HTMLDivElement>(null);
+
     const routes: routeIF[] = [
         {
             path: linkGenMarket.getFullURL(marketParams),
@@ -123,11 +128,6 @@ function Trade() {
             name: 'Pool',
         },
     ];
-
-    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
-    const [selectedDate, setSelectedDate] = useState<number | undefined>();
-
-    const tradeTableRef = useRef<HTMLDivElement>(null);
 
     const navigationMenu: JSX.Element = (
         <FlexContainer
