@@ -3356,16 +3356,28 @@ export default function Chart(props: propsIF) {
         element: lineData[],
         mouseX: number,
         mouseY: number,
+        denomInBase: boolean,
     ) {
+        const startX = element[0].x;
+        const startY =
+            element[0].denomInBase === denomInBase
+                ? element[0].y
+                : 1 / element[0].y;
+        const endX = element[1].x;
+        const endY =
+            element[1].denomInBase === denomInBase
+                ? element[1].y
+                : 1 / element[1].y;
+
         if (scaleData) {
             const threshold = 10;
             const distance = distanceToLine(
                 mouseX,
                 mouseY,
-                scaleData.xScale(element[0].x),
-                scaleData.yScale(element[0].y),
-                scaleData.xScale(element[1].x),
-                scaleData.yScale(element[1].y),
+                scaleData.xScale(startX),
+                scaleData.yScale(startY),
+                scaleData.xScale(endX),
+                scaleData.yScale(endY),
             );
 
             return distance < threshold;
@@ -3415,7 +3427,14 @@ export default function Chart(props: propsIF) {
 
             if (isShapeInCurrentPool) {
                 if (element.type === 'Brush') {
-                    if (checkLineLocation(element.data, mouseX, mouseY)) {
+                    if (
+                        checkLineLocation(
+                            element.data,
+                            mouseX,
+                            mouseY,
+                            denomInBase,
+                        )
+                    ) {
                         resElement = element;
                     }
                 }

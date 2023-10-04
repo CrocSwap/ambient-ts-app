@@ -543,7 +543,10 @@ function YAxisCanvas(props: yAxisIF) {
                         .includes('e');
 
                     let shapePointSubString = undefined;
-                    const shapePoint = Number(data.y.toString());
+                    const shapePoint =
+                        data.denomInBase === denomInBase
+                            ? Number(data.y.toString())
+                            : 1 / Number(data.y.toString());
 
                     let shapePointTick = getFormattedNumber({
                         value: shapePoint,
@@ -560,14 +563,22 @@ function YAxisCanvas(props: yAxisIF) {
                         shapePointTick = textScientificArray[1].slice(1, 4);
                     }
 
+                    const secondPointInDenom =
+                        shapeData.data[1].denomInBase === denomInBase
+                            ? shapeData.data[1].y
+                            : 1 / shapeData.data[1].y;
+                    const firstPointInDenom =
+                        shapeData.data[0].denomInBase === denomInBase
+                            ? shapeData.data[0].y
+                            : 1 / shapeData.data[0].y;
+
                     const rectHeight =
-                        yScale(shapeData.data[1].y) -
-                        yScale(shapeData.data[0].y);
+                        yScale(secondPointInDenom) - yScale(firstPointInDenom);
 
                     context.fillStyle = '#7674ff1e';
                     context.fillRect(
                         0,
-                        yScale(shapeData.data[0].y),
+                        yScale(firstPointInDenom),
                         width,
                         rectHeight,
                     );
