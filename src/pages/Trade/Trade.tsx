@@ -80,36 +80,36 @@ function Trade() {
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
+    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [selectedDate, setSelectedDate] = useState<number | undefined>();
+
+    const tradeTableRef = useRef<HTMLDivElement>(null);
+
     // hooks to generate default URL paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
+    // URL param data to generate nav links
     const marketParams: marketParamsIF = {
         chain: chainId,
         tokenA: tokenA.address,
         tokenB: tokenB.address,
     };
-
     const limitParams: limitParamsIF = {
         ...marketParams,
         limitTick: limitTick ?? 0,
     };
-
     const poolParams: poolParamsIF = {
         ...marketParams,
     };
 
+    // interface describing shape of route data to generate nav links
     interface routeIF {
         path: string;
         baseURL: string;
         name: string;
     }
-
-    const [transactionFilter, setTransactionFilter] = useState<CandleData>();
-    const [selectedDate, setSelectedDate] = useState<number | undefined>();
-
-    const tradeTableRef = useRef<HTMLDivElement>(null);
 
     // data to generate nav links to the three trade modules
     const routes: routeIF[] = [
