@@ -24,7 +24,7 @@ export const FontSize = css<FontSizeProps>`
 `;
 
 interface FontWeightProps {
-    fontWeight?: string;
+    fontWeight?: '100' | '200' | '300' | '400' | '500' | 'lighter';
 }
 export const FontWeight = css<FontWeightProps>`
     ${({ fontWeight }) => (fontWeight ? `font-weight: ${fontWeight};` : '')}
@@ -91,8 +91,14 @@ export interface ContainerProps {
     gap?: number;
     fullHeight?: boolean;
     fullWidth?: boolean;
-    justifyContent?: string;
-    alignItems?: string;
+    justifyContent?:
+        | 'flex-start'
+        | 'flex-end'
+        | 'center'
+        | 'space-between'
+        | 'space-around'
+        | 'space-evenly';
+    alignItems?: 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch';
     overflow?: overflowTypes;
     overflowY?: overflowTypes;
     overflowX?: overflowTypes;
