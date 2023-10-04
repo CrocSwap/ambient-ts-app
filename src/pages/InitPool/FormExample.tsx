@@ -2,14 +2,13 @@ import React, { useContext, useMemo, useState } from 'react';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
 import { FlexContainer, Text } from '../../styled/Common';
 import styles from '../../components/Home/Landing/BackgroundImages.module.css';
-import { SettingsSvg } from '../../assets/images/icons/settingsSvg';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
-import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import Button from '../../components/Form/Button';
 import { Chip } from '../../components/Form/Chip';
+import RangeWidth from '../../components/Form/RangeWidth/RangeWidth';
 
 export default function ExampleForm() {
     const { dexBalRange } = useContext(UserPreferenceContext);
@@ -136,7 +135,6 @@ export default function ExampleForm() {
                 </FlexContainer>
 
                 <RangeTokenInput
-                    hidePlus
                     isAmbient={false}
                     depositSkew={0}
                     isWithdrawFromDexChecked={{
@@ -183,15 +181,10 @@ export default function ExampleForm() {
                 gap={8}
                 alignItems='center'
             >
-                <RangeBounds
-                    isRangeBoundsDisabled={false}
-                    {...rangeWidthProps}
-                    {...rangePriceInfoProps}
-                    {...minMaxPriceProps}
-                    customSwitch={true}
-                />
+                <RangeWidth {...rangeWidthProps} />
+
                 <Button
-                    title={'Confirm'}
+                    title={'Gradient'}
                     action={() => console.log('Confirm')}
                 />
                 <Button
@@ -262,8 +255,7 @@ export default function ExampleForm() {
                             alignItems='center'
                             fontSize='header1'
                         >
-                            <SettingsSvg />
-
+                            <p></p>
                             <p />
                             <IoIosCheckmarkCircle />
                         </FlexContainer>

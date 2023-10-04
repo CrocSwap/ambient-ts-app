@@ -46,9 +46,10 @@ type textColors =
     | 'white'
     | 'orange';
 
+type backgrounds = 'dark1' | 'dark2' | 'dark3' | 'dark4' | 'title-gradient';
 interface ColorProps {
     color?: textColors;
-    background?: 'dark1' | 'dark2' | 'dark3' | 'dark4' | 'title-gradient';
+    background?: backgrounds;
 }
 
 export const Color = css<ColorProps>`
@@ -79,17 +80,6 @@ export const Margin = css<MarginProps>`
 
 //   ------------------------------ DISPLAY ---------------------------------------
 
-// Define the prop types for the GridContainer
-interface GridProps {
-    numCols?: number;
-    numRows?: number;
-    gap?: number;
-    height?: number;
-    fullWidth?: boolean;
-    customRows?: string;
-    customCols?: string;
-}
-
 // Define the prop types for the FlexContainer
 
 type overflowTypes = 'scroll' | 'auto' | 'hidden' | 'visible';
@@ -107,7 +97,7 @@ export interface ContainerProps {
     overflowY?: overflowTypes;
     overflowX?: overflowTypes;
 
-    background?: string;
+    background?: backgrounds;
     rounded?: boolean;
     position?: 'relative' | 'absolute' | 'fixed';
     hideScrollbar?: boolean;
@@ -139,6 +129,8 @@ export const ContainerStyles = (props: ContainerProps) => {
     const {
         transition,
         cursor,
+        width,
+        height,
         fullWidth,
         fullHeight,
         justifyContent,
@@ -166,6 +158,8 @@ export const ContainerStyles = (props: ContainerProps) => {
         flexDirection,
     } = props;
     return `
+        ${width ? `width: ${width};` : ''}
+        ${height ? `height: ${height};` : ''}
         ${fullWidth ? 'width: 100%;' : ''}
         ${fullHeight ? 'height: 100%;' : ''}
         ${justifyContent ? `justify-content: ${justifyContent};` : ''}
@@ -180,14 +174,14 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${overflow ? `overflow: ${overflow};` : ''}
         ${overflowX ? `overflow-x: ${overflowX};` : ''}
         ${overflowY ? `overflow-y: ${overflowY};` : ''}
-        ${background ? `background: ${background};` : ''}
+        ${background ? `background: var(--${background});` : ''}
         ${rounded ? 'border-radius: var(--border-radius);' : ''}
         ${maxWidth ? `max-width: ${maxWidth};` : ''}
         ${zIndex ? `z-index: ${zIndex};` : ''}
 
         ${transition ? 'transition: var(--transition);' : ''}
         ${cursor ? `cursor: ${cursor};` : ''}
-        ${outline ? `outline: 1px solid ${outline};` : ''}
+        ${outline ? `outline: 1px solid var(--${outline});` : ''}
         ${minHeight ? `min-height: ${minHeight};` : ''}
         ${maxHeight ? `max-height: ${maxHeight};` : ''}
         ${blur ? Blur : ''}
@@ -233,7 +227,10 @@ export const Text = styled.span<
     FontProps &
         FontSizeProps &
         ColorProps &
-        FontWeightProps & { align?: string } & MarginProps &
+        FontWeightProps & {
+            align?: string;
+            cursor?: 'pointer' | 'default';
+        } & MarginProps &
         PaddingProps
 >`
     ${Font}
@@ -281,13 +278,16 @@ export const ScrollContainer = styled.div<ScrollContainerProps>`
     }
 `;
 
+export const WarningText = styled.p`
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--negative);
+`;
 export const FlexContainer = styled.div<
     FontProps &
         FontSizeProps &
         FontWeightProps &
         ColorProps &
-        PaddingProps &
-        MarginProps &
         ContainerProps &
         BreakpointProps &
         AnimationProps
