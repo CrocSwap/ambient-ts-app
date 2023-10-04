@@ -8,6 +8,7 @@ import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { FeeTierDisplay } from '../../styled/Components/TradeModules';
 import uriToHttp from '../../utils/functions/uriToHttp';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 
 const Wrapper = styled.div`
     width: 100%;
@@ -30,13 +31,20 @@ interface InitConfirmationProps {
     transactionApproved: boolean;
     isTransactionDenied: boolean;
     isTransactionException: boolean;
-    tokenA: TokenIF;
-    tokenB: TokenIF;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
     isAmbient: boolean;
     isTokenABase: boolean;
     isTxCompleted: boolean;
     errorCode?: string;
     handleNavigation: () => void;
+    pinnedMinPriceDisplayTruncatedInBase: string;
+    pinnedMinPriceDisplayTruncatedInQuote: string;
+    pinnedMaxPriceDisplayTruncatedInBase: string;
+    pinnedMaxPriceDisplayTruncatedInQuote: string;
+    baseCollateral: string;
+    quoteCollateral: string;
+    isDenomBase: boolean;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -45,27 +53,29 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         transactionApproved,
         isTransactionDenied,
         isTransactionException,
-        tokenA,
-        tokenB,
+        baseToken,
+        quoteToken,
         isAmbient,
         isTokenABase,
         errorCode,
         isTxCompleted,
         handleNavigation,
+        pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote,
+        baseCollateral,
+        quoteCollateral,
+        isDenomBase,
     } = props;
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
 
-    const tokenAQty = '';
-    const tokenBQty = '';
+    const baseTokenQty = baseCollateral;
+    const quoteTokenQty = quoteCollateral;
 
-    const tokenACharacter = '';
-    const tokenBCharacter = '';
-
-    const pinnedMinPriceDisplayTruncatedInBase = '1234';
-    const pinnedMinPriceDisplayTruncatedInQuote = '1234';
-    const pinnedMaxPriceDisplayTruncatedInBase = '1234';
-    const pinnedMaxPriceDisplayTruncatedInQuote = '1234';
+    const baseTokenCharacter: string = getUnicodeCharacter(baseToken.symbol);
+    const quoteTokenCharacter: string = getUnicodeCharacter(quoteToken.symbol);
 
     const poolTokenDisplay = (
         <FlexContainer
@@ -84,37 +94,39 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                         <FlexContainer justifyContent='space-between'>
                             <FlexContainer alignItems='center' gap={8}>
                                 <TokenIcon
-                                    token={tokenA}
-                                    src={uriToHttp(tokenA.logoURI)}
-                                    alt={tokenA.symbol}
+                                    token={baseToken}
+                                    src={uriToHttp(baseToken.logoURI)}
+                                    alt={baseToken.symbol}
                                     size='m'
                                 />
                                 <Text fontSize='body'>
                                     {' '}
-                                    Pooled {tokenA.symbol}
+                                    Pooled {baseToken.symbol}
                                 </Text>
                             </FlexContainer>
                             <Text fontSize='body'>
-                                {tokenAQty !== ''
-                                    ? tokenACharacter + tokenAQty
+                                {baseTokenQty !== ''
+                                    ? baseTokenCharacter + baseTokenQty
                                     : '0'}
                             </Text>
                         </FlexContainer>
                         <FlexContainer justifyContent='space-between'>
                             <FlexContainer alignItems='center' gap={8}>
                                 <TokenIcon
-                                    token={tokenB}
-                                    src={uriToHttp(tokenB.logoURI)}
-                                    alt={tokenB.symbol}
+                                    token={quoteToken}
+                                    src={uriToHttp(quoteToken.logoURI)}
+                                    alt={quoteToken.symbol}
                                     size='m'
                                 />
                                 <Text fontSize='body'>
                                     {' '}
-                                    Pooled {tokenB.symbol}
+                                    Pooled {quoteToken.symbol}
                                 </Text>
                             </FlexContainer>
                             <Text fontSize='body'>
-                                {tokenBQty ? tokenBCharacter + tokenBQty : '0'}
+                                {quoteTokenQty
+                                    ? quoteTokenCharacter + quoteTokenQty
+                                    : '0'}
                             </Text>
                         </FlexContainer>
                     </GridContainer>
@@ -135,6 +147,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                         pinnedMaxPriceDisplayTruncatedInQuote={
                             pinnedMaxPriceDisplayTruncatedInQuote
                         }
+                        isDenomBaseLocal={isDenomBase}
                     />
                 )}
             </div>
@@ -158,7 +171,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
     const steps = [
         { label: 'Waiting for confirmation' },
         {
-            label: `Submitting pool initialization for ${tokenA.symbol} / ${tokenB.symbol}`,
+            label: `Submitting pool initialization for ${baseToken.symbol} / ${quoteToken.symbol}`,
         },
     ];
 
@@ -210,7 +223,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                             color='other-green'
                             align='center'
                         >
-                            {`Pool initialization for ${tokenA.symbol} / ${tokenB.symbol} completed`}
+                            {`Pool initialization for ${baseToken.symbol} / ${quoteToken.symbol} completed`}
                         </Text>
                     )
                 }

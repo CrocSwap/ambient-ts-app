@@ -12,6 +12,7 @@ interface propsIF {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
+    isDenomBaseLocal?: boolean;
 }
 function SelectedRange(props: propsIF) {
     const {
@@ -24,9 +25,13 @@ function SelectedRange(props: propsIF) {
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
-    const { isDenomBase, tokenA, tokenB } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const {
+        isDenomBase: isDenomBaseRTK,
+        tokenA,
+        tokenB,
+    } = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = props.isDenomBaseLocal ?? isDenomBaseRTK;
 
     const isInitPage = location.pathname.startsWith('/init');
 
