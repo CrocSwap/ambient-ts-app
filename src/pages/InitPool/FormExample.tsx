@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
-import { FlexContainer, FlexHeader, Text } from '../../styled/Common';
+import { FlexContainer, Text } from '../../styled/Common';
 import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 import { SettingsSvg } from '../../assets/images/icons/settingsSvg';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
@@ -121,6 +121,7 @@ export default function ExampleForm(props: Props) {
                 gap={10}
                 blur={false}
             >
+                <Text>Here is an example form with some common components</Text>
                 <Chip onClick={() => console.log('Hello')}>Outlined</Chip>
                 <Chip variant='filled' onClick={() => console.log('Hello')}>
                     Filled
@@ -244,7 +245,7 @@ export default function ExampleForm(props: Props) {
                     flexDirection='column'
                 >
                     {/* Header */}
-                    <FlexHeader height='41px'>
+                    <FlexContainer as='header' height='41px'>
                         <p />
                         <Text
                             fontSize='header1'
@@ -263,7 +264,7 @@ export default function ExampleForm(props: Props) {
                             <p />
                             <IoIosCheckmarkCircle />
                         </FlexContainer>
-                    </FlexHeader>
+                    </FlexContainer>
                     {/* Body */}
                     <FlexContainer gap={16}>
                         {LeftSide}

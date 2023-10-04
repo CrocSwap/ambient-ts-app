@@ -265,7 +265,7 @@ export const ScrollContainer = styled.div<ScrollContainerProps>`
             var(--accent1) 100%
         );
         border: 1px solid var(--accent1);
-        border-radius: 4px;
+        border-radius: var(--border-radius);
     }
 
     &::-webkit-scrollbar-thumb:hover {
@@ -286,27 +286,6 @@ export const FlexContainer = styled.div<
         ColorProps &
         PaddingProps &
         MarginProps &
-        ContainerProps &
-        BreakpointProps &
-        AnimationProps
->`
-    ${Flex}
-    ${Font}
-    ${FontSize}
-    ${FontWeight}
-    ${Color}
-    ${Padding}
-    ${Margin}
-    ${WrappedContainerStyles}
-    ${Breakpoint}
-    ${Animations}
-`;
-export const FlexHeader = styled.header<
-    FlexProps &
-        FontProps &
-        FontSizeProps &
-        FontWeightProps &
-        ColorProps &
         ContainerProps &
         BreakpointProps &
         AnimationProps
