@@ -11,13 +11,6 @@
     --mono: monospace, 'Lexend Deca' sans-serif;
 
     /* font */
-    --title-ts: 0px 0px 150px rgba(70, 183, 219, 0.5),
-        0px 0px 100px rgba(70, 183, 219, 0.5),
-        0px 0px 30px rgba(70, 183, 219, 0.5),
-        0px 0px 20px rgba(70, 183, 219, 0.5),
-        0px 0px 10px rgba(70, 183, 219, 0.5),
-        0px 0px 3px rgba(70, 183, 219, 0.5);
-
     --header1-size: 24px;
     --header1-lh: 25px;
 
@@ -32,8 +25,6 @@
     --mini-lh: 12px;
 
     /* colors */
-    --blur-bg: rgba(14, 19, 26, 0.5);
-
     --text1: #f0f0f8;
     --text2: #8b98a5;
     --text3: #61646f;
@@ -69,9 +60,6 @@
     /* animations */
     --animation-speed: 300ms;
 
-    /* sizes */
-    --footer-height: 24px;
-
     /* gradients, shadows */
     --shimmer: linear-gradient(to right, #141e30, #243b55);
 
@@ -96,21 +84,13 @@
         #887ffd,
         #7371fc
     );
-    --chart-gradient: linear-gradient(to right, #0f1623, #152332);
     --dark-gradient: linear-gradient(
         90deg,
         #1c1c41 0%,
         #645e7e 49.48%,
         #19193b 100%
     );
-    --highlight-gradient: linear-gradient(
-        270deg,
-        #5a58c7,
-        #b2a8dd,
-        #4947a1,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
+
     --red-gradient: linear-gradient(
         90deg,
         #be4515 32.38%,
@@ -131,8 +111,6 @@
     );
 
     --swap-box-shadow: none;
-    --dark-box-shadow: 1px 1px 1px #000, 0 0 1px #0d0d0d;
-    --dark1-box-shadow: 2px 2px 10px 0px var(--dark1);
     --trade-box-shadow: 0 0 3px white, 0 0 5px white, 0 0 10px white,
         0 0 30px #0ba9ca, 0 0 50px #0ba9ca, 0 0 80px #0ba9ca;
     --glow-box-shadow: 0px 0px 100px rgba(205, 193, 255, 0.3),
