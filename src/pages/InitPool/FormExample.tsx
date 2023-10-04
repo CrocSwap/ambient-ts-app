@@ -224,10 +224,10 @@ export default function ExampleForm() {
                 flexDirection='column'
                 outline='accent5'
                 fullWidth
+                alignItems='center'
                 // This means that if it's greater than lg, use these styles
                 lg={{
                     margin: '64px 0 0 0',
-                    alignItems: 'center',
                     outline: 'accent1',
                     width: 'auto',
                 }}
@@ -265,9 +265,11 @@ export default function ExampleForm() {
                         gap={16}
                         justifyContent='space-around'
                         flexDirection='column'
+                        maxWidth='500px'
                         lg={{
                             justifyContent: 'flex-start',
                             flexDirection: 'row',
+                            maxWidth: 'none',
                         }}
                     >
                         {LeftSide}
