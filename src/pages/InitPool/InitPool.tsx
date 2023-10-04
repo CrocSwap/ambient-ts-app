@@ -825,15 +825,21 @@ export default function InitPool() {
     // default low tick to seed in the DOM (range lower value)
     // initialPriceInBaseDenom
 
+    const [newInitTransactionHash, setNewInitTransactionHash] = useState<
+        undefined | string
+    >('');
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState<
         undefined | string
     >('');
     const [txErrorCode, setTxErrorCode] = useState('');
     const [isInitPending, setIsInitPending] = useState(false);
-    const [isTxCompleted, setIsTxCompleted] = useState(false);
+    const [isTxCompletedInit, setIsTxCompletedInit] = useState(false);
+    const [isTxCompletedRange, setIsTxCompletedRange] = useState(false);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
-    const transactionApproved = newRangeTransactionHash !== '';
+
+    const transactionApprovedInit = newInitTransactionHash !== '';
+    const transactionApprovedRange = newRangeTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
@@ -841,11 +847,13 @@ export default function InitPool() {
         setShowConfirmation(false);
         setTxErrorCode('');
         setNewRangeTransactionHash('');
-        setIsTxCompleted(false);
+        setNewInitTransactionHash('');
+        setIsTxCompletedInit(false);
+        setIsTxCompletedRange(false);
     };
 
     useEffect(() => {
-        setNewRangeTransactionHash('');
+        resetConfirmation();
     }, [baseToken.address + quoteToken.address]);
 
     async function sendInit(
@@ -862,7 +870,7 @@ export default function InitPool() {
                     ?.pool(baseToken.address, quoteToken.address)
                     .initPool(initialPriceInBaseDenom);
 
-                setNewRangeTransactionHash(tx?.hash);
+                setNewInitTransactionHash(tx?.hash);
                 if (tx) dispatch(addPendingTx(tx?.hash));
                 if (tx?.hash)
                     dispatch(
@@ -891,7 +899,7 @@ export default function InitPool() {
                                 newHash: error.replacement.hash,
                             }),
                         );
-                        setNewRangeTransactionHash(newTransactionHash);
+                        setNewInitTransactionHash(newTransactionHash);
 
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
@@ -903,7 +911,7 @@ export default function InitPool() {
                     dispatch(addReceipt(JSON.stringify(receipt)));
                     dispatch(removePendingTx(receipt.transactionHash));
                     if (cb) cb();
-                    setIsTxCompleted(true);
+                    setIsTxCompletedInit(true);
                 }
             } catch (error) {
                 if (
@@ -991,6 +999,7 @@ export default function InitPool() {
             resetConfirmation,
             setShowConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
+            setIsTxCompletedRange: setIsTxCompletedRange,
         };
         console.log('Debug, calling createRangePosition', params);
         createRangePosition(params);
@@ -1570,7 +1579,8 @@ export default function InitPool() {
         activeContent,
         setActiveContent,
         sendTx: sendTransaction,
-        transactionApproved,
+        transactionApprovedInit,
+        transactionApprovedRange,
         isTransactionDenied,
         isTransactionException,
         tokenA,
@@ -1578,7 +1588,8 @@ export default function InitPool() {
         isAmbient,
         isTokenABase,
         errorCode: txErrorCode,
-        isTxCompleted,
+        isTxCompletedInit,
+        isTxCompletedRange,
         handleNavigation,
     };
 

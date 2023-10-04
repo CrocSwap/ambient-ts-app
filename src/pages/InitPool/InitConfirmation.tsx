@@ -27,14 +27,16 @@ interface InitConfirmationProps {
     activeContent: string;
     setActiveContent: (key: string) => void;
     sendTx: () => void;
-    transactionApproved: boolean;
+    transactionApprovedInit: boolean;
+    transactionApprovedRange: boolean;
     isTransactionDenied: boolean;
     isTransactionException: boolean;
     tokenA: TokenIF;
     tokenB: TokenIF;
     isAmbient: boolean;
     isTokenABase: boolean;
-    isTxCompleted: boolean;
+    isTxCompletedInit: boolean;
+    isTxCompletedRange: boolean;
     errorCode?: string;
     handleNavigation: () => void;
 }
@@ -42,7 +44,8 @@ interface InitConfirmationProps {
 export default function InitConfirmation(props: InitConfirmationProps) {
     const {
         sendTx,
-        transactionApproved,
+        transactionApprovedInit,
+        transactionApprovedRange,
         isTransactionDenied,
         isTransactionException,
         tokenA,
@@ -50,8 +53,9 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         isAmbient,
         isTokenABase,
         errorCode,
-        isTxCompleted,
+        isTxCompletedInit,
         handleNavigation,
+        isTxCompletedRange,
     } = props;
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
@@ -156,21 +160,37 @@ export default function InitConfirmation(props: InitConfirmationProps) {
     }
 
     const steps = [
-        { label: 'Waiting for confirmation' },
+        { label: 'Sign transaction to initialize pool.' },
         {
             label: `Submitting pool initialization for ${tokenA.symbol} / ${tokenB.symbol}`,
+        },
+        { label: 'Sign transaction to minting liquidity' },
+        {
+            label: `Submitting liquidty for ${tokenA.symbol} / ${tokenB.symbol}`,
         },
     ];
 
     useEffect(() => {
         setActiveStep(0);
-        if (transactionApproved) {
+        if (transactionApprovedInit) {
             setActiveStep(1);
         }
-        if (isTxCompleted) {
+        if (isTxCompletedInit) {
             setActiveStep(2);
         }
-    }, [transactionApproved, isTxCompleted]);
+
+        if (transactionApprovedRange) {
+            setActiveStep(3);
+        }
+        if (isTxCompletedRange) {
+            setActiveStep(4);
+        }
+    }, [
+        transactionApprovedInit,
+        isTxCompletedInit,
+        transactionApprovedRange,
+        isTxCompletedRange,
+    ]);
 
     const isError = isTransactionDenied || isTransactionException;
     const errorMessage = isError

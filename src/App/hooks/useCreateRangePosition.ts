@@ -60,6 +60,7 @@ export function useCreateRangePosition() {
         setTxErrorCode: (s: string) => void;
         resetConfirmation: () => void;
         setShowConfirmation: (s: boolean) => void;
+        setIsTxCompletedRange?: React.Dispatch<React.SetStateAction<boolean>>;
     }) => {
         const {
             slippageTolerancePercentage,
@@ -75,6 +76,7 @@ export function useCreateRangePosition() {
             setTxErrorCode,
             resetConfirmation,
             setShowConfirmation,
+            setIsTxCompletedRange,
         } = params;
 
         if (!crocEnv) return;
@@ -202,6 +204,9 @@ export function useCreateRangePosition() {
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
+            if (setIsTxCompletedRange) {
+                setIsTxCompletedRange(true);
+            }
         }
     };
 
