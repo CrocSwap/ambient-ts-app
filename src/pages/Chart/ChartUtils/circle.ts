@@ -10,7 +10,7 @@ const circleFillColor = '#8A8AFF';
 const selectedCircleFillColor = 'wheat';
 
 const circleOrderStrokeColor = '#8A8AFF';
-const circleOrderFillColor = 'rgba(115, 113, 252, 0.25)';
+const circleOrderFillColor = 'rgba(115, 113, 252, 0.3)';
 const howeredCircleFillColor = 'wheat';
 
 export function createCircle(

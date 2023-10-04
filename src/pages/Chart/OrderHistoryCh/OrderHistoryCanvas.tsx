@@ -21,6 +21,7 @@ interface OrderHistoryCanvasProps {
     showLiquidity: boolean;
     showHistorical: boolean;
     hoveredOrderHistory: orderHistory | undefined;
+    isHoveredOrderHistory: boolean;
 }
 
 export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
@@ -32,23 +33,26 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         showLiquidity,
         showHistorical,
         hoveredOrderHistory,
+        isHoveredOrderHistory,
     } = props;
 
     const d3OrderCanvas = useRef<HTMLDivElement | null>(null);
 
     const [bandArea, setBandArea] = useState<any>();
+    const [bandAreaHighlighted, setBandAreaHighlighted] = useState<any>();
 
-    const circleSeries = createCircle(
-        scaleData?.xScale,
-        scaleData?.yScale,
-        900,
-        1,
-        denomInBase,
-        false,
-        true,
-    );
+    const [circleScale, setCircleScale] = useState<any>();
+    const [circleSeries, setCircleSeries] = useState<any>();
+    const [circleSeriesHighlighted, setCircleSeriesHighlighted] =
+        useState<any>();
 
     const lineSeries = createLinearLineSeries(
+        scaleData?.xScale,
+        scaleData?.yScale,
+        denomInBase,
+    );
+
+    const liquidityLineSeries = createLinearLineSeries(
         scaleData?.xScale,
         scaleData?.yScale,
         denomInBase,
@@ -61,6 +65,55 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
         return newXScale;
     }
+
+    useEffect(() => {
+        const domainRight = d3.max(orderData, (data) => {
+            data.orderType === 'swap';
+            return data.orderDolarAmount;
+        });
+        const domainLeft = d3.min(orderData, (data) => {
+            data.orderType === 'swap';
+            return data.orderDolarAmount;
+        });
+
+        if (domainRight && domainLeft) {
+            const scale = d3
+                .scaleLinear()
+                .range([1000, 3000])
+                .domain([domainLeft, domainRight]);
+            setCircleScale(() => {
+                return scale;
+            });
+        }
+    }, [orderData]);
+
+    useEffect(() => {
+        if (orderData && circleScale) {
+            const circleSerieArray: any[] = [];
+
+            orderData.forEach((order) => {
+                const circleSerie = createCircle(
+                    scaleData?.xScale,
+                    scaleData?.yScale,
+                    circleScale(order.orderDolarAmount),
+                    1,
+                    denomInBase,
+                    false,
+                    true,
+                );
+
+                circleSerieArray.push(circleSerie);
+            });
+
+            setCircleSeries(() => {
+                return circleSerieArray;
+            });
+
+            setCircleSeriesHighlighted(() => {
+                return circleSerieArray;
+            });
+        }
+    }, [orderData, circleScale]);
 
     useEffect(() => {
         if (orderData && scaleData) {
@@ -87,6 +140,32 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
     }, [diffHashSig(orderData)]);
 
     useEffect(() => {
+        if (
+            hoveredOrderHistory &&
+            scaleData &&
+            hoveredOrderHistory.tsId != ''
+        ) {
+            if (hoveredOrderHistory.orderType === 'liquidity') {
+                const newBandScale = createScaleForBandArea(
+                    hoveredOrderHistory?.tsStart.getTime() * 1000,
+                    hoveredOrderHistory?.tsEnd.getTime() * 1000,
+                );
+
+                const bandArea = createBandArea(
+                    newBandScale,
+                    scaleData?.yScale,
+                    denomInBase,
+                    'rgba(95, 255, 242, 0.15)',
+                );
+
+                setBandAreaHighlighted(() => {
+                    return bandArea;
+                });
+            }
+        }
+    }, [diffHashSig(orderData), hoveredOrderHistory]);
+
+    useEffect(() => {
         const canvas = d3
             .select(d3OrderCanvas.current)
             .select('canvas')
@@ -98,8 +177,95 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
 
-                    orderData.forEach((order) => {
-                        if (showSwap && order.orderType === 'swap') {
+                    if (isHoveredOrderHistory && hoveredOrderHistory) {
+                        if (
+                            showLiquidity &&
+                            liquidityLineSeries &&
+                            bandAreaHighlighted !== undefined &&
+                            hoveredOrderHistory.orderType === 'liquidity'
+                        ) {
+                            const highlightedLines: Array<lineData[]> = [[]];
+
+                            highlightedLines.push(
+                                [
+                                    {
+                                        x:
+                                            hoveredOrderHistory.tsStart.getTime() *
+                                            1000,
+                                        y: hoveredOrderHistory.orderPrice,
+                                        ctx: undefined,
+                                        denomInBase: denomInBase,
+                                    },
+                                    {
+                                        x:
+                                            hoveredOrderHistory.tsEnd.getTime() *
+                                            1000,
+                                        y: hoveredOrderHistory.orderPrice,
+                                        ctx: undefined,
+                                        denomInBase: denomInBase,
+                                    },
+                                ],
+                                [
+                                    {
+                                        x:
+                                            hoveredOrderHistory.tsStart.getTime() *
+                                            1000,
+                                        y: hoveredOrderHistory.orderPriceCompleted,
+                                        ctx: undefined,
+                                        denomInBase: denomInBase,
+                                    },
+                                    {
+                                        x:
+                                            hoveredOrderHistory.tsEnd.getTime() *
+                                            1000,
+                                        y: hoveredOrderHistory.orderPriceCompleted,
+                                        ctx: undefined,
+                                        denomInBase: denomInBase,
+                                    },
+                                ],
+                            );
+
+                            highlightedLines.forEach((lineData) => {
+                                liquidityLineSeries(lineData);
+
+                                liquidityLineSeries.decorate(
+                                    (context: CanvasRenderingContext2D) => {
+                                        context.strokeStyle =
+                                            'rgba(95, 255, 242, 0.6)';
+                                    },
+                                );
+                            });
+
+                            const range = [
+                                scaleData?.xScale(
+                                    hoveredOrderHistory?.tsStart.getTime() *
+                                        1000,
+                                ),
+                                scaleData.xScale(
+                                    hoveredOrderHistory?.tsEnd.getTime() * 1000,
+                                ),
+                            ];
+
+                            bandAreaHighlighted.xScale().range(range);
+
+                            const bandData = {
+                                fromValue: hoveredOrderHistory.orderPrice,
+                                toValue:
+                                    hoveredOrderHistory.orderPriceCompleted,
+                                denomInBase: denomInBase,
+                            } as bandLineData;
+
+                            bandAreaHighlighted([bandData]);
+                        }
+                    }
+
+                    orderData.forEach((order, index) => {
+                        if (
+                            showSwap &&
+                            circleSeries &&
+                            circleSeries.length > 0 &&
+                            order.orderType === 'swap'
+                        ) {
                             const circleData = [
                                 {
                                     x: order.tsEnd.getTime() * 1000,
@@ -108,8 +274,30 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                                 },
                             ];
 
-                            circleSeries(circleData);
+                            circleSeries[index](circleData);
+
+                            if (
+                                showSwap &&
+                                hoveredOrderHistory &&
+                                isHoveredOrderHistory &&
+                                circleSeriesHighlighted.length > 0 &&
+                                hoveredOrderHistory.orderType === 'swap' &&
+                                hoveredOrderHistory.tsId === order.tsId
+                            ) {
+                                const circleDataHg = [
+                                    {
+                                        x:
+                                            hoveredOrderHistory.tsEnd.getTime() *
+                                            1000,
+                                        y: hoveredOrderHistory.orderPriceCompleted,
+                                        denomInBase: denomInBase,
+                                    },
+                                ];
+
+                                circleSeriesHighlighted[index](circleDataHg);
+                            }
                         }
+
                         if (showHistorical && order.orderType === 'history') {
                             const lineData: lineData[] = [];
 
@@ -128,6 +316,7 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
 
                             lineSeries(lineData);
                         }
+
                         if (showLiquidity && order.orderType === 'liquidity') {
                             const range = [
                                 scaleData?.xScale(
@@ -145,17 +334,29 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
                             } as bandLineData;
 
                             bandArea([bandData]);
-
-                            // bandArea.decorate((context: CanvasRenderingContext2D) => {
-                            //     context.fillStyle = 'red';
-                            // })
                         }
                     });
                 })
                 .on('measure', (event: CustomEvent) => {
                     lineSeries.context(ctx);
-                    circleSeries.context(ctx);
+                    liquidityLineSeries.context(ctx);
+                    if (circleSeries !== undefined && circleSeries.length > 0) {
+                        circleSeries.forEach((element: any) => {
+                            element.context(ctx);
+                        });
+                    }
+                    if (
+                        circleSeriesHighlighted !== undefined &&
+                        circleSeriesHighlighted.length > 0
+                    ) {
+                        circleSeriesHighlighted.forEach((element: any) => {
+                            element.context(ctx);
+                        });
+                    }
                     bandArea.context(ctx);
+                    if (bandAreaHighlighted !== undefined) {
+                        bandAreaHighlighted.context(ctx);
+                    }
                 });
         }
 
@@ -169,6 +370,8 @@ export default function OrderHistoryCanvas(props: OrderHistoryCanvasProps) {
         showHistorical,
         showLiquidity,
         showSwap,
+        liquidityLineSeries,
+        bandAreaHighlighted,
     ]);
 
     return <d3fc-canvas className='d3_order_canvas' ref={d3OrderCanvas} />;

@@ -94,7 +94,11 @@ import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
 import OrderHistoryCanvas from './OrderHistoryCh/OrderHistoryCanvas';
-import { formatDollarAmount } from '../../utils/numbers';
+import {
+    formatAmount,
+    formatAmountWithoutDigit,
+    formatDollarAmount,
+} from '../../utils/numbers';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -309,6 +313,7 @@ export default function Chart(props: propsIF) {
 
     const [hoveredOrderHistory, setHoveredOrderHistory] =
         useState<orderHistory>({
+            tsId: '',
             tsStart: new Date(),
             tsEnd: new Date(),
             orderPrice: 0,
@@ -3378,6 +3383,30 @@ export default function Chart(props: propsIF) {
         return isOverLine;
     }
 
+    function checkCircleLocation(
+        element: lineData[],
+        mouseX: number,
+        mouseY: number,
+    ) {
+        if (scaleData) {
+            const threshold = 30;
+
+            const disCos = Math.abs(scaleData.xScale(element[1].x) - mouseX);
+            const disSin = Math.abs(scaleData.yScale(element[1].y) - mouseY);
+
+            const sin = disSin * disSin;
+            const cos = disCos * disCos;
+
+            const hip = Math.sqrt(sin + cos);
+
+            if (hip < threshold) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
@@ -3441,6 +3470,12 @@ export default function Chart(props: propsIF) {
                         denomInBase: denomInBase,
                     },
                 ];
+
+                if (element.orderType === 'swap') {
+                    if (checkCircleLocation(lineLocation, mouseX, mouseY)) {
+                        resElement = element;
+                    }
+                }
 
                 if (element.orderType === 'history') {
                     if (checkLineLocation(lineLocation, mouseX, mouseY)) {
@@ -4016,6 +4051,7 @@ export default function Chart(props: propsIF) {
     };
     const orderData = [
         {
+            tsId: '123',
             tsEnd: new Date(1695722406),
             tsStart: new Date(1695654300),
             orderPrice: 1646,
@@ -4030,6 +4066,22 @@ export default function Chart(props: propsIF) {
             tokenBAmount: 22300,
         },
         {
+            tsId: '183',
+            tsEnd: new Date(1695794672),
+            tsStart: new Date(1695784872),
+            orderPrice: 1644,
+            orderPriceCompleted: 1644.84,
+            orderType: 'swap',
+            orderDirection: 'orderSell',
+            orderStatus: 'completed',
+            orderDolarAmount: 10300,
+            tokenA: 'ETH',
+            tokenAAmount: 1.36,
+            tokenB: 'USDT',
+            tokenBAmount: 22300,
+        },
+        {
+            tsId: '143',
             tsEnd: new Date(1695842406),
             tsStart: new Date(1695774300),
             orderPrice: 1646,
@@ -4044,6 +4096,7 @@ export default function Chart(props: propsIF) {
             tokenBAmount: 18250,
         },
         {
+            tsId: '129',
             tsEnd: new Date(1695773406),
             tsStart: new Date(1695694300),
             orderPrice: 1645,
@@ -4053,11 +4106,35 @@ export default function Chart(props: propsIF) {
             orderStatus: 'completed',
             orderDolarAmount: 15230,
             tokenA: 'ETH',
-            tokenAAmount: 0.56,
+            tokenAAmount: 3700,
             tokenB: 'USDT',
-            tokenBAmount: 15230,
+            tokenBAmount: 4300,
+        },
+        {
+            tsId: '229',
+            tsEnd: new Date(1695993406),
+            tsStart: new Date(1695900300),
+            orderPrice: 1644.79,
+            orderPriceCompleted: 1643.61,
+            orderType: 'liquidity',
+            orderDirection: 'range',
+            orderStatus: 'completed',
+            orderDolarAmount: 15230,
+            tokenA: 'ETH',
+            tokenAAmount: 3700,
+            tokenB: 'USDT',
+            tokenBAmount: 4300,
         },
     ];
+
+    useEffect(() => {
+        if (hoveredOrderHistory && scaleData)
+            console.log(
+                scaleData?.xScale(
+                    new Date(hoveredOrderHistory?.tsEnd.getTime() * 1000),
+                ) + 30,
+            );
+    }, [hoveredOrderHistory]);
 
     return (
         <div
@@ -4130,6 +4207,9 @@ export default function Chart(props: propsIF) {
                                     showHistorical={showHistorical}
                                     orderData={orderData}
                                     hoveredOrderHistory={hoveredOrderHistory}
+                                    isHoveredOrderHistory={
+                                        isHoveredOrderHistory
+                                    }
                                 />
                             )}
 
@@ -4312,6 +4392,7 @@ export default function Chart(props: propsIF) {
                     </div>
                 </CSSTransition>
             )}
+
             {scaleData && (
                 <CSSTransition
                     in={isHoveredOrderHistory}
@@ -4323,22 +4404,30 @@ export default function Chart(props: propsIF) {
                         className='orderHistoryDiv'
                         style={{
                             fontSize: '13px',
-                            top: scaleData.yScale(
-                                Math.max(
-                                    hoveredOrderHistory.orderPriceCompleted,
-                                    hoveredOrderHistory.orderPrice,
-                                ) -
-                                    Math.abs(
-                                        hoveredOrderHistory.orderPriceCompleted -
-                                            hoveredOrderHistory.orderPrice,
-                                    ) /
-                                        2,
-                            ),
+                            top:
+                                hoveredOrderHistory.orderType === 'swap'
+                                    ? scaleData.yScale(
+                                          hoveredOrderHistory.orderPriceCompleted,
+                                      )
+                                    : scaleData.yScale(
+                                          Math.max(
+                                              hoveredOrderHistory.orderPriceCompleted,
+                                              hoveredOrderHistory.orderPrice,
+                                          ) -
+                                              Math.abs(
+                                                  hoveredOrderHistory.orderPriceCompleted -
+                                                      hoveredOrderHistory.orderPrice,
+                                              ) /
+                                                  2,
+                                      ),
                             left:
                                 scaleData?.xScale(
                                     hoveredOrderHistory?.tsEnd.getTime() * 1000,
                                 ) +
-                                bandwidth * 2,
+                                bandwidth *
+                                    (hoveredOrderHistory.orderType === 'swap'
+                                        ? 15
+                                        : 2),
                         }}
                     >
                         <div className='orderHistoryHeader'>
@@ -4374,9 +4463,15 @@ export default function Chart(props: propsIF) {
                                     fontSize: '16px',
                                 }}
                             >
-                                {hoveredOrderHistory?.orderPrice +
+                                {formatAmountWithoutDigit(
+                                    hoveredOrderHistory?.tokenAAmount,
+                                    0,
+                                ) +
                                     ' - ' +
-                                    hoveredOrderHistory?.orderPriceCompleted}
+                                    formatAmountWithoutDigit(
+                                        hoveredOrderHistory?.tokenBAmount,
+                                        0,
+                                    )}
                             </div>
                         )}{' '}
                         <div>
@@ -4391,9 +4486,11 @@ export default function Chart(props: propsIF) {
                             )}
                         </div>
                         <div>
-                            {formatDollarAmount(
-                                hoveredOrderHistory.orderDolarAmount,
-                            )}
+                            {'$' +
+                                formatAmountWithoutDigit(
+                                    hoveredOrderHistory.orderDolarAmount,
+                                    0,
+                                )}
                         </div>
                         {!hoveredOrderHistory?.orderStatus.includes(
                             'pending',

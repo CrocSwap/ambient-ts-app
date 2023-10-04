@@ -97,6 +97,7 @@ export type zoomUtils = {
 };
 
 export type orderHistory = {
+    tsId: string;
     tsStart: Date;
     tsEnd: Date;
     orderPrice: number;
