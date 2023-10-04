@@ -590,6 +590,75 @@ export default function InitPool() {
         return value;
     }, [advancedHighTick, selectedPoolPriceTick, shouldResetAdvancedHighTick]);
 
+    const pinnedMinPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseToken.decimals,
+                quoteToken.decimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
+        [
+            baseToken.decimals,
+            quoteToken.decimals,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
+    const pinnedMinPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseToken.decimals,
+                quoteToken.decimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            ).pinnedMinPriceDisplayTruncatedWithCommas,
+        [
+            baseToken.decimals,
+            quoteToken.decimals,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
+    const pinnedMaxPriceDisplayTruncatedInBase = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                true,
+                baseToken.decimals,
+                quoteToken.decimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
+        [
+            baseToken.decimals,
+            quoteToken.decimals,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
+    const pinnedMaxPriceDisplayTruncatedInQuote = useMemo(
+        () =>
+            getPinnedPriceValuesFromTicks(
+                false,
+                baseToken.decimals,
+                quoteToken.decimals,
+                defaultLowTick,
+                defaultHighTick,
+                gridSize,
+            ).pinnedMaxPriceDisplayTruncatedWithCommas,
+        [
+            baseToken.decimals,
+            quoteToken.decimals,
+            defaultLowTick,
+            defaultHighTick,
+        ],
+    );
+
     useEffect(() => {
         if (advancedMode) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
@@ -963,11 +1032,6 @@ export default function InitPool() {
         true, // hardcode pool initialized since we will be initializing it on confirm
         isMintLiqEnabled,
     );
-
-    console.log({
-        rangeButtonErrorMessageTokenA,
-        rangeButtonErrorMessageTokenB,
-    });
 
     useEffect(() => {
         console.log({
@@ -1423,13 +1487,7 @@ export default function InitPool() {
     const showMobileVersion = useMediaQuery('(max-width: 768px)');
 
     const isRangeBoundsAndCollateralDisabled =
-        poolExists ||
-        !isMintLiqEnabled ||
-        (!isMintLiqEnabled &&
-            rangeButtonErrorMessageTokenA.toLowerCase() ===
-                'enter an amount') ||
-        (!isMintLiqEnabled &&
-            rangeButtonErrorMessageTokenB.toLowerCase() === 'enter an amount');
+        poolExists || !isMintLiqEnabled || !selectedPoolNonDisplayPrice;
 
     const collateralContent = (
         <FlexContainer
@@ -1583,14 +1641,21 @@ export default function InitPool() {
         transactionApprovedRange,
         isTransactionDenied,
         isTransactionException,
-        tokenA,
-        tokenB,
+        baseToken,
+        quoteToken,
         isAmbient,
         isTokenABase,
         errorCode: txErrorCode,
         isTxCompletedInit,
         isTxCompletedRange,
         handleNavigation,
+        pinnedMinPriceDisplayTruncatedInBase,
+        pinnedMinPriceDisplayTruncatedInQuote,
+        pinnedMaxPriceDisplayTruncatedInBase,
+        pinnedMaxPriceDisplayTruncatedInQuote,
+        baseCollateral,
+        quoteCollateral,
+        isDenomBase,
     };
 
     const confirmationContent = (
