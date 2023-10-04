@@ -1537,7 +1537,6 @@ export default function Chart(props: propsIF) {
     // create drag events
     useEffect(() => {
         if (scaleData) {
-            let newLimitValue: number;
             let newRangeValue: lineValue[];
 
             let lowLineMoved: boolean;
@@ -1957,91 +1956,8 @@ export default function Chart(props: propsIF) {
                     setCrosshairActive('none');
                 });
 
-            let oldLimitValue: number | undefined = undefined;
-
-            // *** LIMIT LINE DRAG ***
-            const dragLimit = d3
-                .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
-                .on('start', () => {
-                    // When the drag starts:
-                    // hide the cursor
-                    d3.select(d3CanvasMain.current).style('cursor', 'none');
-                    // hide the cursor over the y-axis canvas.
-                    d3.select('#y-axis-canvas').style('cursor', 'none');
-
-                    // add a keydown event listener to cancel the drag.
-                    document.addEventListener('keydown', cancelDragEvent);
-
-                    // Store the initial value of the limit for potential cancellation.
-                    oldLimitValue = limit;
-                })
-                .on('drag', function (event) {
-                    // During the drag:
-                    if (!event.sourceEvent.type.includes('touch')) {
-                        if (!cancelDrag) {
-                            // to hide the crosshair when dragging the line set the crosshairActive to 'none'.
-                            setCrosshairActive('none');
-
-                            // Indicate that line is dragging
-                            setIsLineDrag(true);
-
-                            // Determine the event point's Y-coordinate based on the event type.
-                            const eventPoint =
-                                event.sourceEvent.type === 'mousemove'
-                                    ? event.sourceEvent.clientY
-                                    : event.sourceEvent.targetTouches[0]
-                                          .clientY;
-
-                            // Calculate the new limit value based on the Y-coordinate.
-                            newLimitValue = scaleData?.yScale.invert(
-                                eventPoint - rectCanvas.top,
-                            );
-
-                            // Perform calculations based on the new limit value
-                            calculateLimit(newLimitValue);
-                        } else {
-                            // If the drag is canceled, restore the previous limit value.
-                            if (oldLimitValue !== undefined) {
-                                setLimit(() => {
-                                    return oldLimitValue as number;
-                                });
-                            }
-                        }
-                    }
-                })
-                // Handle the drag end event
-                .on('end', () => {
-                    setIsLineDrag(false);
-
-                    // If the drag is not canceled
-                    if (!cancelDrag) {
-                        // Change the cursor to 'row-resize'
-                        d3.select(d3Container.current).style(
-                            'cursor',
-                            'row-resize',
-                        );
-                        if (oldLimitValue !== undefined) {
-                            onBlurLimitRate(oldLimitValue, newLimitValue);
-                        }
-                    } else {
-                        if (oldLimitValue !== undefined) {
-                            setLimit(() => {
-                                return oldLimitValue as number;
-                            });
-                        }
-                    }
-
-                    // Restore default cursor styles
-                    d3.select(d3CanvasMain.current).style('cursor', 'default');
-                    d3.select('#y-axis-canvas').style('cursor', 'default');
-                });
-
             setDragRange(() => {
                 return dragRange;
-            });
-
-            setDragLimit(() => {
-                return dragLimit;
             });
         }
     }, [
@@ -2057,6 +1973,150 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth,
         liquidityData?.topBoundary,
         liquidityData?.lowBoundary,
+        scaleData,
+        isDenomBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        currentPoolPriceTick,
+        denomInBase,
+        isTokenABase,
+        chainData.gridSize,
+        rescale,
+    ]);
+
+    // dragLimit
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasMain.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const rectCanvas = canvas.getBoundingClientRect();
+        let offsetY = 0;
+        let movemementY = 0;
+        let newLimitValue: number | undefined;
+
+        let tempMovemementY = 0;
+        let cancelDrag = false;
+        let oldLimitValue: number | undefined = undefined;
+        // clicking esc while dragging the line sets the line to the last value
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cancelDragEvent = (event: any) => {
+            if (event.key === 'Escape') {
+                cancelDrag = true;
+                event.preventDefault();
+                event.stopPropagation();
+                document.removeEventListener('keydown', cancelDragEvent);
+            }
+        };
+        const dragLimit = d3
+            .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
+            .on('start', (event) => {
+                // When the drag starts:
+                // hide the cursor
+                d3.select(d3CanvasMain.current).style('cursor', 'none');
+                // hide the cursor over the y-axis canvas.
+                d3.select('#y-axis-canvas').style('cursor', 'none');
+
+                // add a keydown event listener to cancel the drag.
+                document.addEventListener('keydown', cancelDragEvent);
+
+                // Store the initial value of the limit for potential cancellation.
+                oldLimitValue = limit;
+                newLimitValue = limit;
+                if (event.sourceEvent instanceof TouchEvent) {
+                    tempMovemementY =
+                        event.sourceEvent.touches[0].clientY - rectCanvas?.top;
+                }
+            })
+            .on('drag', function (event) {
+                (async () => {
+                    // Indicate that line is dragging
+                    setIsLineDrag(true);
+                    if (event.sourceEvent instanceof TouchEvent) {
+                        offsetY =
+                            event.sourceEvent.touches[0].clientY -
+                            rectCanvas?.top;
+
+                        movemementY = offsetY - tempMovemementY;
+                    } else {
+                        offsetY = event.sourceEvent.clientY - rectCanvas?.top;
+
+                        movemementY = event.sourceEvent.movementY;
+                    }
+                    if (!cancelDrag) {
+                        // to hide the crosshair when dragging the line set the crosshairActive to 'none'.
+                        setCrosshairActive('none');
+
+                        // // Calculate the new limit value based on the Y-coordinate.
+                        if (newLimitValue !== undefined) {
+                            newLimitValue = scaleData?.yScale.invert(
+                                scaleData?.yScale(newLimitValue) + movemementY,
+                            );
+
+                            // Perform calculations based on the new limit value
+                            if (newLimitValue) {
+                                calculateLimit(newLimitValue);
+                            }
+                        }
+                    } else {
+                        // If the drag is canceled, restore the previous limit value.
+                        if (oldLimitValue !== undefined) {
+                            setLimit(() => {
+                                return oldLimitValue as number;
+                            });
+                        }
+                    }
+                })().then(() => {
+                    if (event.sourceEvent instanceof TouchEvent) {
+                        tempMovemementY =
+                            event.sourceEvent.touches[0].clientY -
+                            rectCanvas?.top;
+                    }
+                });
+            })
+            .on('end', () => {
+                tempMovemementY = 0;
+                setIsLineDrag(false);
+                // If the drag is not canceled
+                if (!cancelDrag) {
+                    // Change the cursor to 'row-resize'
+                    d3.select(d3Container.current).style(
+                        'cursor',
+                        'row-resize',
+                    );
+                    if (
+                        oldLimitValue !== undefined &&
+                        newLimitValue !== undefined
+                    ) {
+                        onBlurLimitRate(oldLimitValue, newLimitValue);
+                    }
+                } else {
+                    if (oldLimitValue !== undefined) {
+                        setLimit(() => {
+                            return oldLimitValue as number;
+                        });
+                    }
+                }
+
+                // Restore default cursor styles
+                d3.select(d3CanvasMain.current).style('cursor', 'default');
+                d3.select('#y-axis-canvas').style('cursor', 'default');
+                setIsLineDrag(false);
+            });
+
+        setDragLimit(() => {
+            return dragLimit;
+        });
+    }, [
+        poolPriceDisplay,
+        location,
+        tradeData.advancedMode,
+        limit,
+        minPrice,
+        maxPrice,
+        minTickForLimit,
+        maxTickForLimit,
+        simpleRangeWidth,
         scaleData,
         isDenomBase,
         baseTokenDecimals,
@@ -2100,7 +2160,7 @@ export default function Chart(props: propsIF) {
                 }
             }
             if (location.pathname.includes('/limit')) {
-                if (dragLimit) {
+                if (dragLimit && !isLineDrag) {
                     d3.select<d3.DraggedElementBaseType, unknown>(
                         d3CanvasMain.current,
                     ).call(dragLimit);
@@ -2108,7 +2168,7 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3CanvasMain]);
         }
-    }, [location.pathname, mainZoom, dragLimit, dragRange]);
+    }, [location.pathname, mainZoom, dragLimit, dragRange, isLineDrag]);
 
     // create market line and liquidity tooltip
     useEffect(() => {
@@ -2886,14 +2946,6 @@ export default function Chart(props: propsIF) {
                             event.targetTouches[0].clientY - rectCanvas?.top;
 
                         if (isTouchToDrag && !isChartZoom) {
-                            if (location.pathname.includes('/limit')) {
-                                const newLimitValue =
-                                    scaleData?.yScale.invert(eventPoint);
-
-                                if (newLimitValue !== undefined) {
-                                    calculateLimit(newLimitValue);
-                                }
-                            }
                             if (location.pathname.includes('/pool')) {
                                 const newRangeValue =
                                     scaleData?.yScale.invert(eventPoint);
