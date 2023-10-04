@@ -111,6 +111,7 @@ function Trade() {
 
     const tradeTableRef = useRef<HTMLDivElement>(null);
 
+    // data to generate nav links to the three trade modules
     const routes: routeIF[] = [
         {
             path: linkGenMarket.getFullURL(marketParams),
@@ -129,6 +130,7 @@ function Trade() {
         },
     ];
 
+    // nav links to the three trade modules
     const navigationMenu: JSX.Element = (
         <FlexContainer
             as='nav'
