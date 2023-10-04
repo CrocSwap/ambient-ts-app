@@ -57,32 +57,42 @@ export default function DragCanvas(props: DragCanvasProps) {
                 (item) => item === hoveredDrawnShape?.data,
             );
 
+            const isPointInDenom =
+                hoveredDrawnShape?.data?.data[0].denomInBase === denomInBase;
+
+            const denomScale = scaleData.yScale.copy();
+            denomScale.domain([
+                1 / scaleData.yScale.domain()[0],
+                1 / scaleData.yScale.domain()[1],
+            ]);
+
+            const scale = isPointInDenom ? scaleData.yScale : denomScale;
+
             const lastData = [
                 {
                     x: scaleData.xScale.invert(
                         scaleData.xScale(hoveredDrawnShape?.data?.data[0].x) +
                             movemementX,
                     ),
-                    y: scaleData.yScale.invert(
-                        scaleData.yScale(hoveredDrawnShape.data?.data[0].y) +
-                            movemementY,
+                    y: scale.invert(
+                        scale(hoveredDrawnShape.data.data[0].y) + movemementY,
                     ),
                     ctx: hoveredDrawnShape.data?.data[0].ctx,
-                    denomInBase: denomInBase,
+                    denomInBase: hoveredDrawnShape.data?.data[0].denomInBase,
                 },
                 {
                     x: scaleData.xScale.invert(
                         scaleData.xScale(hoveredDrawnShape.data.data[1].x) +
                             movemementX,
                     ),
-                    y: scaleData.yScale.invert(
-                        scaleData.yScale(hoveredDrawnShape.data.data[1].y) +
-                            movemementY,
+                    y: scale.invert(
+                        scale(hoveredDrawnShape.data.data[1].y) + movemementY,
                     ),
                     ctx: hoveredDrawnShape.data?.data[1].ctx,
-                    denomInBase: denomInBase,
+                    denomInBase: hoveredDrawnShape.data?.data[1].denomInBase,
                 },
             ];
+
             drawnShapeHistory[index].data = lastData;
             hoveredDrawnShape.data.data = lastData;
 
