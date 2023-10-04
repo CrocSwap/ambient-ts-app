@@ -3,7 +3,7 @@
 .price_info_container {
     display: flex;
     flex-direction: column;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .price_info_content {

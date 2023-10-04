@@ -10,8 +10,8 @@ export const ButtonBase = styled.button<{
     height: ${({ height }) => height || 'auto'};
     outline: none;
     padding: 12px 16px;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: var(--header-size);
+    line-height: var(--header1-lh);
     display: block;
     cursor: pointer;
     text-align: center;
@@ -68,7 +68,7 @@ export const ChipComponent = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     white-space: nowrap;
     height: 23px;
     padding: 5px 8px;
@@ -103,11 +103,7 @@ export const ToggleComponent = styled.div<{ disabled: boolean }>`
     cursor: pointer;
 
     &:focus-visible {
-        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-            0px 0px 21px rgba(205, 193, 255, 0.2),
-            0px 0px 12px rgba(205, 193, 255, 0.2),
-            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-            0px 0px 2px rgba(205, 193, 255, 0.2);
+        box-shadow: var(--glow-light-box-shadow);
     }
 
     &[data-isOn='true'] {
@@ -162,11 +158,7 @@ export const RangeSliderWrapper = styled.input<{
         if (percentageInput) {
             return `
             &:focus-visible {
-                box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-                    0px 0px 21px rgba(205, 193, 255, 0.2),
-                    0px 0px 12px rgba(205, 193, 255, 0.2),
-                    0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-                    0px 0px 2px rgba(205, 193, 255, 0.2);
+                box-shadow: var(--glow-light-box-shadow);
             }
             `;
         }

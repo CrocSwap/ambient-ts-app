@@ -42,11 +42,7 @@ export const LogoContainer = styled(Link)`
     align-items: center;
 
     &:focus-visible img {
-        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-            0px 0px 21px rgba(205, 193, 255, 0.2),
-            0px 0px 12px rgba(205, 193, 255, 0.2),
-            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-            0px 0px 2px rgba(205, 193, 255, 0.2);
+        box-shadow: var(--glow-light-box-shadow);
     }
 
     @media only screen and (min-width: 800px) {
@@ -150,7 +146,7 @@ const NavigationLinkStyles = css`
 
     &.active:focus-visible,
     &:focus-visible {
-        border: 1px solid var(--text2);
+        border: var(--grey-light-border);
     }
 
     &:hover:after,
@@ -178,11 +174,7 @@ export const UnderlinedMotionDiv = styled(motion.div)`
     right: 0;
     height: 1px;
     background: var(--text1);
-    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-        0px 0px 21px rgba(205, 193, 255, 0.2),
-        0px 0px 12px rgba(205, 193, 255, 0.2),
-        0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-        0px 0px 2px rgba(205, 193, 255, 0.2);
+    box-shadow: var(--glow-light-box-shadow);
 `;
 
 // WalletDropdown
@@ -317,7 +309,7 @@ export const TitleGradientButton = styled.button`
     border: none;
     background: var(--dark2);
     padding: 7.5px 12px 7.5px 6px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -326,11 +318,7 @@ export const TitleGradientButton = styled.button`
 
     &:hover,
     &:focus-visible {
-        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-            0px 0px 21px rgba(205, 193, 255, 0.2),
-            0px 0px 12px rgba(205, 193, 255, 0.2),
-            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-            0px 0px 2px rgba(205, 193, 255, 0.2);
+        box-shadow: var(--glow-light-box-shadow);
     }
 
     p {
@@ -372,7 +360,7 @@ export const StyledExchangeBalanceDropdown = styled.div`
         width: auto;
         height: auto;
         background: transparent;
-        border-radius: 4px;
+        border-radius: var(--border-radius);
     }
 `;
 
@@ -488,7 +476,7 @@ export const NavItemIconButton = styled(FlexContainer)<IconButtonProps>`
     background-color: var(--dark2);
     border-radius: ${(props) => (props.square ? '4px' : '50%')};
     padding: 5px;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     cursor: pointer;
 
     &:hover,
@@ -510,7 +498,7 @@ export const DropdownMenuContainer = styled(FlexContainer)`
     z-index: 99999;
     background-color: var(--dark2);
     padding: 0 4px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     height: 31px;
 `;
 
@@ -542,7 +530,7 @@ export const NetworkItem = styled(motion.li)`
     &:hover {
         backdrop-filter: blur(16.5px);
         -webkit-backdrop-filter: blur(16.5px);
-        border-radius: 4px;
+        border-radius: var(--border-radius);
     }
 `;
 
