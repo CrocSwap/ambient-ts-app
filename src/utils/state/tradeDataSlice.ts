@@ -32,7 +32,6 @@ export interface TradeDataIF {
     shouldSwapConverterUpdate: boolean;
     shouldLimitConverterUpdate: boolean;
     shouldSwapDirectionReverse: boolean;
-    shouldLimitDirectionReverse: boolean;
     shouldRangeDirectionReverse: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
@@ -80,7 +79,6 @@ const initialState: TradeDataIF = {
     shouldSwapConverterUpdate: false,
     shouldLimitConverterUpdate: false,
     shouldSwapDirectionReverse: false,
-    shouldLimitDirectionReverse: false,
     shouldRangeDirectionReverse: false,
     isDenomBase: true,
     advancedMode: false,
@@ -182,12 +180,6 @@ export const tradeDataSlice = createSlice({
             action: PayloadAction<boolean>,
         ) => {
             state.shouldSwapDirectionReverse = action.payload;
-        },
-        setShouldLimitDirectionReverse: (
-            state,
-            action: PayloadAction<boolean>,
-        ) => {
-            state.shouldLimitDirectionReverse = action.payload;
         },
         setShouldRangeDirectionReverse: (
             state,
@@ -296,7 +288,6 @@ export const {
     setShouldSwapConverterUpdate,
     setShouldLimitConverterUpdate,
     setShouldSwapDirectionReverse,
-    setShouldLimitDirectionReverse,
     setShouldRangeDirectionReverse,
     setDenomInBase,
     toggleDenomInBase,
