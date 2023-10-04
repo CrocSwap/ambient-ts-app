@@ -3,8 +3,6 @@ import { motion } from 'framer-motion';
 import {
     ContainerProps,
     ContainerStyles,
-    FlexProps,
-    Flex,
     BreakpointProps,
     Breakpoint,
     WrappedContainerStyles,
@@ -117,18 +115,17 @@ export const PortfolioControlContainer = styled.div`
 `;
 
 export const PortfolioMotionContainer = styled(motion.div)<
-    ContainerProps & FlexProps & BreakpointProps
+    ContainerProps & BreakpointProps
 >`
+    display: flex;
     ${WrappedContainerStyles}
-    ${Flex}
     ${Breakpoint}
 `;
 
 export const PortfolioMotionSubContainer = styled(motion.div)<
-    ContainerProps & FlexProps & BreakpointProps
+    ContainerProps & BreakpointProps
 >`
     ${ContainerStyles}
-    ${Flex}
     ${Breakpoint}
     @media only screen and (max-width: 600px) {
         border-radius: var(--border-radius);

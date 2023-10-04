@@ -11,11 +11,7 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import Button from '../../components/Form/Button';
 import { Chip } from '../../components/Form/Chip';
 
-interface Props {
-    title?: string;
-}
-
-export default function ExampleForm(props: Props) {
+export default function ExampleForm() {
     const { dexBalRange } = useContext(UserPreferenceContext);
 
     // eslint-disable-next-line
@@ -233,8 +229,15 @@ export default function ExampleForm(props: Props) {
                 padding='16px'
                 textAlign='center'
                 flexDirection='column'
-                outline='accent1'
-                tablet={{ margin: '64px 0 0 0' }}
+                outline='accent5'
+                fullWidth
+                // This means that if it's greater than lg, use these styles
+                lg={{
+                    margin: '64px 0 0 0',
+                    alignItems: 'center',
+                    outline: 'accent1',
+                    width: 'auto',
+                }}
             >
                 <FlexContainer
                     rounded
@@ -266,7 +269,15 @@ export default function ExampleForm(props: Props) {
                         </FlexContainer>
                     </FlexContainer>
                     {/* Body */}
-                    <FlexContainer gap={16}>
+                    <FlexContainer
+                        gap={16}
+                        justifyContent='space-around'
+                        flexDirection='column'
+                        lg={{
+                            justifyContent: 'flex-start',
+                            flexDirection: 'row',
+                        }}
+                    >
                         {LeftSide}
                         {RightSide}
                     </FlexContainer>

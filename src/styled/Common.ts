@@ -57,6 +57,12 @@ export const Color = css<ColorProps>`
         background ? `background-color: var(--${background});` : ''}
 `;
 
+export const Blur = css<{ blur: boolean }>`
+    pointer-events: none;
+    opacity: 0.2;
+    filter: blur(2px);
+`;
+
 interface PaddingProps {
     padding?: string;
 }
@@ -85,17 +91,6 @@ interface GridProps {
 }
 
 // Define the prop types for the FlexContainer
-export interface FlexProps {
-    flexDirection?: 'row' | 'column';
-}
-
-export const Flex = css<FlexProps>`
-    display: flex;
-    ${({ flexDirection }) => `
-        flex-direction: ${flexDirection ? flexDirection : 'row'};
-
-    `}
-`;
 
 type overflowTypes = 'scroll' | 'auto' | 'hidden' | 'visible';
 export interface ContainerProps {
@@ -124,6 +119,12 @@ export interface ContainerProps {
     zIndex?: number;
     minHeight?: string;
     maxHeight?: string;
+    blur?: boolean;
+    grow?: boolean;
+
+    margin?: string;
+    padding?: string;
+    flexDirection?: 'row' | 'column';
 }
 
 export const hideScrollbarCss = css`
@@ -158,6 +159,11 @@ export const ContainerStyles = (props: ContainerProps) => {
         zIndex,
         minHeight,
         maxHeight,
+        blur,
+        grow,
+        margin,
+        padding,
+        flexDirection,
     } = props;
     return `
         ${fullWidth ? 'width: 100%;' : ''}
@@ -184,6 +190,12 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${outline ? `outline: 1px solid ${outline};` : ''}
         ${minHeight ? `min-height: ${minHeight};` : ''}
         ${maxHeight ? `max-height: ${maxHeight};` : ''}
+        ${blur ? Blur : ''}
+        ${grow ? 'flex-grow: 1;' : ''}
+
+        ${padding ? `padding: ${padding};` : ''}
+        ${margin ? `margin: ${margin};` : ''}
+        ${flexDirection ? `flex-direction: ${flexDirection};` : ''}
     `;
 };
 
@@ -194,37 +206,28 @@ export const WrappedContainerStyles = css<ContainerProps>`
 type BeakpointSubProps = ContainerProps & ColorProps;
 // & FlexProps & FontProps & FontSizeProps & FontWeightProps & ColorProps & PaddingProps & MarginProps;
 export interface BreakpointProps {
-    mobile?: BeakpointSubProps;
-    tablet?: BeakpointSubProps;
-    desktop?: BeakpointSubProps;
+    sm?: BeakpointSubProps;
+    md?: BeakpointSubProps;
+    lg?: BeakpointSubProps;
+    xl?: BeakpointSubProps;
+    xxl?: BeakpointSubProps;
 }
 
-export const Breakpoint = css<BreakpointProps>`
-    ${({ mobile, tablet, desktop }) => `
-    ${
-        mobile
-            ? `@media only screen and (max-width: 600px) {
-                ${ContainerStyles(mobile)}
-            }`
-            : ''
-    }
-    ${
-        tablet
-            ? `@media only screen and (min-width: 600px) {
-                ${ContainerStyles(tablet)}
-            }`
-            : ''
-    }
-    ${
-        desktop
-            ? `@media only screen and (min-width: 1200px) {
-                ${ContainerStyles(desktop)}
-            }`
-            : ''
-    }
-
-    `}
-`;
+export const Breakpoint = (props: BreakpointProps) => {
+    const { sm, md, lg, xl, xxl } = props;
+    const breakpoints = ['640px', '768px', '1024px', '1280px', '1536px'];
+    const breakpointProps = [sm, md, lg, xl, xxl]; // These map by order 1:1
+    return css`
+        ${breakpointProps.map((breakpointStyles, i) => {
+            if (breakpointStyles)
+                return css`
+                    @media (min-width: ${breakpoints[i]}) {
+                        ${ContainerStyles(breakpointStyles)}
+                    }
+                `;
+        })}
+    `;
+};
 
 export const Text = styled.span<
     FontProps &
@@ -279,8 +282,7 @@ export const ScrollContainer = styled.div<ScrollContainerProps>`
 `;
 
 export const FlexContainer = styled.div<
-    FlexProps &
-        FontProps &
+    FontProps &
         FontSizeProps &
         FontWeightProps &
         ColorProps &
@@ -290,7 +292,7 @@ export const FlexContainer = styled.div<
         BreakpointProps &
         AnimationProps
 >`
-    ${Flex}
+    display: flex;
     ${Font}
     ${FontSize}
     ${FontWeight}
