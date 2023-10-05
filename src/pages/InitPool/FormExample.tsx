@@ -11,6 +11,7 @@ import { Chip } from '../../components/Form/Chip';
 import RangeWidth from '../../components/Form/RangeWidth/RangeWidth';
 import TokenInputQuantity from '../../components/Form/TokenInputQuantity';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import Toggle from '../../components/Form/Toggle';
 
 export default function ExampleForm() {
     const { dexBalRange } = useContext(UserPreferenceContext);
@@ -35,6 +36,7 @@ export default function ExampleForm() {
     ] = useState(false);
 
     const [inputValue, setInputValue] = useState<string>('');
+    const [isOn, setIsOn] = useState<boolean>(false);
 
     // eslint-disable-next-line
     const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
@@ -122,6 +124,17 @@ export default function ExampleForm() {
                 gap={10}
             >
                 <Text>Here is an example form with some common components</Text>
+                <FlexContainer gap={8}>
+                    <Toggle
+                        key={'toggle'}
+                        isOn={isOn}
+                        disabled={false}
+                        handleToggle={() => setIsOn(!isOn)}
+                        id='modal_toggle'
+                        aria-label={'aria-label'}
+                    />
+                    <Text>Toggle</Text>
+                </FlexContainer>
                 <Chip onClick={() => console.log('Hello')}>Outlined</Chip>
                 <Chip variant='filled' onClick={() => console.log('Hello')}>
                     Filled
@@ -188,6 +201,8 @@ export default function ExampleForm() {
             </FlexContainer>
         );
     }, [
+        inputValue,
+        isOn,
         baseCollateral,
         quoteCollateral,
         isWithdrawTokenAFromDexChecked,
