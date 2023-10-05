@@ -12,6 +12,7 @@ interface InitSkeletonProps {
     setActiveContent: (key: string) => void;
     title: string;
     isTokenModalOpen: boolean;
+    handleGoBack: () => void;
 }
 interface InnerContainerProps {
     isConfirmation: boolean;
@@ -38,14 +39,7 @@ const InnerContainer = styled.div<InnerContainerProps>`
 `;
 
 export default function InitSkeleton(props: InitSkeletonProps) {
-    const { children, isConfirmation, setActiveContent, title, activeContent } =
-        props;
-
-    function handleBack() {
-        if (activeContent === 'confirmation') {
-            setActiveContent('main');
-        } else return;
-    }
+    const { children, isConfirmation, title, handleGoBack } = props;
 
     return (
         <FlexContainer
@@ -76,7 +70,7 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                     <FlexContainer height='41px' alignItems='center'>
                         <MdArrowBackIosNew
                             style={{ cursor: 'pointer' }}
-                            onClick={handleBack}
+                            onClick={handleGoBack}
                         />
                         <Text
                             fontSize='header1'

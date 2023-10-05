@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import Button from '../../components/Form/Button';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
 import SelectedRange from '../../components/Trade/Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import { FlexContainer, GridContainer, Text } from '../../styled/Common';
@@ -45,6 +45,11 @@ interface InitConfirmationProps {
     baseCollateral: string;
     quoteCollateral: string;
     isDenomBase: boolean;
+
+    activeStep: number;
+    setActiveStep: React.Dispatch<React.SetStateAction<number>>;
+    isConfirmed: boolean;
+    setIsConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -71,9 +76,13 @@ export default function InitConfirmation(props: InitConfirmationProps) {
 
         baseCollateral,
         quoteCollateral,
+
+        activeStep,
+        setActiveStep,
+
+        isConfirmed,
+        setIsConfirmed,
     } = props;
-    const [isConfirmed, setIsConfirmed] = useState(false);
-    const [activeStep, setActiveStep] = useState(0);
 
     const tokensInfo = (
         <GridContainer numCols={2} gap={8} height='136px'>
@@ -95,7 +104,6 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         >
             <FlexContainer flexDirection='column' gap={8}>
                 {tokensInfo}
-
                 {isAmbient || (
                     <SelectedRange
                         isTokenABase={isTokenABase}

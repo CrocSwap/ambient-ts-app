@@ -912,6 +912,8 @@ export default function InitPool() {
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode !== '' && !isTransactionDenied;
 
+    const [activeConfirmationStep, setActiveConfirmationStep] = useState(0);
+
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setTxErrorCode('');
@@ -1560,12 +1562,39 @@ export default function InitPool() {
     const handleSetActiveContent = (newActiveContent: string) => {
         setActiveContent(newActiveContent);
     };
+    console.log({ activeConfirmationStep });
+    console.log({ showConfirmation });
+    const [userClickedSendToMetamask, setUserClickedSendToMetamask] =
+        useState(false);
+
+    // if we are in confirmation
+    // if the active step is 2, set active step to 1
+    //  if the active step is 1, set active step to 0
+    //  if the active step is 0, setActiveContent to main
+    // handle navigation
+    const handleGoBack = () => {
+        if (activeContent === 'confirmation') {
+            if (userClickedSendToMetamask) {
+                setUserClickedSendToMetamask(false);
+            } else {
+                setActiveContent('main');
+            }
+
+            if (activeConfirmationStep === 4) {
+                setActiveContent('main');
+            }
+        } else {
+            handleNavigation();
+        }
+        resetConfirmation();
+    };
 
     const hideContentOnMobile = !isMintLiqEnabled && showMobileVersion;
 
     const mainContent = (
         <InitSkeleton
             isTokenModalOpen={tokenModalOpen}
+            handleGoBack={handleGoBack}
             isConfirmation={false}
             activeContent={activeContent}
             setActiveContent={setActiveContent}
@@ -1656,11 +1685,16 @@ export default function InitPool() {
         baseCollateral,
         quoteCollateral,
         isDenomBase,
+        activeStep: activeConfirmationStep,
+        setActiveStep: setActiveConfirmationStep,
+        isConfirmed: userClickedSendToMetamask,
+        setIsConfirmed: setUserClickedSendToMetamask,
     };
 
     const confirmationContent = (
         <InitSkeleton
             isTokenModalOpen={tokenModalOpen}
+            handleGoBack={handleGoBack}
             isConfirmation={true}
             activeContent={activeContent}
             setActiveContent={setActiveContent}
@@ -1673,6 +1707,7 @@ export default function InitPool() {
     const settingsContent = (
         <InitSkeleton
             isTokenModalOpen={tokenModalOpen}
+            handleGoBack={handleGoBack}
             isConfirmation={true}
             activeContent={activeContent}
             setActiveContent={setActiveContent}
@@ -1685,6 +1720,7 @@ export default function InitPool() {
     const exampleContent3 = (
         <InitSkeleton
             isTokenModalOpen={tokenModalOpen}
+            handleGoBack={handleGoBack}
             isConfirmation={true}
             activeContent={activeContent}
             setActiveContent={setActiveContent}
