@@ -133,7 +133,6 @@ export default function OrdersMenu(props: propsIF) {
                 const newTokenB: string = isBid ? quote : base;
                 // determine if old token A === new token A
                 // no => flip `isTokenAPrimary`
-                console.log({ tradeData, newTokenA });
                 tradeData.tokenA.address.toLowerCase() !==
                     newTokenA.toLowerCase() &&
                     dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
