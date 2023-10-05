@@ -11,6 +11,8 @@ import {
 } from '../../ChartUtils/chartUtils';
 import * as d3 from 'd3';
 import { ChartContext } from '../../../../contexts/ChartContext';
+import { AiOutlineDash, AiOutlineMinus } from 'react-icons/ai';
+import { TbBrush } from 'react-icons/tb';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,6 +39,45 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [divLeft, setDivLeft] = useState(0);
     const [divTop, setDivTop] = useState(0);
+
+    const handleEditColor = () => {
+        if (selectedDrawnShape?.data) {
+            console.log('handleEditColor');
+        }
+    };
+
+    const handleEditSize = () => {
+        if (selectedDrawnShape?.data) {
+            console.log('handleEditSize');
+        }
+    };
+
+    const handleEditBorder = () => {
+        if (selectedDrawnShape?.data) {
+            console.log('handleEditBorder');
+        }
+    };
+
+    const editShapeOptions = [
+        {
+            name: 'Color',
+            type: 'color',
+            operation: handleEditColor,
+            icon: <TbBrush />,
+        },
+        {
+            name: 'Size',
+            type: 'size',
+            operation: handleEditSize,
+            icon: <AiOutlineMinus color='white' />,
+        },
+        {
+            name: 'Border',
+            type: 'border',
+            operation: handleEditBorder,
+            icon: <AiOutlineDash color='white' />,
+        },
+    ];
 
     useEffect(() => {
         const floatingDiv = d3
@@ -119,6 +160,11 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             <FloatingButtonDiv>
                 <img src={dragButton} alt='' />
             </FloatingButtonDiv>
+            {editShapeOptions.map((item, index) => (
+                <FloatingOptions key={index} onClick={item.operation}>
+                    {item.icon}
+                </FloatingOptions>
+            ))}
             <FloatingOptions onClick={deleteDrawnShape}>
                 <img src={deleteButton} alt='' />
             </FloatingOptions>

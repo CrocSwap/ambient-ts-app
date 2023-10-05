@@ -1,14 +1,19 @@
 import styled from 'styled-components';
 
+// --dark1: #0d1117;
+// --dark2: #171d27;
+// --dark3: #242f3f;
+// --dark4: #141922;
+
 const FloatingDiv = styled.div`
-    align-items: stretch;
+    align-items: center;
     border-radius: 6px;
-    box-shadow: 0 2px 6px #ffffff99;
+    box-shadow: 0 2px 6px #0d1117;
     display: flex;
     flex-direction: column;
     opacity: 1;
     position: fixed;
-    background: rgba(23, 29, 39, 255);
+    background: #242f3f;
     flex-direction: row;
     z-index: 55;
 `;
