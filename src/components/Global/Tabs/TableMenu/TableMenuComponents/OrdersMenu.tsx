@@ -133,7 +133,9 @@ export default function OrdersMenu(props: propsIF) {
                 const newTokenB: string = isBid ? quote : base;
                 // determine if old token A === new token A
                 // no => flip `isTokenAPrimary`
-                tradeData.tokenA.address !== newTokenA &&
+                console.log({ tradeData, newTokenA });
+                tradeData.tokenA.address.toLowerCase() !==
+                    newTokenA.toLowerCase() &&
                     dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
                 // URL params for link to limit page
                 const limitLinkParams: limitParamsIF = {

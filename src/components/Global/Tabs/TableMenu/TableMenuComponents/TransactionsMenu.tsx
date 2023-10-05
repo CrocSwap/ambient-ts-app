@@ -125,7 +125,8 @@ export default function TransactionsMenu(props: propsIF) {
                 dispatch(setShouldSwapDirectionReverse(true));
             }
         } else if (tx.entityType === 'limitOrder') {
-            tradeData.tokenA.address !== (tx.isBuy ? tx.base : tx.quote) &&
+            tradeData.tokenA.address.toLowerCase() !==
+                (tx.isBuy ? tx.base.toLowerCase() : tx.quote.toLowerCase()) &&
                 dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
             // URL params for link to limit page
             const limitLinkParams: limitParamsIF = {
