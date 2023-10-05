@@ -1578,9 +1578,8 @@ export default function Chart(props: propsIF) {
                                 }
                             }
                         } else {
-                            const advancedValue = scaleData?.yScale.invert(
-                                event.sourceEvent.clientY - rectCanvas.top,
-                            );
+                            const advancedValue =
+                                scaleData?.yScale.invert(offsetY);
                             highLineMoved = draggingLine === 'Max';
                             lowLineMoved = draggingLine === 'Min';
 
