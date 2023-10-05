@@ -23,6 +23,7 @@ import {
     setShouldRangeDirectionReverse,
     setPrimaryQuantityRange,
     setRangeTicksCopied,
+    setIsTokenAPrimary,
 } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -124,19 +125,17 @@ export default function TransactionsMenu(props: propsIF) {
                 dispatch(setShouldSwapDirectionReverse(true));
             }
         } else if (tx.entityType === 'limitOrder') {
-            dispatch(setLimitTickCopied(true));
+            tradeData.tokenA.address !== (tx.isBuy ? tx.base : tx.quote) &&
+                dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
             // URL params for link to limit page
             const limitLinkParams: limitParamsIF = {
                 chain: chainId,
-                tokenA: tx.base,
-                tokenB: tx.quote,
+                tokenA: tx.isBuy ? tx.base : tx.quote,
+                tokenB: tx.isBuy ? tx.quote : tx.base,
                 limitTick: tx.isBuy ? tx.bidTick : tx.askTick,
             };
             // navigate user to limit page with URL params defined above
             linkGenLimit.navigate(limitLinkParams);
-            setTimeout(() => {
-                dispatch(setLimitTick(tx.isBuy ? tx.bidTick : tx.askTick));
-            }, 500);
         }
         setShowDropdownMenu(false);
     };
