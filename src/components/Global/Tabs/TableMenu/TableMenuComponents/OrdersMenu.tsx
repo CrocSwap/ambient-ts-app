@@ -11,14 +11,10 @@ import LimitActionModal from '../../../../LimitActionModal/LimitActionModal';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    // useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import {
     setLimitTick,
     setLimitTickCopied,
-    // setShouldLimitDirectionReverse,
 } from '../../../../../utils/state/tradeDataSlice';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
@@ -77,16 +73,6 @@ export default function OrdersMenu(props: propsIF) {
 
         handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
-
-        // const shouldReverse =
-        //     tradeData.tokenA.address.toLowerCase() ===
-        //     (limitOrder.isBid
-        //         ? limitOrder.quote.toLowerCase()
-        //         : limitOrder.base.toLowerCase());
-
-        // if (shouldReverse) {
-        //     dispatch(setShouldLimitDirectionReverse(true));
-        // }
 
         // why is this is in on a half-second delay?
         setTimeout(() => {
