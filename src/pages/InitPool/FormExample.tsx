@@ -9,6 +9,8 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import Button from '../../components/Form/Button';
 import { Chip } from '../../components/Form/Chip';
 import RangeWidth from '../../components/Form/RangeWidth/RangeWidth';
+import TokenInputQuantity from '../../components/Form/TokenInputQuantity';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 export default function ExampleForm() {
     const { dexBalRange } = useContext(UserPreferenceContext);
@@ -32,6 +34,8 @@ export default function ExampleForm() {
         setRescaleRangeBoundariesWithSlider,
     ] = useState(false);
 
+    const [inputValue, setInputValue] = useState<string>('');
+
     // eslint-disable-next-line
     const [pinnedDisplayPrices, setPinnedDisplayPrices] = useState<
         | {
@@ -48,6 +52,26 @@ export default function ExampleForm() {
           }
         | undefined
     >();
+
+    // Min Max Price
+    const [minPriceInputString, setMinPriceInputString] = useState<string>('');
+    const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
+    // eslint-disable-next-line
+    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
+        useState(-10);
+    // eslint-disable-next-line
+    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
+        useState(10);
+    // eslint-disable-next-line
+    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
+        useState(false);
+    // eslint-disable-next-line
+    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
+        useState(false);
+    const [minPrice, setMinPrice] = useState(10);
+    const [maxPrice, setMaxPrice] = useState(100);
+
+    const { tokenA } = useAppSelector((state) => state.tradeData);
 
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
@@ -70,24 +94,6 @@ export default function ExampleForm() {
         poolPriceCharacter: getUnicodeCharacter('ETH'),
         isAmbient: false,
     };
-
-    // Min Max Price
-    const [minPriceInputString, setMinPriceInputString] = useState<string>('');
-    const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
-    // eslint-disable-next-line
-    const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] =
-        useState(-10);
-    // eslint-disable-next-line
-    const [maxPriceDifferencePercentage, setMaxPriceDifferencePercentage] =
-        useState(10);
-    // eslint-disable-next-line
-    const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] =
-        useState(false);
-    // eslint-disable-next-line
-    const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] =
-        useState(false);
-    const [minPrice, setMinPrice] = useState(10);
-    const [maxPrice, setMaxPrice] = useState(100);
 
     const minMaxPriceProps = {
         minPricePercentage: minPriceDifferencePercentage,
@@ -123,6 +129,22 @@ export default function ExampleForm() {
                 <Chip variant='secondary' onClick={() => console.log('Hello')}>
                     Secondary
                 </Chip>
+
+                <TokenInputQuantity
+                    label='Select Token'
+                    tokenAorB={null}
+                    value={inputValue}
+                    handleTokenInputEvent={setInputValue}
+                    parseInput={(input: string) => {
+                        return input;
+                    }}
+                    disable={false}
+                    token={tokenA}
+                    setTokenModalOpen={() => {
+                        return null;
+                    }}
+                    fieldId='exchangeBalance'
+                />
 
                 <FlexContainer
                     flexDirection='row'

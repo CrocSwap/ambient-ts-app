@@ -2,7 +2,7 @@ import styled from 'styled-components/macro';
 import { motion } from 'framer-motion';
 import { ContainerStyles, Breakpoint, FlexContainer } from '../Common';
 
-import { WrappedContainerStyles, ContainerProps } from '../Common/Container';
+import { ContainerProps } from '../Common/Container';
 import { BreakpointProps } from '../Common/Breakpoints';
 
 export const PortfolioTabsPortfolioTabsContainer = styled.div`
