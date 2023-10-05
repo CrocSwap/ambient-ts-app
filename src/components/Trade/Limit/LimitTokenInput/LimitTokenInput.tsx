@@ -20,7 +20,6 @@ import {
     setLimitTick,
     setPoolPriceNonDisplay,
     setIsTokenAPrimary,
-    // setShouldLimitDirectionReverse,
     setPrimaryQuantity,
     setIsTokenAPrimaryRange,
 } from '../../../../utils/state/tradeDataSlice';
@@ -78,7 +77,6 @@ function LimitTokenInput(props: propsIF) {
         isTokenAPrimaryRange,
         primaryQuantity,
         limitTickCopied,
-        shouldLimitDirectionReverse,
         isDenomBase,
     } = useAppSelector((state) => state.tradeData);
 
@@ -115,11 +113,7 @@ function LimitTokenInput(props: propsIF) {
     }, [tokenA.address, tokenB.address]);
 
     useEffect(() => {
-        if (!shouldLimitDirectionReverse) {
-            isTokenAPrimary
-                ? handleTokenAChangeEvent()
-                : handleTokenBChangeEvent();
-        }
+        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [limitTickDisplayPrice]);
 
     useEffect(() => {
