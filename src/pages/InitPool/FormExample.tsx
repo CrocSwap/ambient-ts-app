@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { IoIosCheckmarkCircle } from 'react-icons/io';
-import { FlexContainer, Text } from '../../styled/Common';
+import { Container, FlexContainer, Text } from '../../styled/Common';
 import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
@@ -17,13 +17,13 @@ export default function ExampleForm() {
     const [baseCollateral, setBaseCollateral] = useState<string>('');
     // eslint-disable-next-line
     const [quoteCollateral, setQuoteCollateral] = useState<string>('');
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isWithdrawTokenAFromDexChecked, setIsWithdrawTokenAFromDexChecked] =
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] =
         useState<boolean>(dexBalRange.drawFromDexBal.isEnabled);
 
-    // See Range.tsx line 81
     const [rangeWidthPercentage, setRangeWidthPercentage] =
         useState<number>(23);
     const [
@@ -114,7 +114,6 @@ export default function ExampleForm() {
                 flexDirection='column'
                 justifyContent='center'
                 gap={10}
-                blur={false}
             >
                 <Text>Here is an example form with some common components</Text>
                 <Chip onClick={() => console.log('Hello')}>Outlined</Chip>
@@ -204,6 +203,13 @@ export default function ExampleForm() {
                     flat
                     disabled
                 />
+                <FlexContainer fullWidth overlay='blur'>
+                    <Button
+                        title={'Blur'}
+                        action={() => console.log('Confirm')}
+                        flat
+                    />
+                </FlexContainer>
             </FlexContainer>
         );
     }, [rangeWidthProps, rangePriceInfoProps, minMaxPriceProps]);
@@ -261,20 +267,21 @@ export default function ExampleForm() {
                         </FlexContainer>
                     </FlexContainer>
                     {/* Body */}
-                    <FlexContainer
+                    <Container
+                        display='flex'
                         gap={16}
                         justifyContent='space-around'
                         flexDirection='column'
                         maxWidth='500px'
                         lg={{
-                            justifyContent: 'flex-start',
-                            flexDirection: 'row',
+                            display: 'grid',
+                            numCols: 2,
                             maxWidth: 'none',
                         }}
                     >
                         {LeftSide}
                         {RightSide}
-                    </FlexContainer>
+                    </Container>
                 </FlexContainer>
             </FlexContainer>
         </FlexContainer>
