@@ -17,8 +17,6 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setLimitTick,
-    setLimitTickCopied,
     setShouldSwapDirectionReverse,
     setShouldRangeDirectionReverse,
     setPrimaryQuantityRange,
@@ -171,8 +169,6 @@ export default function TransactionsMenu(props: propsIF) {
                 });
                 break;
             case 'limitOrder':
-                dispatch(setLimitTickCopied(true));
-                dispatch(setLimitTick(undefined));
                 linkGenLimit.navigate(
                     tx.isBid
                         ? {

@@ -36,10 +36,7 @@ import {
     addReceipt,
     updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
-import {
-    setLimitTick,
-    setLimitTickCopied,
-} from '../../../utils/state/tradeDataSlice';
+import { setLimitTick } from '../../../utils/state/tradeDataSlice';
 import {
     TransactionError,
     isTransactionReplacedError,
@@ -85,7 +82,6 @@ export default function Limit() {
         poolPriceNonDisplay,
         liquidityFee,
         isDenomBase,
-        limitTickCopied,
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
     const { urlParamMap, updateURL } = useTradeData();
@@ -159,12 +155,7 @@ export default function Limit() {
 
     useEffect(() => {
         (async () => {
-            if (
-                limitTick === undefined &&
-                !!poolPriceNonDisplay &&
-                crocEnv &&
-                !limitTickCopied
-            ) {
+            if (limitTick === undefined && !!poolPriceNonDisplay && crocEnv) {
                 if (!pool) return;
 
                 const spotPrice = await cachedQuerySpotPrice(
@@ -318,13 +309,11 @@ export default function Limit() {
                 }
 
                 setPriceInputFieldBlurred(false);
-                if (limitTickCopied) dispatch(setLimitTickCopied(false));
             }
         })();
     }, [
         !!crocEnv,
         pool,
-        limitTickCopied,
         limitTick,
         isDenomBase,
         priceInputFieldBlurred,

@@ -76,7 +76,6 @@ function LimitTokenInput(props: propsIF) {
         isTokenAPrimary,
         isTokenAPrimaryRange,
         primaryQuantity,
-        limitTickCopied,
         isDenomBase,
     } = useAppSelector((state) => state.tradeData);
 
@@ -93,15 +92,13 @@ function LimitTokenInput(props: propsIF) {
         dispatch(setLimitTick(undefined));
         dispatch(setPoolPriceNonDisplay(0));
 
-        if (!limitTickCopied) {
-            const limitLinkParams: limitParamsIF = {
-                chain: chainId,
-                tokenA: tokenB.address,
-                tokenB: tokenA.address,
-            };
-            // navigate user to limit page with URL params defined above
-            linkGenLimit.navigate(limitLinkParams);
-        }
+        const limitLinkParams: limitParamsIF = {
+            chain: chainId,
+            tokenA: tokenB.address,
+            tokenB: tokenA.address,
+        };
+        // navigate user to limit page with URL params defined above
+        linkGenLimit.navigate(limitLinkParams);
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
