@@ -1344,208 +1344,9 @@ export default function Chart(props: propsIF) {
         });
     }
 
-    function calculateRangeWhenDragged(
-        rangeValue: number,
-        draggingLine: string | undefined,
-    ) {
-        if (liquidityData) {
-            let rangeWidthPercentage: number;
-            let dragSwitched = false;
-
-            const displayValue =
-                poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
-
-            const low = ranges.filter(
-                (target: lineValue) => target.name === 'Min',
-            )[0].value;
-            const high = ranges.filter(
-                (target: lineValue) => target.name === 'Max',
-            )[0].value;
-
-            const draggedValue = rangeValue;
-
-            const lineToBeSet = draggedValue > displayValue ? 'Max' : 'Min';
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let pinnedDisplayPrices: any;
-
-            if (
-                !tradeData.advancedMode ||
-                location.pathname.includes('reposition')
-            ) {
-                if (
-                    draggedValue === 0 ||
-                    draggedValue === liquidityData?.topBoundary
-                ) {
-                    const minValue =
-                        draggedValue === 0
-                            ? 0
-                            : draggedValue < liquidityData?.lowBoundary
-                            ? draggedValue
-                            : 0;
-
-                    return [minValue, liquidityData?.topBoundary];
-                } else {
-                    if (lineToBeSet === 'Max') {
-                        const pinnedTick = getPinnedTickFromDisplayPrice(
-                            isDenomBase,
-                            baseTokenDecimals,
-                            quoteTokenDecimals,
-                            false, // isMinPrice
-                            draggedValue.toString(),
-                            lookupChain(chainId).gridSize,
-                        );
-
-                        rangeWidthPercentage = Math.floor(
-                            Math.abs(pinnedTick - currentPoolPriceTick) / 100,
-                        );
-
-                        rangeWidthPercentage =
-                            rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
-
-                        const offset = rangeWidthPercentage * 100;
-
-                        const lowTick = currentPoolPriceTick - offset;
-                        const highTick = currentPoolPriceTick + offset;
-
-                        pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                            denomInBase,
-                            baseTokenDecimals,
-                            quoteTokenDecimals,
-                            lowTick,
-                            highTick,
-                            lookupChain(chainId).gridSize,
-                        );
-                    } else {
-                        const pinnedTick = getPinnedTickFromDisplayPrice(
-                            isDenomBase,
-                            baseTokenDecimals,
-                            quoteTokenDecimals,
-                            true, // isMinPrice
-                            draggedValue.toString(),
-                            lookupChain(chainId).gridSize,
-                        );
-
-                        rangeWidthPercentage = Math.floor(
-                            Math.abs(currentPoolPriceTick - pinnedTick) / 100,
-                        );
-
-                        rangeWidthPercentage =
-                            rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
-                        const offset = rangeWidthPercentage * 100;
-
-                        const lowTick = currentPoolPriceTick - offset;
-                        const highTick = currentPoolPriceTick + offset;
-
-                        pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                            denomInBase,
-                            baseTokenDecimals,
-                            quoteTokenDecimals,
-                            lowTick,
-                            highTick,
-                            lookupChain(chainId).gridSize,
-                        );
-                    }
-
-                    if (pinnedDisplayPrices !== undefined) {
-                        return [
-                            Number(
-                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                            ),
-                            Number(
-                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                            ),
-                        ];
-                    }
-                }
-            } else {
-                const advancedValue = rangeValue;
-
-                let pinnedMaxPriceDisplayTruncated = high;
-                let pinnedMinPriceDisplayTruncated = low;
-
-                if (advancedValue >= 0) {
-                    if (draggingLine === 'Max') {
-                        if (advancedValue < low) {
-                            pinnedDisplayPrices =
-                                getPinnedPriceValuesFromDisplayPrices(
-                                    denomInBase,
-                                    baseTokenDecimals,
-                                    quoteTokenDecimals,
-                                    high.toString(),
-                                    advancedValue.toString(),
-                                    lookupChain(chainId).gridSize,
-                                );
-                        } else {
-                            pinnedDisplayPrices =
-                                getPinnedPriceValuesFromDisplayPrices(
-                                    denomInBase,
-                                    baseTokenDecimals,
-                                    quoteTokenDecimals,
-                                    low.toString(),
-                                    advancedValue.toString(),
-                                    lookupChain(chainId).gridSize,
-                                );
-                        }
-                    } else {
-                        pinnedDisplayPrices =
-                            getPinnedPriceValuesFromDisplayPrices(
-                                denomInBase,
-                                baseTokenDecimals,
-                                quoteTokenDecimals,
-                                advancedValue.toString(),
-                                high.toString(),
-                                lookupChain(chainId).gridSize,
-                            );
-                    }
-
-                    pinnedMaxPriceDisplayTruncated = Number(
-                        pinnedDisplayPrices.pinnedMaxPriceDisplay,
-                    );
-                    pinnedMinPriceDisplayTruncated = Number(
-                        pinnedDisplayPrices.pinnedMinPriceDisplay,
-                    );
-                }
-
-                let returnMaxValue = high;
-                let returnMinValue = low;
-
-                // to:do fix when advanced is fixed AdvancedPepe
-                if (draggingLine === 'Max') {
-                    if (
-                        dragSwitched ||
-                        pinnedMaxPriceDisplayTruncated <
-                            pinnedMinPriceDisplayTruncated
-                    ) {
-                        returnMinValue = pinnedMaxPriceDisplayTruncated;
-
-                        dragSwitched = true;
-                    } else {
-                        returnMaxValue = pinnedMaxPriceDisplayTruncated;
-                    }
-                } else {
-                    if (
-                        dragSwitched ||
-                        pinnedMinPriceDisplayTruncated >
-                            pinnedMaxPriceDisplayTruncated
-                    ) {
-                        returnMaxValue = pinnedMinPriceDisplayTruncated;
-
-                        dragSwitched = true;
-                    } else {
-                        returnMinValue = pinnedMinPriceDisplayTruncated;
-                    }
-                }
-
-                return [returnMinValue, returnMaxValue];
-            }
-        }
-    }
-
-    // create drag events
+    // dragRange
     useEffect(() => {
         if (scaleData) {
-            let newLimitValue: number;
             let newRangeValue: lineValue[];
 
             let lowLineMoved: boolean;
@@ -1578,8 +1379,7 @@ export default function Chart(props: propsIF) {
 
             let oldRangeMinValue: number | undefined = undefined;
             let oldRangeMaxValue: number | undefined = undefined;
-
-            // *** RANGE LINES DRAG ***
+            let offsetY = 0;
             const dragRange = d3
                 .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
                 .on('start', (event) => {
@@ -1614,303 +1414,298 @@ export default function Chart(props: propsIF) {
                     }
                 })
                 .on('drag', function (event) {
-                    if (!event.sourceEvent.type.includes('touch')) {
-                        if (!cancelDrag && liquidityData) {
-                            setIsLineDrag(true);
-                            setCrosshairActive('none');
+                    if (event.sourceEvent instanceof TouchEvent) {
+                        offsetY =
+                            event.sourceEvent.touches[0].clientY -
+                            rectCanvas?.top;
+                    } else {
+                        offsetY = event.sourceEvent.clientY - rectCanvas?.top;
+                    }
 
-                            let draggedValue =
-                                scaleData?.yScale.invert(
-                                    event.sourceEvent.clientY - rectCanvas.top,
-                                ) >= liquidityData?.topBoundary
-                                    ? liquidityData?.topBoundary
-                                    : scaleData?.yScale.invert(
-                                          event.sourceEvent.clientY -
-                                              rectCanvas.top,
-                                      );
+                    if (!cancelDrag && liquidityData) {
+                        setIsLineDrag(true);
+                        setCrosshairActive('none');
 
-                            draggedValue = draggedValue < 0 ? 0 : draggedValue;
+                        let draggedValue =
+                            scaleData?.yScale.invert(offsetY) >=
+                            liquidityData?.topBoundary
+                                ? liquidityData?.topBoundary
+                                : scaleData?.yScale.invert(offsetY);
 
-                            const displayValue =
-                                poolPriceDisplay !== undefined
-                                    ? poolPriceDisplay
-                                    : 0;
+                        draggedValue = draggedValue < 0 ? 0 : draggedValue;
 
-                            const low = ranges.filter(
-                                (target: lineValue) => target.name === 'Min',
-                            )[0].value;
-                            const high = ranges.filter(
-                                (target: lineValue) => target.name === 'Max',
-                            )[0].value;
+                        const displayValue =
+                            poolPriceDisplay !== undefined
+                                ? poolPriceDisplay
+                                : 0;
 
-                            const lineToBeSet =
-                                draggedValue > displayValue ? 'Max' : 'Min';
+                        const low = ranges.filter(
+                            (target: lineValue) => target.name === 'Min',
+                        )[0].value;
+                        const high = ranges.filter(
+                            (target: lineValue) => target.name === 'Max',
+                        )[0].value;
 
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            let pinnedDisplayPrices: any;
+                        const lineToBeSet =
+                            draggedValue > displayValue ? 'Max' : 'Min';
 
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        let pinnedDisplayPrices: any;
+
+                        if (
+                            !tradeData.advancedMode ||
+                            location.pathname.includes('reposition')
+                        ) {
                             if (
-                                !tradeData.advancedMode ||
-                                location.pathname.includes('reposition')
+                                draggedValue === 0 ||
+                                draggedValue === liquidityData?.topBoundary
                             ) {
-                                if (
-                                    draggedValue === 0 ||
-                                    draggedValue === liquidityData?.topBoundary
-                                ) {
-                                    const minValue =
-                                        draggedValue === 0
-                                            ? 0
-                                            : draggedValue <
-                                              liquidityData?.lowBoundary
-                                            ? draggedValue
-                                            : 0;
+                                const minValue =
+                                    draggedValue === 0
+                                        ? 0
+                                        : draggedValue <
+                                          liquidityData?.lowBoundary
+                                        ? draggedValue
+                                        : 0;
 
+                                setRanges((prevState) => {
+                                    const newTargets = [...prevState];
+
+                                    newTargets.filter(
+                                        (target: lineValue) =>
+                                            target.name === 'Min',
+                                    )[0].value = minValue;
+
+                                    newTargets.filter(
+                                        (target: lineValue) =>
+                                            target.name === 'Max',
+                                    )[0].value = liquidityData?.topBoundary;
+
+                                    newRangeValue = newTargets;
+
+                                    return newTargets;
+                                });
+                            } else {
+                                if (lineToBeSet === 'Max') {
+                                    const pinnedTick =
+                                        getPinnedTickFromDisplayPrice(
+                                            isDenomBase,
+                                            baseTokenDecimals,
+                                            quoteTokenDecimals,
+                                            false, // isMinPrice
+                                            draggedValue.toString(),
+                                            lookupChain(chainId).gridSize,
+                                        );
+
+                                    rangeWidthPercentage = Math.floor(
+                                        Math.abs(
+                                            pinnedTick - currentPoolPriceTick,
+                                        ) / 100,
+                                    );
+
+                                    rangeWidthPercentage =
+                                        rangeWidthPercentage < 1
+                                            ? 1
+                                            : rangeWidthPercentage;
+
+                                    const offset = rangeWidthPercentage * 100;
+
+                                    const lowTick =
+                                        currentPoolPriceTick - offset;
+                                    const highTick =
+                                        currentPoolPriceTick + offset;
+
+                                    pinnedDisplayPrices =
+                                        getPinnedPriceValuesFromTicks(
+                                            denomInBase,
+                                            baseTokenDecimals,
+                                            quoteTokenDecimals,
+                                            lowTick,
+                                            highTick,
+                                            lookupChain(chainId).gridSize,
+                                        );
+                                } else {
+                                    const pinnedTick =
+                                        getPinnedTickFromDisplayPrice(
+                                            isDenomBase,
+                                            baseTokenDecimals,
+                                            quoteTokenDecimals,
+                                            true, // isMinPrice
+                                            draggedValue.toString(),
+                                            lookupChain(chainId).gridSize,
+                                        );
+
+                                    rangeWidthPercentage = Math.floor(
+                                        Math.abs(
+                                            currentPoolPriceTick - pinnedTick,
+                                        ) / 100,
+                                    );
+
+                                    rangeWidthPercentage =
+                                        rangeWidthPercentage < 1
+                                            ? 1
+                                            : rangeWidthPercentage;
+                                    const offset = rangeWidthPercentage * 100;
+
+                                    const lowTick =
+                                        currentPoolPriceTick - offset;
+                                    const highTick =
+                                        currentPoolPriceTick + offset;
+
+                                    pinnedDisplayPrices =
+                                        getPinnedPriceValuesFromTicks(
+                                            denomInBase,
+                                            baseTokenDecimals,
+                                            quoteTokenDecimals,
+                                            lowTick,
+                                            highTick,
+                                            lookupChain(chainId).gridSize,
+                                        );
+                                }
+
+                                if (pinnedDisplayPrices !== undefined) {
                                     setRanges((prevState) => {
                                         const newTargets = [...prevState];
 
                                         newTargets.filter(
                                             (target: lineValue) =>
                                                 target.name === 'Min',
-                                        )[0].value = minValue;
-
+                                        )[0].value = Number(
+                                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                                        );
                                         newTargets.filter(
                                             (target: lineValue) =>
                                                 target.name === 'Max',
-                                        )[0].value = liquidityData?.topBoundary;
+                                        )[0].value = Number(
+                                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                                        );
 
                                         newRangeValue = newTargets;
-
                                         return newTargets;
                                     });
-                                } else {
-                                    if (lineToBeSet === 'Max') {
-                                        const pinnedTick =
-                                            getPinnedTickFromDisplayPrice(
-                                                isDenomBase,
-                                                baseTokenDecimals,
-                                                quoteTokenDecimals,
-                                                false, // isMinPrice
-                                                draggedValue.toString(),
-                                                lookupChain(chainId).gridSize,
-                                            );
-
-                                        rangeWidthPercentage = Math.floor(
-                                            Math.abs(
-                                                pinnedTick -
-                                                    currentPoolPriceTick,
-                                            ) / 100,
-                                        );
-
-                                        rangeWidthPercentage =
-                                            rangeWidthPercentage < 1
-                                                ? 1
-                                                : rangeWidthPercentage;
-
-                                        const offset =
-                                            rangeWidthPercentage * 100;
-
-                                        const lowTick =
-                                            currentPoolPriceTick - offset;
-                                        const highTick =
-                                            currentPoolPriceTick + offset;
-
-                                        pinnedDisplayPrices =
-                                            getPinnedPriceValuesFromTicks(
-                                                denomInBase,
-                                                baseTokenDecimals,
-                                                quoteTokenDecimals,
-                                                lowTick,
-                                                highTick,
-                                                lookupChain(chainId).gridSize,
-                                            );
-                                    } else {
-                                        const pinnedTick =
-                                            getPinnedTickFromDisplayPrice(
-                                                isDenomBase,
-                                                baseTokenDecimals,
-                                                quoteTokenDecimals,
-                                                true, // isMinPrice
-                                                draggedValue.toString(),
-                                                lookupChain(chainId).gridSize,
-                                            );
-
-                                        rangeWidthPercentage = Math.floor(
-                                            Math.abs(
-                                                currentPoolPriceTick -
-                                                    pinnedTick,
-                                            ) / 100,
-                                        );
-
-                                        rangeWidthPercentage =
-                                            rangeWidthPercentage < 1
-                                                ? 1
-                                                : rangeWidthPercentage;
-                                        const offset =
-                                            rangeWidthPercentage * 100;
-
-                                        const lowTick =
-                                            currentPoolPriceTick - offset;
-                                        const highTick =
-                                            currentPoolPriceTick + offset;
-
-                                        pinnedDisplayPrices =
-                                            getPinnedPriceValuesFromTicks(
-                                                denomInBase,
-                                                baseTokenDecimals,
-                                                quoteTokenDecimals,
-                                                lowTick,
-                                                highTick,
-                                                lookupChain(chainId).gridSize,
-                                            );
-                                    }
-
-                                    if (pinnedDisplayPrices !== undefined) {
-                                        setRanges((prevState) => {
-                                            const newTargets = [...prevState];
-
-                                            newTargets.filter(
-                                                (target: lineValue) =>
-                                                    target.name === 'Min',
-                                            )[0].value = Number(
-                                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                                            );
-                                            newTargets.filter(
-                                                (target: lineValue) =>
-                                                    target.name === 'Max',
-                                            )[0].value = Number(
-                                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                                            );
-
-                                            newRangeValue = newTargets;
-                                            return newTargets;
-                                        });
-                                    }
                                 }
-                            } else {
-                                const advancedValue = scaleData?.yScale.invert(
-                                    event.sourceEvent.clientY - rectCanvas.top,
-                                );
-                                highLineMoved = draggingLine === 'Max';
-                                lowLineMoved = draggingLine === 'Min';
+                            }
+                        } else {
+                            const advancedValue =
+                                scaleData?.yScale.invert(offsetY);
+                            highLineMoved = draggingLine === 'Max';
+                            lowLineMoved = draggingLine === 'Min';
 
-                                let pinnedMaxPriceDisplayTruncated = high;
-                                let pinnedMinPriceDisplayTruncated = low;
+                            let pinnedMaxPriceDisplayTruncated = high;
+                            let pinnedMinPriceDisplayTruncated = low;
 
-                                if (advancedValue >= 0) {
-                                    if (draggingLine === 'Max') {
-                                        if (advancedValue < low) {
-                                            pinnedDisplayPrices =
-                                                getPinnedPriceValuesFromDisplayPrices(
-                                                    denomInBase,
-                                                    baseTokenDecimals,
-                                                    quoteTokenDecimals,
-                                                    high.toString(),
-                                                    advancedValue.toString(),
-                                                    lookupChain(chainId)
-                                                        .gridSize,
-                                                );
-                                        } else {
-                                            pinnedDisplayPrices =
-                                                getPinnedPriceValuesFromDisplayPrices(
-                                                    denomInBase,
-                                                    baseTokenDecimals,
-                                                    quoteTokenDecimals,
-                                                    low.toString(),
-                                                    advancedValue.toString(),
-                                                    lookupChain(chainId)
-                                                        .gridSize,
-                                                );
-                                        }
+                            if (advancedValue >= 0) {
+                                if (draggingLine === 'Max') {
+                                    if (advancedValue < low) {
+                                        pinnedDisplayPrices =
+                                            getPinnedPriceValuesFromDisplayPrices(
+                                                denomInBase,
+                                                baseTokenDecimals,
+                                                quoteTokenDecimals,
+                                                high.toString(),
+                                                advancedValue.toString(),
+                                                lookupChain(chainId).gridSize,
+                                            );
                                     } else {
                                         pinnedDisplayPrices =
                                             getPinnedPriceValuesFromDisplayPrices(
                                                 denomInBase,
                                                 baseTokenDecimals,
                                                 quoteTokenDecimals,
+                                                low.toString(),
                                                 advancedValue.toString(),
-                                                high.toString(),
                                                 lookupChain(chainId).gridSize,
                                             );
                                     }
-
-                                    pinnedMaxPriceDisplayTruncated = Number(
-                                        pinnedDisplayPrices.pinnedMaxPriceDisplay,
-                                    );
-                                    pinnedMinPriceDisplayTruncated = Number(
-                                        pinnedDisplayPrices.pinnedMinPriceDisplay,
-                                    );
+                                } else {
+                                    pinnedDisplayPrices =
+                                        getPinnedPriceValuesFromDisplayPrices(
+                                            denomInBase,
+                                            baseTokenDecimals,
+                                            quoteTokenDecimals,
+                                            advancedValue.toString(),
+                                            high.toString(),
+                                            lookupChain(chainId).gridSize,
+                                        );
                                 }
-                                // to:do fix when advanced is fixed AdvancedPepe
-                                setRanges((prevState) => {
-                                    const newTargets = [...prevState];
 
-                                    if (draggingLine === 'Max') {
-                                        if (
-                                            dragSwitched ||
-                                            pinnedMaxPriceDisplayTruncated <
-                                                pinnedMinPriceDisplayTruncated
-                                        ) {
-                                            newTargets.filter(
-                                                (target: lineValue) =>
-                                                    target.name === 'Min',
-                                            )[0].value =
-                                                pinnedMaxPriceDisplayTruncated;
+                                pinnedMaxPriceDisplayTruncated = Number(
+                                    pinnedDisplayPrices.pinnedMaxPriceDisplay,
+                                );
+                                pinnedMinPriceDisplayTruncated = Number(
+                                    pinnedDisplayPrices.pinnedMinPriceDisplay,
+                                );
+                            }
+                            // to:do fix when advanced is fixed AdvancedPepe
+                            setRanges((prevState) => {
+                                const newTargets = [...prevState];
 
-                                            dragSwitched = true;
-                                            highLineMoved = false;
-                                            lowLineMoved = true;
-                                        } else {
-                                            newTargets.filter(
-                                                (target: lineValue) =>
-                                                    target.name === 'Max',
-                                            )[0].value =
-                                                pinnedMaxPriceDisplayTruncated;
-                                        }
+                                if (draggingLine === 'Max') {
+                                    if (
+                                        dragSwitched ||
+                                        pinnedMaxPriceDisplayTruncated <
+                                            pinnedMinPriceDisplayTruncated
+                                    ) {
+                                        newTargets.filter(
+                                            (target: lineValue) =>
+                                                target.name === 'Min',
+                                        )[0].value =
+                                            pinnedMaxPriceDisplayTruncated;
+
+                                        dragSwitched = true;
+                                        highLineMoved = false;
+                                        lowLineMoved = true;
                                     } else {
-                                        if (
-                                            dragSwitched ||
-                                            pinnedMinPriceDisplayTruncated >
-                                                pinnedMaxPriceDisplayTruncated
-                                        ) {
-                                            newTargets.filter(
-                                                (target: lineValue) =>
-                                                    target.name === 'Max',
-                                            )[0].value =
-                                                pinnedMinPriceDisplayTruncated;
-
-                                            dragSwitched = true;
-                                            highLineMoved = true;
-                                            lowLineMoved = false;
-                                        } else {
-                                            newTargets.filter(
-                                                (target: lineValue) =>
-                                                    target.name === 'Min',
-                                            )[0].value =
-                                                pinnedMinPriceDisplayTruncated;
-                                        }
+                                        newTargets.filter(
+                                            (target: lineValue) =>
+                                                target.name === 'Max',
+                                        )[0].value =
+                                            pinnedMaxPriceDisplayTruncated;
                                     }
+                                } else {
+                                    if (
+                                        dragSwitched ||
+                                        pinnedMinPriceDisplayTruncated >
+                                            pinnedMaxPriceDisplayTruncated
+                                    ) {
+                                        newTargets.filter(
+                                            (target: lineValue) =>
+                                                target.name === 'Max',
+                                        )[0].value =
+                                            pinnedMinPriceDisplayTruncated;
 
-                                    newRangeValue = newTargets;
+                                        dragSwitched = true;
+                                        highLineMoved = true;
+                                        lowLineMoved = false;
+                                    } else {
+                                        newTargets.filter(
+                                            (target: lineValue) =>
+                                                target.name === 'Min',
+                                        )[0].value =
+                                            pinnedMinPriceDisplayTruncated;
+                                    }
+                                }
 
-                                    return newTargets;
-                                });
-                            }
-                        } else {
-                            if (
-                                oldRangeMinValue !== undefined &&
-                                oldRangeMaxValue !== undefined
-                            ) {
-                                setRanges([
-                                    {
-                                        name: 'Min',
-                                        value: oldRangeMinValue,
-                                    },
-                                    {
-                                        name: 'Max',
-                                        value: oldRangeMaxValue,
-                                    },
-                                ]);
-                            }
+                                newRangeValue = newTargets;
+
+                                return newTargets;
+                            });
+                        }
+                    } else {
+                        if (
+                            oldRangeMinValue !== undefined &&
+                            oldRangeMaxValue !== undefined
+                        ) {
+                            setRanges([
+                                {
+                                    name: 'Min',
+                                    value: oldRangeMinValue,
+                                },
+                                {
+                                    name: 'Max',
+                                    value: oldRangeMaxValue,
+                                },
+                            ]);
                         }
                     }
                 })
@@ -1965,91 +1760,8 @@ export default function Chart(props: propsIF) {
                     setCrosshairActive('none');
                 });
 
-            let oldLimitValue: number | undefined = undefined;
-
-            // *** LIMIT LINE DRAG ***
-            const dragLimit = d3
-                .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
-                .on('start', () => {
-                    // When the drag starts:
-                    // hide the cursor
-                    d3.select(d3CanvasMain.current).style('cursor', 'none');
-                    // hide the cursor over the y-axis canvas.
-                    d3.select('#y-axis-canvas').style('cursor', 'none');
-
-                    // add a keydown event listener to cancel the drag.
-                    document.addEventListener('keydown', cancelDragEvent);
-
-                    // Store the initial value of the limit for potential cancellation.
-                    oldLimitValue = limit;
-                })
-                .on('drag', function (event) {
-                    // During the drag:
-                    if (!event.sourceEvent.type.includes('touch')) {
-                        if (!cancelDrag) {
-                            // to hide the crosshair when dragging the line set the crosshairActive to 'none'.
-                            setCrosshairActive('none');
-
-                            // Indicate that line is dragging
-                            setIsLineDrag(true);
-
-                            // Determine the event point's Y-coordinate based on the event type.
-                            const eventPoint =
-                                event.sourceEvent.type === 'mousemove'
-                                    ? event.sourceEvent.clientY
-                                    : event.sourceEvent.targetTouches[0]
-                                          .clientY;
-
-                            // Calculate the new limit value based on the Y-coordinate.
-                            newLimitValue = scaleData?.yScale.invert(
-                                eventPoint - rectCanvas.top,
-                            );
-
-                            // Perform calculations based on the new limit value
-                            calculateLimit(newLimitValue);
-                        } else {
-                            // If the drag is canceled, restore the previous limit value.
-                            if (oldLimitValue !== undefined) {
-                                setLimit(() => {
-                                    return oldLimitValue as number;
-                                });
-                            }
-                        }
-                    }
-                })
-                // Handle the drag end event
-                .on('end', () => {
-                    setIsLineDrag(false);
-
-                    // If the drag is not canceled
-                    if (!cancelDrag) {
-                        // Change the cursor to 'row-resize'
-                        d3.select(d3Container.current).style(
-                            'cursor',
-                            'row-resize',
-                        );
-                        if (oldLimitValue !== undefined) {
-                            onBlurLimitRate(oldLimitValue, newLimitValue);
-                        }
-                    } else {
-                        if (oldLimitValue !== undefined) {
-                            setLimit(() => {
-                                return oldLimitValue as number;
-                            });
-                        }
-                    }
-
-                    // Restore default cursor styles
-                    d3.select(d3CanvasMain.current).style('cursor', 'default');
-                    d3.select('#y-axis-canvas').style('cursor', 'default');
-                });
-
             setDragRange(() => {
                 return dragRange;
-            });
-
-            setDragLimit(() => {
-                return dragLimit;
             });
         }
     }, [
@@ -2065,6 +1777,149 @@ export default function Chart(props: propsIF) {
         simpleRangeWidth,
         liquidityData?.topBoundary,
         liquidityData?.lowBoundary,
+        scaleData,
+        isDenomBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        currentPoolPriceTick,
+        denomInBase,
+        isTokenABase,
+        chainData.gridSize,
+        rescale,
+    ]);
+
+    // dragLimit
+    useEffect(() => {
+        const canvas = d3
+            .select(d3CanvasMain.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const rectCanvas = canvas.getBoundingClientRect();
+        let offsetY = 0;
+        let movemementY = 0;
+        let newLimitValue: number | undefined;
+
+        let tempMovemementY = 0;
+        let cancelDrag = false;
+        let oldLimitValue: number | undefined = undefined;
+        // clicking esc while dragging the line sets the line to the last value
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cancelDragEvent = (event: any) => {
+            if (event.key === 'Escape') {
+                cancelDrag = true;
+                event.preventDefault();
+                event.stopPropagation();
+                document.removeEventListener('keydown', cancelDragEvent);
+            }
+        };
+        const dragLimit = d3
+            .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
+            .on('start', (event) => {
+                // When the drag starts:
+                // hide the cursor
+                d3.select(d3CanvasMain.current).style('cursor', 'none');
+                // hide the cursor over the y-axis canvas.
+                d3.select('#y-axis-canvas').style('cursor', 'none');
+
+                // add a keydown event listener to cancel the drag.
+                document.addEventListener('keydown', cancelDragEvent);
+
+                // Store the initial value of the limit for potential cancellation.
+                oldLimitValue = limit;
+                newLimitValue = limit;
+                if (event.sourceEvent instanceof TouchEvent) {
+                    tempMovemementY =
+                        event.sourceEvent.touches[0].clientY - rectCanvas?.top;
+                }
+            })
+            .on('drag', function (event) {
+                (async () => {
+                    // Indicate that line is dragging
+                    setIsLineDrag(true);
+                    if (event.sourceEvent instanceof TouchEvent) {
+                        offsetY =
+                            event.sourceEvent.touches[0].clientY -
+                            rectCanvas?.top;
+
+                        movemementY = offsetY - tempMovemementY;
+                    } else {
+                        offsetY = event.sourceEvent.clientY - rectCanvas?.top;
+
+                        movemementY = event.sourceEvent.movementY;
+                    }
+                    if (!cancelDrag) {
+                        // to hide the crosshair when dragging the line set the crosshairActive to 'none'.
+                        setCrosshairActive('none');
+
+                        // // Calculate the new limit value based on the Y-coordinate.
+                        if (newLimitValue !== undefined) {
+                            newLimitValue = scaleData?.yScale.invert(
+                                scaleData?.yScale(newLimitValue) + movemementY,
+                            );
+
+                            // Perform calculations based on the new limit value
+                            if (newLimitValue) {
+                                calculateLimit(newLimitValue);
+                            }
+                        }
+                    } else {
+                        // If the drag is canceled, restore the previous limit value.
+                        if (oldLimitValue !== undefined) {
+                            setLimit(() => {
+                                return oldLimitValue as number;
+                            });
+                        }
+                    }
+                })().then(() => {
+                    if (event.sourceEvent instanceof TouchEvent) {
+                        tempMovemementY =
+                            event.sourceEvent.touches[0].clientY -
+                            rectCanvas?.top;
+                    }
+                });
+            })
+            .on('end', () => {
+                tempMovemementY = 0;
+                setIsLineDrag(false);
+                // If the drag is not canceled
+                if (!cancelDrag) {
+                    // Change the cursor to 'row-resize'
+                    d3.select(d3Container.current).style(
+                        'cursor',
+                        'row-resize',
+                    );
+                    if (
+                        oldLimitValue !== undefined &&
+                        newLimitValue !== undefined
+                    ) {
+                        onBlurLimitRate(oldLimitValue, newLimitValue);
+                    }
+                } else {
+                    if (oldLimitValue !== undefined) {
+                        setLimit(() => {
+                            return oldLimitValue as number;
+                        });
+                    }
+                }
+
+                // Restore default cursor styles
+                d3.select(d3CanvasMain.current).style('cursor', 'default');
+                d3.select('#y-axis-canvas').style('cursor', 'default');
+                setIsLineDrag(false);
+            });
+
+        setDragLimit(() => {
+            return dragLimit;
+        });
+    }, [
+        poolPriceDisplay,
+        location,
+        tradeData.advancedMode,
+        limit,
+        minPrice,
+        maxPrice,
+        minTickForLimit,
+        maxTickForLimit,
         scaleData,
         isDenomBase,
         baseTokenDecimals,
@@ -2101,14 +1956,14 @@ export default function Chart(props: propsIF) {
                 location.pathname.includes('pool') ||
                 location.pathname.includes('reposition')
             ) {
-                if (dragRange) {
+                if (dragRange && !isLineDrag) {
                     d3.select<d3.DraggedElementBaseType, unknown>(
                         d3CanvasMain.current,
                     ).call(dragRange);
                 }
             }
             if (location.pathname.includes('/limit')) {
-                if (dragLimit) {
+                if (dragLimit && !isLineDrag) {
                     d3.select<d3.DraggedElementBaseType, unknown>(
                         d3CanvasMain.current,
                     ).call(dragLimit);
@@ -2116,7 +1971,7 @@ export default function Chart(props: propsIF) {
             }
             renderCanvasArray([d3CanvasMain]);
         }
-    }, [location.pathname, mainZoom, dragLimit, dragRange]);
+    }, [location.pathname, mainZoom, dragLimit, dragRange, isLineDrag]);
 
     // create market line and liquidity tooltip
     useEffect(() => {
@@ -2340,6 +2195,33 @@ export default function Chart(props: propsIF) {
                         rangeWidthPercentage =
                             rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
                     }
+                }
+
+                if (event.pointerType === 'touch') {
+                    const lowTick =
+                        currentPoolPriceTick - rangeWidthPercentage * 100;
+                    const highTick =
+                        currentPoolPriceTick + rangeWidthPercentage * 100;
+
+                    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                        isDenomBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        lowTick,
+                        highTick,
+                        lookupChain(chainId).gridSize,
+                    );
+
+                    setMaxPrice(
+                        parseFloat(
+                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        ),
+                    );
+                    setMinPrice(
+                        parseFloat(
+                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        ),
+                    );
                 }
 
                 setSimpleRangeWidth(
@@ -2802,46 +2684,6 @@ export default function Chart(props: propsIF) {
         setXaxisActiveTooltip('');
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const isTouchOnLine = (event: any, rectCanvas: any) => {
-        if (scaleData !== undefined) {
-            const lineBuffer =
-                (scaleData?.yScale.domain()[1] -
-                    scaleData?.yScale.domain()[0]) /
-                15;
-
-            const eventPoint = event.targetTouches[0].clientY - rectCanvas?.top;
-
-            const mousePlacement = scaleData?.yScale.invert(eventPoint);
-
-            const limitLineValue = limit;
-
-            const minRangeValue = ranges.filter(
-                (target: lineValue) => target.name === 'Min',
-            )[0].value;
-            const maxRangeValue = ranges.filter(
-                (target: lineValue) => target.name === 'Max',
-            )[0].value;
-
-            const isOnLimit =
-                location.pathname.includes('/limit') &&
-                mousePlacement < limitLineValue + lineBuffer &&
-                mousePlacement > limitLineValue - lineBuffer;
-
-            const isOnRangeMin =
-                location.pathname.includes('/pool') &&
-                mousePlacement < minRangeValue + lineBuffer &&
-                mousePlacement > minRangeValue - lineBuffer;
-
-            const isOnRangeMax =
-                location.pathname.includes('/pool') &&
-                mousePlacement < maxRangeValue + lineBuffer &&
-                mousePlacement > maxRangeValue - lineBuffer;
-
-            return { isOnLimit, isOnRangeMin, isOnRangeMax };
-        }
-    };
-
     // mousemove
     useEffect(() => {
         if (!isChartZoom) {
@@ -2852,94 +2694,12 @@ export default function Chart(props: propsIF) {
                 },
             );
 
-            const canvas = d3
-                .select(d3CanvasMain.current)
-                .select('canvas')
-                .node() as HTMLCanvasElement;
-
-            const rectCanvas = canvas.getBoundingClientRect();
-
-            let isTouchToDrag = isLineDrag;
-            let isMaxDragged = false;
-
-            d3.select(d3CanvasMain.current).on(
-                'touchstart',
-                function (event: TouchEvent) {
-                    if (scaleData !== undefined) {
-                        const isTouchOnLineValues = isTouchOnLine(
-                            event,
-                            rectCanvas,
-                        );
-
-                        if (isTouchOnLineValues) {
-                            isMaxDragged = isTouchOnLineValues?.isOnRangeMax;
-                            if (
-                                isTouchOnLineValues?.isOnLimit ||
-                                isTouchOnLineValues?.isOnRangeMax ||
-                                isTouchOnLineValues?.isOnRangeMin
-                            ) {
-                                isTouchToDrag = true;
-                                setIsLineDrag(true);
-                            }
-                        }
-                    }
-                },
-            );
-
-            d3.select(d3CanvasMain.current).on(
-                'touchmove',
-                function (event: TouchEvent) {
-                    if (scaleData !== undefined) {
-                        const eventPoint =
-                            event.targetTouches[0].clientY - rectCanvas?.top;
-
-                        if (isTouchToDrag && !isChartZoom) {
-                            if (location.pathname.includes('/limit')) {
-                                const newLimitValue =
-                                    scaleData?.yScale.invert(eventPoint);
-
-                                if (newLimitValue !== undefined) {
-                                    calculateLimit(newLimitValue);
-                                }
-                            }
-                            if (location.pathname.includes('/pool')) {
-                                const newRangeValue =
-                                    scaleData?.yScale.invert(eventPoint);
-
-                                if (newRangeValue !== undefined) {
-                                    const calculatedRangeValues =
-                                        calculateRangeWhenDragged(
-                                            newRangeValue,
-                                            isMaxDragged ? 'Max' : 'Min',
-                                        );
-
-                                    if (calculatedRangeValues) {
-                                        setRanges(() => {
-                                            const newTargets = [
-                                                {
-                                                    name: 'Min',
-                                                    value: calculatedRangeValues[0],
-                                                },
-                                                {
-                                                    name: 'Max',
-                                                    value: calculatedRangeValues[1],
-                                                },
-                                            ];
-
-                                            return newTargets;
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-            );
-
-            d3.select(d3CanvasMain.current).on('touchend', function () {
-                isTouchToDrag = false;
-                setIsLineDrag(false);
-            });
+            // d3.select(d3CanvasMain.current).on(
+            //     'touchstart',
+            //     function (event: TouchEvent) {
+            //         onClickCanvas(event);
+            //     },
+            // );
         }
     }, [
         diffHashSigChart(visibleCandleData),
