@@ -1913,7 +1913,6 @@ export default function Chart(props: propsIF) {
         maxPrice,
         minTickForLimit,
         maxTickForLimit,
-        simpleRangeWidth,
         scaleData,
         isDenomBase,
         baseTokenDecimals,
@@ -2189,6 +2188,33 @@ export default function Chart(props: propsIF) {
                         rangeWidthPercentage =
                             rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage;
                     }
+                }
+
+                if (event.pointerType === 'touch') {
+                    const lowTick =
+                        currentPoolPriceTick - rangeWidthPercentage * 100;
+                    const highTick =
+                        currentPoolPriceTick + rangeWidthPercentage * 100;
+
+                    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                        isDenomBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        lowTick,
+                        highTick,
+                        lookupChain(chainId).gridSize,
+                    );
+
+                    setMaxPrice(
+                        parseFloat(
+                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        ),
+                    );
+                    setMinPrice(
+                        parseFloat(
+                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        ),
+                    );
                 }
 
                 setSimpleRangeWidth(
