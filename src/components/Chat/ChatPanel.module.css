@@ -1,7 +1,6 @@
 .main_container {
     width: 380px;
     padding: 0 1rem;
-
     display: none;
 }
 
@@ -10,7 +9,6 @@
     border: solid 1px transparent;
     background: var(--dark2);
     cursor: default;
-
     border-top-left-radius: var(--border-radius);
     border-top-right-radius: var(--border-radius);
     color: white;
@@ -35,6 +33,10 @@
     overflow: hidden;
     order: 0;
     align-self: stretch;
+}
+
+.chat_body * {
+    user-select: text;
 }
 
 .chat_header {
