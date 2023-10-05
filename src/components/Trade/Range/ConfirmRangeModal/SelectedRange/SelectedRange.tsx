@@ -65,6 +65,7 @@ function SelectedRange(props: propsIF) {
         tokens: string;
         currentToken: string;
     }
+
     const PriceRangeDisplay = (props: PriceRangeProps) => {
         const { title, value, tokens, currentToken } = props;
         return (
@@ -78,8 +79,8 @@ function SelectedRange(props: propsIF) {
                     borderRadius: 'var(--border-radius)',
                     cursor: 'pointer',
                 }}
-                gap={4}
-                padding='8px'
+                gap={isInitPage ? 10 : 4}
+                padding={'8px'}
                 onClick={() => {
                     setReverseDisplay(!reverseDisplay);
                     setDenomInBase(!denomInBase);
@@ -106,7 +107,7 @@ function SelectedRange(props: propsIF) {
     };
 
     const selectedRangeDisplay = (
-        <SelectedRangeContainer margin='8px 0 0 0' gap={8}>
+        <SelectedRangeContainer margin={isInitPage ? '0' : '8px 0 0 0'} gap={8}>
             <PriceRangeDisplay
                 title='Min Price'
                 value={minPrice}
@@ -135,7 +136,7 @@ function SelectedRange(props: propsIF) {
             flexDirection='column'
             gap={8}
             padding='8px'
-            margin='8px 0 0 0'
+            margin={isInitPage ? '0' : '8px 0 0 0'}
             style={{ border: '1px solid var(--dark3)', borderRadius: '4px' }}
         >
             <FlexContainer justifyContent='space-between' alignItems='center'>
@@ -168,7 +169,9 @@ function SelectedRange(props: propsIF) {
     return (
         <FlexContainer flexDirection='column' gap={8}>
             {!isAmbient ? selectedRangeDisplay : null}
-            <div style={{ padding: '0 1rem' }}>{extraInfoData}</div>
+            <div style={{ padding: isInitPage ? '0 4rem' : '0 1rem' }}>
+                {extraInfoData}
+            </div>
         </FlexContainer>
     );
 }

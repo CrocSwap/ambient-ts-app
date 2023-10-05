@@ -4,11 +4,9 @@ import { useEffect, useState } from 'react';
 import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
 import SelectedRange from '../../components/Trade/Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import { FlexContainer, GridContainer, Text } from '../../styled/Common';
-import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
-import { FeeTierDisplay } from '../../styled/Components/TradeModules';
-import uriToHttp from '../../utils/functions/uriToHttp';
+
+import { FeaturedBox } from '../../components/Trade/TableInfo/FeaturedBox';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 
 const Wrapper = styled.div`
     width: 100%;
@@ -68,18 +66,21 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
+
+        isDenomBase,
+
         baseCollateral,
         quoteCollateral,
-        isDenomBase,
     } = props;
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
 
-    const baseTokenQty = baseCollateral;
-    const quoteTokenQty = quoteCollateral;
-
-    const baseTokenCharacter: string = getUnicodeCharacter(baseToken.symbol);
-    const quoteTokenCharacter: string = getUnicodeCharacter(quoteToken.symbol);
+    const tokensInfo = (
+        <GridContainer numCols={2} gap={8} height='136px'>
+            <FeaturedBox pooled={baseCollateral} token={baseToken} />
+            <FeaturedBox pooled={quoteCollateral} token={quoteToken} />
+        </GridContainer>
+    );
 
     const poolTokenDisplay = (
         <FlexContainer
@@ -89,52 +90,12 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             style={{
                 margin: '0 auto',
                 height: '100%',
-                paddingTop: '32px',
+                maxWidth: '478px',
             }}
         >
-            <div>
-                <FeeTierDisplay>
-                    <GridContainer gap={12}>
-                        <FlexContainer justifyContent='space-between'>
-                            <FlexContainer alignItems='center' gap={8}>
-                                <TokenIcon
-                                    token={baseToken}
-                                    src={uriToHttp(baseToken.logoURI)}
-                                    alt={baseToken.symbol}
-                                    size='m'
-                                />
-                                <Text fontSize='body'>
-                                    {' '}
-                                    Pooled {baseToken.symbol}
-                                </Text>
-                            </FlexContainer>
-                            <Text fontSize='body'>
-                                {baseTokenQty !== ''
-                                    ? baseTokenCharacter + baseTokenQty
-                                    : '0'}
-                            </Text>
-                        </FlexContainer>
-                        <FlexContainer justifyContent='space-between'>
-                            <FlexContainer alignItems='center' gap={8}>
-                                <TokenIcon
-                                    token={quoteToken}
-                                    src={uriToHttp(quoteToken.logoURI)}
-                                    alt={quoteToken.symbol}
-                                    size='m'
-                                />
-                                <Text fontSize='body'>
-                                    {' '}
-                                    Pooled {quoteToken.symbol}
-                                </Text>
-                            </FlexContainer>
-                            <Text fontSize='body'>
-                                {quoteTokenQty
-                                    ? quoteTokenCharacter + quoteTokenQty
-                                    : '0'}
-                            </Text>
-                        </FlexContainer>
-                    </GridContainer>
-                </FeeTierDisplay>
+            <FlexContainer flexDirection='column' gap={8}>
+                {tokensInfo}
+
                 {isAmbient || (
                     <SelectedRange
                         isTokenABase={isTokenABase}
@@ -154,18 +115,16 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                         isDenomBaseLocal={isDenomBase}
                     />
                 )}
-            </div>
-            <Button flat title='SEND TO METAMASK' action={handleConfirmed} />
+            </FlexContainer>
+
+            <Button
+                flat
+                title='SEND TO METAMASK'
+                action={handleConfirmed}
+                width='350px'
+            />
         </FlexContainer>
     );
-
-    // console.log({
-    //     transactionApproved,
-    //     isTransactionDenied,
-    //     isTransactionException,
-    // });
-
-    // eslint-disable-next-line
 
     function handleConfirmed() {
         setIsConfirmed(true);

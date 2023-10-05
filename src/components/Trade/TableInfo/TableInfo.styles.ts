@@ -3,6 +3,7 @@ import backgroundImage from '../../../assets/images/backgrounds/tableInfoBg.png'
 
 // can be extracted to common
 
+const isInitPage = location.pathname.startsWith('/init');
 const MainSection = styled.section`
     background: url(${backgroundImage}) no-repeat;
 
@@ -12,9 +13,10 @@ const MainSection = styled.section`
 
 const BoxContainer = styled.div`
     grid-column: span 1;
-    background: rgba(23, 29, 39, 0.4);
-    backdrop-filter: blur(10px);
-    border-radius: 0.25rem;
+    background: ${isInitPage ? 'var(--dark2)' : 'rgba(23, 29, 39, 0.4)'};
+    ${!isInitPage &&
+    `  backdrop-filter: blur(10px);
+        border-radius: 0.25rem;`}
     height: 100%;
 `;
 
@@ -22,7 +24,7 @@ const FeaturedBoxInnerContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 1rem;
+    padding: ${isInitPage ? '8px 16px' : '1rem'};
 `;
 
 const InfoHeader = styled.div`
@@ -41,6 +43,7 @@ const FeaturedBoxInfoContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    align-items: flex-start;
 `;
 const TokenSymbol = styled.p`
     margin-left: 0.5rem;

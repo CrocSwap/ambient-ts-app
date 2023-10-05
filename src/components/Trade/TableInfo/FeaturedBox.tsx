@@ -1,7 +1,8 @@
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import useCopyToClipboard from '../../../utils/hooks/useCopyToClipboard';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import {
     BoxContainer,
     BoxInfoText,
@@ -18,15 +19,17 @@ import trimString from '../../../utils/functions/trimString';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { ZERO_ADDRESS } from '../../../constants';
 import { getChainExplorer } from '../../../utils/data/chains';
-import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface FeaturedBoxPropsIF {
     token: TokenIF;
-    balance: string;
-    value: string;
+    balance?: string;
+    value?: string;
+    pooled?: string;
+    style?: React.CSSProperties | undefined;
 }
+
 export function FeaturedBox(props: FeaturedBoxPropsIF) {
-    const { token, balance, value } = props;
+    const { token, balance, value, pooled, style } = props;
     const {
         chainData: { chainId, addrs },
     } = useContext(CrocEnvContext);
@@ -42,8 +45,9 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
         copy(token.address);
         openSnackbar(`${token.address} copied`, 'info');
     }
+
     return (
-        <BoxContainer>
+        <BoxContainer style={style}>
             <FeaturedBoxInnerContainer>
                 <FlexCenter>
                     <TokenIcon token={token} alt={token.symbol} size={'3xl'} />
@@ -56,7 +60,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                     </InfoHeader>
                     <IconWithTooltip
                         title={
-                            token.address === ZERO_ADDRESS
+                            token.address === 'ZERO_ADDRESS'
                                 ? 'Copy the zero address (Ambient convention) to clipboard'
                                 : `Copy ${token.symbol} address to clipboard`
                         }
@@ -87,14 +91,26 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                         </a>
                     </IconWithTooltip>
                 </FlexCenter>
-                <FeaturedBoxInfoContainer>
-                    <InfoHeader>Balance</InfoHeader>
-                    <BoxInfoText>{balance}</BoxInfoText>
-                </FeaturedBoxInfoContainer>
-                <FeaturedBoxInfoContainer>
-                    <InfoHeader>Value</InfoHeader>
-                    <BoxInfoText>${value}</BoxInfoText>
-                </FeaturedBoxInfoContainer>
+
+                {pooled && (
+                    <FeaturedBoxInfoContainer>
+                        <InfoHeader>Pooled</InfoHeader>
+                        <BoxInfoText>{pooled}</BoxInfoText>
+                    </FeaturedBoxInfoContainer>
+                )}
+
+                {balance && (
+                    <FeaturedBoxInfoContainer>
+                        <InfoHeader>Balance</InfoHeader>
+                        <BoxInfoText>{balance}</BoxInfoText>
+                    </FeaturedBoxInfoContainer>
+                )}
+                {value && (
+                    <FeaturedBoxInfoContainer>
+                        <InfoHeader>Value</InfoHeader>
+                        <BoxInfoText>${value}</BoxInfoText>
+                    </FeaturedBoxInfoContainer>
+                )}
             </FeaturedBoxInnerContainer>
         </BoxContainer>
     );
