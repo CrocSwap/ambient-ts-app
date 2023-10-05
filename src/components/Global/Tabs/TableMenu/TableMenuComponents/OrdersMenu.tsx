@@ -13,12 +13,13 @@ import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import {
     useAppDispatch,
-    // useAppSelector,
+    useAppSelector,
 } from '../../../../../utils/hooks/reduxToolkit';
 import {
+    TradeDataIF,
+    setIsTokenAPrimary,
     setLimitTick,
     setLimitTickCopied,
-    // setShouldLimitDirectionReverse,
 } from '../../../../../utils/state/tradeDataSlice';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
@@ -64,30 +65,17 @@ export default function OrdersMenu(props: propsIF) {
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
-    // const tradeData = useAppSelector((state) => state.tradeData);
+    const tradeData: TradeDataIF = useAppSelector((state) => state.tradeData);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-
     const dispatch = useAppDispatch();
 
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
         setActiveMobileComponent('trade');
-
         handlePulseAnimation('limitOrder');
         dispatch(setLimitTickCopied(true));
-
-        // const shouldReverse =
-        //     tradeData.tokenA.address.toLowerCase() ===
-        //     (limitOrder.isBid
-        //         ? limitOrder.quote.toLowerCase()
-        //         : limitOrder.base.toLowerCase());
-
-        // if (shouldReverse) {
-        //     dispatch(setShouldLimitDirectionReverse(true));
-        // }
-
         // why is this is in on a half-second delay?
         setTimeout(() => {
             dispatch(
@@ -96,7 +84,6 @@ export default function OrdersMenu(props: propsIF) {
                 ),
             );
         }, 500);
-
         setShowDropdownMenu(false);
     }
 
@@ -159,11 +146,17 @@ export default function OrdersMenu(props: propsIF) {
             onClick={() => {
                 dispatch(setLimitTickCopied(true));
                 const { base, quote, isBid, bidTick, askTick } = limitOrder;
+                const newTokenA: string = isBid ? base : quote;
+                const newTokenB: string = isBid ? quote : base;
+                // determine if old token A === new token A
+                // no => flip `isTokenAPrimary`
+                tradeData.tokenA.address !== newTokenA &&
+                    dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
                 // URL params for link to limit page
                 const limitLinkParams: limitParamsIF = {
                     chain: chainData.chainId,
-                    tokenA: isBid ? base : quote,
-                    tokenB: isBid ? quote : base,
+                    tokenA: newTokenA,
+                    tokenB: newTokenB,
                     limitTick: isBid ? bidTick : askTick,
                 };
                 // navigate user to limit page with URL params defined above
