@@ -18,8 +18,6 @@ import {
 import {
     TradeDataIF,
     setIsTokenAPrimary,
-    setLimitTick,
-    setLimitTickCopied,
 } from '../../../../../utils/state/tradeDataSlice';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
@@ -72,20 +70,6 @@ export default function OrdersMenu(props: propsIF) {
     const dispatch = useAppDispatch();
 
     // -----------------SNACKBAR----------------
-    function handleCopyOrder() {
-        setActiveMobileComponent('trade');
-        handlePulseAnimation('limitOrder');
-        dispatch(setLimitTickCopied(true));
-        // why is this is in on a half-second delay?
-        setTimeout(() => {
-            dispatch(
-                setLimitTick(
-                    limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick,
-                ),
-            );
-        }, 500);
-        setShowDropdownMenu(false);
-    }
 
     // -----------------END OF SNACKBAR----------------
 
@@ -144,7 +128,6 @@ export default function OrdersMenu(props: propsIF) {
     const copyButton = limitOrder ? (
         <Chip
             onClick={() => {
-                dispatch(setLimitTickCopied(true));
                 const { base, quote, isBid, bidTick, askTick } = limitOrder;
                 const newTokenA: string = isBid ? base : quote;
                 const newTokenB: string = isBid ? quote : base;
@@ -161,7 +144,9 @@ export default function OrdersMenu(props: propsIF) {
                 };
                 // navigate user to limit page with URL params defined above
                 linkGenLimit.navigate(limitLinkParams);
-                handleCopyOrder();
+                setActiveMobileComponent('trade');
+                handlePulseAnimation('limitOrder');
+                setShowDropdownMenu(false);
             }}
         >
             {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}

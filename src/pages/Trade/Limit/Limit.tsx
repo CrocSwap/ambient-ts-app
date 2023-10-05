@@ -332,15 +332,47 @@ export default function Limit() {
         !!poolPriceNonDisplay,
     ]);
 
+    const updateOrderValidityStatus = async () => {
+        try {
+            if (!crocEnv) return;
+            if (!limitTick) return;
+            if (tokenAInputQty === '' && tokenBInputQty === '') return;
+
+            const tknA: string = urlParamMap.get('tokenA') as string;
+            const tknB: string = urlParamMap.get('tokenB') as string;
+            const limitTickParam: string = urlParamMap.get(
+                'limitTick',
+            ) as string;
+            if (limitTickParam && limitTickParam !== limitTick.toString())
+                return;
+            const testOrder = isTokenAPrimary
+                ? crocEnv.sell(tknA, 0)
+                : crocEnv.buy(tknB, 0);
+
+            const ko = testOrder.atLimit(
+                isTokenAPrimary ? tknB : tknA,
+                limitTick,
+            );
+
+            if (await ko.willMintFail()) {
+                updateLimitErrorMessage();
+                setIsOrderValid(false);
+                return;
+            } else {
+                setIsOrderValid(true);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
         limitTick,
-        isTokenAPrimary,
         poolPriceNonDisplay,
         tokenAInputQty === '' && tokenBInputQty === '',
-        tokenA.address,
-        tokenB.address,
+        urlParamMap,
     ]);
 
     useEffect(() => {
@@ -409,36 +441,6 @@ export default function Limit() {
                     : 'Below Minimum'
             }  Price`,
         );
-
-    const updateOrderValidityStatus = async () => {
-        try {
-            if (!crocEnv) return;
-            if (!limitTick) return;
-            if (tokenAInputQty === '' && tokenBInputQty === '') return;
-
-            const tknA: string = urlParamMap.get('tokenA') as string;
-            const tknB: string = urlParamMap.get('tokenB') as string;
-
-            const testOrder = isTokenAPrimary
-                ? crocEnv.sell(tknA, 0)
-                : crocEnv.buy(tknB, 0);
-
-            const ko = testOrder.atLimit(
-                isTokenAPrimary ? tknB : tknA,
-                limitTick,
-            );
-
-            if (await ko.willMintFail()) {
-                updateLimitErrorMessage();
-                setIsOrderValid(false);
-                return;
-            } else {
-                setIsOrderValid(true);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     const sendLimitOrder = async () => {
         if (!crocEnv) return;
