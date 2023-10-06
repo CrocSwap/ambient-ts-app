@@ -51,6 +51,7 @@ interface InitConfirmationProps {
     isConfirmed: boolean;
     setIsConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
     isMintLiqEnabled: boolean;
+    initialPriceDisplay: string | undefined;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -85,6 +86,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         setIsConfirmed,
 
         isMintLiqEnabled,
+        initialPriceDisplay,
     } = props;
 
     const tokensInfo = (
@@ -112,6 +114,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             }
             isDenomBaseLocal={isDenomBase}
             showOnlyFeeTier={!isMintLiqEnabled}
+            initialPrice={initialPriceDisplay}
         />
     );
 
@@ -150,21 +153,23 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         sendTx();
     }
 
+    const tokenSymbols = `${quoteToken.symbol} / ${baseToken.symbol}`;
+
     const noMintLiqSteps = [
         { label: 'Sign transaction to initialize pool.' },
         {
-            label: `Submitting pool initialization for ${baseToken.symbol} / ${quoteToken.symbol}`,
+            label: `Submitting pool initialization for ${tokenSymbols}`,
         },
     ];
 
     const mintLiqSteps = [
         { label: 'Sign transaction to initialize pool.' },
         {
-            label: `Submitting pool initialization for ${baseToken.symbol} / ${quoteToken.symbol}`,
+            label: `Submitting pool initialization for ${tokenSymbols}`,
         },
         { label: 'Sign transaction to minting liquidity' },
         {
-            label: `Submitting liquidty for ${baseToken.symbol} / ${quoteToken.symbol}`,
+            label: `Submitting liquidty for ${tokenSymbols}`,
         },
     ];
 
@@ -230,7 +235,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                             color='other-green'
                             align='center'
                         >
-                            {`Pool initialization for ${baseToken.symbol} / ${quoteToken.symbol} completed`}
+                            {`Pool initialization for ${tokenSymbols} completed`}
                         </Text>
                     )
                 }

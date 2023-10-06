@@ -1440,8 +1440,12 @@ export default function InitPool() {
                 </Text>
 
                 <FlexContainer gap={8}>
+                    {initialPriceDisplay === '' ? (
+                        ''
+                    ) : (
+                        <FiRefreshCw size={20} onClick={handleRefresh} />
+                    )}
                     <LuEdit2 size={20} onClick={() => openEditMode()} />
-                    <FiRefreshCw size={20} onClick={handleRefresh} />
                 </FlexContainer>
             </FlexContainer>
             <section
@@ -1535,7 +1539,7 @@ export default function InitPool() {
         <FlexContainer
             flexDirection='row'
             justifyContent='space-between'
-            blur={!!poolExists}
+            blur={!!poolExists || initialPriceDisplay === ''}
         >
             <Text fontSize='body' color='text2'>
                 Mint Initial Liquidity
@@ -1690,6 +1694,8 @@ export default function InitPool() {
         isConfirmed: userClickedSendToMetamask,
         setIsConfirmed: setUserClickedSendToMetamask,
         isMintLiqEnabled,
+
+        initialPriceDisplay,
     };
 
     const confirmationContent = (

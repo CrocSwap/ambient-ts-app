@@ -14,6 +14,8 @@ interface propsIF {
     pinnedMaxPriceDisplayTruncatedInQuote: string;
     isDenomBaseLocal?: boolean;
     showOnlyFeeTier?: boolean;
+
+    initialPrice?: string;
 }
 function SelectedRange(props: propsIF) {
     const {
@@ -24,6 +26,7 @@ function SelectedRange(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
         showOnlyFeeTier,
+        initialPrice,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -154,7 +157,7 @@ function SelectedRange(props: propsIF) {
                     }}
                     style={{ cursor: 'pointer' }}
                 >
-                    {displayPriceString}
+                    {initialPrice ? initialPrice : displayPriceString}
                 </Text>
             </FlexContainer>
             <FlexContainer justifyContent='space-between' alignItems='center'>
@@ -162,7 +165,7 @@ function SelectedRange(props: propsIF) {
                     {isInitPage ? 'Initial Fee Rate' : 'Current Fee Rate'}
                 </Text>
                 <Text fontSize='body' color='text2'>
-                    0.05%
+                    {isInitPage ? 'Dynamic' : '0.05%'}
                 </Text>
             </FlexContainer>
         </FlexContainer>
