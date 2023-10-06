@@ -222,18 +222,18 @@ export type StyledContainerProps = ContainerProps &
 
 export const FlexContainer = styled.div<StyledContainerProps>`
     ${(props) => ContainerStyles({ ...props, ...{ display: 'flex' } })}
-    ${Breakpoint}
+    ${(props) => Breakpoint({ ...props, ...{ display: 'flex' } })}
     ${Animations}
 `;
 
 export const GridContainer = styled.div<StyledContainerProps>`
     ${(props) => ContainerStyles({ ...props, ...{ display: 'grid' } })}
-    ${Breakpoint}
+    ${(props) => Breakpoint({ ...props, ...{ display: 'grid' } })}
     ${Animations}
 `;
 
 export const Container = styled.div<StyledContainerProps>`
     ${WrappedContainerStyles}
-    ${Breakpoint}
+    ${(props) => Breakpoint(props)}
     ${Animations}
 `;
