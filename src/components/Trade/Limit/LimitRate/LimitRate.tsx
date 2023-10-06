@@ -12,6 +12,7 @@ import { PoolContext } from '../../../../contexts/PoolContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import removeLeadingZeros from '../../../../utils/functions/removeLeadingZeros';
 import { useSimulatedIsPoolInitialized } from '../../../../App/hooks/useSimulatedIsPoolInitialized';
+import { updatesIF } from '../../../../utils/hooks/useUrlParams';
 import { FlexContainer } from '../../../../styled/Common';
 import {
     LimitRateButton,
@@ -28,6 +29,7 @@ interface propsIF {
     fieldId: string;
     isSellTokenBase: boolean;
     disable?: boolean;
+    updateURL: (changes: updatesIF) => void;
 }
 
 export default function LimitRate(props: propsIF) {
@@ -39,6 +41,7 @@ export default function LimitRate(props: propsIF) {
         setPriceInputFieldBlurred,
         fieldId,
         disable,
+        updateURL,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -56,14 +59,18 @@ export default function LimitRate(props: propsIF) {
 
     const increaseTick = (): void => {
         if (limitTick) {
-            dispatch(setLimitTick(limitTick + gridSize));
+            const newLimitTick: number = limitTick + gridSize;
+            dispatch(setLimitTick(newLimitTick));
+            updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
         }
     };
 
     const decreaseTick = (): void => {
         if (limitTick) {
-            dispatch(setLimitTick(limitTick - gridSize));
+            const newLimitTick: number = limitTick - gridSize;
+            dispatch(setLimitTick(newLimitTick));
+            updateURL({ update: [['limitTick', newLimitTick]] });
             setPriceInputFieldBlurred(true);
         }
     };
@@ -79,8 +86,8 @@ export default function LimitRate(props: propsIF) {
                 const pinnedTick: number = isSellTokenBase
                     ? pinTickLower(limit, gridSize)
                     : pinTickUpper(limit, gridSize);
-
                 dispatch(setLimitTick(pinnedTick));
+                updateURL({ update: [['limitTick', pinnedTick]] });
             }
         }
     };

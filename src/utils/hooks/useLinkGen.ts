@@ -1,36 +1,37 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
-interface swapParamsIF {
+export interface swapParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
 }
+
 export interface marketParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
 }
-interface limitParamsIF {
+
+export interface limitParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
     limitTick?: number;
 }
-interface poolParamsIF {
-    chain: string;
-    tokenA: string;
-    tokenB: string;
-    highTick?: string;
-    lowTick?: string;
-}
 
-interface initParamsIF {
+export interface poolParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
 }
 
-interface repoParamsIF {
+export interface initParamsIF {
+    chain: string;
+    tokenA: string;
+    tokenB: string;
+}
+
+export interface repoParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
@@ -68,6 +69,7 @@ const BASE_URL_PATHS = {
 export type pageNames = keyof typeof BASE_URL_PATHS;
 
 export interface linkGenMethodsIF {
+    currentPage: pageNames;
     baseURL: string;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF) => void;
@@ -134,7 +136,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
                 paramsSlug =
                     '/' +
                     Object.entries(paramsObj)
-                        .map((tup: string[]) => tup.join('='))
+                        .map((tup: [string, string | number]) => tup.join('='))
                         .join('&');
             }
         }
@@ -151,6 +153,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     return {
+        currentPage: getPageFromLocation(),
         baseURL,
         getFullURL,
         navigate: navigateUser,
