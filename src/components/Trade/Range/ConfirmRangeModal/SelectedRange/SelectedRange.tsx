@@ -15,7 +15,7 @@ interface propsIF {
     isDenomBaseLocal?: boolean;
     showOnlyFeeTier?: boolean;
 
-    initialPrice?: string;
+    initialPrice?: string | JSX.Element;
 }
 function SelectedRange(props: propsIF) {
     const {

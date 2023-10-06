@@ -53,6 +53,7 @@ interface InitConfirmationProps {
     isMintLiqEnabled: boolean;
     initialPriceDisplay: string | undefined;
     priceDisplayString: string | undefined;
+    priceDisplayDiv: JSX.Element;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -87,13 +88,20 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         setIsConfirmed,
 
         isMintLiqEnabled,
-        priceDisplayString,
+
+        priceDisplayDiv,
     } = props;
 
     const tokensInfo = (
         <GridContainer numCols={2} gap={8} height='136px'>
-            <FeaturedBox pooled={baseCollateral} token={baseToken} />
-            <FeaturedBox pooled={quoteCollateral} token={quoteToken} />
+            <FeaturedBox
+                pooled={isMintLiqEnabled ? baseCollateral : '0.00'}
+                token={baseToken}
+            />
+            <FeaturedBox
+                pooled={isMintLiqEnabled ? quoteCollateral : '0.00'}
+                token={quoteToken}
+            />
         </GridContainer>
     );
 
@@ -115,7 +123,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             }
             isDenomBaseLocal={isDenomBase}
             showOnlyFeeTier={!isMintLiqEnabled}
-            initialPrice={priceDisplayString}
+            initialPrice={priceDisplayDiv}
         />
     );
 
@@ -142,7 +150,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
 
             <Button
                 flat
-                title='SEND TO METAMASK'
+                title='Initialize Pool'
                 action={handleConfirmed}
                 width='350px'
             />

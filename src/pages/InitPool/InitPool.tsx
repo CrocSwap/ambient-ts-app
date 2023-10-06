@@ -454,6 +454,8 @@ export default function InitPool() {
         }
         return undefined;
     }, [baseToken, quoteToken, baseTokenDexBalance, quoteTokenDexBalance]);
+    const [isReferencePriceAvailable, setIsReferencePriceAvailable] =
+        useState(false);
 
     const updateEstimatedInitialPrice = async () => {
         const mainnetBase =
@@ -480,6 +482,7 @@ export default function InitPool() {
 
         const isReferencePriceAvailable =
             basePrice !== undefined && quotePrice !== undefined;
+        setIsReferencePriceAvailable(isReferencePriceAvailable);
 
         const baseUsdPrice = basePrice?.usdPrice || 2000;
         const quoteUsdPrice = quotePrice?.usdPrice || 1;
@@ -1392,6 +1395,8 @@ export default function InitPool() {
         </FlexContainer>
     );
 
+    console.log({ isReferencePriceAvailable });
+
     const handleRefresh = () => {
         setIsLoading(true);
         (async () => {
@@ -1402,6 +1407,8 @@ export default function InitPool() {
             setIsLoading(false);
         }, 1000);
     };
+
+    const [useReferencePrice, setUseReferencePrice] = useState(false);
 
     const openEditMode = () => {
         setIsEditEnabled(true);
@@ -1427,6 +1434,37 @@ export default function InitPool() {
         focusInput();
     };
 
+    function handleRefPriceToggle() {
+        setUseReferencePrice(!useReferencePrice);
+        if (initialPriceInBaseDenom !== undefined) {
+            setInitialPriceDisplay(initialPriceInBaseDenom.toString(2));
+        } else setInitialPriceDisplay('');
+    }
+
+    useEffect(() => {
+        if (!useReferencePrice) setInitialPriceDisplay('');
+    }, [useReferencePrice]);
+
+    const refPriceToggle = (
+        <Toggle
+            id='toggle_ref_price'
+            isOn={useReferencePrice}
+            disabled={!isReferencePriceAvailable}
+            handleToggle={handleRefPriceToggle}
+        />
+    );
+
+    const initPriceEdit = (
+        <FlexContainer gap={8}>
+            {initialPriceDisplay === '' || !isReferencePriceAvailable ? (
+                ''
+            ) : (
+                <FiRefreshCw size={20} onClick={handleRefresh} />
+            )}
+            <LuEdit2 size={20} onClick={() => openEditMode()} />
+        </FlexContainer>
+    );
+
     const initPriceContainer = (
         <FlexContainer
             flexDirection='column'
@@ -1436,17 +1474,9 @@ export default function InitPool() {
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
                 <Text fontSize='body' color='text2'>
-                    Initial Price
+                    Initial Pool Price
                 </Text>
-
-                <FlexContainer gap={8}>
-                    {initialPriceDisplay === '' ? (
-                        ''
-                    ) : (
-                        <FiRefreshCw size={20} onClick={handleRefresh} />
-                    )}
-                    <LuEdit2 size={20} onClick={() => openEditMode()} />
-                </FlexContainer>
+                {isReferencePriceAvailable ? refPriceToggle : initPriceEdit}
             </FlexContainer>
             <section
                 style={{ width: '100%' }}
@@ -1555,8 +1585,8 @@ export default function InitPool() {
 
     useEffect(() => {
         if (!isMintLiqEnabled) {
-            setBaseCollateral('0.00');
-            setQuoteCollateral('0.00');
+            setBaseCollateral('');
+            setQuoteCollateral('');
         }
     });
 
@@ -1675,6 +1705,17 @@ export default function InitPool() {
         ? `1 ${baseToken.symbol} = ${initialPriceLocaleString} ${quoteToken.symbol}`
         : `1 ${quoteToken.symbol} = ${initialPriceLocaleString} ${baseToken.symbol}`;
 
+    const priceDisplayDiv = (
+        <div
+            onClick={() => {
+                setIsDenomBase(!isDenomBase);
+            }}
+            style={{ cursor: 'pointer' }}
+        >
+            {priceDisplayString}
+        </div>
+    );
+
     const initConfirmationProps = {
         activeContent,
         setActiveContent,
@@ -1706,6 +1747,7 @@ export default function InitPool() {
 
         initialPriceDisplay,
         priceDisplayString,
+        priceDisplayDiv,
     };
 
     const confirmationContent = (
