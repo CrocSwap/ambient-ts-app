@@ -1448,12 +1448,18 @@ export default function InitPool() {
 
     // toggle to use reference price
     const refPriceToggle = (
-        <Toggle
-            id='toggle_ref_price'
-            isOn={useReferencePrice}
-            disabled={!isReferencePriceAvailable}
-            handleToggle={handleRefPriceToggle}
-        />
+        <FlexContainer flexDirection='row' alignItems='center' gap={8}>
+            <Text fontSize='body' color='text2'>
+                Use reference price
+            </Text>
+
+            <Toggle
+                id='toggle_ref_price'
+                isOn={useReferencePrice}
+                disabled={!isReferencePriceAvailable}
+                handleToggle={handleRefPriceToggle}
+            />
+        </FlexContainer>
     );
 
     // pencil icon and refresh icon
