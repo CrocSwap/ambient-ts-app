@@ -351,7 +351,7 @@ export default function TransactionDetailsSimplify(
                     </div>
                 ),
                 explanation:
-                    'The appoximate US dollar value of the transaction',
+                    'The approximate US dollar value of the transaction',
             },
         );
     }

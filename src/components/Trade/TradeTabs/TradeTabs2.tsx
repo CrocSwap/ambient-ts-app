@@ -442,7 +442,6 @@ function TradeTabs2(props: propsIF) {
                         ).calendar()}`}
                 </p>
             </DefaultTooltip>
-
             {clearButtonOrNull}
         </FlexContainer>
     );

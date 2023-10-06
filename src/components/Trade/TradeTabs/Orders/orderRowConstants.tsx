@@ -119,7 +119,11 @@ export const orderRowConstants = (props: propsIF) => {
                         rounded
                         font='roboto'
                         role='button'
-                        style={{ width: '440px', cursor: 'default' }}
+                        style={{
+                            width: '440px',
+                            cursor: 'default',
+                            userSelect: 'all',
+                        }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }
@@ -178,7 +182,7 @@ export const orderRowConstants = (props: propsIF) => {
                         <Text
                             font='roboto'
                             onClick={handleWalletLinkClick}
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', userSelect: 'all' }}
                         >
                             {limitOrder.user}
                         </Text>

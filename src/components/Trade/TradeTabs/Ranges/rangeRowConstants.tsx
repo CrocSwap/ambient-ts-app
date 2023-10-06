@@ -110,12 +110,16 @@ export default function rangeRowConstants(props: propsIF) {
                         rounded
                         font='roboto'
                         role='button'
-                        style={{ width: '440px', cursor: 'default' }}
+                        style={{
+                            width: '440px',
+                            cursor: 'default',
+                            userSelect: 'all',
+                        }}
                         onClick={(event: React.MouseEvent<HTMLDivElement>) =>
                             event.stopPropagation()
                         }
                     >
-                        {posHash.toString()}
+                        {posHash}
                         <FiCopy
                             size={'12px'}
                             style={{ cursor: 'pointer' }}
@@ -168,7 +172,7 @@ export default function rangeRowConstants(props: propsIF) {
                         <Text
                             font='roboto'
                             onClick={handleWalletLinkClick}
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', userSelect: 'all' }}
                         >
                             {ownerId}
                         </Text>
