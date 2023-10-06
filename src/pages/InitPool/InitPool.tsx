@@ -483,6 +483,7 @@ export default function InitPool() {
         const isReferencePriceAvailable =
             basePrice !== undefined && quotePrice !== undefined;
         setIsReferencePriceAvailable(isReferencePriceAvailable);
+        console.log({ basePrice, quotePrice });
 
         const baseUsdPrice = basePrice?.usdPrice || 2000;
         const quoteUsdPrice = quotePrice?.usdPrice || 1;
@@ -1445,6 +1446,7 @@ export default function InitPool() {
         if (!useReferencePrice) setInitialPriceDisplay('');
     }, [useReferencePrice]);
 
+    // toggle to use reference price
     const refPriceToggle = (
         <Toggle
             id='toggle_ref_price'
@@ -1454,6 +1456,7 @@ export default function InitPool() {
         />
     );
 
+    // pencil icon and refresh icon
     const initPriceEdit = (
         <FlexContainer gap={8}>
             {initialPriceDisplay === '' || !isReferencePriceAvailable ? (
