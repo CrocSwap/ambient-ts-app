@@ -13,6 +13,7 @@ interface propsIF {
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
     isDenomBaseLocal?: boolean;
+    showOnlyFeeTier?: boolean;
 }
 function SelectedRange(props: propsIF) {
     const {
@@ -22,6 +23,7 @@ function SelectedRange(props: propsIF) {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
+        showOnlyFeeTier,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
@@ -165,6 +167,7 @@ function SelectedRange(props: propsIF) {
             </FlexContainer>
         </FlexContainer>
     );
+    if (showOnlyFeeTier) return extraInfoData;
 
     return (
         <FlexContainer flexDirection='column' gap={8}>

@@ -50,6 +50,7 @@ interface InitConfirmationProps {
     setActiveStep: React.Dispatch<React.SetStateAction<number>>;
     isConfirmed: boolean;
     setIsConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
+    isMintLiqEnabled: boolean;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -82,6 +83,8 @@ export default function InitConfirmation(props: InitConfirmationProps) {
 
         isConfirmed,
         setIsConfirmed,
+
+        isMintLiqEnabled,
     } = props;
 
     const tokensInfo = (
@@ -89,6 +92,27 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             <FeaturedBox pooled={baseCollateral} token={baseToken} />
             <FeaturedBox pooled={quoteCollateral} token={quoteToken} />
         </GridContainer>
+    );
+
+    const selectedRangeDisplay = isAmbient || (
+        <SelectedRange
+            isTokenABase={isTokenABase}
+            isAmbient={isAmbient}
+            pinnedMinPriceDisplayTruncatedInBase={
+                pinnedMinPriceDisplayTruncatedInBase
+            }
+            pinnedMinPriceDisplayTruncatedInQuote={
+                pinnedMinPriceDisplayTruncatedInQuote
+            }
+            pinnedMaxPriceDisplayTruncatedInBase={
+                pinnedMaxPriceDisplayTruncatedInBase
+            }
+            pinnedMaxPriceDisplayTruncatedInQuote={
+                pinnedMaxPriceDisplayTruncatedInQuote
+            }
+            isDenomBaseLocal={isDenomBase}
+            showOnlyFeeTier={!isMintLiqEnabled}
+        />
     );
 
     const poolTokenDisplay = (
@@ -102,27 +126,14 @@ export default function InitConfirmation(props: InitConfirmationProps) {
                 maxWidth: '478px',
             }}
         >
-            <FlexContainer flexDirection='column' gap={8}>
+            <FlexContainer
+                flexDirection='column'
+                gap={8}
+                justifyContent={!isMintLiqEnabled ? 'center' : ''}
+                style={{ height: '100%' }}
+            >
                 {tokensInfo}
-                {isAmbient || (
-                    <SelectedRange
-                        isTokenABase={isTokenABase}
-                        isAmbient={isAmbient}
-                        pinnedMinPriceDisplayTruncatedInBase={
-                            pinnedMinPriceDisplayTruncatedInBase
-                        }
-                        pinnedMinPriceDisplayTruncatedInQuote={
-                            pinnedMinPriceDisplayTruncatedInQuote
-                        }
-                        pinnedMaxPriceDisplayTruncatedInBase={
-                            pinnedMaxPriceDisplayTruncatedInBase
-                        }
-                        pinnedMaxPriceDisplayTruncatedInQuote={
-                            pinnedMaxPriceDisplayTruncatedInQuote
-                        }
-                        isDenomBaseLocal={isDenomBase}
-                    />
-                )}
+                {selectedRangeDisplay}
             </FlexContainer>
 
             <Button
@@ -139,7 +150,14 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         sendTx();
     }
 
-    const steps = [
+    const noMintLiqSteps = [
+        { label: 'Sign transaction to initialize pool.' },
+        {
+            label: `Submitting pool initialization for ${baseToken.symbol} / ${quoteToken.symbol}`,
+        },
+    ];
+
+    const mintLiqSteps = [
         { label: 'Sign transaction to initialize pool.' },
         {
             label: `Submitting pool initialization for ${baseToken.symbol} / ${quoteToken.symbol}`,
@@ -149,6 +167,8 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             label: `Submitting liquidty for ${baseToken.symbol} / ${quoteToken.symbol}`,
         },
     ];
+
+    const steps = isMintLiqEnabled ? mintLiqSteps : noMintLiqSteps;
 
     useEffect(() => {
         setActiveStep(0);

@@ -1689,6 +1689,7 @@ export default function InitPool() {
         setActiveStep: setActiveConfirmationStep,
         isConfirmed: userClickedSendToMetamask,
         setIsConfirmed: setUserClickedSendToMetamask,
+        isMintLiqEnabled,
     };
 
     const confirmationContent = (
