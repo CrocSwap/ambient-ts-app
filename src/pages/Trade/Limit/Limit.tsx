@@ -36,10 +36,7 @@ import {
     addReceipt,
     updateTransactionHash,
 } from '../../../utils/state/receiptDataSlice';
-import {
-    setLimitTick,
-    setLimitTickCopied,
-} from '../../../utils/state/tradeDataSlice';
+import { setLimitTick } from '../../../utils/state/tradeDataSlice';
 import {
     TransactionError,
     isTransactionReplacedError,
@@ -85,10 +82,9 @@ export default function Limit() {
         poolPriceNonDisplay,
         liquidityFee,
         isDenomBase,
-        limitTickCopied,
         primaryQuantity,
     } = useAppSelector((state) => state.tradeData);
-    const { limitTickFromParams } = useTradeData();
+    const { urlParamMap, updateURL } = useTradeData();
 
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(
@@ -157,25 +153,9 @@ export default function Limit() {
         },
     );
 
-    // trigger re-pinning to a default tick
-    useEffect(() => {
-        dispatch(setLimitTick(undefined));
-    }, [tokenA.address]);
-
-    useEffect(() => {
-        if (limitTickFromParams && limitTick === undefined) {
-            dispatch(setLimitTick(limitTickFromParams));
-        }
-    }, [limitTickFromParams, limitTick === undefined]);
-
     useEffect(() => {
         (async () => {
-            if (
-                limitTick === undefined &&
-                !!poolPriceNonDisplay &&
-                crocEnv &&
-                !limitTickCopied
-            ) {
+            if (limitTick === undefined && !!poolPriceNonDisplay && crocEnv) {
                 if (!pool) return;
 
                 const spotPrice = await cachedQuerySpotPrice(
@@ -329,13 +309,11 @@ export default function Limit() {
                 }
 
                 setPriceInputFieldBlurred(false);
-                if (limitTickCopied) dispatch(setLimitTickCopied(false));
             }
         })();
     }, [
         !!crocEnv,
         pool,
-        limitTickCopied,
         limitTick,
         isDenomBase,
         priceInputFieldBlurred,
@@ -343,12 +321,47 @@ export default function Limit() {
         !!poolPriceNonDisplay,
     ]);
 
+    const updateOrderValidityStatus = async () => {
+        try {
+            if (!crocEnv) return;
+            if (!limitTick) return;
+            if (tokenAInputQty === '' && tokenBInputQty === '') return;
+
+            const tknA: string = urlParamMap.get('tokenA') as string;
+            const tknB: string = urlParamMap.get('tokenB') as string;
+            const limitTickParam: string = urlParamMap.get(
+                'limitTick',
+            ) as string;
+            if (limitTickParam && limitTickParam !== limitTick.toString())
+                return;
+            const testOrder = isTokenAPrimary
+                ? crocEnv.sell(tknA, 0)
+                : crocEnv.buy(tknB, 0);
+
+            const ko = testOrder.atLimit(
+                isTokenAPrimary ? tknB : tknA,
+                limitTick,
+            );
+
+            if (await ko.willMintFail()) {
+                updateLimitErrorMessage();
+                setIsOrderValid(false);
+                return;
+            } else {
+                setIsOrderValid(true);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     useEffect(() => {
         updateOrderValidityStatus();
     }, [
         limitTick,
         poolPriceNonDisplay,
         tokenAInputQty === '' && tokenBInputQty === '',
+        urlParamMap,
     ]);
 
     useEffect(() => {
@@ -357,7 +370,14 @@ export default function Limit() {
 
     useEffect(() => {
         handleLimitButtonMessage(parseFloat(tokenAInputQty));
-    }, [isOrderValid, tokenAInputQty, isPoolInitialized, poolPriceNonDisplay]);
+    }, [
+        isOrderValid,
+        tokenAInputQty,
+        isPoolInitialized,
+        poolPriceNonDisplay,
+        limitTick,
+        isSellTokenBase,
+    ]);
 
     useEffect(() => {
         setIsWithdrawFromDexChecked(parseFloat(tokenADexBalance) > 0);
@@ -410,34 +430,6 @@ export default function Limit() {
                     : 'Below Minimum'
             }  Price`,
         );
-
-    const updateOrderValidityStatus = async () => {
-        try {
-            if (!crocEnv) return;
-            if (!limitTick) return;
-
-            if (tokenAInputQty === '' && tokenBInputQty === '') return;
-
-            const testOrder = isTokenAPrimary
-                ? crocEnv.sell(tokenA.address, 0)
-                : crocEnv.buy(tokenB.address, 0);
-
-            const ko = testOrder.atLimit(
-                isTokenAPrimary ? tokenB.address : tokenA.address,
-                limitTick,
-            );
-
-            if (await ko.willMintFail()) {
-                updateLimitErrorMessage();
-                setIsOrderValid(false);
-                return;
-            } else {
-                setIsOrderValid(true);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     const sendLimitOrder = async () => {
         if (!crocEnv) return;
@@ -649,6 +641,7 @@ export default function Limit() {
                     isSellTokenBase={isSellTokenBase}
                     setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                     fieldId='limit-rate'
+                    updateURL={updateURL}
                 />
             }
             transactionDetails={

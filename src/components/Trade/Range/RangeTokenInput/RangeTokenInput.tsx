@@ -12,6 +12,7 @@ import {
 } from '../../../../utils/hooks/reduxToolkit';
 import {
     linkGenMethodsIF,
+    poolParamsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
 import {
@@ -169,11 +170,14 @@ function RangeTokenInput(props: propsIF) {
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
         if (!rangeTicksCopied) {
-            linkGenPool.navigate({
+            // URL params for link to pool page
+            const poolLinkParams: poolParamsIF = {
                 chain: chainId,
                 tokenA: tokenB.address,
                 tokenB: tokenA.address,
-            });
+            };
+            // navigate user to pool page with URL params defined above
+            linkGenPool.navigate(poolLinkParams);
         }
         if (rangeTicksCopied) dispatch(setRangeTicksCopied(false));
     };
