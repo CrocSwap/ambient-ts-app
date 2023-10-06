@@ -52,6 +52,7 @@ interface InitConfirmationProps {
     setIsConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
     isMintLiqEnabled: boolean;
     initialPriceDisplay: string | undefined;
+    priceDisplayString: string | undefined;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -86,7 +87,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         setIsConfirmed,
 
         isMintLiqEnabled,
-        initialPriceDisplay,
+        priceDisplayString,
     } = props;
 
     const tokensInfo = (
@@ -114,7 +115,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             }
             isDenomBaseLocal={isDenomBase}
             showOnlyFeeTier={!isMintLiqEnabled}
-            initialPrice={initialPriceDisplay}
+            initialPrice={priceDisplayString}
         />
     );
 

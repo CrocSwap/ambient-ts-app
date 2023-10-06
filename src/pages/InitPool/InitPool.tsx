@@ -1554,6 +1554,13 @@ export default function InitPool() {
     );
 
     useEffect(() => {
+        if (!isMintLiqEnabled) {
+            setBaseCollateral('0.00');
+            setQuoteCollateral('0.00');
+        }
+    });
+
+    useEffect(() => {
         if (poolExists) {
             setShowErrorMessage(false);
         } else if (erc20TokenWithDexBalance) {
@@ -1566,16 +1573,10 @@ export default function InitPool() {
     const handleSetActiveContent = (newActiveContent: string) => {
         setActiveContent(newActiveContent);
     };
-    console.log({ activeConfirmationStep });
-    console.log({ showConfirmation });
+
     const [userClickedSendToMetamask, setUserClickedSendToMetamask] =
         useState(false);
 
-    // if we are in confirmation
-    // if the active step is 2, set active step to 1
-    //  if the active step is 1, set active step to 0
-    //  if the active step is 0, setActiveContent to main
-    // handle navigation
     const handleGoBack = () => {
         if (activeContent === 'confirmation') {
             if (userClickedSendToMetamask) {
@@ -1666,6 +1667,14 @@ export default function InitPool() {
         </InitSkeleton>
     );
 
+    const initialPriceLocaleString = getFormattedNumber({
+        value: parseFloat(initialPriceDisplay.replaceAll(',', '')),
+    });
+
+    const priceDisplayString = isDenomBase
+        ? `1 ${baseToken.symbol} = ${initialPriceLocaleString} ${quoteToken.symbol}`
+        : `1 ${quoteToken.symbol} = ${initialPriceLocaleString} ${baseToken.symbol}`;
+
     const initConfirmationProps = {
         activeContent,
         setActiveContent,
@@ -1696,6 +1705,7 @@ export default function InitPool() {
         isMintLiqEnabled,
 
         initialPriceDisplay,
+        priceDisplayString,
     };
 
     const confirmationContent = (
