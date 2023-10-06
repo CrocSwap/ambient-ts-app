@@ -4,11 +4,6 @@ import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import styles from './PoolNotInitialized.module.css';
-import {
-    setLocalTokenA,
-    setLocalTokenB,
-} from '../../utils/state/localPairDataSlice';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 
 interface PropsIF {
     chainId: string;
@@ -21,13 +16,6 @@ export const PoolNotInitalized = (props: PropsIF) => {
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
 
-    const dispatch = useAppDispatch();
-
-    function handleNavigationToInit() {
-        dispatch(setLocalTokenA(tokenA));
-        dispatch(setLocalTokenB(tokenB));
-    }
-
     return (
         <div className={styles.pool_not_initialialized_container}>
             <div className={styles.pool_init_bg}>
@@ -37,7 +25,6 @@ export const PoolNotInitalized = (props: PropsIF) => {
                         <h3>Do you want to initialize it?</h3>
 
                         <Link
-                            onClick={handleNavigationToInit}
                             to={linkGenInitPool.getFullURL({
                                 chain: chainId,
                                 tokenA: tokenA.address,

@@ -18,7 +18,7 @@ import TokenIcon from '../Global/TokenIcon/TokenIcon';
 import { SoloTokenSelectModal } from '../Global/TokenSelectContainer/SoloTokenSelectModal';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { Link, useLocation } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import { useModal } from '../Global/Modal/useModal';
@@ -29,10 +29,6 @@ import {
     TokenQuantityInput,
     TokenSelectButton,
 } from '../../styled/Components/TradeModules';
-import {
-    setLocalTokenA,
-    setLocalTokenB,
-} from '../../utils/state/localPairDataSlice';
 import { SoloTokenSelect } from '../Global/TokenSelectContainer/SoloTokenSelect';
 
 interface propsIF {
@@ -71,7 +67,6 @@ function TokenInputQuantity(props: propsIF) {
         setTokenModalOpen = () => null,
     } = props;
     const isPoolInitialized = useSimulatedIsPoolInitialized();
-    const dispatch = useAppDispatch();
     const location = useLocation();
 
     const { tradeData } = useAppSelector((state) => state);
@@ -143,10 +138,6 @@ function TokenInputQuantity(props: propsIF) {
         );
 
     const tokenSelectRef = useRef(null);
-    function handleNavigationToInit() {
-        dispatch(setLocalTokenA(tradeData.tokenA));
-        dispatch(setLocalTokenB(tradeData.tokenB));
-    }
 
     const poolNotInitializedContent = tokenSelectRef.current && (
         <InputDisabledText
@@ -164,7 +155,6 @@ function TokenInputQuantity(props: propsIF) {
                         tokenA: tradeData.tokenA.address,
                         tokenB: tradeData.tokenB.address,
                     })}
-                    onClick={handleNavigationToInit}
                 >
                     Initialize it to continue.
                 </Link>

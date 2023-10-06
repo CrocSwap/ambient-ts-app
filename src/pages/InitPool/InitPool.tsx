@@ -454,10 +454,16 @@ export default function InitPool() {
         }
         return undefined;
     }, [baseToken, quoteToken, baseTokenDexBalance, quoteTokenDexBalance]);
+
     const [isReferencePriceAvailable, setIsReferencePriceAvailable] =
         useState(false);
 
-    const updateEstimatedInitialPrice = async () => {
+    useEffect(() => {
+        setInitialPriceInBaseDenom(undefined);
+        setInitialPriceDisplay('');
+    }, [baseToken, quoteToken]);
+
+    const refreshReferencePrice = async () => {
         const mainnetBase =
             baseToken.address === ZERO_ADDRESS
                 ? ethereumMainnet.tokens['WETH']
@@ -480,10 +486,9 @@ export default function InitPool() {
         const basePrice = await basePricePromise;
         const quotePrice = await quotePricePromise;
 
-        const isReferencePriceAvailable =
+        const isReferencePriceFound =
             basePrice !== undefined && quotePrice !== undefined;
-        setIsReferencePriceAvailable(isReferencePriceAvailable);
-        console.log({ basePrice, quotePrice });
+        setIsReferencePriceAvailable(isReferencePriceFound);
 
         const baseUsdPrice = basePrice?.usdPrice || 2000;
         const quoteUsdPrice = quotePrice?.usdPrice || 1;
@@ -497,12 +502,12 @@ export default function InitPool() {
                 ? defaultPriceNumInBase.toPrecision(3)
                 : defaultPriceNumInBase.toFixed(2);
 
-        if (isReferencePriceAvailable && initialPriceDisplay === '') {
+        if (isReferencePriceFound && initialPriceDisplay === '') {
             setInitialPriceInBaseDenom(defaultPriceNumInBase);
         }
         if (isDenomBase) {
             setEstimatedInitialPriceDisplay(defaultPriceTruncated);
-            isReferencePriceAvailable &&
+            isReferencePriceFound &&
             initialPriceDisplay === '' &&
             !isTokenPairDefault
                 ? setInitialPriceDisplay(defaultPriceTruncated)
@@ -520,7 +525,7 @@ export default function InitPool() {
                     : invertedPriceNum.toFixed(2);
             setEstimatedInitialPriceDisplay(invertedPriceTruncated);
 
-            isReferencePriceAvailable &&
+            isReferencePriceFound &&
             initialPriceDisplay === '' &&
             !isTokenPairDefault
                 ? setInitialPriceDisplay(invertedPriceTruncated)
@@ -531,15 +536,8 @@ export default function InitPool() {
     };
 
     useEffect(() => {
-        setInitialPriceInBaseDenom(undefined);
-        setInitialPriceDisplay('');
-    }, [baseToken, quoteToken]);
-
-    useEffect(() => {
-        (async () => {
-            await updateEstimatedInitialPrice();
-        })();
-    }, [baseToken, quoteToken, isDenomBase]);
+        refreshReferencePrice();
+    }, [baseToken, quoteToken, isDenomBase, isTokenPairDefault]);
 
     useEffect(() => {
         handleDisplayUpdate();
@@ -1396,12 +1394,10 @@ export default function InitPool() {
         </FlexContainer>
     );
 
-    console.log({ isReferencePriceAvailable });
-
     const handleRefresh = () => {
         setIsLoading(true);
         (async () => {
-            await updateEstimatedInitialPrice();
+            await refreshReferencePrice();
         })();
 
         setTimeout(() => {
@@ -1409,7 +1405,7 @@ export default function InitPool() {
         }, 1000);
     };
 
-    const [useReferencePrice, setUseReferencePrice] = useState(false);
+    const [useReferencePrice, setUseReferencePrice] = useState(true);
 
     const openEditMode = () => {
         setIsEditEnabled(true);

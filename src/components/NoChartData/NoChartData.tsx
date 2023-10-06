@@ -9,11 +9,6 @@ import { useContext, useState } from 'react';
 import { CandleContext } from '../../contexts/CandleContext';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
 import { TradeTableContext } from '../../contexts/TradeTableContext';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import {
-    setLocalTokenA,
-    setLocalTokenB,
-} from '../../utils/state/localPairDataSlice';
 
 interface PropsIF {
     chainId: string;
@@ -31,12 +26,6 @@ export const NoChartData = (props: PropsIF) => {
     const { toggleTradeTable } = useContext(TradeTableContext);
 
     const linkGenInitPool: linkGenMethodsIF = useLinkGen('initpool');
-    const dispatch = useAppDispatch();
-
-    function handleNavigationToInit() {
-        dispatch(setLocalTokenA(tokenA));
-        dispatch(setLocalTokenB(tokenB));
-    }
 
     const [isFetching, setIsFetching] = useState(false); // Initialize state for rotation
 
@@ -87,7 +76,6 @@ export const NoChartData = (props: PropsIF) => {
                     tokenB: tokenB.address,
                 })}
                 className={styles.initialize_link}
-                onClick={handleNavigationToInit}
             >
                 Initialize Pool
                 <TokenIcon
