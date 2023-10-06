@@ -51,6 +51,10 @@
     cursor: pointer;
 }
 
+.chat_title {
+    user-select: none;
+}
+
 .chat_header section {
     display: flex;
     flex-direction: row;
