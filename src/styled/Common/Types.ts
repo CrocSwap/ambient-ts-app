@@ -26,3 +26,23 @@ export type Fonts = 'font-logo' | 'font-family' | 'roboto' | 'mono';
 
 export type FontSizes = 'header1' | 'header2' | 'header' | 'body' | 'mini';
 export type FontWeights = '100' | '200' | '300' | '400' | '500' | 'lighter';
+export type JustifyContent =
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-between'
+    | 'space-around'
+    | 'space-evenly';
+
+export type AlignItems =
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'baseline'
+    | 'stretch';
+
+export type Position = 'relative' | 'absolute' | 'fixed';
+
+export type scrollSnapAlign = 'start' | 'center' | 'end';
+
+export type TextAlign = 'left' | 'center' | 'right';

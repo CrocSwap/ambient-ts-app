@@ -1,6 +1,11 @@
-import { FlexContainer, Container, GridContainer, Text } from './Common';
+import { Text, WarningText } from './Text';
 import { Breakpoint } from './Breakpoints';
-import { ContainerStyles } from './Container';
+import {
+    ContainerStyles,
+    FlexContainer,
+    Container,
+    GridContainer,
+} from './Container';
 import { ScrollContainer } from './ScrollContainer';
 
 export {
@@ -11,4 +16,5 @@ export {
     GridContainer,
     ScrollContainer,
     Text,
+    WarningText,
 };

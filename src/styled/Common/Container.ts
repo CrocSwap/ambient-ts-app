@@ -1,4 +1,5 @@
-import { css } from 'styled-components/macro';
+import styled, { css } from 'styled-components/macro';
+
 import {
     FontSizes,
     FontWeights,
@@ -6,7 +7,14 @@ import {
     backgrounds,
     textColors,
     overflowTypes,
+    JustifyContent,
+    AlignItems,
+    Position,
+    scrollSnapAlign,
+    TextAlign,
 } from './Types';
+import { Breakpoint, BreakpointProps } from './Breakpoints';
+import { AnimationProps, Animations } from './Animations';
 
 export const hideScrollbarCss = css`
     &::-webkit-scrollbar {
@@ -14,12 +22,6 @@ export const hideScrollbarCss = css`
     }
     scrollbar-width: none;
     -ms-overflow-style: none;
-`;
-
-export const Blur = css<{ blur: boolean }>`
-    pointer-events: none;
-    opacity: 0.2;
-    filter: blur(2px);
 `;
 
 export interface ContainerProps {
@@ -30,45 +32,37 @@ export interface ContainerProps {
     gap?: number;
     fullHeight?: boolean;
     fullWidth?: boolean;
-    justifyContent?:
-        | 'flex-start'
-        | 'flex-end'
-        | 'center'
-        | 'space-between'
-        | 'space-around'
-        | 'space-evenly';
-    alignItems?: 'flex-start' | 'flex-end' | 'center' | 'baseline' | 'stretch';
+    justifyContent?: JustifyContent;
+    alignItems?: AlignItems;
     overflow?: overflowTypes;
     overflowY?: overflowTypes;
     overflowX?: overflowTypes;
-
     background?: backgrounds;
     color?: textColors;
     rounded?: boolean;
-    position?: 'relative' | 'absolute' | 'fixed';
+    position?: Position;
     hideScrollbar?: boolean;
-    scrollSnapAlign?: 'start' | 'end' | 'center';
+    scrollSnapAlign?: scrollSnapAlign;
     wrap?: boolean;
-    textAlign?: 'left' | 'center' | 'right';
+    textAlign?: TextAlign;
     maxWidth?: string;
     outline?: textColors;
     zIndex?: number;
     minHeight?: string;
     maxHeight?: string;
     overlay?: 'blur';
-    grow?: boolean;
-
     margin?: string;
     padding?: string;
     display?: 'flex' | 'grid';
-    // // Flex Props
+    // Flex Props
     flexDirection?: 'row' | 'column';
-    // // Grid Props
+    grow?: boolean;
+
+    // Grid Props
     numCols?: number;
     numRows?: number;
     customRows?: string;
     customCols?: string;
-
     // Font Props
     font?: Fonts;
     letterSpacing?: boolean;
@@ -115,6 +109,11 @@ export const ContainerStyles = (props: ContainerProps) => {
         numRows,
         customRows,
         customCols,
+        // font props
+        font,
+        fontSize,
+        letterSpacing,
+        fontWeight,
     } = props;
 
     let displayStyling = '';
@@ -147,6 +146,8 @@ export const ContainerStyles = (props: ContainerProps) => {
             displayStyling = `
             display: flex;
             ${flexDirection ? `flex-direction: ${flexDirection};` : ''}
+            ${grow ? 'flex-grow: 1;' : ''}
+
             `;
             break;
         default:
@@ -155,7 +156,18 @@ export const ContainerStyles = (props: ContainerProps) => {
     }
 
     let overlayStyles = '';
-    overlay === 'blur' && (overlayStyles += Blur);
+    switch (overlay) {
+        case 'blur':
+            overlayStyles = `
+            pointer-events: none;
+            opacity: 0.2;
+            filter: blur(2px);
+            `;
+            break;
+        default:
+            break;
+    }
+
     return `
         ${width ? `width: ${width};` : ''}
         ${height ? `height: ${height};` : ''}
@@ -164,7 +176,6 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${justifyContent ? `justify-content: ${justifyContent};` : ''}
         ${alignItems ? `align-items: ${alignItems};` : ''}
         ${gap ? `gap: ${gap}px;` : ''}
-
         ${position ? `position: ${position};` : ''}
         ${hideScrollbar ? hideScrollbarCss : ''}
         ${scrollSnapAlign ? `scroll-snap-align: ${scrollSnapAlign};` : ''}
@@ -178,21 +189,51 @@ export const ContainerStyles = (props: ContainerProps) => {
         ${rounded ? 'border-radius: var(--border-radius);' : ''}
         ${maxWidth ? `max-width: ${maxWidth};` : ''}
         ${zIndex ? `z-index: ${zIndex};` : ''}
-
         ${transition ? 'transition: var(--transition);' : ''}
         ${cursor ? `cursor: ${cursor};` : ''}
         ${outline ? `outline: 1px solid var(--${outline});` : ''}
         ${minHeight ? `min-height: ${minHeight};` : ''}
         ${maxHeight ? `max-height: ${maxHeight};` : ''}
         ${overlayStyles}
-        ${grow ? 'flex-grow: 1;' : ''}
-
         ${padding ? `padding: ${padding};` : ''}
         ${margin ? `margin: ${margin};` : ''}
         ${displayStyling}
+        ${font ? `font-family: var(--${font});` : ''}
+        ${letterSpacing ? 'letter-spacing: -0.02em;' : ''}
+        ${
+            fontSize
+                ? `
+            font-size: var(--${fontSize}-size);
+            line-height: var(--${fontSize}-lh);
+            `
+                : ''
+        }
+        ${fontWeight ? `font-weight: ${fontWeight};` : ''}
         `;
 };
 
 export const WrappedContainerStyles = css<ContainerProps>`
     ${(props) => ContainerStyles(props)}
+`;
+
+export type StyledContainerProps = ContainerProps &
+    BreakpointProps &
+    AnimationProps;
+
+export const FlexContainer = styled.div<StyledContainerProps>`
+    ${(props) => ContainerStyles({ ...props, ...{ display: 'flex' } })}
+    ${Breakpoint}
+    ${Animations}
+`;
+
+export const GridContainer = styled.div<StyledContainerProps>`
+    ${(props) => ContainerStyles({ ...props, ...{ display: 'grid' } })}
+    ${Breakpoint}
+    ${Animations}
+`;
+
+export const Container = styled.div<StyledContainerProps>`
+    ${WrappedContainerStyles}
+    ${Breakpoint}
+    ${Animations}
 `;
