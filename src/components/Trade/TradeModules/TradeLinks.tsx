@@ -6,7 +6,7 @@ import {
     marketParamsIF,
     limitParamsIF,
     poolParamsIF,
-    pageRoutes,
+    baseURLs,
 } from '../../../utils/hooks/useLinkGen';
 import { TokenIF } from '../../../utils/interfaces/exports';
 
@@ -42,7 +42,7 @@ export default function TradeLinks(props: propsIF) {
     // interface describing shape of route data to generate nav links
     interface routeIF {
         path: string;
-        baseURL: pageRoutes;
+        baseURL: baseURLs;
         name: 'Swap' | 'Limit' | 'Pool';
     }
 
