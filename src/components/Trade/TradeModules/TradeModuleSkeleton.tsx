@@ -105,6 +105,13 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
 
+    // !important:  code to generate buttons to navigate between trade modules is run
+    // !important:  ... here to prevent crashes when the app attempts to access on
+    // !important:  ... the `/swap` route, but it exists in parallel with code in the
+    // !important:  ... `Trade.tsx` file, this duplication will be addressed when we
+    // !important:  ... break up this file and create a better implementation of the
+    // !important:  ... mobile version of the app
+
     // hooks to generate default URL paths
     const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
