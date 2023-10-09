@@ -68,7 +68,7 @@ const BASE_URL_PATHS = {
 // string-literal union type of keys in `BASE_URL_PATHS`
 export type pageNames = keyof typeof BASE_URL_PATHS;
 // string-literal union type of keys in `BASE_URL_PATHS`
-export type baseURLs = typeof BASE_URL_PATHS[keyof typeof BASE_URL_PATHS];
+export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
     currentPage: pageNames;
