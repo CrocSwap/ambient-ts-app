@@ -12,6 +12,7 @@ import {
     Position,
     scrollSnapAlign,
     TextAlign,
+    Displays,
 } from './Types';
 import { Breakpoint, BreakpointProps } from './Breakpoints';
 import { AnimationProps, Animations } from './Animations';
@@ -53,7 +54,10 @@ export interface ContainerProps {
     overlay?: 'blur';
     margin?: string;
     padding?: string;
-    display?: 'flex' | 'grid';
+    display?: Displays;
+    colSpan?: string;
+    rowSpan?: string;
+
     // Flex Props
     flexDirection?: 'row' | 'column';
     grow?: boolean;
@@ -101,6 +105,8 @@ export const ContainerStyles = (props: ContainerProps) => {
         grow,
         margin,
         padding,
+        colSpan,
+        rowSpan,
         // flex props
         flexDirection,
         display,
@@ -209,6 +215,8 @@ export const ContainerStyles = (props: ContainerProps) => {
                 : ''
         }
         ${fontWeight ? `font-weight: ${fontWeight};` : ''}
+        ${colSpan ? `grid-column: span ${colSpan};` : ''}
+        ${rowSpan ? `grid-row: span ${rowSpan};` : ''}
         `;
 };
 

@@ -12,6 +12,7 @@ import RangeWidth from '../../components/Form/RangeWidth/RangeWidth';
 import TokenInputQuantity from '../../components/Form/TokenInputQuantity';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import Toggle from '../../components/Form/Toggle';
+import FormFooter from './FormFooterExample';
 
 export default function ExampleForm() {
     const { dexBalRange } = useContext(UserPreferenceContext);
@@ -318,6 +319,7 @@ export default function ExampleForm() {
                     >
                         {LeftSide}
                         {RightSide}
+                        <FormFooter type='explicit' />
                     </Container>
                 </FlexContainer>
             </FlexContainer>
