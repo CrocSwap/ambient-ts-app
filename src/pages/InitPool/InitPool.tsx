@@ -514,13 +514,18 @@ export default function InitPool() {
                     ? defaultPriceNumInBase.toPrecision(3)
                     : defaultPriceNumInBase.toFixed(2);
 
-            if (isReferencePriceFound && initialPriceDisplay === '') {
+            if (
+                isReferencePriceFound &&
+                useReferencePrice &&
+                initialPriceDisplay === ''
+            ) {
                 setInitialPriceInBaseDenom(defaultPriceNumInBase);
             }
             if (isDenomBase) {
                 setEstimatedInitialPriceDisplay(defaultPriceTruncated);
                 isReferencePriceFound &&
                 initialPriceDisplay === '' &&
+                useReferencePrice &&
                 !isTokenPairDefault
                     ? setInitialPriceDisplay(defaultPriceTruncated)
                     : !initialPriceInBaseDenom
@@ -539,6 +544,7 @@ export default function InitPool() {
 
                 isReferencePriceFound &&
                 initialPriceDisplay === '' &&
+                useReferencePrice &&
                 !isTokenPairDefault
                     ? setInitialPriceDisplay(invertedPriceTruncated)
                     : !initialPriceInBaseDenom
