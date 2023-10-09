@@ -59,7 +59,6 @@ export function useCreateRangePosition() {
         setNewRangeTransactionHash: (s: string) => void;
         setTxErrorCode: (s: string) => void;
         resetConfirmation: () => void;
-        setShowConfirmation: (s: boolean) => void;
         setIsTxCompletedRange?: React.Dispatch<React.SetStateAction<boolean>>;
     }) => {
         const {
@@ -75,14 +74,12 @@ export function useCreateRangePosition() {
             setNewRangeTransactionHash,
             setTxErrorCode,
             resetConfirmation,
-            setShowConfirmation,
             setIsTxCompletedRange,
         } = params;
 
         if (!crocEnv) return;
 
         resetConfirmation();
-        setShowConfirmation(true);
 
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
 

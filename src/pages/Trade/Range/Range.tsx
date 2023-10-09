@@ -873,7 +873,6 @@ function Range() {
             setNewRangeTransactionHash,
             setTxErrorCode,
             resetConfirmation,
-            setShowConfirmation,
         });
     };
 

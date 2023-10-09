@@ -111,7 +111,15 @@ export default function InitPool() {
 
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
     const {
-        tradeData: { tokenA, tokenB, baseToken, quoteToken },
+        tradeData: {
+            tokenA,
+            tokenB,
+            baseToken,
+            quoteToken,
+            advancedMode,
+            advancedHighTick,
+            advancedLowTick,
+        },
     } = useAppSelector((state) => state);
 
     useEffect(() => {
@@ -122,11 +130,14 @@ export default function InitPool() {
         setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
     }, [tokenBDexBalance]);
 
-    useUrlParams(tokens, chainId, provider);
+    const { urlParamMap } = useUrlParams(tokens, chainId, provider);
 
-    const {
-        tradeData: { advancedMode, advancedHighTick, advancedLowTick },
-    } = useAppSelector((state) => state);
+    const tknA: string = urlParamMap.get('tokenA') as string;
+    const tknB: string = urlParamMap.get('tokenB') as string;
+
+    const tradeDataMatchesURLParams =
+        tknA.toLowerCase() === tokenA.address.toLowerCase() &&
+        tknB.toLowerCase() === tokenB.address.toLowerCase();
 
     const { isConnected } = useAccount();
 
@@ -464,80 +475,89 @@ export default function InitPool() {
     }, [baseToken, quoteToken]);
 
     const refreshReferencePrice = async () => {
-        const mainnetBase =
-            baseToken.address === ZERO_ADDRESS
-                ? ethereumMainnet.tokens['WETH']
-                : ethereumMainnet.tokens[
-                      baseToken?.symbol as keyof typeof ethereumMainnet.tokens
-                  ];
-        const mainnetQuote =
-            ethereumMainnet.tokens[
-                quoteToken?.symbol as keyof typeof ethereumMainnet.tokens
-            ];
-        const basePricePromise = cachedFetchTokenPrice(
-            mainnetBase,
-            ethereumMainnet.chainId,
-        );
-        const quotePricePromise = cachedFetchTokenPrice(
-            mainnetQuote,
-            ethereumMainnet.chainId,
-        );
+        if (tradeDataMatchesURLParams) {
+            const mainnetBase =
+                baseToken.address === ZERO_ADDRESS
+                    ? ethereumMainnet.tokens['WETH']
+                    : ethereumMainnet.tokens[
+                          baseToken?.symbol as keyof typeof ethereumMainnet.tokens
+                      ];
+            const mainnetQuote =
+                ethereumMainnet.tokens[
+                    quoteToken?.symbol as keyof typeof ethereumMainnet.tokens
+                ];
+            const basePricePromise = cachedFetchTokenPrice(
+                mainnetBase,
+                ethereumMainnet.chainId,
+            );
+            const quotePricePromise = cachedFetchTokenPrice(
+                mainnetQuote,
+                ethereumMainnet.chainId,
+            );
 
-        const basePrice = await basePricePromise;
-        const quotePrice = await quotePricePromise;
+            const basePrice = await basePricePromise;
+            const quotePrice = await quotePricePromise;
 
-        const isReferencePriceFound =
-            basePrice !== undefined && quotePrice !== undefined;
-        setIsReferencePriceAvailable(isReferencePriceFound);
+            const isReferencePriceFound =
+                basePrice !== undefined && quotePrice !== undefined;
 
-        const baseUsdPrice = basePrice?.usdPrice || 2000;
-        const quoteUsdPrice = quotePrice?.usdPrice || 1;
+            setIsReferencePriceAvailable(isReferencePriceFound);
 
-        const defaultPriceNumInBase = baseUsdPrice / quoteUsdPrice;
+            const baseUsdPrice = basePrice?.usdPrice || 2000;
+            const quoteUsdPrice = quotePrice?.usdPrice || 1;
 
-        const defaultPriceTruncated =
-            defaultPriceNumInBase < 0.0001
-                ? defaultPriceNumInBase.toExponential(2)
-                : defaultPriceNumInBase < 2
-                ? defaultPriceNumInBase.toPrecision(3)
-                : defaultPriceNumInBase.toFixed(2);
+            const defaultPriceNumInBase = baseUsdPrice / quoteUsdPrice;
 
-        if (isReferencePriceFound && initialPriceDisplay === '') {
-            setInitialPriceInBaseDenom(defaultPriceNumInBase);
-        }
-        if (isDenomBase) {
-            setEstimatedInitialPriceDisplay(defaultPriceTruncated);
-            isReferencePriceFound &&
-            initialPriceDisplay === '' &&
-            !isTokenPairDefault
-                ? setInitialPriceDisplay(defaultPriceTruncated)
-                : !initialPriceInBaseDenom
-                ? setInitialPriceDisplay('')
-                : undefined;
-        } else {
-            const invertedPriceNum = 1 / defaultPriceNumInBase;
+            const defaultPriceTruncated =
+                defaultPriceNumInBase < 0.0001
+                    ? defaultPriceNumInBase.toExponential(2)
+                    : defaultPriceNumInBase < 2
+                    ? defaultPriceNumInBase.toPrecision(3)
+                    : defaultPriceNumInBase.toFixed(2);
 
-            const invertedPriceTruncated =
-                invertedPriceNum < 0.0001
-                    ? invertedPriceNum.toExponential(2)
-                    : invertedPriceNum < 2
-                    ? invertedPriceNum.toPrecision(3)
-                    : invertedPriceNum.toFixed(2);
-            setEstimatedInitialPriceDisplay(invertedPriceTruncated);
+            if (isReferencePriceFound && initialPriceDisplay === '') {
+                setInitialPriceInBaseDenom(defaultPriceNumInBase);
+            }
+            if (isDenomBase) {
+                setEstimatedInitialPriceDisplay(defaultPriceTruncated);
+                isReferencePriceFound &&
+                initialPriceDisplay === '' &&
+                !isTokenPairDefault
+                    ? setInitialPriceDisplay(defaultPriceTruncated)
+                    : !initialPriceInBaseDenom
+                    ? setInitialPriceDisplay('')
+                    : undefined;
+            } else {
+                const invertedPriceNum = 1 / defaultPriceNumInBase;
 
-            isReferencePriceFound &&
-            initialPriceDisplay === '' &&
-            !isTokenPairDefault
-                ? setInitialPriceDisplay(invertedPriceTruncated)
-                : !initialPriceInBaseDenom
-                ? setInitialPriceDisplay('')
-                : undefined;
+                const invertedPriceTruncated =
+                    invertedPriceNum < 0.0001
+                        ? invertedPriceNum.toExponential(2)
+                        : invertedPriceNum < 2
+                        ? invertedPriceNum.toPrecision(3)
+                        : invertedPriceNum.toFixed(2);
+                setEstimatedInitialPriceDisplay(invertedPriceTruncated);
+
+                isReferencePriceFound &&
+                initialPriceDisplay === '' &&
+                !isTokenPairDefault
+                    ? setInitialPriceDisplay(invertedPriceTruncated)
+                    : !initialPriceInBaseDenom
+                    ? setInitialPriceDisplay('')
+                    : undefined;
+            }
         }
     };
 
     useEffect(() => {
         refreshReferencePrice();
-    }, [baseToken, quoteToken, isDenomBase, isTokenPairDefault]);
+    }, [
+        baseToken,
+        quoteToken,
+        isDenomBase,
+        isTokenPairDefault,
+        tradeDataMatchesURLParams,
+    ]);
 
     useEffect(() => {
         handleDisplayUpdate();
@@ -885,13 +905,6 @@ export default function InitPool() {
         ],
     );
 
-    // console.log({
-    //     depositSkew,
-    //     selectedPoolNonDisplayPrice,
-    //     rangeLowBoundNonDisplayPrice,
-    //     rangeHighBoundNonDisplayPrice,
-    // });
-
     // Tick functions modified from normal range
     // default low tick to seed in the DOM (range lower value)
     // initialPriceInBaseDenom
@@ -907,8 +920,6 @@ export default function InitPool() {
     const [isTxCompletedInit, setIsTxCompletedInit] = useState(false);
     const [isTxCompletedRange, setIsTxCompletedRange] = useState(false);
 
-    const [showConfirmation, setShowConfirmation] = useState(false);
-
     const transactionApprovedInit = newInitTransactionHash !== '';
     const transactionApprovedRange = newRangeTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
@@ -917,7 +928,6 @@ export default function InitPool() {
     const [activeConfirmationStep, setActiveConfirmationStep] = useState(0);
 
     const resetConfirmation = () => {
-        setShowConfirmation(false);
         setTxErrorCode('');
         setNewRangeTransactionHash('');
         setNewInitTransactionHash('');
@@ -1037,15 +1047,6 @@ export default function InitPool() {
         isMintLiqEnabled,
     );
 
-    useEffect(() => {
-        console.log({
-            newRangeTransactionHash,
-            txErrorCode,
-            showConfirmation,
-            depositSkew,
-        });
-    }, [newRangeTransactionHash, txErrorCode, showConfirmation, depositSkew]);
-
     // Next step - understand how sider affects these params
     const sendRangePosition = async () => {
         const params = {
@@ -1065,7 +1066,6 @@ export default function InitPool() {
             setNewRangeTransactionHash,
             setTxErrorCode,
             resetConfirmation,
-            setShowConfirmation,
             poolPrice: selectedPoolNonDisplayPrice,
             setIsTxCompletedRange: setIsTxCompletedRange,
         };
