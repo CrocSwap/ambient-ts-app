@@ -622,7 +622,6 @@ function Reposition() {
                 />
                 <div className={styles.reposition_content}>
                     <RangeWidth
-                        inputId='reposition-input-slider-range'
                         rangeWidthPercentage={rangeWidthPercentage}
                         setRangeWidthPercentage={setRangeWidthPercentage}
                         setRescaleRangeBoundariesWithSlider={

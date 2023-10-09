@@ -7,6 +7,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    limitParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../../functions/getFormattedNumber';
 import { FlexContainer, GridContainer, Text } from '../../../../styled/Common';
@@ -86,11 +87,16 @@ export default function OrdersSearchResults(props: propsIF) {
         setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderId);
         setShowAllData(false);
-        linkGenLimit.navigate({
+        const { base, quote, isBid, bidTick, askTick } = limitOrder;
+        // URL params for link to limit page
+        const limitLinkParams: limitParamsIF = {
             chain: chainId,
-            tokenA: limitOrder.base,
-            tokenB: limitOrder.quote,
-        });
+            tokenA: base,
+            tokenB: quote,
+            limitTick: isBid ? bidTick : askTick,
+        };
+        // navigate user to limit page with URL params defined above
+        linkGenLimit.navigate(limitLinkParams);
     };
 
     return (

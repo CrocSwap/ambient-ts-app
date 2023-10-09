@@ -122,7 +122,7 @@ export default function InitPool() {
         setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
     }, [tokenBDexBalance]);
 
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     const {
         tradeData: { advancedMode, advancedHighTick, advancedLowTick },

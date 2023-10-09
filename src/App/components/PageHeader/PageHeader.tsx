@@ -14,7 +14,6 @@ import {
 import { useAccount, useDisconnect, useEnsName, useSwitchNetwork } from 'wagmi';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
-import { formSlugForPairParams } from '../../functions/urlSlugs';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { AppStateContext } from '../../../contexts/AppStateContext';
@@ -30,6 +29,12 @@ import {
 } from '../../../utils/state/userDataSlice';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
+import chainNumToString from '../../functions/chainNumToString';
+import {
+    linkGenMethodsIF,
+    swapParamsIF,
+    useLinkGen,
+} from '../../../utils/hooks/useLinkGen';
 import {
     HeaderClasses,
     LogoContainer,
@@ -118,12 +123,6 @@ const PageHeader = function () {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const paramsSlug = formSlugForPairParams(
-        tradeData.tokenA.chainId,
-        tradeData.tokenA,
-        tradeData.tokenB,
-    );
-
     const baseSymbol = tradeData.baseToken.symbol;
     const quoteSymbol = tradeData.quoteToken.symbol;
     const isDenomBase = tradeData.isDenomBase;
@@ -211,7 +210,24 @@ const PageHeader = function () {
         ? '/trade/edit/'
         : '/trade/market/';
 
-    const linkData = [
+    // hooks to generate URL paths
+    const linkGenSwap: linkGenMethodsIF = useLinkGen('swap');
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+
+    const swapParams: swapParamsIF = {
+        chain: chainNumToString(tradeData.tokenA.chainId),
+        tokenA: tradeData.tokenA.address,
+        tokenB: tradeData.tokenB.address,
+    };
+
+    interface linkDataIF {
+        title: string;
+        destination: string;
+        shouldDisplay: boolean;
+    }
+
+    const linkData: linkDataIF[] = [
         {
             title: 'Home',
             destination: '/',
@@ -219,17 +235,17 @@ const PageHeader = function () {
         },
         {
             title: 'Swap',
-            destination: '/swap/' + paramsSlug,
+            destination: linkGenSwap.getFullURL(swapParams),
             shouldDisplay: true,
         },
         {
             title: 'Trade',
-            destination: tradeDestination + paramsSlug,
+            destination: linkGenMarket.getFullURL(swapParams),
             shouldDisplay: true,
         },
         {
             title: 'Pool',
-            destination: '/trade/pool/' + paramsSlug,
+            destination: linkGenPool.getFullURL(swapParams),
             shouldDisplay: true,
         },
         {
