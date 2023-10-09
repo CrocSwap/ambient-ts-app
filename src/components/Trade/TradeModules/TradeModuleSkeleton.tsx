@@ -8,20 +8,14 @@ import { FlexContainer, GridContainer } from '../../../styled/Common';
 import {
     AcknowledgeLink,
     AcknowledgeText,
-    TradeModuleLink,
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import Button from '../../Form/Button';
-import {
-    linkGenMethodsIF,
-    useLinkGen,
-    marketParamsIF,
-    limitParamsIF,
-    poolParamsIF,
-} from '../../../utils/hooks/useLinkGen';
+
+import TradeLinks from './TradeLinks';
 
 interface PropsIF {
     chainId: string;
@@ -105,80 +99,6 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
 
-    // !important:  code to generate buttons to navigate between trade modules is run
-    // !important:  ... here to prevent crashes when the app attempts to access on
-    // !important:  ... the `/swap` route, but it exists in parallel with code in the
-    // !important:  ... `Trade.tsx` file, this duplication will be addressed when we
-    // !important:  ... break up this file and create a better implementation of the
-    // !important:  ... mobile version of the app
-
-    // hooks to generate default URL paths
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
-
-    // URL param data to generate nav links
-    const marketParams: marketParamsIF = {
-        chain: chainId,
-        tokenA: tokenA.address,
-        tokenB: tokenB.address,
-    };
-    const limitParams: limitParamsIF = {
-        ...marketParams,
-        limitTick: limitTick ?? 0,
-    };
-    const poolParams: poolParamsIF = {
-        ...marketParams,
-    };
-
-    // interface describing shape of route data to generate nav links
-    interface routeIF {
-        path: string;
-        baseURL: string;
-        name: string;
-    }
-
-    // data to generate nav links to the three trade modules
-    const routes: routeIF[] = [
-        {
-            path: linkGenMarket.getFullURL(marketParams),
-            baseURL: linkGenMarket.baseURL,
-            name: 'Swap',
-        },
-        {
-            path: linkGenLimit.getFullURL(limitParams),
-            baseURL: linkGenLimit.baseURL,
-            name: 'Limit',
-        },
-        {
-            path: linkGenPool.getFullURL(poolParams),
-            baseURL: linkGenPool.baseURL,
-            name: 'Pool',
-        },
-    ];
-
-    // nav links to the three trade modules
-    const navigationMenu: JSX.Element = (
-        <FlexContainer
-            as='nav'
-            justifyContent='center'
-            alignItems='center'
-            gap={8}
-            margin='0 0 16px 0'
-            height='25px'
-        >
-            {routes.map((route: routeIF) => (
-                <TradeModuleLink
-                    key={JSON.stringify(route)}
-                    to={route.path}
-                    isActive={location.pathname.includes(route.baseURL)}
-                >
-                    {route.name}
-                </TradeModuleLink>
-            ))}
-        </FlexContainer>
-    );
-
     return (
         <section>
             {isTutorialActive && (
@@ -195,7 +115,14 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             )}{' '}
             <ContentContainer isOnTradeRoute={!isSwapPage}>
                 {header}
-                {isSwapPage || navigationMenu}
+                {isSwapPage || (
+                    <TradeLinks
+                        chainId={chainId}
+                        tokenA={tokenA}
+                        tokenB={tokenB}
+                        limitTick={limitTick}
+                    />
+                )}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
