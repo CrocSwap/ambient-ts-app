@@ -1409,7 +1409,7 @@ export default function InitPool() {
 
     const openEditMode = () => {
         setIsEditEnabled(true);
-        if (initialPriceDisplay === '') {
+        if (initialPriceDisplay === '' && useReferencePrice) {
             setInitialPriceDisplay(estimatedInitialPriceDisplay);
             const targetValue = estimatedInitialPriceDisplay.replaceAll(
                 ',',
@@ -1429,17 +1429,18 @@ export default function InitPool() {
             }
         }
         focusInput();
+        setUseReferencePrice(false);
     };
 
     function handleRefPriceToggle() {
         setUseReferencePrice(!useReferencePrice);
-        if (initialPriceInBaseDenom !== undefined) {
-            setInitialPriceDisplay(initialPriceInBaseDenom.toString(2));
+        if (estimatedInitialPriceDisplay !== undefined) {
+            setInitialPriceDisplay(estimatedInitialPriceDisplay);
         } else setInitialPriceDisplay('');
     }
 
     useEffect(() => {
-        if (!useReferencePrice) setInitialPriceDisplay('');
+        if (!useReferencePrice) openEditMode();
     }, [useReferencePrice]);
 
     // toggle to use reference price
