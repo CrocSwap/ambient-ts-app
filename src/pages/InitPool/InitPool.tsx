@@ -259,7 +259,7 @@ export default function InitPool() {
 
     useEffect(() => {
         setIsDenomBase(!isBaseTokenMoneynessGreaterOrEqual);
-    }, [isBaseTokenMoneynessGreaterOrEqual]);
+    }, [isBaseTokenMoneynessGreaterOrEqual, tokenA.address + tokenB.address]);
 
     const isTokenPairDefault =
         baseToken.address === ZERO_ADDRESS && quoteToken.symbol === 'USDC';
@@ -470,9 +470,8 @@ export default function InitPool() {
         useState(false);
 
     useEffect(() => {
-        setInitialPriceInBaseDenom(undefined);
         setInitialPriceDisplay('');
-    }, [baseToken, quoteToken]);
+    }, [tokenA.address + tokenB.address]);
 
     const refreshReferencePrice = async () => {
         if (tradeDataMatchesURLParams) {
@@ -557,6 +556,7 @@ export default function InitPool() {
         isDenomBase,
         isTokenPairDefault,
         tradeDataMatchesURLParams,
+        initialPriceDisplay === '',
     ]);
 
     useEffect(() => {
@@ -1409,7 +1409,11 @@ export default function InitPool() {
 
     const openEditMode = () => {
         setIsEditEnabled(true);
-        if (initialPriceDisplay === '' && useReferencePrice) {
+        if (
+            initialPriceDisplay === '' &&
+            (!isReferencePriceAvailable ||
+                (isReferencePriceAvailable && useReferencePrice))
+        ) {
             setInitialPriceDisplay(estimatedInitialPriceDisplay);
             const targetValue = estimatedInitialPriceDisplay.replaceAll(
                 ',',
@@ -1429,7 +1433,7 @@ export default function InitPool() {
             }
         }
         focusInput();
-        setUseReferencePrice(false);
+        isReferencePriceAvailable && setUseReferencePrice(false);
     };
 
     function handleRefPriceToggle() {
