@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import { useContext, useState, useMemo } from 'react';
+import { useContext, useState, useMemo, ReactNode } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
-import { useTradeData } from '../../../App/hooks/useTradeData';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { TokenContext } from '../../../contexts/TokenContext';
@@ -9,30 +8,40 @@ import { FlexContainer, GridContainer } from '../../../styled/Common';
 import {
     AcknowledgeLink,
     AcknowledgeText,
+    TradeModuleLink,
 } from '../../../styled/Components/TradeModules';
 import { TutorialButton } from '../../../styled/Components/Tutorial';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import ContentContainer from '../../Global/ContentContainer/ContentContainer';
 import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import Button from '../../Form/Button';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+    marketParamsIF,
+    limitParamsIF,
+    poolParamsIF,
+} from '../../../utils/hooks/useLinkGen';
 
 interface PropsIF {
-    header: React.ReactNode;
-    input: React.ReactNode;
-    transactionDetails: React.ReactNode;
-    modal: React.ReactNode | undefined;
-    button: React.ReactNode;
-    bypassConfirm: React.ReactNode | undefined;
-    approveButton: React.ReactNode | undefined;
-    warnings?: React.ReactNode | undefined;
+    chainId: string;
+    header: ReactNode;
+    input: ReactNode;
+    transactionDetails: ReactNode;
+    modal: ReactNode | undefined;
+    button: ReactNode;
+    bypassConfirm: ReactNode | undefined;
+    approveButton: ReactNode | undefined;
+    warnings?: ReactNode | undefined;
     // eslint-disable-next-line
     tutorialSteps: any;
     isSwapPage?: boolean;
-    inputOptions?: React.ReactNode;
+    inputOptions?: ReactNode;
 }
 
 export const TradeModuleSkeleton = (props: PropsIF) => {
     const {
+        chainId,
         isSwapPage,
         header,
         input,
@@ -58,8 +67,9 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
-    const { navigationMenu } = useTradeData();
+    const { tokenA, tokenB, limitTick } = useAppSelector(
+        (state) => state.tradeData,
+    );
 
     const [isTutorialEnabled, setIsTutorialEnabled] = useState(false);
 
@@ -93,6 +103,73 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     const formattedAckTokenMessage = ackTokenMessage.replace(
         /\b(not)\b/g,
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
+    );
+
+    // hooks to generate default URL paths
+    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
+    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+
+    // URL param data to generate nav links
+    const marketParams: marketParamsIF = {
+        chain: chainId,
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
+    };
+    const limitParams: limitParamsIF = {
+        ...marketParams,
+        limitTick: limitTick ?? 0,
+    };
+    const poolParams: poolParamsIF = {
+        ...marketParams,
+    };
+
+    // interface describing shape of route data to generate nav links
+    interface routeIF {
+        path: string;
+        baseURL: string;
+        name: string;
+    }
+
+    // data to generate nav links to the three trade modules
+    const routes: routeIF[] = [
+        {
+            path: linkGenMarket.getFullURL(marketParams),
+            baseURL: linkGenMarket.baseURL,
+            name: 'Swap',
+        },
+        {
+            path: linkGenLimit.getFullURL(limitParams),
+            baseURL: linkGenLimit.baseURL,
+            name: 'Limit',
+        },
+        {
+            path: linkGenPool.getFullURL(poolParams),
+            baseURL: linkGenPool.baseURL,
+            name: 'Pool',
+        },
+    ];
+
+    // nav links to the three trade modules
+    const navigationMenu: JSX.Element = (
+        <FlexContainer
+            as='nav'
+            justifyContent='center'
+            alignItems='center'
+            gap={8}
+            margin='0 0 16px 0'
+            height='25px'
+        >
+            {routes.map((route: routeIF) => (
+                <TradeModuleLink
+                    key={JSON.stringify(route)}
+                    to={route.path}
+                    isActive={location.pathname.includes(route.baseURL)}
+                >
+                    {route.name}
+                </TradeModuleLink>
+            ))}
+        </FlexContainer>
     );
 
     return (

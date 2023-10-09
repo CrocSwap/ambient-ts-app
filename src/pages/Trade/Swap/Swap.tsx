@@ -459,6 +459,7 @@ function Swap(props: propsIF) {
 
     return (
         <TradeModuleSkeleton
+            chainId={chainId}
             isSwapPage={!isOnTradeRoute}
             header={
                 <TradeModuleHeader
@@ -471,9 +472,7 @@ function Swap(props: propsIF) {
             input={
                 <SwapTokenInput
                     setIsLiquidityInsufficient={setIsLiquidityInsufficient}
-                    slippageTolerancePercentage={
-                        slippageTolerancePercentage
-                    }
+                    slippageTolerancePercentage={slippageTolerancePercentage}
                     setPriceImpact={setPriceImpact}
                     sellQtyString={{
                         value: sellQtyString,
