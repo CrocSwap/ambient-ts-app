@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import Button from '../../components/Form/Button';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
 import SelectedRange from '../../components/Trade/Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import { FlexContainer, GridContainer, Text } from '../../styled/Common';
@@ -51,9 +51,7 @@ interface InitConfirmationProps {
     isConfirmed: boolean;
     setIsConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
     isMintLiqEnabled: boolean;
-    initialPriceDisplay: string | undefined;
-    priceDisplayString: string | undefined;
-    priceDisplayDiv: JSX.Element;
+    initialPriceInBaseDenom: number | undefined;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -88,8 +86,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         setIsConfirmed,
 
         isMintLiqEnabled,
-
-        priceDisplayDiv,
+        initialPriceInBaseDenom,
     } = props;
 
     const tokensInfo = (
@@ -104,6 +101,9 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             />
         </GridContainer>
     );
+
+    const [isDenomBaseLocalToInitConfirm, setIsDenomBaseLocalToInitConfirm] =
+        useState(isDenomBase);
 
     const selectedRangeDisplay = isAmbient || (
         <SelectedRange
@@ -121,9 +121,10 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             pinnedMaxPriceDisplayTruncatedInQuote={
                 pinnedMaxPriceDisplayTruncatedInQuote
             }
-            isDenomBaseLocal={isDenomBase}
+            isDenomBase={isDenomBaseLocalToInitConfirm}
+            setIsDenomBase={setIsDenomBaseLocalToInitConfirm}
             showOnlyFeeTier={!isMintLiqEnabled}
-            initialPrice={priceDisplayDiv}
+            initialPrice={initialPriceInBaseDenom}
         />
     );
 

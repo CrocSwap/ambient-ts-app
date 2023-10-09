@@ -1,4 +1,4 @@
-import { memo, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, memo, useContext, useState } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
@@ -12,13 +12,15 @@ interface propsIF {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
-    isDenomBaseLocal?: boolean;
     showOnlyFeeTier?: boolean;
-
-    initialPrice?: string | JSX.Element;
+    isDenomBase: boolean;
+    setIsDenomBase: Dispatch<SetStateAction<boolean>>;
+    initialPrice?: number;
 }
 function SelectedRange(props: propsIF) {
     const {
+        isDenomBase,
+        setIsDenomBase,
         isTokenABase,
         isAmbient,
         pinnedMinPriceDisplayTruncatedInBase,
@@ -30,32 +32,29 @@ function SelectedRange(props: propsIF) {
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
-    const {
-        isDenomBase: isDenomBaseRTK,
-        tokenA,
-        tokenB,
-    } = useAppSelector((state) => state.tradeData);
-
-    const isDenomBase = props.isDenomBaseLocal ?? isDenomBaseRTK;
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     const isInitPage = location.pathname.startsWith('/init');
 
     const reverseDisplayDefault =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
-    const [denomInBase, setDenomInBase] = useState(isDenomBase);
     const [reverseDisplay, setReverseDisplay] = useState(reverseDisplayDefault);
 
-    const minPrice = denomInBase
+    const minPrice = isDenomBase
         ? pinnedMinPriceDisplayTruncatedInBase
         : pinnedMinPriceDisplayTruncatedInQuote;
 
-    const maxPrice = denomInBase
+    const maxPrice = isDenomBase
         ? pinnedMaxPriceDisplayTruncatedInBase
         : pinnedMaxPriceDisplayTruncatedInQuote;
 
     const displayPriceWithDenom =
-        denomInBase && poolPriceDisplay
+        isInitPage && initialPrice
+            ? isDenomBase
+                ? initialPrice
+                : 1 / initialPrice
+            : isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
@@ -88,7 +87,7 @@ function SelectedRange(props: propsIF) {
                 padding={'8px'}
                 onClick={() => {
                     setReverseDisplay(!reverseDisplay);
-                    setDenomInBase(!denomInBase);
+                    setIsDenomBase(!isDenomBase);
                 }}
             >
                 <Text fontSize='body' color='text2'>
@@ -153,11 +152,11 @@ function SelectedRange(props: propsIF) {
                     color='text2'
                     onClick={() => {
                         setReverseDisplay(!reverseDisplay);
-                        setDenomInBase(!denomInBase);
+                        setIsDenomBase(!isDenomBase);
                     }}
                     style={{ cursor: 'pointer' }}
                 >
-                    {initialPrice ? initialPrice : displayPriceString}
+                    {displayPriceString}
                 </Text>
             </FlexContainer>
             <FlexContainer justifyContent='space-between' alignItems='center'>

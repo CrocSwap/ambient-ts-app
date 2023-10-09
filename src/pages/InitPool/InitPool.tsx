@@ -1758,6 +1758,7 @@ export default function InitPool() {
         initialPriceDisplay,
         priceDisplayString,
         priceDisplayDiv,
+        initialPriceInBaseDenom,
     };
 
     const confirmationContent = (
