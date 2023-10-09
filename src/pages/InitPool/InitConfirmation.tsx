@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import Button from '../../components/Form/Button';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import StepperComponent from '../../components/Global/MultiStepTransaction/StepperComponent';
 import SelectedRange from '../../components/Trade/Range/ConfirmRangeModal/SelectedRange/SelectedRange';
 import { FlexContainer, GridContainer, Text } from '../../styled/Common';
@@ -30,8 +30,8 @@ interface InitConfirmationProps {
     transactionApprovedRange: boolean;
     isTransactionDenied: boolean;
     isTransactionException: boolean;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
+    tokenA: TokenIF;
+    tokenB: TokenIF;
     isAmbient: boolean;
     isTokenABase: boolean;
     isTxCompletedInit: boolean;
@@ -42,10 +42,10 @@ interface InitConfirmationProps {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
-    baseCollateral: string;
-    quoteCollateral: string;
+    tokenACollateral: string;
+    tokenBCollateral: string;
     isDenomBase: boolean;
-
+    setIsDenomBase: Dispatch<SetStateAction<boolean>>;
     activeStep: number;
     setActiveStep: React.Dispatch<React.SetStateAction<number>>;
     isConfirmed: boolean;
@@ -61,8 +61,8 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         transactionApprovedRange,
         isTransactionDenied,
         isTransactionException,
-        baseToken,
-        quoteToken,
+        tokenA,
+        tokenB,
         isAmbient,
         isTokenABase,
         errorCode,
@@ -75,9 +75,10 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         pinnedMaxPriceDisplayTruncatedInQuote,
 
         isDenomBase,
+        setIsDenomBase,
 
-        baseCollateral,
-        quoteCollateral,
+        tokenACollateral,
+        tokenBCollateral,
 
         activeStep,
         setActiveStep,
@@ -92,18 +93,15 @@ export default function InitConfirmation(props: InitConfirmationProps) {
     const tokensInfo = (
         <GridContainer numCols={2} gap={8} height='136px'>
             <FeaturedBox
-                pooled={isMintLiqEnabled ? baseCollateral : '0.00'}
-                token={baseToken}
+                pooled={isMintLiqEnabled ? tokenACollateral : '0.00'}
+                token={tokenA}
             />
             <FeaturedBox
-                pooled={isMintLiqEnabled ? quoteCollateral : '0.00'}
-                token={quoteToken}
+                pooled={isMintLiqEnabled ? tokenBCollateral : '0.00'}
+                token={tokenB}
             />
         </GridContainer>
     );
-
-    const [isDenomBaseLocalToInitConfirm, setIsDenomBaseLocalToInitConfirm] =
-        useState(isDenomBase);
 
     const selectedRangeDisplay = isAmbient || (
         <SelectedRange
@@ -121,8 +119,8 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             pinnedMaxPriceDisplayTruncatedInQuote={
                 pinnedMaxPriceDisplayTruncatedInQuote
             }
-            isDenomBase={isDenomBaseLocalToInitConfirm}
-            setIsDenomBase={setIsDenomBaseLocalToInitConfirm}
+            isDenomBase={isDenomBase}
+            setIsDenomBase={setIsDenomBase}
             showOnlyFeeTier={!isMintLiqEnabled}
             initialPrice={initialPriceInBaseDenom}
         />
@@ -163,7 +161,9 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         sendTx();
     }
 
-    const tokenSymbols = `${quoteToken.symbol} / ${baseToken.symbol}`;
+    const tokenSymbols = isTokenABase
+        ? `${tokenA.symbol} / ${tokenB.symbol}`
+        : `${tokenB.symbol} / ${tokenA.symbol}`;
 
     const noMintLiqSteps = [
         { label: 'Sign transaction to initialize pool.' },
@@ -173,11 +173,11 @@ export default function InitConfirmation(props: InitConfirmationProps) {
     ];
 
     const mintLiqSteps = [
-        { label: 'Sign transaction to initialize pool.' },
+        { label: 'Sign transaction to initialize pool ' },
         {
             label: `Submitting pool initialization for ${tokenSymbols}`,
         },
-        { label: 'Sign transaction to minting liquidity' },
+        { label: 'Sign transaction to mint liquidity' },
         {
             label: `Submitting liquidty for ${tokenSymbols}`,
         },

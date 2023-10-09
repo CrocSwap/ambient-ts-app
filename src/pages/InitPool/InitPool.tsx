@@ -197,9 +197,9 @@ export default function InitPool() {
     // eslint-disable-next-line
     const [tokenModalOpen, setTokenModalOpen] = useState(false);
     // eslint-disable-next-line
-    const [baseCollateral, setBaseCollateral] = useState<string>('');
+    const [tokenACollateral, setTokenACollateral] = useState<string>('');
     // eslint-disable-next-line
-    const [quoteCollateral, setQuoteCollateral] = useState<string>('');
+    const [tokenBCollateral, setTokenBCollateral] = useState<string>('');
 
     // See Range.tsx line 81
     const [rangeWidthPercentage, setRangeWidthPercentage] =
@@ -1025,7 +1025,7 @@ export default function InitPool() {
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenA,
     } = useHandleRangeButtonMessage(
         tokenA,
-        baseCollateral,
+        tokenACollateral,
         tokenABalance,
         tokenADexBalance,
         isTokenAInputDisabled,
@@ -1038,7 +1038,7 @@ export default function InitPool() {
         rangeButtonErrorMessage: rangeButtonErrorMessageTokenB,
     } = useHandleRangeButtonMessage(
         tokenB,
-        quoteCollateral,
+        tokenBCollateral,
         tokenBBalance,
         tokenBDexBalance,
         isTokenBInputDisabled,
@@ -1054,10 +1054,10 @@ export default function InitPool() {
             isAmbient,
             tokenAInputQty: isTokenAInputDisabled
                 ? 0
-                : parseFloat(baseCollateral),
+                : parseFloat(tokenACollateral),
             tokenBInputQty: isTokenBInputDisabled
                 ? 0
-                : parseFloat(quoteCollateral),
+                : parseFloat(tokenBCollateral),
             isWithdrawTokenAFromDexChecked,
             isWithdrawTokenBFromDexChecked,
             defaultLowTick,
@@ -1559,12 +1559,12 @@ export default function InitPool() {
                 }}
                 isOutOfRange={false}
                 tokenAInputQty={{
-                    value: baseCollateral,
-                    set: setBaseCollateral,
+                    value: tokenACollateral,
+                    set: setTokenACollateral,
                 }}
                 tokenBInputQty={{
-                    value: quoteCollateral,
-                    set: setQuoteCollateral,
+                    value: tokenBCollateral,
+                    set: setTokenBCollateral,
                 }}
                 toggleDexSelection={toggleDexSelection}
                 isInputDisabled={{
@@ -1595,8 +1595,8 @@ export default function InitPool() {
 
     useEffect(() => {
         if (!isMintLiqEnabled) {
-            setBaseCollateral('');
-            setQuoteCollateral('');
+            setTokenACollateral('');
+            setTokenBCollateral('');
         }
     });
 
@@ -1734,8 +1734,8 @@ export default function InitPool() {
         transactionApprovedRange,
         isTransactionDenied,
         isTransactionException,
-        baseToken,
-        quoteToken,
+        tokenA,
+        tokenB,
         isAmbient,
         isTokenABase,
         errorCode: txErrorCode,
@@ -1746,9 +1746,10 @@ export default function InitPool() {
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
-        baseCollateral,
-        quoteCollateral,
+        tokenACollateral,
+        tokenBCollateral,
         isDenomBase,
+        setIsDenomBase,
         activeStep: activeConfirmationStep,
         setActiveStep: setActiveConfirmationStep,
         isConfirmed: userClickedSendToMetamask,

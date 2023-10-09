@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, memo, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, memo, useContext } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
@@ -36,10 +36,8 @@ function SelectedRange(props: propsIF) {
 
     const isInitPage = location.pathname.startsWith('/init');
 
-    const reverseDisplayDefault =
+    const reverseDisplay =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
-
-    const [reverseDisplay, setReverseDisplay] = useState(reverseDisplayDefault);
 
     const minPrice = isDenomBase
         ? pinnedMinPriceDisplayTruncatedInBase
@@ -86,7 +84,6 @@ function SelectedRange(props: propsIF) {
                 gap={isInitPage ? 10 : 4}
                 padding={'8px'}
                 onClick={() => {
-                    setReverseDisplay(!reverseDisplay);
                     setIsDenomBase(!isDenomBase);
                 }}
             >
@@ -151,7 +148,6 @@ function SelectedRange(props: propsIF) {
                     fontSize='body'
                     color='text2'
                     onClick={() => {
-                        setReverseDisplay(!reverseDisplay);
                         setIsDenomBase(!isDenomBase);
                     }}
                     style={{ cursor: 'pointer' }}
