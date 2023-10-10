@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 
 export const HomeTitle = styled.div`
     font-style: normal;
-    font-size: 24px;
+    font-size: var(--header1-size);
     line-height: 30px;
     text-align: center;
     letter-spacing: -0.02em;
@@ -44,7 +44,7 @@ export const HeroContainer = styled(FlexContainer)`
 
     img {
         width: 250px;
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
     }
 
     @media only screen and (min-width: 768px) {
@@ -343,9 +343,9 @@ export const StatContainer = styled(FlexContainer)`
 export const StatCardContainer = styled(FlexContainer)`
     width: 350px;
     height: 100px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     cursor: default;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     &:hover {
         box-shadow: var(--glow-light-box-shadow);

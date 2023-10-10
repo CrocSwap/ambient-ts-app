@@ -20,7 +20,7 @@
     align-items: center;
     flex-direction: row;
     background: var(--dark2);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     outline: none;
     /* max-width: 200px; */
     display: grid;

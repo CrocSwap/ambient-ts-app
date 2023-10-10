@@ -15,14 +15,14 @@
 
 .price {
     white-space: nowrap;
-    font-size: 10px;
+    font-size: var(--mini-size);
     line-height: 13px;
 }
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {
     .price {
-        font-size: 12px;
-        line-height: 15px;
+        font-size: var(--body-size);
+        line-height: var(--body-lh);
     }
 }
