@@ -41,6 +41,7 @@ import {
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import { useApprove } from '../../../App/functions/approve';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -52,6 +53,7 @@ function Swap(props: propsIF) {
         crocEnv,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
+        provider,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
@@ -71,6 +73,8 @@ function Swap(props: propsIF) {
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
     );
+
+    useUrlParams(tokens, chainId, provider);
 
     const dispatch = useAppDispatch();
     // get URL pathway for user relative to index
