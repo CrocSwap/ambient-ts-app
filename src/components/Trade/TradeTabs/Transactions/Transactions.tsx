@@ -31,6 +31,8 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { getAddress } from 'ethers/lib/utils.js';
+import { fetchEnsAddresses } from '../../../../App/functions/fetchENSAddresses';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -400,7 +402,6 @@ function Transactions(props: propsIF) {
         },
         {
             name: '',
-            show: true,
             slug: 'menu',
             sortable: false,
         },
@@ -500,22 +501,37 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
-        <TransactionRow
-            key={idx}
-            tx={tx}
-            tableView={tableView}
-            isAccountView={isAccountView}
-        />
-    ));
-    const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
-        <TransactionRow
-            key={idx}
-            tx={tx}
-            tableView={tableView}
-            isAccountView={isAccountView}
-        />
-    ));
+    const [ensAdressMapping, setEnsAddressMapping] = useState<
+        Map<string, string>
+    >(new Map());
+
+    useEffect(() => {
+        const userAddresses = [
+            ...new Set(
+                sortedTransactions
+                    .map((tx) => (tx.user ? getAddress(tx.user) : ''))
+                    .filter((a) => a !== ''),
+            ),
+        ];
+        (async () => {
+            const batchedEnsMap = await fetchEnsAddresses(userAddresses);
+            if (batchedEnsMap) {
+                setEnsAddressMapping(batchedEnsMap);
+            }
+        })();
+    }, [sortedTransactions]);
+
+    const currentRowItemContent = () =>
+        _DATA.currentData.map((tx, idx) => (
+            <TransactionRow
+                key={idx}
+                tx={tx}
+                tableView={tableView}
+                isAccountView={isAccountView}
+                fetchedEnsAddress={ensAdressMapping.get(tx.user)}
+            />
+        ));
+
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -548,7 +564,7 @@ function Transactions(props: propsIF) {
     const showViewMoreButton =
         !isTradeTableExpanded &&
         !isAccountView &&
-        sortedRowItemContent.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
+        sortedTransactions.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
 
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
@@ -662,7 +678,7 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                {currentRowItemContent}
+                {currentRowItemContent()}
             </ul>
             {showViewMoreButton && (
                 <FlexContainer
