@@ -447,6 +447,7 @@ function Swap(props: propsIF) {
 
     return (
         <TradeModuleSkeleton
+            chainId={chainId}
             isSwapPage={!isOnTradeRoute}
             header={
                 <TradeModuleHeader

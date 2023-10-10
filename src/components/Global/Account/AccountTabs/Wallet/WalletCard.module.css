@@ -26,7 +26,7 @@
 }
 
 .wallet_row:hover {
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     background: var(--dark2);
     cursor: default;
 }
@@ -34,7 +34,7 @@
 .token_key,
 .amount {
     font-weight: 300;
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22px;
     letter-spacing: -0.02em;
     color: var(--text1);

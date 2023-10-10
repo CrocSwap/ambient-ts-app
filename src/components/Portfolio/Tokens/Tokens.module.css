@@ -15,11 +15,11 @@
     border: none;
     outline: 1px solid rgb(33, 32, 32);
     background: var(--dark2);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     padding: 2px 3rem;
 
     color: var(--text1);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     text-align: end;
 }
 
@@ -63,7 +63,7 @@
 
 .menu li {
     color: var(--text2);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     cursor: pointer;
     /* display: block; */
 }
@@ -94,7 +94,7 @@
     background: var(--dark2);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     padding: 5px 20px;
     font-size: 14px;
     line-height: var(--header2-lh);
@@ -113,7 +113,7 @@
 }
 .menu button path {
     fill: var(--text2);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .menu button:hover > .menu button path {

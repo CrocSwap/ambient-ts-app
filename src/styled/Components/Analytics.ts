@@ -39,13 +39,13 @@ export const PoolDisplayContainer = styled.section`
     color: var(--text2);
 
     @media only screen and (min-width: 768px) {
-        font-size: 10px;
+        font-size: var(--mini-size);
         line-height: 13px;
     }
 
     @media only screen and (min-width: 1200px) {
         display: flex;
-        font-size: 12px;
+        font-size: var(--body-size);
         line-height: 16px;
     }
 `;
@@ -75,7 +75,7 @@ export const Table = styled.table`
 export const TableBody = styled.tbody`
     background-color: var(--dark1);
     color: var(--white);
-    font-size: 12px;
+    font-size: var(--body-size);
     text-transform: capitalize;
     line-height: 1.5rem;
     max-height: 96px;
@@ -112,7 +112,7 @@ export const TableHeadWrapper = styled.thead`
     user-select: none;
 `;
 export const TableHeadRow = styled.tr`
-    font-size: 12px;
+    font-size: var(--body-size);
     font-family: Arial, sans-serif;
     font-weight: 300;
     line-height: normal;
@@ -131,7 +131,7 @@ export const TableHeaderCell = styled.th<HeaderItem>`
     cursor: ${({ sortable }) => (sortable ? 'pointer' : 'default')};
 
     color: var(--text2);
-    font-size: 12px;
+    font-size: var(--body-size);
     font-weight: 300;
     white-space: nowrap;
     border-collapse: collapse;

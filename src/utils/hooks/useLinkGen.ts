@@ -63,14 +63,16 @@ const BASE_URL_PATHS = {
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',
-};
+} as const;
 
-// type that maps to keys (strings) in the BASE_URL_PATHS object
+// string-literal union type of keys in `BASE_URL_PATHS`
 export type pageNames = keyof typeof BASE_URL_PATHS;
+// string-literal union type of keys in `BASE_URL_PATHS`
+export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
     currentPage: pageNames;
-    baseURL: string;
+    baseURL: baseURLs;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
     navigate: (paramsObj?: anyParamsIF) => void;
     redirect: (paramsObj?: anyParamsIF) => void;
@@ -88,7 +90,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
 
     // base URL of the user's location in the app, primarily uses provided
     // ... argument but will read the current URL pathname as a backup check
-    const baseURL: string = BASE_URL_PATHS[page ?? getPageFromLocation()];
+    const baseURL: baseURLs = BASE_URL_PATHS[page ?? getPageFromLocation()];
 
     // fn to infer the current page in the app based on the URL path
     function getPageFromLocation(): pageNames {
@@ -127,7 +129,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     // fn to build a URL for a given page including parameters
-    function getFullURL(paramsObj?: anyParamsIF | string): string {
+    function getFullURL(paramsObj?: anyParamsIF | string): baseURLs | string {
         let paramsSlug = '';
         if (paramsObj) {
             if (typeof paramsObj === 'string') {
