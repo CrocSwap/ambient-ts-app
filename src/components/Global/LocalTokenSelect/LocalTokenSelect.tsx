@@ -60,6 +60,7 @@ interface propsIF {
     token: TokenIF;
 
     reverseTokens?: () => void;
+    fnToExecuteInReverse?: () => void;
 
     includeWallet?: React.ReactNode;
 
@@ -72,6 +73,7 @@ function TokenSelectorPoolInit(props: propsIF) {
         token,
 
         reverseTokens,
+        fnToExecuteInReverse,
 
         setTokenModalOpen = () => null,
     } = props;
@@ -96,6 +98,7 @@ function TokenSelectorPoolInit(props: propsIF) {
             isSingleToken={!tokenAorB}
             tokenAorB={tokenAorB}
             reverseTokens={reverseTokens}
+            fnToExecuteInReverse={fnToExecuteInReverse}
         />
     ) : (
         <SoloTokenSelectModal

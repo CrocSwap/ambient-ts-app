@@ -26,6 +26,7 @@ import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { supportedNetworks } from '../../../utils/networks';
 import { IoIosArrowBack } from 'react-icons/io';
+import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -33,6 +34,7 @@ interface propsIF {
     isSingleToken: boolean;
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
+    fnToExecuteInReverse?: () => void;
     onClose: () => void;
 }
 
@@ -44,6 +46,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         isSingleToken,
         tokenAorB,
         reverseTokens,
+        fnToExecuteInReverse,
     } = props;
 
     const { cachedTokenDetails } = useContext(CachedDataContext);
@@ -95,7 +98,15 @@ export const SoloTokenSelect = (props: propsIF) => {
 
         if (tokenAorB === 'A') {
             if (tokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
-                reverseTokens && reverseTokens();
+                if (reverseTokens) {
+                    reverseTokens();
+                } else {
+                    dispatch(setTokenB(tokenA));
+                    dispatch(setTokenA(tkn));
+                    {
+                        fnToExecuteInReverse && fnToExecuteInReverse();
+                    }
+                }
                 onClose();
                 return;
             }
@@ -109,7 +120,15 @@ export const SoloTokenSelect = (props: propsIF) => {
             // user is updating token B
         } else if (tokenAorB === 'B') {
             if (tokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
-                reverseTokens && reverseTokens();
+                if (reverseTokens) {
+                    reverseTokens();
+                } else {
+                    dispatch(setTokenB(tkn));
+                    dispatch(setTokenA(tokenB));
+                    {
+                        fnToExecuteInReverse && fnToExecuteInReverse();
+                    }
+                }
                 onClose();
                 return;
             }

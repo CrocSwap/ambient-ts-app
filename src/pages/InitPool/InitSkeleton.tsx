@@ -58,6 +58,7 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                 outline='accent1'
                 tablet={{ margin: '64px 0 0 0' }}
                 style={{ height: '462px' }}
+                className='mobile_auto_height'
             >
                 <FlexContainer
                     rounded
@@ -79,22 +80,6 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                         >
                             {title}
                         </Text>
-                        {/* <FlexContainer
-                            gap={8}
-                            alignItems='center'
-                            fontSize='header1'
-                        >
-                            {showSettings ? (
-                                <SettingsSvg
-                                    onClick={() => setActiveContent('settings')}
-                                />
-                            ) : (
-                                <p />
-                            )}
-                            <IoIosCheckmarkCircle
-                                onClick={() => setActiveContent('confirmation')}
-                            />
-                        </FlexContainer> */}
                     </FlexContainer>
                     <InnerContainer isConfirmation={isConfirmation}>
                         {children}

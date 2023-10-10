@@ -75,6 +75,8 @@
     background: var(--dark2);
 }
 
+
+
 .hide_scrollvar::-webkit-scrollbar {
     display: none;
 }
@@ -202,4 +204,9 @@ aside.emoji-picker-react {
     .top-pools-analytics-table th {
         min-width: 180px;
     }
+}
+@media only screen and (max-width: 768px) {
+   .mobile_auto_height{
+    height: auto !important;
+   }
 }

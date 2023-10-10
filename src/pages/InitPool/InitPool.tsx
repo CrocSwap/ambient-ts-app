@@ -1378,6 +1378,11 @@ export default function InitPool() {
         </TextOnlyTooltip>
     );
 
+    function reverseTokens() {
+        setTokenACollateral('');
+        setTokenBCollateral('');
+    }
+
     const simpleTokenSelect = (
         <FlexContainer flexDirection='column' gap={8}>
             {newUrlTooltip}
@@ -1385,11 +1390,13 @@ export default function InitPool() {
                 tokenAorB={'A'}
                 token={tokenA}
                 setTokenModalOpen={setTokenModalOpen}
+                fnToExecuteInReverse={reverseTokens}
             />
             <LocalTokenSelect
                 tokenAorB={'B'}
                 token={tokenB}
                 setTokenModalOpen={setTokenModalOpen}
+                fnToExecuteInReverse={reverseTokens}
             />
         </FlexContainer>
     );
