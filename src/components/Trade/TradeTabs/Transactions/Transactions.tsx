@@ -301,18 +301,22 @@ function Transactions(props: propsIF) {
         </>
     );
 
-    const headerColumns = [
+    const headerColumns: {
+        name: string | JSX.Element;
+        show: boolean;
+        slug: string;
+        sortable: boolean;
+        alignRight?: boolean;
+        alignCenter?: boolean;
+    }[] = [
         {
             name: 'Timestamp',
-            className: '',
             show: tableView === 'large',
-
             slug: 'time',
             sortable: true,
         },
         {
             name: 'Pair',
-            className: '',
             show: isAccountView,
             slug: 'pool',
             sortable: true,
@@ -401,6 +405,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: '',
+            show: false,
             slug: 'menu',
             sortable: false,
         },
