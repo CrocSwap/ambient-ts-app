@@ -1299,6 +1299,7 @@ function Range() {
 
     return (
         <TradeModuleSkeleton
+            chainId={chainId}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
