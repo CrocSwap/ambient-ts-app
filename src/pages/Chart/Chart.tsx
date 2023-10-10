@@ -261,18 +261,27 @@ export default function Chart(props: propsIF) {
                 isFakeData: false,
             }));
         if (poolPriceWithoutDenom && data && data.length > 0) {
+            const closePrice = denomInBase
+                ? data[0].invPriceCloseExclMEVDecimalCorrected
+                : data[0].priceCloseExclMEVDecimalCorrected;
+
+            const openPrice = denomInBase
+                ? data[0].invPriceOpenExclMEVDecimalCorrected
+                : data[0].priceOpenExclMEVDecimalCorrected;
+
+            const bearishCandleType =
+                closePrice < openPrice ? closePrice : openPrice;
+            const bullishCandleType =
+                closePrice > openPrice ? closePrice : openPrice;
+
             const fakeData = {
                 time: data[0].time + period,
-                invMinPriceExclMEVDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                maxPriceExclMEVDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
+                invMinPriceExclMEVDecimalCorrected: bearishCandleType,
+                maxPriceExclMEVDecimalCorrected: bullishCandleType,
                 invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
                 minPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                invPriceOpenExclMEVDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                priceOpenExclMEVDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
+                invPriceOpenExclMEVDecimalCorrected: bearishCandleType,
+                priceOpenExclMEVDecimalCorrected: bullishCandleType,
                 invPriceCloseExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
                 priceCloseExclMEVDecimalCorrected: poolPriceWithoutDenom,
                 period: period,
@@ -282,20 +291,14 @@ export default function Chart(props: propsIF) {
                 },
                 volumeUSD: 0,
                 averageLiquidityFee: data[0].averageLiquidityFee,
-                minPriceDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
+                minPriceDecimalCorrected: bullishCandleType,
                 maxPriceDecimalCorrected: 0,
-                priceOpenDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                priceCloseDecimalCorrected:
-                    data[0].priceOpenExclMEVDecimalCorrected,
-                invMinPriceDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                priceOpenDecimalCorrected: bullishCandleType,
+                priceCloseDecimalCorrected: bullishCandleType,
+                invMinPriceDecimalCorrected: bearishCandleType,
                 invMaxPriceDecimalCorrected: 0,
-                invPriceOpenDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
-                invPriceCloseDecimalCorrected:
-                    data[0].invPriceOpenExclMEVDecimalCorrected,
+                invPriceOpenDecimalCorrected: bearishCandleType,
+                invPriceCloseDecimalCorrected: bearishCandleType,
                 isCrocData: false,
                 isFakeData: true,
             };
