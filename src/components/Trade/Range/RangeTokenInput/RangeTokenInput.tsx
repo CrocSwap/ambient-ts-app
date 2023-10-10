@@ -75,6 +75,8 @@ function RangeTokenInput(props: propsIF) {
     const dispatch = useAppDispatch();
     // hook to generate navigation actions with pre-loaded path
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+
+    const isInitPage = location.pathname.startsWith('/init');
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );
@@ -134,7 +136,7 @@ function RangeTokenInput(props: propsIF) {
         resetTokenQuantities();
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-        if (!rangeTicksCopied) {
+        if (!rangeTicksCopied && !isInitPage) {
             // URL params for link to pool page
             const poolLinkParams: poolParamsIF = {
                 chain: chainId,
