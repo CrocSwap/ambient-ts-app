@@ -39,7 +39,7 @@ export const getTransactionData = async (
     const baseMetadata = cachedTokenDetails(provider, tx.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, tx.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(tx.user);
+    const ensRequest = cachedEnsResolve(tx.user, provider);
 
     const basePricedToken = getMainnetAddress(
         baseTokenAddress,

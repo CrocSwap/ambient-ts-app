@@ -46,7 +46,7 @@ export const getLimitOrderData = async (
     const baseMetadata = cachedTokenDetails(provider, order.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, order.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(order.user);
+    const ensRequest = cachedEnsResolve(order.user, provider);
 
     newOrder.ensResolution = (await ensRequest) ?? '';
 
