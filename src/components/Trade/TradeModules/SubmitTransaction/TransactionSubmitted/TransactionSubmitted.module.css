@@ -52,21 +52,21 @@
 .view_etherscan {
     width: 100%;
     padding: 12px 16px;
-    font-size: 16px;
+    font-size: var(--header-size);
 
-    line-height: 24px;
+    line-height: var(--header1-lh);
     background: var(--accent1);
 
     text-decoration: none;
     color: var(--text1);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 4px;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .view_etherscan:hover,
@@ -74,7 +74,7 @@
     background: var(--dark2);
     color: var(--accent1) !important;
     border: 1px solid var(--accent1);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 }
 
 .view_etherscan:hover > svg {

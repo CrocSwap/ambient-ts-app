@@ -27,7 +27,7 @@
     gap: 4px;
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .wallet_amounts {
