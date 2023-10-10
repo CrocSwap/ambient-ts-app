@@ -74,11 +74,10 @@ function Swap(props: propsIF) {
         UserPreferenceContext,
     );
 
-    useUrlParams(tokens, chainId, provider);
-
     const dispatch = useAppDispatch();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
+    !pathname.includes('/trade') && useUrlParams(tokens, chainId, provider);
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
