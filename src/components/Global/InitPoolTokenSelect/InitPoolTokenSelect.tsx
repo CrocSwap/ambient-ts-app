@@ -5,8 +5,6 @@ import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
-import { SoloTokenSelectModal } from '../TokenSelectContainer/SoloTokenSelectModal';
-
 import { useModal } from '../Modal/useModal';
 import { SoloTokenSelect } from '../TokenSelectContainer/SoloTokenSelect';
 
@@ -60,7 +58,6 @@ interface propsIF {
     token: TokenIF;
 
     reverseTokens?: () => void;
-    fnToExecuteInReverse?: () => void;
 
     includeWallet?: React.ReactNode;
 
@@ -73,7 +70,6 @@ function TokenSelectorPoolInit(props: propsIF) {
         token,
 
         reverseTokens,
-        fnToExecuteInReverse,
 
         setTokenModalOpen = () => null,
     } = props;
@@ -88,20 +84,8 @@ function TokenSelectorPoolInit(props: propsIF) {
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] =
         useState(true);
 
-    const isInit = location.pathname.startsWith('/initpool');
-
-    const modalOrNoModal = isInit ? (
+    const modalOrNoModal = (
         <SoloTokenSelect
-            onClose={closeTokenSelect}
-            showSoloSelectTokenButtons={showSoloSelectTokenButtons}
-            setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
-            isSingleToken={!tokenAorB}
-            tokenAorB={tokenAorB}
-            reverseTokens={reverseTokens}
-            fnToExecuteInReverse={fnToExecuteInReverse}
-        />
-    ) : (
-        <SoloTokenSelectModal
             onClose={closeTokenSelect}
             showSoloSelectTokenButtons={showSoloSelectTokenButtons}
             setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}

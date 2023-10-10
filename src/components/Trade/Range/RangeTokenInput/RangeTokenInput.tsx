@@ -36,6 +36,7 @@ interface propsIF {
     isWithdrawFromDexChecked: { tokenA: boolean; tokenB: boolean };
     isInputDisabled: { tokenA: boolean; tokenB: boolean };
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
+    reverseTokens?: () => void;
 }
 
 function RangeTokenInput(props: propsIF) {
@@ -56,6 +57,7 @@ function RangeTokenInput(props: propsIF) {
         },
         toggleDexSelection,
         hidePlus,
+        reverseTokens,
     } = props;
 
     const {
@@ -132,22 +134,24 @@ function RangeTokenInput(props: propsIF) {
         }
     };
 
-    const reverseTokens = (): void => {
-        resetTokenQuantities();
-        dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
-        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-        if (!rangeTicksCopied && !isInitPage) {
-            // URL params for link to pool page
-            const poolLinkParams: poolParamsIF = {
-                chain: chainId,
-                tokenA: tokenB.address,
-                tokenB: tokenA.address,
-            };
-            // navigate user to pool page with URL params defined above
-            linkGenPool.navigate(poolLinkParams);
-        }
-        if (rangeTicksCopied) dispatch(setRangeTicksCopied(false));
-    };
+    const reverseTokensLocal = reverseTokens
+        ? reverseTokens
+        : (): void => {
+              resetTokenQuantities();
+              dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
+              dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+              if (!rangeTicksCopied && !isInitPage) {
+                  // URL params for link to pool page
+                  const poolLinkParams: poolParamsIF = {
+                      chain: chainId,
+                      tokenA: tokenB.address,
+                      tokenB: tokenA.address,
+                  };
+                  // navigate user to pool page with URL params defined above
+                  linkGenPool.navigate(poolLinkParams);
+              }
+              if (rangeTicksCopied) dispatch(setRangeTicksCopied(false));
+          };
 
     const handleTokenAChangeEvent = (value: string) => {
         const inputStr = formatTokenInput(value, tokenA);
@@ -199,7 +203,7 @@ function RangeTokenInput(props: propsIF) {
                 isDexSelected={isWithdrawTokenAFromDexChecked}
                 showPulseAnimation={showRangePulseAnimation}
                 handleTokenInputEvent={handleTokenAChangeEvent}
-                reverseTokens={reverseTokens}
+                reverseTokens={reverseTokensLocal}
                 handleToggleDexSelection={() => toggleDexSelection('A')}
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setTokenAInputQty(formatTokenInput(val, tokenA, isMax));
@@ -235,7 +239,7 @@ function RangeTokenInput(props: propsIF) {
                 isDexSelected={isWithdrawTokenBFromDexChecked}
                 showPulseAnimation={showRangePulseAnimation}
                 handleTokenInputEvent={handleTokenBChangeEvent}
-                reverseTokens={reverseTokens}
+                reverseTokens={reverseTokensLocal}
                 handleToggleDexSelection={() => toggleDexSelection('B')}
                 parseTokenInput={(val: string, isMax?: boolean) => {
                     setTokenBInputQty(formatTokenInput(val, tokenB, isMax));

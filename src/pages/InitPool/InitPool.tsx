@@ -18,7 +18,7 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { exponentialNumRegEx } from '../../utils/regex/exports';
 
 import { CachedDataContext } from '../../contexts/CachedDataContext';
-import LocalTokenSelect from '../../components/Global/LocalTokenSelect/LocalTokenSelect';
+import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/InitPoolTokenSelect';
 
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
@@ -843,6 +843,7 @@ export default function InitPool() {
 
     // hooks to generate navigation actions with pre-loaded paths
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
+    const linkGenInit: linkGenMethodsIF = useLinkGen('initpool');
 
     const handleNavigation = () =>
         linkGenPool.navigate({
@@ -1387,22 +1388,27 @@ export default function InitPool() {
     function reverseTokens() {
         setTokenACollateral('');
         setTokenBCollateral('');
+        linkGenInit.navigate({
+            chain: chainId,
+            tokenA: tokenB.address,
+            tokenB: tokenA.address,
+        });
     }
 
     const simpleTokenSelect = (
         <FlexContainer flexDirection='column' gap={8}>
             {newUrlTooltip}
-            <LocalTokenSelect
+            <InitPoolTokenSelect
                 tokenAorB={'A'}
                 token={tokenA}
                 setTokenModalOpen={setTokenModalOpen}
-                fnToExecuteInReverse={reverseTokens}
+                reverseTokens={reverseTokens}
             />
-            <LocalTokenSelect
+            <InitPoolTokenSelect
                 tokenAorB={'B'}
                 token={tokenB}
                 setTokenModalOpen={setTokenModalOpen}
-                fnToExecuteInReverse={reverseTokens}
+                reverseTokens={reverseTokens}
             />
         </FlexContainer>
     );
@@ -1584,6 +1590,7 @@ export default function InitPool() {
                     tokenA: isTokenAInputDisabled,
                     tokenB: isTokenBInputDisabled,
                 }}
+                reverseTokens={reverseTokens}
             />
         </FlexContainer>
     );
