@@ -9,7 +9,7 @@ import { FlexContainer, GridContainer } from '../Common';
 
 export const SidebarDiv = styled.div<{ open: boolean }>`
     background-color: var(--dark1);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     overflow: hidden;
     padding: 4px;
@@ -91,7 +91,7 @@ export const ViewMoreFlex = styled(FlexContainer)`
 
     &:hover {
         color: var(--accent1);
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
     }
 `;
 
@@ -111,7 +111,7 @@ export const ItemContainer = styled(GridContainer)`
     cursor: pointer;
 
     &:hover {
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
         background: var(--dark2);
     }
 `;
@@ -175,19 +175,19 @@ export const AccordionHeader = styled(motion.div)<{ open: boolean }>`
 
     & > div > *:not(:first-child) {
         color: var(--text1);
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
     }
 
     &:hover {
         & * {
             color: var(--accent1) !important;
-            transition: all var(--animation-speed) ease-in-out;
+            transition: var(--transition);
         }
     }
 `;
 
 export const SearchResultsContainer = styled(FlexContainer)`
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 
     &::-webkit-scrollbar {
         display: none;
@@ -203,7 +203,7 @@ export const Results = styled(GridContainer)`
     cursor: pointer;
 
     &:hover {
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
         background: var(--dark1);
         cursor: pointer;
     }

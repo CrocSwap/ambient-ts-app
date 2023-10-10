@@ -17,7 +17,7 @@
 
     /* Note: backdrop-filter has minimal browser support */
     /* background: red; */
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
