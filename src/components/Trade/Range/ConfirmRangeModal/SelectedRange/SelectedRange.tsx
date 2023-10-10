@@ -152,7 +152,9 @@ function SelectedRange(props: propsIF) {
                     }}
                     style={{ cursor: 'pointer' }}
                 >
-                    {displayPriceString}
+                    {`${displayPriceString} ${
+                        reverseDisplay ? tokenB.symbol : tokenA.symbol
+                    }`}
                 </Text>
             </FlexContainer>
             <FlexContainer justifyContent='space-between' alignItems='center'>
