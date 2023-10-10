@@ -103,7 +103,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         </GridContainer>
     );
 
-    const selectedRangeDisplay = isAmbient || (
+    const selectedRangeDisplay = (
         <SelectedRange
             isTokenABase={isTokenABase}
             isAmbient={isAmbient}
@@ -123,6 +123,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             setIsDenomBase={setIsDenomBase}
             showOnlyFeeTier={!isMintLiqEnabled}
             initialPrice={initialPriceInBaseDenom}
+            isInitPage
         />
     );
 

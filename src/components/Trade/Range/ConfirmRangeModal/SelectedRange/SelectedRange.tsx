@@ -16,6 +16,7 @@ interface propsIF {
     isDenomBase: boolean;
     setIsDenomBase: Dispatch<SetStateAction<boolean>>;
     initialPrice?: number;
+    isInitPage?: boolean;
 }
 function SelectedRange(props: propsIF) {
     const {
@@ -29,12 +30,11 @@ function SelectedRange(props: propsIF) {
         pinnedMaxPriceDisplayTruncatedInQuote,
         showOnlyFeeTier,
         initialPrice,
+        isInitPage,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
-
-    const isInitPage = location.pathname.startsWith('/init');
 
     const reverseDisplay =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
@@ -111,7 +111,7 @@ function SelectedRange(props: propsIF) {
         <SelectedRangeContainer margin={isInitPage ? '0' : '8px 0 0 0'} gap={8}>
             <PriceRangeDisplay
                 title='Min Price'
-                value={minPrice}
+                value={isAmbient ? '0' : minPrice}
                 tokens={
                     reverseDisplay
                         ? `${tokenB.symbol} per ${tokenA.symbol}`
@@ -121,7 +121,7 @@ function SelectedRange(props: propsIF) {
             />
             <PriceRangeDisplay
                 title='Max Price'
-                value={maxPrice}
+                value={isAmbient ? '∞' : maxPrice}
                 tokens={
                     reverseDisplay
                         ? `${tokenB.symbol} per ${tokenA.symbol}`
@@ -171,7 +171,7 @@ function SelectedRange(props: propsIF) {
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            {!isAmbient ? selectedRangeDisplay : null}
+            {selectedRangeDisplay}
             <div style={{ padding: isInitPage ? '0 4rem' : '0 1rem' }}>
                 {extraInfoData}
             </div>
