@@ -41,6 +41,7 @@ import {
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import { useApprove } from '../../../App/functions/approve';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -52,6 +53,7 @@ function Swap(props: propsIF) {
         crocEnv,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
+        provider,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
@@ -70,6 +72,7 @@ function Swap(props: propsIF) {
     const dispatch = useAppDispatch();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
+    !pathname.includes('/trade') && useUrlParams(tokens, chainId, provider);
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
