@@ -37,6 +37,7 @@ interface propsIF {
     isInputDisabled: { tokenA: boolean; tokenB: boolean };
     toggleDexSelection: (tokenAorB: 'A' | 'B') => void;
     reverseTokens?: () => void;
+    isInitPage?: boolean;
 }
 
 function RangeTokenInput(props: propsIF) {
@@ -58,6 +59,7 @@ function RangeTokenInput(props: propsIF) {
         toggleDexSelection,
         hidePlus,
         reverseTokens,
+        isInitPage,
     } = props;
 
     const {
@@ -78,7 +80,6 @@ function RangeTokenInput(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
-    const isInitPage = location.pathname.startsWith('/init');
     const { isLoggedIn: isUserConnected } = useAppSelector(
         (state) => state.userData,
     );

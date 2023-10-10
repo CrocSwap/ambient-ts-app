@@ -1591,6 +1591,7 @@ export default function InitPool() {
                     tokenB: isTokenBInputDisabled,
                 }}
                 reverseTokens={reverseTokens}
+                isInitPage
             />
         </FlexContainer>
     );
