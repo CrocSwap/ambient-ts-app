@@ -19,7 +19,7 @@ interface propsIF {
     isAccountView: boolean;
     isLeaderboard?: boolean;
     tableView: 'small' | 'medium' | 'large';
-    fetchedEnsAddress: string | undefined;
+    fetchedEnsAddress?: string;
 }
 
 function RangesRow(props: propsIF) {

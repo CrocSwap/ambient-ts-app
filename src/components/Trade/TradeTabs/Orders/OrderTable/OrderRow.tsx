@@ -15,7 +15,7 @@ interface propsIF {
     limitOrder: LimitOrderIF;
     isAccountView: boolean;
     tableView: 'small' | 'medium' | 'large';
-    fetchedEnsAddress: string | undefined;
+    fetchedEnsAddress?: string;
 }
 
 function OrderRow(props: propsIF) {

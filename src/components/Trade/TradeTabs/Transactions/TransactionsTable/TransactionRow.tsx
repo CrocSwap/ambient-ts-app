@@ -17,7 +17,7 @@ interface propsIF {
     tx: TransactionIF;
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
-    fetchedEnsAddress: string | undefined;
+    fetchedEnsAddress?: string;
 }
 function TransactionRow(props: propsIF) {
     const { tableView, tx, isAccountView, fetchedEnsAddress } = props;
