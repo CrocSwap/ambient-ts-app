@@ -15,6 +15,7 @@ export const useProcessRange = (
     position: PositionIF,
     account = '',
     isAccountView?: boolean,
+    fetchedEnsAddress?: string,
 ) => {
     const blockExplorer = getChainExplorer(position.chainId);
 
@@ -26,8 +27,6 @@ export const useProcessRange = (
 
     const tokenAAddress = position.base;
     const tokenBAddress = position.quote;
-    // const tokenAAddress = tradeData.tokenA.address;
-    // const tokenBAddress = tradeData.tokenB.address;
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
@@ -66,7 +65,10 @@ export const useProcessRange = (
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
     const isAmbient = position.positionType === 'ambient';
 
-    const ensName = position.ensResolution ? position.ensResolution : null;
+    const ensName =
+        fetchedEnsAddress ?? position.ensResolution
+            ? position.ensResolution
+            : null;
     const ownerId = position.user ? getAddress(position.user) : position.user;
 
     const isOwnerActiveAccount =

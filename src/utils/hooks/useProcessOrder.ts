@@ -25,6 +25,7 @@ export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
     isAccountView = false,
+    fetchedEnsAddress?: string,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
@@ -45,13 +46,17 @@ export const useProcessOrder = (
         limitOrder.user.toLowerCase() === account?.toLowerCase();
     const isDenomBase = tradeData.isDenomBase;
 
-    const ownerId = limitOrder.ensResolution
-        ? limitOrder.ensResolution
-        : limitOrder.user
-        ? getAddress(limitOrder.user)
-        : '';
+    const ownerId =
+        fetchedEnsAddress ?? limitOrder.ensResolution
+            ? limitOrder.ensResolution
+            : limitOrder.user
+            ? getAddress(limitOrder.user)
+            : '';
 
-    const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
+    const ensName =
+        fetchedEnsAddress ?? limitOrder.ensResolution
+            ? limitOrder.ensResolution
+            : null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 

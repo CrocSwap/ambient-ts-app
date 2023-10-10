@@ -31,8 +31,7 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import { getAddress } from 'ethers/lib/utils.js';
-import { fetchEnsAddresses } from '../../../../App/functions/fetchENSAddresses';
+import useEnsAddresses from '../../../../App/hooks/useENSAddresses';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -501,25 +500,7 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const [ensAdressMapping, setEnsAddressMapping] = useState<
-        Map<string, string>
-    >(new Map());
-
-    useEffect(() => {
-        const userAddresses = [
-            ...new Set(
-                sortedTransactions
-                    .map((tx) => (tx.user ? getAddress(tx.user) : ''))
-                    .filter((a) => a !== ''),
-            ),
-        ];
-        (async () => {
-            const batchedEnsMap = await fetchEnsAddresses(userAddresses);
-            if (batchedEnsMap) {
-                setEnsAddressMapping(batchedEnsMap);
-            }
-        })();
-    }, [sortedTransactions]);
+    const ensAddressMapping = useEnsAddresses(sortedTransactions);
 
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (
@@ -528,7 +509,7 @@ function Transactions(props: propsIF) {
                 tx={tx}
                 tableView={tableView}
                 isAccountView={isAccountView}
-                fetchedEnsAddress={ensAdressMapping.get(tx.user)}
+                fetchedEnsAddress={ensAddressMapping.get(tx.user)}
             />
         ));
 

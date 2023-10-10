@@ -25,6 +25,7 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import useEnsAddresses from '../../../../App/hooks/useENSAddresses';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -372,23 +373,19 @@ function Ranges(props: propsIF) {
             ))}
         </RangeRowStyled>
     );
-    const sortedRowItemContent = sortedPositions.map((position, idx) => (
-        <RangesRow
-            key={idx}
-            position={position}
-            isAccountView={isAccountView}
-            tableView={tableView}
-        />
-    ));
 
-    const currentRowItemContent = _DATA.currentData.map((position, idx) => (
-        <RangesRow
-            key={idx}
-            position={position}
-            isAccountView={isAccountView}
-            tableView={tableView}
-        />
-    ));
+    const ensAddressMapping = useEnsAddresses(sortedPositions);
+
+    const currentRowItemContent = () =>
+        _DATA.currentData.map((position, idx) => (
+            <RangesRow
+                key={idx}
+                position={position}
+                isAccountView={isAccountView}
+                tableView={tableView}
+                fetchedEnsAddress={ensAddressMapping.get(position.user)}
+            />
+        ));
 
     useEffect(() => {
         if (_DATA.currentData.length && !isTradeTableExpanded) {
@@ -434,14 +431,14 @@ function Ranges(props: propsIF) {
                             tableView={tableView}
                         />
                     ))}
-                {currentRowItemContent}
+                {currentRowItemContent()}
             </ul>
             {
                 // Show a 'View More' button at the end of the table when collapsed (half-page) and it's not a /account render
                 // TODO (#1804): we should instead be adding results to RTK
                 !isTradeTableExpanded &&
                     !props.isAccountView &&
-                    sortedRowItemContent.length > NUM_RANGES_WHEN_COLLAPSED && (
+                    sortedPositions.length > NUM_RANGES_WHEN_COLLAPSED && (
                         <FlexContainer
                             justifyContent='center'
                             alignItems='center'

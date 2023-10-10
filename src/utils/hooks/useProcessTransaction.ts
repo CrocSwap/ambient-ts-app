@@ -27,6 +27,8 @@ export const useProcessTransaction = (
     const isDenomBase = tradeData.isDenomBase;
 
     const txHash = tx.txHash;
+
+    // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
     const ensName =
