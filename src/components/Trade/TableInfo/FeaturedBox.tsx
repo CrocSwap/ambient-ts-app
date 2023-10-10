@@ -19,6 +19,7 @@ import trimString from '../../../utils/functions/trimString';
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { ZERO_ADDRESS } from '../../../constants';
 import { getChainExplorer } from '../../../utils/data/chains';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface FeaturedBoxPropsIF {
     token: TokenIF;
@@ -50,7 +51,12 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
         <BoxContainer style={style}>
             <FeaturedBoxInnerContainer>
                 <FlexCenter>
-                    <TokenIcon token={token} alt={token.symbol} size={'3xl'} />
+                    <TokenIcon
+                        token={token}
+                        src={token.logoURI ? uriToHttp(token.logoURI) : ''}
+                        alt={token.symbol}
+                        size={'3xl'}
+                    />
                     <TokenSymbol>{token.symbol}</TokenSymbol>
                     <TokenName>{token.name}</TokenName>
                 </FlexCenter>
