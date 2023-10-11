@@ -1149,6 +1149,17 @@ export default function InitPool() {
                             flat={true}
                         />
                     );
+                } else if (advancedHighTick <= advancedLowTick) {
+                    buttonContent = (
+                        <Button
+                            title='Invalid range'
+                            disabled={true}
+                            action={() => {
+                                IS_LOCAL_ENV && console.debug('clicked');
+                            }}
+                            flat={true}
+                        />
+                    );
                 } else {
                     buttonContent = confirmButton;
                     // Display confirm button for final step
