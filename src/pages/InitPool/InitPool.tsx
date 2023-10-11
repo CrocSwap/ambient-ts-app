@@ -80,6 +80,7 @@ import {
 import { useHandleRangeButtonMessage } from '../../App/hooks/useHandleRangeButtonMessage';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
+import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 // react functional component
 export default function InitPool() {
     const {
@@ -1507,9 +1508,14 @@ export default function InitPool() {
             blur={!!poolExists}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
-                <Text fontSize='body' color='text2'>
-                    Initial Pool Price
-                </Text>
+                <FlexContainer flexDirection='row' gap={8} alignItems='center'>
+                    <Text fontSize='body' color='text2'>
+                        Initial Pool Price
+                    </Text>
+                    {isEditEnabled && (
+                        <TooltipComponent title='Suggested initial pool prices are based on other decentralized exchanges.' />
+                    )}
+                </FlexContainer>
                 {isReferencePriceAvailable ? refPriceToggle : initPriceEdit}
             </FlexContainer>
             <section
@@ -1662,6 +1668,31 @@ export default function InitPool() {
 
     const hideContentOnMobile = !isMintLiqEnabled && showMobileVersion;
 
+    const warningAndExtraInfo = showErrorMessage ? (
+        <div
+            style={{
+                padding: hideContentOnMobile ? '20px 40px' : '0 40px',
+            }}
+        >
+            <WarningBox
+                details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
+            />
+        </div>
+    ) : (
+        <FlexContainer blur={!!poolExists} justifyContent='center'>
+            <InitPoolExtraInfo
+                initialPrice={parseFloat(
+                    initialPriceDisplay.replaceAll(',', ''),
+                )}
+                isDenomBase={isDenomBase}
+                initGasPriceinDollars={initGasPriceinDollars}
+                baseToken={baseToken}
+                quoteToken={quoteToken}
+                setIsDenomBase={setIsDenomBase}
+            />
+        </FlexContainer>
+    );
+
     const mainContent = (
         <InitSkeleton
             isTokenModalOpen={tokenModalOpen}
@@ -1684,51 +1715,34 @@ export default function InitPool() {
                 {collateralContent}
             </FlexContainer>
 
-            <FlexContainer padding='0 8px' flexDirection='column' gap={8}>
-                {!showMobileVersion && mintInitialLiquidity}
-                <FlexContainer blur={isRangeBoundsAndCollateralDisabled}>
-                    <AdvancedModeToggle advancedMode={advancedMode} />
+            <FlexContainer
+                padding='0 8px'
+                flexDirection='column'
+                justifyContent='space-between'
+            >
+                <FlexContainer flexDirection='column' gap={8}>
+                    {!showMobileVersion && mintInitialLiquidity}
+                    <FlexContainer blur={isRangeBoundsAndCollateralDisabled}>
+                        <AdvancedModeToggle advancedMode={advancedMode} />
+                    </FlexContainer>
+
+                    {!hideContentOnMobile && (
+                        <RangeBounds
+                            isRangeBoundsDisabled={
+                                isRangeBoundsAndCollateralDisabled
+                            }
+                            {...rangeWidthProps}
+                            {...rangePriceInfoProps}
+                            {...minMaxPriceProps}
+                            customSwitch={true}
+                        />
+                    )}
                 </FlexContainer>
 
-                {!hideContentOnMobile && (
-                    <RangeBounds
-                        isRangeBoundsDisabled={
-                            isRangeBoundsAndCollateralDisabled
-                        }
-                        {...rangeWidthProps}
-                        {...rangePriceInfoProps}
-                        {...minMaxPriceProps}
-                        customSwitch={true}
-                    />
-                )}
-                {showErrorMessage ? (
-                    <div
-                        style={{
-                            padding: hideContentOnMobile
-                                ? '20px 40px'
-                                : '0 40px',
-                        }}
-                    >
-                        <WarningBox
-                            details={`Due to a known issue, you currently need to completely withdraw your ${erc20TokenWithDexBalance?.symbol} exchange balance before proceeding with pool initialization.`}
-                        />
-                    </div>
-                ) : (
-                    <FlexContainer blur={!!poolExists} justifyContent='center'>
-                        <InitPoolExtraInfo
-                            initialPrice={parseFloat(
-                                initialPriceDisplay.replaceAll(',', ''),
-                            )}
-                            isDenomBase={isDenomBase}
-                            initGasPriceinDollars={initGasPriceinDollars}
-                            baseToken={baseToken}
-                            quoteToken={quoteToken}
-                            setIsDenomBase={setIsDenomBase}
-                        />
-                    </FlexContainer>
-                )}
-
-                <ButtonToRender />
+                <FlexContainer flexDirection='column' gap={8}>
+                    {warningAndExtraInfo}
+                    <ButtonToRender />
+                </FlexContainer>
             </FlexContainer>
         </InitSkeleton>
     );
@@ -1814,23 +1828,6 @@ export default function InitPool() {
         </InitSkeleton>
     );
 
-    const exampleContent3 = (
-        <InitSkeleton
-            isTokenModalOpen={tokenModalOpen}
-            handleGoBack={handleGoBack}
-            isConfirmation={true}
-            activeContent={activeContent}
-            setActiveContent={setActiveContent}
-            title='Example content 3'
-        >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim,
-            doloremque?
-        </InitSkeleton>
-    );
-
-    const otherContents = [
-        { title: 'Example Content 3', content: exampleContent3 },
-    ];
     return (
         <>
             <MultiContentComponent
@@ -1839,7 +1836,6 @@ export default function InitPool() {
                 confirmationContent={confirmationContent}
                 activeContent={activeContent}
                 setActiveContent={handleSetActiveContent}
-                otherContents={otherContents}
             />
         </>
     );
