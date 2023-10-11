@@ -261,29 +261,30 @@ export default function Chart(props: propsIF) {
                 isFakeData: false,
             }));
         if (poolPriceWithoutDenom && data && data.length > 0) {
-            const closePrice = denomInBase
-                ? data[0].invPriceCloseExclMEVDecimalCorrected
-                : data[0].priceCloseExclMEVDecimalCorrected;
+            const closePriceWithDenom =
+                data[0].invPriceCloseExclMEVDecimalCorrected;
+            const poolPriceWithDenom = 1 / poolPriceWithoutDenom;
 
-            const openPrice = denomInBase
-                ? data[0].invPriceOpenExclMEVDecimalCorrected
-                : data[0].priceOpenExclMEVDecimalCorrected;
+            const fakeDataOpenWithDenom = closePriceWithDenom;
 
-            const bearishCandleType =
-                closePrice < openPrice ? closePrice : openPrice;
-            const bullishCandleType =
-                closePrice > openPrice ? closePrice : openPrice;
+            const fakeDataCloseWithDenom = poolPriceWithDenom;
+
+            const closePrice = data[0].priceCloseExclMEVDecimalCorrected;
+
+            const fakeDataOpen = closePrice;
+
+            const fakeDataClose = poolPriceWithoutDenom;
 
             const fakeData = {
                 time: data[0].time + period,
-                invMinPriceExclMEVDecimalCorrected: bearishCandleType,
-                maxPriceExclMEVDecimalCorrected: bullishCandleType,
-                invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                minPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                invPriceOpenExclMEVDecimalCorrected: bearishCandleType,
-                priceOpenExclMEVDecimalCorrected: bullishCandleType,
-                invPriceCloseExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                priceCloseExclMEVDecimalCorrected: poolPriceWithoutDenom,
+                invMinPriceExclMEVDecimalCorrected: fakeDataOpenWithDenom,
+                maxPriceExclMEVDecimalCorrected: fakeDataOpen,
+                invMaxPriceExclMEVDecimalCorrected: fakeDataCloseWithDenom,
+                minPriceExclMEVDecimalCorrected: fakeDataClose,
+                invPriceOpenExclMEVDecimalCorrected: fakeDataOpenWithDenom,
+                priceOpenExclMEVDecimalCorrected: fakeDataOpen,
+                invPriceCloseExclMEVDecimalCorrected: fakeDataCloseWithDenom,
+                priceCloseExclMEVDecimalCorrected: fakeDataClose,
                 period: period,
                 tvlData: {
                     time: data[0].time,
@@ -291,14 +292,14 @@ export default function Chart(props: propsIF) {
                 },
                 volumeUSD: 0,
                 averageLiquidityFee: data[0].averageLiquidityFee,
-                minPriceDecimalCorrected: bullishCandleType,
+                minPriceDecimalCorrected: fakeDataClose,
                 maxPriceDecimalCorrected: 0,
-                priceOpenDecimalCorrected: bullishCandleType,
-                priceCloseDecimalCorrected: bullishCandleType,
-                invMinPriceDecimalCorrected: bearishCandleType,
+                priceOpenDecimalCorrected: fakeDataOpen,
+                priceCloseDecimalCorrected: fakeDataClose,
+                invMinPriceDecimalCorrected: fakeDataCloseWithDenom,
                 invMaxPriceDecimalCorrected: 0,
-                invPriceOpenDecimalCorrected: bearishCandleType,
-                invPriceCloseDecimalCorrected: bearishCandleType,
+                invPriceOpenDecimalCorrected: fakeDataOpenWithDenom,
+                invPriceCloseDecimalCorrected: fakeDataCloseWithDenom,
                 isCrocData: false,
                 isFakeData: true,
             };
