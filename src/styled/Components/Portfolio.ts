@@ -55,7 +55,7 @@ export const SVGContainer = styled.div`
 
 export const CurrencyQuantityInput = styled.input`
     font-weight: 300;
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22px;
     color: white;
     text-align: start;
@@ -72,7 +72,7 @@ export const CurrencyQuantityInput = styled.input`
     &::placeholder {
         color: var(--text2);
         font-weight: 300;
-        font-size: 18px;
+        font-size: var(--header2-size);
         line-height: 22px;
     }
 `;
@@ -185,7 +185,7 @@ export const PortfolioBannerRectangleContainer = styled.div`
 `;
 
 export const PortfolioContainer = styled(FlexContainer)`
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     height: calc(100vh - 56px);
     @media only screen and (max-width: 600px) {
         overflow-y: hidden;
@@ -200,7 +200,7 @@ export const PortfolioTabsContainer = styled.div<{
     @media (min-width: 1200px) {
         width: 100%;
         display: grid;
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
         overflow: hidden;
         flex: 1;
 
@@ -230,7 +230,7 @@ export const PortfolioTabsContainer = styled.div<{
                 return `
                     width: 100%;
                     display: grid;
-                    transition: all var(--animation-speed) ease-in-out;
+                    transition: var(--transition);
                     overflow: hidden;
                     grid-template-columns: auto 36px;
                     column-gap: 16px;
@@ -245,7 +245,7 @@ export const PortfolioTabsContainer = styled.div<{
         gap: 1rem;
                 width: 100%;
         display: grid;
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
         overflow: hidden;
                 grid-template-columns: auto 380px;
 

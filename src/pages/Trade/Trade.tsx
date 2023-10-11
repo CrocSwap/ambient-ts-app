@@ -28,13 +28,6 @@ import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { NoChartData } from '../../components/NoChartData/NoChartData';
 import { TradeChartsHeader } from './TradeCharts/TradeChartsHeader/TradeChartsHeader';
 import { useSimulatedIsPoolInitialized } from '../../App/hooks/useSimulatedIsPoolInitialized';
-import {
-    limitParamsIF,
-    linkGenMethodsIF,
-    marketParamsIF,
-    poolParamsIF,
-    useLinkGen,
-} from '../../utils/hooks/useLinkGen';
 import { FlexContainer } from '../../styled/Common';
 import {
     ChartContainer,
@@ -44,7 +37,6 @@ import {
     TradeDropdownButton,
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
-import { TradeModuleLink } from '../../styled/Components/TradeModules';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -76,7 +68,7 @@ function Trade() {
     } = useContext(TradeTableContext);
 
     const { tradeData } = useAppSelector((state) => state);
-    const { tokenA, tokenB, isDenomBase, limitTick } = tradeData;
+    const { isDenomBase, limitTick } = tradeData;
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
@@ -84,73 +76,6 @@ function Trade() {
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
     const tradeTableRef = useRef<HTMLDivElement>(null);
-
-    // hooks to generate default URL paths
-    const linkGenMarket: linkGenMethodsIF = useLinkGen('market');
-    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-    const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
-
-    // URL param data to generate nav links
-    const marketParams: marketParamsIF = {
-        chain: chainId,
-        tokenA: tokenA.address,
-        tokenB: tokenB.address,
-    };
-    const limitParams: limitParamsIF = {
-        ...marketParams,
-        limitTick: limitTick ?? 0,
-    };
-    const poolParams: poolParamsIF = {
-        ...marketParams,
-    };
-
-    // interface describing shape of route data to generate nav links
-    interface routeIF {
-        path: string;
-        baseURL: string;
-        name: string;
-    }
-
-    // data to generate nav links to the three trade modules
-    const routes: routeIF[] = [
-        {
-            path: linkGenMarket.getFullURL(marketParams),
-            baseURL: linkGenMarket.baseURL,
-            name: 'Swap',
-        },
-        {
-            path: linkGenLimit.getFullURL(limitParams),
-            baseURL: linkGenLimit.baseURL,
-            name: 'Limit',
-        },
-        {
-            path: linkGenPool.getFullURL(poolParams),
-            baseURL: linkGenPool.baseURL,
-            name: 'Pool',
-        },
-    ];
-
-    // nav links to the three trade modules
-    const navigationMenu: JSX.Element = (
-        <FlexContainer
-            as='nav'
-            justifyContent='center'
-            alignItems='center'
-            gap={8}
-            margin='0 0 16px 0'
-            height='25px'
-        >
-            {routes.map((route: routeIF) => (
-                <TradeModuleLink
-                    key={JSON.stringify(route)}
-                    to={route.path}
-                    isActive={location.pathname.includes(route.baseURL)}
-                >
-                    {route.name}
-                </TradeModuleLink>
-            ))}
-        </FlexContainer>
-    );
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -285,7 +210,6 @@ function Trade() {
                 <Outlet
                     context={{
                         tradeData: tradeData,
-                        navigationMenu: navigationMenu,
                         limitTick: limitTick,
                         updateURL: updateURL,
                     }}
@@ -401,7 +325,6 @@ function Trade() {
                     context={{
                         tradeData: tradeData,
                         urlParamMap: urlParamMap,
-                        navigationMenu: navigationMenu,
                         limitTick: limitTick,
                         updateURL: updateURL,
                     }}

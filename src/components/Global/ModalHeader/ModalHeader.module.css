@@ -12,7 +12,7 @@
 
     background: var(--dark1);
     padding: 1rem;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 }
 
 .header_container svg {

@@ -93,7 +93,7 @@
 
 .currency_quantity {
     font-weight: 300;
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22px;
     color: var(--text1);
 

@@ -50,7 +50,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 10px;
+    font-size: var(--mini-size);
     line-height: 10px;
     align-self: flex-end;
 
@@ -65,8 +65,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 10px;
-    line-height: 12px;
+    font-size: var(--mini-size);
+    line-height: var(--mini-lh);
     text-align: center;
 
     /* text/grey dark */
@@ -87,8 +87,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
     flex-grow: 5px !important;
     margin-left: 10px;
     width: 85%;
@@ -108,8 +108,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
@@ -131,8 +131,8 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
     flex-grow: 5px !important;
     margin: 10px;
     width: 85%;
@@ -208,7 +208,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
+    font-size: var(--body-size);
     line-height: 16px;
     display: flex;
     align-items: center;
@@ -233,7 +233,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
+    font-size: var(--body-size);
     line-height: 16px;
     display: flex;
     align-items: center;

@@ -44,7 +44,7 @@ export const TradeDropdownButton = styled.button`
     width: 90%;
     margin: 0 auto;
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     border-radius: var(--border-radius);
     text-align: center;
     display: flex;
@@ -86,7 +86,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
     ${({ fullScreen }) =>
         fullScreen
             ? `
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
         background: var(--dark2);
         position: fixed;
         width: 100%;
