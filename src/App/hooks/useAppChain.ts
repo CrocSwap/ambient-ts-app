@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
@@ -23,12 +30,35 @@ export const useAppChain = (
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
 
+    function getChainFromURL(): string | null {
+        const { pathname } = window.location;
+        let rawURL = pathname;
+        let templateURL = '';
+        if (rawURL.length && rawURL.includes('chain')) {
+            while (!rawURL.startsWith('chain')) {
+                rawURL = rawURL.substring(1);
+            }
+            rawURL = rawURL.substring(6);
+            for (let i = 0; i < rawURL.length; i++) {
+                const character: string = rawURL[i];
+                if (character === '&') break;
+                templateURL += character;
+            }
+        }
+        let output: string | null = templateURL.length ? templateURL : null;
+        if (typeof output === 'string' && !validateChainId(output)) {
+            output = null;
+        }
+        return output;
+    }
+
     const { chain: chainNetwork } = useNetwork();
 
     function determineConnected(chainNetwork?: { id: number }): string {
         return chainNetwork
             ? chainNumToString(chainNetwork.id)
-            : localStorage.getItem(CHAIN_LS_KEY) || defaultChain;
+            : getChainFromURL() ??
+                  (localStorage.getItem(CHAIN_LS_KEY) || defaultChain);
     }
 
     const defaultChain = getDefaultChainId();
@@ -41,13 +71,14 @@ export const useAppChain = (
     // initializes on the default chain parameter
     // we need this value so the app can be used without a wallet
     const [currentChain, setCurrentChain] = useState(
-        determineConnected(chainNetwork),
+        getChainFromURL() ?? determineConnected(chainNetwork),
     );
 
     // value trackng the chain the user or app is trying to switch to
     // If valid, currentChain should converge to this value. For invalid chains
     // the rest of the app should be gated, by not converging currentChain
     const [nextChain, setNextChain] = useState(currentChain);
+    console.log({ currentChain, nextChain });
 
     // boolean representing if the current chain is supported by the app
     // we use this value to populate the SwitchNetwork.tsx modal
