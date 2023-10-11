@@ -365,8 +365,71 @@ function DrawCanvas(props: DrawCanvasProps) {
                             },
                         ];
 
-                        if (ctx) ctx.setLineDash([5, 3]);
-                        lineSeries(angleLineData);
+                        if (lineData.length > 1) {
+                            const opposite = Math.abs(
+                                scaleData.yScale(lineData[0].y) -
+                                    scaleData.yScale(lineData[1].y),
+                            );
+                            const side = Math.abs(
+                                scaleData.xScale(lineData[0].x) -
+                                    scaleData.xScale(lineData[1].x),
+                            );
+
+                            const distance = opposite / side;
+
+                            const angle = Math.atan(distance) * (180 / Math.PI);
+
+                            const supplement =
+                                lineData[1].x > lineData[0].x
+                                    ? -Math.atan(distance)
+                                    : Math.PI + Math.atan(distance);
+
+                            const arcX =
+                                lineData[1].y > lineData[0].y ? supplement : 0;
+                            const arcY =
+                                lineData[1].y > lineData[0].y ? 0 : -supplement;
+
+                            const radius =
+                                scaleData.xScale(
+                                    lineData[0].x + period * 6 * 1000,
+                                ) - scaleData.xScale(lineData[0].x);
+
+                            if (ctx) {
+                                ctx.setLineDash([5, 3]);
+                                lineSeries(angleLineData);
+
+                                ctx.beginPath();
+                                ctx.arc(
+                                    scaleData.xScale(lineData[0].x),
+                                    scaleData.yScale(lineData[0].y),
+                                    radius,
+                                    arcX,
+                                    arcY,
+                                );
+                                ctx.stroke();
+
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                ctx.fillStyle = 'white';
+                                ctx.font = '50 12px Lexend Deca';
+
+                                const angleDisplay =
+                                    lineData[1].x > lineData[0].x
+                                        ? angle
+                                        : 180 - angle;
+
+                                ctx.fillText(
+                                    (lineData[1].y > lineData[0].y ? '' : '-') +
+                                        angleDisplay.toFixed(0).toString(),
+                                    scaleData.xScale(
+                                        lineData[0].x + period * 8.5 * 1000,
+                                    ),
+                                    scaleData.yScale(lineData[0].y),
+                                );
+
+                                ctx.closePath();
+                            }
+                        }
                     }
                 })
                 .on('measure', (event: CustomEvent) => {
