@@ -469,10 +469,6 @@ export default function InitPool() {
     const [isReferencePriceAvailable, setIsReferencePriceAvailable] =
         useState(false);
 
-    useEffect(() => {
-        setInitialPriceDisplay('');
-    }, [baseToken.address + quoteToken.address]);
-
     const refreshReferencePrice = async () => {
         if (tradeDataMatchesURLParams) {
             const mainnetBase =
@@ -944,7 +940,16 @@ export default function InitPool() {
 
     useEffect(() => {
         resetConfirmation();
+        setInitialPriceDisplay('');
     }, [baseToken.address + quoteToken.address]);
+
+    useEffect(() => {
+        if (activeContent !== 'main') {
+            setTokenACollateral('');
+            setTokenBCollateral('');
+            setActiveContent('main');
+        }
+    }, [tokenA.address + tokenB.address]);
 
     async function sendInit(
         initialPriceInBaseDenom: number | undefined,
@@ -1619,7 +1624,7 @@ export default function InitPool() {
             setTokenACollateral('');
             setTokenBCollateral('');
         }
-    });
+    }, [isMintLiqEnabled]);
 
     useEffect(() => {
         if (poolExists) {
