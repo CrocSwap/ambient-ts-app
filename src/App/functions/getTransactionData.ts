@@ -14,6 +14,7 @@ export const getTransactionData = async (
     tokenList: TokenIF[],
     crocEnv: CrocEnv,
     provider: Provider,
+    mainnetProvider: Provider,
     chainId: string,
     lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -39,7 +40,7 @@ export const getTransactionData = async (
     const baseMetadata = cachedTokenDetails(provider, tx.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, tx.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(tx.user, provider);
+    const ensRequest = cachedEnsResolve(tx.user, mainnetProvider);
 
     const basePricedToken = getMainnetAddress(
         baseTokenAddress,

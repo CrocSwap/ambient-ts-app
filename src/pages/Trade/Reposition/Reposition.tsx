@@ -64,6 +64,7 @@ function Reposition() {
     const {
         crocEnv,
         provider,
+        mainnetProvider,
         chainData: { blockExplorer },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
@@ -423,7 +424,7 @@ function Reposition() {
         )
             .then((response) => response?.json())
             .then(async (json) => {
-                if (!crocEnv || !provider || !json?.data) {
+                if (!crocEnv || !provider || !mainnetProvider || !json?.data) {
                     setCurrentBaseQtyDisplayTruncated('...');
                     setCurrentQuoteQtyDisplayTruncated('...');
                     return;
@@ -434,6 +435,7 @@ function Reposition() {
                     tokens.tokenUniv,
                     crocEnv,
                     provider,
+                    mainnetProvider,
                     position.chainId,
                     lastBlockNumber,
                     cachedFetchTokenPrice,

@@ -43,6 +43,7 @@ export default function TransactionDetailsModal(props: propsIF) {
     const {
         crocEnv,
         provider,
+        mainnetProvider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -71,7 +72,7 @@ export default function TransactionDetailsModal(props: propsIF) {
         )
             .then((response) => response?.json())
             .then(async (json) => {
-                if (!crocEnv || !provider || !json?.data) {
+                if (!crocEnv || !provider || !mainnetProvider || !json?.data) {
                     return;
                 }
 
@@ -81,6 +82,7 @@ export default function TransactionDetailsModal(props: propsIF) {
                     tokens.tokenUniv,
                     crocEnv,
                     provider,
+                    mainnetProvider,
                     chainId,
                     lastBlockNumber,
                     cachedFetchTokenPrice,

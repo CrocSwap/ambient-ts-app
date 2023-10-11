@@ -22,6 +22,7 @@ export const getLimitOrderData = async (
     tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
     provider: Provider,
+    mainnetProvider: Provider,
     chainId: string,
     lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -46,7 +47,7 @@ export const getLimitOrderData = async (
     const baseMetadata = cachedTokenDetails(provider, order.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, order.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(order.user, provider);
+    const ensRequest = cachedEnsResolve(order.user, mainnetProvider);
 
     newOrder.ensResolution = (await ensRequest) ?? '';
 

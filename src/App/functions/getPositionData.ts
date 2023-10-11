@@ -23,6 +23,7 @@ export const getPositionData = async (
     tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
     provider: Provider,
+    mainnetProvider: Provider,
     chainId: string,
     lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -49,7 +50,7 @@ export const getPositionData = async (
     const baseMetadata = cachedTokenDetails(provider, position.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, position.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(newPosition.user, provider);
+    const ensRequest = cachedEnsResolve(newPosition.user, mainnetProvider);
 
     const basePricedToken = getMainnetAddress(
         baseTokenAddress,

@@ -90,6 +90,7 @@ function TradeTabs2(props: propsIF) {
     const {
         crocEnv,
         provider,
+        mainnetProvider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -257,7 +258,8 @@ function TradeTabs2(props: propsIF) {
             isServerEnabled &&
             !showAllData &&
             crocEnv &&
-            provider
+            provider &&
+            mainnetProvider
         ) {
             try {
                 fetchUserRecentChanges({
@@ -272,6 +274,7 @@ function TradeTabs2(props: propsIF) {
                     n: 100, // fetch last 100 changes,
                     crocEnv,
                     provider,
+                    mainnetProvider,
                     lastBlockNumber,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
                     cachedQuerySpotPrice: cachedQuerySpotPrice,

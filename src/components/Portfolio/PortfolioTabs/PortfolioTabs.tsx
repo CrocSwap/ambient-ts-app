@@ -69,6 +69,7 @@ export default function PortfolioTabs(props: propsIF) {
     const {
         crocEnv,
         provider,
+        mainnetProvider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -115,7 +116,7 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userPositions = json?.data;
-                if (userPositions && crocEnv && provider) {
+                if (userPositions && crocEnv && provider && mainnetProvider) {
                     Promise.all(
                         userPositions.map((position: PositionServerIF) => {
                             return getPositionData(
@@ -123,6 +124,7 @@ export default function PortfolioTabs(props: propsIF) {
                                 tokens.tokenUniv,
                                 crocEnv,
                                 provider,
+                                mainnetProvider,
                                 chainId,
                                 lastBlockNumber,
                                 cachedFetchTokenPrice,
@@ -161,7 +163,12 @@ export default function PortfolioTabs(props: propsIF) {
             .then((response) => response?.json())
             .then((json) => {
                 const userLimitOrderStates = json?.data;
-                if (userLimitOrderStates && crocEnv && provider) {
+                if (
+                    userLimitOrderStates &&
+                    crocEnv &&
+                    provider &&
+                    mainnetProvider
+                ) {
                     Promise.all(
                         userLimitOrderStates.map(
                             (limitOrder: LimitOrderServerIF) => {
@@ -170,6 +177,7 @@ export default function PortfolioTabs(props: propsIF) {
                                     tokens.tokenUniv,
                                     crocEnv,
                                     provider,
+                                    mainnetProvider,
                                     chainId,
                                     lastBlockNumber,
                                     cachedFetchTokenPrice,
@@ -194,7 +202,7 @@ export default function PortfolioTabs(props: propsIF) {
             });
 
     const getLookupUserTransactions = async (accountToSearch: string) => {
-        if (crocEnv && provider) {
+        if (crocEnv && provider && mainnetProvider) {
             fetchUserRecentChanges({
                 tokenList: tokens.tokenUniv,
                 user: accountToSearch,
@@ -207,6 +215,7 @@ export default function PortfolioTabs(props: propsIF) {
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
                 provider,
+                mainnetProvider,
                 lastBlockNumber: lastBlockNumber,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,
                 cachedQuerySpotPrice: cachedQuerySpotPrice,

@@ -67,6 +67,7 @@ function Transactions(props: propsIF) {
     const {
         crocEnv,
         provider,
+        mainnetProvider,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
     const { showAllData: showAllDataSelection, toggleTradeTable } =
@@ -212,6 +213,7 @@ function Transactions(props: propsIF) {
     const getCandleData = () =>
         crocEnv &&
         provider &&
+        mainnetProvider &&
         fetchPoolRecentChanges({
             tokenList: tokens.tokenUniv,
             base: selectedBase,
@@ -228,6 +230,7 @@ function Transactions(props: propsIF) {
             time: filter?.time,
             crocEnv: crocEnv,
             provider,
+            mainnetProvider,
             lastBlockNumber,
             cachedFetchTokenPrice: cachedFetchTokenPrice,
             cachedQuerySpotPrice: cachedQuerySpotPrice,

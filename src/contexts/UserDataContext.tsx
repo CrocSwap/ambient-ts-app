@@ -46,7 +46,8 @@ export const UserDataContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, provider, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, provider, mainnetProvider, chainData } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -75,6 +76,7 @@ export const UserDataContextProvider = (props: {
             userAddress &&
             crocEnv &&
             provider &&
+            mainnetProvider &&
             tokens.tokenUniv.length &&
             chainData.chainId
         ) {
@@ -107,6 +109,7 @@ export const UserDataContextProvider = (props: {
                                             tokens.tokenUniv,
                                             crocEnv,
                                             provider,
+                                            mainnetProvider,
                                             chainData.chainId,
                                             lastBlockNumber,
                                             cachedFetchTokenPrice,
@@ -160,6 +163,7 @@ export const UserDataContextProvider = (props: {
                                         tokens.tokenUniv,
                                         crocEnv,
                                         provider,
+                                        mainnetProvider,
                                         chainData.chainId,
                                         lastBlockNumber,
                                         cachedFetchTokenPrice,
@@ -199,6 +203,7 @@ export const UserDataContextProvider = (props: {
                     ensResolution: true,
                     crocEnv: crocEnv,
                     provider,
+                    mainnetProvider,
                     lastBlockNumber: lastBlockNumber,
                     n: 100, // fetch last 100 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,

@@ -48,7 +48,7 @@ export default function OrderDetailsModal(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const { crocEnv, provider, mainnetProvider } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -107,7 +107,7 @@ export default function OrderDetailsModal(props: propsIF) {
             GRAPHCACHE_SMALL_URL + '/limit_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
-        if (positionType && crocEnv && provider) {
+        if (positionType && crocEnv && provider && mainnetProvider) {
             fetch(
                 positionStatsCacheEndpoint +
                     new URLSearchParams({
@@ -133,6 +133,7 @@ export default function OrderDetailsModal(props: propsIF) {
                         tokens.tokenUniv,
                         crocEnv,
                         provider,
+                        mainnetProvider,
                         chainId,
                         lastBlockNumber,
                         cachedFetchTokenPrice,

@@ -81,6 +81,7 @@ export default function RangeDetailsModal(props: propsIF) {
     const {
         chainData: { chainId, poolIndex },
         provider,
+        mainnetProvider,
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
@@ -152,7 +153,12 @@ export default function RangeDetailsModal(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then(async (json) => {
-                    if (!crocEnv || !provider || !json?.data) {
+                    if (
+                        !crocEnv ||
+                        !provider ||
+                        !mainnetProvider ||
+                        !json?.data
+                    ) {
                         setBaseCollateralDisplay(undefined);
                         setQuoteCollateralDisplay(undefined);
                         setUsdValue(undefined);
@@ -167,6 +173,7 @@ export default function RangeDetailsModal(props: propsIF) {
                         tokens.tokenUniv,
                         crocEnv,
                         provider,
+                        mainnetProvider,
                         chainId,
                         lastBlockNumber,
                         cachedFetchTokenPrice,

@@ -84,6 +84,7 @@ export default function RangeActionModal(props: propsIF) {
     const {
         crocEnv,
         provider,
+        mainnetProvider,
         chainData: { chainId, poolIndex },
         ethMainnetUsdPrice,
     } = useContext(CrocEnvContext);
@@ -198,12 +199,13 @@ export default function RangeActionModal(props: propsIF) {
                     .then((response) => response.json())
                     .then((json) => json?.data)
                     .then(async (data: PositionServerIF) => {
-                        if (data && crocEnv && provider) {
+                        if (data && crocEnv && provider && mainnetProvider) {
                             const position = await getPositionData(
                                 data,
                                 tokens.tokenUniv,
                                 crocEnv,
                                 provider,
+                                mainnetProvider,
                                 chainId,
                                 lastBlockNumber,
                                 cachedFetchTokenPrice,
