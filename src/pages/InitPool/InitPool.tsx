@@ -471,7 +471,7 @@ export default function InitPool() {
 
     useEffect(() => {
         setInitialPriceDisplay('');
-    }, [tokenA.address + tokenB.address]);
+    }, [baseToken.address + quoteToken.address]);
 
     const refreshReferencePrice = async () => {
         if (tradeDataMatchesURLParams) {
