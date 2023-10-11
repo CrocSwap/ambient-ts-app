@@ -27,10 +27,11 @@ interface FeaturedBoxPropsIF {
     value?: string;
     pooled?: string;
     style?: React.CSSProperties | undefined;
+    isInit?: boolean;
 }
 
 export function FeaturedBox(props: FeaturedBoxPropsIF) {
-    const { token, balance, value, pooled, style } = props;
+    const { token, balance, value, pooled, style, isInit } = props;
     const {
         chainData: { chainId, addrs },
     } = useContext(CrocEnvContext);
@@ -48,7 +49,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
     }
 
     return (
-        <BoxContainer style={style}>
+        <BoxContainer style={style} isInit={isInit}>
             <FeaturedBoxInnerContainer>
                 <FlexCenter>
                     <TokenIcon
@@ -98,20 +99,20 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                     </IconWithTooltip>
                 </FlexCenter>
 
-                {pooled && (
+                {isInit && (
                     <FeaturedBoxInfoContainer>
                         <InfoHeader>Pooled</InfoHeader>
                         <BoxInfoText>{pooled}</BoxInfoText>
                     </FeaturedBoxInfoContainer>
                 )}
 
-                {balance && (
+                {!isInit && (
                     <FeaturedBoxInfoContainer>
                         <InfoHeader>Balance</InfoHeader>
                         <BoxInfoText>{balance}</BoxInfoText>
                     </FeaturedBoxInfoContainer>
                 )}
-                {value && (
+                {!isInit && (
                     <FeaturedBoxInfoContainer>
                         <InfoHeader>Value</InfoHeader>
                         <BoxInfoText>${value}</BoxInfoText>

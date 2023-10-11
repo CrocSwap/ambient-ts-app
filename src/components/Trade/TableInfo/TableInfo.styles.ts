@@ -3,7 +3,11 @@ import backgroundImage from '../../../assets/images/backgrounds/tableInfoBg.png'
 
 // can be extracted to common
 
-const isInitPage = location.pathname.startsWith('/init');
+interface BoxContainerProps {
+    isInit?: boolean;
+    style?: React.CSSProperties; // Allow style prop
+}
+
 const MainSection = styled.section`
     background: url(${backgroundImage}) no-repeat;
 
@@ -11,20 +15,22 @@ const MainSection = styled.section`
     padding: 8px;
 `;
 
-const BoxContainer = styled.div`
+const BoxContainer = styled.div<BoxContainerProps>`
     grid-column: span 1;
-    background: ${isInitPage ? 'var(--dark2)' : 'rgba(23, 29, 39, 0.4)'};
-    ${!isInitPage &&
-    `  backdrop-filter: blur(10px);
+    background: ${(props) =>
+        props.isInit ? 'var(--dark2)' : 'rgba(23, 29, 39, 0.4)'};
+    ${(props) =>
+        !props.isInit &&
+        `  backdrop-filter: blur(10px);
         border-radius: 0.25rem;`}
     height: 100%;
 `;
 
-const FeaturedBoxInnerContainer = styled.div`
+const FeaturedBoxInnerContainer = styled.div<BoxContainerProps>`
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: ${isInitPage ? '8px 16px' : '1rem'};
+    padding: ${(props) => (props.isInit ? '8px 16px' : '1rem')};
 `;
 
 const InfoHeader = styled.div`

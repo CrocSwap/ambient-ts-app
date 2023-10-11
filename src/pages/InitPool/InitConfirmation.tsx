@@ -95,10 +95,12 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             <FeaturedBox
                 pooled={isMintLiqEnabled ? tokenACollateral : '0.00'}
                 token={tokenA}
+                isInit
             />
             <FeaturedBox
                 pooled={isMintLiqEnabled ? tokenBCollateral : '0.00'}
                 token={tokenB}
+                isInit
             />
         </GridContainer>
     );
@@ -140,7 +142,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         >
             <FlexContainer
                 flexDirection='column'
-                gap={8}
+                gap={24}
                 justifyContent={!isMintLiqEnabled ? 'center' : ''}
                 style={{ height: '100%' }}
             >
