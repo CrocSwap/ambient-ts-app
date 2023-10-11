@@ -1478,7 +1478,9 @@ export default function InitPool() {
             <Text fontSize='body' color='text2'>
                 Use reference price
             </Text>
-
+            {isReferencePriceAvailable && (
+                <TooltipComponent title='Suggested initial pool prices are based on other decentralized exchanges.' />
+            )}
             <Toggle
                 id='toggle_ref_price'
                 isOn={useReferencePrice}
@@ -1512,9 +1514,6 @@ export default function InitPool() {
                     <Text fontSize='body' color='text2'>
                         Initial Pool Price
                     </Text>
-                    {isEditEnabled && (
-                        <TooltipComponent title='Suggested initial pool prices are based on other decentralized exchanges.' />
-                    )}
                 </FlexContainer>
                 {isReferencePriceAvailable ? refPriceToggle : initPriceEdit}
             </FlexContainer>
