@@ -1,11 +1,4 @@
-import {
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
