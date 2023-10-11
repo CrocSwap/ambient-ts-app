@@ -93,12 +93,20 @@ export default function InitConfirmation(props: InitConfirmationProps) {
     const tokensInfo = (
         <GridContainer numCols={2} gap={8} height='136px'>
             <FeaturedBox
-                pooled={isMintLiqEnabled ? tokenACollateral : '0.00'}
+                pooled={
+                    isMintLiqEnabled && tokenACollateral
+                        ? tokenACollateral
+                        : '0.00'
+                }
                 token={tokenA}
                 isInit
             />
             <FeaturedBox
-                pooled={isMintLiqEnabled ? tokenBCollateral : '0.00'}
+                pooled={
+                    isMintLiqEnabled && tokenBCollateral
+                        ? tokenBCollateral
+                        : '0.00'
+                }
                 token={tokenB}
                 isInit
             />
