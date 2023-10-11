@@ -16,6 +16,7 @@ export function createCircle(
     lineWidth: number,
     denomInBase: boolean,
     isSelected = false,
+    isTransparent = false,
 ) {
     return d3fc
         .seriesCanvasPoint()
@@ -29,7 +30,9 @@ export function createCircle(
         .type(d3.symbolCircle)
         .decorate((context: any) => {
             context.strokeStyle = circleStrokeColor;
-            context.fillStyle = isSelected
+            context.fillStyle = isTransparent
+                ? 'transparent'
+                : isSelected
                 ? selectedCircleFillColor
                 : circleFillColor;
             context.lineWidth = lineWidth;
@@ -65,7 +68,7 @@ export function checkCricleLocation(
 }
 
 function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
-    if (element.type === 'Brush') {
+    if (element.type === 'Brush' || element.type === 'Angle') {
         const data: lineData[] = [];
 
         element.data.forEach((item) => {

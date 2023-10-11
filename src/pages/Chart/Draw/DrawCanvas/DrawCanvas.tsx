@@ -37,6 +37,7 @@ interface DrawCanvasProps {
         tokenB: TokenIF;
     };
     denomInBase: boolean;
+    period: number;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -54,6 +55,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         currentPool,
         drawActionStack,
         actionKey,
+        period,
         denomInBase,
     } = props;
 
@@ -335,12 +337,37 @@ function DrawCanvas(props: DrawCanvasProps) {
             .node() as HTMLCanvasElement;
         const ctx = canvas.getContext('2d');
 
-        if (lineSeries && scaleData && activeDrawingType === 'Brush') {
+        if (
+            lineSeries &&
+            scaleData &&
+            (activeDrawingType === 'Brush' || activeDrawingType === 'Angle')
+        ) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
+                    if (ctx) ctx.setLineDash([0, 0]);
                     lineSeries(lineData);
                     circleSeries(lineData);
+
+                    if (activeDrawingType === 'Angle' && lineData.length > 0) {
+                        const angleLineData = [
+                            {
+                                x: lineData[0].x,
+                                y: lineData[0].y,
+                                ctx: lineData[0].ctx,
+                                denomInBase: lineData[0].denomInBase,
+                            },
+                            {
+                                x: lineData[0].x + period * 6 * 1000,
+                                y: lineData[0].y,
+                                ctx: lineData[0].ctx,
+                                denomInBase: lineData[0].denomInBase,
+                            },
+                        ];
+
+                        if (ctx) ctx.setLineDash([5, 3]);
+                        lineSeries(angleLineData);
+                    }
                 })
                 .on('measure', (event: CustomEvent) => {
                     lineSeries.context(ctx);

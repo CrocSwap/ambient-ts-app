@@ -245,7 +245,8 @@ export default function DragCanvas(props: DragCanvasProps) {
                     setCrossHairDataFunc(offsetX, offsetY);
                     if (
                         hoveredDrawnShape &&
-                        hoveredDrawnShape.data.type === 'Brush'
+                        (hoveredDrawnShape.data.type === 'Brush' ||
+                            hoveredDrawnShape.data.type === 'Angle')
                     ) {
                         if (!hoveredDrawnShape.selectedCircle) {
                             dragLine(movemementX, movemementY);
