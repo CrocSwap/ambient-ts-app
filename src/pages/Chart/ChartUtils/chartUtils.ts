@@ -34,6 +34,9 @@ export type drawDataHistory = {
     type: string;
     time: number;
     pool: TradeDataIF;
+    color: string;
+    lineWidth: number;
+    style: number[];
 };
 export type bandLineData = {
     fromValue: number;

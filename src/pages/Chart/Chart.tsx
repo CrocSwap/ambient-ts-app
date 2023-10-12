@@ -2653,7 +2653,14 @@ export default function Chart(props: propsIF) {
                                 item.type === 'Brush' ||
                                 item.type === 'Angle'
                             ) {
-                                if (ctx) ctx.setLineDash([0, 0]);
+                                if (ctx) ctx.setLineDash(item.style);
+                                lineSeries.decorate(
+                                    (context: CanvasRenderingContext2D) => {
+                                        context.strokeStyle = item.color;
+                                        context.lineWidth = item.lineWidth;
+                                    },
+                                );
+
                                 lineSeries(item?.data);
                                 if (
                                     (hoveredDrawnShape &&
@@ -2733,6 +2740,15 @@ export default function Chart(props: propsIF) {
 
                                     if (ctx) {
                                         ctx.setLineDash([5, 3]);
+                                        dashedLineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    item.color;
+                                                context.lineWidth = 1;
+                                            },
+                                        );
                                         dashedLineSeries(angleLineData);
 
                                         ctx.beginPath();
@@ -2796,6 +2812,12 @@ export default function Chart(props: propsIF) {
                                     denomInBase: denomInBase,
                                 } as bandLineData;
 
+                                item.data[1].ctx.decorate(
+                                    (context: CanvasRenderingContext2D) => {
+                                        context.fillStyle =
+                                            'rgba(255, 0, 4, 0.15)';
+                                    },
+                                );
                                 item.data[1].ctx([bandData]);
 
                                 const lineOfBand = createPointsOfBandLine(
@@ -2803,7 +2825,13 @@ export default function Chart(props: propsIF) {
                                 );
 
                                 lineOfBand?.forEach((line) => {
-                                    if (ctx) ctx.setLineDash([0, 0]);
+                                    if (ctx) ctx.setLineDash(item.style);
+                                    lineSeries.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            context.strokeStyle = item.color;
+                                            context.lineWidth = item.lineWidth;
+                                        },
+                                    );
                                     lineSeries(line);
                                     if (
                                         (hoveredDrawnShape &&
