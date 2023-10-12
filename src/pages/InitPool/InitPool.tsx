@@ -566,17 +566,17 @@ export default function InitPool() {
         handleDisplayUpdate();
     }, [isDenomBase]);
 
-    const selectedPoolNonDisplayPrice = useMemo(() => {
-        const selectedPriceInBaseDenom = isDenomBase
-            ? 1 / parseFloat(initialPriceDisplay)
-            : parseFloat(initialPriceDisplay);
-        const priceNonDisplayNum = fromDisplayPrice(
-            selectedPriceInBaseDenom,
-            baseToken.decimals,
-            quoteToken.decimals,
-        );
-        return priceNonDisplayNum;
-    }, [isDenomBase, baseToken, quoteToken, initialPriceDisplay]);
+    const selectedPoolNonDisplayPrice = useMemo(
+        () =>
+            fromDisplayPrice(
+                isDenomBase
+                    ? 1 / parseFloat(initialPriceDisplay)
+                    : parseFloat(initialPriceDisplay),
+                baseToken.decimals,
+                quoteToken.decimals,
+            ),
+        [initialPriceDisplay],
+    );
 
     const selectedPoolPriceTick =
         Math.log(selectedPoolNonDisplayPrice) / Math.log(1.0001);
