@@ -17,13 +17,11 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
-    setLimitTick,
-    setLimitTickCopied,
     setShouldSwapDirectionReverse,
-    setShouldLimitDirectionReverse,
     setShouldRangeDirectionReverse,
     setPrimaryQuantityRange,
     setRangeTicksCopied,
+    setIsTokenAPrimary,
 } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -32,6 +30,7 @@ import { RangeContext } from '../../../../../contexts/RangeContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    limitParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
@@ -124,31 +123,18 @@ export default function TransactionsMenu(props: propsIF) {
                 dispatch(setShouldSwapDirectionReverse(true));
             }
         } else if (tx.entityType === 'limitOrder') {
-            dispatch(setLimitTickCopied(true));
-            linkGenLimit.navigate(
-                tx.isBuy
-                    ? {
-                          chain: chainId,
-                          tokenA: tx.base,
-                          tokenB: tx.quote,
-                          limitTick: tx.bidTick,
-                      }
-                    : {
-                          chain: chainId,
-                          tokenA: tx.quote,
-                          tokenB: tx.base,
-                          limitTick: tx.askTick,
-                      },
-            );
-            const shouldReverse =
-                tradeData.tokenA.address.toLowerCase() ===
-                (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
-            if (shouldReverse) {
-                dispatch(setShouldLimitDirectionReverse(true));
-            }
-            setTimeout(() => {
-                dispatch(setLimitTick(tx.isBuy ? tx.bidTick : tx.askTick));
-            }, 500);
+            tradeData.tokenA.address.toLowerCase() !==
+                (tx.isBuy ? tx.base.toLowerCase() : tx.quote.toLowerCase()) &&
+                dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+            // URL params for link to limit page
+            const limitLinkParams: limitParamsIF = {
+                chain: chainId,
+                tokenA: tx.isBuy ? tx.base : tx.quote,
+                tokenB: tx.isBuy ? tx.quote : tx.base,
+                limitTick: tx.isBuy ? tx.bidTick : tx.askTick,
+            };
+            // navigate user to limit page with URL params defined above
+            linkGenLimit.navigate(limitLinkParams);
         }
         setShowDropdownMenu(false);
     };
@@ -180,13 +166,9 @@ export default function TransactionsMenu(props: propsIF) {
                     chain: chainId,
                     tokenA: tx.isBid ? tx.base : tx.quote,
                     tokenB: tx.isBid ? tx.quote : tx.base,
-                    lowTick: tx.bidTick.toString(),
-                    highTick: tx.askTick.toString(),
                 });
                 break;
             case 'limitOrder':
-                dispatch(setLimitTickCopied(true));
-                dispatch(setLimitTick(undefined));
                 linkGenLimit.navigate(
                     tx.isBid
                         ? {

@@ -1,14 +1,13 @@
 import styles from './SidebarFooter.module.css';
-
 import { Link, useLocation } from 'react-router-dom';
 import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
-// import { IoMdAnalytics } from 'react-icons/io';
 import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
 import { memo } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
+import chainNumToString from '../../../../App/functions/chainNumToString';
 
 function SidebarFooter() {
     const location = useLocation();
@@ -32,11 +31,11 @@ function SidebarFooter() {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const paramsSlug = formSlugForPairParams(
-        tradeData.tokenA.chainId,
-        tradeData.tokenA,
-        tradeData.tokenB,
-    );
+    const paramsSlug = formSlugForPairParams({
+        chain: chainNumToString(tradeData.tokenA.chainId),
+        tokenA: tradeData.tokenA.address,
+        tokenB: tradeData.tokenB.address,
+    });
 
     const linksData = [
         {

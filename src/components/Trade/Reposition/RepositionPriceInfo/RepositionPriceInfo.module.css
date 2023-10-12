@@ -107,7 +107,7 @@
     border-radius: 0.25rem;
     padding: 0.5rem;
 
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .gas_pump_dropdown p {

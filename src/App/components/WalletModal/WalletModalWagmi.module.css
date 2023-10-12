@@ -32,18 +32,18 @@
     padding: 12px 16px;
     gap: 8px;
 
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 
     color: var(--text2);
     font-weight: 300;
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22px;
 }
 
 /* learn content */
 
 .learn_container {
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22px;
     display: flex;
     gap: 4px;
@@ -70,7 +70,7 @@
     align-items: center;
     gap: 8px;
     background: var(--dark2);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     height: 48px;
 }
 
@@ -103,7 +103,7 @@
     justify-content: center;
     cursor: pointer;
     font-weight: 300;
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22px;
     letter-spacing: -0.02em;
     color: var(--accent1);
@@ -119,8 +119,8 @@
     white-space: nowrap;
     color: var(--text1);
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
 .tos_content a {
     text-decoration: none;

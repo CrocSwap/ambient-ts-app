@@ -9,14 +9,14 @@ export const ClearButton = styled.button`
     display: flex;
     align-items: center;
     box-shadow: 2px 1000px 1px var(--dark2) inset;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     height: 23px;
     padding: 5px 8px;
     text-decoration: none;
     border-radius: 6.25rem;
     cursor: pointer;
-    font-size: 10px;
+    font-size: var(--mini-size);
     color: var(--text2);
 
     &:hover {
@@ -35,7 +35,7 @@ export const Row = styled(GridContainer)<{
     position: relative;
     width: 100%;
     min-height: 35px;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     padding: 0 8px;
     gap: 4px;
@@ -289,7 +289,7 @@ export const ViewMoreButton = styled.button`
     border: none;
     outline: none;
     box-shadow: 2px 1000px 1px var(--dark2) inset;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     white-space: nowrap;
     height: 23px;
     padding: 1px 12px;

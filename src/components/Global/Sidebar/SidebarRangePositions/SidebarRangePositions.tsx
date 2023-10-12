@@ -9,6 +9,7 @@ import { useContext } from 'react';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    poolParamsIF,
 } from '../../../../utils/hooks/useLinkGen';
 import { FlexContainer } from '../../../../styled/Common';
 import {
@@ -61,11 +62,14 @@ export default function SidebarRangePositions(props: propsIF) {
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.firstMintTx);
         setShowAllData(false);
-        linkGenPool.navigate({
+        // URL params for link to pool page
+        const poolLinkParams: poolParamsIF = {
             chain: chainId,
             tokenA: pos.base,
             tokenB: pos.quote,
-        });
+        };
+        // navigate user to pool page with URL params defined above
+        linkGenPool.navigate(poolLinkParams);
     };
 
     const handleViewMoreClick = () => {

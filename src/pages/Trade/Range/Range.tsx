@@ -443,6 +443,12 @@ function Range() {
         },
     );
 
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
+    const isTokenBWalletBalanceSufficient =
+        parseFloat(tokenBBalance) >= tokenBQtyCoveredByWalletBalance;
+
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
@@ -596,7 +602,18 @@ function Range() {
     useEffect(() => {
         handleRangeButtonMessageTokenA(tokenAInputQty);
         handleRangeButtonMessageTokenB(tokenBInputQty);
-    }, [isQtyEntered, isPoolInitialized, isInvalidRange, poolPriceNonDisplay]);
+    }, [
+        isQtyEntered,
+        isPoolInitialized,
+        isInvalidRange,
+        poolPriceNonDisplay,
+        isWithdrawTokenAFromDexChecked,
+        isWithdrawTokenBFromDexChecked,
+        tokenABalance,
+        tokenADexBalance,
+        tokenBBalance,
+        tokenBDexBalance,
+    ]);
 
     useEffect(() => {
         if (isTokenAInputDisabled) dispatch(setIsTokenAPrimaryRange(false));
@@ -612,6 +629,7 @@ function Range() {
     }, [tokenBDexBalance]);
 
     useEffect(() => {
+        console.log({ advancedMode, defaultLowTick, defaultHighTick });
         if (advancedMode) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,
@@ -621,6 +639,7 @@ function Range() {
                 defaultHighTick,
                 gridSize,
             );
+            console.log({ pinnedDisplayPrices });
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
             );
@@ -1108,9 +1127,9 @@ function Range() {
     };
 
     const handleRangeButtonMessageTokenA = (tokenAAmount: string) => {
-        if (poolPriceNonDisplay === 0) {
+        if (!isPoolInitialized) {
             setTokenAAllowed(false);
-            setRangeButtonErrorMessage('Invalid Token Pair');
+            setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (
             (isNaN(parseFloat(tokenAAmount)) ||
                 parseFloat(tokenAAmount) <= 0) &&
@@ -1118,8 +1137,6 @@ function Range() {
         ) {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
-        } else if (!isPoolInitialized) {
-            setRangeButtonErrorMessage('Pool Not Initialized');
         } else {
             if (isWithdrawTokenAFromDexChecked) {
                 if (
@@ -1147,9 +1164,9 @@ function Range() {
     };
 
     const handleRangeButtonMessageTokenB = (tokenBAmount: string) => {
-        if (poolPriceNonDisplay === 0) {
+        if (!isPoolInitialized) {
             setTokenBAllowed(false);
-            setRangeButtonErrorMessage('Invalid Token Pair');
+            setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (
             (isNaN(parseFloat(tokenBAmount)) ||
                 parseFloat(tokenBAmount) <= 0) &&
@@ -1282,6 +1299,7 @@ function Range() {
 
     return (
         <TradeModuleSkeleton
+            chainId={chainId}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
@@ -1422,8 +1440,9 @@ function Range() {
                 ) : undefined
             }
             approveButton={
-                poolPriceNonDisplay !== 0 &&
+                isPoolInitialized &&
                 parseFloat(tokenAInputQty) > 0 &&
+                isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient ? (
                     <Button
                         title={
@@ -1437,8 +1456,9 @@ function Range() {
                         }}
                         flat={true}
                     />
-                ) : poolPriceNonDisplay !== 0 &&
+                ) : isPoolInitialized &&
                   parseFloat(tokenBInputQty) > 0 &&
+                  isTokenBWalletBalanceSufficient &&
                   !isTokenBAllowanceSufficient ? (
                     <Button
                         title={

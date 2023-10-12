@@ -5,9 +5,9 @@ export const TutorialButton = styled.button`
     background: var(--dark2);
     border: 1px solid var(--accent1);
     color: var(--text2);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     padding: 0 4px;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     cursor: pointer;
 
     box-shadow: var(--trade-box-shadow);
