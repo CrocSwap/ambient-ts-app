@@ -3,7 +3,6 @@ import { useContext, useEffect, useMemo, useState } from 'react';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
-import Button from '../../components/Form/Button';
 
 // START: Import Local Files
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -11,7 +10,6 @@ import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
-import { AppStateContext } from '../../contexts/AppStateContext';
 import { useAccount } from 'wagmi';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
@@ -43,7 +41,6 @@ import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
 import MultiContentComponent from '../../components/Global/MultiStepTransaction/MultiContentComponent';
 
-import { useApprove } from '../../App/functions/approve';
 import { useMediaQuery } from '@material-ui/core';
 import { CurrencyQuantityInput } from '../../styled/Components/TradeModules';
 import RangeTokenInput from '../../components/Trade/Range/RangeTokenInput/RangeTokenInput';
@@ -81,11 +78,9 @@ import { useHandleRangeButtonMessage } from '../../App/hooks/useHandleRangeButto
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
+import InitButton from './InitButton';
 // react functional component
 export default function InitPool() {
-    const {
-        wagmiModal: { open: openWagmiModalWallet },
-    } = useContext(AppStateContext);
     const {
         crocEnv,
         provider,
@@ -141,8 +136,6 @@ export default function InitPool() {
         tknB.toLowerCase() === tokenB.address.toLowerCase();
 
     const { isConnected } = useAccount();
-
-    const { approve, isApprovalPending } = useApprove();
 
     const {
         baseTokenDexBalance,
@@ -1096,146 +1089,33 @@ export default function InitPool() {
               sendInit(initialPriceInBaseDenom);
           };
 
-    const ButtonToRender = () => {
-        let buttonContent;
-
-        switch (true) {
-            case poolExists:
-                // Display button for an already initialized pool
-                buttonContent = (
-                    <Button
-                        title='Pool Already Initialized'
-                        disabled={true}
-                        action={() => {
-                            IS_LOCAL_ENV && console.debug('clicked');
-                        }}
-                        flat={true}
-                    />
-                );
-                break;
-
-            case isConnected || !connectButtonDelayElapsed:
-                // Display different buttons based on various conditions
-                if (!isTokenAAllowanceSufficient) {
-                    // Display token A approval button
-                    buttonContent = tokenAApprovalButton;
-                } else if (!isTokenBAllowanceSufficient) {
-                    // Display token B approval button
-                    buttonContent = tokenBApprovalButton;
-                } else if (
-                    initialPriceDisplay === '' ||
-                    parseFloat(initialPriceDisplay.replaceAll(',', '')) <= 0
-                ) {
-                    // Display button to enter an initial price
-                    buttonContent = (
-                        <Button
-                            title='Enter an Initial Price'
-                            disabled={true}
-                            action={() => {
-                                IS_LOCAL_ENV && console.debug('clicked');
-                            }}
-                            flat={true}
-                        />
-                    );
-                } else if (isInitPending === true) {
-                    // Display button for pending initialization
-                    buttonContent = (
-                        <Button
-                            title='Initialization Pending'
-                            disabled={true}
-                            action={() => {
-                                IS_LOCAL_ENV && console.debug('clicked');
-                            }}
-                            flat={true}
-                        />
-                    );
-                } else if (advancedHighTick <= advancedLowTick) {
-                    buttonContent = (
-                        <Button
-                            title='Invalid range'
-                            disabled={true}
-                            action={() => {
-                                IS_LOCAL_ENV && console.debug('clicked');
-                            }}
-                            flat={true}
-                        />
-                    );
-                } else {
-                    buttonContent = confirmButton;
-                    // Display confirm button for final step
-                }
-                break;
-
-            default:
-                // Display button to connect wallet if no conditions match
-                buttonContent = (
-                    <Button
-                        title='Connect Wallet'
-                        action={openWagmiModalWallet}
-                        flat={true}
-                    />
-                );
-                break;
-        }
-
-        return buttonContent;
-    };
-    const confirmButton = useMemo(() => {
-        const tokenInputValid = tokenAAllowed && tokenBAllowed;
-
-        const disabled =
-            erc20TokenWithDexBalance !== undefined || !tokenInputValid;
-        const title = !tokenInputValid
-            ? rangeButtonErrorMessageTokenA || rangeButtonErrorMessageTokenB
-            : 'Confirm';
-        return (
-            <Button
-                title={title}
-                disabled={disabled}
-                action={() => setActiveContent('confirmation')}
-                flat={true}
-            />
-        );
-    }, [
+    const initButtopPropsIF = {
+        tokenA,
+        tokenB,
+        tokenACollateral,
+        tokenBCollateral,
+        isTokenAInputDisabled,
+        isWithdrawTokenAFromDexChecked,
+        isMintLiqEnabled,
         tokenAAllowed,
         tokenBAllowed,
         erc20TokenWithDexBalance,
         rangeButtonErrorMessageTokenA,
         rangeButtonErrorMessageTokenB,
+        setActiveContent,
         initialPriceInBaseDenom,
-        isMintLiqEnabled,
         sendRangePosition,
         sendInit,
-    ]);
-    const tokenAApprovalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Approve ${tokenA.symbol}`
-                    : `${tokenA.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenA.address, tokenA.symbol);
-            }}
-            flat={true}
-        />
-    );
-
-    const tokenBApprovalButton = (
-        <Button
-            title={
-                !isApprovalPending
-                    ? `Approve ${tokenB.symbol}`
-                    : `${tokenB.symbol} Approval Pending`
-            }
-            disabled={isApprovalPending}
-            action={async () => {
-                await approve(tokenB.address, tokenB.symbol);
-            }}
-            flat={true}
-        />
-    );
+        poolExists,
+        isConnected,
+        connectButtonDelayElapsed,
+        isTokenAAllowanceSufficient,
+        isTokenBAllowanceSufficient,
+        isInitPending,
+        initialPriceDisplay,
+        advancedHighTick,
+        advancedLowTick,
+    };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
     const maxPriceDisplay = isAmbient
@@ -1751,7 +1631,7 @@ export default function InitPool() {
 
                 <FlexContainer flexDirection='column' gap={8}>
                     {warningAndExtraInfo}
-                    <ButtonToRender />
+                    <InitButton {...initButtopPropsIF} />
                 </FlexContainer>
             </FlexContainer>
         </InitSkeleton>
