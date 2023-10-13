@@ -75,6 +75,9 @@ export function useUndoRedo(denomInBase: boolean) {
                     type: findItem.type,
                     time: findItem.time,
                     pool: findItem.pool,
+                    color: '#7371fc',
+                    lineWidth: 1.5,
+                    style: [],
                 };
                 drawActionStack.get(actionKey)?.push(tempHistoryData);
             }

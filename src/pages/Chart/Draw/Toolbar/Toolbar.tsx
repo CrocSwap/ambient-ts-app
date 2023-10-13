@@ -3,6 +3,7 @@ import styles from './Toolbar.module.css';
 import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
 import drawRect from '../../../../assets/images/icons/draw/rect.svg';
+import drawAngle from '../../../../assets/images/icons/draw/angle_line.svg';
 
 interface ToolbarProps {
     activeDrawingType: string;
@@ -50,6 +51,10 @@ function Toolbar(props: ToolbarProps) {
         {
             icon: drawLine,
             label: 'Brush',
+        },
+        {
+            icon: drawAngle,
+            label: 'Angle',
         },
         {
             icon: drawRect,

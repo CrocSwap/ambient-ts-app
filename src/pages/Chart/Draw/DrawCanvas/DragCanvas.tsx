@@ -245,7 +245,8 @@ export default function DragCanvas(props: DragCanvasProps) {
                     setCrossHairDataFunc(offsetX, offsetY);
                     if (
                         hoveredDrawnShape &&
-                        hoveredDrawnShape.data.type === 'Brush'
+                        (hoveredDrawnShape.data.type === 'Brush' ||
+                            hoveredDrawnShape.data.type === 'Angle')
                     ) {
                         if (!hoveredDrawnShape.selectedCircle) {
                             dragLine(movemementX, movemementY);
@@ -307,6 +308,9 @@ export default function DragCanvas(props: DragCanvasProps) {
                         type: tempLastData.type,
                         time: tempLastData.time,
                         pool: tempLastData.pool,
+                        color: '#7371fc',
+                        lineWidth: 1.5,
+                        style: [],
                     });
                 }
 

@@ -1,16 +1,21 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import FloatingDiv, {
+import {
     FloatingButtonDiv,
     FloatingOptions,
+    Divider,
+    FloatingDivContainer,
+    FloatingDiv,
+    OptionsTab,
 } from './FloatingToolbarCss';
 import dragButton from '../../../../assets/images/icons/draw/floating_button.svg';
-import deleteButton from '../../../../assets/images/icons/draw/draw_delete.svg';
 import {
     drawDataHistory,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
 import * as d3 from 'd3';
 import { ChartContext } from '../../../../contexts/ChartContext';
+import { AiOutlineDash, AiOutlineDelete, AiOutlineMinus } from 'react-icons/ai';
+import { TbBrush } from 'react-icons/tb';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,6 +42,89 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [divLeft, setDivLeft] = useState(0);
     const [divTop, setDivTop] = useState(0);
+
+    const [isOptionTabActive, setIsOptionTabActive] = useState(false);
+
+    const handleEditColor = () => {
+        if (selectedDrawnShape?.data) {
+            setDrawnShapeHistory((item: drawDataHistory[]) => {
+                const changedItemIndex = item.findIndex(
+                    (i) => i.time === selectedDrawnShape?.data.time,
+                );
+
+                item[changedItemIndex].color = 'red';
+
+                return item;
+            });
+        }
+    };
+
+    const handleEditSize = () => {
+        if (selectedDrawnShape?.data) {
+            setDrawnShapeHistory((item: drawDataHistory[]) => {
+                const changedItemIndex = item.findIndex(
+                    (i) => i.time === selectedDrawnShape?.data.time,
+                );
+
+                item[changedItemIndex].lineWidth = 5;
+
+                return item;
+            });
+        }
+    };
+
+    const handleEditBorder = () => {
+        if (selectedDrawnShape?.data) {
+            setDrawnShapeHistory((item: drawDataHistory[]) => {
+                const changedItemIndex = item.findIndex(
+                    (i) => i.time === selectedDrawnShape?.data.time,
+                );
+
+                item[changedItemIndex].style = [3, 5];
+
+                return item;
+            });
+        }
+    };
+
+    const deleteDrawnShape = () => {
+        if (selectedDrawnShape?.data) {
+            deleteItem(selectedDrawnShape?.data);
+            setDrawnShapeHistory((item: drawDataHistory[]) => {
+                return item.filter(
+                    (i) => i.time !== selectedDrawnShape?.data.time,
+                );
+            });
+            setSelectedDrawnShape(undefined);
+        }
+    };
+
+    const editShapeOptions = [
+        {
+            name: 'Color',
+            type: 'color',
+            operation: handleEditColor,
+            icon: <TbBrush />,
+        },
+        {
+            name: 'Size',
+            type: 'size',
+            operation: () => setIsOptionTabActive((prev) => !prev),
+            icon: <AiOutlineMinus color='white' />,
+        },
+        {
+            name: 'Style',
+            type: 'style',
+            operation: () => setIsOptionTabActive((prev) => !prev),
+            icon: <AiOutlineDash color='white' />,
+        },
+        {
+            name: 'Delete',
+            type: 'delete',
+            operation: deleteDrawnShape,
+            icon: <AiOutlineDelete />,
+        },
+    ];
 
     useEffect(() => {
         const floatingDiv = d3
@@ -74,18 +162,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         }
     }, [floatingDivRef, selectedDrawnShape]);
 
-    const deleteDrawnShape = () => {
-        if (selectedDrawnShape?.data) {
-            deleteItem(selectedDrawnShape?.data);
-            setDrawnShapeHistory((item: drawDataHistory[]) => {
-                return item.filter(
-                    (i) => i.time !== selectedDrawnShape?.data.time,
-                );
-            });
-            setSelectedDrawnShape(undefined);
-        }
-    };
-
     useEffect(() => {
         if (floatingDivRef.current && !isDragging) {
             const floatingDiv = d3
@@ -105,24 +181,39 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     ]);
 
     return (
-        <FloatingDiv
+        <FloatingDivContainer
             ref={floatingDivRef}
             style={{
                 left: divLeft + 'px',
                 top: divTop + 'px',
+                gridTemplateColumns: '1fr 1fr 1fr 1fr',
                 visibility:
                     selectedDrawnShape !== undefined && divLeft && divTop
                         ? 'visible'
                         : 'hidden',
             }}
         >
-            <FloatingButtonDiv>
-                <img src={dragButton} alt='' />
-            </FloatingButtonDiv>
-            <FloatingOptions onClick={deleteDrawnShape}>
-                <img src={deleteButton} alt='' />
-            </FloatingOptions>
-        </FloatingDiv>
+            <FloatingDiv>
+                <FloatingButtonDiv>
+                    <img src={dragButton} alt='' />
+                    <Divider></Divider>
+                </FloatingButtonDiv>
+
+                {editShapeOptions.map((item, index) => (
+                    <FloatingOptions key={index} onClick={item.operation}>
+                        {item.icon}
+                    </FloatingOptions>
+                ))}
+            </FloatingDiv>
+
+            {isOptionTabActive && (
+                <OptionsTab
+                    style={{
+                        marginLeft: '35px',
+                    }}
+                ></OptionsTab>
+            )}
+        </FloatingDivContainer>
     );
 }
 

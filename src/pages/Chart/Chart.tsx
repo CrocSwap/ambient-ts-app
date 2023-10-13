@@ -296,6 +296,8 @@ export default function Chart(props: propsIF) {
     // Draw
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [lineSeries, setLineSeries] = useState<any>();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [dashedLineSeries, setDashedLineSeries] = useState<any>();
 
     const [selectedDrawnShape, setSelectedDrawnShape] = useState<
         selectedDrawnData | undefined
@@ -2647,7 +2649,18 @@ export default function Chart(props: propsIF) {
                             item.pool.tokenA === currentPool.tokenA;
 
                         if (isShapeInCurrentPool) {
-                            if (item.type === 'Brush') {
+                            if (
+                                item.type === 'Brush' ||
+                                item.type === 'Angle'
+                            ) {
+                                if (ctx) ctx.setLineDash(item.style);
+                                lineSeries.decorate(
+                                    (context: CanvasRenderingContext2D) => {
+                                        context.strokeStyle = item.color;
+                                        context.lineWidth = item.lineWidth;
+                                    },
+                                );
+
                                 lineSeries(item?.data);
                                 if (
                                     (hoveredDrawnShape &&
@@ -2670,6 +2683,110 @@ export default function Chart(props: propsIF) {
                                             circleSeries([element]);
                                         }
                                     });
+                                }
+
+                                if (item.type === 'Angle') {
+                                    const angleLineData = [
+                                        {
+                                            x: item?.data[0].x,
+                                            y: item?.data[0].y,
+                                            ctx: item?.data[0].ctx,
+                                            denomInBase:
+                                                item?.data[0].denomInBase,
+                                        },
+                                        {
+                                            x:
+                                                item?.data[0].x +
+                                                period * 6 * 1000,
+                                            y: item?.data[0].y,
+                                            ctx: item?.data[0].ctx,
+                                            denomInBase:
+                                                item?.data[0].denomInBase,
+                                        },
+                                    ];
+
+                                    const opposite = Math.abs(
+                                        scaleData.yScale(item?.data[0].y) -
+                                            scaleData.yScale(item?.data[1].y),
+                                    );
+                                    const side = Math.abs(
+                                        scaleData.xScale(item?.data[0].x) -
+                                            scaleData.xScale(item?.data[1].x),
+                                    );
+
+                                    const distance = opposite / side;
+
+                                    const angle =
+                                        Math.atan(distance) * (180 / Math.PI);
+
+                                    const supplement =
+                                        item?.data[1].x > item?.data[0].x
+                                            ? -Math.atan(distance)
+                                            : Math.PI + Math.atan(distance);
+
+                                    const arcX =
+                                        item?.data[1].y > item?.data[0].y
+                                            ? supplement
+                                            : 0;
+                                    const arcY =
+                                        item?.data[1].y > item?.data[0].y
+                                            ? 0
+                                            : -supplement;
+
+                                    const radius =
+                                        scaleData.xScale(
+                                            item?.data[0].x + period * 6 * 1000,
+                                        ) - scaleData.xScale(item?.data[0].x);
+
+                                    if (ctx) {
+                                        ctx.setLineDash([5, 3]);
+                                        dashedLineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    item.color;
+                                                context.lineWidth = 1;
+                                            },
+                                        );
+                                        dashedLineSeries(angleLineData);
+
+                                        ctx.beginPath();
+                                        ctx.arc(
+                                            scaleData.xScale(item.data[0].x),
+                                            scaleData.yScale(item.data[0].y),
+                                            radius,
+                                            arcX,
+                                            arcY,
+                                        );
+                                        ctx.stroke();
+
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'middle';
+                                        ctx.fillStyle = 'white';
+                                        ctx.font = '50 12px Lexend Deca';
+
+                                        const angleDisplay =
+                                            item?.data[1].x > item?.data[0].x
+                                                ? angle
+                                                : 180 - angle;
+
+                                        ctx.fillText(
+                                            (item?.data[1].y > item?.data[0].y
+                                                ? ''
+                                                : '-') +
+                                                angleDisplay
+                                                    .toFixed(0)
+                                                    .toString(),
+                                            scaleData.xScale(
+                                                item?.data[0].x +
+                                                    period * 8.5 * 1000,
+                                            ),
+                                            scaleData.yScale(item?.data[0].y),
+                                        );
+
+                                        ctx.closePath();
+                                    }
                                 }
                             }
 
@@ -2695,6 +2812,12 @@ export default function Chart(props: propsIF) {
                                     denomInBase: denomInBase,
                                 } as bandLineData;
 
+                                item.data[1].ctx.decorate(
+                                    (context: CanvasRenderingContext2D) => {
+                                        context.fillStyle =
+                                            'rgba(255, 0, 4, 0.15)';
+                                    },
+                                );
                                 item.data[1].ctx([bandData]);
 
                                 const lineOfBand = createPointsOfBandLine(
@@ -2702,6 +2825,13 @@ export default function Chart(props: propsIF) {
                                 );
 
                                 lineOfBand?.forEach((line) => {
+                                    if (ctx) ctx.setLineDash(item.style);
+                                    lineSeries.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            context.strokeStyle = item.color;
+                                            context.lineWidth = item.lineWidth;
+                                        },
+                                    );
                                     lineSeries(line);
                                     if (
                                         (hoveredDrawnShape &&
@@ -2750,6 +2880,7 @@ export default function Chart(props: propsIF) {
                     lineSeries.context(ctx);
                     circleSeries.context(ctx);
                     selectedCircleSeries.context(ctx);
+                    dashedLineSeries.context(ctx);
                 });
 
             render();
@@ -2762,6 +2893,7 @@ export default function Chart(props: propsIF) {
         isUpdatingShape,
         denomInBase,
         period,
+        // anglePointSeries,
     ]);
 
     useEffect(() => {
@@ -3426,7 +3558,7 @@ export default function Chart(props: propsIF) {
                 element.pool.tokenA === currentPool.tokenA;
 
             if (isShapeInCurrentPool) {
-                if (element.type === 'Brush') {
+                if (element.type === 'Brush' || element.type === 'Angle') {
                     if (
                         checkLineLocation(
                             element.data,
@@ -3930,6 +4062,14 @@ export default function Chart(props: propsIF) {
             );
 
             setLineSeries(() => lineSeries);
+
+            const dashedLineSeries = createLinearLineSeries(
+                scaleData?.xScale,
+                scaleData?.yScale,
+                denomInBase,
+            );
+
+            setDashedLineSeries(() => dashedLineSeries);
         }
     }, [scaleData, denomInBase]);
 
@@ -4107,6 +4247,7 @@ export default function Chart(props: propsIF) {
                                 drawActionStack={drawActionStack}
                                 actionKey={actionKey}
                                 denomInBase={denomInBase}
+                                period={period}
                             />
                         )}
 
