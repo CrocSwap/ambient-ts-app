@@ -71,8 +71,17 @@ function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
     if (element.type === 'Brush' || element.type === 'Angle') {
         const data: lineData[] = [];
 
+        // element.data.forEach((item) => {
+        //     data.push(item);
+        // });
+
         element.data.forEach((item) => {
-            data.push(item);
+            data.push({
+                x: item.x,
+                y: denomInBase === item.denomInBase ? item.y : 1 / item.y,
+                denomInBase: item.denomInBase,
+                ctx: item.ctx,
+            } as lineData);
         });
 
         return data;
@@ -80,9 +89,15 @@ function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
 
     if (element.type === 'Square') {
         const startX = element.data[0].x;
-        const startY = element.data[0].y;
+        const startY =
+            element.data[0].denomInBase === denomInBase
+                ? element.data[0].y
+                : 1 / element.data[0].y;
         const endX = element.data[1].x;
-        const endY = element.data[1].y;
+        const endY =
+            element.data[1].denomInBase === denomInBase
+                ? element.data[1].y
+                : 1 / element.data[1].y;
 
         const data: lineData[] = [
             { x: startX, y: startY, ctx: undefined, denomInBase: denomInBase },

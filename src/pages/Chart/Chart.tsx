@@ -2673,8 +2673,17 @@ export default function Chart(props: propsIF) {
                                     item.data.forEach((element) => {
                                         if (
                                             hoveredDrawnShape &&
-                                            hoveredDrawnShape.selectedCircle ===
-                                                element
+                                            hoveredDrawnShape.selectedCircle &&
+                                            hoveredDrawnShape.selectedCircle
+                                                .x === element.x &&
+                                            element.y ===
+                                                (element.denomInBase ===
+                                                denomInBase
+                                                    ? hoveredDrawnShape
+                                                          ?.selectedCircle.y
+                                                    : 1 /
+                                                      hoveredDrawnShape
+                                                          ?.selectedCircle.y)
                                         ) {
                                             if (!isUpdatingShape) {
                                                 selectedCircleSeries([element]);
