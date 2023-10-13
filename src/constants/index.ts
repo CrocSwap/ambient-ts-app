@@ -52,10 +52,6 @@ export const CHAT_ENABLED =
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
-export const MORALIS_KEY =
-    process.env.REACT_APP_MORALIS_KEY ||
-    'tb9SfJn2zwjLldR7JeHzLkT0cAHOu9Jc2QWVY06Sloar9VWNKTqZFMIta5BCWLma';
-
 export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 
