@@ -101,18 +101,24 @@ export const useAppChain = (
                 if (
                     chainInWalletValidated.current !== incomingChainFromWallet
                 ) {
+                    // update preserved chain ID in local storage
                     localStorage.setItem(CHAIN_LS_KEY, incomingChainFromWallet);
+                    // determine if new chain ID from wallet matches URL
+                    // if yes, no changes needed
+                    // if no, navigate to index page
+                    // first part seems unnecessary but appears to help stability
+                    console.log(chainInURL, incomingChainFromWallet);
                     if (chainInURL === incomingChainFromWallet) {
+                        // generate params chain manually and navigate user
                         const { pathname } = window.location;
                         let templateURL = pathname;
                         while (templateURL.includes('/')) {
                             templateURL = templateURL.substring(1);
                         }
-                        templateURL
-                            ? linkGenCurrent.navigate(templateURL)
-                            : linkGenCurrent.navigate();
+                        linkGenCurrent.navigate(templateURL);
                         window.location.reload();
                     } else {
+                        // navigate to index page
                         linkGenIndex.navigate();
                         window.location.reload();
                     }
