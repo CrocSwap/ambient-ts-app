@@ -77,6 +77,7 @@ interface SentMessageProps {
     setIsDeleteMessageButtonPressed: Dispatch<SetStateAction<boolean>>;
     deleteMsgFromList: any;
     addReaction: (messageId: string, userId: string, reaction: string) => void;
+    mentionHoverListener: (elementTop: number, walletID: string) => void;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -488,18 +489,28 @@ function SentMessagePanel(props: SentMessageProps) {
             if (mentFound.val == false && word.indexOf('@') >= 0) {
                 mentFound.val = true;
                 ret = (
-                    <span className={styles.mentioned_name_token}>{word}</span>
+                    <span
+                        onMouseEnter={(e) => {
+                            props.mentionHoverListener(
+                                e.currentTarget.getBoundingClientRect().top,
+                                props.message.mentionedWalletID,
+                            );
+                        }}
+                        className={styles.mentioned_name_token}
+                    >
+                        {word}
+                    </span>
                 );
             } else {
                 ret = <span> {word} </span>;
             }
         }
-
         return ret;
     }
 
     function renderMessage() {
         const messagesArray = props.message.message.split(' ');
+        const mentFound = { val: false };
 
         return (
             <div
@@ -513,7 +524,6 @@ function SentMessagePanel(props: SentMessageProps) {
             >
                 <div className={styles.message_block}>
                     {messagesArray.map((e, i) => {
-                        const mentFound = { val: false };
                         return (
                             <span key={i} className={styles.message_token}>
                                 {buildMessageToken(e, mentFound)}
@@ -606,10 +616,6 @@ function SentMessagePanel(props: SentMessageProps) {
             return { width: '90%', marginBottom: -7 };
         }
     }
-
-    const getReactionNode = () => {
-        console.log('cont');
-    };
 
     function getReactionUsers(reaction: string) {
         const ret = [''];

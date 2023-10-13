@@ -88,6 +88,11 @@ function ChatPanel(props: propsIF) {
     const [messageCooldownInterval, setSendMessageCooldownInterval] =
         useState<any>();
 
+    const [userSummaryToBottom, setUserSummaryToBottom] = useState(false);
+    const [userSummaryVerticalPosition, setUserSummaryVerticalPosition] =
+        useState(0);
+    const [userSummaryActive, setUserSummaryActive] = useState(false);
+
     const {
         messages,
         getMsg,
@@ -108,6 +113,7 @@ function ChatPanel(props: propsIF) {
         addReaction,
         deleteMsgFromList,
         fetchForNotConnectedUser,
+        getUserSummaryDetails,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -167,6 +173,21 @@ function ChatPanel(props: propsIF) {
         }
     }
 
+    async function mentionHoverListener(elementTop: number, walletID: string) {
+        const userDetails = await getUserSummaryDetails(walletID);
+        console.log(userDetails);
+        const wrapperCenterPoint =
+            messageEnd.current?.getBoundingClientRect().height / 2 +
+            messageEnd.current?.getBoundingClientRect().top;
+        setUserSummaryActive(true);
+        setUserSummaryVerticalPosition(elementTop);
+        if (elementTop >= wrapperCenterPoint) {
+            setUserSummaryToBottom(false);
+        } else {
+            setUserSummaryToBottom(true);
+        }
+    }
+
     function closePopUp() {
         setShowPopUp(false);
     }
@@ -185,6 +206,7 @@ function ChatPanel(props: propsIF) {
     };
 
     const reactionBtnListener = (focusedMessage?: Message) => {
+        console.log('adding reaction focusedMessage', focusedMessage);
         setFocusedMessage(focusedMessage);
         setShowPicker(true);
     };
@@ -195,7 +217,6 @@ function ChatPanel(props: propsIF) {
             setShowPicker(false);
         }
     };
-
     useEffect(() => {
         if (address == undefined && notConnectedUserInterval == undefined) {
             const interval = setInterval(() => {
@@ -712,6 +733,7 @@ function ChatPanel(props: propsIF) {
                             }
                             deleteMsgFromList={deleteMsgFromList}
                             addReaction={addReaction}
+                            mentionHoverListener={mentionHoverListener}
                         />
                     );
                 })}

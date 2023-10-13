@@ -1,0 +1,16 @@
+
+.user_summary_wrapper{
+    z-index: -1;
+    opacity: 0;
+    transition: all .2s ease-in-out;
+    position: absolute;
+    width: 80%;
+    height: 10rem;
+}
+
+
+.active{
+    z-index: 1;
+    opacity: 1;
+ 
+}
