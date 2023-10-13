@@ -74,8 +74,8 @@ export interface linkGenMethodsIF {
     currentPage: pageNames;
     baseURL: baseURLs;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
-    navigate: (paramsObj?: anyParamsIF) => void;
-    redirect: (paramsObj?: anyParamsIF) => void;
+    navigate: (paramsObj?: anyParamsIF | string) => void;
+    redirect: (paramsObj?: anyParamsIF | string) => void;
 }
 
 // TODO:    @Emily: it probably makes sense to expand this hook to

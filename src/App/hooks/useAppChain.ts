@@ -1,4 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
@@ -7,6 +14,7 @@ import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import chainNumToString from '../functions/chainNumToString';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import { useParams } from 'react-router';
 
 export const useAppChain = (
     isUserLoggedIn: boolean | undefined,
@@ -20,6 +28,15 @@ export const useAppChain = (
         // chains, error, isLoading, pendingChainId,
         switchNetwork,
     } = useSwitchNetwork();
+
+    // metadata on chain authenticated in connected wallet
+    const { chain: chainNetwork } = useNetwork();
+
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenCurrent: linkGenMethodsIF = useLinkGen();
+    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
+
+    const dispatch = useAppDispatch();
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
 
@@ -45,20 +62,76 @@ export const useAppChain = (
         return output;
     }
 
-    const { chain: chainNetwork } = useNetwork();
+    function getChainFromWallet(): string | null {
+        let output: string | null = null;
+        if (chainNetwork) {
+            const chainAsString: string = '0x' + chainNetwork.id.toString(16);
+            const isValid: boolean = validateChainId(chainAsString);
+            if (isValid) output = chainAsString;
+        }
+        return output;
+    }
+
+    const chainInURL: string | null = useMemo(
+        () => getChainFromURL(),
+        [window.location.pathname],
+    );
+
+    const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
+
+    // trigger chain switch in wallet when chain in URL changes
+    useEffect(() => {
+        if (chainInURL && switchNetwork) {
+            const isChainValid = validateChainId(chainInURL);
+            isChainValid && switchNetwork(parseInt(chainInURL));
+        }
+    }, [chainInURL, switchNetwork]);
+
+    useEffect(() => {
+        console.log('wallet updated!');
+        // chain ID from wallet (current live value, not memoized in the app)
+        const incomingChainFromWallet: string | null = getChainFromWallet();
+        // if a wallet is connected, evaluate action to take
+        // if none is connected, nullify memoized record of chain ID from wallet
+        if (incomingChainFromWallet) {
+            // check that the new incoming chain ID is supported by Ambient
+            if (validateChainId(incomingChainFromWallet)) {
+                // if wallet chain is valid and does not match record in app, re-initialize
+                // without this gatekeeping the app refreshes itself endlessly
+                if (
+                    chainInWalletValidated.current !== incomingChainFromWallet
+                ) {
+                    localStorage.setItem(CHAIN_LS_KEY, incomingChainFromWallet);
+                    if (chainInURL === incomingChainFromWallet) {
+                        const { pathname } = window.location;
+                        let templateURL = pathname;
+                        while (templateURL.includes('/')) {
+                            templateURL = templateURL.substring(1);
+                        }
+                        templateURL
+                            ? linkGenCurrent.navigate(templateURL)
+                            : linkGenCurrent.navigate();
+                        window.location.reload();
+                    } else {
+                        linkGenIndex.navigate();
+                        window.location.reload();
+                    }
+                }
+            }
+        } else {
+            // this should only ever be null
+            chainInWalletValidated.current = incomingChainFromWallet;
+        }
+    }, [chainNetwork]);
 
     function determineConnected(chainNetwork?: { id: number }): string {
         return chainNetwork
             ? chainNumToString(chainNetwork.id)
-            : getChainFromURL() ??
+            : chainInURL ??
                   (localStorage.getItem(CHAIN_LS_KEY) || defaultChain);
     }
 
     const defaultChain = getDefaultChainId();
-    const dispatch = useAppDispatch();
-
-    // hook to generate navigation actions with pre-loaded path
-    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter
@@ -71,7 +144,7 @@ export const useAppChain = (
     // If valid, currentChain should converge to this value. For invalid chains
     // the rest of the app should be gated, by not converging currentChain
     const [nextChain, setNextChain] = useState(currentChain);
-    console.log({ currentChain, nextChain });
+    // console.log({ currentChain, nextChain });
 
     // boolean representing if the current chain is supported by the app
     // we use this value to populate the SwitchNetwork.tsx modal
@@ -79,44 +152,51 @@ export const useAppChain = (
         validateChainId(currentChain),
     );
 
+    // const walletInitialized = useRef(false);
+
     // If chain switches from wallet, propogate that into currentChain hook
-    useEffect(() => {
-        setNextChain(determineConnected(chainNetwork));
-    }, [chainNetwork]);
+    // useEffect(() => {
+    //     // if (chainNetwork) {
+    //     //     if (walletInitialized.current) {
+    //             setNextChain(determineConnected(chainNetwork));
+    //     //     }
+    //     //     walletInitialized.current = true;
+    //     // }
+    // }, [chainNetwork]);
 
     // This is crude way to handle a chain switch, but without this there is a
     // a lot of dangling providers pointing to the wrong chain that will error and
     // time out, slowing down app performance
-    function nukeAndReloadApp() {
-        linkGenIndex.navigate();
+    function nukeAndReloadApp(params: string) {
+        params ? linkGenCurrent.navigate(params) : linkGenCurrent.navigate();
         window.location.reload();
     }
-
+    // http://localhost:3000/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05
     // if the chain in metamask changes, update the value in the app to match
     // gatekeeping ensures this only runs when the user changes the chain in metamask
     // gatekeeping also ensures app will not change to an unsupported network
     // TODO: plan for pathways supporting de-authentication
-    useEffect(() => {
-        // Indicates that we're switching between valid chains. For now we reload
-        // the app, since there's a lot of downstream dependencies to the provider
-        if (
-            validateChainId(nextChain) &&
-            validateChainId(currentChain) &&
-            nextChain !== currentChain
-        ) {
-            localStorage.setItem(CHAIN_LS_KEY, nextChain);
-            nukeAndReloadApp();
-        }
+    // useEffect(() => {
+    //     // Indicates that we're switching between valid chains. For now we reload
+    //     // the app, since there's a lot of downstream dependencies to the provider
+    //     if (
+    //         validateChainId(nextChain) &&
+    //         validateChainId(currentChain) &&
+    //         nextChain !== currentChain
+    //     ) {
+    //         localStorage.setItem(CHAIN_LS_KEY, nextChain);
+    //         nukeAndReloadApp();
+    //     }
 
-        // Only switch currentChain iif valid
-        if (validateChainId(nextChain)) {
-            setCurrentChain(nextChain);
-            dispatch(setChainId(nextChain));
-            setIsChainSupported(true);
-        } else {
-            setIsChainSupported(false);
-        }
-    }, [nextChain, isUserLoggedIn]);
+    //     // Only switch currentChain iif valid
+    //     if (validateChainId(nextChain)) {
+    //         setCurrentChain(nextChain);
+    //         dispatch(setChainId(nextChain));
+    //         setIsChainSupported(true);
+    //     } else {
+    //         setIsChainSupported(false);
+    //     }
+    // }, [nextChain, isUserLoggedIn]);
 
     // data from the SDK about the current chain
     // refreshed every time the the value of currentChain is updated
