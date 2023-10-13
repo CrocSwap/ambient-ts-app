@@ -310,7 +310,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                         pool: tempLastData.pool,
                         color: '#7371fc',
                         lineWidth: 1.5,
-                        style: [],
+                        style: [0, 0],
                     });
                 }
 

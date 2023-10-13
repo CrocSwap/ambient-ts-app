@@ -221,7 +221,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             pool: currentPool,
                             color: '#7371fc',
                             lineWidth: 1.5,
-                            style: [],
+                            style: [0, 0],
                         };
 
                         setSelectedDrawnShape({
@@ -251,7 +251,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     pool: endPoint.pool,
                                     color: '#7371fc',
                                     lineWidth: 1.5,
-                                    style: [],
+                                    style: [0, 0],
                                 },
                             ]);
                         } else {
@@ -275,7 +275,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 pool: endPoint.pool,
                                 color: '#7371fc',
                                 lineWidth: 1.5,
-                                style: [],
+                                style: [0, 0],
                             });
                         }
                         return [...prevData, endPoint];
@@ -332,7 +332,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     pool: currentPool,
                     color: '#7371fc',
                     lineWidth: 1.5,
-                    style: [],
+                    style: [0, 0],
                 },
                 selectedCircle: undefined,
             });
