@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
@@ -16,22 +16,28 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
-
-export function useSendInit() {
+export function useSendInit(
+    setNewInitTransactionHash: React.Dispatch<
+        React.SetStateAction<string | undefined>
+    >,
+    setIsInitPending: React.Dispatch<React.SetStateAction<boolean>>,
+    setIsTxCompletedInit: React.Dispatch<React.SetStateAction<boolean>>,
+    setTxErrorCode: React.Dispatch<React.SetStateAction<string>>,
+    resetConfirmation: () => void, // Include resetConfirmation as an argument
+) {
     const dispatch = useAppDispatch();
-    // TODO: move to confirm component
-    // const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
-
-    const [isInitPending, setIsInitPending] = useState(false);
     const { crocEnv } = useContext(CrocEnvContext);
 
     const {
         tradeData: { baseToken, quoteToken },
     } = useAppSelector((state) => state);
+
     const sendInit = async (
         initialPriceInBaseDenom: number | undefined,
         cb?: () => void,
     ) => {
+        resetConfirmation();
+
         if (initialPriceInBaseDenom) {
             let tx;
             try {
@@ -40,6 +46,7 @@ export function useSendInit() {
                     ?.pool(baseToken.address, quoteToken.address)
                     .initPool(initialPriceInBaseDenom);
 
+                setNewInitTransactionHash(tx?.hash);
                 if (tx) dispatch(addPendingTx(tx?.hash));
                 if (tx?.hash)
                     dispatch(
@@ -55,8 +62,6 @@ export function useSendInit() {
                 } catch (e) {
                     const error = e as TransactionError;
                     console.error({ error });
-                    // The user used 'speed up' or something similar
-                    // in their client, but we now have the updated info
                     if (isTransactionReplacedError(error)) {
                         IS_LOCAL_ENV && console.debug('repriced');
                         dispatch(removePendingTx(error.hash));
@@ -64,13 +69,14 @@ export function useSendInit() {
                         const newTransactionHash = error.replacement.hash;
                         dispatch(addPendingTx(newTransactionHash));
 
-                        //    setNewSwapTransactionHash(newTransactionHash);
                         dispatch(
                             updateTransactionHash({
                                 oldHash: error.hash,
                                 newHash: error.replacement.hash,
                             }),
                         );
+                        setNewInitTransactionHash(newTransactionHash);
+
                         IS_LOCAL_ENV && console.debug({ newTransactionHash });
                         receipt = error.receipt;
                     } else if (isTransactionFailedError(error)) {
@@ -80,13 +86,8 @@ export function useSendInit() {
                 if (receipt) {
                     dispatch(addReceipt(JSON.stringify(receipt)));
                     dispatch(removePendingTx(receipt.transactionHash));
-                    // TODO: move this to the confirm component
-                    // linkGenPool.navigate({
-                    //     chain: chainId,
-                    //     tokenA: baseToken.address,
-                    //     tokenB: quoteToken.address,
-                    // });
                     if (cb) cb();
+                    setIsTxCompletedInit(true);
                 }
             } catch (error) {
                 if (
@@ -95,10 +96,12 @@ export function useSendInit() {
                     location.reload();
                 }
                 console.error({ error });
+                setTxErrorCode(error?.code);
             } finally {
                 setIsInitPending(false);
             }
         }
     };
-    return { sendInit, isInitPending };
+
+    return { sendInit };
 }

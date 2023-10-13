@@ -62,23 +62,13 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
 import truncateDecimals from '../../utils/data/truncateDecimals';
-import {
-    addPendingTx,
-    addReceipt,
-    addTransactionByType,
-    removePendingTx,
-    updateTransactionHash,
-} from '../../utils/state/receiptDataSlice';
-import {
-    TransactionError,
-    isTransactionFailedError,
-    isTransactionReplacedError,
-} from '../../utils/TransactionError';
+
 import { useHandleRangeButtonMessage } from '../../App/hooks/useHandleRangeButtonMessage';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import InitButton from './InitButton';
+import { useSendInit } from '../../App/hooks/useSendInit';
 // react functional component
 export default function InitPool() {
     const {
@@ -945,76 +935,13 @@ export default function InitPool() {
         }
     }, [tokenA.address + tokenB.address]);
 
-    async function sendInit(
-        initialPriceInBaseDenom: number | undefined,
-        cb?: () => void,
-    ) {
-        resetConfirmation();
-
-        if (initialPriceInBaseDenom) {
-            let tx;
-            try {
-                setIsInitPending(true);
-                tx = await crocEnv
-                    ?.pool(baseToken.address, quoteToken.address)
-                    .initPool(initialPriceInBaseDenom);
-
-                setNewInitTransactionHash(tx?.hash);
-                if (tx) dispatch(addPendingTx(tx?.hash));
-                if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: 'Init',
-                            txDescription: `Pool Initialization of ${quoteToken.symbol} / ${baseToken.symbol}`,
-                        }),
-                    );
-                let receipt;
-                try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && console.debug('repriced');
-                        dispatch(removePendingTx(error.hash));
-
-                        const newTransactionHash = error.replacement.hash;
-                        dispatch(addPendingTx(newTransactionHash));
-
-                        dispatch(
-                            updateTransactionHash({
-                                oldHash: error.hash,
-                                newHash: error.replacement.hash,
-                            }),
-                        );
-                        setNewInitTransactionHash(newTransactionHash);
-
-                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        receipt = error.receipt;
-                    }
-                }
-                if (receipt) {
-                    dispatch(addReceipt(JSON.stringify(receipt)));
-                    dispatch(removePendingTx(receipt.transactionHash));
-                    if (cb) cb();
-                    setIsTxCompletedInit(true);
-                }
-            } catch (error) {
-                if (
-                    error.reason === 'sending a transaction requires a signer'
-                ) {
-                    location.reload();
-                }
-                console.error({ error });
-                setTxErrorCode(error?.code);
-            } finally {
-                setIsInitPending(false);
-            }
-        }
-    }
+    const { sendInit } = useSendInit(
+        setNewInitTransactionHash,
+        setIsInitPending,
+        setIsTxCompletedInit,
+        setTxErrorCode,
+        resetConfirmation,
+    );
 
     const { isTokenAInputDisabled, isTokenBInputDisabled } =
         useRangeInputDisable(
