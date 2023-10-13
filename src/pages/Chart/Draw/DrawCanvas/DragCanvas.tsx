@@ -100,20 +100,47 @@ export default function DragCanvas(props: DragCanvasProps) {
         }
     };
 
-    function updateDrawLine(offsetX: number, offsetY: number) {
+    function updateDrawLine(
+        offsetX: number,
+        offsetY: number,
+        denomInBase: boolean,
+    ) {
         const index = drawnShapeHistory.findIndex(
-            (item) => item === hoveredDrawnShape?.data,
+            (item) => item.time === hoveredDrawnShape?.data.time,
         );
 
         const previosData = drawnShapeHistory[index].data;
 
+        // const lastDataIndex = previosData.findIndex(
+        //     (item) => item === hoveredDrawnShape?.selectedCircle,
+        // );
+
         const lastDataIndex = previosData.findIndex(
-            (item) => item === hoveredDrawnShape?.selectedCircle,
+            (item) =>
+                hoveredDrawnShape?.selectedCircle &&
+                item.x === hoveredDrawnShape?.selectedCircle.x &&
+                item.y ===
+                    (item.denomInBase === denomInBase
+                        ? hoveredDrawnShape?.selectedCircle.y
+                        : 1 / hoveredDrawnShape?.selectedCircle.y),
         );
 
-        previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
-        previosData[lastDataIndex].y = scaleData.yScale.invert(offsetY);
-        drawnShapeHistory[index].data = previosData;
+        if (lastDataIndex !== -1) {
+            if (hoveredDrawnShape && hoveredDrawnShape.selectedCircle) {
+                hoveredDrawnShape.selectedCircle.x =
+                    scaleData.xScale.invert(offsetX);
+                hoveredDrawnShape.selectedCircle.y =
+                    scaleData.yScale.invert(offsetY);
+            }
+
+            previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
+            previosData[lastDataIndex].y =
+                previosData[lastDataIndex].denomInBase === denomInBase
+                    ? scaleData.yScale.invert(offsetY)
+                    : 1 / scaleData.yScale.invert(offsetY);
+
+            drawnShapeHistory[index].data = previosData;
+        }
     }
 
     function updateDrawRect(
@@ -252,7 +279,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                             dragLine(movemementX, movemementY);
                         } else {
                             setIsUpdatingShape(true);
-                            updateDrawLine(offsetX, offsetY);
+                            updateDrawLine(offsetX, offsetY, denomInBase);
                         }
                     }
 
