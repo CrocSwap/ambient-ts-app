@@ -473,12 +473,14 @@ function YAxisCanvas(props: yAxisIF) {
                 const { isSameLocation, sameLocationData } =
                     sameLocationLimit();
 
-                const isScientificLimitTick = limit.toString().includes('e');
-
                 let limitTick = getFormattedNumber({
                     value: limit,
                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                 }).replace(',', '');
+
+                const isScientificLimitTick = limitTick
+                    .toString()
+                    .includes('e');
 
                 let limitSubString = undefined;
 
