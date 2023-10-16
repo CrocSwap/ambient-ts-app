@@ -30,6 +30,10 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
         setIsDenomBase,
     } = props;
 
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
     const [showExtraDetails] = useState<boolean>(true);
     // const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);
 
