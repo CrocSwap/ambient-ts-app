@@ -16,11 +16,13 @@ import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
 import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { supportedNetworks } from '../../utils/networks';
+import { Provider } from '@ethersproject/providers';
 
 export const getPositionData = async (
     position: PositionServerIF,
     tokensOnChain: TokenIF[],
     crocEnv: CrocEnv,
+    provider: Provider,
     chainId: string,
     lastBlockNumber: number,
     cachedFetchTokenPrice: TokenPriceFn,
@@ -44,22 +46,10 @@ export const getPositionData = async (
         lastBlockNumber,
     );
 
-    const baseMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        position.base,
-        chainId,
-    );
-    const quoteMetadata = cachedTokenDetails(
-        (await crocEnv.context).provider,
-        position.quote,
-        chainId,
-    );
+    const baseMetadata = cachedTokenDetails(provider, position.base, chainId);
+    const quoteMetadata = cachedTokenDetails(provider, position.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(
-        (await crocEnv.context).provider,
-        newPosition.user,
-        '0x1',
-    );
+    const ensRequest = cachedEnsResolve(newPosition.user);
 
     const basePricedToken = getMainnetAddress(
         baseTokenAddress,

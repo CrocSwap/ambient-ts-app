@@ -80,6 +80,7 @@ export default function RangeDetailsModal(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         chainData: { chainId, poolIndex },
+        provider,
     } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
 
@@ -151,7 +152,7 @@ export default function RangeDetailsModal(props: propsIF) {
             )
                 .then((response) => response?.json())
                 .then(async (json) => {
-                    if (!crocEnv || !json?.data) {
+                    if (!crocEnv || !provider || !json?.data) {
                         setBaseCollateralDisplay(undefined);
                         setQuoteCollateralDisplay(undefined);
                         setUsdValue(undefined);
@@ -165,6 +166,7 @@ export default function RangeDetailsModal(props: propsIF) {
                         positionPayload,
                         tokens.tokenUniv,
                         crocEnv,
+                        provider,
                         chainId,
                         lastBlockNumber,
                         cachedFetchTokenPrice,
@@ -219,7 +221,7 @@ export default function RangeDetailsModal(props: propsIF) {
                 })
                 .catch(console.error);
         }
-    }, [lastBlockNumber, crocEnv, chainId]);
+    }, [lastBlockNumber, !!crocEnv, !!provider, chainId]);
 
     const shareComponent = (
         <div ref={detailsRef} className={styles.main_outer_container}>

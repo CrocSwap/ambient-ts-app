@@ -91,7 +91,8 @@ function TokenInputWithWalletBalance(props: propsIF) {
         // then the quantity should be updated to the exchange balance maximum
         if (
             tokenAorB === 'A' &&
-            formatTokenInput(balanceWithBuffer, token) === tokenInput
+            parseFloat(formatTokenInput(balanceWithBuffer, token)) ===
+                parseFloat(tokenInput)
         ) {
             const balance = subtractBuffer(
                 isDexSelected ? walletBalance : walletAndExchangeBalance,

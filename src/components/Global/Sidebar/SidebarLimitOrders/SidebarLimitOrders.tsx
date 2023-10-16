@@ -7,6 +7,7 @@ import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { SidebarContext } from '../../../../contexts/SidebarContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import {
+    limitParamsIF,
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
@@ -61,11 +62,16 @@ export default function SidebarLimitOrders(props: propsIF) {
         setSelectedOutsideTab(1);
         setCurrentPositionActive(limitOrder.limitOrderId);
         setShowAllData(false);
-        linkGenLimit.navigate({
+        const { base, quote, isBid, bidTick, askTick } = limitOrder;
+        // URL params for link to limit page
+        const limitLinkParams: limitParamsIF = {
             chain: chainId,
-            tokenA: limitOrder.base,
-            tokenB: limitOrder.quote,
-        });
+            tokenA: base,
+            tokenB: quote,
+            limitTick: isBid ? bidTick : askTick,
+        };
+        // navigate user to limit page with URL params defined above
+        linkGenLimit.navigate(limitLinkParams);
     };
 
     const handleViewMoreClick = () => {

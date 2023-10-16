@@ -106,13 +106,9 @@ function Portfolio() {
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (addressFromParams && !isAddressEns && provider) {
+            if (addressFromParams && !isAddressEns) {
                 try {
-                    const ensName = await fetchEnsAddress(
-                        provider,
-                        addressFromParams,
-                        chainId,
-                    );
+                    const ensName = await fetchEnsAddress(addressFromParams);
 
                     if (ensName) setSecondaryEnsName(ensName);
                     else setSecondaryEnsName('');
@@ -124,7 +120,7 @@ function Portfolio() {
                 setSecondaryEnsName(addressFromParams);
             }
         })();
-    }, [addressFromParams, isAddressEns, provider]);
+    }, [addressFromParams, isAddressEns]);
 
     const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (

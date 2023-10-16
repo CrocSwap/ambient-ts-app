@@ -16,14 +16,14 @@ import {
     useAppSelector,
 } from '../../../../../utils/hooks/reduxToolkit';
 import {
-    setLimitTick,
-    setLimitTickCopied,
-    setShouldLimitDirectionReverse,
+    TradeDataIF,
+    setIsTokenAPrimary,
 } from '../../../../../utils/state/tradeDataSlice';
 import { SidebarContext } from '../../../../../contexts/SidebarContext';
 import {
     useLinkGen,
     linkGenMethodsIF,
+    limitParamsIF,
 } from '../../../../../utils/hooks/useLinkGen';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
@@ -63,40 +63,13 @@ export default function OrdersMenu(props: propsIF) {
     const { handlePulseAnimation, setActiveMobileComponent } =
         useContext(TradeTableContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const tradeData: TradeDataIF = useAppSelector((state) => state.tradeData);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-
     const dispatch = useAppDispatch();
 
     // -----------------SNACKBAR----------------
-    function handleCopyOrder() {
-        setActiveMobileComponent('trade');
-
-        handlePulseAnimation('limitOrder');
-        dispatch(setLimitTickCopied(true));
-
-        const shouldReverse =
-            tradeData.tokenA.address.toLowerCase() ===
-            (limitOrder.isBid
-                ? limitOrder.quote.toLowerCase()
-                : limitOrder.base.toLowerCase());
-
-        if (shouldReverse) {
-            dispatch(setShouldLimitDirectionReverse(true));
-        }
-
-        setTimeout(() => {
-            dispatch(
-                setLimitTick(
-                    limitOrder.isBid ? limitOrder.bidTick : limitOrder.askTick,
-                ),
-            );
-        }, 500);
-
-        setShowDropdownMenu(false);
-    }
 
     // -----------------END OF SNACKBAR----------------
 
@@ -155,23 +128,26 @@ export default function OrdersMenu(props: propsIF) {
     const copyButton = limitOrder ? (
         <Chip
             onClick={() => {
-                dispatch(setLimitTickCopied(true));
-                linkGenLimit.navigate(
-                    limitOrder.isBid
-                        ? {
-                              chain: chainData.chainId,
-                              tokenA: limitOrder.base,
-                              tokenB: limitOrder.quote,
-                              limitTick: limitOrder.bidTick,
-                          }
-                        : {
-                              chain: chainData.chainId,
-                              tokenA: limitOrder.quote,
-                              tokenB: limitOrder.base,
-                              limitTick: limitOrder.askTick,
-                          },
-                );
-                handleCopyOrder();
+                const { base, quote, isBid, bidTick, askTick } = limitOrder;
+                const newTokenA: string = isBid ? base : quote;
+                const newTokenB: string = isBid ? quote : base;
+                // determine if old token A === new token A
+                // no => flip `isTokenAPrimary`
+                tradeData.tokenA.address.toLowerCase() !==
+                    newTokenA.toLowerCase() &&
+                    dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+                // URL params for link to limit page
+                const limitLinkParams: limitParamsIF = {
+                    chain: chainData.chainId,
+                    tokenA: newTokenA,
+                    tokenB: newTokenB,
+                    limitTick: isBid ? bidTick : askTick,
+                };
+                // navigate user to limit page with URL params defined above
+                linkGenLimit.navigate(limitLinkParams);
+                setActiveMobileComponent('trade');
+                handlePulseAnimation('limitOrder');
+                setShowDropdownMenu(false);
             }}
         >
             {showAbbreviatedCopyTradeButton ? 'Copy' : 'Copy Trade'}
@@ -184,14 +160,14 @@ export default function OrdersMenu(props: propsIF) {
             {(view3 || view2WithNoSidebar) && detailsButton}
             {minView && claimButton}
             {minView && removeButton}
-            {!isOwnerActiveAccount && copyButton}
+            {minView && copyButton}
         </div>
     );
 
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
-            {isOwnerActiveAccount && copyButton}
+            {!minView && copyButton}
             {!minView && removeButton}
             {!isAccountView && walletButton}
         </div>

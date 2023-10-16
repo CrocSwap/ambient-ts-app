@@ -1,69 +1,74 @@
-import { styled } from 'styled-components/macro';
-import MultiStepTransaction, {
-    TransactionStep,
-} from '../../components/Global/MultiStepTransaction/MultiStepTransaction';
-
-const StepContainer = styled.div`
-    height: 400px;
-    width: 800px;
-    background: var(--dark2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 500ms ease-in-out;
-    overflow: hidden;
-`;
+import VerticalStepper from '../../components/Global/MultiStepTransaction/VerticalStepper';
+import { useState } from 'react';
+import { FlexContainer } from '../../styled/Common';
 
 export default function TestPage() {
-    const Step1 = () => {
-        return (
-            <StepContainer>
-                <h2>Step 1</h2>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Sint
-                reprehenderit hic sunt quae labore ullam esse ex ut officia
-                voluptate provident perspiciatis ipsa laborum quos, odio
-                exercitationem pariatur adipisci! Impedit.
-            </StepContainer>
-        );
-    };
-
-    const Step2 = () => {
-        return (
-            <StepContainer>
-                <h2>Step 2</h2>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis
-                earum illum omnis rerum nostrum libero tempore, eos, dolorum
-                magnam ullam, atque animi cupiditate. Amet dolorum ipsum itaque
-                dolores blanditiis saepe, cum optio commodi ipsa rem, labore in
-                doloribus ratione praesentium aperiam, similique sapiente
-                expedita quaerat maxime aspernatur excepturi? Numquam,
-                laboriosam.
-            </StepContainer>
-        );
-    };
-
-    const Step3 = () => {
-        return (
-            <StepContainer>
-                <h2>Step 3</h2>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Magni
-                itaque molestias tempore accusantium. Ab, recusandae at
-                molestiae dolor possimus perferendis.
-            </StepContainer>
-        );
-    };
-
-    // Define steps array
-    const steps: TransactionStep[] = [
-        { component: Step1 },
-        { component: Step2 },
-        { component: Step3 },
+    const [activeStep, setActiveStep] = useState(0);
+    // For demonstration-------------------------------
+    const questions = [
+        { text: 'What is 2 + 2?', answer: 4 },
+        { text: 'What is 5 + 3?', answer: 8 },
+        { text: 'What is 10 + 10?', answer: 20 },
     ];
 
+    const [activeQuestion, setActiveQuestion] = useState(0);
+    const [userAnswer, setUserAnswer] = useState('');
+    const [isError, setIsError] = useState(false);
+
+    const handleAnswer = () => {
+        const parsedAnswer = parseInt(userAnswer, 10);
+        if (
+            !isNaN(parsedAnswer) &&
+            parsedAnswer === questions[activeQuestion].answer
+        ) {
+            if (activeQuestion === questions.length - 1) {
+                setActiveQuestion(0);
+                setActiveStep(0);
+            } else {
+                setActiveQuestion(
+                    (prevActiveQuestion) => prevActiveQuestion + 1,
+                );
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                setIsError(false);
+            }
+            setUserAnswer('');
+        } else {
+            setIsError(true);
+        }
+    };
+
+    const questionContent = (
+        <div>
+            <p>{questions[activeQuestion].text}</p>
+            <input
+                type='number'
+                value={userAnswer}
+                onChange={(e) => setUserAnswer(e.target.value)}
+            />
+            <button onClick={handleAnswer}>Submit Answer</button>
+
+            <div>
+                <p>Active Step: {activeStep}</p>
+            </div>
+        </div>
+    );
+
+    // ENd of for demonstration--------------------
+
     return (
-        <section>
-            <h1>Multi-Step Transaction Example</h1>
-            <MultiStepTransaction steps={steps} />
-        </section>
+        <FlexContainer flexDirection='row' justifyContent='space-around'>
+            {questionContent}
+
+            <VerticalStepper
+                steps={[
+                    { label: 'Question 1' },
+                    { label: 'Question 2' },
+                    { label: 'Question 3' },
+                ]}
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                isError={isError}
+            />
+        </FlexContainer>
     );
 }

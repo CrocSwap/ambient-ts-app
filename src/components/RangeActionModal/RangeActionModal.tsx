@@ -83,6 +83,7 @@ export default function RangeActionModal(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        provider,
         chainData: { chainId, poolIndex },
         nativeTokenUsdPrice,
     } = useContext(CrocEnvContext);
@@ -197,11 +198,12 @@ export default function RangeActionModal(props: propsIF) {
                     .then((response) => response.json())
                     .then((json) => json?.data)
                     .then(async (data: PositionServerIF) => {
-                        if (data && crocEnv) {
+                        if (data && crocEnv && provider) {
                             const position = await getPositionData(
                                 data,
                                 tokens.tokenUniv,
                                 crocEnv,
+                                provider,
                                 chainId,
                                 lastBlockNumber,
                                 cachedFetchTokenPrice,
@@ -631,7 +633,15 @@ export default function RangeActionModal(props: propsIF) {
                 />
             ) : showConfirmation ? (
                 <SubmitTransaction
-                    type='Range'
+                    type={
+                        type === 'Harvest'
+                            ? !areFeesAvailableToWithdraw
+                                ? 'Reset'
+                                : 'Harvest'
+                            : type === 'Remove'
+                            ? 'Remove'
+                            : 'Range'
+                    }
                     newTransactionHash={newTransactionHash}
                     txErrorCode={txErrorCode}
                     resetConfirmation={resetConfirmation}
@@ -653,13 +663,15 @@ export default function RangeActionModal(props: propsIF) {
                             ? type === 'Remove'
                                 ? 'Remove Liquidity'
                                 : 'Harvest Fees'
+                            : type === 'Harvest'
+                            ? 'Reset'
                             : '...'
                     }
                     disabled={
-                        (type === 'Remove'
-                            ? liquidityToBurn === undefined ||
-                              liquidityToBurn.isZero()
-                            : !areFeesAvailableToWithdraw) || showSettings
+                        (type === 'Remove' &&
+                            (liquidityToBurn === undefined ||
+                                liquidityToBurn.isZero())) ||
+                        showSettings
                     }
                     action={type === 'Remove' ? removeFn : harvestFn}
                     flat

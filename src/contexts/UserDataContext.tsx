@@ -46,7 +46,7 @@ export const UserDataContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, provider, chainData } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -74,6 +74,7 @@ export const UserDataContextProvider = (props: {
             isConnected &&
             userAddress &&
             crocEnv &&
+            provider &&
             tokens.tokenUniv.length &&
             chainData.chainId
         ) {
@@ -105,6 +106,7 @@ export const UserDataContextProvider = (props: {
                                             position,
                                             tokens.tokenUniv,
                                             crocEnv,
+                                            provider,
                                             chainData.chainId,
                                             lastBlockNumber,
                                             cachedFetchTokenPrice,
@@ -157,6 +159,7 @@ export const UserDataContextProvider = (props: {
                                         limitOrder,
                                         tokens.tokenUniv,
                                         crocEnv,
+                                        provider,
                                         chainData.chainId,
                                         lastBlockNumber,
                                         cachedFetchTokenPrice,
@@ -195,6 +198,7 @@ export const UserDataContextProvider = (props: {
                     annotateMEV: false,
                     ensResolution: true,
                     crocEnv: crocEnv,
+                    provider,
                     lastBlockNumber: lastBlockNumber,
                     n: 100, // fetch last 100 changes,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
@@ -285,6 +289,7 @@ export const UserDataContextProvider = (props: {
         chainData.chainId,
         lastBlockNumWait,
         !!crocEnv,
+        !!provider,
     ]);
 
     return (

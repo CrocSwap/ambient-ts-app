@@ -442,7 +442,7 @@ function Orders(props: propsIF) {
         }
     };
     const orderDataOrNull = shouldDisplayNoTableData ? (
-        <NoTableData type='orders' isAccountView={isAccountView} />
+        <NoTableData type='limits' isAccountView={isAccountView} />
     ) : (
         <div onKeyDown={handleKeyDownViewOrder}>
             <ul ref={listRef}>

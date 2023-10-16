@@ -44,7 +44,7 @@ export const TradeDropdownButton = styled.button`
     width: 90%;
     margin: 0 auto;
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     border-radius: var(--border-radius);
     text-align: center;
     display: flex;
@@ -74,6 +74,11 @@ export const ResizableContainer = styled(Resizable)<{
         background-color: var(--dark3);
         z-index: 99;
     }
+    
+    & > div:last-child > div:nth-child(2), & > div:last-child > div:nth-child(4) {
+        z-index: -1;
+        display: none;
+    }
     `}
 `;
 
@@ -81,7 +86,7 @@ export const ChartContainer = styled.div<{ fullScreen: boolean }>`
     ${({ fullScreen }) =>
         fullScreen
             ? `
-        transition: all var(--animation-speed) ease-in-out;
+        transition: var(--transition);
         background: var(--dark2);
         position: fixed;
         width: 100%;

@@ -37,9 +37,11 @@ import useDebounce from './useDebounce';
 import { getLiquidityFee } from '../functions/getPoolStats';
 import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { supportedNetworks } from '../../utils/networks';
+import { Provider } from '@ethersproject/providers';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
+    provider?: Provider;
     pathname: string;
     chainData: ChainSpec;
     userAddress: `0x${string}` | undefined;
@@ -214,7 +216,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
     // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
     useEffect(() => {
-        if (rtkMatchesParams && props.crocEnv) {
+        if (rtkMatchesParams && props.crocEnv && props.provider !== undefined) {
             const tokenAAddress = tradeData.tokenA.address;
             const tokenBAddress = tradeData.tokenB.address;
 
@@ -260,7 +262,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((json) => {
                             const poolPositions = json.data;
                             const crocEnv = props.crocEnv;
-                            if (poolPositions && crocEnv) {
+                            const provider = props.provider;
+                            if (poolPositions && crocEnv && provider) {
                                 Promise.all(
                                     poolPositions.map(
                                         (position: PositionServerIF) => {
@@ -268,6 +271,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 position,
                                                 props.searchableTokens,
                                                 crocEnv,
+                                                provider,
                                                 props.chainData.chainId,
                                                 props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
@@ -332,9 +336,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((response) => response.json())
                         .then((json) => {
                             const leaderboardPositions = json.data;
-
                             const crocEnv = props.crocEnv;
-                            if (leaderboardPositions && crocEnv) {
+                            const provider = props.provider;
+
+                            if (leaderboardPositions && crocEnv && provider) {
                                 Promise.all(
                                     leaderboardPositions.map(
                                         (position: PositionServerIF) => {
@@ -342,6 +347,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 position,
                                                 props.searchableTokens,
                                                 crocEnv,
+                                                provider,
                                                 props.chainData.chainId,
                                                 props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
@@ -393,6 +399,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         ensResolution: true,
                         n: 200,
                         crocEnv: props.crocEnv,
+                        provider: props.provider,
                         lastBlockNumber: props.lastBlockNumber,
                         cachedFetchTokenPrice: props.cachedFetchTokenPrice,
                         cachedQuerySpotPrice: props.cachedQuerySpotPrice,
@@ -435,7 +442,8 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                         .then((json) => {
                             const poolLimitOrderStates = json?.data;
                             const crocEnv = props.crocEnv;
-                            if (poolLimitOrderStates && crocEnv) {
+                            const provider = props.provider;
+                            if (poolLimitOrderStates && crocEnv && provider) {
                                 Promise.all(
                                     poolLimitOrderStates.map(
                                         (limitOrder: LimitOrderServerIF) => {
@@ -443,6 +451,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                 limitOrder,
                                                 props.searchableTokens,
                                                 crocEnv,
+                                                provider,
                                                 props.chainData.chainId,
                                                 props.lastBlockNumber,
                                                 props.cachedFetchTokenPrice,
@@ -502,7 +511,9 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((json) => {
                                 const userPoolPositions = json.data;
                                 const crocEnv = props.crocEnv;
-                                if (userPoolPositions && crocEnv) {
+                                const provider = props.provider;
+
+                                if (userPoolPositions && crocEnv && provider) {
                                     Promise.all(
                                         userPoolPositions.map(
                                             (position: PositionServerIF) => {
@@ -510,6 +521,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     position,
                                                     props.searchableTokens,
                                                     crocEnv,
+                                                    provider,
                                                     props.chainData.chainId,
                                                     props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
@@ -572,7 +584,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                             .then((json) => {
                                 const userPoolLimitOrderStates = json?.data;
                                 const crocEnv = props.crocEnv;
-                                if (userPoolLimitOrderStates && crocEnv) {
+                                const provider = props.provider;
+                                if (
+                                    userPoolLimitOrderStates &&
+                                    crocEnv &&
+                                    provider
+                                ) {
                                     Promise.all(
                                         userPoolLimitOrderStates.map(
                                             (
@@ -582,6 +599,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                                     limitOrder,
                                                     props.searchableTokens,
                                                     crocEnv,
+                                                    provider,
                                                     props.chainData.chainId,
                                                     props.lastBlockNumber,
                                                     props.cachedFetchTokenPrice,
@@ -641,6 +659,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         props.searchableTokens,
         lastBlockNumWait,
         !!props.crocEnv,
+        !!props.provider,
     ]);
 
     useEffect(() => {

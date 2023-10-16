@@ -1,7 +1,6 @@
 import { CrocImpact } from '@crocswap-libs/sdk';
 import { useContext, useState, useEffect, memo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useProvider } from 'wagmi';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import { getPriceImpactString } from '../../../App/functions/swap/getPriceImpactString';
 import { useTradeData } from '../../../App/hooks/useTradeData';
@@ -28,7 +27,6 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import {
     addPendingTx,
     addTransactionByType,
@@ -42,6 +40,8 @@ import {
     isTransactionFailedError,
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
+import { useApprove } from '../../../App/functions/approve';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -53,13 +53,13 @@ function Swap(props: propsIF) {
         crocEnv,
         chainData: { chainId, poolIndex },
         nativeTokenUsdPrice,
+        provider,
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
     const {
         isTokenABase: isSellTokenBase,
-        setRecheckTokenAApproval,
         tokenAAllowance,
         baseToken: {
             balance: baseTokenBalance,
@@ -75,9 +75,9 @@ function Swap(props: propsIF) {
     );
 
     const dispatch = useAppDispatch();
-    const provider = useProvider();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
+    !pathname.includes('/trade') && useUrlParams(tokens, chainId, provider);
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
@@ -95,7 +95,6 @@ function Swap(props: propsIF) {
     } = pathname.includes('/trade')
         ? useTradeData()
         : useAppSelector((state) => state);
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
         isTokenAPrimary ? primaryQuantity : '',
@@ -112,7 +111,6 @@ function Swap(props: propsIF) {
     const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
     const [isLiquidityInsufficient, setIsLiquidityInsufficient] =
         useState<boolean>(false);
-    const [isApprovalPending, setIsApprovalPending] = useState(false);
     // hooks to track whether user will use dex or wallet funds in transaction, this is
     // ... abstracted away from the central hook because the hook manages preference
     // ... and does not consider whether dex balance is sufficient
@@ -169,6 +167,10 @@ function Swap(props: propsIF) {
             ? tokenASurplusMinusTokenARemainderNum * -1
             : 0
         : parseFloat(sellQtyString || '0');
+
+    const isTokenAWalletBalanceSufficient =
+        parseFloat(tokenABalance) >= tokenAQtyCoveredByWalletBalance;
+
     const isTokenAAllowanceSufficient =
         parseFloat(tokenAAllowance) >= tokenAQtyCoveredByWalletBalance;
 
@@ -396,61 +398,7 @@ function Swap(props: propsIF) {
         closeModal();
     };
 
-    const approve = async (tokenAddress: string, tokenSymbol: string) => {
-        if (!crocEnv) return;
-        try {
-            setIsApprovalPending(true);
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) dispatch(addPendingTx(tx?.hash));
-            if (tx?.hash)
-                dispatch(
-                    addTransactionByType({
-                        txHash: tx.hash,
-                        txType: 'Approve',
-                        txDescription: `Approval of ${tokenSymbol}`,
-                    }),
-                );
-            let receipt;
-            try {
-                if (tx) receipt = await tx.wait();
-            } catch (e) {
-                const error = e as TransactionError;
-                console.error({ error });
-                // The user used "speed up" or something similar
-                // in their client, but we now have the updated info
-                if (isTransactionReplacedError(error)) {
-                    IS_LOCAL_ENV && console.debug('repriced');
-                    dispatch(removePendingTx(error.hash));
-
-                    const newTransactionHash = error.replacement.hash;
-                    dispatch(addPendingTx(newTransactionHash));
-
-                    dispatch(
-                        updateTransactionHash({
-                            oldHash: error.hash,
-                            newHash: error.replacement.hash,
-                        }),
-                    );
-                    IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                    receipt = error.receipt;
-                } else if (isTransactionFailedError(error)) {
-                    receipt = error.receipt;
-                }
-            }
-            if (receipt) {
-                dispatch(addReceipt(JSON.stringify(receipt)));
-                dispatch(removePendingTx(receipt.transactionHash));
-            }
-        } catch (error) {
-            if (error.reason === 'sending a transaction requires a signer') {
-                location.reload();
-            }
-            console.error({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAApproval(true);
-        }
-    };
+    const { approve, isApprovalPending } = useApprove();
 
     const toggleDexSelection = (tokenAorB: 'A' | 'B') => {
         if (tokenAorB === 'A') {
@@ -514,6 +462,7 @@ function Swap(props: propsIF) {
 
     return (
         <TradeModuleSkeleton
+            chainId={chainId}
             isSwapPage={!isOnTradeRoute}
             header={
                 <TradeModuleHeader
@@ -532,12 +481,18 @@ function Swap(props: propsIF) {
                         value: sellQtyString,
                         set: setSellQtyString,
                     }}
-                    buyQtyString={{ value: buyQtyString, set: setBuyQtyString }}
+                    buyQtyString={{
+                        value: buyQtyString,
+                        set: setBuyQtyString,
+                    }}
                     isSellLoading={{
                         value: isSellLoading,
                         set: setIsSellLoading,
                     }}
-                    isBuyLoading={{ value: isBuyLoading, set: setIsBuyLoading }}
+                    isBuyLoading={{
+                        value: isBuyLoading,
+                        set: setIsBuyLoading,
+                    }}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setSwapAllowed={setSwapAllowed}
@@ -628,6 +583,7 @@ function Swap(props: propsIF) {
             }
             approveButton={
                 isPoolInitialized &&
+                isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient &&
                 parseFloat(sellQtyString) > 0 &&
                 sellQtyString !== 'Infinity' ? (

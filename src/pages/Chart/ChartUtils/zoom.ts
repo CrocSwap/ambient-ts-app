@@ -248,17 +248,11 @@ export class Zoom {
     public getNewCandleDataLeft(newBoundary: number, firstCandleTime: number) {
         // Implementation for getting new candle data
         if (newBoundary && firstCandleTime && newBoundary < firstCandleTime) {
-            const maxBoundary: number | undefined =
-                firstCandleTime - 200 * this.period * 1000;
-
             const newLastCandle = newBoundary - 100 * this.period * 1000;
-
-            const finalData =
-                maxBoundary < newLastCandle ? maxBoundary : newLastCandle;
 
             const candleDomain = {
                 lastCandleDate: firstCandleTime,
-                domainBoundry: finalData,
+                domainBoundry: newLastCandle,
             };
 
             this.setCandleDomains(candleDomain);

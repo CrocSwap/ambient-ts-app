@@ -57,7 +57,7 @@ export const TradeTokenContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, provider } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
@@ -87,6 +87,7 @@ export const TradeTokenContextProvider = (props: {
         isTokenABase,
     } = usePoolMetadata({
         crocEnv,
+        provider,
         pathname: location.pathname,
         chainData,
         userAddress,
