@@ -1070,11 +1070,7 @@ export default function InitPool() {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
-            if (
-                Math.abs(selectedPoolPriceTick) === Infinity ||
-                Math.abs(selectedPoolPriceTick) === 0
-            )
-                return;
+            if (Math.abs(selectedPoolPriceTick) === Infinity) return;
             const lowTick = selectedPoolPriceTick - rangeWidthPercentage * 100;
             const highTick = selectedPoolPriceTick + rangeWidthPercentage * 100;
 

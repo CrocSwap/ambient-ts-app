@@ -474,11 +474,7 @@ function Range() {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
-            if (
-                Math.abs(currentPoolPriceTick) === Infinity ||
-                Math.abs(currentPoolPriceTick) === 0
-            )
-                return;
+            if (Math.abs(currentPoolPriceTick) === Infinity) return;
             const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
             const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
