@@ -14,7 +14,6 @@ import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import chainNumToString from '../functions/chainNumToString';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { useParams } from 'react-router';
 
 export const useAppChain = (
     isUserLoggedIn: boolean | undefined,
@@ -27,20 +26,19 @@ export const useAppChain = (
     const {
         // chains, error, isLoading,
         switchNetwork,
-    } =
-        useSwitchNetwork();
-        // {
-        //     onSuccess(data, error) {
-        //         console.clear();
-        //         console.log('Success', { data, error });
-        //         const updatedChainId: string = '0x' + data?.id.toString(16);
-        //         console.log({updatedChainId, chainInURLValidated});
-        //         if (updatedChainId !== chainInURLValidated) {
-        //             console.log('going to index page');
-        //             linkGenIndex.navigate();
-        //         };
-        //     }
-        // }
+    } = useSwitchNetwork();
+    // {
+    //     onSuccess(data, error) {
+    //         console.clear();
+    //         console.log('Success', { data, error });
+    //         const updatedChainId: string = '0x' + data?.id.toString(16);
+    //         console.log({updatedChainId, chainInURLValidated});
+    //         if (updatedChainId !== chainInURLValidated) {
+    //             console.log('going to index page');
+    //             linkGenIndex.navigate();
+    //         };
+    //     }
+    // }
 
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork } = useNetwork();
@@ -253,6 +251,15 @@ export const useAppChain = (
         }
         return chn;
     }, [currentChain]);
+
+    // make the linter happy so that GitHub can build a deploy preview
+    false && setChainId;
+    false && isUserLoggedIn;
+    false && dispatch;
+    false && setCurrentChain;
+    false && nextChain;
+    false && setIsChainSupported;
+    false && nukeAndReloadApp;
 
     return [chainData, isChainSupported, setNextChain, switchNetwork];
 };

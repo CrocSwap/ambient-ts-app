@@ -3,7 +3,6 @@ import React, {
     SetStateAction,
     Dispatch,
     useState,
-    useEffect,
 } from 'react';
 
 interface RangeContextIF {
