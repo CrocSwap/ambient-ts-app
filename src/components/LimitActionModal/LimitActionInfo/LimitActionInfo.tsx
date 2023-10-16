@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import Row from '../../Global/Row/Row';
 import styles from './LimitActionInfo.module.css';
 
@@ -25,6 +27,10 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
         receivingAmountLogo,
         networkFee,
     } = props;
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     return (
         <div className={styles.row}>
@@ -81,7 +87,7 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                 <div>
                     <span>Network Fee</span>
                 </div>
-                <span>~{networkFee}</span>
+                <span>{chainId === '0x1' ? '~' + networkFee : '...'}</span>
             </div>
         </div>
     );

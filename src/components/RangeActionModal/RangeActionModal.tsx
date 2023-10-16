@@ -756,7 +756,11 @@ export default function RangeActionModal(props: propsIF) {
                         </div>
                         <div>
                             <span>Network Fee</span>
-                            <span>~{removalGasPriceinDollars ?? '...'}</span>
+                            <span>
+                                {chainId === '0x1'
+                                    ? '~' + removalGasPriceinDollars
+                                    : '...'}
+                            </span>
                         </div>
                     </div>
                 </div>
