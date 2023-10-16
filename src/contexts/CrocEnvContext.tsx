@@ -111,19 +111,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         setNextChain(network.chainId);
     };
 
-    const crocEnvContext = {
-        crocEnv,
-        setCrocEnv,
-        selectedNetwork,
-        setSelectedNetwork: updateNetwork,
-        chainData,
-        isChainSupported,
-        topPools,
-        ethMainnetUsdPrice,
-        defaultUrlParams,
-        provider,
-    };
-
     useBlacklist(userAddress);
 
     const setNewCrocEnv = async () => {
@@ -169,11 +156,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     };
     useEffect(() => {
         setNewCrocEnv();
-    }, [
-        crocEnv === undefined,
-        chainData.chainId,
-        signer,
-    ]);
+    }, [crocEnv === undefined, chainData.chainId, signer]);
 
     useEffect(() => {
         if (provider) {
@@ -192,6 +175,20 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
     }, [chainData.chainId]);
+
+    // data returned by this context
+    const crocEnvContext = {
+        crocEnv,
+        setCrocEnv,
+        selectedNetwork,
+        setSelectedNetwork: updateNetwork,
+        chainData,
+        isChainSupported,
+        topPools,
+        ethMainnetUsdPrice,
+        defaultUrlParams,
+        provider,
+    };
 
     return (
         <CrocEnvContext.Provider value={crocEnvContext}>
