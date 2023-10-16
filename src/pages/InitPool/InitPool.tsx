@@ -1335,7 +1335,9 @@ export default function InitPool() {
             </FlexContainer>
             <section
                 style={{ width: '100%' }}
-                onDoubleClick={() => openEditMode()}
+                onDoubleClick={() => {
+                    if (!isEditEnabled) openEditMode();
+                }}
             >
                 {isLoading ? (
                     <FlexContainer
