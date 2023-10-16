@@ -20,7 +20,8 @@ interface InnerContainerProps {
 }
 
 const InnerContainer = styled.div<InnerContainerProps>`
-    height: 100%;
+    height: 70vh;
+    overflow-y: scroll;
     ${(props) =>
         props.isConfirmation
             ? css`
@@ -36,6 +37,7 @@ const InnerContainer = styled.div<InnerContainerProps>`
 
     @media only screen and (min-width: 768px) {
         width: 772px;
+        height: 100%;
     }
 `;
 
