@@ -629,7 +629,6 @@ function Range() {
     }, [tokenBDexBalance]);
 
     useEffect(() => {
-        console.log({ advancedMode, defaultLowTick, defaultHighTick });
         if (advancedMode) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,

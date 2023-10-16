@@ -20,10 +20,6 @@ export const useAppChain = (): {
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork, chains: chns } = useNetwork();
     const { switchNetwork } = useSwitchNetwork();
-    console.log(chns);
-    // useEffect(() => {
-    //     console.log('Network:', chainNetwork);
-    // }, [chainNetwork?.id]);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
@@ -35,6 +31,7 @@ export const useAppChain = (): {
 
     // fn to get a chain ID param from the current URL string
     // returns `null` if chain ID is not found or fails validation
+    // due to where this code is instantiated we can't use param tools
     function getChainFromURL(): string | null {
         const { pathname } = window.location;
         let rawURL = pathname;
@@ -81,18 +78,9 @@ export const useAppChain = (): {
     // trigger chain switch in wallet when chain in URL changes
     useEffect(() => {
         if (chainInURLValidated && switchNetwork) {
-            const isChainValid = validateChainId(chainInURLValidated);
-            isChainValid && switchNetwork(parseInt(chainInURLValidated));
+            switchNetwork(parseInt(chainInURLValidated));
         }
     }, [chainInURLValidated, switchNetwork]);
-
-    /*
-    Mainnet
-    http://localhost:3000/trade/market/chain=0x1&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
-    
-    Goerli
-    http://localhost:3000/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05
-    */
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
@@ -119,7 +107,6 @@ export const useAppChain = (): {
                         // if yes, no changes needed
                         // if no, navigate to index page
                         // first part seems unnecessary but appears to help stability
-                        // console.log(chainInURLValidated, incomingChainFromWallet);
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
                             const { pathname } = window.location;
@@ -134,6 +121,7 @@ export const useAppChain = (): {
                             linkGenIndex.navigate();
                             window.location.reload;
                         }
+                        // update state with new validated wallet network
                         chainInWalletValidated.current =
                             incomingChainFromWallet;
                     }
@@ -145,109 +133,51 @@ export const useAppChain = (): {
         }
     }, [chainNetwork?.id]);
 
-    // const [activeChain, setActiveChain] = useState();
-
-    // function determineConnected(chainNetwork?: { id: number }): string {
-    //     return chainNetwork
-    //         ? chainNumToString(chainNetwork.id)
-    //         : chainInURLValidated ??
-    //               (localStorage.getItem(CHAIN_LS_KEY) || defaultChain);
-    // }
-
     const defaultChain = getDefaultChainId();
 
-    // // value tracking the current chain the app is set to use
-    // // initializes on the default chain parameter
-    // // we need this value so the app can be used without a wallet
-    // const [currentChain, setCurrentChain] = useState(
-    //     getChainFromURL() ?? determineConnected(chainNetwork),
-    // );
-
-    // // value trackng the chain the user or app is trying to switch to
-    // // If valid, currentChain should converge to this value. For invalid chains
-    // // the rest of the app should be gated, by not converging currentChain
-    // const [nextChain, setNextChain] = useState(currentChain);
-    // // console.log({ currentChain, nextChain });
-
-    // // boolean representing if the current chain is supported by the app
-    // // we use this value to populate the SwitchNetwork.tsx modal
-    // const [isChainSupported, setIsChainSupported] = useState(
-    //     validateChainId(currentChain),
-    // );
-
-    // const walletInitialized = useRef(false);
-
-    // If chain switches from wallet, propogate that into currentChain hook
-    // useEffect(() => {
-    //     // if (chainNetwork) {
-    //     //     if (walletInitialized.current) {
-    //             setNextChain(determineConnected(chainNetwork));
-    //     //     }
-    //     //     walletInitialized.current = true;
-    //     // }
-    // }, [chainNetwork]);
-
-    // This is crude way to handle a chain switch, but without this there is a
-    // a lot of dangling providers pointing to the wrong chain that will error and
-    // time out, slowing down app performance
-    // function nukeAndReloadApp(params: string) {
-    //     params ? linkGenCurrent.navigate(params) : linkGenCurrent.navigate();
-    //     window.location.reload();
-    // }
-    // http://localhost:3000/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05
-    // if the chain in metamask changes, update the value in the app to match
-    // gatekeeping ensures this only runs when the user changes the chain in metamask
-    // gatekeeping also ensures app will not change to an unsupported network
-    // TODO: plan for pathways supporting de-authentication
-    // useEffect(() => {
-    //     // Indicates that we're switching between valid chains. For now we reload
-    //     // the app, since there's a lot of downstream dependencies to the provider
-    //     if (
-    //         validateChainId(nextChain) &&
-    //         validateChainId(currentChain) &&
-    //         nextChain !== currentChain
-    //     ) {
-    //         localStorage.setItem(CHAIN_LS_KEY, nextChain);
-    //         nukeAndReloadApp();
-    //     }
-
-    //     // Only switch currentChain iif valid
-    //     if (validateChainId(nextChain)) {
-    //         setCurrentChain(nextChain);
-    //         dispatch(setChainId(nextChain));
-    //         setIsChainSupported(true);
-    //     } else {
-    //         setIsChainSupported(false);
-    //     }
-    // }, [nextChain, isUserLoggedIn]);
-
-    // data from the SDK about the current chain
-    // refreshed every time the the value of currentChain is updated
+    // data from the SDK about the current chain in the connected wallet
+    // chain is validated upstream of this process
     const chainData = useMemo<ChainSpec>(() => {
+        // hierarchical list of possible sources of truth
         const chainsHierarchy: Array<string | null> = [
+            // last validated chain from a connected wallet
             chainInWalletValidated.current,
+            // current validated chain in the URL bar
             chainInURLValidated,
-            defaultChain,
         ];
+        // variable to hold chain data from SDK
         let chn;
+        // iterator for while loop below
         let i = 0;
+        // look for chain data through hierarchical list of chains
         do {
-            const thisChain = chainsHierarchy[i];
+            const thisChain: string | null = chainsHierarchy[i];
             if (thisChain) chn = lookupChain(thisChain);
             i++;
         } while (!chn && i < chainsHierarchy.length);
+        // output variable with default chain as a fallback value
         const output: ChainSpec = chn ?? lookupChain(defaultChain);
+        // sync data in RTK for the new chain
         dispatch(setChainId(output.chainId));
+        // return output varibale (chain data)
         return output;
     }, [chainInWalletValidated.current]);
 
+    // boolean showing if the current chain in connected wallet is supported
+    // this is used to launch the network switcher automatically
     const isWalletChainSupported = useMemo<boolean>(() => {
+        // output variable, true by default (when no wallet is connected)
         let isSupported = true;
+        // if a wallet is connected, try to validate network
         if (chns.length && chainNetwork) {
+            // array of supported chains (number)
             const supportedChains: number[] = chns.map((chn) => chn.id);
-            const walletChain: number | undefined = chainNetwork.id;
+            // chain Id of connected network in wallet
+            const walletChain: number = chainNetwork.id;
+            // determine if connected wallet has a supported chain
             isSupported = supportedChains.includes(walletChain);
         }
+        // return output variable
         return isSupported;
     }, [chainNetwork]);
 
