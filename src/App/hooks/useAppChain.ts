@@ -27,9 +27,9 @@ export const useAppChain = (
     const { chain: chainNetwork } = useNetwork();
     const { switchNetwork } = useSwitchNetwork();
 
-    // useEffect(() => {
-    //     console.log('Network:', chainNetwork);
-    // }, [chainNetwork?.id]);
+    useEffect(() => {
+        console.log('Network:', chainNetwork);
+    }, [chainNetwork?.id]);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
@@ -103,6 +103,8 @@ export const useAppChain = (
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
         // console.log('wallet updated!');
+        console.log('start timer!');
+        console.time('updating chain in app');
         if (chainNetwork) {
             // chain ID from wallet (current live value, not memoized in the app)
             const incomingChainFromWallet: string | null = getChainFromWallet();
@@ -111,7 +113,7 @@ export const useAppChain = (
             if (incomingChainFromWallet) {
                 // check that the new incoming chain ID is supported by Ambient
                 if (validateChainId(incomingChainFromWallet)) {
-                    // if wallet chain is valid and does not match record in app, re-initialize
+                    // if wallet chain is valid and does not match record in app, update
                     // without this gatekeeping the app refreshes itself endlessly
                     if (
                         chainInWalletValidated.current !==
@@ -141,6 +143,8 @@ export const useAppChain = (
                             linkGenIndex.navigate();
                             window.location.reload;
                         }
+                        chainInWalletValidated.current =
+                            incomingChainFromWallet;
                     }
                 }
             } else {
@@ -228,16 +232,29 @@ export const useAppChain = (
 
     // data from the SDK about the current chain
     // refreshed every time the the value of currentChain is updated
-    const chainData = useMemo(() => {
+    const chainData = useMemo<ChainSpec>(() => {
+        console.timeEnd('updating chain in app');
+        console.log('recalculating chainData...');
+        const chainsHierarchy: Array<string | null> = [
+            chainInWalletValidated.current,
+            chainInURLValidated,
+            defaultChain,
+        ];
         let chn;
-        try {
-            chn = lookupChain(currentChain);
-        } catch (err) {
-            console.error(err);
-            chn = lookupChain(defaultChain);
-        }
-        return chn;
-    }, [currentChain]);
+        let i = 0;
+        do {
+            const thisChain = chainsHierarchy[i];
+            if (thisChain) {
+                chn = lookupChain(thisChain);
+            }
+            i++;
+        } while (!chn && i < chainsHierarchy.length);
+        const output: ChainSpec = chn ?? lookupChain(defaultChain);
+        // console.log('new chain:', output);
+        console.timeEnd('updating chain in app');
+        console.log('recalculating chainData...');
+        return output;
+    }, [chainInWalletValidated.current]);
 
     // make the linter happy so that GitHub can build a deploy preview
     false && setChainId;
