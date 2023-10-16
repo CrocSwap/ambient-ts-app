@@ -73,13 +73,10 @@ export function useCreateRangePosition() {
             isAdd,
             setNewRangeTransactionHash,
             setTxErrorCode,
-            resetConfirmation,
             setIsTxCompletedRange,
         } = params;
 
         if (!crocEnv) return;
-
-        resetConfirmation();
 
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
 

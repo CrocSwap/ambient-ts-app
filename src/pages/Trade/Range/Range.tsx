@@ -855,6 +855,7 @@ function Range() {
     const { createRangePosition } = useCreateRangePosition();
     const sendTransaction = async () => {
         if (!crocEnv) return;
+        setShowConfirmation(true);
 
         createRangePosition({
             slippageTolerancePercentage,
