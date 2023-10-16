@@ -25,12 +25,28 @@ export const useAppChain = (
     ((chainId_?: number | undefined) => void) | undefined,
 ] => {
     const {
-        // chains, error, isLoading, pendingChainId,
+        // chains, error, isLoading,
         switchNetwork,
-    } = useSwitchNetwork();
+    } =
+        useSwitchNetwork();
+        // {
+        //     onSuccess(data, error) {
+        //         console.clear();
+        //         console.log('Success', { data, error });
+        //         const updatedChainId: string = '0x' + data?.id.toString(16);
+        //         console.log({updatedChainId, chainInURLValidated});
+        //         if (updatedChainId !== chainInURLValidated) {
+        //             console.log('going to index page');
+        //             linkGenIndex.navigate();
+        //         };
+        //     }
+        // }
 
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork } = useNetwork();
+    useEffect(() => {
+        console.log('Network:', chainNetwork);
+    }, [chainNetwork?.id]);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
@@ -104,46 +120,52 @@ export const useAppChain = (
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
         console.log('wallet updated!');
-        // chain ID from wallet (current live value, not memoized in the app)
-        const incomingChainFromWallet: string | null = getChainFromWallet();
-        // if a wallet is connected, evaluate action to take
-        // if none is connected, nullify memoized record of chain ID from wallet
-        if (incomingChainFromWallet) {
-            // check that the new incoming chain ID is supported by Ambient
-            if (validateChainId(incomingChainFromWallet)) {
-                // if wallet chain is valid and does not match record in app, re-initialize
-                // without this gatekeeping the app refreshes itself endlessly
-                if (
-                    chainInWalletValidated.current !== incomingChainFromWallet
-                ) {
-                    // update preserved chain ID in local storage
-                    localStorage.setItem(CHAIN_LS_KEY, incomingChainFromWallet);
-                    // determine if new chain ID from wallet matches URL
-                    // if yes, no changes needed
-                    // if no, navigate to index page
-                    // first part seems unnecessary but appears to help stability
-                    console.log(chainInURLValidated, incomingChainFromWallet);
-                    if (chainInURLValidated === incomingChainFromWallet) {
-                        // generate params chain manually and navigate user
-                        const { pathname } = window.location;
-                        let templateURL = pathname;
-                        while (templateURL.includes('/')) {
-                            templateURL = templateURL.substring(1);
+        if (chainNetwork) {
+            // chain ID from wallet (current live value, not memoized in the app)
+            const incomingChainFromWallet: string | null = getChainFromWallet();
+            // if a wallet is connected, evaluate action to take
+            // if none is connected, nullify memoized record of chain ID from wallet
+            if (incomingChainFromWallet) {
+                // check that the new incoming chain ID is supported by Ambient
+                if (validateChainId(incomingChainFromWallet)) {
+                    // if wallet chain is valid and does not match record in app, re-initialize
+                    // without this gatekeeping the app refreshes itself endlessly
+                    if (
+                        chainInWalletValidated.current !==
+                        incomingChainFromWallet
+                    ) {
+                        // update preserved chain ID in local storage
+                        localStorage.setItem(
+                            CHAIN_LS_KEY,
+                            incomingChainFromWallet,
+                        );
+                        // determine if new chain ID from wallet matches URL
+                        // if yes, no changes needed
+                        // if no, navigate to index page
+                        // first part seems unnecessary but appears to help stability
+                        // console.log(chainInURLValidated, incomingChainFromWallet);
+                        if (chainInURLValidated === incomingChainFromWallet) {
+                            // generate params chain manually and navigate user
+                            const { pathname } = window.location;
+                            let templateURL = pathname;
+                            while (templateURL.includes('/')) {
+                                templateURL = templateURL.substring(1);
+                            }
+                            linkGenCurrent.navigate(templateURL);
+                            window.location.reload();
+                        } else {
+                            // navigate to index page
+                            linkGenIndex.navigate();
+                            window.location.reload;
                         }
-                        linkGenCurrent.navigate(templateURL);
-                        window.location.reload();
-                    } else {
-                        // navigate to index page
-                        linkGenIndex.navigate();
-                        window.location.reload();
                     }
                 }
+            } else {
+                // this should only ever be null
+                chainInWalletValidated.current = incomingChainFromWallet;
             }
-        } else {
-            // this should only ever be null
-            chainInWalletValidated.current = incomingChainFromWallet;
         }
-    }, [chainNetwork]);
+    }, [chainNetwork?.id]);
 
     function determineConnected(chainNetwork?: { id: number }): string {
         return chainNetwork
