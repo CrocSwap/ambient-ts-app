@@ -852,11 +852,7 @@ export default function InitPool() {
         const targetValueNum = parseFloat(input);
         isValid && setInitialPriceDisplay(input);
 
-        if (
-            isValid &&
-            ((!isNaN(targetValueNum) && targetValueNum !== 0) ||
-                event.target.value === '')
-        ) {
+        if (isValid && !isNaN(targetValueNum) && targetValueNum !== 0) {
             if (event.target.value === '') {
                 setInitialPriceInBaseDenom(undefined);
             } else {
@@ -1430,7 +1426,11 @@ export default function InitPool() {
         <FlexContainer
             flexDirection='row'
             justifyContent='space-between'
-            blur={!!poolExists || initialPriceDisplay === ''}
+            blur={
+                !!poolExists ||
+                initialPriceDisplay === '' ||
+                parseFloat(initialPriceDisplay) === 0
+            }
         >
             <Text fontSize='body' color='text2'>
                 Mint Initial Liquidity
