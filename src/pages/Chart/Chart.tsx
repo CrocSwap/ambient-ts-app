@@ -1803,6 +1803,7 @@ export default function Chart(props: propsIF) {
         let offsetY = 0;
         let movemementY = 0;
         let newLimitValue: number | undefined;
+        let tempNewLimitValue: number | undefined;
 
         let tempMovemementY = 0;
         let cancelDrag = false;
@@ -1832,6 +1833,7 @@ export default function Chart(props: propsIF) {
                 // Store the initial value of the limit for potential cancellation.
                 oldLimitValue = limit;
                 newLimitValue = limit;
+                tempNewLimitValue = limit;
                 if (event.sourceEvent instanceof TouchEvent) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - rectCanvas?.top;
@@ -1857,14 +1859,16 @@ export default function Chart(props: propsIF) {
                         setCrosshairActive('none');
 
                         // // Calculate the new limit value based on the Y-coordinate.
-                        if (newLimitValue !== undefined) {
-                            newLimitValue = scaleData?.yScale.invert(
-                                scaleData?.yScale(newLimitValue) + movemementY,
+                        if (tempNewLimitValue !== undefined) {
+                            tempNewLimitValue = scaleData?.yScale.invert(
+                                scaleData?.yScale(tempNewLimitValue) +
+                                    movemementY,
                             );
 
                             // Perform calculations based on the new limit value
-                            if (newLimitValue) {
-                                newLimitValue = calculateLimit(newLimitValue);
+                            if (tempNewLimitValue) {
+                                newLimitValue =
+                                    calculateLimit(tempNewLimitValue);
                             }
                         }
                     } else {
@@ -2698,13 +2702,6 @@ export default function Chart(props: propsIF) {
                     mousemove(event);
                 },
             );
-
-            // d3.select(d3CanvasMain.current).on(
-            //     'touchstart',
-            //     function (event: TouchEvent) {
-            //         onClickCanvas(event);
-            //     },
-            // );
         }
     }, [
         diffHashSigChart(visibleCandleData),
