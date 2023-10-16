@@ -23,28 +23,13 @@ export const useAppChain = (
     Dispatch<SetStateAction<string>>,
     ((chainId_?: number | undefined) => void) | undefined,
 ] => {
-    const {
-        // chains, error, isLoading,
-        switchNetwork,
-    } = useSwitchNetwork();
-    // {
-    //     onSuccess(data, error) {
-    //         console.clear();
-    //         console.log('Success', { data, error });
-    //         const updatedChainId: string = '0x' + data?.id.toString(16);
-    //         console.log({updatedChainId, chainInURLValidated});
-    //         if (updatedChainId !== chainInURLValidated) {
-    //             console.log('going to index page');
-    //             linkGenIndex.navigate();
-    //         };
-    //     }
-    // }
-
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork } = useNetwork();
-    useEffect(() => {
-        console.log('Network:', chainNetwork);
-    }, [chainNetwork?.id]);
+    const { switchNetwork } = useSwitchNetwork();
+
+    // useEffect(() => {
+    //     console.log('Network:', chainNetwork);
+    // }, [chainNetwork?.id]);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
@@ -117,7 +102,7 @@ export const useAppChain = (
 
     // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
-        console.log('wallet updated!');
+        // console.log('wallet updated!');
         if (chainNetwork) {
             // chain ID from wallet (current live value, not memoized in the app)
             const incomingChainFromWallet: string | null = getChainFromWallet();
@@ -164,6 +149,8 @@ export const useAppChain = (
             }
         }
     }, [chainNetwork?.id]);
+
+    // const [activeChain, setActiveChain] = useState();
 
     function determineConnected(chainNetwork?: { id: number }): string {
         return chainNetwork
