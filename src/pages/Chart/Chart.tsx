@@ -1346,6 +1346,7 @@ export default function Chart(props: propsIF) {
                 });
             }
         });
+        return newLimitValue;
     }
 
     // dragRange
@@ -1863,7 +1864,7 @@ export default function Chart(props: propsIF) {
 
                             // Perform calculations based on the new limit value
                             if (newLimitValue) {
-                                calculateLimit(newLimitValue);
+                                newLimitValue = calculateLimit(newLimitValue);
                             }
                         }
                     } else {
