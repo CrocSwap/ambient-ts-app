@@ -1643,7 +1643,7 @@ export default function InitPool() {
             setActiveContent={setActiveContent}
             title='Settings'
         >
-            <InitConfirmation {...initConfirmationProps} />
+            I AM SETTINGS
         </InitSkeleton>
     );
 

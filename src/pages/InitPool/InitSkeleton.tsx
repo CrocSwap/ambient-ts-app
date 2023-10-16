@@ -4,6 +4,7 @@ import { FlexContainer, Text } from '../../styled/Common';
 import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 
 import { MdArrowBackIosNew } from 'react-icons/md';
+import { FiSettings } from 'react-icons/fi';
 
 interface InitSkeletonProps {
     children: React.ReactNode;
@@ -39,7 +40,8 @@ const InnerContainer = styled.div<InnerContainerProps>`
 `;
 
 export default function InitSkeleton(props: InitSkeletonProps) {
-    const { children, isConfirmation, title, handleGoBack } = props;
+    const { children, isConfirmation, title, handleGoBack, setActiveContent } =
+        props;
 
     return (
         <FlexContainer
@@ -80,6 +82,10 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                         >
                             {title}
                         </Text>
+                        <FiSettings
+                            onClick={() => setActiveContent('settings')}
+                            size={18}
+                        />
                     </FlexContainer>
                     <InnerContainer isConfirmation={isConfirmation}>
                         {children}
