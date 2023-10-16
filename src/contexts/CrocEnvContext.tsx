@@ -37,7 +37,7 @@ interface CrocEnvContextIF {
     selectedNetwork: NetworkIF;
     setSelectedNetwork: (val: NetworkIF) => void;
     chainData: ChainSpec;
-    isChainSupported: boolean;
+    isWalletChainSupported: boolean;
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
@@ -51,14 +51,13 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
-    const { address: userAddress, isConnected } = useAccount();
+    const { address: userAddress } = useAccount();
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     const [selectedNetwork, setSelectedNetwork] =
         useState<NetworkIF>(ethereumGoerli);
-    const [chainData, isChainSupported, setNextChain] =
-        useAppChain(isConnected);
+    const { chainData, isWalletChainSupported } = useAppChain();
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
@@ -108,7 +107,6 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     const updateNetwork = (network: NetworkIF) => {
         setSelectedNetwork(network);
-        setNextChain(network.chainId);
     };
 
     useBlacklist(userAddress);
@@ -183,7 +181,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         selectedNetwork,
         setSelectedNetwork: updateNetwork,
         chainData,
-        isChainSupported,
+        isWalletChainSupported,
         topPools,
         ethMainnetUsdPrice,
         defaultUrlParams,
