@@ -1481,6 +1481,8 @@ export default function InitPool() {
             if (activeConfirmationStep === 4) {
                 setActiveContent('main');
             }
+        } else if (activeContent === 'settings') {
+            setActiveContent('main');
         } else {
             handleNavigation();
         }

@@ -5,6 +5,7 @@ import styles from '../../components/Home/Landing/BackgroundImages.module.css';
 
 import { MdArrowBackIosNew } from 'react-icons/md';
 import { FiSettings } from 'react-icons/fi';
+import { DISABLE_INIT_SETTINGS } from '../../constants';
 
 interface InitSkeletonProps {
     children: React.ReactNode;
@@ -38,12 +39,19 @@ const InnerContainer = styled.div<InnerContainerProps>`
     @media only screen and (min-width: 768px) {
         width: 772px;
         height: 100%;
+        overflow-y: hidden;
     }
 `;
 
 export default function InitSkeleton(props: InitSkeletonProps) {
-    const { children, isConfirmation, title, handleGoBack, setActiveContent } =
-        props;
+    const {
+        children,
+        isConfirmation,
+        title,
+        handleGoBack,
+        setActiveContent,
+        activeContent,
+    } = props;
 
     return (
         <FlexContainer
@@ -84,10 +92,12 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                         >
                             {title}
                         </Text>
-                        <FiSettings
-                            onClick={() => setActiveContent('settings')}
-                            size={18}
-                        />
+                        {!DISABLE_INIT_SETTINGS && activeContent === 'main' && (
+                            <FiSettings
+                                onClick={() => setActiveContent('settings')}
+                                size={18}
+                            />
+                        )}
                     </FlexContainer>
                     <InnerContainer isConfirmation={isConfirmation}>
                         {children}
