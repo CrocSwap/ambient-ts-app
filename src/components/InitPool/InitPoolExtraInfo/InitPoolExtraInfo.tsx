@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 // import { FaGasPump } from 'react-icons/fa';
 // import { RiArrowDownSLine } from 'react-icons/ri';
 
@@ -8,6 +8,7 @@ import styles from './InitPoolExtraInfo.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 interface InitPriceExtraInfoProps {
     initGasPriceinDollars: string | undefined;
@@ -28,6 +29,10 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
         quoteToken,
         setIsDenomBase,
     } = props;
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const [showExtraDetails] = useState<boolean>(true);
     // const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);
@@ -74,7 +79,7 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
             title: 'Network Fee',
             tooltipTitle:
                 'Estimated network fee (i.e. gas cost) to initialize pool',
-            data: `${initGasPriceinDollars}`,
+            data: `${chainId === '0x1' ? initGasPriceinDollars : '...'}`,
         },
 
         // {
