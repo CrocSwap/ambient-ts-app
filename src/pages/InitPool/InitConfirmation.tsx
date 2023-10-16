@@ -65,7 +65,6 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         tokenB,
         isAmbient,
         isTokenABase,
-        errorCode,
         isTxCompletedInit,
         handleNavigation,
         isTxCompletedRange,
@@ -223,7 +222,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         ? isTransactionDenied
             ? 'Transaction denied in wallet.'
             : isTransactionException
-            ? `oh oh there is a problem initiating this pool. ${errorCode}. Please try again.`
+            ? 'Pool initialization transaction failed simulation. Please refresh and try again.'
             : ''
         : '';
 
