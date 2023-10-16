@@ -198,7 +198,10 @@ export default function InitButton(props: PropsIF) {
                 return initializationPendingButton;
             }
 
-            if (advancedHighTick <= advancedLowTick) {
+            if (
+                advancedHighTick <= advancedLowTick &&
+                !(advancedHighTick === 0 && advancedLowTick === 0)
+            ) {
                 return invalidRangeButton;
             }
 
