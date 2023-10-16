@@ -13,8 +13,7 @@ import { WagmiConfig, createClient, configureChains } from 'wagmi';
 import { infuraProvider } from 'wagmi/providers/infura';
 
 import { InjectedConnector } from 'wagmi/connectors/injected';
-import Moralis from 'moralis/.';
-import { GLOBAL_MODAL_PORTAL_ID, MORALIS_KEY } from './constants';
+import { GLOBAL_MODAL_PORTAL_ID } from './constants';
 import { GlobalContexts } from './contexts/GlobalContexts';
 import { supportedNetworks } from './utils/networks';
 
@@ -80,10 +79,6 @@ if (!doReload) {
         ],
         provider,
         webSocketProvider,
-    });
-
-    Moralis.start({
-        apiKey: MORALIS_KEY,
     });
 
     const root = ReactDOM.createRoot(

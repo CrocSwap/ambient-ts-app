@@ -11,8 +11,8 @@
 
 .range_column p,
 .range_sing p {
-    font-size: 10px;
-    line-height: 12px;
+    font-size: var(--mini-size);
+    line-height: var(--mini-lh);
     color: var(--accent3);
 }
 
@@ -22,8 +22,8 @@
         display: none;
     }
     .range_column p {
-        font-size: 12px;
-        line-height: 15px;
+        font-size: var(--body-size);
+        line-height: var(--body-lh);
     }
 
     .range_sing {

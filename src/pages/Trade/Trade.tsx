@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { useParams, Outlet, NavLink } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { NumberSize } from 're-resizable';
 import {
     useEffect,
@@ -37,10 +37,6 @@ import {
     TradeDropdownButton,
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
-import {
-    SelectorWrapper,
-    SelectorContainer,
-} from '../../styled/Components/TradeModules';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -71,43 +67,15 @@ function Trade() {
         setActiveMobileComponent,
     } = useContext(TradeTableContext);
 
-    const routes = [
-        {
-            path: '/market',
-            name: 'Swap',
-        },
-        {
-            path: '/limit',
-            name: 'Limit',
-        },
-        {
-            path: '/pool',
-            name: 'Pool',
-        },
-    ];
+    const { tradeData } = useAppSelector((state) => state);
+    const { isDenomBase, limitTick } = tradeData;
 
-    const { params } = useParams();
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+    const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [selectedDate, setSelectedDate] = useState<number | undefined>();
 
-    const { tradeData } = useAppSelector((state) => state);
-    const { isDenomBase, limitTick } = tradeData;
-
     const tradeTableRef = useRef<HTMLDivElement>(null);
-
-    const navigationMenu = (
-        <SelectorContainer justifyContent='center' alignItems='center' gap={8}>
-            {routes.map((route, idx) => (
-                <SelectorWrapper key={idx}>
-                    <NavLink to={`/trade${route.path}/${params}`}>
-                        {route.name}
-                    </NavLink>
-                </SelectorWrapper>
-            ))}
-        </SelectorContainer>
-    );
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
@@ -205,6 +173,7 @@ function Trade() {
         setSelectedDate: setSelectedDate,
         isChartLoading,
         setIsChartLoading,
+        updateURL,
     };
 
     const tradeTabsProps = {
@@ -241,8 +210,8 @@ function Trade() {
                 <Outlet
                     context={{
                         tradeData: tradeData,
-                        navigationMenu: navigationMenu,
                         limitTick: limitTick,
+                        updateURL: updateURL,
                     }}
                 />
             )}
@@ -355,7 +324,9 @@ function Trade() {
                 <Outlet
                     context={{
                         tradeData: tradeData,
-                        navigationMenu: navigationMenu,
+                        urlParamMap: urlParamMap,
+                        limitTick: limitTick,
+                        updateURL: updateURL,
                     }}
                 />
             </FlexContainer>

@@ -45,7 +45,7 @@ export default function InitPool() {
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { tokenAAllowance, tokenBAllowance } = useContext(TradeTokenContext);
     const { tokens } = useContext(TokenContext);
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
+    useUrlParams(tokens, chainId, provider);
 
     const { isConnected } = useAccount();
 

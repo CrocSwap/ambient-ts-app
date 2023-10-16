@@ -94,6 +94,10 @@ export const UserPreferenceContextProvider = (props: {
                         getMoneynessRank(quoteTokenSymbol) >=
                     0
                 );
+            } else if (quoteTokenSymbol) {
+                return false;
+            } else {
+                return true;
             }
         }
         return false;

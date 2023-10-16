@@ -27,7 +27,6 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 import {
     addPendingTx,
     addTransactionByType,
@@ -42,6 +41,7 @@ import {
 } from '../../../utils/TransactionError';
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import { useApprove } from '../../../App/functions/approve';
+import { useUrlParams } from '../../../utils/hooks/useUrlParams';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -77,6 +77,7 @@ function Swap(props: propsIF) {
     const dispatch = useAppDispatch();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
+    !pathname.includes('/trade') && useUrlParams(tokens, chainId, provider);
     const [isModalOpen, openModal, closeModal] = useModal();
     // use URL pathway to determine if user is in swap or market page
     // depending on location we pull data on the tx in progress differently
@@ -94,7 +95,6 @@ function Swap(props: propsIF) {
     } = pathname.includes('/trade')
         ? useTradeData()
         : useAppSelector((state) => state);
-    useUrlParams(['chain', 'tokenA', 'tokenB'], tokens, chainId, provider);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
         isTokenAPrimary ? primaryQuantity : '',
@@ -462,6 +462,7 @@ function Swap(props: propsIF) {
 
     return (
         <TradeModuleSkeleton
+            chainId={chainId}
             isSwapPage={!isOnTradeRoute}
             header={
                 <TradeModuleHeader
@@ -480,12 +481,18 @@ function Swap(props: propsIF) {
                         value: sellQtyString,
                         set: setSellQtyString,
                     }}
-                    buyQtyString={{ value: buyQtyString, set: setBuyQtyString }}
+                    buyQtyString={{
+                        value: buyQtyString,
+                        set: setBuyQtyString,
+                    }}
                     isSellLoading={{
                         value: isSellLoading,
                         set: setIsSellLoading,
                     }}
-                    isBuyLoading={{ value: isBuyLoading, set: setIsBuyLoading }}
+                    isBuyLoading={{
+                        value: isBuyLoading,
+                        set: setIsBuyLoading,
+                    }}
                     isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setSwapAllowed={setSwapAllowed}
