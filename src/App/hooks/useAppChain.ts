@@ -40,6 +40,8 @@ export const useAppChain = (
 
     const CHAIN_LS_KEY = 'CHAIN_ID';
 
+    // fn to get a chain ID param from the current URL string
+    // returns `null` if chain ID is not found or fails validation
     function getChainFromURL(): string | null {
         const { pathname } = window.location;
         let rawURL = pathname;
@@ -62,6 +64,8 @@ export const useAppChain = (
         return output;
     }
 
+    // fn to get a chain ID from the connected wallet
+    // returns `null` if no wallet or if network fails validation
     function getChainFromWallet(): string | null {
         let output: string | null = null;
         if (chainNetwork) {
@@ -72,21 +76,32 @@ export const useAppChain = (
         return output;
     }
 
-    const chainInURL: string | null = useMemo(
+    // memoized and validated chain ID from the URL
+    const chainInURLValidated: string | null = useMemo(
         () => getChainFromURL(),
         [window.location.pathname],
     );
 
+    // memoized and validated chain ID from the connected wallet
     const chainInWalletValidated = useRef<string | null>(getChainFromWallet());
 
     // trigger chain switch in wallet when chain in URL changes
     useEffect(() => {
-        if (chainInURL && switchNetwork) {
-            const isChainValid = validateChainId(chainInURL);
-            isChainValid && switchNetwork(parseInt(chainInURL));
+        if (chainInURLValidated && switchNetwork) {
+            const isChainValid = validateChainId(chainInURLValidated);
+            isChainValid && switchNetwork(parseInt(chainInURLValidated));
         }
-    }, [chainInURL, switchNetwork]);
+    }, [chainInURLValidated, switchNetwork]);
 
+    /*
+    Mainnet
+    http://localhost:3000/trade/market/chain=0x1&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+    
+    Goerli
+    http://localhost:3000/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05
+    */
+
+    // listen for the wallet to change in connected wallet and process that change in the app
     useEffect(() => {
         console.log('wallet updated!');
         // chain ID from wallet (current live value, not memoized in the app)
@@ -107,8 +122,8 @@ export const useAppChain = (
                     // if yes, no changes needed
                     // if no, navigate to index page
                     // first part seems unnecessary but appears to help stability
-                    console.log(chainInURL, incomingChainFromWallet);
-                    if (chainInURL === incomingChainFromWallet) {
+                    console.log(chainInURLValidated, incomingChainFromWallet);
+                    if (chainInURLValidated === incomingChainFromWallet) {
                         // generate params chain manually and navigate user
                         const { pathname } = window.location;
                         let templateURL = pathname;
@@ -133,7 +148,7 @@ export const useAppChain = (
     function determineConnected(chainNetwork?: { id: number }): string {
         return chainNetwork
             ? chainNumToString(chainNetwork.id)
-            : chainInURL ??
+            : chainInURLValidated ??
                   (localStorage.getItem(CHAIN_LS_KEY) || defaultChain);
     }
 
