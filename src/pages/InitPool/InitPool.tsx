@@ -787,7 +787,9 @@ export default function InitPool() {
     // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
-            const averageInitCostInGasDrops = 157922;
+            const averageInitCostInGasDrops = isMintLiqEnabled
+                ? 400000
+                : 155000;
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageInitCostInGasDrops *
@@ -801,7 +803,7 @@ export default function InitPool() {
                 }),
             );
         }
-    }, [gasPriceInGwei, ethMainnetUsdPrice]);
+    }, [gasPriceInGwei, ethMainnetUsdPrice, isMintLiqEnabled]);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
