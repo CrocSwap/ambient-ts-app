@@ -41,10 +41,6 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
         value: initialPrice,
     });
 
-    const {
-        chainData: { chainId },
-    } = useContext(CrocEnvContext);
-
     const priceDisplayString = isDenomBase
         ? `1 ${baseToken.symbol} = ${initialPriceLocaleString} ${quoteToken.symbol}`
         : `1 ${quoteToken.symbol} = ${initialPriceLocaleString} ${baseToken.symbol}`;
