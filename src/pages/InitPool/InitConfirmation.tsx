@@ -189,7 +189,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         },
         { label: 'Sign transaction to mint liquidity' },
         {
-            label: `Submitting liquidty for ${tokenSymbols}`,
+            label: `Submitting liquidity for ${tokenSymbols}`,
         },
     ];
 
