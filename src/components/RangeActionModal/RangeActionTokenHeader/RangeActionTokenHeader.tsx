@@ -30,6 +30,7 @@ export default function RangeActionTokenHeader(props: propsIF) {
         isAmbient,
     } = props;
     const { showSettings, setShowSettings } = props;
+    // TODO: use the settingsSVG from the library
     const settingsSvg = (
         <svg
             width='16'

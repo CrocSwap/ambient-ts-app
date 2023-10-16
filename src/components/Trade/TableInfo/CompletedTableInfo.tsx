@@ -22,7 +22,7 @@ function CompletedTableInfo() {
     return (
         <MainSection>
             <ScrollContainer>
-                <GridContainer numCols={2} gap={8} height={200}>
+                <GridContainer numCols={2} gap={8} height={'200px'}>
                     <GridContainer numCols={2} gap={8}>
                         {/* {featuredData.map((data, idx) => (
                                 <FeaturedBox

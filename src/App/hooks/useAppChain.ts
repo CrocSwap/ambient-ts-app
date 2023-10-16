@@ -71,7 +71,7 @@ export const useAppChain = (
     // If valid, currentChain should converge to this value. For invalid chains
     // the rest of the app should be gated, by not converging currentChain
     const [nextChain, setNextChain] = useState(currentChain);
-    console.log({ currentChain, nextChain });
+    // console.log({ currentChain, nextChain });
 
     // boolean representing if the current chain is supported by the app
     // we use this value to populate the SwitchNetwork.tsx modal

@@ -8,6 +8,7 @@ interface propsIF {
     customAriaLabel?: string;
     thin?: boolean;
     black?: boolean;
+    width?: string;
 }
 
 export default function Button(props: propsIF) {
@@ -17,6 +18,7 @@ export default function Button(props: propsIF) {
         title,
         flat,
         customAriaLabel,
+        width,
 
         thin,
     } = props;
@@ -34,7 +36,7 @@ export default function Button(props: propsIF) {
             aria-label={ariaLabelToDisplay}
             tabIndex={0}
             flat={!!flat}
-            width={thin ? '156px' : '100%'}
+            width={width ? width : thin ? '156px' : '100%'}
             height={thin ? '28px' : 'auto'}
         >
             {title}
