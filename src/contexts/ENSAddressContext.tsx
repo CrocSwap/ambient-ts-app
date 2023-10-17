@@ -49,7 +49,7 @@ export const ENSAddressContextProvider = (props: { children: ReactNode }) => {
                 const batchedEnsMap = await fetchEnsAddresses(
                     uncachedAddresses,
                 );
-                console.log({ uncachedAddresses });
+
                 if (batchedEnsMap && batchedEnsMap.size > 0) {
                     // Separate the addresses that returned null
                     const nullAddresses: string[] = [];
