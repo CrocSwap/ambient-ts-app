@@ -477,12 +477,14 @@ function YAxisCanvas(props: yAxisIF) {
                 const { isSameLocation, sameLocationData } =
                     sameLocationLimit();
 
-                const isScientificLimitTick = limit.toString().includes('e');
-
                 let limitTick = getFormattedNumber({
                     value: limit,
                     abbrevThreshold: 10000000, // use 'm', 'b' format > 10m
                 }).replace(',', '');
+
+                const isScientificLimitTick = limitTick
+                    .toString()
+                    .includes('e');
 
                 let limitSubString = undefined;
 
@@ -841,13 +843,22 @@ function YAxisCanvas(props: yAxisIF) {
                 })
                 .filter((event) => {
                     const isWheel = event.type === 'wheel';
+                    let offsetY: number | undefined = undefined;
+                    if (event instanceof TouchEvent) {
+                        offsetY = event.touches[0].clientY - rectCanvas?.top;
+                    } else {
+                        offsetY = event.offsetY;
+                    }
 
                     const isLabel =
                         yAxisLabels?.find((element: yLabel) => {
-                            return (
-                                event.offsetY > element?.y &&
-                                event.offsetY < element?.y + element?.height
-                            );
+                            if (offsetY !== undefined) {
+                                return (
+                                    offsetY > element?.y &&
+                                    offsetY < element?.y + element?.height
+                                );
+                            }
+                            return false;
                         }) !== undefined;
 
                     return !isLabel || isWheel;
@@ -861,6 +872,7 @@ function YAxisCanvas(props: yAxisIF) {
         diffHashSigScaleData(scaleData, 'y'),
         liquidityData?.liqBidData,
         isChartZoom,
+        isLineDrag,
     ]);
 
     useEffect(() => {
@@ -873,12 +885,13 @@ function YAxisCanvas(props: yAxisIF) {
                 d3.select(d3Yaxis.current).on('.drag', null);
             }
             if (
-                location.pathname.includes('pool') ||
-                location.pathname.includes('reposition')
+                (location.pathname.includes('pool') ||
+                    location.pathname.includes('reposition')) &&
+                !isLineDrag
             ) {
                 d3.select(d3Yaxis.current).call(dragRange);
             }
-            if (location.pathname.includes('/limit')) {
+            if (location.pathname.includes('/limit') && !isLineDrag) {
                 d3.select(d3Yaxis.current).call(dragLimit);
             }
             renderCanvasArray([d3Yaxis]);

@@ -1,4 +1,4 @@
-import { memo, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, memo, useContext } from 'react';
 import { PoolContext } from '../../../../../contexts/PoolContext';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
@@ -12,38 +12,47 @@ interface propsIF {
     pinnedMinPriceDisplayTruncatedInQuote: string;
     pinnedMaxPriceDisplayTruncatedInBase: string;
     pinnedMaxPriceDisplayTruncatedInQuote: string;
+    showOnlyFeeTier?: boolean;
+    isDenomBase: boolean;
+    setIsDenomBase: Dispatch<SetStateAction<boolean>>;
+    initialPrice?: number;
+    isInitPage?: boolean;
 }
 function SelectedRange(props: propsIF) {
     const {
+        isDenomBase,
+        setIsDenomBase,
         isTokenABase,
         isAmbient,
         pinnedMinPriceDisplayTruncatedInBase,
         pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
+        showOnlyFeeTier,
+        initialPrice,
+        isInitPage,
     } = props;
 
     const { poolPriceDisplay } = useContext(PoolContext);
-    const { isDenomBase, tokenA, tokenB } = useAppSelector(
-        (state) => state.tradeData,
-    );
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
-    const reverseDisplayDefault =
+    const reverseDisplay =
         (isTokenABase && isDenomBase) || (!isTokenABase && !isDenomBase);
 
-    const [denomInBase, setDenomInBase] = useState(isDenomBase);
-    const [reverseDisplay, setReverseDisplay] = useState(reverseDisplayDefault);
-
-    const minPrice = denomInBase
+    const minPrice = isDenomBase
         ? pinnedMinPriceDisplayTruncatedInBase
         : pinnedMinPriceDisplayTruncatedInQuote;
 
-    const maxPrice = denomInBase
+    const maxPrice = isDenomBase
         ? pinnedMaxPriceDisplayTruncatedInBase
         : pinnedMaxPriceDisplayTruncatedInQuote;
 
     const displayPriceWithDenom =
-        denomInBase && poolPriceDisplay
+        isInitPage && initialPrice
+            ? isDenomBase
+                ? initialPrice
+                : 1 / initialPrice
+            : isDenomBase && poolPriceDisplay
             ? 1 / poolPriceDisplay
             : poolPriceDisplay ?? 0;
 
@@ -58,6 +67,7 @@ function SelectedRange(props: propsIF) {
         tokens: string;
         currentToken: string;
     }
+
     const PriceRangeDisplay = (props: PriceRangeProps) => {
         const { title, value, tokens, currentToken } = props;
         return (
@@ -71,11 +81,10 @@ function SelectedRange(props: propsIF) {
                     borderRadius: 'var(--border-radius)',
                     cursor: 'pointer',
                 }}
-                gap={4}
-                padding='8px'
+                gap={isInitPage ? 10 : 4}
+                padding={'8px'}
                 onClick={() => {
-                    setReverseDisplay(!reverseDisplay);
-                    setDenomInBase(!denomInBase);
+                    setIsDenomBase(!isDenomBase);
                 }}
             >
                 <Text fontSize='body' color='text2'>
@@ -99,10 +108,10 @@ function SelectedRange(props: propsIF) {
     };
 
     const selectedRangeDisplay = (
-        <SelectedRangeContainer margin='8px 0 0 0' gap={8}>
+        <SelectedRangeContainer margin={isInitPage ? '0' : '8px 0 0 0'} gap={8}>
             <PriceRangeDisplay
                 title='Min Price'
-                value={minPrice}
+                value={isAmbient ? '0' : minPrice}
                 tokens={
                     reverseDisplay
                         ? `${tokenB.symbol} per ${tokenA.symbol}`
@@ -112,7 +121,7 @@ function SelectedRange(props: propsIF) {
             />
             <PriceRangeDisplay
                 title='Max Price'
-                value={maxPrice}
+                value={isAmbient ? '∞' : maxPrice}
                 tokens={
                     reverseDisplay
                         ? `${tokenB.symbol} per ${tokenA.symbol}`
@@ -128,40 +137,44 @@ function SelectedRange(props: propsIF) {
             flexDirection='column'
             gap={8}
             padding='8px'
-            margin='8px 0 0 0'
+            margin={isInitPage ? '0' : '8px 0 0 0'}
             style={{ border: '1px solid var(--dark3)', borderRadius: '4px' }}
         >
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
-                    Current Price
+                    {isInitPage ? 'Initial Price' : 'Current Price'}
                 </Text>
                 <Text
                     fontSize='body'
                     color='text2'
                     onClick={() => {
-                        setReverseDisplay(!reverseDisplay);
-                        setDenomInBase(!denomInBase);
+                        setIsDenomBase(!isDenomBase);
                     }}
                     style={{ cursor: 'pointer' }}
                 >
-                    {displayPriceString}
+                    {`${displayPriceString} ${
+                        reverseDisplay ? tokenB.symbol : tokenA.symbol
+                    }`}
                 </Text>
             </FlexContainer>
             <FlexContainer justifyContent='space-between' alignItems='center'>
                 <Text fontSize='body' color='text2'>
-                    Current Fee Rate
+                    {isInitPage ? 'Initial Fee Rate' : 'Current Fee Rate'}
                 </Text>
                 <Text fontSize='body' color='text2'>
-                    0.05%
+                    {isInitPage ? 'Dynamic' : '0.05%'}
                 </Text>
             </FlexContainer>
         </FlexContainer>
     );
+    if (showOnlyFeeTier) return extraInfoData;
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
-            {!isAmbient ? selectedRangeDisplay : null}
-            <div style={{ padding: '0 1rem' }}>{extraInfoData}</div>
+            {selectedRangeDisplay}
+            <div style={{ padding: isInitPage ? '0 4rem' : '0 1rem' }}>
+                {extraInfoData}
+            </div>
         </FlexContainer>
     );
 }

@@ -36,7 +36,7 @@
 
 .main_content:hover,
 .main_content:focus-within {
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .swap_route {

@@ -22,7 +22,7 @@ export const Chip = styled.button<PropsIF>`
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     white-space: nowrap;
     height: 23px;
     padding: 5px 8px;

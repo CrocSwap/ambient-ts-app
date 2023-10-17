@@ -25,7 +25,7 @@
 
 .main_container p {
     color: var(--text1);
-    font-size: 16px;
+    font-size: var(--header-size);
 
     line-height: 22px;
 }
