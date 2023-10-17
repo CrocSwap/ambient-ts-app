@@ -5,24 +5,23 @@ import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { AppStateContext } from '../../../contexts/AppStateContext';
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 
-import {
-    updateRangeWithButton,
-    handleRangeSlider,
-} from './rangeWidthFunctions';
+// START: Import Local Files
+import { handleRangeSlider } from './rangeWidthFunctions';
 import RangeSlider from '../RangeSlider';
 import { Chip } from '../Chip';
 import { ExplanationButton } from '../Icons/Icons.styles';
 import { FlexContainer } from '../../../styled/Common';
+import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // interface for React functional component props
-interface RangeWidthPropsIF {
+interface propsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
     setRescaleRangeBoundariesWithSlider: Dispatch<SetStateAction<boolean>>;
 }
 
 // React functional component
-function RangeWidth(props: RangeWidthPropsIF) {
+function RangeWidth(props: propsIF) {
     const {
         rangeWidthPercentage,
         setRangeWidthPercentage,
@@ -32,6 +31,23 @@ function RangeWidth(props: RangeWidthPropsIF) {
         globalPopup: { open: openGlobalPopup },
     } = useContext(AppStateContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
+
+    // fn to update the width of range (balanced mode) from buttons
+    function updateRangeWithButton(value: 5 | 10 | 25 | 50 | 100): void {
+        // convert the numerical input to a string
+        const valueString: string = value.toString();
+        // locate the range adjustment slider in the DOM
+        const inputSlider: HTMLElement | null =
+            document.getElementById('input-slider-range');
+        // set the range adjustment slider to the value provided in args
+        if (inputSlider) {
+            (inputSlider as HTMLInputElement).value = valueString;
+        }
+        // set the input value to two decimals of precision
+        const truncatedValue: string = truncateDecimals(value, 2);
+        // convert input value to a float and update range width
+        setRangeWidthPercentage(parseFloat(truncatedValue));
+    }
 
     const PercentageOptionContent = (
         <>
@@ -47,10 +63,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                         rangeWidthPercentage === 5 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 20) * 100,
-                            setRangeWidthPercentage,
-                        );
+                        updateRangeWithButton(5);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='Set range width to 5%.'
@@ -62,10 +75,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                         rangeWidthPercentage === 10 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 10) * 100,
-                            setRangeWidthPercentage,
-                        );
+                        updateRangeWithButton(10);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='Set range width to 10%.'
@@ -77,10 +87,7 @@ function RangeWidth(props: RangeWidthPropsIF) {
                         rangeWidthPercentage === 25 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 4) * 100,
-                            setRangeWidthPercentage,
-                        );
+                        updateRangeWithButton(25);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='Set range width to 25%.'
@@ -92,23 +99,19 @@ function RangeWidth(props: RangeWidthPropsIF) {
                         rangeWidthPercentage === 50 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
-                        updateRangeWithButton(
-                            (1 / 2) * 100,
-                            setRangeWidthPercentage,
-                        );
+                        updateRangeWithButton(50);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='Set range width to 50%.'
                 >
                     50%
                 </Chip>
-
                 <Chip
                     variant={
                         rangeWidthPercentage === 100 ? 'filled' : 'secondary'
                     }
                     onClick={() => {
-                        updateRangeWithButton(100, setRangeWidthPercentage);
+                        updateRangeWithButton(100);
                         setRescaleRangeBoundariesWithSlider(true);
                     }}
                     aria-label='use Ambient range width.'

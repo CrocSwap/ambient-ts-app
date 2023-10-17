@@ -27,7 +27,7 @@ OLD STUFF BELOW!!!!
     grid-template-columns: auto 50px;
     align-items: center;
 
-    font-size: 10px;
+    font-size: var(--mini-size);
     padding-bottom: 4px;
     border-bottom: 1px solid var(--dark2);
 }
@@ -71,7 +71,7 @@ OLD STUFF BELOW!!!!
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    font-size: 10px;
+    font-size: var(--mini-size);
     color: var(--text2);
     padding: 0 0.5rem;
 }
@@ -128,7 +128,7 @@ OLD STUFF BELOW!!!!
         grid-template-columns: auto 100px;
         align-items: center;
 
-        font-size: 10px;
+        font-size: var(--mini-size);
 
         padding-bottom: 4px;
         border-bottom: 1px solid var(--dark2);

@@ -1,42 +1,23 @@
 import styled from 'styled-components/macro';
+import { Link } from 'react-router-dom';
 import { FlexContainer, GridContainer, Text } from '../Common';
 import { AnimationProps, Animations } from '../Animations';
 
-export const SelectorContainer = styled(FlexContainer)`
+export const TradeModuleLink = styled(Link)<{ isActive: boolean }>`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text1);
+    width: 116px;
+    height: 25px;
+    font-size: 18px;
+    background: ${({ isActive }) =>
+        isActive ? 'var(--accent1)' : 'var(--dark2)'};
     border-radius: var(--border-radius);
-    margin-bottom: 16px;
-
-    & a {
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-
-        border-radius: var(--border-radius);
-        font-style: normal;
-        font-weight: 300;
-        font-size: 18px;
-        line-height: 22px;
-        letter-spacing: -0.02em;
-        color: var(--text1);
-
-        transition: all var(--animation-speed) ease-in-out;
-    }
-
-    & a[class='active'],
+    transition: all var(--animation-speed) ease-in-out;
     & a:hover {
         background: var(--accent1);
-        color: var(--text1);
     }
-`;
-
-export const SelectorWrapper = styled.div`
-    color: var(--text1);
-    width: 116.67px;
-    height: 25px;
-    background: var(--dark2);
-
-    border-radius: var(--border-radius);
 `;
 
 export const WarningContainer = styled(FlexContainer)`
@@ -98,7 +79,7 @@ export const AcknowledgeLink = styled.a`
     justify-content: center;
     align-items: center;
     gap: 4px;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 `;
 
 export const SettingsContainer = styled(FlexContainer)`
@@ -116,13 +97,13 @@ export const ShareItem = styled.a`
     color: var(--text2);
     margin-bottom: 12px;
 
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     &:hover,
     &:focus-visible {
         color: var(--text1);
         background: var(--dark2);
-        border-radius: 4px;
+        border-radius: var(--border-radius);
     }
 
     &:focus-visible svg {
@@ -135,7 +116,7 @@ export const TokenArrowButton = styled.button<{
     disabled: boolean;
 }>`
     display: flex;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     border-radius: 50%;
 
     justify-content: center;
@@ -217,7 +198,7 @@ export const ShareUrl = styled.input`
 `;
 
 export const InputDisabledText = styled(FlexContainer)`
-    font-size: 10px;
+    font-size: var(--mini-size);
     line-height: var(--body-lh);
     text-align: center;
     font-weight: 100;
@@ -225,7 +206,7 @@ export const InputDisabledText = styled(FlexContainer)`
 
 export const TokenQuantityInput = styled.input`
     font-weight: 300;
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22px;
     color: var(--text1);
     text-align: start;
@@ -267,13 +248,13 @@ export const TokenSelectButton = styled.button`
     align-items: center;
 
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 
     background: transparent;
     outline: none;
     border: none;
     padding: 0 4px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 
     &:hover {
         background: var(--dark3);
@@ -351,7 +332,7 @@ export const ModalContainer = styled(FlexContainer)`
 
 export const ConfirmationDetailsContainer = styled(FlexContainer)`
     border: 1px solid var(--border);
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 `;
 
 export const ConfirmationQuantityContainer = styled.div`
@@ -369,8 +350,9 @@ export const SubmitTransactionButton = styled.button`
     height: auto;
     width: 100%;
 
-    font-size: 12px;
-    line-height: 24px;
+    font-size: var(--body-size);
+    line-height: var(--header1-lh);
+
     text-align: center;
 
     display: flex;
@@ -387,7 +369,7 @@ export const SubmitTransactionButton = styled.button`
     background: var(--dark2);
     color: var(--text1);
 
-    border-radius: 4px;
+    border-radius: var(--border-radius);
 `;
 
 export const SubmitTransactionExtraButton = styled.button`
@@ -398,7 +380,7 @@ export const SubmitTransactionExtraButton = styled.button`
     color: var(--text1);
     cursor: pointer;
     border: 1px solid var(--dark3);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
     border-radius: 50px;
     padding: 4px 8px;
 
@@ -436,11 +418,7 @@ export const LimitRateButton = styled.button`
         color: var(--accent1);
     }
     & button:focus-visible {
-        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-            0px 0px 21px rgba(205, 193, 255, 0.2),
-            0px 0px 12px rgba(205, 193, 255, 0.2),
-            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-            0px 0px 2px rgba(205, 193, 255, 0.2);
+        box-shadow: var(--glow-light-box-shadow);
     }
 `;
 
@@ -457,7 +435,8 @@ export const PriceInputContainer = styled.div`
     grid-template-columns: 18px 1fr 18px;
     color: var(--text1);
     font-size: 20px;
-    line-height: 24px;
+    line-height: var(--header1-lh);
+
     text-align: center;
 
     background: var(--dark2);
@@ -473,11 +452,7 @@ export const PriceInputButton = styled.button`
     background: transparent;
 
     &:focus-visible {
-        box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2),
-            0px 0px 21px rgba(205, 193, 255, 0.2),
-            0px 0px 12px rgba(205, 193, 255, 0.2),
-            0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px var(--accent5),
-            0px 0px 2px rgba(205, 193, 255, 0.2);
+        box-shadow: var(--glow-light-box-shadow);
     }
 `;
 
@@ -502,4 +477,24 @@ export const SelectedRangeContainer = styled(GridContainer)`
     @media only screen and (min-width: 768px) {
         grid-template-columns: 1fr 1fr;
     }
+`;
+
+// TODO: there exists a similarly named component in portfolio components
+// Should determine whether two separate components are needed
+export const CurrencyQuantityInput = styled.input`
+    width: 100%;
+    font-weight: 300;
+    height: 31px;
+    padding: 4px 16px;
+    font-size: 18px;
+    line-height: 22px;
+    color: var(--text1);
+    text-align: start;
+    border: none;
+    border-radius: var(--border-radius);
+    outline: 0;
+    background-color: var(--dark2);
+    background-clip: padding-box;
+    transition: border-color var(--animation-speed) ease-in-out,
+        box-shadow var(--animation-speed) ease-in-out;
 `;

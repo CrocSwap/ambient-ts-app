@@ -1,4 +1,3 @@
-import styles from './SoloTokenImport.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import Button from '../../Form/Button';
@@ -11,36 +10,79 @@ interface propsIF {
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
     chainId: string;
 }
+import styled from 'styled-components';
+import { FlexContainer } from '../../../styled/Common';
+
+export const MainContainer = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    p {
+        color: var(--text2);
+        font-size: var(--body-size);
+        line-height: var(--body-lh);
+    }
+`;
+
+export const TokenDisplay = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+
+    h2 {
+        font-size: var(--header2-size);
+        line-height: var(--header2-lh);
+        color: var(--text1);
+    }
+
+    h6 {
+        text-align: right;
+    }
+`;
+
 export default function SoloTokenImport(props: propsIF) {
     const { customToken, chooseToken, chainId } = props;
 
     const chainData = lookupChain(chainId);
 
     const tokenNotFound = (
-        <div className={styles.token_not_found}>
+        <FlexContainer
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='center'
+        >
             <p>Cound not find matching token</p>
             <AiOutlineQuestionCircle />
-        </div>
+        </FlexContainer>
     );
 
     const tokenQuerying = (
-        <div className={styles.match_text_container}>
+        <FlexContainer
+            justifyContent='center'
+            alignItems='center'
+            textAlign='center'
+            style={{ width: '100%', padding: '4px 0' }}
+        >
             <p>...</p>
-        </div>
+        </FlexContainer>
     );
 
     if (!customToken) return tokenNotFound;
     if (customToken === 'querying') return tokenQuerying;
 
     return (
-        <div className={styles.main_container}>
-            <div className={styles.match_text_container}>
-                <p>A match for this token was found on chain.</p>
-            </div>
+        <MainContainer>
+            <p style={{ textAlign: 'center' }}>
+                A match for this token was found on chain.
+            </p>
             <DividerDark />
 
-            <div className={styles.token_display}>
-                <div>
+            <TokenDisplay>
+                <FlexContainer alignItems='center' gap={8}>
                     <TokenIcon
                         token={customToken}
                         src={uriToHttp(customToken.logoURI)}
@@ -48,9 +90,9 @@ export default function SoloTokenImport(props: propsIF) {
                         size='2xl'
                     />
                     <h2>{customToken?.symbol}</h2>
-                </div>
+                </FlexContainer>
                 <h6>{customToken?.name}</h6>
-            </div>
+            </TokenDisplay>
             <p style={{ textAlign: 'center' }}>
                 This token is not listed on Coingecko or any other major
                 reputable lists. Please be sure
@@ -72,11 +114,13 @@ export default function SoloTokenImport(props: propsIF) {
                 will use the same name and symbol as other major tokens. Always
                 conduct your own research before trading.
             </p>
-            <Button
-                flat
-                title='Acknowledge'
-                action={() => chooseToken(customToken, true)}
-            />
-        </div>
+            <FlexContainer justifyContent='center'>
+                <Button
+                    flat
+                    title='Acknowledge'
+                    action={() => chooseToken(customToken, true)}
+                />
+            </FlexContainer>
+        </MainContainer>
     );
 }

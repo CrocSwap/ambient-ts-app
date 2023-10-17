@@ -33,7 +33,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22px;
     letter-spacing: -0.02em;
 
@@ -50,7 +50,7 @@
 .sub_header {
     font-family: 'Lexend Deca';
     font-weight: 300;
-    font-size: 24px;
+    font-size: var(--header1-size);
     line-height: 30px;
 
     margin-top: 2rem !important;
