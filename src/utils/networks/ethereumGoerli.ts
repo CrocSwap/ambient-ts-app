@@ -15,7 +15,6 @@ export const ethereumGoerli: NetworkIF = {
     mainnetChainId: '0x1',
     wagmiChain,
     shouldPollBlock: false,
-    marketData: '0x1',
     tokens: {
         ETH: '0x0000000000000000000000000000000000000000',
         WETH: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6',

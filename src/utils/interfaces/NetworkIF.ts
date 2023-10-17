@@ -19,7 +19,6 @@ export interface NetworkIF {
     mainnetChainId: string;
     wagmiChain: any;
     shouldPollBlock: boolean;
-    marketData: string;
     tokens: Tokens;
     defaultPair: TokenIF[];
     topPools: TopPool[];

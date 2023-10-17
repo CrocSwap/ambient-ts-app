@@ -15,7 +15,6 @@ export const ethereumMainnet: NetworkIF = {
     mainnetChainId: '0x1',
     wagmiChain,
     shouldPollBlock: false,
-    marketData: '0x1',
     tokens: {
         ETH: '0x0000000000000000000000000000000000000000',
         WETH: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
