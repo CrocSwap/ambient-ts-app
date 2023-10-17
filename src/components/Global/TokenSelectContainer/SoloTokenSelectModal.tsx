@@ -16,7 +16,6 @@ import styles from './SoloTokenSelectModal.module.css';
 import SoloTokenImport from './SoloTokenImport';
 import { setSoloToken } from '../../../utils/state/soloTokenDataSlice';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import { useProvider } from 'wagmi';
 import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
@@ -35,6 +34,8 @@ interface propsIF {
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
     onClose: () => void;
+
+    noModal?: boolean;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
@@ -50,6 +51,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const { cachedTokenDetails } = useContext(CachedDataContext);
     const {
         chainData: { chainId },
+        provider,
     } = useContext(CrocEnvContext);
 
     const {
@@ -71,8 +73,6 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // hook to generate a navigation action for when modal is closed
     // no arg ➡ hook will infer destination from current URL path
     const linkGenAny: linkGenMethodsIF = useLinkGen();
-
-    const provider = useProvider();
 
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
@@ -250,6 +250,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
 
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
+
+    // We can fix this later to use a prop but right now, I am getting weird bugs with that approach -JR
 
     return (
         <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>

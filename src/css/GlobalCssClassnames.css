@@ -75,6 +75,8 @@
     background: var(--dark2);
 }
 
+
+
 .hide_scrollvar::-webkit-scrollbar {
     display: none;
 }
@@ -107,15 +109,15 @@ aside.emoji-picker-react {
     color: var(--text1);
     /* color: black; */
     font-weight: 300;
-    font-size: 18px;
+    font-size: var(--header2-size);
     line-height: 22px;
 }
 .introjs-tooltip-title {
     color: var(--text2) !important;
     /* color: black !important; */
     font-weight: 300;
-    font-size: 12px;
-    line-height: 15px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
 .introjs-button {
     background: var(--dark2) !important;
@@ -144,13 +146,8 @@ aside.emoji-picker-react {
     bottom: 48px;
     padding: 4px 16px !important;
 
-    box-shadow: 0px 0px 100px rgba(205, 193, 255, 0.3),
-        0px 0px 60px rgba(205, 193, 255, 0.3),
-        0px 0px 20px rgba(205, 193, 255, 0.3),
-        0px 0px 12px rgba(205, 193, 255, 0.3),
-        0px 0px 6px rgba(205, 193, 255, 0.3),
-        0px 0px 3px rgba(205, 193, 255, 0.3);
-    border-radius: 4px;
+    box-shadow: var(--glow-box-shadow);
+    border-radius: var(--border-radius);
 }
 
 /* .MuiPagination-root{
@@ -159,7 +156,7 @@ aside.emoji-picker-react {
     } */
 .MuiPagination-ul {
     background: var(--dark2);
-    border-radius: 4px !important;
+    border-radius: var(--border-radius) !important;
     flex-wrap: nowrap !important;
 }
 
@@ -184,7 +181,15 @@ aside.emoji-picker-react {
     color: var(--title-gradient) !important;
 }
 
-.icon_hover:hover{
+.css-14sza3e-MuiStepLabel-root {
+    padding: 0;
+    gap: 32px;
+}
+
+.css-8t49rw-MuiStepConnector-line {
+    border-color: var(--accent1) !important;
+}
+.icon_hover:hover {
     color: var(--accent1) !important;
     cursor: pointer;
 }
@@ -193,4 +198,9 @@ aside.emoji-picker-react {
     .top-pools-analytics-table th {
         min-width: 180px;
     }
+}
+@media only screen and (max-width: 768px) {
+   .mobile_auto_height{
+    height: auto !important;
+   }
 }

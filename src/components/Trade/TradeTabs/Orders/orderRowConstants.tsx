@@ -5,10 +5,14 @@ import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import moment from 'moment';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
-import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import { useContext } from 'react';
 import { TokenContext } from '../../../../contexts/TokenContext';
+import {
+    limitParamsIF,
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 import { RowItem } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 
@@ -98,13 +102,8 @@ export const orderRowConstants = (props: propsIF) => {
     const phoneScreen = useMediaQuery('(max-width: 600px)');
     const smallScreen = useMediaQuery('(max-width: 720px)');
 
-    const tradeLinkPath =
-        '/trade/limit/' +
-        formSlugForPairParams(
-            limitOrder.chainId,
-            limitOrder.quote,
-            limitOrder.base,
-        );
+    // hook to generate navigation actions with pre-loaded path
+    const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
 
     const IDWithTooltip = (
         <RowItem hover data-label='id' role='button' tabIndex={0}>
@@ -242,13 +241,21 @@ export const orderRowConstants = (props: propsIF) => {
         />
     );
 
+    // URL params for link to limit page
+    const limitLinkParams: limitParamsIF = {
+        chain: limitOrder.chainId,
+        tokenA: limitOrder.quote,
+        tokenB: limitOrder.base,
+        limitTick: limitOrder.isBid ? limitOrder.askTick : limitOrder.bidTick,
+    };
+
     const tokenPair = (
         <div
             className='base_color'
             data-label='tokens'
             onClick={(event) => event.stopPropagation()}
         >
-            <NavLink to={tradeLinkPath}>
+            <NavLink to={linkGenLimit.getFullURL(limitLinkParams)}>
                 {baseTokenSymbol} / {quoteTokenSymbol}
             </NavLink>
         </div>

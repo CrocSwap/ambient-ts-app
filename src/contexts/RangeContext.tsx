@@ -3,6 +3,7 @@ import React, {
     SetStateAction,
     Dispatch,
     useState,
+    useEffect,
 } from 'react';
 
 interface RangeContextIF {
@@ -25,9 +26,16 @@ interface RangeContextIF {
 export const RangeContext = createContext<RangeContextIF>({} as RangeContextIF);
 
 export const RangeContextProvider = (props: { children: React.ReactNode }) => {
+    // low and high bounds of range to display in DOM for advanced mode
     const [maxRangePrice, setMaxRangePrice] = useState<number>(0);
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
+
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
+
+    useEffect(() => {
+        console.log({ maxRangePrice });
+        console.log({ minRangePrice });
+    }, [minRangePrice, maxRangePrice]);
 
     const [currentRangeInReposition, setCurrentRangeInReposition] =
         useState<string>('');
