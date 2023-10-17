@@ -23,6 +23,8 @@ export interface poolParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
+    lowTick: string;
+    highTick: string;
 }
 
 export interface initParamsIF {
@@ -35,8 +37,8 @@ export interface repoParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
-    highTick: string;
     lowTick: string;
+    highTick: string;
 }
 
 // type containing all the URL parameter interfaces
