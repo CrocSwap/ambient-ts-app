@@ -23,12 +23,7 @@ import validateChain from '../functions/validateChain';
 
 // array of all valid params in the app (global, anywhere)
 // must be listed in desired sequence in URL string
-const validParams = [
-    'chain',
-    'tokenA',
-    'tokenB',
-    'limitTick',
-] as const;
+const validParams = ['chain', 'tokenA', 'tokenB', 'limitTick'] as const;
 
 // type generated as a union of all string literals in `validParams`
 export type validParamsType = typeof validParams[number];
