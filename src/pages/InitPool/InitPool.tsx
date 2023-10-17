@@ -69,6 +69,7 @@ import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import InitButton from './InitButton';
 import { useSendInit } from '../../App/hooks/useSendInit';
+import InitSettings from './InitSettings';
 // react functional component
 export default function InitPool() {
     const {
@@ -1635,16 +1636,12 @@ export default function InitPool() {
     );
 
     const settingsContent = (
-        <InitSkeleton
+        <InitSettings
             isTokenModalOpen={tokenModalOpen}
             handleGoBack={handleGoBack}
-            isConfirmation={true}
             activeContent={activeContent}
             setActiveContent={setActiveContent}
-            title='Settings'
-        >
-            I AM SETTINGS
-        </InitSkeleton>
+        />
     );
 
     return (
