@@ -59,6 +59,14 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [isSizeOptionTabActive, setIsSizeOptionTabActive] = useState(false);
     const [isColorPickerTabActive, setIsColorPickerTabActive] = useState(false);
 
+    useEffect(() => {
+        if (selectedDrawnShape === undefined) {
+            setIsStyleOptionTabActive(false);
+            setIsColorPickerTabActive(false);
+            setIsSizeOptionTabActive(false);
+        }
+    }, [selectedDrawnShape]);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEditColor = (color: any) => {
         if (selectedDrawnShape?.data) {
