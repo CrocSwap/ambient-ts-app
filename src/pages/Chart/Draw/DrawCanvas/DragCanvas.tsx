@@ -206,6 +206,8 @@ export default function DragCanvas(props: DragCanvasProps) {
             .select('canvas')
             .node() as HTMLCanvasElement;
         const canvasRect = canvas.getBoundingClientRect();
+        let dragTimeout: number | undefined = undefined;
+
         let offsetY = 0;
         let offsetX = 0;
         let movemementX = 0;
@@ -224,6 +226,9 @@ export default function DragCanvas(props: DragCanvasProps) {
                     tempMovemementX =
                         event.sourceEvent.touches[0].clientX - canvasRect?.left;
                 }
+
+                dragTimeout = event.sourceEvent.timeStamp;
+
                 if (
                     hoveredDrawnShape &&
                     hoveredDrawnShape.data.type === 'Square'
@@ -307,7 +312,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                     isDragging = true;
                 });
             })
-            .on('end', () => {
+            .on('end', (event) => {
                 tempMovemementX = 0;
                 tempMovemementY = 0;
                 setIsUpdatingShape(false);
@@ -316,7 +321,12 @@ export default function DragCanvas(props: DragCanvasProps) {
                     (item) => hoveredDrawnShape?.data.time === item.time,
                 );
 
-                if (tempLastData && isDragging) {
+                if (
+                    tempLastData &&
+                    isDragging &&
+                    dragTimeout &&
+                    event.sourceEvent.timeStamp - dragTimeout > 250
+                ) {
                     drawActionStack.get(actionKey)?.push({
                         data: [
                             {
