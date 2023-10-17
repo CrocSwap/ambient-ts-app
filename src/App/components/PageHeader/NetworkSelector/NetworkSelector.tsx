@@ -12,6 +12,7 @@ import {
 } from '../../../../styled/Components/Header';
 import { supportedNetworks } from '../../../../utils/networks';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { useLinkGen } from '../../../../utils/hooks/useLinkGen';
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
@@ -27,13 +28,14 @@ export default function NetworkSelector(props: propsIF) {
         lookupChain(chain),
     );
 
+    const linkGenIndex = useLinkGen('index');
+
     const handleClick = (chn: ChainSpec): void => {
-        console.log(switchNetwork);
-        console.log(chn);
         if (switchNetwork) {
             switchNetwork(parseInt(chn.chainId));
         } else {
             setActiveNetwork(supportedNetworks[chn.chainId]);
+            linkGenIndex.navigate();
         }
     };
 
