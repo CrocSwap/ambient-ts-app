@@ -17,14 +17,14 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
 
     const moneynessRank: { [K in keyof Tokens]: number } = {
         USDC: 100,
-        DAI: 90,
+        /* DAI: 90,
         USDT: 80,
         FRAX: 70,
-        WBTC: 60,
-        ETH: 50,
-        UNI: 0,
+        WBTC: 60, */
+        // ETH: 50
+        // UNI: 0,
         WETH: 0,
-        PEPE: 0,
+        // PEPE: 0,
     };
 
     const rank = moneynessRank[tokenSymbol as keyof Tokens] ?? 0;

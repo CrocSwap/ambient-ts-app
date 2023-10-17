@@ -169,11 +169,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     };
     useEffect(() => {
         setNewCrocEnv();
-    }, [
-        crocEnv === undefined,
-        chainData.chainId,
-        signer,
-    ]);
+    }, [crocEnv === undefined, chainData.chainId, signer]);
 
     useEffect(() => {
         if (provider) {
@@ -181,7 +177,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
                 IS_LOCAL_ENV &&
                     console.debug('fetching WETH price from mainnet');
                 const mainnetEthPrice = await cachedFetchTokenPrice(
-                    ethereumMainnet.tokens['WETH'],
+                    ethereumMainnet.tokens['WETH'] as string,
                     ethereumMainnet.chainId,
                 );
                 const usdPrice = mainnetEthPrice?.usdPrice;

@@ -55,6 +55,7 @@ async function expandLiquidityData(
 
     const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
     const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
+
     const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
     const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
 

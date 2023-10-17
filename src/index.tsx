@@ -11,6 +11,7 @@ import isValidProp from '@emotion/is-prop-valid';
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
 
 import { infuraProvider } from 'wagmi/providers/infura';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { GLOBAL_MODAL_PORTAL_ID } from './constants';
@@ -40,6 +41,12 @@ if (!doReload) {
                 apiKey:
                     process.env.REACT_APP_INFURA_KEY ||
                     '360ea5fda45b4a22883de8522ebd639e', // croc labs #2
+            }),
+
+            jsonRpcProvider({
+                rpc: () => ({
+                    http: 'https://sepolia-rpc.scroll.io',
+                }),
             }),
         ],
     );

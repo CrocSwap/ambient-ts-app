@@ -225,22 +225,27 @@ async function expandPoolStats(
 ): Promise<CandleData[]> {
     const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
     const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
-    const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
 
     const baseDecimals = crocEnv.token(base).decimals;
     const quoteDecimals = crocEnv.token(quote).decimals;
 
-    const basePrice = (await basePricePromise)?.usdPrice || 0.0;
-    const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
+    if (mainnetBase && mainnetQuote) {
+        const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
+        const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
 
-    return decorateCandleData(
-        payload,
-        await baseDecimals,
-        await quoteDecimals,
-        basePrice,
-        quotePrice,
-    ).reverse();
+        const basePrice = (await basePricePromise)?.usdPrice || 0.0;
+        const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
+
+        return decorateCandleData(
+            payload,
+            await baseDecimals,
+            await quoteDecimals,
+            basePrice,
+            quotePrice,
+        ).reverse();
+    }
+
+    return [];
 }
 
 function decorateCandleData(

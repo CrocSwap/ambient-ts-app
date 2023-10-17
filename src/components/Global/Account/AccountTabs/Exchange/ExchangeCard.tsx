@@ -56,7 +56,7 @@ export default function ExchangeCard(props: propsIF) {
                     if (mainnetAddress) {
                         const price = await cachedFetchTokenPrice(
                             mainnetAddress === ZERO_ADDRESS
-                                ? ethereumMainnet.tokens['WETH']
+                                ? (ethereumMainnet.tokens['WETH'] as string)
                                 : mainnetAddress,
                             ethereumMainnet.chainId,
                         );

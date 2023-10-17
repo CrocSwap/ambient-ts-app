@@ -287,13 +287,17 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 <button
                                     onClick={() => {
                                         try {
-                                            chooseToken(
-                                                tokens.getTokenByAddress(
-                                                    supportedNetworks[chainId]
-                                                        .tokens.WETH,
-                                                ) as TokenIF,
-                                                false,
-                                            );
+                                            const wethAddr =
+                                                supportedNetworks[chainId]
+                                                    .tokens.WETH;
+                                            if (wethAddr) {
+                                                chooseToken(
+                                                    tokens.getTokenByAddress(
+                                                        wethAddr,
+                                                    ) as TokenIF,
+                                                    false,
+                                                );
+                                            }
                                         } catch (err) {
                                             IS_LOCAL_ENV && console.warn(err);
                                             onClose();

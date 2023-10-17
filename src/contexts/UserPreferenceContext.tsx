@@ -74,7 +74,7 @@ export const UserPreferenceContextProvider = (props: {
 
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
         const network = supportedNetworks[chainId];
-        if (baseTokenAddress && quoteTokenAddress && network) {
+        /* if (baseTokenAddress && quoteTokenAddress && network) {
             const baseTokenSymbol = Object.keys(network.tokens).find(
                 (key) =>
                     network.tokens[
@@ -100,7 +100,8 @@ export const UserPreferenceContextProvider = (props: {
                 return true;
             }
         }
-        return false;
+        //return false; */
+        return baseTokenAddress > quoteTokenAddress;
     }, [baseTokenAddress, quoteTokenAddress, chainId]);
     function updateDenomIsInBase() {
         // we need to know if the denom token is base or quote

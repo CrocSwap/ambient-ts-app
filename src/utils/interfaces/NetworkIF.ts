@@ -3,15 +3,8 @@ import { TopPool } from '../data/defaultTopPools';
 import { TokenIF } from './TokenIF';
 
 export interface Tokens {
-    ETH: string;
-    USDC: string;
-    USDT: string;
-    DAI: string;
-    UNI: string;
-    WETH: string;
-    WBTC: string;
-    PEPE: string;
-    FRAX: string;
+    USDC?: string;
+    WETH?: string;
 }
 
 export interface NetworkIF {
@@ -24,4 +17,6 @@ export interface NetworkIF {
     topPools: TopPool[];
     stableTokens: string[];
     getGasPriceInGwei: (provider?: Provider) => Promise<number | undefined>;
+
+    customRpc?: string;
 }

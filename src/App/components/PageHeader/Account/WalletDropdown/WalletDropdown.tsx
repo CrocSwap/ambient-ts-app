@@ -67,7 +67,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);
-    const usdcAddr: string = selectedNetwork.tokens.USDC;
+    const usdcAddr: string = selectedNetwork.tokens.USDC || 'undefined';
     const usdcData: TokenIF | undefined = useMemo(() => {
         return tokenBalances?.find(
             (tkn: TokenIF) =>
@@ -131,27 +131,29 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
 
         setUsdcBalanceForDom(usdcCombinedBalanceDisplayTruncated);
 
-        Promise.resolve(
-            cachedFetchTokenPrice(
-                ethereumMainnet.tokens.USDC,
-                ethereumMainnet.chainId,
-            ),
-        ).then((price) => {
-            if (price?.usdPrice !== undefined) {
-                const usdValueNum: number =
-                    (price &&
-                        price?.usdPrice *
-                            (usdcCombinedBalanceDisplayNum ?? 0)) ??
-                    0;
-                const usdValueTruncated = getFormattedNumber({
-                    value: usdValueNum,
-                    isUSD: true,
-                });
-                setUsdcUsdValueForDom(usdValueTruncated);
-            } else {
-                setUsdcUsdValueForDom(undefined);
-            }
-        });
+        if (ethereumMainnet.tokens.USDC) {
+            Promise.resolve(
+                cachedFetchTokenPrice(
+                    ethereumMainnet.tokens.USDC,
+                    ethereumMainnet.chainId,
+                ),
+            ).then((price) => {
+                if (price?.usdPrice !== undefined) {
+                    const usdValueNum: number =
+                        (price &&
+                            price?.usdPrice *
+                                (usdcCombinedBalanceDisplayNum ?? 0)) ??
+                        0;
+                    const usdValueTruncated = getFormattedNumber({
+                        value: usdValueNum,
+                        isUSD: true,
+                    });
+                    setUsdcUsdValueForDom(usdValueTruncated);
+                } else {
+                    setUsdcUsdValueForDom(undefined);
+                }
+            });
+        }
     }, [chainId, JSON.stringify(usdcData)]);
 
     const { ethMainnetUsdPrice } = useContext(CrocEnvContext);

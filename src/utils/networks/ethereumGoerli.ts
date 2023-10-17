@@ -16,15 +16,8 @@ export const ethereumGoerli: NetworkIF = {
     shouldPollBlock: false,
     marketData: '0x1',
     tokens: {
-        ETH: '0x0000000000000000000000000000000000000000',
         WETH: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6',
         USDC: '0xd87ba7a50b2e7e660f678a895e4b72e7cb4ccd9c',
-        USDT: '0x509ee0d083ddf8ac028f2a56731412edd63223b9',
-        UNI: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
-        DAI: '0xdc31ee1784292379fbb2964b3b9c4124d8f89c60',
-        WBTC: '0xc04b0d3107736c32e19f1c62b2af67be61d63a05',
-        PEPE: '0x630f8b9d8f517af8f5b8670e6a167b6c0240d583',
-        FRAX: '0x92d43093959c7dda89896418bce9de0b87879646',
     },
     defaultPair: [goerliETH, goerliUSDC],
     topPools: [

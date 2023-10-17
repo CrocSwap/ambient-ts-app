@@ -9,7 +9,11 @@ export default function checkPoolForWETH(
     chainId: string,
 ): boolean {
     // check for a canonical WETH address on the current chain
-    const addrWETH: string = supportedNetworks[chainId].tokens.WETH;
+    const addrWETH = supportedNetworks[chainId].tokens.WETH;
+    if (!addrWETH) {
+        return false;
+    }
+
     // if found then check if either token is WETH
     const checkWETH = (tkn: TokenIF): boolean => {
         return addrWETH
