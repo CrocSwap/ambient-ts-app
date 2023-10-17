@@ -135,7 +135,11 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                 )}
                 {tableView !== 'small' ? (
                     transaction.type === 'Range' ? (
-                        <FlexContainer justifyContent='flex-end'>
+                        <FlexContainer
+                            flexDirection='column'
+                            alignItems='flex-end'
+                            justifyContent='center'
+                        >
                             <p>
                                 {transaction.details?.isAmbient
                                     ? '0.00'
