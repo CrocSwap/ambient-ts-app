@@ -51,6 +51,7 @@ export default function InitSkeleton(props: InitSkeletonProps) {
         handleGoBack,
         setActiveContent,
         activeContent,
+        isTokenModalOpen,
     } = props;
 
     return (
@@ -92,12 +93,14 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                         >
                             {title}
                         </Text>
-                        {!DISABLE_INIT_SETTINGS && activeContent === 'main' && (
-                            <FiSettings
-                                onClick={() => setActiveContent('settings')}
-                                size={18}
-                            />
-                        )}
+                        {!DISABLE_INIT_SETTINGS &&
+                            activeContent === 'main' &&
+                            !isTokenModalOpen && (
+                                <FiSettings
+                                    onClick={() => setActiveContent('settings')}
+                                    size={18}
+                                />
+                            )}
                     </FlexContainer>
                     <InnerContainer isConfirmation={isConfirmation}>
                         {children}
