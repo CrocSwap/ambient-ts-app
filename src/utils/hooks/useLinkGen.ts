@@ -23,8 +23,8 @@ export interface poolParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
-    lowTick: string;
-    highTick: string;
+    lowTick?: string;
+    highTick?: string;
 }
 
 export interface initParamsIF {
