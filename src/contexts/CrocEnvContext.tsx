@@ -1,8 +1,6 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import {
-    Dispatch,
     ReactNode,
-    SetStateAction,
     createContext,
     useContext,
     useEffect,
@@ -32,6 +30,7 @@ interface UrlRoutesTemplate {
     limit: string;
     pool: string;
 }
+
 interface CrocEnvContextIF {
     crocEnv: CrocEnv | undefined;
     setCrocEnv: (val: CrocEnv | undefined) => void;
@@ -44,7 +43,7 @@ interface CrocEnvContextIF {
     defaultUrlParams: UrlRoutesTemplate;
     provider: Provider | undefined;
     activeNetwork: NetworkIF;
-    setActiveNetwork: Dispatch<SetStateAction<NetworkIF>>;
+    setActiveNetwork: (network: NetworkIF) => void;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(

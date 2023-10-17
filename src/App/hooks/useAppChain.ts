@@ -1,6 +1,6 @@
 import {
-    Dispatch,
-    SetStateAction,
+    // Dispatch,
+    // SetStateAction,
     useEffect,
     useMemo,
     useRef,
@@ -22,7 +22,7 @@ export const useAppChain = (): {
     chainData: ChainSpec;
     isWalletChainSupported: boolean;
     activeNetwork: NetworkIF;
-    setActiveNetwork: Dispatch<SetStateAction<NetworkIF>>;
+    setActiveNetwork: (network: NetworkIF) => void;
 } => {
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork, chains: chns } = useNetwork();
@@ -158,6 +158,13 @@ export const useAppChain = (): {
         }
     }, [chainInWalletValidated.current]);
 
+    // fn to allow user to manually switch chains in the app because everything
+    // ... else in this file responds to changes in the browser environment
+    function chooseNetwork(network: NetworkIF): void {
+        linkGenIndex.navigate();
+        setActiveNetwork(network);
+    }
+
     // data from the SDK about the current chain in the connected wallet
     // chain is validated upstream of this process
     const chainData = useMemo<ChainSpec>(() => {
@@ -191,6 +198,6 @@ export const useAppChain = (): {
         chainData,
         isWalletChainSupported,
         activeNetwork,
-        setActiveNetwork,
+        setActiveNetwork: chooseNetwork,
     };
 };
