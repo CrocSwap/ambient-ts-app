@@ -2545,200 +2545,16 @@ export default function Chart(props: propsIF) {
                     setCanvasResolution(canvas);
 
                     drawnShapeHistory?.forEach((item) => {
-                        const isShapeInCurrentPool =
-                            item.pool.tokenB === currentPool.tokenB &&
-                            item.pool.tokenA === currentPool.tokenA;
+                        if (item.pool) {
+                            const isShapeInCurrentPool =
+                                item.pool.tokenB === currentPool.tokenB &&
+                                item.pool.tokenA === currentPool.tokenA;
 
-                        if (isShapeInCurrentPool) {
-                            if (
-                                item.type === 'Brush' ||
-                                item.type === 'Angle'
-                            ) {
-                                if (ctx) ctx.setLineDash(item.style);
-                                lineSeries.decorate(
-                                    (context: CanvasRenderingContext2D) => {
-                                        context.strokeStyle = item.color;
-                                        context.lineWidth = item.lineWidth;
-                                    },
-                                );
-
-                                lineSeries(item?.data);
+                            if (isShapeInCurrentPool) {
                                 if (
-                                    (hoveredDrawnShape &&
-                                        hoveredDrawnShape.data.time ===
-                                            item.time) ||
-                                    (selectedDrawnShape &&
-                                        selectedDrawnShape.data.time ===
-                                            item.time)
+                                    item.type === 'Brush' ||
+                                    item.type === 'Angle'
                                 ) {
-                                    item.data.forEach((element) => {
-                                        if (
-                                            hoveredDrawnShape &&
-                                            hoveredDrawnShape.selectedCircle &&
-                                            hoveredDrawnShape.selectedCircle
-                                                .x === element.x &&
-                                            element.y ===
-                                                (element.denomInBase ===
-                                                denomInBase
-                                                    ? hoveredDrawnShape
-                                                          ?.selectedCircle.y
-                                                    : 1 /
-                                                      hoveredDrawnShape
-                                                          ?.selectedCircle.y)
-                                        ) {
-                                            if (!isUpdatingShape) {
-                                                selectedCircleSeries([element]);
-                                            }
-                                        } else {
-                                            circleSeries([element]);
-                                        }
-                                    });
-                                }
-
-                                if (item.type === 'Angle') {
-                                    const angleLineData = [
-                                        {
-                                            x: item?.data[0].x,
-                                            y: item?.data[0].y,
-                                            ctx: item?.data[0].ctx,
-                                            denomInBase:
-                                                item?.data[0].denomInBase,
-                                        },
-                                        {
-                                            x:
-                                                item?.data[0].x +
-                                                period * 6 * 1000,
-                                            y: item?.data[0].y,
-                                            ctx: item?.data[0].ctx,
-                                            denomInBase:
-                                                item?.data[0].denomInBase,
-                                        },
-                                    ];
-
-                                    const opposite = Math.abs(
-                                        scaleData.yScale(item?.data[0].y) -
-                                            scaleData.yScale(item?.data[1].y),
-                                    );
-                                    const side = Math.abs(
-                                        scaleData.xScale(item?.data[0].x) -
-                                            scaleData.xScale(item?.data[1].x),
-                                    );
-
-                                    const distance = opposite / side;
-
-                                    const angle =
-                                        Math.atan(distance) * (180 / Math.PI);
-
-                                    const supplement =
-                                        item?.data[1].x > item?.data[0].x
-                                            ? -Math.atan(distance)
-                                            : Math.PI + Math.atan(distance);
-
-                                    const arcX =
-                                        item?.data[1].y > item?.data[0].y
-                                            ? supplement
-                                            : 0;
-                                    const arcY =
-                                        item?.data[1].y > item?.data[0].y
-                                            ? 0
-                                            : -supplement;
-
-                                    const radius =
-                                        scaleData.xScale(
-                                            item?.data[0].x + period * 6 * 1000,
-                                        ) - scaleData.xScale(item?.data[0].x);
-
-                                    if (ctx) {
-                                        ctx.setLineDash([5, 3]);
-                                        dashedLineSeries.decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                context.strokeStyle =
-                                                    item.color;
-                                                context.lineWidth = 1;
-                                            },
-                                        );
-                                        dashedLineSeries(angleLineData);
-
-                                        ctx.beginPath();
-                                        ctx.arc(
-                                            scaleData.xScale(item.data[0].x),
-                                            scaleData.yScale(item.data[0].y),
-                                            radius,
-                                            arcX,
-                                            arcY,
-                                        );
-                                        ctx.stroke();
-
-                                        ctx.textAlign = 'center';
-                                        ctx.textBaseline = 'middle';
-                                        ctx.fillStyle = 'white';
-                                        ctx.font = '50 12px Lexend Deca';
-
-                                        const angleDisplay =
-                                            item?.data[1].x > item?.data[0].x
-                                                ? angle
-                                                : 180 - angle;
-
-                                        ctx.fillText(
-                                            (item?.data[1].y > item?.data[0].y
-                                                ? ''
-                                                : '-') +
-                                                angleDisplay
-                                                    .toFixed(0)
-                                                    .toString(),
-                                            scaleData.xScale(
-                                                item?.data[0].x +
-                                                    period * 8.5 * 1000,
-                                            ),
-                                            scaleData.yScale(item?.data[0].y),
-                                        );
-
-                                        ctx.closePath();
-                                    }
-                                }
-                            }
-
-                            if (item.type === 'Square') {
-                                item.data[1].ctx
-                                    .xScale()
-                                    .domain(scaleData.xScale.domain());
-
-                                item.data[1].ctx
-                                    .yScale()
-                                    .domain(scaleData.yScale.domain());
-
-                                const range = [
-                                    scaleData?.xScale(item.data[0].x),
-                                    scaleData.xScale(item.data[1].x),
-                                ];
-
-                                item.data[1].ctx.xScale().range(range);
-
-                                const bandData = {
-                                    fromValue: item.data[0].y,
-                                    toValue: item.data[1].y,
-                                    denomInBase: denomInBase,
-                                } as bandLineData;
-
-                                const fillerSqu = item.color;
-
-                                item.data[1].ctx.decorate(
-                                    (context: CanvasRenderingContext2D) => {
-                                        context.fillStyle = fillerSqu.replace(
-                                            '1)',
-                                            '0.15)',
-                                        );
-                                    },
-                                );
-                                item.data[1].ctx([bandData]);
-
-                                const lineOfBand = createPointsOfBandLine(
-                                    item.data,
-                                );
-
-                                lineOfBand?.forEach((line) => {
                                     if (ctx) ctx.setLineDash(item.style);
                                     lineSeries.decorate(
                                         (context: CanvasRenderingContext2D) => {
@@ -2746,7 +2562,8 @@ export default function Chart(props: propsIF) {
                                             context.lineWidth = item.lineWidth;
                                         },
                                     );
-                                    lineSeries(line);
+
+                                    lineSeries(item?.data);
                                     if (
                                         (hoveredDrawnShape &&
                                             hoveredDrawnShape.data.time ===
@@ -2755,21 +2572,22 @@ export default function Chart(props: propsIF) {
                                             selectedDrawnShape.data.time ===
                                                 item.time)
                                     ) {
-                                        line.forEach((element) => {
-                                            const selectedShape =
-                                                selectedDrawnShape
-                                                    ? selectedDrawnShape
-                                                    : hoveredDrawnShape;
-
-                                            const selectedCircleIsActive =
-                                                selectedShape &&
-                                                selectedShape.selectedCircle &&
-                                                selectedShape.selectedCircle
+                                        item.data.forEach((element) => {
+                                            if (
+                                                hoveredDrawnShape &&
+                                                hoveredDrawnShape.selectedCircle &&
+                                                hoveredDrawnShape.selectedCircle
                                                     .x === element.x &&
-                                                selectedShape.selectedCircle
-                                                    .y === element.y;
-
-                                            if (selectedCircleIsActive) {
+                                                element.y ===
+                                                    (element.denomInBase ===
+                                                    denomInBase
+                                                        ? hoveredDrawnShape
+                                                              ?.selectedCircle.y
+                                                        : 1 /
+                                                          hoveredDrawnShape
+                                                              ?.selectedCircle
+                                                              .y)
+                                            ) {
                                                 if (!isUpdatingShape) {
                                                     selectedCircleSeries([
                                                         element,
@@ -2780,7 +2598,214 @@ export default function Chart(props: propsIF) {
                                             }
                                         });
                                     }
-                                });
+
+                                    if (item.type === 'Angle') {
+                                        const angleLineData = [
+                                            {
+                                                x: item?.data[0].x,
+                                                y: item?.data[0].y,
+                                                ctx: item?.data[0].ctx,
+                                                denomInBase:
+                                                    item?.data[0].denomInBase,
+                                            },
+                                            {
+                                                x:
+                                                    item?.data[0].x +
+                                                    period * 6 * 1000,
+                                                y: item?.data[0].y,
+                                                ctx: item?.data[0].ctx,
+                                                denomInBase:
+                                                    item?.data[0].denomInBase,
+                                            },
+                                        ];
+
+                                        const opposite = Math.abs(
+                                            scaleData.yScale(item?.data[0].y) -
+                                                scaleData.yScale(
+                                                    item?.data[1].y,
+                                                ),
+                                        );
+                                        const side = Math.abs(
+                                            scaleData.xScale(item?.data[0].x) -
+                                                scaleData.xScale(
+                                                    item?.data[1].x,
+                                                ),
+                                        );
+
+                                        const distance = opposite / side;
+
+                                        const angle =
+                                            Math.atan(distance) *
+                                            (180 / Math.PI);
+
+                                        const supplement =
+                                            item?.data[1].x > item?.data[0].x
+                                                ? -Math.atan(distance)
+                                                : Math.PI + Math.atan(distance);
+
+                                        const arcX =
+                                            item?.data[1].y > item?.data[0].y
+                                                ? supplement
+                                                : 0;
+                                        const arcY =
+                                            item?.data[1].y > item?.data[0].y
+                                                ? 0
+                                                : -supplement;
+
+                                        const radius =
+                                            scaleData.xScale(
+                                                item?.data[0].x +
+                                                    period * 6 * 1000,
+                                            ) -
+                                            scaleData.xScale(item?.data[0].x);
+
+                                        if (ctx) {
+                                            ctx.setLineDash([5, 3]);
+                                            dashedLineSeries.decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    context.strokeStyle =
+                                                        item.color;
+                                                    context.lineWidth = 1;
+                                                },
+                                            );
+                                            dashedLineSeries(angleLineData);
+
+                                            ctx.beginPath();
+                                            ctx.arc(
+                                                scaleData.xScale(
+                                                    item.data[0].x,
+                                                ),
+                                                scaleData.yScale(
+                                                    item.data[0].y,
+                                                ),
+                                                radius,
+                                                arcX,
+                                                arcY,
+                                            );
+                                            ctx.stroke();
+
+                                            ctx.textAlign = 'center';
+                                            ctx.textBaseline = 'middle';
+                                            ctx.fillStyle = 'white';
+                                            ctx.font = '50 12px Lexend Deca';
+
+                                            const angleDisplay =
+                                                item?.data[1].x >
+                                                item?.data[0].x
+                                                    ? angle
+                                                    : 180 - angle;
+
+                                            ctx.fillText(
+                                                (item?.data[1].y >
+                                                item?.data[0].y
+                                                    ? ''
+                                                    : '-') +
+                                                    angleDisplay
+                                                        .toFixed(0)
+                                                        .toString(),
+                                                scaleData.xScale(
+                                                    item?.data[0].x +
+                                                        period * 8.5 * 1000,
+                                                ),
+                                                scaleData.yScale(
+                                                    item?.data[0].y,
+                                                ),
+                                            );
+
+                                            ctx.closePath();
+                                        }
+                                    }
+                                }
+
+                                if (item.type === 'Square') {
+                                    item.data[1].ctx
+                                        .xScale()
+                                        .domain(scaleData.xScale.domain());
+
+                                    item.data[1].ctx
+                                        .yScale()
+                                        .domain(scaleData.yScale.domain());
+
+                                    const range = [
+                                        scaleData?.xScale(item.data[0].x),
+                                        scaleData.xScale(item.data[1].x),
+                                    ];
+
+                                    item.data[1].ctx.xScale().range(range);
+
+                                    const bandData = {
+                                        fromValue: item.data[0].y,
+                                        toValue: item.data[1].y,
+                                        denomInBase: denomInBase,
+                                    } as bandLineData;
+
+                                    const fillerSqu = item.color;
+
+                                    item.data[1].ctx.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            context.fillStyle =
+                                                fillerSqu.replace(
+                                                    '1)',
+                                                    '0.15)',
+                                                );
+                                        },
+                                    );
+                                    item.data[1].ctx([bandData]);
+
+                                    const lineOfBand = createPointsOfBandLine(
+                                        item.data,
+                                    );
+
+                                    lineOfBand?.forEach((line) => {
+                                        if (ctx) ctx.setLineDash(item.style);
+                                        lineSeries.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.strokeStyle =
+                                                    item.color;
+                                                context.lineWidth =
+                                                    item.lineWidth;
+                                            },
+                                        );
+                                        lineSeries(line);
+                                        if (
+                                            (hoveredDrawnShape &&
+                                                hoveredDrawnShape.data.time ===
+                                                    item.time) ||
+                                            (selectedDrawnShape &&
+                                                selectedDrawnShape.data.time ===
+                                                    item.time)
+                                        ) {
+                                            line.forEach((element) => {
+                                                const selectedShape =
+                                                    selectedDrawnShape
+                                                        ? selectedDrawnShape
+                                                        : hoveredDrawnShape;
+
+                                                const selectedCircleIsActive =
+                                                    selectedShape &&
+                                                    selectedShape.selectedCircle &&
+                                                    selectedShape.selectedCircle
+                                                        .x === element.x &&
+                                                    selectedShape.selectedCircle
+                                                        .y === element.y;
+
+                                                if (selectedCircleIsActive) {
+                                                    if (!isUpdatingShape) {
+                                                        selectedCircleSeries([
+                                                            element,
+                                                        ]);
+                                                    }
+                                                } else {
+                                                    circleSeries([element]);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
                             }
                         }
                     });
@@ -2818,10 +2843,11 @@ export default function Chart(props: propsIF) {
         const handleKeyDown = function (event: any) {
             if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
                 event.preventDefault();
-
+                setSelectedDrawnShape(undefined);
                 undo();
             } else if ((event.ctrlKey || event.metaKey) && event.key === 'y') {
                 event.preventDefault();
+                setSelectedDrawnShape(undefined);
                 redo();
             }
         };

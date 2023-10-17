@@ -23,7 +23,7 @@ export function useUndoRedo(denomInBase: boolean) {
         new Map<actionKeyIF, drawDataHistory[]>(),
     );
 
-    const [undoStack, setUndoStack] = useState<drawDataHistory[]>([]);
+    const [undoStack] = useState(new Map<actionKeyIF, drawDataHistory[]>());
 
     const currentPool = useAppSelector((state) => state.tradeData);
 
@@ -82,86 +82,101 @@ export function useUndoRedo(denomInBase: boolean) {
                 drawActionStack.get(actionKey)?.push(tempHistoryData);
             }
         }
-        undoStack.push(item);
+        undoStack.get(actionKey)?.push(item);
     }
     function undo() {
         const actionList = drawActionStack.get(actionKey);
 
         if (actionList) {
             const action = actionList.pop();
-            const index = drawnShapeHistory.findIndex(
-                (element) => element.time === action?.time,
-            );
-
             if (action) {
-                const hasSameTimeAction =
-                    actionList.find((item) => item.time === action.time) ===
-                    undefined;
-                undoStack.push(action);
-                if (index !== -1) {
-                    setDrawnShapeHistory((prevHistory) => {
-                        if (hasSameTimeAction) {
-                            return prevHistory.filter(
-                                (item: drawDataHistory) =>
-                                    item.time !== action.time,
-                            );
-                        }
-
-                        const lastStatusDrawnShape = actionList.filter(
-                            (item: drawDataHistory) =>
-                                item.time === action.time,
-                        );
-
-                        const updatedHistory = [...prevHistory];
-                        updatedHistory[index] = lastStatusDrawnShape[0];
-
-                        return updatedHistory;
-                    });
-                } else {
-                    const lastAction = actionList.find(
-                        (item) => item.time === action.time,
-                    );
-                    if (lastAction) {
-                        setDrawnShapeHistory((prevHistory) => [
-                            ...prevHistory,
-                            lastAction,
-                        ]);
-                    }
+                undoDrawnShapeHistory(action);
+                if (!undoStack.has(actionKey)) {
+                    undoStack.set(actionKey, []);
                 }
+                undoStack.get(actionKey)?.push(action);
             }
         }
     }
 
     function redo() {
         if (drawActionStack.has(actionKey)) {
-            if (undoStack.length > 0) {
-                drawActionStack
-                    .get(actionKey)
-                    ?.push(undoStack[undoStack.length - 1]);
-                const index = drawnShapeHistory.findIndex(
-                    (element) =>
-                        element.time === undoStack[undoStack.length - 1].time,
-                );
+            const undoActionList = undoStack.get(actionKey);
+            if (undoActionList) {
+                const lastValue = undoActionList[undoActionList?.length - 1];
 
-                setDrawnShapeHistory((prevHistory) => {
-                    const updatedHistory = [...prevHistory];
-                    if (index !== -1) {
-                        updatedHistory[index] = undoStack[undoStack.length - 1];
-                        return updatedHistory;
+                if (lastValue) {
+                    drawActionStack.get(actionKey)?.push(lastValue);
+                    const actionList = undoStack.get(actionKey);
+
+                    if (actionList) {
+                        const action = actionList.pop();
+                        if (action) {
+                            redoDrawnShapeHistory(action);
+                        }
                     }
-
-                    return [...prevHistory, undoStack[undoStack.length - 1]];
-                });
-                setUndoStack((i) =>
-                    i.filter((i) => i !== undoStack[undoStack.length - 1]),
-                );
+                }
             }
         }
     }
 
-    // useEffect(() => {
-    //     console.log({ drawnShapeHistory }, drawActionStack);
-    // }, [drawnShapeHistory]);
+    function undoDrawnShapeHistory(action: drawDataHistory) {
+        const actions = drawActionStack
+            .get(actionKey)
+            ?.filter((item) => item.time === action.time);
+
+        setDrawnShapeHistory((prev) => {
+            if (actions && actions?.length > 0) {
+                if (
+                    action.data[0].x === 0 &&
+                    action.data[0].y === 0 &&
+                    action.data[1].x === 0 &&
+                    action.data[1].y === 0
+                ) {
+                    return [...prev, actions[actions?.length - 1]];
+                } else {
+                    return prev.map((item) => {
+                        if (
+                            JSON.stringify(item.data) ===
+                            JSON.stringify(action.data)
+                        ) {
+                            item = actions[actions?.length - 1];
+                            return {
+                                ...item,
+                            };
+                        }
+                        return item;
+                    });
+                }
+            } else {
+                return prev.filter(
+                    (item) =>
+                        JSON.stringify(item.data) !==
+                        JSON.stringify(action.data),
+                );
+            }
+        });
+    }
+
+    function redoDrawnShapeHistory(action: drawDataHistory) {
+        setDrawnShapeHistory((prev) => {
+            const updatedHistory = prev.map((item) => {
+                if (item.time === action.time) {
+                    item = action;
+                    return {
+                        ...item,
+                    };
+                }
+                return item;
+            });
+
+            if (!updatedHistory.some((item) => item.time === action.time)) {
+                updatedHistory.push(action);
+            }
+
+            return updatedHistory;
+        });
+    }
 
     return {
         undo,
