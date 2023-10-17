@@ -7,7 +7,11 @@ import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitP
 // START: Import Local Files
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 
-import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../constants';
+import {
+    DISABLE_INIT_SETTINGS,
+    IS_LOCAL_ENV,
+    ZERO_ADDRESS,
+} from '../../constants';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { ChainDataContext } from '../../contexts/ChainDataContext';
 import { useAccount } from 'wagmi';
@@ -116,6 +120,9 @@ export default function InitPool() {
     useEffect(() => {
         setIsWithdrawTokenBFromDexChecked(parseFloat(tokenBDexBalance) > 0);
     }, [tokenBDexBalance]);
+
+    const [isLpContractCreationEnabled, setIsLpContractCreationEnabled] =
+        useState(true);
 
     const { urlParamMap } = useUrlParams(tokens, chainId, provider);
 
@@ -1008,10 +1015,18 @@ export default function InitPool() {
     const sendTransaction = isMintLiqEnabled
         ? async () => {
               console.log('initializing and minting');
+              console.log({
+                  isLpContractCreationEnabled,
+                  DISABLE_INIT_SETTINGS,
+              });
               sendInit(initialPriceInBaseDenom, sendRangePosition);
           }
         : () => {
               console.log('initializing');
+              console.log({
+                  isLpContractCreationEnabled,
+                  DISABLE_INIT_SETTINGS,
+              });
               sendInit(initialPriceInBaseDenom);
           };
 
@@ -1641,6 +1656,8 @@ export default function InitPool() {
             handleGoBack={handleGoBack}
             activeContent={activeContent}
             setActiveContent={setActiveContent}
+            isLpContractCreationEnabled={isLpContractCreationEnabled}
+            setIsLpContractCreationEnabled={setIsLpContractCreationEnabled}
         />
     );
 

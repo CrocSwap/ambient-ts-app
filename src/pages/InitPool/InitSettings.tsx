@@ -4,7 +4,7 @@ import InitSkeleton from './InitSkeleton';
 import { FlexContainer, Text } from '../../styled/Common';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import Toggle from '../../components/Form/Toggle';
-import { useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 
 const Wrapper = styled.div`
     border-radius: 8px;
@@ -21,12 +21,19 @@ interface InitSettingsProps {
 
     handleGoBack: () => void;
     isTokenModalOpen: boolean;
+    isLpContractCreationEnabled: boolean;
+    setIsLpContractCreationEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function InitSettings(props: InitSettingsProps) {
-    const { activeContent, setActiveContent, handleGoBack, isTokenModalOpen } =
-        props;
-    const [isLp, setIsLp] = useState(false);
+    const {
+        activeContent,
+        setActiveContent,
+        handleGoBack,
+        isTokenModalOpen,
+        isLpContractCreationEnabled,
+        setIsLpContractCreationEnabled,
+    } = props;
     return (
         <InitSkeleton
             isTokenModalOpen={isTokenModalOpen}
@@ -46,17 +53,21 @@ export default function InitSettings(props: InitSettingsProps) {
                 >
                     <FlexContainer gap={8}>
                         <Text fontSize='body' color='text2'>
-                            Enable LP Token Minting
+                            Initialize LP token contract
                         </Text>
 
-                        <TooltipComponent title='A one-time contract creation transaction to enable automatic token creation for all future liquidity positions.' />
+                        <TooltipComponent title='A one-time contract creation transaction to initialize a liquidity position token contract' />
                     </FlexContainer>
 
                     <Toggle
                         id='toggle_ref_price'
-                        isOn={isLp}
+                        isOn={isLpContractCreationEnabled}
                         disabled={false}
-                        handleToggle={() => setIsLp(!isLp)}
+                        handleToggle={() =>
+                            setIsLpContractCreationEnabled(
+                                !isLpContractCreationEnabled,
+                            )
+                        }
                     />
                 </FlexContainer>
             </Wrapper>
