@@ -31,3 +31,12 @@
 .home4 {
     background: url(/src/assets/images/home/home4.png) no-repeat;
 }
+
+.background {
+    background: url('/src/assets/images/backgrounds/background.png') no-repeat
+        center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}

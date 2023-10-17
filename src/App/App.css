@@ -73,6 +73,11 @@ a {
     /* position: relative;  */
 }
 
+input:disabled {
+    color: var(--text3);
+    cursor: default;
+}
+
 body {
     overflow-x: hidden;
 
@@ -257,16 +262,19 @@ input[type='number'] {
         transition: var(--transition);
         display: grid;
         grid-template-columns: 296px auto;
+        overflow-y: hidden;
     }
     .sidebar_content_layout_close {
         transition: var(--transition);
 
         display: grid;
         grid-template-columns: 32px auto;
+        overflow-y: hidden;
     }
 
     .content-container {
-        overflow: auto;
+        overflow-y: auto;
+        overflow-x: hidden;
         height: 100vh;
 
         background: var(--dark1);

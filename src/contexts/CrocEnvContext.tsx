@@ -24,7 +24,6 @@ import {
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
 import { NetworkIF, PoolIF, TokenIF } from '../utils/interfaces/exports';
-import { ethereumGoerli } from '../utils/networks/ethereumGoerli';
 import { ethereumMainnet } from '../utils/networks/ethereumMainnet';
 
 interface UrlRoutesTemplate {

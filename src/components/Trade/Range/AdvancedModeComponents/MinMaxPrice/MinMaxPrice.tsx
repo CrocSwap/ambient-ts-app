@@ -62,7 +62,9 @@ function MinMaxPrice(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>): void => {
+    const handleMinPriceChangeEvent = (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ): void => {
         if (evt) {
             const targetValue = evt.target.value.replaceAll(',', '');
             const input = targetValue.startsWith('.')
@@ -71,15 +73,19 @@ function MinMaxPrice(props: propsIF) {
             const isValid = exponentialNumRegEx.test(input);
             if (isValid) {
                 setMinPriceInputString(targetValue);
-                const targetAsFloat: number = parseFloat(targetValue)
-                isDenomBase ? setMinPrice(targetAsFloat) : setMaxPrice(targetAsFloat);
+                const targetAsFloat: number = parseFloat(targetValue);
+                isDenomBase
+                    ? setMinPrice(targetAsFloat)
+                    : setMaxPrice(targetAsFloat);
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
         }
     };
 
-    const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>): void => {
+    const handleMaxPriceChangeEvent = (
+        evt?: ChangeEvent<HTMLInputElement>,
+    ): void => {
         if (evt) {
             const targetValue = evt.target.value.replaceAll(',', '');
             const input = targetValue.startsWith('.')
@@ -89,7 +95,9 @@ function MinMaxPrice(props: propsIF) {
             if (isValid) {
                 setMaxPriceInputString(targetValue);
                 const targetAsFloat: number = parseFloat(targetValue);
-                isDenomBase ? setMaxPrice(targetAsFloat) : setMinPrice(targetAsFloat);
+                isDenomBase
+                    ? setMaxPrice(targetAsFloat)
+                    : setMinPrice(targetAsFloat);
             }
         } else {
             IS_LOCAL_ENV && console.debug('no event');
