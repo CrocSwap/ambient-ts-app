@@ -219,7 +219,6 @@ function RangeTokenInput(props: propsIF) {
                     fullWidth
                     justifyContent='center'
                     alignItems='center'
-                    padding='0 0 8px 0'
                 >
                     <img
                         style={{ cursor: 'default !important' }}

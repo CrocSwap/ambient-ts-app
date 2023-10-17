@@ -4,6 +4,8 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
 import { WalletBallanceSubinfo } from './WalletBalanceSubinfo';
+import { RefreshButton } from '../../styled/Components/TradeModules';
+import { FiRefreshCw } from 'react-icons/fi';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -104,38 +106,50 @@ function TokenInputWithWalletBalance(props: propsIF) {
     };
 
     const walletContent = showWallet && (
-        <WalletBallanceSubinfo
-            isWithdraw={isWithdraw ?? tokenAorB === 'A'}
-            balance={balanceToDisplay}
-            availableBalance={parseFloat(balanceWithBuffer)}
-            useExchangeBalance={
-                isDexSelected &&
-                !!tokenDexBalance &&
-                parseFloat(tokenDexBalance) > 0
-            }
-            isDexSelected={isDexSelected}
-            onToggleDex={handleToggleDex}
-            onMaxButtonClick={
-                !hideWalletMaxButton ? handleMaxButtonClick : undefined
-            }
-            onRefresh={handleRefresh}
-        />
+        <>
+            <WalletBallanceSubinfo
+                isWithdraw={isWithdraw ?? tokenAorB === 'A'}
+                balance={balanceToDisplay}
+                availableBalance={parseFloat(balanceWithBuffer)}
+                useExchangeBalance={
+                    isDexSelected &&
+                    !!tokenDexBalance &&
+                    parseFloat(tokenDexBalance) > 0
+                }
+                isDexSelected={isDexSelected}
+                onToggleDex={handleToggleDex}
+                onMaxButtonClick={
+                    !hideWalletMaxButton ? handleMaxButtonClick : undefined
+                }
+                onRefresh={handleRefresh}
+            />
+        </>
     );
 
     return (
-        <TokenInputQuantity
-            fieldId={fieldId}
-            token={token}
-            tokenAorB={tokenAorB}
-            value={tokenInput}
-            handleTokenInputEvent={handleTokenInputEvent}
-            reverseTokens={reverseTokens}
-            isLoading={isLoading}
-            includeWallet={walletContent}
-            showPulseAnimation={showPulseAnimation}
-            parseInput={parseTokenInput}
-            disabledContent={disabledContent}
-        />
+        <>
+            <TokenInputQuantity
+                fieldId={fieldId}
+                token={token}
+                tokenAorB={tokenAorB}
+                value={tokenInput}
+                handleTokenInputEvent={handleTokenInputEvent}
+                reverseTokens={reverseTokens}
+                isLoading={isLoading}
+                includeWallet={walletContent}
+                showPulseAnimation={showPulseAnimation}
+                parseInput={parseTokenInput}
+                disabledContent={disabledContent}
+            />
+            {handleRefresh && (
+                <RefreshButton
+                    onClick={handleRefresh}
+                    aria-label='Refresh data'
+                >
+                    <FiRefreshCw size={18} />
+                </RefreshButton>
+            )}
+        </>
     );
 }
 
