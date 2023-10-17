@@ -90,7 +90,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
     } = props;
 
     const tokensInfo = (
-        <GridContainer numCols={2} gap={8} height='136px'>
+        <GridContainer numCols={2} gap={8}>
             <FeaturedBox
                 pooled={
                     isMintLiqEnabled && tokenACollateral
@@ -149,7 +149,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
         >
             <FlexContainer
                 flexDirection='column'
-                gap={24}
+                gap={8}
                 justifyContent={!isMintLiqEnabled ? 'center' : ''}
                 style={{ height: '100%' }}
             >
