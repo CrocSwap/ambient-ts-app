@@ -102,6 +102,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                 return [];
             }
 
+            const skipENSFetch = true;
             return Promise.all(
                 userTransactions.map((tx: TransactionServerIF) => {
                     return getTransactionData(
@@ -115,6 +116,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                 }),
             ).then((updatedTransactions) => {

@@ -46,17 +46,9 @@ export const useProcessOrder = (
         limitOrder.user.toLowerCase() === account?.toLowerCase();
     const isDenomBase = tradeData.isDenomBase;
 
-    const ownerId =
-        fetchedEnsAddress ?? limitOrder.ensResolution
-            ? limitOrder.ensResolution
-            : limitOrder.user
-            ? getAddress(limitOrder.user)
-            : '';
+    const ownerId = fetchedEnsAddress || getAddress(limitOrder.user) || '';
 
-    const ensName =
-        fetchedEnsAddress ?? limitOrder.ensResolution
-            ? limitOrder.ensResolution
-            : null;
+    const ensName = fetchedEnsAddress || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 

@@ -396,6 +396,7 @@ function Orders(props: propsIF) {
         </OrderRowStyled>
     );
 
+    // TODO: should not block rendering of table while fetching ENS addresses
     const ensAddressMapping = useEnsAddresses(sortedLimits);
 
     const currentRowItemContent = () =>

@@ -31,8 +31,8 @@ export const useProcessTransaction = (
     // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
-    const ensName =
-        fetchedEnsAddress ?? tx.ensResolution ? tx.ensResolution : null;
+    const ensName = fetchedEnsAddress || tx.ensResolution || null;
+
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();
 

@@ -65,10 +65,12 @@ export const useProcessRange = (
     const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
     const isAmbient = position.positionType === 'ambient';
 
-    const ensName =
-        fetchedEnsAddress ?? position.ensResolution
-            ? position.ensResolution
-            : null;
+    const ensName = fetchedEnsAddress
+        ? fetchedEnsAddress
+        : position.ensResolution
+        ? position.ensResolution
+        : null;
+
     const ownerId = position.user ? getAddress(position.user) : position.user;
 
     const isOwnerActiveAccount =

@@ -24,7 +24,7 @@ export default function useEnsAddresses(data: TradeTableDataRow[]) {
             .map((row) => (row.user ? getAddress(row.user) : ''))
             .filter((addr) => {
                 const nullTimestamp = nullCacheRef.current.get(addr);
-                // Address is valid if it's not in the cache OR in the nullCache but was added more than 5 minutes ago
+                // Address is valid if it's not in the cache OR in the nullCache but was added more than DEADLINE ago
                 return (
                     addr &&
                     !cacheRef.current.has(addr) &&
