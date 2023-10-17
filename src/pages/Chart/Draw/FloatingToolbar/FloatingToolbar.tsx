@@ -6,7 +6,6 @@ import {
     FloatingDivContainer,
     FloatingDiv,
     OptionsTab,
-    HorizontalDivider,
     OptionsTabSize,
     OptionsTabStyle,
 } from './FloatingToolbarCss';
@@ -24,6 +23,7 @@ import {
     AiOutlineSmallDash,
 } from 'react-icons/ai';
 import { TbBrush } from 'react-icons/tb';
+import { SketchPicker } from 'react-color';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,18 +52,33 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [isDragging, setIsDragging] = useState(false);
     const [divLeft, setDivLeft] = useState(0);
     const [divTop, setDivTop] = useState(0);
+    const [backgroundColorPicker, setBackgroundColorPicker] =
+        useState('#7371fc');
 
     const [isStyleOptionTabActive, setIsStyleOptionTabActive] = useState(false);
     const [isSizeOptionTabActive, setIsSizeOptionTabActive] = useState(false);
+    const [isColorPickerTabActive, setIsColorPickerTabActive] = useState(false);
 
-    const handleEditColor = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleEditColor = (color: any) => {
         if (selectedDrawnShape?.data) {
+            const colorRgbaCode =
+                'rgba(' +
+                color.rgb.r +
+                ',' +
+                color.rgb.g +
+                ',' +
+                color.rgb.b +
+                ',' +
+                color.rgb.a +
+                ')';
+            setBackgroundColorPicker(colorRgbaCode);
             setDrawnShapeHistory((item: drawDataHistory[]) => {
                 const changedItemIndex = item.findIndex(
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                item[changedItemIndex].color = 'red';
+                item[changedItemIndex].color = colorRgbaCode;
 
                 return item;
             });
@@ -117,7 +132,11 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         {
             name: 'Color',
             type: 'color',
-            operation: handleEditColor,
+            operation: () => {
+                setIsStyleOptionTabActive(false);
+                setIsSizeOptionTabActive(false);
+                setIsColorPickerTabActive((prev) => !prev);
+            },
             icon: <TbBrush />,
         },
         {
@@ -125,6 +144,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             type: 'size',
             operation: () => {
                 setIsStyleOptionTabActive(false);
+                setIsColorPickerTabActive(false);
                 setIsSizeOptionTabActive((prev) => !prev);
             },
             icon: <AiOutlineMinus color='white' />,
@@ -134,6 +154,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             type: 'style',
             operation: () => {
                 setIsSizeOptionTabActive(false);
+                setIsColorPickerTabActive(false);
                 setIsStyleOptionTabActive((prev) => !prev);
             },
             icon: <AiOutlineDash color='white' />,
@@ -245,7 +266,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
     return (
         <FloatingDivContainer
-            ref={floatingDivRef}
             style={{
                 left: divLeft + 'px',
                 top: divTop + 'px',
@@ -256,7 +276,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                         : 'hidden',
             }}
         >
-            <FloatingDiv>
+            <FloatingDiv ref={floatingDivRef}>
                 <FloatingButtonDiv>
                     <img src={dragButton} alt='' />
                     <Divider></Divider>
@@ -268,6 +288,16 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                     </FloatingOptions>
                 ))}
             </FloatingDiv>
+
+            {isColorPickerTabActive && (
+                <OptionsTab>
+                    <SketchPicker
+                        color={backgroundColorPicker}
+                        width={'140px'}
+                        onChange={(item) => handleEditColor(item)}
+                    />
+                </OptionsTab>
+            )}
 
             {isSizeOptionTabActive && (
                 <OptionsTab
@@ -281,7 +311,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                             onClick={() => handleEditSize(item.value)}
                         >
                             {item.icon} {item.name}
-                            {/* <HorizontalDivider></HorizontalDivider> */}
                         </OptionsTabSize>
                     ))}
                 </OptionsTab>
@@ -299,7 +328,6 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                             onClick={() => handleEditStyle(item.value)}
                         >
                             {item.icon} {item.name}
-                            {/* <HorizontalDivider></HorizontalDivider> */}
                         </OptionsTabStyle>
                     ))}
                 </OptionsTab>

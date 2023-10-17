@@ -2822,10 +2822,14 @@ export default function Chart(props: propsIF) {
                                     denomInBase: denomInBase,
                                 } as bandLineData;
 
+                                const fillerSqu = item.color;
+
                                 item.data[1].ctx.decorate(
                                     (context: CanvasRenderingContext2D) => {
-                                        context.fillStyle =
-                                            'rgba(255, 0, 4, 0.15)';
+                                        context.fillStyle = fillerSqu.replace(
+                                            '1)',
+                                            '0.15)',
+                                        );
                                     },
                                 );
                                 item.data[1].ctx([bandData]);
