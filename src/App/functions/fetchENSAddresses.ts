@@ -21,7 +21,7 @@ const parseBatchedEnsReq = (
         const { req_id, results } = item;
 
         if (results.ens_address) {
-            resultMap.set(req_id, results.ens_address);
+            resultMap.set(req_id.toLowerCase(), results.ens_address);
         }
     }
 

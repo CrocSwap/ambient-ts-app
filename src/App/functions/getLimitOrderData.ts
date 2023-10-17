@@ -48,7 +48,7 @@ export const getLimitOrderData = async (
 
     const ensRequest = cachedEnsResolve(order.user);
 
-    newOrder.ensResolution = (await ensRequest) ?? '';
+    newOrder.ensResolution = ''; // (await ensRequest) ?? '';
 
     const basePricedToken = getMainnetAddress(
         baseTokenAddress,
