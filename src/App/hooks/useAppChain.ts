@@ -157,7 +157,6 @@ export const useAppChain = (): {
             chainMetadata && setActiveNetwork(chainMetadata);
         }
     }, [chainInWalletValidated.current]);
-    useEffect(() => console.log(activeNetwork), [activeNetwork]);
 
     // data from the SDK about the current chain in the connected wallet
     // chain is validated upstream of this process
@@ -167,7 +166,6 @@ export const useAppChain = (): {
         // sync data in RTK for the new chain
         dispatch(setChainId(output.chainId));
         // return output varibale (chain data)
-        console.log(output);
         return output;
     }, [activeNetwork]);
 
