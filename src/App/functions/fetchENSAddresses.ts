@@ -19,19 +19,18 @@ const parseBatchedEnsReq = (
 
     for (const item of response.value.data) {
         const { req_id, results } = item;
-
-        if (results.ens_address) {
-            resultMap.set(req_id.toLowerCase(), results.ens_address);
-        }
+        // 'null' is used to decide when to query again for ens addresses that returned null.
+        resultMap.set(req_id.toLowerCase(), results.ens_address || 'null');
     }
 
     return resultMap;
 };
 
 export const fetchEnsAddresses = async (addresses: string[]) => {
+    const deDupedAddresses = [...new Set(addresses)];
     const addressQueryBody = JSON.stringify({
         data: {
-            req: addresses.map((addr) => {
+            req: deDupedAddresses.map((addr) => {
                 return {
                     config_path: 'ens_address',
                     req_id: addr,

@@ -31,7 +31,7 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import useEnsAddresses from '../../../../App/hooks/useENSAddresses';
+import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -505,7 +505,11 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const ensAddressMapping = useEnsAddresses(sortedTransactions);
+    const { ensAddressMapping, addData } = useENSAddresses();
+
+    useEffect(() => {
+        addData(sortedTransactions);
+    }, [sortedTransactions]);
 
     const currentRowItemContent = () =>
         _DATA.currentData.map((tx, idx) => (

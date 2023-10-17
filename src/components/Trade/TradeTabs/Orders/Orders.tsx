@@ -21,7 +21,7 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import useEnsAddresses from '../../../../App/hooks/useENSAddresses';
+import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 
 // interface for props for react functional component
 interface propsIF {
@@ -397,7 +397,11 @@ function Orders(props: propsIF) {
     );
 
     // TODO: should not block rendering of table while fetching ENS addresses
-    const ensAddressMapping = useEnsAddresses(sortedLimits);
+    const { ensAddressMapping, addData } = useENSAddresses();
+
+    useEffect(() => {
+        addData(sortedLimits);
+    }, [sortedLimits]);
 
     const currentRowItemContent = () =>
         _DATA.currentData.map((order, idx) => (

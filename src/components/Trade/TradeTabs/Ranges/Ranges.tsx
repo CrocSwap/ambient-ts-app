@@ -25,7 +25,7 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
-import useEnsAddresses from '../../../../App/hooks/useENSAddresses';
+import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -52,6 +52,7 @@ function Ranges(props: propsIF) {
     const {
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
+
     // only show all data when on trade tabs page
     const showAllData = !isAccountView && showAllDataSelection;
     const isTradeTableExpanded =
@@ -374,7 +375,11 @@ function Ranges(props: propsIF) {
         </RangeRowStyled>
     );
 
-    const ensAddressMapping = useEnsAddresses(sortedPositions);
+    const { ensAddressMapping, addData } = useENSAddresses();
+
+    useEffect(() => {
+        addData(sortedPositions);
+    }, [sortedPositions]);
 
     const currentRowItemContent = () =>
         _DATA.currentData.map((position, idx) => (
