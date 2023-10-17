@@ -8,7 +8,7 @@ import { FlexContainer, GridContainer, Text } from '../../styled/Common';
 import { FeaturedBox } from '../../components/Trade/TableInfo/FeaturedBox';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ isLpContractCreationEnabled: boolean }>`
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -19,7 +19,8 @@ const Wrapper = styled.div`
 
     text-align: center;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    padding-top: 64px;
+    padding-top: ${(props) =>
+        props.isLpContractCreationEnabled ? '16px' : '32px'};
 `;
 
 interface InitConfirmationProps {
@@ -52,6 +53,7 @@ interface InitConfirmationProps {
     setIsConfirmed: React.Dispatch<React.SetStateAction<boolean>>;
     isMintLiqEnabled: boolean;
     initialPriceInBaseDenom: number | undefined;
+    isLpContractCreationEnabled: boolean;
 }
 
 export default function InitConfirmation(props: InitConfirmationProps) {
@@ -87,6 +89,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
 
         isMintLiqEnabled,
         initialPriceInBaseDenom,
+        isLpContractCreationEnabled,
     } = props;
 
     const tokensInfo = (
@@ -181,6 +184,18 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             label: `Submitting pool initialization for ${tokenSymbols}`,
         },
     ];
+    const noMintLiqStepsWithLP = [
+        { label: 'Sign transaction to initialize pool.' },
+        {
+            label: `Submitting pool initialization for ${tokenSymbols}`,
+        },
+        {
+            label: `Sign LP contract creation for ${tokenSymbols}`,
+        },
+        {
+            label: `Submitting LP contract for ${tokenSymbols}`,
+        },
+    ];
 
     const mintLiqSteps = [
         { label: 'Sign transaction to initialize pool ' },
@@ -192,8 +207,31 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             label: `Submitting liquidity for ${tokenSymbols}`,
         },
     ];
+    const mintLiqStepsWithLP = [
+        { label: 'Sign transaction to initialize pool ' },
+        {
+            label: `Submitting pool initialization for ${tokenSymbols}`,
+        },
+        { label: 'Sign transaction to mint liquidity' },
+        {
+            label: `Submitting liquidity for ${tokenSymbols}`,
+        },
+        {
+            label: `Sign LP contract creation for ${tokenSymbols}`,
+        },
+        {
+            label: `Submitting LP contract for ${tokenSymbols}`,
+        },
+    ];
 
-    const steps = isMintLiqEnabled ? mintLiqSteps : noMintLiqSteps;
+    const noMintLiqStepsToShow = isLpContractCreationEnabled
+        ? noMintLiqStepsWithLP
+        : noMintLiqSteps;
+    const mintLiqStepsToShow = isLpContractCreationEnabled
+        ? mintLiqStepsWithLP
+        : mintLiqSteps;
+
+    const steps = isMintLiqEnabled ? mintLiqStepsToShow : noMintLiqStepsToShow;
 
     useEffect(() => {
         setActiveStep(0);
@@ -204,17 +242,39 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             setActiveStep(2);
         }
 
+        if (isLpContractCreationEnabled) {
+            if (isTxCompletedInit) {
+                setActiveStep(3);
+
+                setTimeout(() => {
+                    setActiveStep(4);
+                }, 2000);
+            }
+        }
+        // -----------------------------------------
+
         if (transactionApprovedRange) {
             setActiveStep(3);
         }
         if (isTxCompletedRange) {
             setActiveStep(4);
         }
+
+        if (isLpContractCreationEnabled) {
+            if (isTxCompletedRange) {
+                setActiveStep(5);
+
+                setTimeout(() => {
+                    setActiveStep(6);
+                }, 2000);
+            }
+        }
     }, [
         transactionApprovedInit,
         isTxCompletedInit,
         transactionApprovedRange,
         isTxCompletedRange,
+        isLpContractCreationEnabled,
     ]);
 
     const isError = isTransactionDenied || isTransactionException;
@@ -228,13 +288,18 @@ export default function InitConfirmation(props: InitConfirmationProps) {
 
     if (!isConfirmed) return poolTokenDisplay;
     return (
-        <Wrapper>
+        <Wrapper isLpContractCreationEnabled={isLpContractCreationEnabled}>
             <StepperComponent
                 orientation='vertical'
                 steps={steps}
                 activeStep={activeStep}
                 setActiveStep={setActiveStep}
                 isError={isError}
+                connectorLineHeight={
+                    isLpContractCreationEnabled && isMintLiqEnabled
+                        ? '10px'
+                        : '24px'
+                }
                 errorDisplay={
                     isError && (
                         <Text

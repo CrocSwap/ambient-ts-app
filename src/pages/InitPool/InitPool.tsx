@@ -1640,6 +1640,7 @@ export default function InitPool() {
         priceDisplayString,
         priceDisplayDiv,
         initialPriceInBaseDenom,
+        isLpContractCreationEnabled,
     };
 
     const confirmationContent = (

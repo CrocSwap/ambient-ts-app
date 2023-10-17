@@ -5,6 +5,7 @@ import StepLabel from '@mui/material/StepLabel';
 
 import { FlexContainer } from '../../../styled/Common';
 import Spinner from '../Spinner/Spinner';
+import styled from 'styled-components';
 
 interface Step {
     label: string;
@@ -18,6 +19,7 @@ interface StepperComponentProps {
     orientation: 'vertical' | 'horizontal';
     completedDisplay?: React.ReactNode;
     errorDisplay?: React.ReactNode;
+    connectorLineHeight?: string;
 }
 
 const StepperComponent: React.FC<StepperComponentProps> = ({
@@ -28,6 +30,7 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
     orientation,
     completedDisplay,
     errorDisplay,
+    connectorLineHeight,
 }) => {
     // eslint-disable-next-line
     const handleReset = () => {
@@ -71,9 +74,28 @@ const StepperComponent: React.FC<StepperComponentProps> = ({
         );
     }
 
+    const ConnectorLine = styled.div<{
+        connectorLineHeight: string | undefined;
+    }>`
+        display: block;
+        border-color: var(--accent1);
+        border-left-style: solid;
+        border-left-width: 1px;
+        min-height: ${(props) =>
+            props.connectorLineHeight ? props.connectorLineHeight : '24px'};
+
+        margin-left: 12px;
+    `;
+
     return (
         <FlexContainer flexDirection='column'>
-            <Stepper activeStep={activeStep} orientation='vertical'>
+            <Stepper
+                activeStep={activeStep}
+                orientation='vertical'
+                connector={
+                    <ConnectorLine connectorLineHeight={connectorLineHeight} />
+                }
+            >
                 {steps.map((step, index) => (
                     <Step key={step.label}>
                         {activeStep === index ? (

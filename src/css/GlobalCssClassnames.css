@@ -189,6 +189,10 @@ aside.emoji-picker-react {
 .css-8t49rw-MuiStepConnector-line {
     border-color: var(--accent1) !important;
 }
+.css-8t49rw-MuiStepConnector-line {
+   min-height: 10px !important;
+
+}
 .icon_hover:hover {
     color: var(--accent1) !important;
     cursor: pointer;
