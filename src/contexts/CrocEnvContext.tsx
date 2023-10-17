@@ -22,7 +22,7 @@ import {
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
 import { NetworkIF, PoolIF, TokenIF } from '../utils/interfaces/exports';
-import { ethereumGoerli } from '../utils/networks/ethereumGoerli';
+import { ethereumMainnet } from '../utils/networks/ethereumMainnet';
 
 interface UrlRoutesTemplate {
     swap: string;
@@ -55,7 +55,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
     const [selectedNetwork, setSelectedNetwork] =
-        useState<NetworkIF>(ethereumGoerli);
+        useState<NetworkIF>(ethereumMainnet);
     const [chainData, isChainSupported, setNextChain] =
         useAppChain(isConnected);
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
