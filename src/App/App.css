@@ -48,7 +48,7 @@ html {
 
 svg {
     color: var(--text2);
-    transition: all var(--animation-speed) ease-in-out;
+    /* transition: all var(--animation-speed) ease-in-out; */
 }
 
 svg:hover {
@@ -61,11 +61,11 @@ button:hover > svg {
     cursor: pointer;
 }
 
-button,
+/* button,
 svg,
 a {
     transition: all var(--animation-speed) ease-in-out;
-}
+} */
 
 a {
     color: unset;

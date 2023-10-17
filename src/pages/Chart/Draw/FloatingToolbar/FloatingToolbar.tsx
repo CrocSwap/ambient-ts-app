@@ -6,6 +6,9 @@ import {
     FloatingDivContainer,
     FloatingDiv,
     OptionsTab,
+    HorizontalDivider,
+    OptionsTabSize,
+    OptionsTabStyle,
 } from './FloatingToolbarCss';
 import dragButton from '../../../../assets/images/icons/draw/floating_button.svg';
 import {
@@ -14,7 +17,12 @@ import {
 } from '../../ChartUtils/chartUtils';
 import * as d3 from 'd3';
 import { ChartContext } from '../../../../contexts/ChartContext';
-import { AiOutlineDash, AiOutlineDelete, AiOutlineMinus } from 'react-icons/ai';
+import {
+    AiOutlineDash,
+    AiOutlineDelete,
+    AiOutlineMinus,
+    AiOutlineSmallDash,
+} from 'react-icons/ai';
 import { TbBrush } from 'react-icons/tb';
 
 interface FloatingToolbarProps {
@@ -27,6 +35,7 @@ interface FloatingToolbarProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
+    setIsShapeEdited: React.Dispatch<boolean>;
     deleteItem: (item: drawDataHistory) => void;
 }
 function FloatingToolbar(props: FloatingToolbarProps) {
@@ -36,6 +45,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         setDrawnShapeHistory,
         setSelectedDrawnShape,
         deleteItem,
+        setIsShapeEdited,
     } = props;
     const floatingDivRef = useRef<HTMLDivElement>(null);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
@@ -43,7 +53,8 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [divLeft, setDivLeft] = useState(0);
     const [divTop, setDivTop] = useState(0);
 
-    const [isOptionTabActive, setIsOptionTabActive] = useState(false);
+    const [isStyleOptionTabActive, setIsStyleOptionTabActive] = useState(false);
+    const [isSizeOptionTabActive, setIsSizeOptionTabActive] = useState(false);
 
     const handleEditColor = () => {
         if (selectedDrawnShape?.data) {
@@ -56,34 +67,37 @@ function FloatingToolbar(props: FloatingToolbarProps) {
 
                 return item;
             });
+            setIsShapeEdited(true);
         }
     };
 
-    const handleEditSize = () => {
+    const handleEditSize = (value: number) => {
         if (selectedDrawnShape?.data) {
             setDrawnShapeHistory((item: drawDataHistory[]) => {
                 const changedItemIndex = item.findIndex(
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                item[changedItemIndex].lineWidth = 5;
+                item[changedItemIndex].lineWidth = value;
 
                 return item;
             });
+            setIsShapeEdited(true);
         }
     };
 
-    const handleEditBorder = () => {
+    const handleEditStyle = (array: number[]) => {
         if (selectedDrawnShape?.data) {
             setDrawnShapeHistory((item: drawDataHistory[]) => {
                 const changedItemIndex = item.findIndex(
                     (i) => i.time === selectedDrawnShape?.data.time,
                 );
 
-                item[changedItemIndex].style = [3, 5];
+                item[changedItemIndex].style = array;
 
                 return item;
             });
+            setIsShapeEdited(true);
         }
     };
 
@@ -109,13 +123,19 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         {
             name: 'Size',
             type: 'size',
-            operation: () => setIsOptionTabActive((prev) => !prev),
+            operation: () => {
+                setIsStyleOptionTabActive(false);
+                setIsSizeOptionTabActive((prev) => !prev);
+            },
             icon: <AiOutlineMinus color='white' />,
         },
         {
             name: 'Style',
             type: 'style',
-            operation: () => setIsOptionTabActive((prev) => !prev),
+            operation: () => {
+                setIsSizeOptionTabActive(false);
+                setIsStyleOptionTabActive((prev) => !prev);
+            },
             icon: <AiOutlineDash color='white' />,
         },
         {
@@ -123,6 +143,49 @@ function FloatingToolbar(props: FloatingToolbarProps) {
             type: 'delete',
             operation: deleteDrawnShape,
             icon: <AiOutlineDelete />,
+        },
+    ];
+
+    const sizeOptions = [
+        {
+            name: '1px',
+            value: 1,
+            icon: (
+                <AiOutlineMinus color='white' width={'1px'} height={'15px'} />
+            ),
+        },
+        {
+            name: '2px',
+            value: 2,
+            icon: <AiOutlineMinus color='white' />,
+        },
+        {
+            name: '3px',
+            value: 3,
+            icon: <AiOutlineMinus color='white' />,
+        },
+        {
+            name: '4px',
+            value: 4,
+            icon: <AiOutlineMinus color='white' />,
+        },
+    ];
+
+    const styleOptions = [
+        {
+            name: 'Line',
+            value: [0, 0],
+            icon: <AiOutlineMinus color='white' />,
+        },
+        {
+            name: 'Dashed',
+            value: [5, 5],
+            icon: <AiOutlineDash color='white' />,
+        },
+        {
+            name: 'Dotted',
+            value: [3, 6],
+            icon: <AiOutlineSmallDash color='white' />,
         },
     ];
 
@@ -206,12 +269,40 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 ))}
             </FloatingDiv>
 
-            {isOptionTabActive && (
+            {isSizeOptionTabActive && (
                 <OptionsTab
                     style={{
-                        marginLeft: '35px',
+                        marginLeft: '70px',
                     }}
-                ></OptionsTab>
+                >
+                    {sizeOptions.map((item, index) => (
+                        <OptionsTabSize
+                            key={index}
+                            onClick={() => handleEditSize(item.value)}
+                        >
+                            {item.icon} {item.name}
+                            {/* <HorizontalDivider></HorizontalDivider> */}
+                        </OptionsTabSize>
+                    ))}
+                </OptionsTab>
+            )}
+
+            {isStyleOptionTabActive && (
+                <OptionsTab
+                    style={{
+                        marginLeft: '70px',
+                    }}
+                >
+                    {styleOptions.map((item, index) => (
+                        <OptionsTabStyle
+                            key={index}
+                            onClick={() => handleEditStyle(item.value)}
+                        >
+                            {item.icon} {item.name}
+                            {/* <HorizontalDivider></HorizontalDivider> */}
+                        </OptionsTabStyle>
+                    ))}
+                </OptionsTab>
             )}
         </FloatingDivContainer>
     );

@@ -285,6 +285,7 @@ export default function Chart(props: propsIF) {
     const [market, setMarket] = useState<number>(0);
 
     const [boundaries, setBoundaries] = useState<boolean>();
+    const [isShapeEdited, setIsShapeEdited] = useState<boolean>();
 
     const [isLineDrag, setIsLineDrag] = useState(false);
 
@@ -2879,6 +2880,8 @@ export default function Chart(props: propsIF) {
                             }
                         }
                     });
+
+                    setIsShapeEdited(false);
                 })
                 .on('measure', () => {
                     drawnShapeHistory?.forEach((item) => {
@@ -2902,6 +2905,7 @@ export default function Chart(props: propsIF) {
         isUpdatingShape,
         denomInBase,
         period,
+        isShapeEdited,
         // anglePointSeries,
     ]);
 
@@ -4382,6 +4386,7 @@ export default function Chart(props: propsIF) {
                 setDrawnShapeHistory={setDrawnShapeHistory}
                 setSelectedDrawnShape={setSelectedDrawnShape}
                 deleteItem={deleteItem}
+                setIsShapeEdited={setIsShapeEdited}
             />
 
             {scaleData && (
