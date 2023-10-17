@@ -16,6 +16,9 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FunctionArray = ((...args: any[]) => void)[];
+
 export function useSendInit(
     setNewInitTransactionHash: React.Dispatch<
         React.SetStateAction<string | undefined>
@@ -34,7 +37,7 @@ export function useSendInit(
 
     const sendInit = async (
         initialPriceInBaseDenom: number | undefined,
-        cb?: () => void,
+        cbs?: FunctionArray,
     ) => {
         resetConfirmation();
 
@@ -86,7 +89,11 @@ export function useSendInit(
                 if (receipt) {
                     dispatch(addReceipt(JSON.stringify(receipt)));
                     dispatch(removePendingTx(receipt.transactionHash));
-                    if (cb) cb();
+                    if (cbs) {
+                        for (const cb of cbs) {
+                            await cb();
+                        }
+                    }
                     setIsTxCompletedInit(true);
                 }
             } catch (error) {

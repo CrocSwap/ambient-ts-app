@@ -1009,7 +1009,7 @@ export default function InitPool() {
             setIsTxCompletedRange: setIsTxCompletedRange,
         };
         console.log('Debug, calling createRangePosition', params);
-        createRangePosition(params);
+        return createRangePosition(params);
     };
 
     const sendTransaction = isMintLiqEnabled
@@ -1019,15 +1019,20 @@ export default function InitPool() {
                   isLpContractCreationEnabled,
                   DISABLE_INIT_SETTINGS,
               });
-              sendInit(initialPriceInBaseDenom, sendRangePosition);
+              sendInit(initialPriceInBaseDenom, [
+                  sendRangePosition,
+                  () => alert('Fired Second Callback A'),
+              ]);
           }
-        : () => {
+        : async () => {
               console.log('initializing');
               console.log({
                   isLpContractCreationEnabled,
                   DISABLE_INIT_SETTINGS,
               });
-              sendInit(initialPriceInBaseDenom);
+              sendInit(initialPriceInBaseDenom, [
+                  () => alert('Fired Second Callback B'),
+              ]);
           };
 
     const initButtopPropsIF = {

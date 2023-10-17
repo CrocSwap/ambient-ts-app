@@ -4,6 +4,7 @@ import Button from '../../components/Form/Button';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { IS_LOCAL_ENV } from '../../constants';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { FunctionArray } from '../../App/hooks/useSendInit';
 
 interface PropsIF {
     tokenA: TokenIF;
@@ -23,7 +24,7 @@ interface PropsIF {
     sendRangePosition: () => Promise<void>;
     sendInit: (
         initialPriceInBaseDenom: number | undefined,
-        cb?: (() => void) | undefined,
+        cbs?: FunctionArray | undefined,
     ) => Promise<void>;
     poolExists: boolean | null;
     isConnected: boolean;
