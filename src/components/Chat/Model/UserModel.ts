@@ -24,9 +24,8 @@ export function getUserLabel(user: User | null): string {
         return user.ensName;
     }
     return (
-        user.walletID.substring(0, 6) +
-        '...' +
-        user.walletID.substring(user.walletID.length - 4)
+        user.walletID.substring(0, 6) + '...'
+        // + user.walletID.substring(user.walletID.length - 4)
     );
 }
 

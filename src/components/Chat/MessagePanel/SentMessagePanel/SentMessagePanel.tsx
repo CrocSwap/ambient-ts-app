@@ -78,6 +78,7 @@ interface SentMessageProps {
     deleteMsgFromList: any;
     addReaction: (messageId: string, userId: string, reaction: string) => void;
     mentionHoverListener: (elementTop: number, walletID: string) => void;
+    mentionMouseLeftListener: any;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -496,6 +497,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                 props.message.mentionedWalletID,
                             );
                         }}
+                        onMouseLeave={props.mentionMouseLeftListener}
                         className={styles.mentioned_name_token}
                     >
                         {word}
