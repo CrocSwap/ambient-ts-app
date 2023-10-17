@@ -37,8 +37,6 @@ export interface repoParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
-    lowTick: string;
-    highTick: string;
 }
 
 // type containing all the URL parameter interfaces
