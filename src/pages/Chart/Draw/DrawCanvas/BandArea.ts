@@ -18,7 +18,7 @@ export function createBandArea(
             denomInBase === d.denomInBase ? d.toValue : 1 / d.toValue,
         )
         .decorate((context: CanvasRenderingContext2D) => {
-            context.fillStyle = 'rgba(41,98,255,0.15)';
+            context.fillStyle = 'rgba(115, 113, 252, 0.15)';
         });
 }
 

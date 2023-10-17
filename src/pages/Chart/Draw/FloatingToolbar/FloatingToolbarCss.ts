@@ -59,13 +59,60 @@ export const Divider = styled.div`
     height: 30px;
 `;
 
+export const HorizontalDivider = styled.div`
+    background: #434c58;
+    width: 30px;
+    height: 1px;
+`;
+
 const OptionsTab = styled.div`
     background: #242f3f;
-    height: 80px;
-    width: 30px;
     margin-top: 4px;
     border-radius: 3px;
     box-shadow: 4px 4px 6px #0d1117;
+    align-items: end;
+
+    margin: 4px;
+    padding: 4px;
+
+    justify-content: end;
 `;
 
-export { FloatingDiv, FloatingDivContainer, OptionsTab };
+const OptionsTabSize = styled.div`
+    background: #242f3f;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    padding: 4px;
+    gap: 12px;
+
+    display: flex;
+
+    &:hover {
+        background: #434c58;
+    }
+`;
+const OptionsTabStyle = styled.div`
+    background: #242f3f;
+    align-items: center;
+    justify-content: start;
+    cursor: pointer;
+
+    padding: 4px;
+    gap: 12px;
+
+    display: flex;
+
+    &:hover {
+        background: #434c58;
+    }
+`;
+
+export {
+    FloatingDiv,
+    FloatingDivContainer,
+    OptionsTab,
+    OptionsTabSize,
+    OptionsTabStyle,
+};
