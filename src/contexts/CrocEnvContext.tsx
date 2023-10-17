@@ -1,6 +1,8 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import {
+    Dispatch,
     ReactNode,
+    SetStateAction,
     createContext,
     useContext,
     useEffect,
@@ -42,6 +44,8 @@ interface CrocEnvContextIF {
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
     provider: Provider | undefined;
+    activeNetwork: NetworkIF;
+    setActiveNetwork: Dispatch<SetStateAction<NetworkIF>>;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
@@ -55,9 +59,14 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
-    const [selectedNetwork, setSelectedNetwork] =
-        useState<NetworkIF>(ethereumGoerli);
-    const { chainData, isWalletChainSupported } = useAppChain();
+    // const [activeNetwork, setActiveNetwork] =
+    //     useState<NetworkIF>(ethereumGoerli);
+    const {
+        chainData,
+        isWalletChainSupported,
+        activeNetwork,
+        setActiveNetwork,
+    } = useAppChain();
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
@@ -105,8 +114,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
 
     const provider = useProvider({ chainId: +chainData.chainId });
 
-    const updateNetwork = (network: NetworkIF) => {
-        setSelectedNetwork(network);
+    const updateNetwork = (network: NetworkIF): void => {
+        setActiveNetwork(network);
     };
 
     useBlacklist(userAddress);
@@ -178,7 +187,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const crocEnvContext = {
         crocEnv,
         setCrocEnv,
-        selectedNetwork,
+        selectedNetwork: activeNetwork,
         setSelectedNetwork: updateNetwork,
         chainData,
         isWalletChainSupported,
@@ -186,6 +195,8 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         ethMainnetUsdPrice,
         defaultUrlParams,
         provider,
+        activeNetwork,
+        setActiveNetwork,
     };
 
     return (

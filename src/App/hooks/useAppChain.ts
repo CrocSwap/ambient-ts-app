@@ -1,4 +1,11 @@
-import { useEffect, useMemo, useRef } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
@@ -7,10 +14,15 @@ import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import chainNumToString from '../functions/chainNumToString';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
+import { ethereumGoerli } from '../../utils/networks/ethereumGoerli';
+import { NetworkIF } from '../../utils/interfaces/exports';
+import { supportedNetworks } from '../../utils/networks/index';
 
 export const useAppChain = (): {
     chainData: ChainSpec;
     isWalletChainSupported: boolean;
+    activeNetwork: NetworkIF;
+    setActiveNetwork: Dispatch<SetStateAction<NetworkIF>>;
 } => {
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork, chains: chns } = useNetwork();
@@ -130,33 +142,34 @@ export const useAppChain = (): {
 
     const defaultChain = getDefaultChainId();
 
+    // metadata about the active network in the app
+    const [activeNetwork, setActiveNetwork] =
+        useState<NetworkIF>(ethereumGoerli);
+    // logic to update `activeNetwork` when the connected wallet changes networks
+    // this doesn't kick in if the user does not have a connected wallet
+    useEffect(() => {
+        // see if there is a connected wallet with a valid network
+        if (chainInWalletValidated.current) {
+            // find network metaData for validated wallet
+            const chainMetadata: NetworkIF =
+                supportedNetworks[chainInWalletValidated.current];
+            // if found, update local state with retrieved metadata
+            chainMetadata && setActiveNetwork(chainMetadata);
+        }
+    }, [chainInWalletValidated.current]);
+    useEffect(() => console.log(activeNetwork), [activeNetwork]);
+
     // data from the SDK about the current chain in the connected wallet
     // chain is validated upstream of this process
     const chainData = useMemo<ChainSpec>(() => {
-        // hierarchical list of possible sources of truth
-        const chainsHierarchy: Array<string | null> = [
-            // last validated chain from a connected wallet
-            chainInWalletValidated.current,
-            // current validated chain in the URL bar
-            chainInURLValidated,
-        ];
-        // variable to hold chain data from SDK
-        let chn;
-        // iterator for while loop below
-        let i = 0;
-        // look for chain data through hierarchical list of chains
-        do {
-            const thisChain: string | null = chainsHierarchy[i];
-            if (thisChain) chn = lookupChain(thisChain);
-            i++;
-        } while (!chn && i < chainsHierarchy.length);
-        // output variable with default chain as a fallback value
-        const output: ChainSpec = chn ?? lookupChain(defaultChain);
+        const output: ChainSpec =
+            lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
         // sync data in RTK for the new chain
         dispatch(setChainId(output.chainId));
         // return output varibale (chain data)
+        console.log(output);
         return output;
-    }, [chainInWalletValidated.current]);
+    }, [activeNetwork]);
 
     // boolean showing if the current chain in connected wallet is supported
     // this is used to launch the network switcher automatically
@@ -179,5 +192,7 @@ export const useAppChain = (): {
     return {
         chainData,
         isWalletChainSupported,
+        activeNetwork,
+        setActiveNetwork,
     };
 };

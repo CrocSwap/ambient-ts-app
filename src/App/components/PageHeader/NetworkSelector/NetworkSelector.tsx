@@ -11,14 +11,15 @@ import {
     DropdownMenuContainer,
 } from '../../../../styled/Components/Header';
 import { supportedNetworks } from '../../../../utils/networks';
-interface NetworkSelectorPropsIF {
+import { ChainSpec } from '@crocswap-libs/sdk';
+interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
 
-export default function NetworkSelector(props: NetworkSelectorPropsIF) {
+export default function NetworkSelector(props: propsIF) {
     const { switchNetwork } = props;
     const {
-        setSelectedNetwork,
+        setActiveNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -26,15 +27,22 @@ export default function NetworkSelector(props: NetworkSelectorPropsIF) {
         lookupChain(chain),
     );
 
+    const handleClick = (chn: ChainSpec): void => {
+        console.log(switchNetwork);
+        console.log(chn);
+        if (switchNetwork) {
+            switchNetwork(parseInt(chn.chainId));
+        } else {
+            setActiveNetwork(supportedNetworks[chn.chainId]);
+        }
+    };
+
     const dropdownAriaDescription = 'Dropdown menu for networks.';
     const networkMenuContent = (
         <MenuContent tabIndex={0} aria-label={dropdownAriaDescription}>
             {chains.map((chain, idx) => (
                 <NetworkItem
-                    onClick={() => {
-                        switchNetwork && switchNetwork(parseInt(chain.chainId));
-                        setSelectedNetwork(supportedNetworks[chain.chainId]);
-                    }}
+                    onClick={() => handleClick(chain)}
                     key={chain.chainId}
                     custom={idx}
                     variants={ItemEnterAnimation}
