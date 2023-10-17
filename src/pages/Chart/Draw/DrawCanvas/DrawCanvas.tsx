@@ -219,7 +219,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                             type: activeDrawingType,
                             time: Date.now(),
                             pool: currentPool,
-                            color: '#7371fc',
+                            color: 'rgba(115, 113, 252, 1)',
                             lineWidth: 1.5,
                             style: [0, 0],
                         };
@@ -249,7 +249,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     type: activeDrawingType,
                                     time: endPoint.time,
                                     pool: endPoint.pool,
-                                    color: '#7371fc',
+                                    color: 'rgba(115, 113, 252, 1)',
                                     lineWidth: 1.5,
                                     style: [0, 0],
                                 },
@@ -273,7 +273,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 type: activeDrawingType,
                                 time: endPoint.time,
                                 pool: endPoint.pool,
-                                color: '#7371fc',
+                                color: 'rgba(115, 113, 252, 1)',
                                 lineWidth: 1.5,
                                 style: [0, 0],
                             });
@@ -330,7 +330,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     type: activeDrawingType,
                     time: Date.now(),
                     pool: currentPool,
-                    color: '#7371fc',
+                    color: 'rgba(115, 113, 252, 1)',
                     lineWidth: 1.5,
                     style: [0, 0],
                 },
@@ -339,7 +339,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
             renderCanvasArray([d3DrawCanvas]);
         }
-    }, []);
+    }, [activeDrawingType]);
 
     // Draw
     useEffect(() => {
