@@ -169,11 +169,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     };
     useEffect(() => {
         setNewCrocEnv();
-    }, [
-        crocEnv === undefined,
-        chainData.chainId,
-        signer,
-    ]);
+    }, [crocEnv === undefined, chainData.chainId, signer]);
 
     useEffect(() => {
         if (provider) {

@@ -4,7 +4,6 @@ import graphDataReducer from './graphDataSlice';
 import receiptDataReducer from './receiptDataSlice';
 import userDataReducer from './userDataSlice';
 import soloTokenReducer from './soloTokenDataSlice';
-
 export const store = configureStore({
     reducer: {
         tradeData: tradeDataReducer,
