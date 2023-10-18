@@ -113,20 +113,21 @@ export const useAppChain = (): {
                         // if yes, no changes needed
                         // if no, navigate to index page
                         // first part seems unnecessary but appears to help stability
+                        const { pathname } = window.location;
                         if (chainInURLValidated === incomingChainFromWallet) {
                             // generate params chain manually and navigate user
-                            const { pathname } = window.location;
                             let templateURL = pathname;
                             while (templateURL.includes('/')) {
                                 templateURL = templateURL.substring(1);
                             }
                             linkGenCurrent.navigate(templateURL);
-                            window.location.reload();
                         } else {
-                            // navigate to index page
-                            linkGenIndex.navigate();
-                            window.location.reload();
+                            if (pathname.includes('token')) {
+                                // navigate to index page only if token pair in URL
+                                linkGenIndex.navigate();
+                            }
                         }
+                        window.location.reload();
                         // update state with new validated wallet network
                         chainInWalletValidated.current =
                             incomingChainFromWallet;
@@ -150,7 +151,7 @@ export const useAppChain = (): {
 
     function findNetworkData(chn: keyof typeof supportedNetworks): NetworkIF {
         const output = supportedNetworks[chn];
-        console.log(output);
+        // console.log(output);
         return output;
     }
     // logic to update `activeNetwork` when the connected wallet changes networks
@@ -169,13 +170,9 @@ export const useAppChain = (): {
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
-        console.log('hey now');
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
-        linkGenIndex.navigate();
         setActiveNetwork(network);
-        console.log('reload on next line');
         window.location.reload();
-        console.log('just reloaded!');
     }
 
     // data from the SDK about the current chain in the connected wallet
@@ -185,7 +182,6 @@ export const useAppChain = (): {
             lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
         // sync data in RTK for the new chain
         dispatch(setChainId(output.chainId));
-        console.log(output);
         // return output varibale (chain data)
         return output;
     }, [activeNetwork.chainId]);

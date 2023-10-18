@@ -67,7 +67,6 @@ export default function Stats() {
     >();
 
     useEffect(() => {
-        console.log('getting fresh DEX stats');
         if (isServerEnabled && !isUserIdle && crocEnv) {
             getChainStats(
                 chainData.chainId,
