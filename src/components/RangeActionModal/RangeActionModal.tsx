@@ -754,14 +754,16 @@ export default function RangeActionModal(props: propsIF) {
                             <span>Slippage Tolerange</span>
                             <span>{currentSlippage}%</span>
                         </div>
-                        <div>
-                            <span>Network Fee</span>
-                            <span>
-                                {chainId === '0x1'
-                                    ? '~' + removalGasPriceinDollars
-                                    : '...'}
-                            </span>
-                        </div>
+                        {chainId === '0x1' && (
+                            <div>
+                                <span>Network Fee</span>
+                                <span>
+                                    {removalGasPriceinDollars
+                                        ? '~' + removalGasPriceinDollars
+                                        : '...'}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
