@@ -83,8 +83,12 @@ export const useAppChain = (): {
 
     // trigger chain switch in wallet when chain in URL changes
     useEffect(() => {
-        if (chainInURLValidated && switchNetwork) {
-            switchNetwork(parseInt(chainInURLValidated));
+        if (chainInURLValidated) {
+            if (switchNetwork) {
+                switchNetwork(parseInt(chainInURLValidated));
+            } else {
+                localStorage.setItem(CHAIN_LS_KEY, chainInURLValidated);
+            }
         }
     }, [chainInURLValidated, switchNetwork]);
 
