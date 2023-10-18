@@ -388,14 +388,16 @@ export default function Withdraw(props: propsIF) {
                         <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
                     )}
                 </FlexContainer>
-                <GasPump>
-                    <SVGContainer>
-                        <FaGasPump size={12} />{' '}
-                    </SVGContainer>
-                    {chainId === '0x1' && withdrawGasPriceinDollars
-                        ? withdrawGasPriceinDollars
-                        : '…'}
-                </GasPump>
+                {chainId === '0x1' && (
+                    <GasPump>
+                        <SVGContainer>
+                            <FaGasPump size={12} />{' '}
+                        </SVGContainer>
+                        {withdrawGasPriceinDollars
+                            ? withdrawGasPriceinDollars
+                            : '…'}
+                    </GasPump>
+                )}
             </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}

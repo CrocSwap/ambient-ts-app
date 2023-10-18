@@ -546,7 +546,6 @@ function Range() {
                 defaultHighTick,
                 gridSize,
             );
-            console.log({ pinnedDisplayPrices });
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
             );
