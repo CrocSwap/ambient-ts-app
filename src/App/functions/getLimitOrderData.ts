@@ -28,6 +28,7 @@ export const getLimitOrderData = async (
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
+    skipENSFetch?: boolean,
 ): Promise<LimitOrderIF> => {
     const newOrder = { ...order } as LimitOrderIF;
 
@@ -46,9 +47,9 @@ export const getLimitOrderData = async (
     const baseMetadata = cachedTokenDetails(provider, order.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, order.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(order.user);
-
-    newOrder.ensResolution = (await ensRequest) ?? '';
+    newOrder.ensResolution = skipENSFetch
+        ? ''
+        : (await cachedEnsResolve(order.user)) ?? '';
 
     const basePricedToken = getMainnetAddress(
         baseTokenAddress,
