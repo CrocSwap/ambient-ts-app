@@ -43,6 +43,7 @@ interface CrocEnvContextIF {
     provider: Provider | undefined;
     activeNetwork: NetworkIF;
     chooseNetwork: (network: NetworkIF) => void;
+    mainnetProvider: Provider | undefined;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
@@ -106,6 +107,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         useState<UrlRoutesTemplate>(initUrl);
 
     const provider = useProvider({ chainId: +chainData.chainId });
+    const mainnetProvider = useProvider({ chainId: +'0x1' });
 
     useBlacklist(userAddress);
 
@@ -160,19 +162,17 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     ]);
 
     useEffect(() => {
-        if (provider) {
-            (async () => {
-                IS_LOCAL_ENV &&
-                    console.debug('fetching WETH price from mainnet');
-                const mainnetEthPrice = await cachedFetchTokenPrice(
-                    ethereumMainnet.tokens['WETH'],
-                    ethereumMainnet.chainId,
-                );
-                const usdPrice = mainnetEthPrice?.usdPrice;
-                setEthMainnetUsdPrice(usdPrice);
-            })();
-        }
-    }, [provider]);
+        (async () => {
+            IS_LOCAL_ENV && console.debug('fetching WETH price from mainnet');
+            const mainnetEthPrice = await cachedFetchTokenPrice(
+                ethereumMainnet.tokens['WETH'],
+                ethereumMainnet.chainId,
+            );
+            const usdPrice = mainnetEthPrice?.usdPrice;
+            setEthMainnetUsdPrice(usdPrice);
+        })();
+    }, []);
+
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
     }, [chainData.chainId]);
@@ -188,6 +188,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         ethMainnetUsdPrice,
         defaultUrlParams,
         provider,
+        mainnetProvider,
         activeNetwork,
         chooseNetwork,
     };
