@@ -2758,7 +2758,7 @@ export default function Chart(props: propsIF) {
                                         item.data,
                                     );
 
-                                    lineOfBand?.forEach((line) => {
+                                    lineOfBand?.forEach((line, index) => {
                                         if (ctx) ctx.setLineDash(item.style);
                                         lineSeries.decorate(
                                             (
@@ -2772,23 +2772,38 @@ export default function Chart(props: propsIF) {
                                         );
                                         lineSeries(line);
                                         if (
-                                            (hoveredDrawnShape &&
-                                                hoveredDrawnShape.data.time ===
-                                                    item.time) ||
-                                            (selectedDrawnShape &&
-                                                selectedDrawnShape.data.time ===
-                                                    item.time)
+                                            hoveredDrawnShape &&
+                                            hoveredDrawnShape.data.time ===
+                                                item.time
                                         ) {
-                                            line.forEach((element) => {
+                                            line.forEach((element, _index) => {
                                                 const selectedCircleIsActive =
                                                     hoveredDrawnShape &&
                                                     hoveredDrawnShape.selectedCircle &&
                                                     hoveredDrawnShape
                                                         .selectedCircle.x ===
                                                         element.x &&
-                                                    hoveredDrawnShape
-                                                        .selectedCircle.y ===
-                                                        element.y;
+                                                    element.y ===
+                                                        (element.denomInBase ===
+                                                        denomInBase
+                                                            ? hoveredDrawnShape
+                                                                  ?.selectedCircle
+                                                                  .y
+                                                            : Number(
+                                                                  (
+                                                                      1 /
+                                                                      hoveredDrawnShape
+                                                                          ?.selectedCircle
+                                                                          .y
+                                                                  ).toFixed(
+                                                                      element.y
+                                                                          .toString()
+                                                                          .split(
+                                                                              '.',
+                                                                          )[1]
+                                                                          .length,
+                                                                  ),
+                                                              ));
 
                                                 if (selectedCircleIsActive) {
                                                     if (!isUpdatingShape) {
@@ -3319,23 +3334,35 @@ export default function Chart(props: propsIF) {
 
         if (scaleData) {
             const threshold = 10;
-
             const allBandLines = createPointsOfBandLine(element);
 
-            allBandLines.forEach((item: { x: number; y: number }[]) => {
-                const distance = distanceToLine(
-                    mouseX,
-                    mouseY,
-                    scaleData.xScale(item[0].x),
-                    scaleData.yScale(item[0].y),
-                    scaleData.xScale(item[1].x),
-                    scaleData.yScale(item[1].y),
-                );
+            allBandLines.forEach(
+                (item: { x: number; y: number; denomInBase: boolean }[]) => {
+                    const startX = item[0].x;
+                    const startY =
+                        item[0].denomInBase === denomInBase
+                            ? item[0].y
+                            : 1 / item[0].y;
+                    const endX = item[1].x;
+                    const endY =
+                        item[1].denomInBase === denomInBase
+                            ? item[1].y
+                            : 1 / item[1].y;
 
-                if (distance < threshold) {
-                    isOverLine = true;
-                }
-            });
+                    const distance = distanceToLine(
+                        mouseX,
+                        mouseY,
+                        scaleData.xScale(startX),
+                        scaleData.yScale(startY),
+                        scaleData.xScale(endX),
+                        scaleData.yScale(endY),
+                    );
+
+                    if (distance < threshold) {
+                        isOverLine = true;
+                    }
+                },
+            );
         }
 
         return isOverLine;
