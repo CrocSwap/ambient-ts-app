@@ -3,12 +3,10 @@ import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../utils/functions/uriToHttp';
+import TokenIcon from '../../Global/TokenIcon/TokenIcon';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface IRemoveRangeInfoProps {
-    baseTokenSymbol: string;
-    quoteTokenSymbol: string;
-    baseTokenLogoURI: string;
-    quoteTokenLogoURI: string;
     posLiqBaseDecimalCorrected: number | undefined;
     posLiqQuoteDecimalCorrected: number | undefined;
     feeLiqBaseDecimalCorrected: number | undefined;
@@ -21,10 +19,6 @@ interface IRemoveRangeInfoProps {
 
 export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
     const {
-        baseTokenSymbol,
-        quoteTokenSymbol,
-        baseTokenLogoURI,
-        quoteTokenLogoURI,
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
         feeLiqBaseDecimalCorrected,
@@ -33,6 +27,9 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         quoteRemovalNum,
         isAmbient,
     } = props;
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const baseToken = tradeData.baseToken;
+    const quoteToken = tradeData.quoteToken;
 
     const liqBaseDisplay = getFormattedNumber({
         value: posLiqBaseDecimalCorrected,
@@ -57,20 +54,30 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         <>
             <DividerDark />
             <Row>
-                <span>{baseTokenSymbol} Rewards Earned</span>
+                <span>{baseToken.symbol} Rewards Earned</span>
                 <div className={styles.token_price}>
                     {feeLiqBaseDisplay !== undefined ? feeLiqBaseDisplay : '…'}
-                    <img src={uriToHttp(baseTokenLogoURI)} alt='' />
+                    <TokenIcon
+                        token={baseToken}
+                        src={uriToHttp(baseToken.logoURI)}
+                        alt={baseToken.symbol}
+                        size='xs'
+                    />
                 </div>
             </Row>
             {/*  */}
             <Row>
-                <span>{quoteTokenSymbol} Rewards Earned</span>
+                <span>{quoteToken.symbol} Rewards Earned</span>
                 <div className={styles.token_price}>
                     {feeLiqQuoteDisplay !== undefined
                         ? feeLiqQuoteDisplay
                         : '…'}
-                    <img src={uriToHttp(quoteTokenLogoURI)} alt='' />
+                    <TokenIcon
+                        token={quoteToken}
+                        src={uriToHttp(quoteToken.logoURI)}
+                        alt={quoteToken.symbol}
+                        size='xs'
+                    />
                 </div>
             </Row>
         </>
@@ -89,39 +96,59 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         <div className={styles.row}>
             <div className={styles.remove_position_info}>
                 <Row>
-                    <span>Pooled {baseTokenSymbol}</span>
+                    <span>Pooled {baseToken.symbol}</span>
                     <div className={styles.token_price}>
                         {liqBaseDisplay !== undefined ? liqBaseDisplay : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={baseToken}
+                            src={uriToHttp(baseToken.logoURI)}
+                            alt={baseToken.symbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
                 {/*  */}
                 <Row>
-                    <span>Pooled {quoteTokenSymbol}</span>
+                    <span>Pooled {quoteToken.symbol}</span>
                     <div className={styles.token_price}>
                         {liqQuoteDisplay !== undefined ? liqQuoteDisplay : '…'}
-                        <img src={quoteTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={quoteToken}
+                            src={uriToHttp(quoteToken.logoURI)}
+                            alt={quoteToken.symbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
                 {/*  */}
                 {rewardsEarnedSection}
                 <DividerDark />
                 <Row>
-                    <span>{baseTokenSymbol} Removal Summary</span>
+                    <span>{baseToken.symbol} Removal Summary</span>
                     <div className={styles.token_price}>
                         {baseRemovalString !== undefined
                             ? baseRemovalString
                             : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={baseToken}
+                            src={uriToHttp(baseToken.logoURI)}
+                            alt={baseToken.symbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
                 <Row>
-                    <span>{quoteTokenSymbol} Removal Summary</span>
+                    <span>{quoteToken.symbol} Removal Summary</span>
                     <div className={styles.token_price}>
                         {quoteRemovalString !== undefined
                             ? quoteRemovalString
                             : '…'}
-                        <img src={quoteTokenLogoURI} alt='' />
+                        <TokenIcon
+                            token={quoteToken}
+                            src={uriToHttp(quoteToken.logoURI)}
+                            alt={quoteToken.symbol}
+                            size='xs'
+                        />
                     </div>
                 </Row>
             </div>
