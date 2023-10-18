@@ -83,12 +83,14 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                     </Row>
                 </div>
             </div>
-            <div className={styles.network_fee_container}>
-                <div>
-                    <span>Network Fee</span>
+            {chainId === '0x1' && (
+                <div className={styles.network_fee_container}>
+                    <div>
+                        <span>Network Fee</span>
+                    </div>
+                    <span>{networkFee ? '~' + networkFee : '...'}</span>
                 </div>
-                <span>{chainId === '0x1' ? '~' + networkFee : '...'}</span>
-            </div>
+            )}
         </div>
     );
 }

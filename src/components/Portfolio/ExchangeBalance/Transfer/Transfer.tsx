@@ -349,14 +349,16 @@ export default function Transfer(props: propsIF) {
                         <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
                     )}
                 </FlexContainer>
-                <GasPump>
-                    <SVGContainer>
-                        <FaGasPump size={12} />{' '}
-                    </SVGContainer>
-                    {chainId === '0x1' && transferGasPriceinDollars
-                        ? transferGasPriceinDollars
-                        : '…'}
-                </GasPump>
+                {chainId === '0x1' && (
+                    <GasPump>
+                        <SVGContainer>
+                            <FaGasPump size={12} />{' '}
+                        </SVGContainer>
+                        {transferGasPriceinDollars
+                            ? transferGasPriceinDollars
+                            : '…'}
+                    </GasPump>
+                )}
             </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}
