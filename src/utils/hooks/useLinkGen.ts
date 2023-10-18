@@ -1,5 +1,9 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
+export interface indexParamsIF {
+    chain?: string;
+}
+
 export interface swapParamsIF {
     chain: string;
     tokenA: string;
@@ -65,9 +69,9 @@ const BASE_URL_PATHS = {
     privacy: '/privacy',
 } as const;
 
-// string-literal union type of keys in `BASE_URL_PATHS`
+// string-literal union type of keys in `BASE_URL_PATHS` obj
 export type pageNames = keyof typeof BASE_URL_PATHS;
-// string-literal union type of keys in `BASE_URL_PATHS`
+// string-literal union type of values in `BASE_URL_PATHS` obj
 export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
