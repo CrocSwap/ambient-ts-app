@@ -5,6 +5,7 @@ import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../constants';
 import removeWrappedNative from '../../utils/functions/removeWrappedNative';
 import { supportedNetworks } from '../../utils/networks';
+import { isUsdcToken } from '../../utils/data/stablePairs';
 
 export const useTokenSearch = (
     chainId: string,
@@ -181,13 +182,9 @@ export const useTokenSearch = (
                     // declare an output variable
                     let priority: number;
                     // canonical token addresses to assign probability
-                    const addresses = {
-                        nativeToken: ZERO_ADDRESS,
-                        USDC: supportedNetworks[chainId].tokens['USDC'],
-                    };
                     if (tknAddress === ZERO_ADDRESS) {
                         priority = 100;
-                    } else if (tknAddress === addresses.USDC) {
+                    } else if (isUsdcToken(tknAddress)) {
                         priority = 90;
                     } else if (
                         walletTknAddresses.includes(tkn.address.toLowerCase())

@@ -202,7 +202,6 @@ function Range() {
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
-        chainId,
     )
         ? mintSlippage.stable
         : mintSlippage.volatile;
@@ -629,7 +628,6 @@ function Range() {
     }, [tokenBDexBalance]);
 
     useEffect(() => {
-        console.log({ advancedMode, defaultLowTick, defaultHighTick });
         if (advancedMode) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 isDenomBase,
@@ -639,7 +637,6 @@ function Range() {
                 defaultHighTick,
                 gridSize,
             );
-            console.log({ pinnedDisplayPrices });
             setRangeLowBoundNonDisplayPrice(
                 pinnedDisplayPrices.pinnedMinPriceNonDisplay,
             );

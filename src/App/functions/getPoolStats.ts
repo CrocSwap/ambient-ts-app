@@ -1,6 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL } from '../../constants';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { supportedNetworks } from '../../utils/networks';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
@@ -84,10 +83,8 @@ async function expandPoolStats(
 ): Promise<PoolStatsIF> {
     const pool = crocEnv.pool(base, quote);
 
-    const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
-    const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
-    const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
-    const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
 
     const basePrice = (await basePricePromise)?.usdPrice || 0.0;
     const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
@@ -306,11 +303,7 @@ async function expandTokenStats(
 ): Promise<DexAggStatsIF> {
     const decimals = crocEnv.token(stats.tokenAddr).decimals;
 
-    const mainnetEquiv = getMainnetAddress(
-        stats.tokenAddr,
-        supportedNetworks[chainId],
-    );
-    const usdPrice = cachedFetchTokenPrice(mainnetEquiv, chainId).then(
+    const usdPrice = cachedFetchTokenPrice(stats.tokenAddr, chainId).then(
         (p) => p?.usdPrice || 0.0,
     );
 

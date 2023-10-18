@@ -20,12 +20,12 @@ import { ethers } from 'ethers';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
-import { handleWETH } from '../../../utils/data/handleWETH';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
 import { supportedNetworks } from '../../../utils/networks';
+import { isWethToken } from '../../../utils/data/stablePairs';
 
 interface propsIF {
     showSoloSelectTokenButtons: boolean;
@@ -249,6 +249,11 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
+    const handleWETH = {
+        check: isWethToken,
+        message: ' Ambient uses Native Ether (ETH) to lower gas costs.',
+    };
+
     return (
         <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>
             <section className={styles.container}>
@@ -287,16 +292,12 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                                 <button
                                     onClick={() => {
                                         try {
-                                            const wethAddr =
-                                                supportedNetworks[chainId]
-                                                    .tokens.WETH;
-                                            if (wethAddr) {
-                                                chooseToken(
-                                                    tokens.getTokenByAddress(
-                                                        wethAddr,
-                                                    ) as TokenIF,
-                                                    false,
+                                            const wethToken =
+                                                tokens.getTokenByAddress(
+                                                    validatedInput,
                                                 );
+                                            if (wethToken) {
+                                                chooseToken(wethToken, false);
                                             }
                                         } catch (err) {
                                             IS_LOCAL_ENV && console.warn(err);

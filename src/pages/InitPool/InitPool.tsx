@@ -25,8 +25,6 @@ import TokenIcon from '../../components/Global/TokenIcon/TokenIcon';
 import { CachedDataContext } from '../../contexts/CachedDataContext';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
-import { supportedNetworks } from '../../utils/networks';
 import { useApprove } from '../../App/functions/approve';
 import { useSendInit } from '../../App/hooks/useSendInit';
 
@@ -94,20 +92,12 @@ export default function InitPool() {
 
     useEffect(() => {
         (async () => {
-            const mainnetBase = getMainnetAddress(
-                baseToken.address,
-                supportedNetworks[chainId],
-            );
-            const mainnetQuote = getMainnetAddress(
-                quoteToken.address,
-                supportedNetworks[chainId],
-            );
             const basePricePromise = cachedFetchTokenPrice(
-                mainnetBase,
+                baseToken.address,
                 chainId,
             );
             const quotePricePromise = cachedFetchTokenPrice(
-                mainnetQuote,
+                quoteToken.address,
                 chainId,
             );
 

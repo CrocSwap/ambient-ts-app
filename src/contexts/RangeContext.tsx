@@ -32,11 +32,6 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
 
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
 
-    useEffect(() => {
-        console.log({ maxRangePrice });
-        console.log({ minRangePrice });
-    }, [minRangePrice, maxRangePrice]);
-
     const [currentRangeInReposition, setCurrentRangeInReposition] =
         useState<string>('');
     const [currentRangeInAdd, setCurrentRangeInAdd] = useState<string>('');

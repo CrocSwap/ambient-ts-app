@@ -15,20 +15,12 @@ export const ethereumMainnet: NetworkIF = {
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',
-    tokens: {
-        WETH: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-        USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    },
     defaultPair: [mainnetETH, mainnetUSDC],
     topPools: [
         new TopPool(mainnetETH, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetETH, mainnetWBTC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetDAI, mainnetUSDC, lookupChain('0x1').poolIndex),
         new TopPool(mainnetUSDT, mainnetUSDC, lookupChain('0x1').poolIndex),
-    ],
-    stableTokens: [
-        '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', // USDC
-        '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
     ],
     getGasPriceInGwei: async () => {
         const response = await fetch(

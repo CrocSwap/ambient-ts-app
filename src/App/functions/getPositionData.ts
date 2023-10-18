@@ -14,7 +14,6 @@ import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { supportedNetworks } from '../../utils/networks';
 import { Provider } from '@ethersproject/providers';
 
@@ -51,16 +50,8 @@ export const getPositionData = async (
 
     const ensRequest = cachedEnsResolve(newPosition.user);
 
-    const basePricedToken = getMainnetAddress(
-        baseTokenAddress,
-        supportedNetworks[chainId],
-    );
-    const basePricePromise = cachedFetchTokenPrice(basePricedToken, chainId);
-    const quotePricedToken = getMainnetAddress(
-        quoteTokenAddress,
-        supportedNetworks[chainId],
-    );
-    const quotePricePromise = cachedFetchTokenPrice(quotePricedToken, chainId);
+    const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
     newPosition.ensResolution = (await ensRequest) ?? '';
 

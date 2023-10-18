@@ -139,7 +139,6 @@ function Swap(props: propsIF) {
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,
         tokenB.address,
-        chainId,
     )
         ? swapSlippage.stable
         : swapSlippage.volatile;

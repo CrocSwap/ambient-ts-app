@@ -35,7 +35,6 @@ import { getPositionData } from '../functions/getPositionData';
 import { SpotPriceFn } from '../functions/querySpotPrice';
 import useDebounce from './useDebounce';
 import { getLiquidityFee } from '../functions/getPoolStats';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { supportedNetworks } from '../../utils/networks';
 import { Provider } from '@ethersproject/providers';
 
@@ -67,11 +66,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
 
     const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
     const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
-
-    const [mainnetBaseTokenAddress, setMainnetBaseTokenAddress] =
-        useState<string>('');
-    const [mainnetQuoteTokenAddress, setMainnetQuoteTokenAddress] =
-        useState<string>('');
 
     const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
 
@@ -132,28 +126,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     tokenBAddress,
                 );
 
-                const tokenAMainnetEquivalent = getMainnetAddress(
-                    tokenAAddress,
-                    supportedNetworks[props.chainData.chainId],
-                );
-                const tokenBMainnetEquivalent = getMainnetAddress(
-                    tokenBAddress,
-                    supportedNetworks[props.chainData.chainId],
-                );
-
-                if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
-                    const sortedMainnetTokens = sortBaseQuoteTokens(
-                        tokenAMainnetEquivalent,
-                        tokenBMainnetEquivalent,
-                    );
-
-                    setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
-                    setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
-                } else {
-                    setMainnetBaseTokenAddress('');
-                    setMainnetQuoteTokenAddress('');
-                }
-
                 setBaseTokenAddress(sortedTokens[0]);
                 setQuoteTokenAddress(sortedTokens[1]);
                 if (tradeData.tokenA.address === sortedTokens[0]) {
@@ -213,8 +185,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         );
     }, [tradeData.baseToken.address, tradeData.quoteToken.address]);
 
-    // Sets up the asynchronous queries to TVL, volume and liquidity curve and translates
-    // to equivalent mainnet tokens so the chart renders mainnet data even in testnet
+    // Sets up the asynchronous queries to TVL, volume and liquidity curve
     useEffect(() => {
         if (rtkMatchesParams && props.crocEnv && props.provider !== undefined) {
             const tokenAAddress = tradeData.tokenA.address;
@@ -711,8 +682,6 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         quoteTokenAddress,
         baseTokenDecimals, // Token contract decimals
         quoteTokenDecimals, // Token contract decimals
-        mainnetBaseTokenAddress, // The mainnet equivalent base token (if testnet)
-        mainnetQuoteTokenAddress, // The mainnet euquivalent quote token
         isTokenABase, // True if the base token is the first token in the panel (e.g. sell token on swap)
     };
 }

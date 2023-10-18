@@ -1,5 +1,3 @@
-import { Tokens } from '../interfaces/NetworkIF';
-
 export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 
         This 'moneyness' rank is intended to reflect an average user's expectation 
@@ -15,18 +13,16 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
         but otherwise arbitrary.
     */
 
-    const moneynessRank: { [K in keyof Tokens]: number } = {
+    const moneynessRank = {
         USDC: 100,
-        /* DAI: 90,
+        DAI: 90,
         USDT: 80,
         FRAX: 70,
-        WBTC: 60, */
-        // ETH: 50
-        // UNI: 0,
-        WETH: 0,
-        // PEPE: 0,
+        WBTC: 60,
+        ETH: 50,
+        PEPE: 0,
     };
 
-    const rank = moneynessRank[tokenSymbol as keyof Tokens] ?? 0;
+    const rank = moneynessRank[tokenSymbol as keyof typeof moneynessRank] ?? 0;
     return rank;
 };

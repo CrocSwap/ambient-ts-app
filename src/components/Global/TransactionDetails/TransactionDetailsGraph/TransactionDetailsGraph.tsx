@@ -18,8 +18,6 @@ import {
     setCanvasResolution,
 } from '../../../../pages/Chart/ChartUtils/chartUtils';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { supportedNetworks } from '../../../../utils/networks';
-import { getMainnetAddress } from '../../../../utils/functions/getMainnetAddress';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
@@ -54,15 +52,6 @@ export default function TransactionDetailsGraph(
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const denominationsInBase = tradeData.isDenomBase;
-
-    const mainnetBaseTokenAddress = getMainnetAddress(
-        baseTokenAddress,
-        supportedNetworks[tx.chainId],
-    );
-    const mainnetQuoteTokenAddress = getMainnetAddress(
-        quoteTokenAddress,
-        supportedNetworks[tx.chainId],
-    );
 
     const [graphData, setGraphData] = useState<any>();
 
@@ -103,9 +92,7 @@ export default function TransactionDetailsGraph(
         chainData &&
         isServerEnabled &&
         baseTokenAddress &&
-        quoteTokenAddress &&
-        mainnetBaseTokenAddress &&
-        mainnetQuoteTokenAddress
+        quoteTokenAddress
     );
 
     const [isDataEmpty, setIsDataEmpty] = useState(false);

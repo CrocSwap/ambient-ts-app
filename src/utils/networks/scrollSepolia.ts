@@ -35,9 +35,6 @@ export const scrollSepolia: NetworkIF = {
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x1',
-    tokens: {
-        USDC: scrollSepoliaUSDC.address,
-    },
     defaultPair: [scrollSepoliaETH, scrollSepoliaUSDC],
     topPools: [
         new TopPool(
@@ -46,12 +43,8 @@ export const scrollSepolia: NetworkIF = {
             lookupChain('0x8274f').poolIndex,
         ),
     ],
-    stableTokens: [
-        scrollSepoliaUSDC.address, // USDC
-    ],
     getGasPriceInGwei: async (provider?: Provider) => {
         if (!provider) return 0;
         return (await provider.getGasPrice()).toNumber() * 1e-9;
     },
-    customRpc: 'https://sepolia-rpc.scroll.io',
 };

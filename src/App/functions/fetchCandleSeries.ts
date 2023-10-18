@@ -1,8 +1,5 @@
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
-import { translateMainnetForGraphcache } from '../../utils/data/testTokenMap';
-import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
-import { supportedNetworks } from '../../utils/networks';
 import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { TokenPriceFn } from './fetchTokenPrice';
 
@@ -223,29 +220,22 @@ async function expandPoolStats(
     crocEnv: CrocEnv,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<CandleData[]> {
-    const mainnetBase = getMainnetAddress(base, supportedNetworks[chainId]);
-    const mainnetQuote = getMainnetAddress(quote, supportedNetworks[chainId]);
-
     const baseDecimals = crocEnv.token(base).decimals;
     const quoteDecimals = crocEnv.token(quote).decimals;
 
-    if (mainnetBase && mainnetQuote) {
-        const basePricePromise = cachedFetchTokenPrice(mainnetBase, chainId);
-        const quotePricePromise = cachedFetchTokenPrice(mainnetQuote, chainId);
+    const basePricePromise = cachedFetchTokenPrice(base, chainId);
+    const quotePricePromise = cachedFetchTokenPrice(quote, chainId);
 
-        const basePrice = (await basePricePromise)?.usdPrice || 0.0;
-        const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
+    const basePrice = (await basePricePromise)?.usdPrice || 0.0;
+    const quotePrice = (await quotePricePromise)?.usdPrice || 0.0;
 
-        return decorateCandleData(
-            payload,
-            await baseDecimals,
-            await quoteDecimals,
-            basePrice,
-            quotePrice,
-        ).reverse();
-    }
-
-    return [];
+    return decorateCandleData(
+        payload,
+        await baseDecimals,
+        await quoteDecimals,
+        basePrice,
+        quotePrice,
+    ).reverse();
 }
 
 function decorateCandleData(
@@ -304,6 +294,21 @@ function decorateCandleData(
         });
 }
 
+function translateUniswapTokens(
+    baseToken: string,
+    quoteToken: string,
+): { baseToken: string; quoteToken: string } {
+    const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+    const ZERO = '0x0000000000000000000000000000000000000000';
+    if (baseToken === WETH) {
+        return { baseToken: ZERO, quoteToken: quoteToken };
+    } else if (quoteToken === WETH) {
+        return { baseToken: ZERO, quoteToken: baseToken };
+    } else {
+        return { baseToken: baseToken, quoteToken: quoteToken };
+    }
+}
+
 async function fetchCandleSeriesUniswap(
     isFetchEnabled: boolean,
     mainnetBaseTokenAddress: string,
@@ -317,7 +322,7 @@ async function fetchCandleSeriesUniswap(
     signal?: AbortSignal,
 ): Promise<CandleData[] | undefined | void> {
     const { baseToken: mainnetBase, quoteToken: mainnetQuote } =
-        translateMainnetForGraphcache(
+        translateUniswapTokens(
             mainnetBaseTokenAddress,
             mainnetQuoteTokenAddress,
         );

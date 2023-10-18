@@ -33,7 +33,7 @@ export default function TransactionSettingsModal(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
-    const isPairStable = isStablePair(tokenA.address, tokenB.address, chainId);
+    const isPairStable = isStablePair(tokenA.address, tokenB.address);
 
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
         event.code === 'Enter' && updateSettings();

@@ -75,18 +75,7 @@ export const UserPreferenceContextProvider = (props: {
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
         const network = supportedNetworks[chainId];
         /* if (baseTokenAddress && quoteTokenAddress && network) {
-            const baseTokenSymbol = Object.keys(network.tokens).find(
-                (key) =>
-                    network.tokens[
-                        key as keyof typeof network.tokens
-                    ].toLowerCase() === baseTokenAddress.toLowerCase(),
-            );
-            const quoteTokenSymbol = Object.keys(network.tokens).find(
-                (key) =>
-                    network.tokens[
-                        key as keyof typeof network.tokens
-                    ].toLowerCase() === quoteTokenAddress.toLowerCase(),
-            );
+            const baseTokenSymbol = network.tokens[baseTokenAddress]?.symbol;
 
             if (baseTokenSymbol && quoteTokenSymbol) {
                 return (
@@ -99,10 +88,10 @@ export const UserPreferenceContextProvider = (props: {
             } else {
                 return true;
             }
-        }
-        //return false; */
-        return baseTokenAddress > quoteTokenAddress;
+        } */
+        return false;
     }, [baseTokenAddress, quoteTokenAddress, chainId]);
+
     function updateDenomIsInBase() {
         // we need to know if the denom token is base or quote
         // currently the denom token is the cheaper one by default

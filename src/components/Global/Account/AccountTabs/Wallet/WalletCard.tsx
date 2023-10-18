@@ -50,19 +50,11 @@ export default function WalletCard(props: propsIF) {
         (async () => {
             try {
                 if (tokenFromMap?.symbol) {
-                    const mainnetAddress =
-                        ethereumMainnet.tokens[
-                            tokenFromMap?.symbol as keyof typeof ethereumMainnet.tokens
-                        ];
-                    if (mainnetAddress) {
-                        const price = await cachedFetchTokenPrice(
-                            mainnetAddress === ZERO_ADDRESS
-                                ? (ethereumMainnet.tokens['WETH'] as string)
-                                : mainnetAddress,
-                            ethereumMainnet.chainId,
-                        );
-                        if (price) setTokenPrice(price);
-                    }
+                    const price = await cachedFetchTokenPrice(
+                        tokenFromMap.address,
+                        chainId,
+                    );
+                    if (price) setTokenPrice(price);
                 }
             } catch (err) {
                 console.error(err);
