@@ -74,6 +74,7 @@
 
     /* gradients, shadows */
     --shimmer: linear-gradient(to right, #141e30, #243b55);
+   
 
     --title-gradient: linear-gradient(
         90deg,

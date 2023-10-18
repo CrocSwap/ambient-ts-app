@@ -217,7 +217,7 @@ export const WalletBallanceSubinfo = (props: PropsIF) => {
             fontSize='body'
             color='text2'
         >
-            <p>$1,234</p>
+            <p>eg: $1,234</p>
             <FlexContainer
                 role='button'
                 flexDirection='row'
