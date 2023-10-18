@@ -165,6 +165,7 @@ export default function App() {
                     {!currentLocation.startsWith('/swap') && sidebarRender}
                     <Routes>
                         <Route index element={<Home />} />
+                        <Route path='/:params' element={<Home />} />
                         <Route
                             path='accessibility'
                             element={<Accessibility />}
