@@ -321,6 +321,27 @@ export const FlexContainer = styled.div<
     ${Breakpoint}
     ${Animations}
 `;
+export const GradientBoxShadow = styled.div<
+    FlexProps &
+        FontProps &
+        FontSizeProps &
+        FontWeightProps &
+        ColorProps &
+        ContainerProps &
+        BreakpointProps &
+        AnimationProps
+>`
+    ${Font}
+    ${FontSize}
+    ${FontWeight}
+    ${Color}
+    ${Padding}
+    ${Margin}
+    ${WrappedContainerStyles}
+    ${Breakpoint}
+    ${Animations};
+    box-shadow: var(--gradient-box-shadow);
+`;
 
 // Define the prop types for the GridContainer
 interface GridProps {

@@ -69,7 +69,10 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                 flexDirection='column'
                 outline='accent1'
                 tablet={{ margin: '64px 0 0 0' }}
-                style={{ height: '462px' }}
+                style={{
+                    height: '462px',
+                    boxShadow: 'var(--gradient-box-shadow)',
+                }}
                 className='mobile_auto_height'
             >
                 <FlexContainer
