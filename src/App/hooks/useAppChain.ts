@@ -172,6 +172,11 @@ export const useAppChain = (): {
     function chooseNetwork(network: NetworkIF): void {
         localStorage.setItem(CHAIN_LS_KEY, network.chainId);
         setActiveNetwork(network);
+        const { pathname } = window.location;
+        if (pathname.includes('token')) {
+            // navigate to index page only if token pair in URL
+            linkGenIndex.navigate();
+        }
         window.location.reload();
     }
 
