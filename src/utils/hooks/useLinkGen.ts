@@ -133,9 +133,12 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     // fn to build a URL for a given page including parameters
+    // pass a params object to construct a param string
+    // pass a param string to use it directly
+    // pass an empty string to use the base URL with no parameterization
     function getFullURL(paramsObj?: anyParamsIF | string): baseURLs | string {
         let paramsSlug = '';
-        if (paramsObj) {
+        if (paramsObj !== undefined) {
             if (typeof paramsObj === 'string') {
                 paramsSlug = '/' + paramsObj;
             } else {
