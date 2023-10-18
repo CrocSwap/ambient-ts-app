@@ -42,6 +42,7 @@ interface CrocEnvContextIF {
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
     provider: Provider | undefined;
+    mainnetProvider: Provider | undefined;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
@@ -105,6 +106,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         useState<UrlRoutesTemplate>(initUrl);
 
     const provider = useProvider({ chainId: +chainData.chainId });
+    const mainnetProvider = useProvider({ chainId: +'0x1' });
 
     const updateNetwork = (network: NetworkIF) => {
         setSelectedNetwork(network);
@@ -122,6 +124,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         ethMainnetUsdPrice,
         defaultUrlParams,
         provider,
+        mainnetProvider,
     };
 
     useBlacklist(userAddress);
