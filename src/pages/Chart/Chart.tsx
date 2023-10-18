@@ -2780,18 +2780,15 @@ export default function Chart(props: propsIF) {
                                                     item.time)
                                         ) {
                                             line.forEach((element) => {
-                                                const selectedShape =
-                                                    selectedDrawnShape
-                                                        ? selectedDrawnShape
-                                                        : hoveredDrawnShape;
-
                                                 const selectedCircleIsActive =
-                                                    selectedShape &&
-                                                    selectedShape.selectedCircle &&
-                                                    selectedShape.selectedCircle
-                                                        .x === element.x &&
-                                                    selectedShape.selectedCircle
-                                                        .y === element.y;
+                                                    hoveredDrawnShape &&
+                                                    hoveredDrawnShape.selectedCircle &&
+                                                    hoveredDrawnShape
+                                                        .selectedCircle.x ===
+                                                        element.x &&
+                                                    hoveredDrawnShape
+                                                        .selectedCircle.y ===
+                                                        element.y;
 
                                                 if (selectedCircleIsActive) {
                                                     if (!isUpdatingShape) {
@@ -3167,8 +3164,6 @@ export default function Chart(props: propsIF) {
 
                 setCrosshairActive('none');
                 // Check if the location pathname includes 'pool' or 'reposition' and handle the click event.
-
-                setSelectedDrawnShape(undefined);
 
                 setSelectedDrawnShape(undefined);
 
