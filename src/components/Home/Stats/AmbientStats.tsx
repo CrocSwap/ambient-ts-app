@@ -51,10 +51,7 @@ export default function Stats() {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const {
-        chainData: { chainId },
-        crocEnv,
-    } = useContext(CrocEnvContext);
+    const { chainData, crocEnv } = useContext(CrocEnvContext);
 
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -71,35 +68,37 @@ export default function Stats() {
 
     useEffect(() => {
         if (isServerEnabled && !isUserIdle && crocEnv) {
-            getChainStats(chainId, crocEnv, cachedFetchTokenPrice).then(
-                (dexStats) => {
-                    if (!dexStats) {
-                        return;
-                    }
+            getChainStats(
+                chainData.chainId,
+                crocEnv,
+                cachedFetchTokenPrice,
+            ).then((dexStats) => {
+                if (!dexStats) {
+                    return;
+                }
 
-                    setTotalTvlString(
-                        getFormattedNumber({
-                            value: dexStats.tvlTotalUsd,
-                            prefix: '$',
-                            isTvl: true,
-                        }),
-                    );
-                    setTotalVolumeString(
-                        getFormattedNumber({
-                            value: dexStats.volumeTotalUsd,
-                            prefix: '$',
-                        }),
-                    );
-                    setTotalFeesString(
-                        getFormattedNumber({
-                            value: dexStats.feesTotalUsd,
-                            prefix: '$',
-                        }),
-                    );
-                },
-            );
+                setTotalTvlString(
+                    getFormattedNumber({
+                        value: dexStats.tvlTotalUsd,
+                        prefix: '$',
+                        isTvl: true,
+                    }),
+                );
+                setTotalVolumeString(
+                    getFormattedNumber({
+                        value: dexStats.volumeTotalUsd,
+                        prefix: '$',
+                    }),
+                );
+                setTotalFeesString(
+                    getFormattedNumber({
+                        value: dexStats.feesTotalUsd,
+                        prefix: '$',
+                    }),
+                );
+            });
         }
-    }, [isServerEnabled, isUserIdle, lastBlockNumber]);
+    }, [crocEnv, isServerEnabled, isUserIdle, lastBlockNumber]);
 
     const statCardData = [
         {

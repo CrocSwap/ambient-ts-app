@@ -1,41 +1,42 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
-interface swapParamsIF {
+export interface swapParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
 }
+
 export interface marketParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
 }
-interface limitParamsIF {
+
+export interface limitParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
     limitTick?: number;
 }
-interface poolParamsIF {
+
+export interface poolParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
-    highTick?: string;
     lowTick?: string;
+    highTick?: string;
 }
 
-interface initParamsIF {
+export interface initParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
 }
 
-interface repoParamsIF {
+export interface repoParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
-    highTick: string;
-    lowTick: string;
 }
 
 // type containing all the URL parameter interfaces
@@ -62,16 +63,19 @@ const BASE_URL_PATHS = {
     testpage: '/testpage',
     account: '/account',
     privacy: '/privacy',
-};
+} as const;
 
-// type that maps to keys (strings) in the BASE_URL_PATHS object
+// string-literal union type of keys in `BASE_URL_PATHS`
 export type pageNames = keyof typeof BASE_URL_PATHS;
+// string-literal union type of keys in `BASE_URL_PATHS`
+export type baseURLs = typeof BASE_URL_PATHS[pageNames];
 
 export interface linkGenMethodsIF {
-    baseURL: string;
+    currentPage: pageNames;
+    baseURL: baseURLs;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
-    navigate: (paramsObj?: anyParamsIF) => void;
-    redirect: (paramsObj?: anyParamsIF) => void;
+    navigate: (paramsObj?: anyParamsIF | string) => void;
+    redirect: (paramsObj?: anyParamsIF | string) => void;
 }
 
 // TODO:    @Emily: it probably makes sense to expand this hook to
@@ -86,7 +90,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
 
     // base URL of the user's location in the app, primarily uses provided
     // ... argument but will read the current URL pathname as a backup check
-    const baseURL: string = BASE_URL_PATHS[page ?? getPageFromLocation()];
+    const baseURL: baseURLs = BASE_URL_PATHS[page ?? getPageFromLocation()];
 
     // fn to infer the current page in the app based on the URL path
     function getPageFromLocation(): pageNames {
@@ -125,7 +129,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     // fn to build a URL for a given page including parameters
-    function getFullURL(paramsObj?: anyParamsIF | string): string {
+    function getFullURL(paramsObj?: anyParamsIF | string): baseURLs | string {
         let paramsSlug = '';
         if (paramsObj) {
             if (typeof paramsObj === 'string') {
@@ -134,7 +138,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
                 paramsSlug =
                     '/' +
                     Object.entries(paramsObj)
-                        .map((tup: string[]) => tup.join('='))
+                        .map((tup: [string, string | number]) => tup.join('='))
                         .join('&');
             }
         }
@@ -151,6 +155,7 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     return {
+        currentPage: getPageFromLocation(),
         baseURL,
         getFullURL,
         navigate: navigateUser,

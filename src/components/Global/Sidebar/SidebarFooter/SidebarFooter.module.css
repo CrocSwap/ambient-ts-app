@@ -38,7 +38,7 @@
     .sidebar_footer a {
         flex: 1 0;
         padding: 9px 8px;
-        font-size: 12px;
+        font-size: var(--body-size);
     }
     .sidebar_footer a img,
     .sidebar_footer a svg {

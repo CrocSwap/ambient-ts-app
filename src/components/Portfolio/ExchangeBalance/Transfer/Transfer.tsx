@@ -63,7 +63,11 @@ export default function Transfer(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
@@ -349,7 +353,7 @@ export default function Transfer(props: propsIF) {
                     <SVGContainer>
                         <FaGasPump size={12} />{' '}
                     </SVGContainer>
-                    {transferGasPriceinDollars
+                    {chainId === '0x1' && transferGasPriceinDollars
                         ? transferGasPriceinDollars
                         : '…'}
                 </GasPump>

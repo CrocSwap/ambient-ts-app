@@ -23,7 +23,7 @@
     display: none;
 }
 .column_qty p {
-    font-size: 10px;
+    font-size: var(--mini-size);
     line-height: 13px;
     color: var(--text2);
 }

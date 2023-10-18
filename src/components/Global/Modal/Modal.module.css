@@ -5,7 +5,7 @@
     right: 0;
     bottom: 0;
     display: flex;
-    /* align-items: center; */
+    align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 99999;
@@ -15,7 +15,7 @@
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     border-radius: var(--border-radius);
-    transition: all var(--animation-speed) ease-in-out;
+    transition: var(--transition);
 }
 
 .modal_body {
@@ -38,7 +38,6 @@
     position: relative;
     /* max-height: 80vh; */
     color: var(--text1);
-    top: 20%;
 
     /* min-height: 80vh; */
 }

@@ -60,7 +60,11 @@ export default function Deposit(props: propsIF) {
         selectedTokenDecimals,
         setTokenModalOpen = () => null,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
@@ -387,7 +391,9 @@ export default function Deposit(props: propsIF) {
                     <SVGContainer>
                         <FaGasPump size={12} />
                     </SVGContainer>
-                    {depositGasPriceinDollars ? depositGasPriceinDollars : '…'}
+                    {chainId === '0x1' && depositGasPriceinDollars
+                        ? depositGasPriceinDollars
+                        : '…'}
                 </FlexContainer>
             </FlexContainer>
             <Button

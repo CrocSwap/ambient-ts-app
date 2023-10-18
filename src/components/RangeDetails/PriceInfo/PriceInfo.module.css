@@ -115,7 +115,7 @@
     text-align: center;
     background: var(--dark2);
     padding: 4px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     text-transform: none;
 }
 /* .order_type{
