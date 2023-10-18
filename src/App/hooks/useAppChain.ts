@@ -14,7 +14,6 @@ import { setChainId } from '../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import chainNumToString from '../functions/chainNumToString';
 import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
-import { ethereumGoerli } from '../../utils/networks/ethereumGoerli';
 import { NetworkIF } from '../../utils/interfaces/exports';
 import { supportedNetworks } from '../../utils/networks/index';
 
@@ -22,7 +21,7 @@ export const useAppChain = (): {
     chainData: ChainSpec;
     isWalletChainSupported: boolean;
     activeNetwork: NetworkIF;
-    setActiveNetwork: (network: NetworkIF) => void;
+    chooseNetwork: (network: NetworkIF) => void;
 } => {
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork, chains: chns } = useNetwork();
@@ -126,7 +125,7 @@ export const useAppChain = (): {
                         } else {
                             // navigate to index page
                             linkGenIndex.navigate();
-                            window.location.reload;
+                            window.location.reload();
                         }
                         // update state with new validated wallet network
                         chainInWalletValidated.current =
@@ -143,8 +142,17 @@ export const useAppChain = (): {
     const defaultChain = getDefaultChainId();
 
     // metadata about the active network in the app
-    const [activeNetwork, setActiveNetwork] =
-        useState<NetworkIF>(ethereumGoerli);
+    const [activeNetwork, setActiveNetwork] = useState<NetworkIF>(
+        findNetworkData(
+            chainInURLValidated ?? localStorage.getItem(CHAIN_LS_KEY) ?? '0x1',
+        ),
+    );
+
+    function findNetworkData(chn: keyof typeof supportedNetworks): NetworkIF {
+        const output = supportedNetworks[chn];
+        console.log(output);
+        return output;
+    }
     // logic to update `activeNetwork` when the connected wallet changes networks
     // this doesn't kick in if the user does not have a connected wallet
     useEffect(() => {
@@ -161,8 +169,13 @@ export const useAppChain = (): {
     // fn to allow user to manually switch chains in the app because everything
     // ... else in this file responds to changes in the browser environment
     function chooseNetwork(network: NetworkIF): void {
+        console.log('hey now');
+        localStorage.setItem(CHAIN_LS_KEY, network.chainId);
         linkGenIndex.navigate();
         setActiveNetwork(network);
+        console.log('reload on next line');
+        window.location.reload();
+        console.log('just reloaded!');
     }
 
     // data from the SDK about the current chain in the connected wallet
@@ -172,9 +185,10 @@ export const useAppChain = (): {
             lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
         // sync data in RTK for the new chain
         dispatch(setChainId(output.chainId));
+        console.log(output);
         // return output varibale (chain data)
         return output;
-    }, [activeNetwork]);
+    }, [activeNetwork.chainId]);
 
     // boolean showing if the current chain in connected wallet is supported
     // this is used to launch the network switcher automatically
@@ -198,6 +212,6 @@ export const useAppChain = (): {
         chainData,
         isWalletChainSupported,
         activeNetwork,
-        setActiveNetwork: chooseNetwork,
+        chooseNetwork,
     };
 };

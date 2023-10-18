@@ -12,7 +12,6 @@ import {
 } from '../../../../styled/Components/Header';
 import { supportedNetworks } from '../../../../utils/networks';
 import { ChainSpec } from '@crocswap-libs/sdk';
-import { useLinkGen } from '../../../../utils/hooks/useLinkGen';
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
@@ -20,7 +19,7 @@ interface propsIF {
 export default function NetworkSelector(props: propsIF) {
     const { switchNetwork } = props;
     const {
-        setActiveNetwork,
+        chooseNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
@@ -28,14 +27,11 @@ export default function NetworkSelector(props: propsIF) {
         lookupChain(chain),
     );
 
-    const linkGenIndex = useLinkGen('index');
-
     const handleClick = (chn: ChainSpec): void => {
         if (switchNetwork) {
             switchNetwork(parseInt(chn.chainId));
         } else {
-            setActiveNetwork(supportedNetworks[chn.chainId]);
-            linkGenIndex.navigate();
+            chooseNetwork(supportedNetworks[chn.chainId]);
         }
     };
 
