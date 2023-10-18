@@ -39,24 +39,34 @@ export const useAppChain = (): {
     // returns `null` if chain ID is not found or fails validation
     // due to where this code is instantiated we can't use param tools
     function getChainFromURL(): string | null {
+        // full URL for the current path
         const { pathname } = window.location;
+        // mutable copy of the current URL path
         let rawURL = pathname;
-        let templateURL = '';
-        if (rawURL.length && rawURL.includes('chain')) {
-            while (!rawURL.startsWith('chain')) {
+        // template string to hold the chain ID from the URL
+        let chainId = '';
+        // make sure the URL contains data including a `chain` param
+        if (rawURL.length && rawURL.includes('chain=')) {
+            // chop off the base (non-parameter characters) of the URL
+            while (!rawURL.startsWith('chain=')) {
                 rawURL = rawURL.substring(1);
             }
+            // chop off the `'chain=` characters of the URL
             rawURL = rawURL.substring(6);
-            for (let i = 0; i < rawURL.length; i++) {
-                const character: string = rawURL[i];
-                if (character === '&') break;
-                templateURL += character;
-            }
+            // isolate characters from the URL string representing the chain
+            do {
+                if (!rawURL) break;
+                chainId += rawURL[0];
+                rawURL = rawURL.substring(1);
+            } while (rawURL[0] !== '&');
         }
-        let output: string | null = templateURL.length ? templateURL : null;
+        // output variable gets chain ID or `null` if chain is an empty string
+        let output: string | null = chainId || null;
+        // if a chain Id value is found, make sure it validates
         if (typeof output === 'string' && !validateChainId(output)) {
             output = null;
         }
+        // return validated chain ID or `null`
         return output;
     }
 
@@ -83,7 +93,11 @@ export const useAppChain = (): {
 
     // trigger chain switch in wallet when chain in URL changes
     useEffect(() => {
+        // only run logic if the chain in the URL validates (is supported)
         if (chainInURLValidated) {
+            // determine if a wallet is connected
+            // yes → trigger wagmi to handle further processes
+            // no → other machinery kicks in but won't otherwise update local storage
             if (switchNetwork) {
                 switchNetwork(parseInt(chainInURLValidated));
             } else {

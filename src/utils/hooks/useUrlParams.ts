@@ -284,7 +284,6 @@ export const useUrlParams = (
             if (urlParamMap.has('chain')) {
                 switchNetwork && switchNetwork(parseInt(chainToUse));
                 dispatch(setChainId(chainToUse));
-                localStorage.setItem();
             }
 
             const tokenA = urlParamMap.get('tokenA');
