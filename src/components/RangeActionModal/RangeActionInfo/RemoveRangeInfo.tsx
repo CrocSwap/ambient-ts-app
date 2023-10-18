@@ -2,6 +2,7 @@ import styles from './RangeActionInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface IRemoveRangeInfoProps {
     baseTokenSymbol: string;
@@ -59,7 +60,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                 <span>{baseTokenSymbol} Rewards Earned</span>
                 <div className={styles.token_price}>
                     {feeLiqBaseDisplay !== undefined ? feeLiqBaseDisplay : '…'}
-                    <img src={baseTokenLogoURI} alt='' />
+                    <img src={uriToHttp(baseTokenLogoURI)} alt='' />
                 </div>
             </Row>
             {/*  */}
@@ -69,7 +70,7 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                     {feeLiqQuoteDisplay !== undefined
                         ? feeLiqQuoteDisplay
                         : '…'}
-                    <img src={quoteTokenLogoURI} alt='' />
+                    <img src={uriToHttp(quoteTokenLogoURI)} alt='' />
                 </div>
             </Row>
         </>
