@@ -13,6 +13,12 @@
             "sizes": "192x192"
         },
         {
+            "src": "android-chrome-192x192.png",
+            "type": "image/png",
+            "sizes": "192x192",
+            "purpose": "any maskable"
+        },
+        {
             "src": "android-chrome-512x512.png",
             "type": "image/png",
             "sizes": "512x512"
