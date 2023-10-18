@@ -19,6 +19,7 @@ export const useProcessTransaction = (
     tx: TransactionIF,
     account = '',
     isAccountView = false,
+    fetchedEnsAddress?: string,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = getChainExplorer(tx.chainId);
@@ -26,9 +27,12 @@ export const useProcessTransaction = (
     const isDenomBase = tradeData.isDenomBase;
 
     const txHash = tx.txHash;
+
+    // TODO: clarify if this should also preferentially show ENS address
     const ownerId = tx.user ? getAddress(tx.user) : '';
 
-    const ensName = tx.ensResolution ? tx.ensResolution : null;
+    const ensName = fetchedEnsAddress || tx.ensResolution || null;
+
     const isOwnerActiveAccount =
         ownerId.toLowerCase() === account?.toLowerCase();
 

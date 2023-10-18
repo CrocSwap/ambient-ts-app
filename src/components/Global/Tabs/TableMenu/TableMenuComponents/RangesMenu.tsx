@@ -201,6 +201,8 @@ export default function RangesMenu(props: propsIF) {
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
                             ? position.base
                             : position.quote,
+                    lowTick: position.bidTick.toString(),
+                    highTick: position.askTick.toString(),
                 };
                 // navigate user to pool page with URL params defined above
                 linkGenPool.navigate(poolLinkParams);
@@ -225,6 +227,8 @@ export default function RangesMenu(props: propsIF) {
                         rtkTokenA.toLowerCase() === position.quote.toLowerCase()
                             ? position.base
                             : position.quote,
+                    lowTick: position.bidTick.toString(),
+                    highTick: position.askTick.toString(),
                 };
                 // navigate user to pool page with URL params defined above
                 linkGenPool.navigate(poolLinkParams);

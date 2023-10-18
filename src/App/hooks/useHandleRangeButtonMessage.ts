@@ -27,15 +27,19 @@ export function useHandleRangeButtonMessage(
         } else {
             if (isWithdrawTokenFromDexChecked) {
                 if (
+                    !isTokenInputDisabled &&
                     parseFloat(tokenAmount) >
-                    parseFloat(tokenDexBalance) + parseFloat(tokenBalance)
+                        parseFloat(tokenDexBalance) + parseFloat(tokenBalance)
                 ) {
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Combined Wallet and Exchange Balance`;
                 } else {
                     tokenAllowed = true;
                 }
             } else {
-                if (parseFloat(tokenAmount) > parseFloat(tokenBalance)) {
+                if (
+                    !isTokenInputDisabled &&
+                    parseFloat(tokenAmount) > parseFloat(tokenBalance)
+                ) {
                     rangeButtonErrorMessage = `${token.symbol} Amount Exceeds Wallet Balance`;
                 } else {
                     tokenAllowed = true;
