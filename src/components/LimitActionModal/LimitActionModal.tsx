@@ -35,10 +35,11 @@ interface propsIF {
     type: LimitActionType;
     isOpen: boolean;
     onClose: () => void;
+    isAccountView: boolean;
 }
 
 export default function LimitActionModal(props: propsIF) {
-    const { limitOrder, type, isOpen, onClose } = props;
+    const { limitOrder, type, isOpen, onClose, isAccountView } = props;
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
     );
@@ -54,6 +55,8 @@ export default function LimitActionModal(props: propsIF) {
         baseDisplay,
         quoteDisplay,
         truncatedDisplayPrice,
+        truncatedDisplayPriceDenomByMoneyness,
+        isBaseTokenMoneynessGreaterOrEqual,
         initialTokenQty,
         baseTokenAddress,
         quoteTokenAddress,
@@ -379,8 +382,14 @@ export default function LimitActionModal(props: propsIF) {
                   tokenQuantityAddress: limitOrder.isBid
                       ? baseTokenAddress
                       : quoteTokenAddress,
-                  limitOrderPrice: truncatedDisplayPrice,
-                  limitOrderPriceAddress: !isDenomBase
+                  limitOrderPrice: isAccountView
+                      ? truncatedDisplayPriceDenomByMoneyness
+                      : truncatedDisplayPrice,
+                  limitOrderPriceAddress: isAccountView
+                      ? isBaseTokenMoneynessGreaterOrEqual
+                          ? baseTokenAddress
+                          : quoteTokenAddress
+                      : !isDenomBase
                       ? baseTokenAddress
                       : quoteTokenAddress,
                   receivingAmount: limitOrder.isBid
@@ -398,8 +407,14 @@ export default function LimitActionModal(props: propsIF) {
                   tokenQuantityAddress: limitOrder.isBid
                       ? baseTokenAddress
                       : quoteTokenAddress,
-                  limitOrderPrice: truncatedDisplayPrice,
-                  limitOrderPriceAddress: !isDenomBase
+                  limitOrderPrice: isAccountView
+                      ? truncatedDisplayPriceDenomByMoneyness
+                      : truncatedDisplayPrice,
+                  limitOrderPriceAddress: isAccountView
+                      ? isBaseTokenMoneynessGreaterOrEqual
+                          ? baseTokenAddress
+                          : quoteTokenAddress
+                      : !isDenomBase
                       ? baseTokenAddress
                       : quoteTokenAddress,
                   receivingAmount: limitOrder.isBid
