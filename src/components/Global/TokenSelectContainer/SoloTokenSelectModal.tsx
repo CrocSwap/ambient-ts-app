@@ -24,7 +24,6 @@ import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import Modal from '../Modal/Modal';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { supportedNetworks } from '../../../utils/networks';
 import { isWethToken } from '../../../utils/data/stablePairs';
 
 interface propsIF {
@@ -250,7 +249,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     const MAX_TOKEN_COUNT = 300;
 
     const handleWETH = {
-        check: isWethToken,
+        check: (x: string) => x,
         message: ' Ambient uses Native Ether (ETH) to lower gas costs.',
     };
 
@@ -326,14 +325,16 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     <div className={styles.scrollable_container}>
                         {removeWrappedNative(chainId, outputTokens)
                             .slice(0, MAX_TOKEN_COUNT)
-                            .map((token: TokenIF) => (
-                                <TokenSelect
-                                    key={JSON.stringify(token)}
-                                    token={token}
-                                    chooseToken={chooseToken}
-                                    fromListsText=''
-                                />
-                            ))}
+                            .map((token: TokenIF) => {
+                                return (
+                                    <TokenSelect
+                                        key={JSON.stringify(token)}
+                                        token={token}
+                                        chooseToken={chooseToken}
+                                        fromListsText=''
+                                    />
+                                );
+                            })}
                     </div>
                 ) : (
                     <SoloTokenImport

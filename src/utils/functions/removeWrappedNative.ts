@@ -9,5 +9,5 @@ export default function removeWrappedNative(
 ): TokenIF[] {
     // return the token array with the wrapped native removed, or the original
     // ... token array if the current chain has no wrapped native token specified
-    return tokens.filter((tkn: TokenIF) => isWethToken(tkn.address));
+    return tokens.filter((tkn: TokenIF) => !isWethToken(tkn.address));
 }

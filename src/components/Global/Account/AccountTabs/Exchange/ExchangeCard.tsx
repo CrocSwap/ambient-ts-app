@@ -50,7 +50,7 @@ export default function ExchangeCard(props: propsIF) {
             try {
                 if (tokenFromMap?.symbol) {
                     const price = await cachedFetchTokenPrice(
-                        tokenFromMap.symbol,
+                        tokenFromMap.address,
                         chainId,
                     );
                     if (price) setTokenPrice(price);

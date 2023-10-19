@@ -24,7 +24,7 @@ const COVALENT_CHAIN_IDS = {
 };
 
 export const fetchTokenBalances = async (
-    dispToken: string,
+    address: string,
     chain: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastBlockNumber: number,
@@ -33,9 +33,6 @@ export const fetchTokenBalances = async (
     client: Client,
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
-
-    const address = translateTestnetToken(dispToken);
-    console.log(address, dispToken);
 
     const covalentChainString =
         COVALENT_CHAIN_IDS[chain as keyof typeof COVALENT_CHAIN_IDS] ||
