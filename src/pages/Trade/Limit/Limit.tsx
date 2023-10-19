@@ -241,7 +241,7 @@ export default function Limit() {
                         });
                     }
                 }
-            } else if (limitTick) {
+            } else if (limitTick !== undefined) {
                 if (!pool) return;
 
                 const tickPrice = tickToPrice(limitTick);
@@ -326,7 +326,7 @@ export default function Limit() {
     const updateOrderValidityStatus = async () => {
         try {
             if (!crocEnv) return;
-            if (!limitTick) return;
+            if (limitTick === undefined) return;
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
 
             const tknA: string = urlParamMap.get('tokenA') as string;
