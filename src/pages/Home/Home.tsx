@@ -17,8 +17,7 @@ export default function Home() {
     const [searchParams, setSearchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     useEffect(() => {
-        // TODO: add validation that the chain ID is supported
-        if (chainParam) {
+        if (chainParam && supportedNetworks[chainParam]) {
             if (chainParam !== chainData.chainId) {
                 switchNetwork
                     ? switchNetwork(parseInt(chainParam))
