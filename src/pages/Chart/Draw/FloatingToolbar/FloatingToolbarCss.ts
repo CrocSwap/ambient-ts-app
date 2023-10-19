@@ -8,7 +8,7 @@ const FloatingDivContainer = styled.div`
     display: flex,
     opacity: 1;
     position: fixed;
-    z-index: 55;
+    z-index: 10000;
 `;
 
 const FloatingDiv = styled.div`

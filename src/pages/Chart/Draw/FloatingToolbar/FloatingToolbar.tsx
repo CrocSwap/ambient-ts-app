@@ -251,8 +251,25 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 .on('drag', function (event) {
                     if (floatingDivRef.current) {
                         setIsDragging(true);
-                        const divLeft = event.sourceEvent.pageX - offsetX;
-                        const divTop = event.sourceEvent.pageY - offsetY;
+                        const screenWidth = window.innerWidth;
+                        const screenHeight = window.innerHeight;
+
+                        const divWidth =
+                            floatingDiv.getBoundingClientRect().width;
+                        const divHeight =
+                            floatingDiv.getBoundingClientRect().height;
+
+                        let divLeft = event.sourceEvent.clientX - offsetX;
+                        let divTop = event.sourceEvent.clientY - offsetY;
+
+                        divLeft = Math.max(
+                            1,
+                            Math.min(screenWidth - divWidth, divLeft),
+                        );
+                        divTop = Math.max(
+                            1,
+                            Math.min(screenHeight - divHeight, divTop),
+                        );
                         setDivLeft(divLeft);
                         setDivTop(divTop);
                     }
