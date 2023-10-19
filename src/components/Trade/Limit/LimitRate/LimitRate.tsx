@@ -58,7 +58,7 @@ export default function LimitRate(props: propsIF) {
     const limitTick: number | undefined = tradeData.limitTick;
 
     const increaseTick = (): void => {
-        if (limitTick) {
+        if (limitTick !== undefined) {
             const newLimitTick: number = limitTick + gridSize;
             dispatch(setLimitTick(newLimitTick));
             updateURL({ update: [['limitTick', newLimitTick]] });
@@ -67,7 +67,7 @@ export default function LimitRate(props: propsIF) {
     };
 
     const decreaseTick = (): void => {
-        if (limitTick) {
+        if (limitTick !== undefined) {
             const newLimitTick: number = limitTick - gridSize;
             dispatch(setLimitTick(newLimitTick));
             updateURL({ update: [['limitTick', newLimitTick]] });

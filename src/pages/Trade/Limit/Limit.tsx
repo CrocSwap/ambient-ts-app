@@ -241,7 +241,7 @@ export default function Limit() {
                         });
                     }
                 }
-            } else if (limitTick) {
+            } else if (limitTick !== undefined) {
                 if (!pool) return;
 
                 const tickPrice = tickToPrice(limitTick);
