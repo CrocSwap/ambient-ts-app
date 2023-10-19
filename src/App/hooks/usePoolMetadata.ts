@@ -35,7 +35,6 @@ import { getPositionData } from '../functions/getPositionData';
 import { SpotPriceFn } from '../functions/querySpotPrice';
 import useDebounce from './useDebounce';
 import { getLiquidityFee } from '../functions/getPoolStats';
-import { supportedNetworks } from '../../utils/networks';
 import { Provider } from '@ethersproject/providers';
 
 interface PoolParamsHookIF {

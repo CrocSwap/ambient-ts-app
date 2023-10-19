@@ -23,7 +23,6 @@ import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../../../constants';
 import removeWrappedNative from '../../../utils/functions/removeWrappedNative';
 import { WarningBox } from '../../RangeActionModal/WarningBox/WarningBox';
-import { supportedNetworks } from '../../../utils/networks';
 import { IoIosArrowBack } from 'react-icons/io';
 import { isWethToken } from '../../../utils/data/stablePairs';
 

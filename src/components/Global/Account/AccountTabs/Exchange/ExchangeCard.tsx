@@ -9,7 +9,6 @@ import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { getFormattedNumber } from '../../../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import TokenIcon from '../../../TokenIcon/TokenIcon';
-import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 
 interface propsIF {

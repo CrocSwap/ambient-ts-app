@@ -29,7 +29,6 @@ import Toggle from '../../components/Form/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
-import { useApprove } from '../../App/functions/approve';
 import { useSendInit } from '../../App/hooks/useSendInit';
 
 import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
@@ -38,7 +37,6 @@ import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
-import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
 import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
 import MultiContentComponent from '../../components/Global/MultiStepTransaction/MultiContentComponent';

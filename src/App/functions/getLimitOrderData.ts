@@ -9,7 +9,6 @@ import {
 } from '@crocswap-libs/sdk';
 import { LimitOrderIF, TokenIF } from '../../utils/interfaces/exports';
 import { LimitOrderServerIF } from '../../utils/interfaces/LimitOrderIF';
-import { supportedNetworks } from '../../utils/networks';
 import { FetchAddrFn } from './fetchAddress';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';

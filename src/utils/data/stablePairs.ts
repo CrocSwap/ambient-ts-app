@@ -3,7 +3,6 @@
 // NOTE: Definition of what constitutes a "stable pair" is arbitrary and just based
 //       on the devs discretion. Users should not assume that true/false implies
 
-import { supportedNetworks } from '../networks';
 import {
     arbGoerliDAI,
     arbGoerliUSDC,

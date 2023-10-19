@@ -7,7 +7,6 @@ import { memoizePromiseFn } from './memoizePromiseFn';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { Client } from '@covalenthq/client-sdk';
 import { Chains } from '@covalenthq/client-sdk/dist/services/Client';
-import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 
 export interface IDepositedTokenBalance {
     token: string;

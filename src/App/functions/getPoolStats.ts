@@ -1,6 +1,5 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL } from '../../constants';
-import { supportedNetworks } from '../../utils/networks';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { memoizeCacheQueryFn } from './memoizePromiseFn';
 

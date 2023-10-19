@@ -9,7 +9,6 @@ import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../../../../constants';
-import { supportedNetworks } from '../../../../../utils/networks';
 import { isUsdcToken } from '../../../../../utils/data/stablePairs';
 
 interface propsIF {
@@ -22,7 +21,6 @@ interface propsIF {
 
 export default function Exchange(props: propsIF) {
     const {
-        chainId,
         connectedAccountActive,
         resolvedAddressTokens,
         cachedFetchTokenPrice,

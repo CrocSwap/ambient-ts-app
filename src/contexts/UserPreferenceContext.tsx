@@ -9,7 +9,6 @@ import { skipConfirmIF, useSkipConfirm } from '../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF, useSlippage } from '../App/hooks/useSlippage';
 import { IS_LOCAL_ENV } from '../constants';
 import { slippage } from '../utils/data/slippage';
-import { getMoneynessRank } from '../utils/functions/getMoneynessRank';
 import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { supportedNetworks } from '../utils/networks';
 import { setDenomInBase } from '../utils/state/tradeDataSlice';

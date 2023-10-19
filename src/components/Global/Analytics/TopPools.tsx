@@ -108,7 +108,7 @@ function TopPools(props: propsIF) {
                                 sortedPools.pools
                                     .filter(
                                         (pool: PoolIF) =>
-                                            !checkPoolForWETH(pool, chainId),
+                                            !checkPoolForWETH(pool),
                                     )
                                     .map((pool: PoolDataIF, idx: number) => (
                                         <PoolRow

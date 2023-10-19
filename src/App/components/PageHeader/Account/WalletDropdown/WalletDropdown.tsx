@@ -59,7 +59,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddressFull,
     } = props;
     const {
-        selectedNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 

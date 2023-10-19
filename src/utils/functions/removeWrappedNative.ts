@@ -1,6 +1,5 @@
 import { isWethToken } from '../data/stablePairs';
 import { TokenIF } from '../interfaces/exports';
-import { supportedNetworks } from '../networks';
 
 // fn to remove the wrapped native token of the current chain from a token array
 export default function removeWrappedNative(

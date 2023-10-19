@@ -4,7 +4,6 @@ import { tokenMethodsIF } from './useTokens';
 import { tokenListURIs } from '../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../constants';
 import removeWrappedNative from '../../utils/functions/removeWrappedNative';
-import { supportedNetworks } from '../../utils/networks';
 import { isUsdcToken } from '../../utils/data/stablePairs';
 
 export const useTokenSearch = (

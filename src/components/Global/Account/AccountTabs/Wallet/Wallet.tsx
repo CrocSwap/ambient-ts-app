@@ -9,7 +9,6 @@ import { useContext } from 'react';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../../../../constants';
-import { supportedNetworks } from '../../../../../utils/networks';
 import { isUsdcToken } from '../../../../../utils/data/stablePairs';
 
 interface propsIF {
@@ -22,7 +21,6 @@ interface propsIF {
 
 export default function Wallet(props: propsIF) {
     const {
-        chainId,
         connectedAccountActive,
         resolvedAddressTokens,
         cachedFetchTokenPrice,
