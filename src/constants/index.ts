@@ -39,6 +39,11 @@ export const CHAT_ENABLED =
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
+export const DISABLE_INIT_SETTINGS =
+    process.env.REACT_APP_DISABLE_INIT_SETTINGS !== undefined
+        ? process.env.REACT_APP_DISABLE_INIT_SETTINGS.toLowerCase() === 'true'
+        : false;
+
 export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 

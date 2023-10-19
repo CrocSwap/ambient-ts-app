@@ -25,7 +25,6 @@ import {
     useLinkGen,
 } from '../utils/hooks/useLinkGen';
 import { NetworkIF, PoolIF, TokenIF } from '../utils/interfaces/exports';
-import { ethereumGoerli } from '../utils/networks/ethereumGoerli';
 import { ethereumMainnet } from '../utils/networks/ethereumMainnet';
 
 interface UrlRoutesTemplate {
@@ -34,17 +33,20 @@ interface UrlRoutesTemplate {
     limit: string;
     pool: string;
 }
+
 interface CrocEnvContextIF {
     crocEnv: CrocEnv | undefined;
     setCrocEnv: (val: CrocEnv | undefined) => void;
     selectedNetwork: NetworkIF;
-    setSelectedNetwork: (val: NetworkIF) => void;
     chainData: ChainSpec;
-    isChainSupported: boolean;
+    isWalletChainSupported: boolean;
     topPools: PoolIF[];
     ethMainnetUsdPrice: number | undefined;
     defaultUrlParams: UrlRoutesTemplate;
     provider: Provider | undefined;
+    activeNetwork: NetworkIF;
+    chooseNetwork: (network: NetworkIF) => void;
+    mainnetProvider: Provider | undefined;
 }
 
 export const CrocEnvContext = createContext<CrocEnvContextIF>(
@@ -54,14 +56,14 @@ export const CrocEnvContext = createContext<CrocEnvContextIF>(
 export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
 
-    const { address: userAddress, isConnected } = useAccount();
+    const { address: userAddress } = useAccount();
     const { data: signer, isError, error, status: signerStatus } = useSigner();
 
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
-    const [selectedNetwork, setSelectedNetwork] =
-        useState<NetworkIF>(ethereumGoerli);
-    const [chainData, isChainSupported, setNextChain] =
-        useAppChain(isConnected);
+    // const [activeNetwork, setActiveNetwork] =
+    //     useState<NetworkIF>(ethereumGoerli);
+    const { chainData, isWalletChainSupported, activeNetwork, chooseNetwork } =
+        useAppChain();
     const topPools: PoolIF[] = useTopPools(chainData.chainId);
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<
         number | undefined
@@ -108,24 +110,7 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
         useState<UrlRoutesTemplate>(initUrl);
 
     const provider = useProvider({ chainId: +chainData.chainId });
-
-    const updateNetwork = (network: NetworkIF) => {
-        setSelectedNetwork(network);
-        setNextChain(network.chainId);
-    };
-
-    const crocEnvContext = {
-        crocEnv,
-        setCrocEnv,
-        selectedNetwork,
-        setSelectedNetwork: updateNetwork,
-        chainData,
-        isChainSupported,
-        topPools,
-        ethMainnetUsdPrice,
-        defaultUrlParams,
-        provider,
-    };
+    const mainnetProvider = useProvider({ chainId: +'0x1' });
 
     useBlacklist(userAddress);
 
@@ -172,7 +157,12 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     };
     useEffect(() => {
         setNewCrocEnv();
-    }, [crocEnv === undefined, chainData.chainId, signer]);
+    }, [
+        crocEnv === undefined,
+        chainData.chainId,
+        signer,
+        activeNetwork.chainId,
+    ]);
 
     useEffect(() => {
         if (provider) {
@@ -191,6 +181,22 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
     }, [chainData.chainId]);
+
+    // data returned by this context
+    const crocEnvContext = {
+        crocEnv,
+        setCrocEnv,
+        selectedNetwork: activeNetwork,
+        chainData,
+        isWalletChainSupported,
+        topPools,
+        ethMainnetUsdPrice,
+        defaultUrlParams,
+        provider,
+        mainnetProvider,
+        activeNetwork,
+        chooseNetwork,
+    };
 
     return (
         <CrocEnvContext.Provider value={crocEnvContext}>

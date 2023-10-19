@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from 'react';
+import { MouseEvent, useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 import { RiArrowDownSLine, RiArrowUpSLine } from 'react-icons/ri';
 import { FlexContainer } from '../../../../styled/Common';
@@ -9,6 +9,7 @@ import {
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
+import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 
 interface PropsIF {
     extraInfo: {
@@ -23,6 +24,10 @@ interface PropsIF {
 
 export const ExtraInfo = (props: PropsIF) => {
     const { extraInfo, showDropdown, conversionRate, gasPrice } = props;
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
 
     const dispatch = useAppDispatch();
 
@@ -46,14 +51,23 @@ export const ExtraInfo = (props: PropsIF) => {
                 }
                 aria-label={`Gas cost is ${gasPrice}. Conversion rate is ${conversionRate}.`}
             >
-                <FlexContainer
-                    alignItems='center'
-                    padding='0 0 0 4px'
-                    gap={4}
-                    style={{ pointerEvents: 'none' }}
-                >
-                    <FaGasPump size={15} /> {gasPrice ?? '…'}
-                </FlexContainer>
+                {chainId === '0x1' ? (
+                    <FlexContainer
+                        alignItems='center'
+                        padding='0 0 0 4px'
+                        gap={4}
+                        style={{ pointerEvents: 'none' }}
+                    >
+                        <FaGasPump size={15} /> {gasPrice ?? '…'}
+                    </FlexContainer>
+                ) : (
+                    <FlexContainer
+                        alignItems='center'
+                        padding='0 0 0 4px'
+                        gap={4}
+                        style={{ pointerEvents: 'none' }}
+                    ></FlexContainer>
+                )}
                 <FlexContainer
                     alignItems='center'
                     onClick={(e: MouseEvent<HTMLDivElement>) => {

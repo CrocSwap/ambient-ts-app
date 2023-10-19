@@ -14,7 +14,6 @@ import { FetchContractDetailsFn } from './fetchContractDetails';
 import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from './querySpotPrice';
 import { getFormattedNumber } from './getFormattedNumber';
-import { supportedNetworks } from '../../utils/networks';
 import { Provider } from '@ethersproject/providers';
 
 export const getPositionData = async (
@@ -28,6 +27,7 @@ export const getPositionData = async (
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
+    skipENSFetch?: boolean,
 ): Promise<PositionIF> => {
     const newPosition = { ...position } as PositionIF;
 
@@ -48,12 +48,12 @@ export const getPositionData = async (
     const baseMetadata = cachedTokenDetails(provider, position.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, position.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(newPosition.user);
-
     const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
     const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
-    newPosition.ensResolution = (await ensRequest) ?? '';
+    newPosition.ensResolution = skipENSFetch
+        ? ''
+        : (await cachedEnsResolve(newPosition.user)) ?? '';
 
     const poolPriceInTicks =
         Math.log(await poolPriceNonDisplay) / Math.log(1.0001);

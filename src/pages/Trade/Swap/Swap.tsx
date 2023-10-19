@@ -58,17 +58,12 @@ function Swap(props: propsIF) {
     const { gasPriceInGwei } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const { tokens } = useContext(TokenContext);
+
     const {
-        isTokenABase: isSellTokenBase,
         tokenAAllowance,
-        baseToken: {
-            balance: baseTokenBalance,
-            dexBalance: baseTokenDexBalance,
-        },
-        quoteToken: {
-            balance: quoteTokenBalance,
-            dexBalance: quoteTokenDexBalance,
-        },
+        tokenABalance,
+        tokenADexBalance,
+        isTokenABase: isSellTokenBase,
     } = useContext(TradeTokenContext);
     const { swapSlippage, dexBalSwap, bypassConfirmSwap } = useContext(
         UserPreferenceContext,
@@ -128,13 +123,6 @@ function Swap(props: propsIF) {
     const [swapGasPriceinDollars, setSwapGasPriceinDollars] = useState<
         string | undefined
     >();
-
-    const tokenABalance = isSellTokenBase
-        ? baseTokenBalance
-        : quoteTokenBalance;
-    const tokenADexBalance = isSellTokenBase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
 
     const slippageTolerancePercentage = isStablePair(
         tokenA.address,

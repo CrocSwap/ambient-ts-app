@@ -6,6 +6,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import TokenIcon from '../../../Global/TokenIcon/TokenIcon';
 import uriToHttp from '../../../../utils/functions/uriToHttp';
 import TradeConfirmationSkeleton from '../../TradeModules/TradeConfirmationSkeleton';
+import { useState } from 'react';
 
 interface propsIF {
     position: PositionIF;
@@ -51,9 +52,17 @@ export default function ConfirmRepositionModal(props: propsIF) {
         onClose,
     } = props;
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB, isDenomBase } = useAppSelector(
+        (state) => state.tradeData,
+    );
+
     const baseToken = isTokenABase ? tokenA : tokenB;
     const quoteToken = isTokenABase ? tokenB : tokenA;
+
+    const [
+        isDenomBaseLocalToRepositionConfirm,
+        setIsDenomBaseocalToRepositionConfirm,
+    ] = useState(isDenomBase);
 
     const tokenAmountDisplay = (
         <section className={styles.fee_tier_display}>
@@ -142,6 +151,8 @@ export default function ConfirmRepositionModal(props: propsIF) {
             {tokenAmountDisplay}
             {isAmbient || (
                 <SelectedRange
+                    isDenomBase={isDenomBaseLocalToRepositionConfirm}
+                    setIsDenomBase={setIsDenomBaseocalToRepositionConfirm}
                     isTokenABase={isTokenABase}
                     isAmbient={isAmbient}
                     pinnedMinPriceDisplayTruncatedInBase={

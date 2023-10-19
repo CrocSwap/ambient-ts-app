@@ -19,6 +19,7 @@ export const getTransactionData = async (
     cachedQuerySpotPrice: SpotPriceFn,
     cachedTokenDetails: FetchContractDetailsFn,
     cachedEnsResolve: FetchAddrFn,
+    skipENSFetch?: boolean,
 ): Promise<TransactionIF> => {
     const newTx = { ...tx } as TransactionIF;
 
@@ -38,12 +39,14 @@ export const getTransactionData = async (
     const baseMetadata = cachedTokenDetails(provider, tx.base, chainId);
     const quoteMetadata = cachedTokenDetails(provider, tx.quote, chainId);
 
-    const ensRequest = cachedEnsResolve(tx.user);
+    // const ensRequest = cachedEnsResolve(tx.user);
 
     const basePricePromise = cachedFetchTokenPrice(baseTokenAddress, chainId);
     const quotePricePromise = cachedFetchTokenPrice(quoteTokenAddress, chainId);
 
-    newTx.ensResolution = (await ensRequest) ?? '';
+    newTx.ensResolution = skipENSFetch
+        ? ''
+        : (await cachedEnsResolve(tx.user)) ?? '';
 
     const baseTokenName = tokenList.find(
         (token) =>

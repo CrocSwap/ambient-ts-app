@@ -115,6 +115,8 @@ export default function Limit() {
     const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
+    // TODO: is possible we can convert this to use the TradeTokenContext
+    // However, unsure if the fact that baseToken comes from pool affects this
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
     const tokenABalance = isSellTokenBase
@@ -239,7 +241,7 @@ export default function Limit() {
                         });
                     }
                 }
-            } else if (limitTick) {
+            } else if (limitTick !== undefined) {
                 if (!pool) return;
 
                 const tickPrice = tickToPrice(limitTick);
@@ -324,7 +326,7 @@ export default function Limit() {
     const updateOrderValidityStatus = async () => {
         try {
             if (!crocEnv) return;
-            if (!limitTick) return;
+            if (limitTick === undefined) return;
             if (tokenAInputQty === '' && tokenBInputQty === '') return;
 
             const tknA: string = urlParamMap.get('tokenA') as string;

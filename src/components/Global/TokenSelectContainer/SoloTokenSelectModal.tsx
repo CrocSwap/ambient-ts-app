@@ -33,6 +33,8 @@ interface propsIF {
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
     onClose: () => void;
+
+    noModal?: boolean;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
@@ -248,10 +250,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
 
-    const handleWETH = {
-        check: (x: string) => x,
-        message: ' Ambient uses Native Ether (ETH) to lower gas costs.',
-    };
+    const WETH_WARNING = ' Ambient uses Native Ether (ETH) to lower gas costs.';
 
     return (
         <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>
@@ -282,10 +281,10 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                     )}
                 </div>
                 <div style={{ padding: '1rem' }}>
-                    {handleWETH.check(validatedInput) && (
+                    {isWethToken(validatedInput) && (
                         <WarningBox
                             title=''
-                            details={handleWETH.message}
+                            details={WETH_WARNING}
                             noBackground
                             button={
                                 <button
@@ -310,7 +309,7 @@ export const SoloTokenSelectModal = (props: propsIF) => {
                         />
                     )}
                 </div>
-                {handleWETH.check(validatedInput) &&
+                {isWethToken(validatedInput) &&
                     [tokens.getTokenByAddress(ZERO_ADDRESS) as TokenIF].map(
                         (token: TokenIF) => (
                             <TokenSelect
