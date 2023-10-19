@@ -716,6 +716,12 @@ export default function RangeActionModal(props: propsIF) {
                 <div className={styles.info_container}>
                     {type === 'Remove' && (
                         <RemoveRangeInfo
+                            baseTokenAddress={props.baseTokenAddress}
+                            quoteTokenAddress={props.quoteTokenAddress}
+                            baseTokenSymbol={props.baseTokenSymbol}
+                            quoteTokenSymbol={props.quoteTokenSymbol}
+                            baseTokenLogoURI={props.baseTokenLogoURI}
+                            quoteTokenLogoURI={props.quoteTokenLogoURI}
                             posLiqBaseDecimalCorrected={
                                 posLiqBaseDecimalCorrected
                             }
@@ -736,6 +742,12 @@ export default function RangeActionModal(props: propsIF) {
                     )}
                     {type === 'Harvest' && (
                         <HarvestPositionInfo
+                            baseTokenAddress={props.baseTokenAddress}
+                            quoteTokenAddress={props.quoteTokenAddress}
+                            baseTokenSymbol={props.baseTokenSymbol}
+                            quoteTokenSymbol={props.quoteTokenSymbol}
+                            baseTokenLogoURI={props.baseTokenLogoURI}
+                            quoteTokenLogoURI={props.quoteTokenLogoURI}
                             baseHarvestNum={baseHarvestNum}
                             quoteHarvestNum={quoteHarvestNum}
                         />

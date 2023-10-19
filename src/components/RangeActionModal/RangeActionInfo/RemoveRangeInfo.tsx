@@ -4,9 +4,17 @@ import DividerDark from '../../Global/DividerDark/DividerDark';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useContext } from 'react';
+import { TokenContext } from '../../../contexts/TokenContext';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface IRemoveRangeInfoProps {
+    baseTokenAddress: string;
+    quoteTokenAddress: string;
+    baseTokenSymbol: string;
+    quoteTokenSymbol: string;
+    baseTokenLogoURI: string;
+    quoteTokenLogoURI: string;
     posLiqBaseDecimalCorrected: number | undefined;
     posLiqQuoteDecimalCorrected: number | undefined;
     feeLiqBaseDecimalCorrected: number | undefined;
@@ -19,6 +27,12 @@ interface IRemoveRangeInfoProps {
 
 export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
     const {
+        baseTokenAddress,
+        quoteTokenAddress,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        baseTokenLogoURI,
+        quoteTokenLogoURI,
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
         feeLiqBaseDecimalCorrected,
@@ -27,9 +41,12 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         quoteRemovalNum,
         isAmbient,
     } = props;
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const baseToken = tradeData.baseToken;
-    const quoteToken = tradeData.quoteToken;
+
+    const { tokens } = useContext(TokenContext);
+    const baseToken: TokenIF | undefined =
+        tokens.getTokenByAddress(baseTokenAddress);
+    const quoteToken: TokenIF | undefined =
+        tokens.getTokenByAddress(quoteTokenAddress);
 
     const liqBaseDisplay = getFormattedNumber({
         value: posLiqBaseDecimalCorrected,
@@ -54,28 +71,28 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         <>
             <DividerDark />
             <Row>
-                <span>{baseToken.symbol} Rewards Earned</span>
+                <span>{baseTokenSymbol} Rewards Earned</span>
                 <div className={styles.token_price}>
                     {feeLiqBaseDisplay !== undefined ? feeLiqBaseDisplay : '…'}
                     <TokenIcon
                         token={baseToken}
-                        src={uriToHttp(baseToken.logoURI)}
-                        alt={baseToken.symbol}
+                        src={uriToHttp(baseTokenLogoURI)}
+                        alt={baseTokenSymbol}
                         size='xs'
                     />
                 </div>
             </Row>
             {/*  */}
             <Row>
-                <span>{quoteToken.symbol} Rewards Earned</span>
+                <span>{quoteTokenSymbol} Rewards Earned</span>
                 <div className={styles.token_price}>
                     {feeLiqQuoteDisplay !== undefined
                         ? feeLiqQuoteDisplay
                         : '…'}
                     <TokenIcon
                         token={quoteToken}
-                        src={uriToHttp(quoteToken.logoURI)}
-                        alt={quoteToken.symbol}
+                        src={uriToHttp(quoteTokenLogoURI)}
+                        alt={quoteTokenSymbol}
                         size='xs'
                     />
                 </div>
@@ -96,26 +113,26 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
         <div className={styles.row}>
             <div className={styles.remove_position_info}>
                 <Row>
-                    <span>Pooled {baseToken.symbol}</span>
+                    <span>Pooled {baseTokenSymbol}</span>
                     <div className={styles.token_price}>
                         {liqBaseDisplay !== undefined ? liqBaseDisplay : '…'}
                         <TokenIcon
                             token={baseToken}
-                            src={uriToHttp(baseToken.logoURI)}
-                            alt={baseToken.symbol}
+                            src={uriToHttp(baseTokenLogoURI)}
+                            alt={baseTokenSymbol}
                             size='xs'
                         />
                     </div>
                 </Row>
                 {/*  */}
                 <Row>
-                    <span>Pooled {quoteToken.symbol}</span>
+                    <span>Pooled {quoteTokenSymbol}</span>
                     <div className={styles.token_price}>
                         {liqQuoteDisplay !== undefined ? liqQuoteDisplay : '…'}
                         <TokenIcon
                             token={quoteToken}
-                            src={uriToHttp(quoteToken.logoURI)}
-                            alt={quoteToken.symbol}
+                            src={uriToHttp(quoteTokenLogoURI)}
+                            alt={quoteTokenSymbol}
                             size='xs'
                         />
                     </div>
@@ -124,29 +141,29 @@ export default function RemoveRangeInfo(props: IRemoveRangeInfoProps) {
                 {rewardsEarnedSection}
                 <DividerDark />
                 <Row>
-                    <span>{baseToken.symbol} Removal Summary</span>
+                    <span>{baseTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
                         {baseRemovalString !== undefined
                             ? baseRemovalString
                             : '…'}
                         <TokenIcon
                             token={baseToken}
-                            src={uriToHttp(baseToken.logoURI)}
-                            alt={baseToken.symbol}
+                            src={uriToHttp(baseTokenLogoURI)}
+                            alt={baseTokenSymbol}
                             size='xs'
                         />
                     </div>
                 </Row>
                 <Row>
-                    <span>{quoteToken.symbol} Removal Summary</span>
+                    <span>{quoteTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
                         {quoteRemovalString !== undefined
                             ? quoteRemovalString
                             : '…'}
                         <TokenIcon
                             token={quoteToken}
-                            src={uriToHttp(quoteToken.logoURI)}
-                            alt={quoteToken.symbol}
+                            src={uriToHttp(quoteTokenLogoURI)}
+                            alt={quoteTokenSymbol}
                             size='xs'
                         />
                     </div>

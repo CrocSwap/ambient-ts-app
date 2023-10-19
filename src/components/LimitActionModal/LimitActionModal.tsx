@@ -376,38 +376,38 @@ export default function LimitActionModal(props: propsIF) {
                   type,
                   usdValue,
                   tokenQuantity: limitOrder.isBid ? baseDisplay : quoteDisplay,
-                  tokenQuantityLogo: limitOrder.isBid
-                      ? baseTokenLogo
-                      : quoteTokenLogo,
+                  tokenQuantityAddress: limitOrder.isBid
+                      ? baseTokenAddress
+                      : quoteTokenAddress,
                   limitOrderPrice: truncatedDisplayPrice,
-                  limitOrderPriceLogo: !isDenomBase
-                      ? baseTokenLogo
-                      : quoteTokenLogo,
+                  limitOrderPriceAddress: !isDenomBase
+                      ? baseTokenAddress
+                      : quoteTokenAddress,
                   receivingAmount: limitOrder.isBid
                       ? baseDisplay
                       : quoteDisplay,
-                  receivingAmountLogo: limitOrder.isBid
-                      ? baseTokenLogo
-                      : quoteTokenLogo,
+                  receivingAmountAddress: limitOrder.isBid
+                      ? baseTokenAddress
+                      : quoteTokenAddress,
                   networkFee,
               }
             : {
                   type,
                   usdValue,
                   tokenQuantity: initialTokenQty,
-                  tokenQuantityLogo: limitOrder.isBid
-                      ? baseTokenLogo
-                      : quoteTokenLogo,
+                  tokenQuantityAddress: limitOrder.isBid
+                      ? baseTokenAddress
+                      : quoteTokenAddress,
                   limitOrderPrice: truncatedDisplayPrice,
-                  limitOrderPriceLogo: !isDenomBase
-                      ? baseTokenLogo
-                      : quoteTokenLogo,
-                  receivingAmount: !limitOrder.isBid
+                  limitOrderPriceAddress: !isDenomBase
+                      ? baseTokenAddress
+                      : quoteTokenAddress,
+                  receivingAmount: limitOrder.isBid
                       ? baseDisplay
                       : quoteDisplay,
-                  receivingAmountLogo: !limitOrder.isBid
-                      ? baseTokenLogo
-                      : quoteTokenLogo,
+                  receivingAmountAddress: limitOrder.isBid
+                      ? baseTokenAddress
+                      : quoteTokenAddress,
                   networkFee,
               };
 
