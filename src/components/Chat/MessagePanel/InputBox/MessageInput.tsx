@@ -168,6 +168,10 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     useEffect(() => {
+        console.log('reply test');
+    }, [props.isReplyButtonPressed === false]);
+
+    useEffect(() => {
         if (inputRef.current !== null && cursorPosition !== null) {
             inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
         }
@@ -556,13 +560,17 @@ export default function MessageInput(props: MessageInputProps) {
                         {props.isReplyButtonPressed ? (
                             <ReplyMessage
                                 message={props.replyMessageContent?.message}
-                                ensName={props.ensName}
                                 setIsReplyButtonPressed={
                                     props.setIsReplyButtonPressed
                                 }
                                 isReplyButtonPressed={
                                     props.isReplyButtonPressed
                                 }
+                                repliedMessageEnsName={
+                                    props.replyMessageContent?.ensName
+                                }
+                                ensName={props.replyMessageContent?.ensName}
+                                walletID={props.replyMessageContent?.walletID}
                             />
                         ) : (
                             ''
