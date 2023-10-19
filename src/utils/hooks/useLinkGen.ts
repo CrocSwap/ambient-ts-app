@@ -151,7 +151,6 @@ export const useLinkGen = (page?: pageNames): linkGenMethodsIF => {
     }
 
     function redirectUser(paramsObj?: anyParamsIF | string): void {
-        console.log(getFullURL(paramsObj));
         navigate(getFullURL(paramsObj), { replace: true });
     }
 
