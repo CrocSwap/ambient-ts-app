@@ -34,6 +34,7 @@ interface PropsIF {
     initialPriceDisplay: string;
     advancedHighTick: number;
     advancedLowTick: number;
+    selectedPoolPriceTick: number;
 }
 export default function InitButton(props: PropsIF) {
     const {
@@ -68,6 +69,7 @@ export default function InitButton(props: PropsIF) {
         isInitPending,
         advancedHighTick,
         advancedLowTick,
+        selectedPoolPriceTick,
     } = props;
 
     const tokenAApprovalButton = (
@@ -199,8 +201,11 @@ export default function InitButton(props: PropsIF) {
             }
 
             if (
-                advancedHighTick <= advancedLowTick &&
-                !(advancedHighTick === 0 && advancedLowTick === 0)
+                (advancedHighTick === 0 &&
+                    advancedLowTick === 0 &&
+                    selectedPoolPriceTick === 0) ||
+                (advancedHighTick <= advancedLowTick &&
+                    !(advancedHighTick === 0 && advancedLowTick === 0))
             ) {
                 return invalidRangeButton;
             }
