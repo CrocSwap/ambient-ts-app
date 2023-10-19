@@ -145,6 +145,7 @@ export default function DragCanvas(props: DragCanvasProps) {
         rectDragDirection: string,
         is0Left: boolean,
         is0Top: boolean,
+        denomInBase: boolean,
     ) {
         const index = drawnShapeHistory.findIndex(
             (item) => item === hoveredDrawnShape?.data,
@@ -171,19 +172,22 @@ export default function DragCanvas(props: DragCanvasProps) {
             ? rectDragDirection.includes('bottom')
             : rectDragDirection.includes('top');
 
+        const newYWithDenom =
+            previosData[0].denomInBase === denomInBase ? newY : 1 / newY;
+
         previosData[0].x = should0xMove ? newX : previosData[0].x;
 
-        previosData[0].y = should0yMove ? newY : previosData[0].y;
+        previosData[0].y = should0yMove ? newYWithDenom : previosData[0].y;
 
         previosData[1].x = should1xMove ? newX : previosData[1].x;
 
-        previosData[1].y = should1yMove ? newY : previosData[1].y;
+        previosData[1].y = should1yMove ? newYWithDenom : previosData[1].y;
 
         drawnShapeHistory[index].data = previosData;
         if (hoveredDrawnShape) {
             hoveredDrawnShape.selectedCircle = {
                 x: newX,
-                y: newY,
+                y: newYWithDenom,
                 ctx: undefined,
                 denomInBase: denomInBase,
             };
@@ -263,7 +267,12 @@ export default function DragCanvas(props: DragCanvasProps) {
                         );
 
                         const direction =
-                            topLineY === selectedCircle.y ? 'top' : 'bottom';
+                            topLineY ===
+                            (previosData[0].denomInBase === denomInBase
+                                ? selectedCircle.y
+                                : 1 / selectedCircle.y)
+                                ? 'top'
+                                : 'bottom';
 
                         rectDragDirection =
                             leftLineX === selectedCircle.x
@@ -323,6 +332,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                                 rectDragDirection,
                                 is0Left,
                                 is0Top,
+                                denomInBase,
                             );
                         }
                     }
