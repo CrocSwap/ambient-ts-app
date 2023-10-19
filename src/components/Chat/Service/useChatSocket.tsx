@@ -13,6 +13,7 @@ import {
     verifyUserEndpoint,
     updateVerifiedDateEndpoint,
     addReactionEndpoint,
+    getUserDetailsEndpoint,
 } from '../../../constants';
 import { Message } from '../Model/MessageModel';
 import { User } from '../Model/UserModel';
@@ -221,6 +222,18 @@ const useChatSocket = (
         });
         setUserMap(usmp);
         setUsers(userListData);
+    }
+
+    async function getUserSummaryDetails(walletID: string) {
+        const encodedWalletID = encodeURIComponent(walletID);
+        const response = await fetch(
+            CHAT_BACKEND_URL + getUserDetailsEndpoint + '/' + encodedWalletID,
+            {
+                method: 'GET',
+            },
+        );
+        const data = await response.json();
+        return data;
     }
 
     useEffect(() => {
@@ -453,6 +466,7 @@ const useChatSocket = (
         setMessages,
         addReaction,
         fetchForNotConnectedUser,
+        getUserSummaryDetails,
     };
 };
 

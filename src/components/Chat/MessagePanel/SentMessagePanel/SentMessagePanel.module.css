@@ -281,7 +281,7 @@
     background: var(--dark3);
 }
 
-.name {
+.name_default{
     width: 82px;
     height: 14px;
     cursor: pointer;
@@ -294,10 +294,7 @@
     line-height: 16px;
     display: flex;
     align-items: center;
-
-    /* accent/secondary */
-    color: var(--accent2);
-
+    
     /* Inside auto layout */
     flex: none;
     order: 0;
@@ -306,28 +303,17 @@
     margin-left: 10px;
 }
 
+.name {
+    color: var(--accent2);
+    /* accent/secondary */
+}
+
 .current_user_name {
-    width: 82px;
-    height: 14px;
-    cursor: pointer;
-
-    /* small */
-    font-family: 'Lexend Deca';
-    font-style: normal;
-    font-weight: 300;
-    font-size: 12px;
-    line-height: 16px;
-    display: flex;
-    align-items: center;
-
+  
     /* accent/secondary */
     color: var(--accent1);
 
-    /* Inside auto layout */
-    flex: none;
-    order: 0;
-    flex-grow: 0;
-    margin-left: 5px;
+   
 }
 
 .replied_box{
@@ -762,4 +748,57 @@
     font-size: .72rem;
     box-shadow: 0px 0px 30px var(--accent1);
 
+}
+
+.reader_mentioned{
+      box-shadow: 0px 0px 2px var(--accent1);
+    background: #7371fc26;
+}
+.reader_mentioned:hover{
+      box-shadow: 0px 0px 2px var(--accent1);
+    background: #7371fc26;
+}
+
+.reader_mentioned .options_button {
+    background: transparent;
+}
+
+.message_block_wrapper{
+    width: 80%;
+    height: 80%;
+    margin-left: 10px;
+    font-size: 12px;
+}
+
+.without_avatar{
+    margin-left: 34px;
+}
+
+
+.message_block{
+    
+    width: 80%;
+    height: 80%;
+    bottom: -100%;
+    white-space: pre-line;
+    font-family: "Lexend Deca";
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 15px;
+    flex-grow: 5px !important;
+    width: 85%;
+    /* color: var(--text1); */
+    align-self: stretch;
+    word-break: break-word;
+}
+
+.message_token{
+    margin-right: 1px;
+}
+
+.mentioned_name_token{
+    font-weight: bold;
+    color: #7371FC;
+    cursor: pointer;
 }

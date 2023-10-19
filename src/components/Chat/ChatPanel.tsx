@@ -20,6 +20,8 @@ import { Message } from './Model/MessageModel';
 import { AiOutlineCheck, AiOutlineClose } from 'react-icons/ai';
 import { CROCODILE_LABS_LINKS } from '../../constants';
 import Picker from 'emoji-picker-react';
+import UserSummary from './MessagePanel/UserSummary/UserSummary';
+import { UserSummaryModel } from './Model/UserSummaryModel';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -88,6 +90,13 @@ function ChatPanel(props: propsIF) {
     const [messageCooldownInterval, setSendMessageCooldownInterval] =
         useState<any>();
 
+    const [userSummaryToBottom, setUserSummaryToBottom] = useState(false);
+    const [userSummaryVerticalPosition, setUserSummaryVerticalPosition] =
+        useState(0);
+    const [userSummaryActive, setUserSummaryActive] = useState(false);
+    const [selectedUserSummary, setSelectedUserSummary] =
+        useState<UserSummaryModel>();
+
     const {
         messages,
         getMsg,
@@ -108,6 +117,7 @@ function ChatPanel(props: propsIF) {
         addReaction,
         deleteMsgFromList,
         fetchForNotConnectedUser,
+        getUserSummaryDetails,
     } = useChatSocket(room, isSubscriptionsEnabled, isChatOpen, address, ens);
 
     const { getID, updateUser, updateMessageUser } = useChatApi();
@@ -167,6 +177,28 @@ function ChatPanel(props: propsIF) {
         }
     }
 
+    async function mentionHoverListener(elementTop: number, walletID: string) {
+        const userDetails = await getUserSummaryDetails(walletID);
+        console.log(userDetails);
+        setSelectedUserSummary(userDetails);
+        const wrapperCenterPoint =
+            messageEnd.current?.getBoundingClientRect().height / 2 +
+            messageEnd.current?.getBoundingClientRect().top;
+        setUserSummaryActive(true);
+        setUserSummaryVerticalPosition(
+            elementTop - messageEnd.current?.getBoundingClientRect().top,
+        );
+        if (elementTop >= wrapperCenterPoint) {
+            setUserSummaryToBottom(false);
+        } else {
+            setUserSummaryToBottom(true);
+        }
+    }
+
+    function summaryMouseLeaveListener() {
+        setUserSummaryActive(false);
+    }
+
     function closePopUp() {
         setShowPopUp(false);
     }
@@ -185,6 +217,7 @@ function ChatPanel(props: propsIF) {
     };
 
     const reactionBtnListener = (focusedMessage?: Message) => {
+        console.log('adding reaction focusedMessage', focusedMessage);
         setFocusedMessage(focusedMessage);
         setShowPicker(true);
     };
@@ -195,7 +228,6 @@ function ChatPanel(props: propsIF) {
             setShowPicker(false);
         }
     };
-
     useEffect(() => {
         if (address == undefined && notConnectedUserInterval == undefined) {
             const interval = setInterval(() => {
@@ -712,9 +744,23 @@ function ChatPanel(props: propsIF) {
                             }
                             deleteMsgFromList={deleteMsgFromList}
                             addReaction={addReaction}
+                            mentionHoverListener={mentionHoverListener}
+                            mentionMouseLeftListener={() => {
+                                setUserSummaryActive(false);
+                            }}
                         />
                     );
                 })}
+            <UserSummary
+                isActive={userSummaryActive}
+                toBottom={userSummaryToBottom}
+                user={selectedUserSummary}
+                mouseLeaveListener={summaryMouseLeaveListener}
+                mouseEnterListener={() => {
+                    setUserSummaryActive(true);
+                }}
+                verticalPosition={userSummaryVerticalPosition}
+            />
         </div>
     );
 

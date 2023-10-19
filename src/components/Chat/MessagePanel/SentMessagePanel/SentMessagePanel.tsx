@@ -77,6 +77,8 @@ interface SentMessageProps {
     setIsDeleteMessageButtonPressed: Dispatch<SetStateAction<boolean>>;
     deleteMsgFromList: any;
     addReaction: (messageId: string, userId: string, reaction: string) => void;
+    mentionHoverListener: (elementTop: number, walletID: string) => void;
+    mentionMouseLeftListener: any;
 }
 
 function SentMessagePanel(props: SentMessageProps) {
@@ -480,6 +482,65 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
+    function buildMessageToken(word: string, mentFound: any) {
+        let ret = <></>;
+        if (props.isLinkInCrocodileLabsLinks(word)) {
+            ret = <span>{word}</span>;
+        } else {
+            if (mentFound.val == false && word.indexOf('@') >= 0) {
+                mentFound.val = true;
+                ret = (
+                    <span
+                        onMouseEnter={(e) => {
+                            props.mentionHoverListener(
+                                e.currentTarget.getBoundingClientRect().top,
+                                props.message.mentionedWalletID,
+                            );
+                        }}
+                        onMouseLeave={props.mentionMouseLeftListener}
+                        className={styles.mentioned_name_token}
+                    >
+                        {word}
+                    </span>
+                );
+            } else {
+                ret = <span> {word} </span>;
+            }
+        }
+        return ret;
+    }
+
+    function renderMessage() {
+        const messagesArray = props.message.message.split(' ');
+        const mentFound = { val: false };
+
+        return (
+            <div
+                className={` ${styles.message_block_wrapper}
+                                ${
+                                    showAvatar == true
+                                        ? ' '
+                                        : styles.without_avatar
+                                }
+        `}
+            >
+                <div className={styles.message_block}>
+                    {messagesArray.map((e, i) => {
+                        return (
+                            <span key={i} className={styles.message_token}>
+                                {buildMessageToken(e, mentFound)}
+                            </span>
+                        );
+                    })}
+                </div>
+                <div className={styles.roomInfo}>
+                    {' '}
+                    {props.room === 'Admins' ? props.message.roomInfo : ''}
+                </div>
+            </div>
+        );
+    }
+
     const jazziconsSeed = props.message.walletID.toLowerCase();
 
     const myJazzicon = (
@@ -558,10 +619,6 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }
 
-    const getReactionNode = () => {
-        console.log('cont');
-    };
-
     function getReactionUsers(reaction: string) {
         const ret = [''];
         if (props.message.reactions != undefined) {
@@ -629,6 +686,11 @@ function SentMessagePanel(props: SentMessageProps) {
             }
 
             ${hasSeparator ? styles.has_separator : ''}
+            ${
+                props.message.mentionedWalletID === props.address
+                    ? styles.reader_mentioned
+                    : ''
+            }
             
             `}
             // style={messageStyle()}
@@ -756,10 +818,14 @@ function SentMessagePanel(props: SentMessageProps) {
                                     <div
                                         className={
                                             showName && props.isCurrentUser
-                                                ? styles.current_user_name
+                                                ? styles.current_user_name +
+                                                  ' ' +
+                                                  styles.name_default
                                                 : showName &&
                                                   !props.isCurrentUser
-                                                ? styles.name
+                                                ? styles.name +
+                                                  ' ' +
+                                                  styles.name_default
                                                 : !showName &&
                                                   !props.isCurrentUser
                                                 ? ''
@@ -852,7 +918,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                         isCurrentUser={props.isCurrentUser}
                                         showAvatar={showAvatar}
                                     />
-                                    {!isPosition && mentionedMessage()}
+                                    {!isPosition && renderMessage()}
                                     {isMoreButtonPressed ? (
                                         <div className={styles.menu}>
                                             <Menu

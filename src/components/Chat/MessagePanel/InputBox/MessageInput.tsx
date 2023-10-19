@@ -20,6 +20,18 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
+import {
+    Editor,
+    EditorState,
+    RichUtils,
+    convertToRaw,
+    ContentState,
+    Modifier,
+    ContentBlock,
+    CompositeDecorator,
+} from 'draft-js';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+
 interface MessageInputProps {
     currentUser: string;
     message?: Message;
@@ -211,6 +223,9 @@ export default function MessageInput(props: MessageInputProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
+        console.log('possible', possibleMentUser?.walletID);
+        console.log('selected', mentUser?.walletID);
+        console.log('................');
         if (props.isInputDisabled) {
             if (message !== '') {
                 setMessage('');
@@ -427,10 +442,14 @@ export default function MessageInput(props: MessageInputProps) {
             if (filteredUsers.length < 1) {
                 setPossibleMentUser(null);
                 setMentPanelActive(false);
+            } else {
+                setMentUser(null);
             }
         } else {
+            console.log('hotfix in code');
             if (mentPanelActive) setMentPanelActive(false);
             setPossibleMentUser(null);
+            setMentUser(null);
         }
     };
 
@@ -442,6 +461,56 @@ export default function MessageInput(props: MessageInputProps) {
             selectedUser={possibleMentUser}
         />
     );
+
+    const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    // const [editorState, setEditorState] = useState(() => {
+    //     const mentionDecorator = new CompositeDecorator(
+    //         [{
+    //             strategy: mentionStrategy,
+    //             component: MentionSpan,
+    //         }]
+    //     );
+
+    //     return EditorState.createEmpty(mentionDecorator);
+    // });
+
+    const handleEditorChange = (newEditorState: EditorState) => {
+        setEditorState(newEditorState);
+    };
+
+    const handleColorize = (color: any) => {
+        const currentContent = editorState.getCurrentContent();
+        const selection = editorState.getSelection();
+        const contentWithColor = Modifier.applyInlineStyle(
+            currentContent,
+            selection,
+            color,
+        );
+        const newEditorState = EditorState.push(
+            editorState,
+            contentWithColor,
+            'change-inline-style',
+        );
+        setEditorState(newEditorState);
+    };
+
+    const mentionStrategy = (
+        contentBlock: ContentBlock,
+        callback: (start: number, end: number) => void,
+    ) => {
+        const text = contentBlock.getText();
+        const matches = text.match(/@[\w]+/g);
+        if (matches) {
+            matches.forEach((match) => {
+                const start = text.indexOf(match);
+                callback(start, start + match.length);
+            });
+        }
+    };
+
+    const MentionSpan = (props: any) => {
+        return <span style={{ color: 'blue' }}>{props.children}</span>;
+    };
 
     return (
         <>
@@ -606,6 +675,18 @@ export default function MessageInput(props: MessageInputProps) {
                     )}
 
                     {mentionAutoComplete}
+                    <div>
+                        <button onClick={() => handleColorize('red')}>
+                            Colorize Red
+                        </button>
+                        <button onClick={() => handleColorize('blue')}>
+                            Colorize Blue
+                        </button>
+                        <Editor
+                            editorState={editorState}
+                            onChange={handleEditorChange}
+                        />
+                    </div>
                 </div>
             )}
         </>
