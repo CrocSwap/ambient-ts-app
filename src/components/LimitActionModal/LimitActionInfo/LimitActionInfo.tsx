@@ -103,7 +103,7 @@ export default function LimitActionInfo(props: ILimitActionInfoProps) {
                                 src={uriToHttp(
                                     receivingAmountToken?.logoURI ?? '',
                                 )}
-                                alt={receivingAmountToken?.symbol ?? 'Token'}
+                                alt={receivingAmountToken?.symbol ?? '?'}
                                 size='xs'
                             />
                         </div>
