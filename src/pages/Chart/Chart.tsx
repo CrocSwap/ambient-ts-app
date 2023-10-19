@@ -2754,8 +2754,6 @@ export default function Chart(props: propsIF) {
                                     );
                                     item.data[1].ctx([bandData]);
 
-                                    lineSeries(item.data);
-
                                     const lineOfBand = createPointsOfBandLine(
                                         item.data,
                                     );
