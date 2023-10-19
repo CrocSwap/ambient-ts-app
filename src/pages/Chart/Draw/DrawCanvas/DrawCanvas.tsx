@@ -43,7 +43,6 @@ interface DrawCanvasProps {
 function DrawCanvas(props: DrawCanvasProps) {
     const d3DrawCanvas = useRef<HTMLDivElement | null>(null);
     const [lineData, setLineData] = useState<lineData[]>([]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     const {
         scaleData,
@@ -89,19 +88,19 @@ function DrawCanvas(props: DrawCanvasProps) {
         const canvasRect = canvas.getBoundingClientRect();
 
         const threshold = 15;
-        let cancelDrag = false;
+        let cancelDraw = false;
         let isDrawing = false;
         const tempLineData: lineData[] = [];
 
         let touchTimeout: NodeJS.Timeout | null = null; // Declare touchTimeout
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const cancelDragEvent = (event: any) => {
+        const cancelDrawEvent = (event: any) => {
             if (event.key === 'Escape') {
-                cancelDrag = true;
+                cancelDraw = true;
                 event.preventDefault();
                 event.stopPropagation();
-                document.removeEventListener('keydown', cancelDragEvent);
+                document.removeEventListener('keydown', cancelDrawEvent);
             }
         };
 
@@ -138,7 +137,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         d3.select(d3DrawCanvas.current).on(
             'mousedown',
             (event: PointerEvent) => {
-                document.addEventListener('keydown', cancelDragEvent);
+                document.addEventListener('keydown', cancelDrawEvent);
 
                 startDrawing(event.clientX, event.clientY);
             },
@@ -174,7 +173,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function endDrawing(mouseX: number, mouseY: number) {
-            if (!cancelDrag) {
+            if (!cancelDraw) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
@@ -291,7 +290,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function draw(mouseX: number, mouseY: number) {
-            if (!cancelDrag) {
+            if (!cancelDraw) {
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 

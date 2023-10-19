@@ -2,6 +2,7 @@ import { MouseEvent, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import {
     drawDataHistory,
+    lineData,
     scaleData,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
@@ -207,6 +208,7 @@ export default function DragCanvas(props: DragCanvasProps) {
             .node() as HTMLCanvasElement;
         const canvasRect = canvas.getBoundingClientRect();
         let dragTimeout: number | undefined = undefined;
+        let cancelDrag = false;
 
         let offsetY = 0;
         let offsetX = 0;
@@ -217,9 +219,21 @@ export default function DragCanvas(props: DragCanvasProps) {
         let tempMovemementY = 0;
         let rectDragDirection = '';
         let isDragging = false;
+        let previousData: lineData[] | undefined = undefined;
+        let previousIndex = 0;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cancelDragEvent = (event: any) => {
+            if (event.key === 'Escape') {
+                cancelDrag = true;
+                event.preventDefault();
+                event.stopPropagation();
+                document.removeEventListener('keydown', cancelDragEvent);
+            }
+        };
         const dragDrawnShape = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
             .on('start', (event) => {
+                document.addEventListener('keydown', cancelDragEvent);
                 if (event.sourceEvent instanceof TouchEvent) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - canvasRect?.top;
@@ -227,28 +241,30 @@ export default function DragCanvas(props: DragCanvasProps) {
                         event.sourceEvent.touches[0].clientX - canvasRect?.left;
                 }
 
+                previousIndex = drawnShapeHistory.findIndex(
+                    (item) => item === hoveredDrawnShape?.data,
+                );
+
+                const originalData = drawnShapeHistory[previousIndex].data;
+                previousData = originalData.map((item) => {
+                    return { ...item };
+                });
                 dragTimeout = event.sourceEvent.timeStamp;
 
                 if (
                     hoveredDrawnShape &&
                     hoveredDrawnShape.data.type === 'Square'
                 ) {
-                    const index = drawnShapeHistory.findIndex(
-                        (item) => item === hoveredDrawnShape?.data,
-                    );
-
-                    const previosData = drawnShapeHistory[index].data;
-
                     const selectedCircle = hoveredDrawnShape.selectedCircle;
 
                     if (selectedCircle) {
                         const direction =
-                            previosData[0].y <= selectedCircle.y
+                            previousData[0].y <= selectedCircle.y
                                 ? 'top'
                                 : 'bottom';
 
                         rectDragDirection =
-                            previosData[0].x >= selectedCircle.x
+                            previousData[0].x >= selectedCircle.x
                                 ? direction + 'Left'
                                 : direction + 'Right';
                     }
@@ -257,60 +273,73 @@ export default function DragCanvas(props: DragCanvasProps) {
                 setSelectedDrawnShape(hoveredDrawnShape);
             })
             .on('drag', function (event) {
-                (async () => {
-                    if (event.sourceEvent instanceof TouchEvent) {
-                        offsetY =
-                            event.sourceEvent.touches[0].clientY -
-                            canvasRect?.top;
-                        offsetX =
-                            event.sourceEvent.touches[0].clientX -
-                            canvasRect?.left;
-                        movemementX = offsetX - tempMovemementX;
-                        movemementY = offsetY - tempMovemementY;
-                    } else {
-                        offsetY = event.sourceEvent.clientY - canvasRect?.top;
-                        offsetX = event.sourceEvent.clientX - canvasRect?.left;
-
-                        movemementX = event.sourceEvent.movementX;
-                        movemementY = event.sourceEvent.movementY;
-                    }
-                    setCrossHairDataFunc(offsetX, offsetY);
-                    if (
-                        hoveredDrawnShape &&
-                        (hoveredDrawnShape.data.type === 'Brush' ||
-                            hoveredDrawnShape.data.type === 'Angle')
-                    ) {
-                        if (!hoveredDrawnShape.selectedCircle) {
-                            dragLine(movemementX, movemementY);
+                if (!cancelDrag) {
+                    (async () => {
+                        if (event.sourceEvent instanceof TouchEvent) {
+                            offsetY =
+                                event.sourceEvent.touches[0].clientY -
+                                canvasRect?.top;
+                            offsetX =
+                                event.sourceEvent.touches[0].clientX -
+                                canvasRect?.left;
+                            movemementX = offsetX - tempMovemementX;
+                            movemementY = offsetY - tempMovemementY;
                         } else {
-                            setIsUpdatingShape(true);
-                            updateDrawLine(offsetX, offsetY, denomInBase);
-                        }
-                    }
+                            offsetY =
+                                event.sourceEvent.clientY - canvasRect?.top;
+                            offsetX =
+                                event.sourceEvent.clientX - canvasRect?.left;
 
-                    if (
-                        hoveredDrawnShape &&
-                        hoveredDrawnShape.data.type === 'Square'
-                    ) {
-                        if (!hoveredDrawnShape.selectedCircle) {
-                            dragLine(movemementX, movemementY);
-                        } else {
-                            setIsUpdatingShape(true);
-                            updateDrawRect(offsetX, offsetY, rectDragDirection);
+                            movemementX = event.sourceEvent.movementX;
+                            movemementY = event.sourceEvent.movementY;
                         }
-                    }
-                })().then(() => {
-                    if (event.sourceEvent instanceof TouchEvent) {
-                        tempMovemementX =
-                            event.sourceEvent.touches[0].clientX -
-                            canvasRect?.left;
-                        tempMovemementY =
-                            event.sourceEvent.touches[0].clientY -
-                            canvasRect?.top;
-                    }
+                        setCrossHairDataFunc(offsetX, offsetY);
+                        if (
+                            hoveredDrawnShape &&
+                            (hoveredDrawnShape.data.type === 'Brush' ||
+                                hoveredDrawnShape.data.type === 'Angle')
+                        ) {
+                            if (!hoveredDrawnShape.selectedCircle) {
+                                dragLine(movemementX, movemementY);
+                            } else {
+                                setIsUpdatingShape(true);
+                                updateDrawLine(offsetX, offsetY, denomInBase);
+                            }
+                        }
 
-                    isDragging = true;
-                });
+                        if (
+                            hoveredDrawnShape &&
+                            hoveredDrawnShape.data.type === 'Square'
+                        ) {
+                            if (!hoveredDrawnShape.selectedCircle) {
+                                dragLine(movemementX, movemementY);
+                            } else {
+                                setIsUpdatingShape(true);
+                                updateDrawRect(
+                                    offsetX,
+                                    offsetY,
+                                    rectDragDirection,
+                                );
+                            }
+                        }
+                    })().then(() => {
+                        if (event.sourceEvent instanceof TouchEvent) {
+                            tempMovemementX =
+                                event.sourceEvent.touches[0].clientX -
+                                canvasRect?.left;
+                            tempMovemementY =
+                                event.sourceEvent.touches[0].clientY -
+                                canvasRect?.top;
+                        }
+
+                        isDragging = true;
+                    });
+                } else {
+                    if (previousData) {
+                        drawnShapeHistory[previousIndex].data = previousData;
+                        setIsUpdatingShape(false);
+                    }
+                }
             })
             .on('end', (event) => {
                 tempMovemementX = 0;
@@ -321,34 +350,40 @@ export default function DragCanvas(props: DragCanvasProps) {
                     (item) => hoveredDrawnShape?.data.time === item.time,
                 );
 
-                if (
-                    tempLastData &&
-                    isDragging &&
-                    dragTimeout &&
-                    event.sourceEvent.timeStamp - dragTimeout > 250
-                ) {
-                    drawActionStack.get(actionKey)?.push({
-                        data: [
-                            {
-                                x: tempLastData.data[0].x,
-                                y: tempLastData.data[0].y,
-                                ctx: tempLastData.data[0].ctx,
-                                denomInBase: denomInBase,
-                            },
-                            {
-                                x: tempLastData.data[1].x,
-                                y: tempLastData.data[1].y,
-                                ctx: tempLastData.data[1].ctx,
-                                denomInBase: denomInBase,
-                            },
-                        ],
-                        type: tempLastData.type,
-                        time: tempLastData.time,
-                        pool: tempLastData.pool,
-                        color: '#7371fc',
-                        lineWidth: 1.5,
-                        style: [0, 0],
-                    });
+                if (!cancelDrag) {
+                    if (
+                        tempLastData &&
+                        isDragging &&
+                        dragTimeout &&
+                        event.sourceEvent.timeStamp - dragTimeout > 250
+                    ) {
+                        drawActionStack.get(actionKey)?.push({
+                            data: [
+                                {
+                                    x: tempLastData.data[0].x,
+                                    y: tempLastData.data[0].y,
+                                    ctx: tempLastData.data[0].ctx,
+                                    denomInBase: denomInBase,
+                                },
+                                {
+                                    x: tempLastData.data[1].x,
+                                    y: tempLastData.data[1].y,
+                                    ctx: tempLastData.data[1].ctx,
+                                    denomInBase: denomInBase,
+                                },
+                            ],
+                            type: tempLastData.type,
+                            time: tempLastData.time,
+                            pool: tempLastData.pool,
+                            color: '#7371fc',
+                            lineWidth: 1.5,
+                            style: [0, 0],
+                        });
+                    }
+                } else {
+                    if (previousData) {
+                        drawnShapeHistory[previousIndex].data = previousData;
+                    }
                 }
 
                 isDragging = false;
