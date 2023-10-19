@@ -20,7 +20,6 @@ export default function Home() {
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
 
-    console.log({ isConnected, switchNetwork });
     useEffect(() => {
         if (chainParam && supportedNetworks[chainParam]) {
             if (chainParam !== chainData.chainId) {
