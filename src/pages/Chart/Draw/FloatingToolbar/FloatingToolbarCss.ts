@@ -38,7 +38,7 @@ export const FloatingButtonDiv = styled.div`
     padding-left: 11px;
 `;
 
-export const FloatingOptions = styled.div`
+export const FloatingOptions = styled.div<{ hoverColor: string }>`
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -49,7 +49,7 @@ export const FloatingOptions = styled.div`
     display: flex;
 
     &:hover {
-        background: #434c58;
+        background: ${({ hoverColor }) => hoverColor};
     }
 `;
 
