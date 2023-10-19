@@ -112,10 +112,6 @@ export default function DragCanvas(props: DragCanvasProps) {
 
         const previosData = drawnShapeHistory[index].data;
 
-        // const lastDataIndex = previosData.findIndex(
-        //     (item) => item === hoveredDrawnShape?.selectedCircle,
-        // );
-
         const lastDataIndex = previosData.findIndex(
             (item) =>
                 hoveredDrawnShape?.selectedCircle &&
@@ -148,6 +144,9 @@ export default function DragCanvas(props: DragCanvasProps) {
         offsetX: number,
         offsetY: number,
         rectDragDirection: string,
+        is0Left: boolean,
+        is0Top: boolean,
+        denomInBase: boolean,
     ) {
         const index = drawnShapeHistory.findIndex(
             (item) => item === hoveredDrawnShape?.data,
@@ -158,25 +157,38 @@ export default function DragCanvas(props: DragCanvasProps) {
         const newX = scaleData.xScale.invert(offsetX);
         const newY = scaleData.yScale.invert(offsetY);
 
-        previosData[0].x = rectDragDirection.includes('Left')
-            ? newX
-            : previosData[0].x;
-        previosData[0].y = rectDragDirection.includes('top')
-            ? newY
-            : previosData[0].y;
+        const should0xMove = is0Left
+            ? rectDragDirection.includes('Left')
+            : rectDragDirection.includes('Right');
 
-        previosData[1].x = rectDragDirection.includes('Right')
-            ? newX
-            : previosData[1].x;
-        previosData[1].y = rectDragDirection.includes('bottom')
-            ? newY
-            : previosData[1].y;
+        const should0yMove = is0Top
+            ? rectDragDirection.includes('top')
+            : rectDragDirection.includes('bottom');
+
+        const should1xMove = is0Left
+            ? rectDragDirection.includes('Right')
+            : rectDragDirection.includes('Left');
+
+        const should1yMove = is0Top
+            ? rectDragDirection.includes('bottom')
+            : rectDragDirection.includes('top');
+
+        const newYWithDenom =
+            previosData[0].denomInBase === denomInBase ? newY : 1 / newY;
+
+        previosData[0].x = should0xMove ? newX : previosData[0].x;
+
+        previosData[0].y = should0yMove ? newYWithDenom : previosData[0].y;
+
+        previosData[1].x = should1xMove ? newX : previosData[1].x;
+
+        previosData[1].y = should1yMove ? newYWithDenom : previosData[1].y;
 
         drawnShapeHistory[index].data = previosData;
         if (hoveredDrawnShape) {
             hoveredDrawnShape.selectedCircle = {
                 x: newX,
-                y: newY,
+                y: newYWithDenom,
                 ctx: undefined,
                 denomInBase: denomInBase,
             };
@@ -230,6 +242,9 @@ export default function DragCanvas(props: DragCanvasProps) {
                 document.removeEventListener('keydown', cancelDragEvent);
             }
         };
+
+        let is0Left = false;
+        let is0Top = false;
         const dragDrawnShape = d3
             .drag<d3.DraggedElementBaseType, unknown, d3.SubjectPosition>()
             .on('start', (event) => {
@@ -258,16 +273,31 @@ export default function DragCanvas(props: DragCanvasProps) {
                     const selectedCircle = hoveredDrawnShape.selectedCircle;
 
                     if (selectedCircle) {
+                        const topLineY = Math.max(
+                            previousData[0].y,
+                            previousData[1].y,
+                        );
+                        const leftLineX = Math.min(
+                            previousData[0].x,
+                            previousData[1].x,
+                        );
+
                         const direction =
-                            previousData[0].y <= selectedCircle.y
+                            topLineY ===
+                            (previousData[0].denomInBase === denomInBase
+                                ? selectedCircle.y
+                                : 1 / selectedCircle.y)
                                 ? 'top'
                                 : 'bottom';
 
                         rectDragDirection =
-                            previousData[0].x >= selectedCircle.x
+                            leftLineX === selectedCircle.x
                                 ? direction + 'Left'
                                 : direction + 'Right';
                     }
+
+                    is0Left = previousData[0].x < previousData[1].x;
+                    is0Top = previousData[0].y > previousData[1].y;
                 }
 
                 setSelectedDrawnShape(hoveredDrawnShape);
@@ -319,6 +349,9 @@ export default function DragCanvas(props: DragCanvasProps) {
                                     offsetX,
                                     offsetY,
                                     rectDragDirection,
+                                    is0Left,
+                                    is0Top,
+                                    denomInBase,
                                 );
                             }
                         }

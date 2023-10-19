@@ -2754,6 +2754,8 @@ export default function Chart(props: propsIF) {
                                     );
                                     item.data[1].ctx([bandData]);
 
+                                    lineSeries(item.data);
+
                                     const lineOfBand = createPointsOfBandLine(
                                         item.data,
                                     );
@@ -2772,26 +2774,33 @@ export default function Chart(props: propsIF) {
                                         );
                                         lineSeries(line);
                                         if (
-                                            (hoveredDrawnShape &&
-                                                hoveredDrawnShape.data.time ===
-                                                    item.time) ||
-                                            (selectedDrawnShape &&
-                                                selectedDrawnShape.data.time ===
-                                                    item.time)
+                                            hoveredDrawnShape &&
+                                            hoveredDrawnShape.data.time ===
+                                                item.time
                                         ) {
-                                            line.forEach((element) => {
-                                                const selectedShape =
-                                                    selectedDrawnShape
-                                                        ? selectedDrawnShape
-                                                        : hoveredDrawnShape;
-
+                                            line.forEach((element, _index) => {
                                                 const selectedCircleIsActive =
-                                                    selectedShape &&
-                                                    selectedShape.selectedCircle &&
-                                                    selectedShape.selectedCircle
-                                                        .x === element.x &&
-                                                    selectedShape.selectedCircle
-                                                        .y === element.y;
+                                                    hoveredDrawnShape &&
+                                                    hoveredDrawnShape.selectedCircle &&
+                                                    hoveredDrawnShape
+                                                        .selectedCircle.x ===
+                                                        element.x &&
+                                                    Number(
+                                                        element.y.toFixed(12),
+                                                    ) ===
+                                                        (element.denomInBase ===
+                                                        denomInBase
+                                                            ? hoveredDrawnShape
+                                                                  ?.selectedCircle
+                                                                  .y
+                                                            : Number(
+                                                                  (
+                                                                      1 /
+                                                                      hoveredDrawnShape
+                                                                          ?.selectedCircle
+                                                                          .y
+                                                                  ).toFixed(12),
+                                                              ));
 
                                                 if (selectedCircleIsActive) {
                                                     if (!isUpdatingShape) {
@@ -3170,8 +3179,6 @@ export default function Chart(props: propsIF) {
 
                 setSelectedDrawnShape(undefined);
 
-                setSelectedDrawnShape(undefined);
-
                 if (
                     (location.pathname.includes('pool') ||
                         location.pathname.includes('reposition')) &&
@@ -3324,23 +3331,35 @@ export default function Chart(props: propsIF) {
 
         if (scaleData) {
             const threshold = 10;
-
             const allBandLines = createPointsOfBandLine(element);
 
-            allBandLines.forEach((item: { x: number; y: number }[]) => {
-                const distance = distanceToLine(
-                    mouseX,
-                    mouseY,
-                    scaleData.xScale(item[0].x),
-                    scaleData.yScale(item[0].y),
-                    scaleData.xScale(item[1].x),
-                    scaleData.yScale(item[1].y),
-                );
+            allBandLines.forEach(
+                (item: { x: number; y: number; denomInBase: boolean }[]) => {
+                    const startX = item[0].x;
+                    const startY =
+                        item[0].denomInBase === denomInBase
+                            ? item[0].y
+                            : 1 / item[0].y;
+                    const endX = item[1].x;
+                    const endY =
+                        item[1].denomInBase === denomInBase
+                            ? item[1].y
+                            : 1 / item[1].y;
 
-                if (distance < threshold) {
-                    isOverLine = true;
-                }
-            });
+                    const distance = distanceToLine(
+                        mouseX,
+                        mouseY,
+                        scaleData.xScale(startX),
+                        scaleData.yScale(startY),
+                        scaleData.xScale(endX),
+                        scaleData.yScale(endY),
+                    );
+
+                    if (distance < threshold) {
+                        isOverLine = true;
+                    }
+                },
+            );
         }
 
         return isOverLine;
