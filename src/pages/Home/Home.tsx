@@ -5,7 +5,7 @@ import TopPools from '../../components/Home/TopPools/TopPools';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import MobileLandingSections from '../../components/Home/Landing/MobileLandingSections';
 import { useSearchParams } from 'react-router-dom';
-import { useSwitchNetwork } from 'wagmi';
+import { useAccount, useSwitchNetwork } from 'wagmi';
 import { supportedNetworks } from '../../utils/networks/index';
 import { useAppChain } from '../../App/hooks/useAppChain';
 import { useEffect } from 'react';
@@ -13,23 +13,30 @@ import { useEffect } from 'react';
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const { switchNetwork } = useSwitchNetwork();
+    const { isConnected } = useAccount();
+
     const { chooseNetwork, chainData } = useAppChain();
     const [searchParams] = useSearchParams();
-    // const [searchParams, setSearchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     const networkParam = searchParams.get('network');
+
+    console.log({ isConnected, switchNetwork });
     useEffect(() => {
         if (chainParam && supportedNetworks[chainParam]) {
             if (chainParam !== chainData.chainId) {
-                switchNetwork
-                    ? switchNetwork(parseInt(chainParam))
-                    : chooseNetwork(supportedNetworks[chainParam]);
+                if (switchNetwork) {
+                    switchNetwork(parseInt(chainParam));
+                } else if (!isConnected) {
+                    chooseNetwork(supportedNetworks[chainParam]);
+                }
             }
         } else if (networkParam && supportedNetworks[networkParam]) {
             if (networkParam !== chainData.chainId) {
-                switchNetwork
-                    ? switchNetwork(parseInt(networkParam))
-                    : chooseNetwork(supportedNetworks[networkParam]);
+                if (switchNetwork) {
+                    switchNetwork(parseInt(networkParam));
+                } else if (!isConnected) {
+                    chooseNetwork(supportedNetworks[networkParam]);
+                }
             }
         }
     }, [switchNetwork]);
