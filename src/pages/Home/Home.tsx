@@ -8,27 +8,22 @@ import { useSearchParams } from 'react-router-dom';
 import { useSwitchNetwork } from 'wagmi';
 import { supportedNetworks } from '../../utils/networks/index';
 import { useAppChain } from '../../App/hooks/useAppChain';
-import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { useEffect } from 'react';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
-    const { switchNetwork } = useSwitchNetwork({
-        onSuccess() {
-            console.log('did it!');
-            linkGenIndex.redirect('');
-        },
-    });
+    const { switchNetwork } = useSwitchNetwork();
     const { chooseNetwork, chainData } = useAppChain();
-    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
     useEffect(() => {
-        if (chainParam && chainParam !== chainData.chainId) {
-            console.log(chainParam, chainData.chainId);
-            switchNetwork
-                ? switchNetwork(parseInt(chainParam))
-                : chooseNetwork(supportedNetworks[chainParam]);
+        if (chainParam) {
+            if (chainParam !== chainData.chainId) {
+                switchNetwork
+                    ? switchNetwork(parseInt(chainParam))
+                    : chooseNetwork(supportedNetworks[chainParam]);
+                // setSearchParams('');
+            }
         }
     }, [switchNetwork]);
     if (showMobileVersion) return <MobileLandingSections />;
