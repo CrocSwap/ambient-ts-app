@@ -43,7 +43,6 @@ interface DrawCanvasProps {
 function DrawCanvas(props: DrawCanvasProps) {
     const d3DrawCanvas = useRef<HTMLDivElement | null>(null);
     const [lineData, setLineData] = useState<lineData[]>([]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     const {
         scaleData,
@@ -89,11 +88,21 @@ function DrawCanvas(props: DrawCanvasProps) {
         const canvasRect = canvas.getBoundingClientRect();
 
         const threshold = 15;
-        // let clickCount = 0;
+        let cancelDraw = false;
         let isDrawing = false;
         const tempLineData: lineData[] = [];
 
         let touchTimeout: NodeJS.Timeout | null = null; // Declare touchTimeout
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cancelDrawEvent = (event: any) => {
+            if (event.key === 'Escape') {
+                cancelDraw = true;
+                event.preventDefault();
+                event.stopPropagation();
+                document.removeEventListener('keydown', cancelDrawEvent);
+            }
+        };
 
         d3.select(d3DrawCanvas.current).on(
             'touchstart',
@@ -119,16 +128,6 @@ function DrawCanvas(props: DrawCanvasProps) {
         });
 
         d3.select(d3DrawCanvas.current).on(
-            'mousedown',
-            (event: PointerEvent) => {
-                startDrawing(event.clientX, event.clientY);
-            },
-        );
-        d3.select(d3DrawCanvas.current).on('mouseup', (event: PointerEvent) => {
-            endDrawing(event.clientX, event.clientY);
-        });
-
-        d3.select(d3DrawCanvas.current).on(
             'mousemove',
             (event: PointerEvent) => {
                 draw(event.clientX, event.clientY);
@@ -138,6 +137,8 @@ function DrawCanvas(props: DrawCanvasProps) {
         d3.select(d3DrawCanvas.current).on(
             'mousedown',
             (event: PointerEvent) => {
+                document.addEventListener('keydown', cancelDrawEvent);
+
                 startDrawing(event.clientX, event.clientY);
             },
         );
@@ -172,66 +173,91 @@ function DrawCanvas(props: DrawCanvasProps) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function endDrawing(mouseX: number, mouseY: number) {
-            const offsetY = mouseY - canvasRect?.top;
-            const offsetX = mouseX - canvasRect?.left;
+            if (!cancelDraw) {
+                const offsetY = mouseY - canvasRect?.top;
+                const offsetX = mouseX - canvasRect?.left;
 
-            const valueX = scaleData?.xScale.invert(offsetX);
-            const valueY = scaleData?.yScale.invert(offsetY);
+                const valueX = scaleData?.xScale.invert(offsetX);
+                const valueY = scaleData?.yScale.invert(offsetY);
 
-            const firstValueX = scaleData?.xScale(tempLineData[0].x);
-            const firstValueY = scaleData?.yScale(tempLineData[0].y);
+                const firstValueX = scaleData?.xScale(tempLineData[0].x);
+                const firstValueY = scaleData?.yScale(tempLineData[0].y);
 
-            const checkThreshold = Math.hypot(
-                offsetX - firstValueX,
-                offsetY - firstValueY,
-            );
-
-            if (checkThreshold > threshold) {
-                const newBandScale = createScaleForBandArea(
-                    tempLineData[0].x,
-                    valueX,
+                const checkThreshold = Math.hypot(
+                    offsetX - firstValueX,
+                    offsetY - firstValueY,
                 );
 
-                const bandArea = createBandArea(
-                    newBandScale,
-                    scaleData?.yScale,
-                    denomInBase,
-                );
+                if (checkThreshold > threshold) {
+                    const newBandScale = createScaleForBandArea(
+                        tempLineData[0].x,
+                        valueX,
+                    );
 
-                bandArea
-                    .xScale()
-                    .range([firstValueX, scaleData?.xScale(valueX)]);
+                    const bandArea = createBandArea(
+                        newBandScale,
+                        scaleData?.yScale,
+                        denomInBase,
+                    );
 
-                tempLineData[1] = {
-                    x: valueX,
-                    y: valueY,
-                    ctx: bandArea,
-                    denomInBase: denomInBase,
-                };
+                    bandArea
+                        .xScale()
+                        .range([firstValueX, scaleData?.xScale(valueX)]);
 
-                isDrawing = false;
-                setActiveDrawingType('Cross');
+                    tempLineData[1] = {
+                        x: valueX,
+                        y: valueY,
+                        ctx: bandArea,
+                        denomInBase: denomInBase,
+                    };
 
-                setDrawnShapeHistory((prevData: drawDataHistory[]) => {
-                    if (tempLineData.length > 0) {
-                        const endPoint = {
-                            data: tempLineData,
-                            type: activeDrawingType,
-                            time: Date.now(),
-                            pool: currentPool,
-                            color: 'rgba(115, 113, 252, 1)',
-                            lineWidth: 1.5,
-                            style: [0, 0],
-                        };
+                    isDrawing = false;
+                    setActiveDrawingType('Cross');
 
-                        setSelectedDrawnShape({
-                            data: endPoint,
-                            selectedCircle: undefined,
-                        });
+                    setDrawnShapeHistory((prevData: drawDataHistory[]) => {
+                        if (tempLineData.length > 0) {
+                            const endPoint = {
+                                data: tempLineData,
+                                type: activeDrawingType,
+                                time: Date.now(),
+                                pool: currentPool,
+                                color: 'rgba(115, 113, 252, 1)',
+                                lineWidth: 1.5,
+                                style: [0, 0],
+                            };
 
-                        if (!drawActionStack.has(actionKey)) {
-                            drawActionStack.set(actionKey, [
-                                {
+                            setSelectedDrawnShape({
+                                data: endPoint,
+                                selectedCircle: undefined,
+                            });
+
+                            if (!drawActionStack.has(actionKey)) {
+                                drawActionStack.set(actionKey, [
+                                    {
+                                        data: [
+                                            {
+                                                x: tempLineData[0].x,
+                                                y: tempLineData[0].y,
+                                                ctx: tempLineData[0].ctx,
+                                                denomInBase: denomInBase,
+                                            },
+                                            {
+                                                x: tempLineData[1].x,
+                                                y: tempLineData[1].y,
+                                                ctx: tempLineData[1].ctx,
+                                                denomInBase: denomInBase,
+                                            },
+                                        ],
+                                        type: activeDrawingType,
+                                        time: endPoint.time,
+                                        pool: endPoint.pool,
+                                        color: 'rgba(115, 113, 252, 1)',
+                                        lineWidth: 1.5,
+                                        style: [0, 0],
+                                    },
+                                ]);
+                            } else {
+                                drawActionStack.get(actionKey)?.push({
                                     data: [
                                         {
                                             x: tempLineData[0].x,
@@ -252,90 +278,70 @@ function DrawCanvas(props: DrawCanvasProps) {
                                     color: 'rgba(115, 113, 252, 1)',
                                     lineWidth: 1.5,
                                     style: [0, 0],
-                                },
-                            ]);
-                        } else {
-                            drawActionStack.get(actionKey)?.push({
-                                data: [
-                                    {
-                                        x: tempLineData[0].x,
-                                        y: tempLineData[0].y,
-                                        ctx: tempLineData[0].ctx,
-                                        denomInBase: denomInBase,
-                                    },
-                                    {
-                                        x: tempLineData[1].x,
-                                        y: tempLineData[1].y,
-                                        ctx: tempLineData[1].ctx,
-                                        denomInBase: denomInBase,
-                                    },
-                                ],
-                                type: activeDrawingType,
-                                time: endPoint.time,
-                                pool: endPoint.pool,
-                                color: 'rgba(115, 113, 252, 1)',
-                                lineWidth: 1.5,
-                                style: [0, 0],
-                            });
+                                });
+                            }
+                            return [...prevData, endPoint];
                         }
-                        return [...prevData, endPoint];
-                    }
-                    return prevData;
-                });
-
-                setActiveDrawingType('Cross');
+                        return prevData;
+                    });
+                }
             }
+            setActiveDrawingType('Cross');
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function draw(mouseX: number, mouseY: number) {
-            const offsetY = mouseY - canvasRect?.top;
-            const offsetX = mouseX - canvasRect?.left;
+            if (!cancelDraw) {
+                const offsetY = mouseY - canvasRect?.top;
+                const offsetX = mouseX - canvasRect?.left;
 
-            setCrossHairDataFunc(offsetX, offsetY);
+                setCrossHairDataFunc(offsetX, offsetY);
 
-            if (!isDrawing) return;
+                if (!isDrawing) return;
 
-            const newBandScale = createScaleForBandArea(
-                tempLineData[0].x,
-                scaleData.xScale.invert(offsetX),
-            );
+                const newBandScale = createScaleForBandArea(
+                    tempLineData[0].x,
+                    scaleData.xScale.invert(offsetX),
+                );
 
-            const bandArea = createBandArea(
-                newBandScale,
-                scaleData?.yScale,
-                denomInBase,
-            );
+                const bandArea = createBandArea(
+                    newBandScale,
+                    scaleData?.yScale,
+                    denomInBase,
+                );
 
-            const valueX = scaleData?.xScale.invert(offsetX);
-            const valueY = scaleData?.yScale.invert(offsetY);
-            if (tempLineData.length === 1) {
-                tempLineData.push({
-                    x: valueX,
-                    y: valueY,
-                    ctx: bandArea,
-                    denomInBase: denomInBase,
+                const valueX = scaleData?.xScale.invert(offsetX);
+                const valueY = scaleData?.yScale.invert(offsetY);
+                if (tempLineData.length === 1) {
+                    tempLineData.push({
+                        x: valueX,
+                        y: valueY,
+                        ctx: bandArea,
+                        denomInBase: denomInBase,
+                    });
+                } else {
+                    tempLineData[1] = {
+                        x: valueX,
+                        y: valueY,
+                        ctx: bandArea,
+                        denomInBase: denomInBase,
+                    };
+                }
+                setSelectedDrawnShape({
+                    data: {
+                        data: tempLineData,
+                        type: activeDrawingType,
+                        time: Date.now(),
+                        pool: currentPool,
+                        color: 'rgba(115, 113, 252, 1)',
+                        lineWidth: 1.5,
+                        style: [0, 0],
+                    },
+                    selectedCircle: undefined,
                 });
             } else {
-                tempLineData[1] = {
-                    x: valueX,
-                    y: valueY,
-                    ctx: bandArea,
-                    denomInBase: denomInBase,
-                };
+                setSelectedDrawnShape(undefined);
+                setLineData([]);
             }
-
-            setSelectedDrawnShape({
-                data: {
-                    data: tempLineData,
-                    type: activeDrawingType,
-                    time: Date.now(),
-                    pool: currentPool,
-                    color: 'rgba(115, 113, 252, 1)',
-                    lineWidth: 1.5,
-                    style: [0, 0],
-                },
-                selectedCircle: undefined,
-            });
 
             renderCanvasArray([d3DrawCanvas]);
         }
