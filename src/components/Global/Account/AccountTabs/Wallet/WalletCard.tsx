@@ -100,12 +100,10 @@ export default function WalletCard(props: propsIF) {
                 <TokenIcon
                     token={token}
                     src={uriToHttp(token.logoURI)}
-                    alt={token.symbol ?? 'unknown token'}
+                    alt={token.symbol ?? '?'}
                     size='2xl'
                 />
-                <p className={styles.token_key}>
-                    {token.symbol ?? 'unknown token'}
-                </p>
+                <p className={styles.token_key}>{token.symbol ?? '?'}</p>
             </div>
         </DefaultTooltip>
     );

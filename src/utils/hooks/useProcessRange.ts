@@ -87,21 +87,14 @@ export const useProcessRange = (
             position.poolIdx,
         );
     } else {
-        posHash =
-            position.user &&
-            position.base &&
-            position.quote &&
-            position.bidTick &&
-            position.askTick
-                ? concPosSlot(
-                      position.user,
-                      position.base,
-                      position.quote,
-                      position.bidTick,
-                      position.askTick,
-                      position.poolIdx,
-                  ).toString()
-                : '…';
+        posHash = concPosSlot(
+            position.user ?? '',
+            position.base ?? '',
+            position.quote ?? '',
+            position.bidTick ?? 0,
+            position.askTick ?? 0,
+            position.poolIdx ?? 0,
+        ).toString();
     }
 
     // -----------------------------POSITIONS RANGE--------------------
@@ -202,7 +195,7 @@ export const useProcessRange = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 4, '…');
+        : trimString(ownerId, 6, 4, '…');
 
     const posHashTruncated = trimString(posHash.toString(), 9, 0, '…');
 
