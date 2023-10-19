@@ -4,6 +4,7 @@ import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './RangeActionTokenHeader.module.css';
 import { TokenContext } from '../../../contexts/TokenContext';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     isPositionInRange: boolean;
@@ -30,6 +31,7 @@ export default function RangeActionTokenHeader(props: propsIF) {
         isAmbient,
     } = props;
     const { showSettings, setShowSettings } = props;
+    // TODO: use the settingsSVG from the library
     const settingsSvg = (
         <svg
             width='16'
@@ -70,13 +72,13 @@ export default function RangeActionTokenHeader(props: propsIF) {
             <div className={styles.token_info}>
                 <TokenIcon
                     token={baseToken}
-                    src={baseTokenLogoURI}
+                    src={uriToHttp(baseTokenLogoURI)}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
                 <TokenIcon
                     token={quoteToken}
-                    src={quoteTokenLogoURI}
+                    src={uriToHttp(quoteTokenLogoURI)}
                     alt={quoteTokenSymbol}
                     size='2xl'
                 />

@@ -1,8 +1,14 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { useAccount } from 'wagmi';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
-import { IS_LOCAL_ENV } from '../constants';
+import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -34,6 +40,12 @@ interface TradeTokenContextIF {
         setDexBalance: (val: string) => void;
         decimals: number;
     };
+    tokenABalance: string;
+    tokenBBalance: string;
+    tokenADexBalance: string;
+    tokenBDexBalance: string;
+    isTokenAEth: boolean;
+    isTokenBEth: boolean;
     tokenAAllowance: string;
     tokenBAllowance: string;
     setRecheckTokenAApproval: (val: boolean) => void;
@@ -108,6 +120,44 @@ export const TradeTokenContextProvider = (props: {
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] =
         useState<string>('');
+    const {
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenAEth,
+        isTokenBEth,
+    } = useMemo(() => {
+        const tokenABalance = isTokenABase
+            ? baseTokenBalance
+            : quoteTokenBalance;
+        const tokenBBalance = isTokenABase
+            ? quoteTokenBalance
+            : baseTokenBalance;
+        const tokenADexBalance = isTokenABase
+            ? baseTokenDexBalance
+            : quoteTokenDexBalance;
+        const tokenBDexBalance = isTokenABase
+            ? quoteTokenDexBalance
+            : baseTokenDexBalance;
+
+        const isTokenAEth = tradeData.tokenA.address === ZERO_ADDRESS;
+        const isTokenBEth = tradeData.tokenB.address === ZERO_ADDRESS;
+        return {
+            tokenABalance,
+            tokenBBalance,
+            tokenADexBalance,
+            tokenBDexBalance,
+            isTokenAEth,
+            isTokenBEth,
+        };
+    }, [
+        isTokenABase,
+        baseTokenBalance,
+        quoteTokenBalance,
+        tradeData.tokenA,
+        tradeData.tokenB,
+    ]);
 
     const tradeTokenContext = {
         baseToken: {
@@ -128,6 +178,12 @@ export const TradeTokenContextProvider = (props: {
             setDexBalance: setQuoteTokenDexBalance,
             decimals: quoteTokenDecimals,
         },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenAEth,
+        isTokenBEth,
         tokenAAllowance,
         tokenBAllowance,
         setRecheckTokenAApproval,

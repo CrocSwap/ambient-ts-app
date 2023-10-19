@@ -34,6 +34,8 @@ interface propsIF {
     tokenAorB: 'A' | 'B' | null;
     reverseTokens?: () => void;
     onClose: () => void;
+
+    noModal?: boolean;
 }
 
 export const SoloTokenSelectModal = (props: propsIF) => {
@@ -248,6 +250,8 @@ export const SoloTokenSelectModal = (props: propsIF) => {
 
     // arbitrary limit on number of tokens to display in DOM for performance
     const MAX_TOKEN_COUNT = 300;
+
+    // We can fix this later to use a prop but right now, I am getting weird bugs with that approach -JR
 
     return (
         <Modal title='Select Token' onClose={clearInputFieldAndCloseModal}>

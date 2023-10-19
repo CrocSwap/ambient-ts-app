@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { memo } from 'react';
+import { memo, useState } from 'react';
 
 // START: Import JSX Functional Components
 import RangeStatus from '../../../Global/RangeStatus/RangeStatus';
@@ -56,7 +56,12 @@ function ConfirmRangeModal(props: propsIF) {
         onClose = () => null,
     } = props;
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB, isDenomBase } = useAppSelector(
+        (state) => state.tradeData,
+    );
+
+    const [isDenomBaseLocalToRangeConfirm, setIsDenomBaseocalToRangeConfirm] =
+        useState(isDenomBase);
 
     const tokenACharacter: string = getUnicodeCharacter(tokenA.symbol);
     const tokenBCharacter: string = getUnicodeCharacter(tokenB.symbol);
@@ -129,6 +134,8 @@ function ConfirmRangeModal(props: propsIF) {
             </FeeTierDisplay>
             {isAmbient || (
                 <SelectedRange
+                    isDenomBase={isDenomBaseLocalToRangeConfirm}
+                    setIsDenomBase={setIsDenomBaseocalToRangeConfirm}
                     isTokenABase={isTokenABase}
                     isAmbient={isAmbient}
                     pinnedMinPriceDisplayTruncatedInBase={

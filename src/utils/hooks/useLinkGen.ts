@@ -23,6 +23,8 @@ export interface poolParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
+    lowTick?: string;
+    highTick?: string;
 }
 
 export interface initParamsIF {
@@ -35,8 +37,6 @@ export interface repoParamsIF {
     chain: string;
     tokenA: string;
     tokenB: string;
-    highTick: string;
-    lowTick: string;
 }
 
 // type containing all the URL parameter interfaces
@@ -74,8 +74,8 @@ export interface linkGenMethodsIF {
     currentPage: pageNames;
     baseURL: baseURLs;
     getFullURL: (paramsObj?: anyParamsIF | string) => string;
-    navigate: (paramsObj?: anyParamsIF) => void;
-    redirect: (paramsObj?: anyParamsIF) => void;
+    navigate: (paramsObj?: anyParamsIF | string) => void;
+    redirect: (paramsObj?: anyParamsIF | string) => void;
 }
 
 // TODO:    @Emily: it probably makes sense to expand this hook to

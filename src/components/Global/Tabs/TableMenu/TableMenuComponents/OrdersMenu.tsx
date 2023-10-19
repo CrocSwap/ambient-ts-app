@@ -230,6 +230,7 @@ export default function OrdersMenu(props: propsIF) {
                     type={limitModalAction}
                     isOpen={isActionModalOpen}
                     onClose={closeActionModal}
+                    isAccountView={isAccountView}
                 />
             )}
         </FlexContainer>
