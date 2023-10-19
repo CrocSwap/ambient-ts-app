@@ -16,12 +16,12 @@ export function useRangeInputDisable(
     useEffect(() => {
         if (!isAmbient) {
             if (isTokenABase) {
-                if (defaultHighTick < currentPoolPriceTick) {
+                if (defaultHighTick <= currentPoolPriceTick) {
                     setIsTokenBInputDisabled(true);
                     if (defaultHighTick > defaultLowTick) {
                         setIsTokenAInputDisabled(false);
                     } else setIsTokenAInputDisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
+                } else if (defaultLowTick >= currentPoolPriceTick) {
                     setIsTokenAInputDisabled(true);
                     if (defaultLowTick < defaultHighTick) {
                         setIsTokenBInputDisabled(false);
@@ -31,12 +31,12 @@ export function useRangeInputDisable(
                     setIsTokenBInputDisabled(false);
                 }
             } else {
-                if (defaultHighTick < currentPoolPriceTick) {
+                if (defaultHighTick <= currentPoolPriceTick) {
                     setIsTokenAInputDisabled(true);
                     if (defaultHighTick > defaultLowTick) {
                         setIsTokenBInputDisabled(false);
                     } else setIsTokenBInputDisabled(true);
-                } else if (defaultLowTick > currentPoolPriceTick) {
+                } else if (defaultLowTick >= currentPoolPriceTick) {
                     setIsTokenBInputDisabled(true);
                     if (defaultLowTick < defaultHighTick) {
                         setIsTokenAInputDisabled(false);
