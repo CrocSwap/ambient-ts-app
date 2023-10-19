@@ -7,12 +7,13 @@ import { GrClose } from 'react-icons/gr';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 interface propsIF {
     message: string | undefined;
-    ensName: string;
+    ensName: string | undefined;
     setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
     isReplyButtonPressed: boolean;
     time?: any;
     myJazzicon?: JSX.Element;
-    walletID?: string;
+    walletID?: string | undefined;
+    repliedMessageEnsName?: string;
 }
 
 export default function ReplyMessage(props: propsIF) {

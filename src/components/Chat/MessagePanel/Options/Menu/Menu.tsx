@@ -3,6 +3,7 @@ import styles from './Menu.module.css';
 import { FiArrowLeft, FiDelete, FiInfo, FiRotateCw } from 'react-icons/fi';
 import { BsFillReplyFill, BsEmojiSmileUpsideDown } from 'react-icons/bs';
 import useChatApi from '../../../Service/ChatApi';
+import { Message } from '../../../Model/MessageModel';
 interface propsIF {
     isMessageDeleted: boolean;
     setIsMessageDeleted: Dispatch<SetStateAction<boolean>>;
@@ -12,6 +13,12 @@ interface propsIF {
     id: string;
     isModerator: boolean;
     isUsersMessage: boolean;
+    setIsReplyButtonPressed: Dispatch<SetStateAction<boolean>>;
+    isReplyButtonPressed: boolean;
+    replyMessageContent: Message | undefined;
+    setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
+    message: Message | undefined;
+    addReactionListener: (message?: Message) => void;
 }
 export default function Menu(props: propsIF) {
     const { deleteMessage } = useChatApi();
@@ -27,16 +34,26 @@ export default function Menu(props: propsIF) {
         });
     };
 
+    const setReplyMessage = () => {
+        console.log(props.message);
+        props.setIsReplyButtonPressed(!props.isReplyButtonPressed);
+        props.setReplyMessageContent(props.message);
+    };
+
+    const addReaction = () => {
+        props.addReactionListener(props.message);
+    };
+
     const options = [
         {
             label: 'Reply',
             icon: <BsFillReplyFill size={10} />,
-            listener: undefined,
+            listener: setReplyMessage,
         },
         {
             label: 'Add Reaction',
             icon: <BsEmojiSmileUpsideDown size={10} />,
-            listener: undefined,
+            listener: addReaction,
         },
         { label: 'Delete', icon: <FiDelete size={10} />, listener: closePanel },
         {
