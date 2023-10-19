@@ -14,15 +14,22 @@ export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
     const { switchNetwork } = useSwitchNetwork();
     const { chooseNetwork, chainData } = useAppChain();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
+    // const [searchParams, setSearchParams] = useSearchParams();
     const chainParam = searchParams.get('chain');
+    const networkParam = searchParams.get('network');
     useEffect(() => {
         if (chainParam && supportedNetworks[chainParam]) {
             if (chainParam !== chainData.chainId) {
                 switchNetwork
                     ? switchNetwork(parseInt(chainParam))
                     : chooseNetwork(supportedNetworks[chainParam]);
-                // setSearchParams('');
+            }
+        } else if (networkParam && supportedNetworks[networkParam]) {
+            if (networkParam !== chainData.chainId) {
+                switchNetwork
+                    ? switchNetwork(parseInt(networkParam))
+                    : chooseNetwork(supportedNetworks[networkParam]);
             }
         }
     }, [switchNetwork]);
