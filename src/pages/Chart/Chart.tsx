@@ -2754,11 +2754,13 @@ export default function Chart(props: propsIF) {
                                     );
                                     item.data[1].ctx([bandData]);
 
+                                    lineSeries(item.data);
+
                                     const lineOfBand = createPointsOfBandLine(
                                         item.data,
                                     );
 
-                                    lineOfBand?.forEach((line, index) => {
+                                    lineOfBand?.forEach((line) => {
                                         if (ctx) ctx.setLineDash(item.style);
                                         lineSeries.decorate(
                                             (
@@ -2783,7 +2785,9 @@ export default function Chart(props: propsIF) {
                                                     hoveredDrawnShape
                                                         .selectedCircle.x ===
                                                         element.x &&
-                                                    element.y ===
+                                                    Number(
+                                                        element.y.toFixed(12),
+                                                    ) ===
                                                         (element.denomInBase ===
                                                         denomInBase
                                                             ? hoveredDrawnShape
@@ -2795,14 +2799,7 @@ export default function Chart(props: propsIF) {
                                                                       hoveredDrawnShape
                                                                           ?.selectedCircle
                                                                           .y
-                                                                  ).toFixed(
-                                                                      element.y
-                                                                          .toString()
-                                                                          .split(
-                                                                              '.',
-                                                                          )[1]
-                                                                          .length,
-                                                                  ),
+                                                                  ).toFixed(12),
                                                               ));
 
                                                 if (selectedCircleIsActive) {
