@@ -24,6 +24,7 @@ import {
 } from 'react-icons/ai';
 import { TbBrush } from 'react-icons/tb';
 import { SketchPicker } from 'react-color';
+import { IoCloseOutline } from 'react-icons/io5';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -146,6 +147,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 setIsColorPickerTabActive((prev) => !prev);
             },
             icon: <TbBrush />,
+            hover: '#434c58',
         },
         {
             name: 'Size',
@@ -156,6 +158,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 setIsSizeOptionTabActive((prev) => !prev);
             },
             icon: <AiOutlineMinus color='white' />,
+            hover: '#434c58',
         },
         {
             name: 'Style',
@@ -166,12 +169,21 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 setIsStyleOptionTabActive((prev) => !prev);
             },
             icon: <AiOutlineDash color='white' />,
+            hover: '#434c58',
         },
         {
             name: 'Delete',
             type: 'delete',
             operation: deleteDrawnShape,
             icon: <AiOutlineDelete />,
+            hover: '#434c58',
+        },
+        {
+            name: 'Close',
+            type: 'close',
+            operation: () => setSelectedDrawnShape(undefined),
+            icon: <IoCloseOutline />,
+            hover: '#c21937',
         },
     ];
 
@@ -291,7 +303,11 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 </FloatingButtonDiv>
 
                 {editShapeOptions.map((item, index) => (
-                    <FloatingOptions key={index} onClick={item.operation}>
+                    <FloatingOptions
+                        key={index}
+                        onClick={item.operation}
+                        hoverColor={item.hover}
+                    >
                         {item.icon}
                     </FloatingOptions>
                 ))}
@@ -301,7 +317,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 <OptionsTab>
                     <SketchPicker
                         color={backgroundColorPicker}
-                        width={'140px'}
+                        width={'170px'}
                         onChange={(item) => handleEditColor(item)}
                     />
                 </OptionsTab>

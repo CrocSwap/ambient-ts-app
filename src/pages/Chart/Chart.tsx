@@ -3132,6 +3132,23 @@ export default function Chart(props: propsIF) {
         currentPool,
     ]);
 
+    useEffect(() => {
+        const handleDocumentClick = (event: any) => {
+            if (
+                d3Container.current &&
+                !d3Container.current.contains(event.target)
+            ) {
+                setSelectedDrawnShape(undefined);
+            }
+        };
+
+        document.addEventListener('click', handleDocumentClick);
+
+        return () => {
+            document.removeEventListener('click', handleDocumentClick);
+        };
+    }, []);
+
     // mouseleave
     useEffect(() => {
         d3.select(d3CanvasMain.current).on(
