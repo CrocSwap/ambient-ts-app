@@ -12,6 +12,11 @@ import {
 } from '../../../../styled/Components/Header';
 import { supportedNetworks } from '../../../../utils/networks';
 import { ChainSpec } from '@crocswap-libs/sdk';
+import { useSearchParams } from 'react-router-dom';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
@@ -23,6 +28,11 @@ export default function NetworkSelector(props: propsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
+    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
+    const [searchParams] = useSearchParams();
+    const chainParam = searchParams.get('chain');
+    const networkParam = searchParams.get('network');
+
     const chains = getSupportedChainIds().map((chain: string) =>
         lookupChain(chain),
     );
@@ -30,7 +40,15 @@ export default function NetworkSelector(props: propsIF) {
     const handleClick = (chn: ChainSpec): void => {
         if (switchNetwork) {
             switchNetwork(parseInt(chn.chainId));
+            if (chainParam || networkParam) {
+                // navigate to index page only if chain/network search param present
+                linkGenIndex.navigate();
+            }
         } else {
+            if (chainParam || networkParam) {
+                // navigate to index page only if chain/network search param present
+                linkGenIndex.navigate();
+            }
             chooseNetwork(supportedNetworks[chn.chainId]);
         }
     };
