@@ -28,18 +28,34 @@ export default function Home() {
             searchParams.get('chain') ?? searchParams.get('network');
         // logic to execute if a param is found (if not, do nothing)
         if (chainParam) {
+            // map various chain identifiers to a canonical ID
+            let targetChain: string;
+            switch (chainParam) {
+                case 'ethereum':
+                case 'mainnet':
+                case '1':
+                    targetChain = '0x1';
+                    break;
+                case 'goerli':
+                case '5':
+                    targetChain = '0x5';
+                    break;
+                default:
+                    targetChain = chainParam;
+                    break;
+            }
             // check if chain is supported and not the current chain in the app
             // yes → trigger machinery to switch the current network
             // no → no action except to clear the param from the URL
             if (
-                supportedNetworks[chainParam] &&
-                chainParam !== chainData.chainId
+                supportedNetworks[targetChain] &&
+                targetChain !== chainData.chainId
             ) {
                 // use wagmi if wallet is connected, otherwise use in-app toggle
                 if (switchNetwork) {
-                    switchNetwork(parseInt(chainParam));
+                    switchNetwork(parseInt(targetChain));
                 } else if (!isConnected) {
-                    chooseNetwork(supportedNetworks[chainParam]);
+                    chooseNetwork(supportedNetworks[targetChain]);
                 }
             } else {
                 setSearchParams('');
