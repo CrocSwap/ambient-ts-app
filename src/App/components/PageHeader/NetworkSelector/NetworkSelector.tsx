@@ -53,8 +53,6 @@ export default function NetworkSelector(props: propsIF) {
         }
     };
 
-    console.log({ networkParam });
-
     const dropdownAriaDescription = 'Dropdown menu for networks.';
     const networkMenuContent = (
         <MenuContent tabIndex={0} aria-label={dropdownAriaDescription}>
