@@ -34,6 +34,7 @@ export function lookupChainId(
             chainIdHex = '0x1';
             break;
         case 'goerli':
+        case 'görli':
         case '5':
         case '0x5':
             chainIdHex = '0x5';
