@@ -30,11 +30,15 @@ export default function Home() {
         if (chainParam) {
             // map various chain identifiers to a canonical ID
             let targetChain: string;
-            switch (chainParam) {
+            switch (chainParam.toLowerCase()) {
                 case 'ethereum':
                 case 'mainnet':
                 case '1':
                     targetChain = '0x1';
+                    break;
+                case 'scroll':
+                case '534352':
+                    targetChain = '0x82750';
                     break;
                 case 'goerli':
                 case '5':
