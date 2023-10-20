@@ -17,8 +17,7 @@ export default function Home() {
 
     const { chooseNetwork, chainData } = useAppChain();
     const [searchParams] = useSearchParams();
-    const chainParam = searchParams.get('chain');
-    const networkParam = searchParams.get('network');
+    const chainParam = searchParams.get('chain') ?? searchParams.get('network');
 
     useEffect(() => {
         if (chainParam && supportedNetworks[chainParam]) {
@@ -27,14 +26,6 @@ export default function Home() {
                     switchNetwork(parseInt(chainParam));
                 } else if (!isConnected) {
                     chooseNetwork(supportedNetworks[chainParam]);
-                }
-            }
-        } else if (networkParam && supportedNetworks[networkParam]) {
-            if (networkParam !== chainData.chainId) {
-                if (switchNetwork) {
-                    switchNetwork(parseInt(networkParam));
-                } else if (!isConnected) {
-                    chooseNetwork(supportedNetworks[networkParam]);
                 }
             }
         }
