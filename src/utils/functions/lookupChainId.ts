@@ -1,13 +1,19 @@
 // fn to translate all possible chain identifiers to a canonical ID
 // overload is necessary so compiler will know what return type to expect
+
+// fn signature to return type 'string'
 export function lookupChainId(
     rawInput: string | number,
     returnAs: 'string',
 ): string | undefined;
+
+// fn signature to return type 'number'
 export function lookupChainId(
     rawInput: string | number,
     returnAs: 'number',
 ): number | undefined;
+
+// fn definition
 export function lookupChainId(
     rawInput: string | number,
     returnAs: 'string' | 'number',
