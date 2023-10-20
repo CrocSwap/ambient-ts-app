@@ -2606,25 +2606,6 @@ export default function Chart(props: propsIF) {
                                     }
 
                                     if (item.type === 'Angle') {
-                                        const angleLineData = [
-                                            {
-                                                x: item?.data[0].x,
-                                                y: item?.data[0].y,
-                                                ctx: item?.data[0].ctx,
-                                                denomInBase:
-                                                    item?.data[0].denomInBase,
-                                            },
-                                            {
-                                                x:
-                                                    item?.data[0].x +
-                                                    period * 6 * 1000,
-                                                y: item?.data[0].y,
-                                                ctx: item?.data[0].ctx,
-                                                denomInBase:
-                                                    item?.data[0].denomInBase,
-                                            },
-                                        ];
-
                                         const opposite = Math.abs(
                                             scaleData.yScale(item?.data[0].y) -
                                                 scaleData.yScale(
@@ -2639,6 +2620,47 @@ export default function Chart(props: propsIF) {
                                         );
 
                                         const distance = opposite / side;
+
+                                        const minAngleLineLength =
+                                            side / 4 > 80
+                                                ? Math.abs(
+                                                      item?.data[0].x -
+                                                          item?.data[1].x,
+                                                  ) / 4
+                                                : scaleData.xScale.invert(
+                                                      scaleData.xScale(
+                                                          item?.data[0].x,
+                                                      ) + 80,
+                                                  ) - item?.data[0].x;
+
+                                        const minAngleTextLength =
+                                            item?.data[0].x +
+                                            minAngleLineLength +
+                                            scaleData.xScale.invert(
+                                                scaleData.xScale(
+                                                    item?.data[0].x,
+                                                ) + 20,
+                                            ) -
+                                            item?.data[0].x;
+
+                                        const angleLineData = [
+                                            {
+                                                x: item?.data[0].x,
+                                                y: item?.data[0].y,
+                                                ctx: item?.data[0].ctx,
+                                                denomInBase:
+                                                    item?.data[0].denomInBase,
+                                            },
+                                            {
+                                                x:
+                                                    item?.data[0].x +
+                                                    minAngleLineLength,
+                                                y: item?.data[0].y,
+                                                ctx: item?.data[0].ctx,
+                                                denomInBase:
+                                                    item?.data[0].denomInBase,
+                                            },
+                                        ];
 
                                         const angle =
                                             Math.atan(distance) *
@@ -2661,7 +2683,7 @@ export default function Chart(props: propsIF) {
                                         const radius =
                                             scaleData.xScale(
                                                 item?.data[0].x +
-                                                    period * 6 * 1000,
+                                                    minAngleLineLength,
                                             ) -
                                             scaleData.xScale(item?.data[0].x);
 
@@ -2710,10 +2732,10 @@ export default function Chart(props: propsIF) {
                                                     : '-') +
                                                     angleDisplay
                                                         .toFixed(0)
-                                                        .toString(),
+                                                        .toString() +
+                                                    'º',
                                                 scaleData.xScale(
-                                                    item?.data[0].x +
-                                                        period * 8.5 * 1000,
+                                                    minAngleTextLength,
                                                 ),
                                                 scaleData.yScale(
                                                     item?.data[0].y,

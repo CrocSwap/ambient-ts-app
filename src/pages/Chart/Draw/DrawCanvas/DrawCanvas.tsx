@@ -368,21 +368,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                     circleSeries(lineData);
 
                     if (activeDrawingType === 'Angle' && lineData.length > 0) {
-                        const angleLineData = [
-                            {
-                                x: lineData[0].x,
-                                y: lineData[0].y,
-                                ctx: lineData[0].ctx,
-                                denomInBase: lineData[0].denomInBase,
-                            },
-                            {
-                                x: lineData[0].x + period * 6 * 1000,
-                                y: lineData[0].y,
-                                ctx: lineData[0].ctx,
-                                denomInBase: lineData[0].denomInBase,
-                            },
-                        ];
-
                         if (lineData.length > 1) {
                             const opposite = Math.abs(
                                 scaleData.yScale(lineData[0].y) -
@@ -394,6 +379,37 @@ function DrawCanvas(props: DrawCanvasProps) {
                             );
 
                             const distance = opposite / side;
+
+                            const minAngleLineLength =
+                                side / 4 > 80
+                                    ? Math.abs(lineData[0].x - lineData[1].x) /
+                                      4
+                                    : scaleData.xScale.invert(
+                                          scaleData.xScale(lineData[0].x) + 80,
+                                      ) - lineData[0].x;
+
+                            const minAngleTextLength =
+                                lineData[0].x +
+                                minAngleLineLength +
+                                scaleData.xScale.invert(
+                                    scaleData.xScale(lineData[0].x) + 20,
+                                ) -
+                                lineData[0].x;
+
+                            const angleLineData = [
+                                {
+                                    x: lineData[0].x,
+                                    y: lineData[0].y,
+                                    ctx: lineData[0].ctx,
+                                    denomInBase: lineData[0].denomInBase,
+                                },
+                                {
+                                    x: lineData[0].x + minAngleLineLength,
+                                    y: lineData[0].y,
+                                    ctx: lineData[0].ctx,
+                                    denomInBase: lineData[0].denomInBase,
+                                },
+                            ];
 
                             const angle = Math.atan(distance) * (180 / Math.PI);
 
@@ -409,7 +425,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                             const radius =
                                 scaleData.xScale(
-                                    lineData[0].x + period * 6 * 1000,
+                                    lineData[0].x + minAngleLineLength,
                                 ) - scaleData.xScale(lineData[0].x);
 
                             if (ctx) {
@@ -438,10 +454,9 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                                 ctx.fillText(
                                     (lineData[1].y > lineData[0].y ? '' : '-') +
-                                        angleDisplay.toFixed(0).toString(),
-                                    scaleData.xScale(
-                                        lineData[0].x + period * 8.5 * 1000,
-                                    ),
+                                        angleDisplay.toFixed(0).toString() +
+                                        'º',
+                                    scaleData.xScale(minAngleTextLength),
                                     scaleData.yScale(lineData[0].y),
                                 );
 
