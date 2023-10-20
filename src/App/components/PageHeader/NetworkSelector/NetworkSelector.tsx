@@ -17,6 +17,7 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import { Text } from '../../../../styled/Common';
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
@@ -64,7 +65,10 @@ export default function NetworkSelector(props: propsIF) {
                     variants={ItemEnterAnimation}
                     tabIndex={0}
                 >
-                    <ChainNameStatus tabIndex={0}>
+                    <ChainNameStatus
+                        tabIndex={0}
+                        active={chain.chainId === chainId}
+                    >
                         <img
                             src={chain.logoUrl}
                             alt={chain.displayName}
@@ -72,7 +76,14 @@ export default function NetworkSelector(props: propsIF) {
                             height='21px'
                             style={{ borderRadius: '50%' }}
                         />
-                        {chain.displayName}
+
+                        <Text
+                            color={
+                                chain.chainId === chainId ? 'accent1' : 'white'
+                            }
+                        >
+                            {chain.displayName}
+                        </Text>
                     </ChainNameStatus>
                 </NetworkItem>
             ))}
