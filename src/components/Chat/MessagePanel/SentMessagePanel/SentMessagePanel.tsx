@@ -769,14 +769,21 @@ function SentMessagePanel(props: SentMessageProps) {
                                 <div className={styles.replied_box}>
                                     <ReplyMessage
                                         message={repliedMessageText}
-                                        ensName={repliedMessageEnsName}
                                         time={repliedMessageDate}
                                         setIsReplyButtonPressed={
                                             props.setIsReplyButtonPressed
                                         }
                                         isReplyButtonPressed={false}
                                         myJazzicon={repliedJazzicon}
-                                        walletID={repliedMessageWalletID}
+                                        repliedMessageEnsName={
+                                            props.replyMessageContent?.ensName
+                                        }
+                                        ensName={
+                                            props.replyMessageContent?.ensName
+                                        }
+                                        walletID={
+                                            props.replyMessageContent?.walletID
+                                        }
                                     />
                                 </div>
                             ) : (
@@ -943,6 +950,20 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 isUsersMessage={
                                                     props.message.sender ===
                                                     props.currentUser
+                                                }
+                                                setIsReplyButtonPressed={
+                                                    props.setIsReplyButtonPressed
+                                                }
+                                                isReplyButtonPressed={false}
+                                                replyMessageContent={
+                                                    props.replyMessageContent
+                                                }
+                                                setReplyMessageContent={
+                                                    props.setReplyMessageContent
+                                                }
+                                                message={props.message}
+                                                addReactionListener={
+                                                    props.addReactionListener
                                                 }
                                             />
                                         </div>
