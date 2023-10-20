@@ -6,6 +6,7 @@ import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import TokenIcon from '../../Global/TokenIcon/TokenIcon';
 import styles from './LimitActionTokenHeader.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
+import uriToHttp from '../../../utils/functions/uriToHttp';
 
 interface propsIF {
     isOrderFilled: boolean;
@@ -27,7 +28,6 @@ export default function LimitActionTokenHeader(props: propsIF) {
         quoteTokenSymbol,
         baseTokenLogoURI,
         quoteTokenLogoURI,
-        isDenomBase,
         baseTokenAddress,
         quoteTokenAddress,
         isLimitOrderPartiallyFilled,
@@ -50,20 +50,19 @@ export default function LimitActionTokenHeader(props: propsIF) {
                 }}
             >
                 <TokenIcon
-                    token={isDenomBase ? baseToken : quoteToken}
-                    src={isDenomBase ? baseTokenLogoURI : quoteTokenLogoURI}
-                    alt={quoteTokenSymbol}
-                    size='2xl'
-                />
-                <TokenIcon
-                    token={isDenomBase ? quoteToken : baseToken}
-                    src={isDenomBase ? quoteTokenLogoURI : baseTokenLogoURI}
+                    token={baseToken}
+                    src={uriToHttp(baseTokenLogoURI)}
                     alt={baseTokenSymbol}
                     size='2xl'
                 />
+                <TokenIcon
+                    token={quoteToken}
+                    src={uriToHttp(quoteTokenLogoURI)}
+                    alt={quoteTokenSymbol}
+                    size='2xl'
+                />
                 <span>
-                    {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /
-                    {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+                    {baseTokenSymbol} /{quoteTokenSymbol}
                 </span>
             </div>
             <OpenOrderStatus

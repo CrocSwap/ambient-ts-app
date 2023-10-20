@@ -52,7 +52,7 @@ function Portfolio() {
 
     const dispatch = useAppDispatch();
 
-    const { provider } = useContext(CrocEnvContext);
+    const { mainnetProvider } = useContext(CrocEnvContext);
 
     const { address: addressFromParams } = useParams();
 
@@ -82,11 +82,10 @@ function Portfolio() {
 
     useEffect(() => {
         (async () => {
-            if (addressFromParams && isAddressEns && provider) {
+            if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
-                    const newResolvedAddress = await provider.resolveName(
-                        addressFromParams,
-                    );
+                    const newResolvedAddress =
+                        await mainnetProvider.resolveName(addressFromParams);
                     setResolvedAddress(newResolvedAddress ?? '');
                     dispatch(setResolvedAddressRedux(newResolvedAddress ?? ''));
                 } catch (error) {
@@ -100,7 +99,7 @@ function Portfolio() {
                 dispatch(setResolvedAddressRedux(''));
             }
         })();
-    }, [addressFromParams, isAddressHex, isAddressEns, provider]);
+    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes

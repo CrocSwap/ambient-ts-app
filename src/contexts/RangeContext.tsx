@@ -3,7 +3,6 @@ import React, {
     SetStateAction,
     Dispatch,
     useState,
-    useEffect,
 } from 'react';
 
 interface RangeContextIF {
@@ -31,11 +30,6 @@ export const RangeContextProvider = (props: { children: React.ReactNode }) => {
     const [minRangePrice, setMinRangePrice] = useState<number>(0);
 
     const [simpleRangeWidth, setSimpleRangeWidth] = useState<number>(10);
-
-    useEffect(() => {
-        console.log({ maxRangePrice });
-        console.log({ minRangePrice });
-    }, [minRangePrice, maxRangePrice]);
 
     const [currentRangeInReposition, setCurrentRangeInReposition] =
         useState<string>('');

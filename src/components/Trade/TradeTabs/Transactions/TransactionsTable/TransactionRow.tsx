@@ -17,9 +17,10 @@ interface propsIF {
     tx: TransactionIF;
     tableView: 'small' | 'medium' | 'large';
     isAccountView: boolean;
+    fetchedEnsAddress?: string;
 }
 function TransactionRow(props: propsIF) {
-    const { tableView, tx, isAccountView } = props;
+    const { tableView, tx, isAccountView, fetchedEnsAddress } = props;
 
     const { addressCurrent: userAddress } = useAppSelector(
         (state) => state.userData,
@@ -57,7 +58,12 @@ function TransactionRow(props: propsIF) {
         priceCharacter,
         isBuy,
         elapsedTimeString,
-    } = useProcessTransaction(tx, userAddress, isAccountView);
+    } = useProcessTransaction(
+        tx,
+        userAddress,
+        isAccountView,
+        fetchedEnsAddress,
+    );
 
     const {
         snackbar: { open: openSnackbar },

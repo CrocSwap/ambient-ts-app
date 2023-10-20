@@ -79,8 +79,8 @@ export const OrderRowPlaceholder = (props: PropsIF) => {
 
     const limitPrice =
         transaction.details &&
-        transaction.details.lowTick &&
-        transaction.details.highTick
+        transaction.details.lowTick !== undefined &&
+        transaction.details.highTick !== undefined
             ? transaction.details.isBid === true
                 ? tickToPrice(transaction.details.lowTick)
                 : tickToPrice(transaction.details.highTick)

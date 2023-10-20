@@ -261,29 +261,30 @@ export default function Chart(props: propsIF) {
                 isFakeData: false,
             }));
         if (poolPriceWithoutDenom && data && data.length > 0) {
-            const closePrice = denomInBase
-                ? data[0].invPriceCloseExclMEVDecimalCorrected
-                : data[0].priceCloseExclMEVDecimalCorrected;
+            const closePriceWithDenom =
+                data[0].invPriceCloseExclMEVDecimalCorrected;
+            const poolPriceWithDenom = 1 / poolPriceWithoutDenom;
 
-            const openPrice = denomInBase
-                ? data[0].invPriceOpenExclMEVDecimalCorrected
-                : data[0].priceOpenExclMEVDecimalCorrected;
+            const fakeDataOpenWithDenom = closePriceWithDenom;
 
-            const bearishCandleType =
-                closePrice < openPrice ? closePrice : openPrice;
-            const bullishCandleType =
-                closePrice > openPrice ? closePrice : openPrice;
+            const fakeDataCloseWithDenom = poolPriceWithDenom;
+
+            const closePrice = data[0].priceCloseExclMEVDecimalCorrected;
+
+            const fakeDataOpen = closePrice;
+
+            const fakeDataClose = poolPriceWithoutDenom;
 
             const fakeData = {
                 time: data[0].time + period,
-                invMinPriceExclMEVDecimalCorrected: bearishCandleType,
-                maxPriceExclMEVDecimalCorrected: bullishCandleType,
-                invMaxPriceExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                minPriceExclMEVDecimalCorrected: poolPriceWithoutDenom,
-                invPriceOpenExclMEVDecimalCorrected: bearishCandleType,
-                priceOpenExclMEVDecimalCorrected: bullishCandleType,
-                invPriceCloseExclMEVDecimalCorrected: 1 / poolPriceWithoutDenom,
-                priceCloseExclMEVDecimalCorrected: poolPriceWithoutDenom,
+                invMinPriceExclMEVDecimalCorrected: fakeDataOpenWithDenom,
+                maxPriceExclMEVDecimalCorrected: fakeDataOpen,
+                invMaxPriceExclMEVDecimalCorrected: fakeDataCloseWithDenom,
+                minPriceExclMEVDecimalCorrected: fakeDataClose,
+                invPriceOpenExclMEVDecimalCorrected: fakeDataOpenWithDenom,
+                priceOpenExclMEVDecimalCorrected: fakeDataOpen,
+                invPriceCloseExclMEVDecimalCorrected: fakeDataCloseWithDenom,
+                priceCloseExclMEVDecimalCorrected: fakeDataClose,
                 period: period,
                 tvlData: {
                     time: data[0].time,
@@ -291,14 +292,14 @@ export default function Chart(props: propsIF) {
                 },
                 volumeUSD: 0,
                 averageLiquidityFee: data[0].averageLiquidityFee,
-                minPriceDecimalCorrected: bullishCandleType,
+                minPriceDecimalCorrected: fakeDataClose,
                 maxPriceDecimalCorrected: 0,
-                priceOpenDecimalCorrected: bullishCandleType,
-                priceCloseDecimalCorrected: bullishCandleType,
-                invMinPriceDecimalCorrected: bearishCandleType,
+                priceOpenDecimalCorrected: fakeDataOpen,
+                priceCloseDecimalCorrected: fakeDataClose,
+                invMinPriceDecimalCorrected: fakeDataCloseWithDenom,
                 invMaxPriceDecimalCorrected: 0,
-                invPriceOpenDecimalCorrected: bearishCandleType,
-                invPriceCloseDecimalCorrected: bearishCandleType,
+                invPriceOpenDecimalCorrected: fakeDataOpenWithDenom,
+                invPriceCloseDecimalCorrected: fakeDataCloseWithDenom,
                 isCrocData: false,
                 isFakeData: true,
             };
@@ -1345,6 +1346,7 @@ export default function Chart(props: propsIF) {
                 });
             }
         });
+        return newLimitValue;
     }
 
     // dragRange
@@ -1801,6 +1803,7 @@ export default function Chart(props: propsIF) {
         let offsetY = 0;
         let movemementY = 0;
         let newLimitValue: number | undefined;
+        let tempNewLimitValue: number | undefined;
 
         let tempMovemementY = 0;
         let cancelDrag = false;
@@ -1830,6 +1833,7 @@ export default function Chart(props: propsIF) {
                 // Store the initial value of the limit for potential cancellation.
                 oldLimitValue = limit;
                 newLimitValue = limit;
+                tempNewLimitValue = limit;
                 if (event.sourceEvent instanceof TouchEvent) {
                     tempMovemementY =
                         event.sourceEvent.touches[0].clientY - rectCanvas?.top;
@@ -1855,14 +1859,16 @@ export default function Chart(props: propsIF) {
                         setCrosshairActive('none');
 
                         // // Calculate the new limit value based on the Y-coordinate.
-                        if (newLimitValue !== undefined) {
-                            newLimitValue = scaleData?.yScale.invert(
-                                scaleData?.yScale(newLimitValue) + movemementY,
+                        if (tempNewLimitValue !== undefined) {
+                            tempNewLimitValue = scaleData?.yScale.invert(
+                                scaleData?.yScale(tempNewLimitValue) +
+                                    movemementY,
                             );
 
                             // Perform calculations based on the new limit value
-                            if (newLimitValue) {
-                                calculateLimit(newLimitValue);
+                            if (tempNewLimitValue) {
+                                newLimitValue =
+                                    calculateLimit(tempNewLimitValue);
                             }
                         }
                     } else {
@@ -2696,13 +2702,6 @@ export default function Chart(props: propsIF) {
                     mousemove(event);
                 },
             );
-
-            // d3.select(d3CanvasMain.current).on(
-            //     'touchstart',
-            //     function (event: TouchEvent) {
-            //         onClickCanvas(event);
-            //     },
-            // );
         }
     }, [
         diffHashSigChart(visibleCandleData),

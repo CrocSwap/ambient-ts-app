@@ -27,7 +27,7 @@ export const APP_ENVIRONMENT: AppEnvironment =
 export const IS_LOCAL_ENV = APP_ENVIRONMENT === 'local';
 
 export const ANALYTICS_URL =
-    process.env.ANALYTICS_URL ||
+    process.env.REACT_APP_ANALYTICS_URL ||
     'https://crocswap-analytics-tools-service-dfxb5x3tja-uc.a.run.app/run?';
 
 export const GRAPHCACHE_URL =
@@ -52,9 +52,10 @@ export const CHAT_ENABLED =
         ? process.env.REACT_APP_CHAT_IS_ENABLED.toLowerCase() === 'true'
         : true;
 
-export const MORALIS_KEY =
-    process.env.REACT_APP_MORALIS_KEY ||
-    'tb9SfJn2zwjLldR7JeHzLkT0cAHOu9Jc2QWVY06Sloar9VWNKTqZFMIta5BCWLma';
+export const DISABLE_INIT_SETTINGS =
+    process.env.REACT_APP_DISABLE_INIT_SETTINGS !== undefined
+        ? process.env.REACT_APP_DISABLE_INIT_SETTINGS.toLowerCase() === 'true'
+        : false;
 
 export const SHOULD_CANDLE_SUBSCRIPTIONS_RECONNECT = true;
 export const SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT = true;

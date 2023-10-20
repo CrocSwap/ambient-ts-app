@@ -716,6 +716,8 @@ export default function RangeActionModal(props: propsIF) {
                 <div className={styles.info_container}>
                     {type === 'Remove' && (
                         <RemoveRangeInfo
+                            baseTokenAddress={props.baseTokenAddress}
+                            quoteTokenAddress={props.quoteTokenAddress}
                             baseTokenSymbol={props.baseTokenSymbol}
                             quoteTokenSymbol={props.quoteTokenSymbol}
                             baseTokenLogoURI={props.baseTokenLogoURI}
@@ -740,6 +742,8 @@ export default function RangeActionModal(props: propsIF) {
                     )}
                     {type === 'Harvest' && (
                         <HarvestPositionInfo
+                            baseTokenAddress={props.baseTokenAddress}
+                            quoteTokenAddress={props.quoteTokenAddress}
                             baseTokenSymbol={props.baseTokenSymbol}
                             quoteTokenSymbol={props.quoteTokenSymbol}
                             baseTokenLogoURI={props.baseTokenLogoURI}
@@ -754,10 +758,16 @@ export default function RangeActionModal(props: propsIF) {
                             <span>Slippage Tolerange</span>
                             <span>{currentSlippage}%</span>
                         </div>
-                        <div>
-                            <span>Network Fee</span>
-                            <span>~{removalGasPriceinDollars ?? '...'}</span>
-                        </div>
+                        {chainId === '0x1' && (
+                            <div>
+                                <span>Network Fee</span>
+                                <span>
+                                    {removalGasPriceinDollars
+                                        ? '~' + removalGasPriceinDollars
+                                        : '...'}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

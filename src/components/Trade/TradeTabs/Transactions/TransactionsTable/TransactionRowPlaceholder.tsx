@@ -70,22 +70,14 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
     );
     const wallet = <p>you</p>;
 
-    const pinnedDisplayPrices =
-        transaction.details?.baseTokenDecimals &&
-        transaction.details?.quoteTokenDecimals &&
-        transaction.details?.lowTick &&
-        transaction.details?.highTick &&
-        transaction.details?.gridSize
-            ? getPinnedPriceValuesFromTicks(
-                  isDenomBase,
-                  transaction.details.baseTokenDecimals,
-                  transaction.details.quoteTokenDecimals,
-                  transaction.details.lowTick,
-                  transaction.details.highTick,
-                  transaction.details.gridSize,
-              )
-            : undefined;
-
+    const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+        isDenomBase,
+        transaction?.details?.baseTokenDecimals ?? 0,
+        transaction?.details?.quoteTokenDecimals ?? 0,
+        transaction?.details?.lowTick ?? 0,
+        transaction?.details?.highTick ?? 0,
+        transaction?.details?.gridSize ?? 0,
+    );
     const limitPrice =
         transaction.details &&
         transaction.details.lowTick &&
@@ -135,7 +127,11 @@ export const TransactionRowPlaceholder = (props: PropsIF) => {
                 )}
                 {tableView !== 'small' ? (
                     transaction.type === 'Range' ? (
-                        <FlexContainer justifyContent='flex-end'>
+                        <FlexContainer
+                            flexDirection='column'
+                            alignItems='flex-end'
+                            justifyContent='center'
+                        >
                             <p>
                                 {transaction.details?.isAmbient
                                     ? '0.00'

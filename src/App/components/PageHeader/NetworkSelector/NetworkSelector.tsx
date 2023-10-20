@@ -11,30 +11,54 @@ import {
     DropdownMenuContainer,
 } from '../../../../styled/Components/Header';
 import { supportedNetworks } from '../../../../utils/networks';
-interface NetworkSelectorPropsIF {
+import { ChainSpec } from '@crocswap-libs/sdk';
+import { useSearchParams } from 'react-router-dom';
+import {
+    linkGenMethodsIF,
+    useLinkGen,
+} from '../../../../utils/hooks/useLinkGen';
+interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
 
-export default function NetworkSelector(props: NetworkSelectorPropsIF) {
+export default function NetworkSelector(props: propsIF) {
     const { switchNetwork } = props;
     const {
-        setSelectedNetwork,
+        chooseNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
+
+    const linkGenIndex: linkGenMethodsIF = useLinkGen('index');
+    const [searchParams] = useSearchParams();
+    const chainParam = searchParams.get('chain');
+    const networkParam = searchParams.get('network');
 
     const chains = getSupportedChainIds().map((chain: string) =>
         lookupChain(chain),
     );
+
+    const handleClick = (chn: ChainSpec): void => {
+        if (switchNetwork) {
+            switchNetwork(parseInt(chn.chainId));
+            if (chainParam || networkParam) {
+                // navigate to index page only if chain/network search param present
+                linkGenIndex.navigate();
+            }
+        } else {
+            if (chainParam || networkParam) {
+                // navigate to index page only if chain/network search param present
+                linkGenIndex.navigate();
+            }
+            chooseNetwork(supportedNetworks[chn.chainId]);
+        }
+    };
 
     const dropdownAriaDescription = 'Dropdown menu for networks.';
     const networkMenuContent = (
         <MenuContent tabIndex={0} aria-label={dropdownAriaDescription}>
             {chains.map((chain, idx) => (
                 <NetworkItem
-                    onClick={() => {
-                        switchNetwork && switchNetwork(parseInt(chain.chainId));
-                        setSelectedNetwork(supportedNetworks[chain.chainId]);
-                    }}
+                    onClick={() => handleClick(chain)}
                     key={chain.chainId}
                     custom={idx}
                     variants={ItemEnterAnimation}
