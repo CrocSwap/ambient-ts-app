@@ -16,18 +16,23 @@ export default function Home() {
     const { isConnected } = useAccount();
 
     const { chooseNetwork, chainData } = useAppChain();
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
         const chainParam: string | null =
             searchParams.get('chain') ?? searchParams.get('network');
-        if (chainParam && supportedNetworks[chainParam]) {
-            if (chainParam !== chainData.chainId) {
+        if (chainParam) {
+            if (
+                supportedNetworks[chainParam] &&
+                chainParam !== chainData.chainId
+            ) {
                 if (switchNetwork) {
                     switchNetwork(parseInt(chainParam));
                 } else if (!isConnected) {
                     chooseNetwork(supportedNetworks[chainParam]);
                 }
+            } else {
+                setSearchParams('');
             }
         }
     }, [switchNetwork]);
