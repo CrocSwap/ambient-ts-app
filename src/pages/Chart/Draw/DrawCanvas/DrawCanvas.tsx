@@ -37,7 +37,6 @@ interface DrawCanvasProps {
         tokenB: TokenIF;
     };
     denomInBase: boolean;
-    period: number;
 }
 
 function DrawCanvas(props: DrawCanvasProps) {
@@ -54,7 +53,6 @@ function DrawCanvas(props: DrawCanvasProps) {
         currentPool,
         drawActionStack,
         actionKey,
-        period,
         denomInBase,
     } = props;
 

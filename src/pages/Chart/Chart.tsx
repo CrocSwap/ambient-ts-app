@@ -4134,7 +4134,6 @@ export default function Chart(props: propsIF) {
                                 drawActionStack={drawActionStack}
                                 actionKey={actionKey}
                                 denomInBase={denomInBase}
-                                period={period}
                             />
                         )}
 
