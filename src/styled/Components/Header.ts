@@ -534,7 +534,10 @@ export const NetworkItem = styled(motion.li)`
     }
 `;
 
-export const ChainNameStatus = styled.div`
+export const ChainNameStatus = styled.div<{ active: boolean }>`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     padding: 0.6rem 0;
     font-size: var(--header2-size);
     width: 100%;
@@ -550,4 +553,7 @@ export const ChainNameStatus = styled.div`
         margin-right: 0.5em;
         vertical-align: middle;
     }
+
+    border-bottom: ${(props) =>
+        props.active ? '1px solid var(--accent1)' : ''};
 `;

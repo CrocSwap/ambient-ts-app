@@ -53,6 +53,8 @@ export default function NetworkSelector(props: propsIF) {
         }
     };
 
+    console.log({ networkParam });
+
     const dropdownAriaDescription = 'Dropdown menu for networks.';
     const networkMenuContent = (
         <MenuContent tabIndex={0} aria-label={dropdownAriaDescription}>
@@ -64,7 +66,10 @@ export default function NetworkSelector(props: propsIF) {
                     variants={ItemEnterAnimation}
                     tabIndex={0}
                 >
-                    <ChainNameStatus tabIndex={0}>
+                    <ChainNameStatus
+                        tabIndex={0}
+                        active={chain.chainId === chainId}
+                    >
                         <img
                             src={chain.logoUrl}
                             alt={chain.displayName}
@@ -72,7 +77,16 @@ export default function NetworkSelector(props: propsIF) {
                             height='21px'
                             style={{ borderRadius: '50%' }}
                         />
-                        {chain.displayName}
+                        <p
+                            style={{
+                                color:
+                                    chain.chainId === chainId
+                                        ? 'var(--accent1)'
+                                        : '',
+                            }}
+                        >
+                            {chain.displayName}
+                        </p>
                     </ChainNameStatus>
                 </NetworkItem>
             ))}
