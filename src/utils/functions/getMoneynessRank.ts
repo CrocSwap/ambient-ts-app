@@ -1,3 +1,5 @@
+import { defaultTokens } from '../data/defaultTokens';
+
 export const getMoneynessRank = (tokenSymbol: string): number => {
     /* 
         This 'moneyness' rank is intended to reflect an average user's expectation 
@@ -25,4 +27,14 @@ export const getMoneynessRank = (tokenSymbol: string): number => {
 
     const rank = moneynessRank[tokenSymbol as keyof typeof moneynessRank] ?? 0;
     return rank;
+};
+
+export const getMoneynessRankByAddr = (tokenAddress: string): number => {
+    let moneynessRank = 0;
+    defaultTokens.forEach((token) => {
+        if (token.address === tokenAddress) {
+            moneynessRank = getMoneynessRank(token.symbol);
+        }
+    });
+    return moneynessRank;
 };

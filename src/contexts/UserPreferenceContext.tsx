@@ -14,6 +14,7 @@ import { supportedNetworks } from '../utils/networks';
 import { setDenomInBase } from '../utils/state/tradeDataSlice';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
+import { getMoneynessRankByAddr } from '../utils/functions/getMoneynessRank';
 
 interface UserPreferenceIF {
     favePools: favePoolsMethodsIF;
@@ -72,22 +73,13 @@ export const UserPreferenceContextProvider = (props: {
     );
 
     const isBaseTokenMoneynessGreaterOrEqual: boolean = useMemo(() => {
-        const network = supportedNetworks[chainId];
-        /* if (baseTokenAddress && quoteTokenAddress && network) {
-            const baseTokenSymbol = network.tokens[baseTokenAddress]?.symbol;
-
-            if (baseTokenSymbol && quoteTokenSymbol) {
-                return (
-                    getMoneynessRank(baseTokenSymbol) -
-                        getMoneynessRank(quoteTokenSymbol) >=
-                    0
-                );
-            } else if (quoteTokenSymbol) {
-                return false;
-            } else {
-                return true;
-            }
-        } */
+        if (baseTokenAddress && quoteTokenAddress) {
+            return (
+                getMoneynessRankByAddr(baseTokenAddress) -
+                    getMoneynessRankByAddr(quoteTokenAddress) >=
+                0
+            );
+        }
         return false;
     }, [baseTokenAddress, quoteTokenAddress, chainId]);
 
