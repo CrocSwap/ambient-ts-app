@@ -17,6 +17,7 @@ import {
     linkGenMethodsIF,
     useLinkGen,
 } from '../../../../utils/hooks/useLinkGen';
+import { Text } from '../../../../styled/Common';
 interface propsIF {
     switchNetwork: ((chainId_?: number | undefined) => void) | undefined;
 }
@@ -75,16 +76,14 @@ export default function NetworkSelector(props: propsIF) {
                             height='21px'
                             style={{ borderRadius: '50%' }}
                         />
-                        <p
-                            style={{
-                                color:
-                                    chain.chainId === chainId
-                                        ? 'var(--accent1)'
-                                        : '',
-                            }}
+
+                        <Text
+                            color={
+                                chain.chainId === chainId ? 'accent1' : 'white'
+                            }
                         >
                             {chain.displayName}
-                        </p>
+                        </Text>
                     </ChainNameStatus>
                 </NetworkItem>
             ))}

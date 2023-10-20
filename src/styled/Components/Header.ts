@@ -536,7 +536,6 @@ export const NetworkItem = styled(motion.li)`
 
 export const ChainNameStatus = styled.div<{ active: boolean }>`
     display: flex;
-    flex-direction: row;
     align-items: center;
     padding: 0.6rem 0;
     font-size: var(--header2-size);
