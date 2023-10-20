@@ -145,6 +145,7 @@ interface propsIF {
     };
     deleteItem: (item: drawDataHistory) => void;
     updateURL: (changes: updatesIF) => void;
+    addDrawActionStack: (item: drawDataHistory) => void;
 }
 
 export default function Chart(props: propsIF) {
@@ -178,6 +179,7 @@ export default function Chart(props: propsIF) {
         actionKey,
         deleteItem,
         updateURL,
+        addDrawActionStack,
     } = props;
 
     const {
@@ -3133,6 +3135,7 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleDocumentClick = (event: any) => {
             if (
                 d3Container.current &&
@@ -4112,9 +4115,8 @@ export default function Chart(props: propsIF) {
                                 setCrossHairDataFunc={setCrossHairDataFunc}
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 setIsUpdatingShape={setIsUpdatingShape}
-                                drawActionStack={drawActionStack}
-                                actionKey={actionKey}
                                 denomInBase={denomInBase}
+                                addDrawActionStack={addDrawActionStack}
                             />
                         )}
                         <YAxisCanvas {...yAxisCanvasProps} />
@@ -4224,6 +4226,7 @@ export default function Chart(props: propsIF) {
                 setSelectedDrawnShape={setSelectedDrawnShape}
                 deleteItem={deleteItem}
                 setIsShapeEdited={setIsShapeEdited}
+                addDrawActionStack={addDrawActionStack}
             />
 
             {scaleData && (
