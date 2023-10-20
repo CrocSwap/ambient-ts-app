@@ -2547,8 +2547,14 @@ export default function Chart(props: propsIF) {
                     drawnShapeHistory?.forEach((item) => {
                         if (item.pool) {
                             const isShapeInCurrentPool =
-                                item.pool.tokenB === currentPool.tokenB &&
-                                item.pool.tokenA === currentPool.tokenA;
+                                currentPool.tokenA ===
+                                    (isTokenABase === item.pool.isTokenABase
+                                        ? item.pool.tokenA
+                                        : item.pool.tokenB) &&
+                                currentPool.tokenB ===
+                                    (isTokenABase === item.pool.isTokenABase
+                                        ? item.pool.tokenB
+                                        : item.pool.tokenA);
 
                             if (isShapeInCurrentPool) {
                                 if (
@@ -3385,8 +3391,14 @@ export default function Chart(props: propsIF) {
 
         drawnShapeHistory.forEach((element) => {
             const isShapeInCurrentPool =
-                element.pool.tokenB === currentPool.tokenB &&
-                element.pool.tokenA === currentPool.tokenA;
+                currentPool.tokenA ===
+                    (isTokenABase === element.pool.isTokenABase
+                        ? element.pool.tokenA
+                        : element.pool.tokenB) &&
+                currentPool.tokenB ===
+                    (isTokenABase === element.pool.isTokenABase
+                        ? element.pool.tokenB
+                        : element.pool.tokenA);
 
             if (isShapeInCurrentPool) {
                 if (element.type === 'Brush' || element.type === 'Angle') {
