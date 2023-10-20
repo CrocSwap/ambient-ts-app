@@ -487,7 +487,11 @@ function SentMessagePanel(props: SentMessageProps) {
         if (props.isLinkInCrocodileLabsLinks(word)) {
             ret = <span>{word}</span>;
         } else {
-            if (mentFound.val == false && word.indexOf('@') >= 0) {
+            if (
+                mentFound.val == false &&
+                word.indexOf('@') >= 0 &&
+                props.message.mentionedWalletID
+            ) {
                 mentFound.val = true;
                 ret = (
                     <span
