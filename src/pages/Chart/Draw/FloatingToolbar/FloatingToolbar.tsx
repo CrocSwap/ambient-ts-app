@@ -38,6 +38,7 @@ interface FloatingToolbarProps {
     >;
     setIsShapeEdited: React.Dispatch<boolean>;
     deleteItem: (item: drawDataHistory) => void;
+    addDrawActionStack: (item: drawDataHistory) => void;
 }
 function FloatingToolbar(props: FloatingToolbarProps) {
     const {
@@ -47,6 +48,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
         setSelectedDrawnShape,
         deleteItem,
         setIsShapeEdited,
+        addDrawActionStack,
     } = props;
     const floatingDivRef = useRef<HTMLDivElement>(null);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
@@ -88,6 +90,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 );
 
                 item[changedItemIndex].color = colorRgbaCode;
+                addDrawActionStack(item[changedItemIndex]);
 
                 return item;
             });
@@ -103,7 +106,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 );
 
                 item[changedItemIndex].lineWidth = value;
-
+                addDrawActionStack(item[changedItemIndex]);
                 return item;
             });
             setIsShapeEdited(true);
@@ -118,7 +121,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 );
 
                 item[changedItemIndex].style = array;
-
+                addDrawActionStack(item[changedItemIndex]);
                 return item;
             });
             setIsShapeEdited(true);

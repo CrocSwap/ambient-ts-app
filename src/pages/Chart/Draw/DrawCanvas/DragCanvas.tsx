@@ -6,8 +6,6 @@ import {
     scaleData,
     selectedDrawnData,
 } from '../../ChartUtils/chartUtils';
-import { actionKeyIF } from '../../ChartUtils/useUndoRedo';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 
 interface DragCanvasProps {
     scaleData: scaleData;
@@ -24,13 +22,8 @@ interface DragCanvasProps {
     setSelectedDrawnShape: React.Dispatch<
         React.SetStateAction<selectedDrawnData | undefined>
     >;
-    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
-    actionKey: {
-        poolIndex: number;
-        tokenA: TokenIF;
-        tokenB: TokenIF;
-    };
     denomInBase: boolean;
+    addDrawActionStack: (item: drawDataHistory) => void;
 }
 
 export default function DragCanvas(props: DragCanvasProps) {
@@ -46,9 +39,8 @@ export default function DragCanvas(props: DragCanvasProps) {
         canUserDragDrawnShape,
         setCrossHairDataFunc,
         setSelectedDrawnShape,
-        drawActionStack,
-        actionKey,
         denomInBase,
+        addDrawActionStack,
     } = props;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -390,28 +382,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                         dragTimeout &&
                         event.sourceEvent.timeStamp - dragTimeout > 250
                     ) {
-                        drawActionStack.get(actionKey)?.push({
-                            data: [
-                                {
-                                    x: tempLastData.data[0].x,
-                                    y: tempLastData.data[0].y,
-                                    ctx: tempLastData.data[0].ctx,
-                                    denomInBase: denomInBase,
-                                },
-                                {
-                                    x: tempLastData.data[1].x,
-                                    y: tempLastData.data[1].y,
-                                    ctx: tempLastData.data[1].ctx,
-                                    denomInBase: denomInBase,
-                                },
-                            ],
-                            type: tempLastData.type,
-                            time: tempLastData.time,
-                            pool: tempLastData.pool,
-                            color: '#7371fc',
-                            lineWidth: 1.5,
-                            style: [0, 0],
-                        });
+                        addDrawActionStack(tempLastData);
                     }
                 } else {
                     if (previousData) {

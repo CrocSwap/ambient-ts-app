@@ -178,6 +178,31 @@ export function useUndoRedo(denomInBase: boolean) {
         });
     }
 
+    function addDrawActionStack(tempLastData: drawDataHistory) {
+        drawActionStack.get(actionKey)?.push({
+            data: [
+                {
+                    x: tempLastData.data[0].x,
+                    y: tempLastData.data[0].y,
+                    ctx: tempLastData.data[0].ctx,
+                    denomInBase: tempLastData.data[0].denomInBase,
+                },
+                {
+                    x: tempLastData.data[1].x,
+                    y: tempLastData.data[1].y,
+                    ctx: tempLastData.data[1].ctx,
+                    denomInBase: tempLastData.data[0].denomInBase,
+                },
+            ],
+            type: tempLastData.type,
+            time: tempLastData.time,
+            pool: tempLastData.pool,
+            color: tempLastData.color,
+            lineWidth: tempLastData.lineWidth,
+            style: tempLastData.style,
+        });
+    }
+
     return {
         undo,
         redo,
@@ -187,5 +212,6 @@ export function useUndoRedo(denomInBase: boolean) {
         setDrawnShapeHistory,
         drawActionStack,
         actionKey,
+        addDrawActionStack,
     };
 }
