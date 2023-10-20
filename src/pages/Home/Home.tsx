@@ -17,9 +17,10 @@ export default function Home() {
 
     const { chooseNetwork, chainData } = useAppChain();
     const [searchParams] = useSearchParams();
-    const chainParam = searchParams.get('chain') ?? searchParams.get('network');
 
     useEffect(() => {
+        const chainParam: string | null =
+            searchParams.get('chain') ?? searchParams.get('network');
         if (chainParam && supportedNetworks[chainParam]) {
             if (chainParam !== chainData.chainId) {
                 if (switchNetwork) {
