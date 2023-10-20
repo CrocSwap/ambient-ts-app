@@ -9,6 +9,7 @@ import { useAccount, useSwitchNetwork } from 'wagmi';
 import { supportedNetworks } from '../../utils/networks/index';
 import { useAppChain } from '../../App/hooks/useAppChain';
 import { useEffect } from 'react';
+import { lookupChainId } from '../../utils/functions/lookupChainId';
 
 export default function Home() {
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
@@ -28,22 +29,9 @@ export default function Home() {
             searchParams.get('chain') ?? searchParams.get('network');
         // logic to execute if a param is found (if not, do nothing)
         if (chainParam) {
-            // map various chain identifiers to a canonical ID
-            let targetChain: string;
-            switch (chainParam) {
-                case 'ethereum':
-                case 'mainnet':
-                case '1':
-                    targetChain = '0x1';
-                    break;
-                case 'goerli':
-                case '5':
-                    targetChain = '0x5';
-                    break;
-                default:
-                    targetChain = chainParam;
-                    break;
-            }
+            // get a canonical 0x hex string chain ID from URL param
+            const targetChain: string =
+                lookupChainId(chainParam, 'string') ?? chainParam;
             // check if chain is supported and not the current chain in the app
             // yes → trigger machinery to switch the current network
             // no → no action except to clear the param from the URL
