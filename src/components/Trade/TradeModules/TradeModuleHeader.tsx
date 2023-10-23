@@ -59,9 +59,13 @@ function TradeModuleHeader(props: propsIF) {
                     />
 
                     {isSwapPage ? (
-                        <Text color='text1'>Swap</Text>
+                        <Text id='swap_header_token_pair' as='h4' color='text1'>
+                            Swap
+                        </Text>
                     ) : (
                         <Text
+                            id='trade_header_token_pair'
+                            as='h4'
                             color='text1'
                             fontSize='header1'
                             role='button'
