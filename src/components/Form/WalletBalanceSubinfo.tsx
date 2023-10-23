@@ -23,7 +23,7 @@ interface PropsIF {
     onRefresh?: () => void;
 }
 
-export const WalletBallanceSubinfo = (props: PropsIF) => {
+export const WalletBalanceSubinfo = (props: PropsIF) => {
     const {
         isWithdraw,
         balance,
@@ -120,7 +120,7 @@ export const WalletBallanceSubinfo = (props: PropsIF) => {
                                     ? (
                                           availableBalance
                                               ? availableBalance > 0
-                                              : parseFloat(balance) > 0
+                                              : false
                                       )
                                         ? 'Use Maximum Wallet + Exchange Balance'
                                         : 'Wallet + Exchange Balance'
@@ -148,7 +148,7 @@ export const WalletBallanceSubinfo = (props: PropsIF) => {
                                     : (
                                           availableBalance
                                               ? availableBalance > 0
-                                              : parseFloat(balance) > 0
+                                              : false
                                       )
                                     ? 'Use Maximum Wallet Balance'
                                     : 'Wallet Balance'}
@@ -165,12 +165,15 @@ export const WalletBallanceSubinfo = (props: PropsIF) => {
                         flexDirection='column'
                         color='text1'
                         style={
-                            onMaxButtonClick && parseFloat(balance) > 0
+                            onMaxButtonClick &&
+                            availableBalance !== undefined &&
+                            availableBalance > 0
                                 ? { cursor: 'pointer' }
                                 : { cursor: 'default' }
                         }
                         onClick={() => {
-                            parseFloat(balance) > 0 &&
+                            availableBalance !== undefined &&
+                                availableBalance > 0 &&
                                 onMaxButtonClick &&
                                 onMaxButtonClick();
                         }}
@@ -178,47 +181,49 @@ export const WalletBallanceSubinfo = (props: PropsIF) => {
                         <div>{balance}</div>
                     </FlexContainer>
                 </DefaultTooltip>
-                {onMaxButtonClick && parseFloat(balance) > 0 && (
-                    <DefaultTooltip
-                        interactive
-                        title={
-                            <p
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '4px',
-                                    cursor: 'pointer',
-                                }}
-                                onClick={() => {
-                                    useExchangeBalance
-                                        ? openGlobalPopup(
-                                              <ExchangeBalanceExplanation />,
-                                              'Exchange Balance',
-                                              'right',
-                                          )
-                                        : openGlobalPopup(
-                                              <WalletBalanceExplanation />,
-                                              'Wallet Balance',
-                                              'right',
-                                          );
-                                }}
-                            >
-                                {useExchangeBalance
-                                    ? 'Use Maximum Wallet + Exchange Balance'
-                                    : 'Use Maximum Wallet Balance'}
-                                <AiOutlineQuestionCircle size={14} />
-                            </p>
-                        }
-                        placement={'bottom'}
-                        arrow
-                        enterDelay={700}
-                        leaveDelay={200}
-                    >
-                        <MaxButton width='25px' onClick={onMaxButtonClick}>
-                            Max
-                        </MaxButton>
-                    </DefaultTooltip>
-                )}
+                {onMaxButtonClick &&
+                    availableBalance !== undefined &&
+                    availableBalance > 0 && (
+                        <DefaultTooltip
+                            interactive
+                            title={
+                                <p
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '4px',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => {
+                                        useExchangeBalance
+                                            ? openGlobalPopup(
+                                                  <ExchangeBalanceExplanation />,
+                                                  'Exchange Balance',
+                                                  'right',
+                                              )
+                                            : openGlobalPopup(
+                                                  <WalletBalanceExplanation />,
+                                                  'Wallet Balance',
+                                                  'right',
+                                              );
+                                    }}
+                                >
+                                    {useExchangeBalance
+                                        ? 'Use Maximum Wallet + Exchange Balance'
+                                        : 'Use Maximum Wallet Balance'}
+                                    <AiOutlineQuestionCircle size={14} />
+                                </p>
+                            }
+                            placement={'bottom'}
+                            arrow
+                            enterDelay={700}
+                            leaveDelay={200}
+                        >
+                            <MaxButton width='25px' onClick={onMaxButtonClick}>
+                                Max
+                            </MaxButton>
+                        </DefaultTooltip>
+                    )}
             </FlexContainer>
             {onRefresh && (
                 <RefreshButton onClick={onRefresh} aria-label='Refresh data'>
