@@ -3,10 +3,9 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
-import { WalletBallanceSubinfo } from './WalletBalanceSubinfo';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
-
+import WalletBalanceSubinfo from './WalletBalanceSubinfo';
 interface propsIF {
     tokenAorB: 'A' | 'B';
     token: TokenIF;
@@ -107,7 +106,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
 
     const walletContent = showWallet && (
         <>
-            <WalletBallanceSubinfo
+            <WalletBalanceSubinfo
                 isWithdraw={isWithdraw ?? tokenAorB === 'A'}
                 balance={balanceToDisplay}
                 availableBalance={parseFloat(balanceWithBuffer)}

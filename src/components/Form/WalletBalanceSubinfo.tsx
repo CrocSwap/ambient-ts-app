@@ -3,14 +3,12 @@ import walletIcon from '../../assets/images/icons/wallet.svg';
 import walletEnabledIcon from '../../assets/images/icons/wallet-enabled.svg';
 import { useContext } from 'react';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import { FiRefreshCw } from 'react-icons/fi';
 import { AppStateContext } from '../../contexts/AppStateContext';
 import IconWithTooltip from '../Global/IconWithTooltip/IconWithTooltip';
 import ExchangeBalanceExplanation from '../Global/Informational/ExchangeBalanceExplanation';
 import WalletBalanceExplanation from '../Global/Informational/WalletBalanceExplanation';
 import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import { FlexContainer } from '../../styled/Common';
-import { RefreshButton } from '../../styled/Components/TradeModules';
 import { MaxButton } from '../../styled/Components/Portfolio';
 interface PropsIF {
     isWithdraw: boolean;
@@ -22,8 +20,7 @@ interface PropsIF {
     onMaxButtonClick?: () => void;
     onRefresh?: () => void;
 }
-
-export const WalletBallanceSubinfo = (props: PropsIF) => {
+export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
         isWithdraw,
         balance,
@@ -32,7 +29,6 @@ export const WalletBallanceSubinfo = (props: PropsIF) => {
         isDexSelected,
         onToggleDex,
         onMaxButtonClick,
-        onRefresh,
     } = props;
 
     const {
@@ -239,4 +235,4 @@ export const WalletBallanceSubinfo = (props: PropsIF) => {
             )} */}
         </FlexContainer>
     );
-};
+}

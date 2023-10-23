@@ -565,36 +565,32 @@ export default function InitPool() {
         Math.log(selectedPoolNonDisplayPrice) / Math.log(1.0001);
 
     const shouldResetAdvancedLowTick =
-        advancedLowTick === 0 ||
         advancedHighTick > selectedPoolPriceTick + 100000 ||
         advancedLowTick < selectedPoolPriceTick - 100000;
     const shouldResetAdvancedHighTick =
-        advancedHighTick === 0 ||
         advancedHighTick > selectedPoolPriceTick + 100000 ||
         advancedLowTick < selectedPoolPriceTick - 100000;
 
     const defaultLowTick = useMemo<number>(() => {
-        const value: number =
-            shouldResetAdvancedLowTick || advancedLowTick === 0
-                ? roundDownTick(
-                      selectedPoolPriceTick +
-                          DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
-                      gridSize,
-                  )
-                : advancedLowTick;
+        const value: number = shouldResetAdvancedLowTick
+            ? roundDownTick(
+                  selectedPoolPriceTick +
+                      DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
+                  gridSize,
+              )
+            : advancedLowTick;
         return value;
     }, [advancedLowTick, selectedPoolPriceTick, shouldResetAdvancedLowTick]);
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo<number>(() => {
-        const value: number =
-            shouldResetAdvancedHighTick || advancedHighTick === 0
-                ? roundUpTick(
-                      selectedPoolPriceTick +
-                          DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
-                      gridSize,
-                  )
-                : advancedHighTick;
+        const value: number = shouldResetAdvancedHighTick
+            ? roundUpTick(
+                  selectedPoolPriceTick +
+                      DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
+                  gridSize,
+              )
+            : advancedHighTick;
         return value;
     }, [advancedHighTick, selectedPoolPriceTick, shouldResetAdvancedHighTick]);
 
@@ -1040,6 +1036,7 @@ export default function InitPool() {
         initialPriceDisplay,
         advancedHighTick,
         advancedLowTick,
+        selectedPoolPriceTick,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;

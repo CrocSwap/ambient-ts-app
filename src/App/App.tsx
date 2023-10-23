@@ -61,7 +61,8 @@ export default function App() {
         theme: { selected: selectedTheme },
         wagmiModal: { isOpen: isWagmiModalOpen },
     } = useContext(AppStateContext);
-    const { isChainSupported, defaultUrlParams } = useContext(CrocEnvContext);
+    const { isWalletChainSupported, defaultUrlParams } =
+        useContext(CrocEnvContext);
     const { isFullScreen: fullScreenChart } = useContext(ChartContext);
     const {
         sidebar: { isOpen: isSidebarOpen, toggle: toggleSidebar },
@@ -155,7 +156,7 @@ export default function App() {
                 className={containerStyle}
                 data-theme={selectedTheme}
             >
-                {!isChainSupported && <SwitchNetwork />}
+                {!isWalletChainSupported && <SwitchNetwork />}
                 <AppOverlay />
                 <PageHeader />
                 <section

@@ -13,6 +13,7 @@ import { TradeTableContext } from '../../../../contexts/TradeTableContext';
 import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
+import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 
 // react functional component
 function Leaderboard() {
@@ -48,7 +49,7 @@ function Leaderboard() {
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
     const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
-    const currentRangess = sortedPositions?.slice(
+    const currentRanges = sortedPositions?.slice(
         indexOfFirstRanges,
         indexOfLastRanges,
     );
@@ -57,7 +58,7 @@ function Leaderboard() {
     };
 
     const usePaginateDataOrNull =
-        tradeTableState === 'Expanded' ? currentRangess : sortedPositions;
+        tradeTableState === 'Expanded' ? currentRanges : sortedPositions;
 
     // TODO: Use these as media width constants
     const isSmallScreen = useMediaQuery('(max-width: 600px)');
@@ -229,6 +230,15 @@ function Leaderboard() {
             ))}
         </RangeRowStyled>
     );
+
+    const { ensAddressMapping, addData } = useENSAddresses();
+
+    useEffect(() => {
+        if (usePaginateDataOrNull.length > 0) {
+            addData(usePaginateDataOrNull);
+        }
+    }, [usePaginateDataOrNull]);
+
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
             key={idx}
@@ -241,6 +251,7 @@ function Leaderboard() {
             isAccountView={false}
             isLeaderboard={true}
             tableView={tableView}
+            fetchedEnsAddress={ensAddressMapping.get(position.user)}
         />
     ));
 
