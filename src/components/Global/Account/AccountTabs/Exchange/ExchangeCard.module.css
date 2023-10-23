@@ -1,6 +1,6 @@
 .token_info {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto 40%;
     width: 100%;
     align-items: center;
     color: var(--text1);
