@@ -1,5 +1,5 @@
 import { drawDataHistory } from './chartUtils';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -202,6 +202,72 @@ export function useUndoRedo(denomInBase: boolean) {
             style: tempLastData.style,
         });
     }
+
+    useEffect(() => {
+        const newShapeData = drawnShapeHistory[drawnShapeHistory.length - 1];
+
+        if (newShapeData) {
+            const newLineData = newShapeData.data;
+
+            if (!drawActionStack.has(actionKey)) {
+                drawActionStack.set(actionKey, [
+                    {
+                        data: [
+                            {
+                                x: newLineData[0].x,
+                                y: newLineData[0].y,
+                                ctx: newLineData[0].ctx,
+                                denomInBase: denomInBase,
+                            },
+                            {
+                                x: newLineData[1].x,
+                                y: newLineData[1].y,
+                                ctx: newLineData[1].ctx,
+                                denomInBase: denomInBase,
+                            },
+                        ],
+                        type: newShapeData.type,
+                        time: newShapeData.time,
+                        pool: newShapeData.pool,
+                        color: newShapeData.color,
+                        lineWidth: newShapeData.lineWidth,
+                        style: [0, 0],
+                    },
+                ]);
+            } else {
+                const actionList = drawActionStack.get(actionKey);
+                const checkData = actionList?.find(
+                    (item: drawDataHistory) =>
+                        JSON.stringify(item) === JSON.stringify(newShapeData),
+                );
+
+                if (checkData === undefined) {
+                    drawActionStack.get(actionKey)?.push({
+                        data: [
+                            {
+                                x: newLineData[0].x,
+                                y: newLineData[0].y,
+                                ctx: newLineData[0].ctx,
+                                denomInBase: denomInBase,
+                            },
+                            {
+                                x: newLineData[1].x,
+                                y: newLineData[1].y,
+                                ctx: newLineData[1].ctx,
+                                denomInBase: denomInBase,
+                            },
+                        ],
+                        type: newShapeData.type,
+                        time: newShapeData.time,
+                        pool: newShapeData.pool,
+                        color: newShapeData.color,
+                        lineWidth: newShapeData.lineWidth,
+                        style: [0, 0],
+                    });
+                }
+            }
+        }
+    }, [drawnShapeHistory.length]);
 
     return {
         undo,

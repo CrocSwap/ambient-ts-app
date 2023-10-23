@@ -89,8 +89,6 @@ import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { actionKeyIF } from './ChartUtils/useUndoRedo';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 
@@ -137,12 +135,6 @@ interface propsIF {
         React.SetStateAction<drawDataHistory[]>
     >;
     currentPool: TradeDataIF;
-    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
-    actionKey: {
-        poolIndex: number;
-        tokenA: TokenIF;
-        tokenB: TokenIF;
-    };
     deleteItem: (item: drawDataHistory) => void;
     updateURL: (changes: updatesIF) => void;
     addDrawActionStack: (item: drawDataHistory) => void;
@@ -175,8 +167,6 @@ export default function Chart(props: propsIF) {
         drawnShapeHistory,
         setDrawnShapeHistory,
         currentPool,
-        drawActionStack,
-        actionKey,
         deleteItem,
         updateURL,
         addDrawActionStack,
@@ -4131,8 +4121,6 @@ export default function Chart(props: propsIF) {
                                 setActiveDrawingType={setActiveDrawingType}
                                 setSelectedDrawnShape={setSelectedDrawnShape}
                                 currentPool={currentPool}
-                                drawActionStack={drawActionStack}
-                                actionKey={actionKey}
                                 denomInBase={denomInBase}
                             />
                         )}

@@ -118,8 +118,6 @@ function TradeCandleStickChart(props: propsIF) {
         drawnShapeHistory,
         setDrawnShapeHistory,
         currentPool,
-        drawActionStack,
-        actionKey,
         deleteItem,
         addDrawActionStack,
     } = useUndoRedo(denominationsInBase);
@@ -847,11 +845,9 @@ function TradeCandleStickChart(props: propsIF) {
                         unparsedData={candleData}
                         undo={undo}
                         redo={redo}
-                        drawActionStack={drawActionStack}
                         drawnShapeHistory={drawnShapeHistory}
                         setDrawnShapeHistory={setDrawnShapeHistory}
                         currentPool={currentPool}
-                        actionKey={actionKey}
                         deleteItem={deleteItem}
                         updateURL={updateURL}
                         addDrawActionStack={addDrawActionStack}
