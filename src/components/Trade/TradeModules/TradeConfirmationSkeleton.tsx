@@ -164,6 +164,7 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
                                     }
                                 />
                                 <Button
+                                    idForDOM='set_skip_confirmation_button'
                                     title={statusText}
                                     action={() => {
                                         // if this modal is launched we can infer user wants confirmation

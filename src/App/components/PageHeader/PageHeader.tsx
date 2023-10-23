@@ -111,6 +111,7 @@ const PageHeader = function () {
 
     const connectWagmiButton = (
         <Button
+            idForDOM='connect_wallet_button_page_header'
             title={desktopScreen ? 'Connect Wallet' : 'Connect'}
             action={openWagmiModal}
             thin

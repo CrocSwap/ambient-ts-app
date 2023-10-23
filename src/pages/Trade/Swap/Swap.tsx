@@ -528,6 +528,7 @@ function Swap(props: propsIF) {
             }
             button={
                 <Button
+                    idForDOM='confirm_swap_button'
                     title={
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
@@ -576,6 +577,7 @@ function Swap(props: propsIF) {
                 parseFloat(sellQtyString) > 0 &&
                 sellQtyString !== 'Infinity' ? (
                     <Button
+                        idForDOM='approve_token_a_for_swap_module'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`

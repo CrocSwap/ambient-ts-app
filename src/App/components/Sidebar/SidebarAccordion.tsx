@@ -117,6 +117,7 @@ export default function SidebarAccordion(props: propsIF) {
                         Your recent {item.name.toLowerCase()} will display here.
                     </p>
                     <Button
+                        idForDOM={`connect_wallet_button_in_sidebar_${item.name}`}
                         action={openWagmiModal}
                         flat
                         thin

@@ -1060,6 +1060,7 @@ function Range() {
             }
             button={
                 <Button
+                    idForDOM='submit_range_position_button'
                     title={
                         areBothAckd
                             ? tokenAAllowed && tokenBAllowed
@@ -1114,6 +1115,7 @@ function Range() {
                 isTokenAWalletBalanceSufficient &&
                 !isTokenAAllowanceSufficient ? (
                     <Button
+                        idForDOM='approve_token_a_for_range'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
@@ -1130,6 +1132,7 @@ function Range() {
                   isTokenBWalletBalanceSufficient &&
                   !isTokenBAllowanceSufficient ? (
                     <Button
+                        idForDOM='approve_token_b_for_range'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenB.symbol}`

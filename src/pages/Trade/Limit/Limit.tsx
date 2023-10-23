@@ -684,6 +684,7 @@ export default function Limit() {
             }
             button={
                 <Button
+                    idForDOM='confirm_limit_order_button'
                     title={
                         areBothAckd
                             ? limitAllowed
@@ -727,6 +728,7 @@ export default function Limit() {
                 isTokenAWalletBalanceSufficient &&
                 parseFloat(tokenAInputQty) > 0 ? (
                     <Button
+                        idForDOM='approve_limit_order_button'
                         title={
                             !isApprovalPending
                                 ? `Approve ${tokenA.symbol}`
