@@ -224,8 +224,9 @@ function DrawCanvas(props: DrawCanvasProps) {
                         return prevData;
                     });
                 }
+            } else {
+                setActiveDrawingType('Cross');
             }
-            setActiveDrawingType('Cross');
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function draw(mouseX: number, mouseY: number) {
