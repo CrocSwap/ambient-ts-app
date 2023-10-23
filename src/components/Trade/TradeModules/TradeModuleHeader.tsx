@@ -39,6 +39,9 @@ function TradeModuleHeader(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
+    // TODO:    refactor this file to have only a single top-level return and remove
+    // TODO:    ... the `<div>` wrapper around the `TradeModuleHeaderContainer` element
+
     return (
         <>
             <div style={{ paddingBottom: isSwapPage ? '16px' : '' }}>
