@@ -21,17 +21,6 @@ import MentionAutoComplete from './MentionAutoComplete/MentionAutoComplete';
 import { User, getUserLabel, userLabelForFilter } from '../../Model/UserModel';
 import ReplyMessage from '../ReplyMessage/ReplyMessage';
 import CircularProgressBar from '../../../Global/OpenOrderStatus/CircularProgressBar';
-import {
-    Editor,
-    EditorState,
-    RichUtils,
-    convertToRaw,
-    ContentState,
-    Modifier,
-    ContentBlock,
-    CompositeDecorator,
-} from 'draft-js';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 interface MessageInputProps {
     currentUser: string;

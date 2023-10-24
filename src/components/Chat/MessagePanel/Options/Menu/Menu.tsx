@@ -19,19 +19,24 @@ interface propsIF {
     setReplyMessageContent: Dispatch<SetStateAction<Message | undefined>>;
     message: Message | undefined;
     addReactionListener: (message?: Message) => void;
+    isUserVerified: boolean;
+    riseToBottom: boolean;
 }
 export default function Menu(props: propsIF) {
     const { deleteMessage } = useChatApi();
     const closePanel = () => {
-        deleteMessage(props.id).then((result: any) => {
-            if (result.status === 'OK') {
-                props.setIsMessageDeleted(true);
-                props.deleteMsgFromList(props.id, props.isModerator);
-                return result;
-            } else {
-                props.setIsMessageDeleted(false);
-            }
-        });
+        // props.deleteMsgFromList(props.id)
+        // deleteMessage(props.id).then((result: any) => {
+        //     if (result.status === 'OK') {
+        //         props.setIsMessageDeleted(true);
+        //         props.deleteMsgFromList(props.id, props.isModerator);
+        //         return result;
+        //     } else {
+        //         props.setIsMessageDeleted(false);
+        //     }
+        // });
+
+        props.deleteMsgFromList(props.id);
     };
 
     const setReplyMessage = () => {
@@ -64,12 +69,33 @@ export default function Menu(props: propsIF) {
     ];
 
     const filteredOptions =
-        !props.isUsersMessage && !props.isModerator
+        !(props.isUsersMessage && props.isUserVerified) && !props.isModerator
             ? options.filter((option) => option.label !== 'Delete')
             : options;
 
+    console.log('........................................');
+    console.log(props.riseToBottom);
+    console.log('........................................');
+
     return (
-        <div className={styles.dropdown_item}>
+        <div
+            className={`${styles.dropdown_item}
+        ${props.riseToBottom ? styles.rise_to_bottom : ''}
+        `}
+            onMouseOver={() => {
+                console.log('mouse over');
+                props.setIsMoreButtonPressed(true);
+            }}
+            onMouseEnter={() => {
+                console.log('mouse enter');
+                props.setIsMoreButtonPressed(true);
+            }}
+            onMouseLeave={() => {
+                console.log('mouse leave');
+                props.setIsMoreButtonPressed(false);
+            }}
+        >
+            {props.isUserVerified}
             {filteredOptions.map((option, index) => {
                 return (
                     <>

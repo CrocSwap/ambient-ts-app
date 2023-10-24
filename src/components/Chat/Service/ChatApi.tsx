@@ -116,7 +116,7 @@ const useChatApi = () => {
 
     async function deleteMessage(_id: string) {
         const response = await fetch(
-            host + '/chat/api/messages/deleteMessage/' + _id,
+            host + '/chat/api/messages/deleteMessagev2/' + _id,
             {
                 method: 'POST',
             },

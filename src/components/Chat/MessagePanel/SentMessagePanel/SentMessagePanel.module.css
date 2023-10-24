@@ -374,6 +374,7 @@
     animation: msgBubbleAnim 0.1s ease-in-out forwards;
     transition: background .1s ease-in-out;
     width: 90%;
+    position: relative;
     /* border: 1px solid rgba(255,0,0, .3); */
 }
 

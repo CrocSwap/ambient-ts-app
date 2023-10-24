@@ -674,6 +674,24 @@ function SentMessagePanel(props: SentMessageProps) {
         return ret;
     }
 
+    const optionsButtonRef = useRef<any>();
+
+    function shouldOptionsRiseToBottom() {
+        console.log('calculating');
+
+        const wrapper = document.getElementById('chatmessage');
+        if (wrapper && optionsButtonRef.current) {
+            const wrapperCenter =
+                wrapper.getBoundingClientRect().height / 2 +
+                wrapper.getBoundingClientRect().top;
+            return (
+                wrapperCenter >
+                optionsButtonRef.current.getBoundingClientRect().top
+            );
+        }
+        return false;
+    }
+
     return (
         <div
             className={`${styles.msg_bubble_container} ${
@@ -713,7 +731,10 @@ function SentMessagePanel(props: SentMessageProps) {
                             }}
                         ></div>
                         {props.address && (
-                            <div className={styles.options_button}>
+                            <div
+                                ref={optionsButtonRef}
+                                className={styles.options_button}
+                            >
                                 <Options
                                     setIsReplyButtonPressed={
                                         props.setIsReplyButtonPressed
@@ -735,6 +756,7 @@ function SentMessagePanel(props: SentMessageProps) {
                                     addReactionListener={
                                         props.addReactionListener
                                     }
+                                    tooltipTop={shouldOptionsRiseToBottom()}
                                 />
                             </div>
                         )}
@@ -969,6 +991,10 @@ function SentMessagePanel(props: SentMessageProps) {
                                                 addReactionListener={
                                                     props.addReactionListener
                                                 }
+                                                isUserVerified={
+                                                    props.isUserVerified
+                                                }
+                                                riseToBottom={shouldOptionsRiseToBottom()}
                                             />
                                         </div>
                                     ) : (

@@ -6,6 +6,13 @@
     top: calc(50% - .5rem);
     transform: translateY(-100%);
     padding: 1rem;
+    z-index: 99;
+    /* background: rgba(255,0,0, .2); */
+}
+
+.rise_to_bottom{
+    /* top: calc(-50% + .5rem); */
+    transform: translateY(.5rem);
 }
 
 
