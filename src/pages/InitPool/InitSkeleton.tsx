@@ -77,7 +77,6 @@ export default function InitSkeleton(props: InitSkeletonProps) {
             >
                 <FlexContainer
                     rounded
-                    background='dark1'
                     position='relative'
                     style={{ height: '100%' }}
                     transition
