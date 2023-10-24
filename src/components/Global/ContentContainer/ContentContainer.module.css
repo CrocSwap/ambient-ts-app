@@ -41,7 +41,7 @@
 }
 
 .swap_route {
-    background: var(--swap-border);
+    background: var(--accent1);
     padding: 1px;
     border-radius: var(--border-radius);
     box-shadow: var(--swap-box-shadow);
