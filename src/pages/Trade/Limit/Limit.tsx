@@ -643,7 +643,6 @@ export default function Limit() {
                     setPreviousDisplayPrice={setPreviousDisplayPrice}
                     isSellTokenBase={isSellTokenBase}
                     setPriceInputFieldBlurred={setPriceInputFieldBlurred}
-                    fieldId='limit-rate'
                     updateURL={updateURL}
                 />
             }
