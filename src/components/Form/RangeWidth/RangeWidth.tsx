@@ -52,6 +52,7 @@ function RangeWidth(props: propsIF) {
         const truncatedValue: string = truncateDecimals(value, 2);
         // convert input value to a float and update range width
         setRangeWidthPercentage(parseFloat(truncatedValue));
+        setRescaleRangeBoundariesWithSlider(true);
     }
 
     return (
@@ -84,10 +85,7 @@ function RangeWidth(props: propsIF) {
                                     ? 'filled'
                                     : 'secondary'
                             }
-                            onClick={() => {
-                                updateRangeWithButton(preset);
-                                setRescaleRangeBoundariesWithSlider(true);
-                            }}
+                            onClick={() => updateRangeWithButton(preset)}
                             aria-label={`Set range width to ${humanReadable}.`}
                         >
                             {humanReadable}
