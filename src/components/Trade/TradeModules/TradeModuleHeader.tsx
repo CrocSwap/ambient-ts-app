@@ -16,16 +16,26 @@ import { useModal } from '../../Global/Modal/useModal';
 import { TradeModuleHeaderContainer } from '../../../styled/Components/TradeModules';
 import { Text } from '../../../styled/Common';
 import { SettingsSvg } from '../../../assets/images/icons/settingsSvg';
+import { BiArrowBack } from 'react-icons/bi';
 
 interface propsIF {
     slippage: SlippageMethodsIF;
     bypassConfirm: skipConfirmIF;
     settingsTitle: TransactionModuleType;
     isSwapPage?: boolean;
+    activeContent?: string;
+    handleSetActiveContent: (newActiveContent: string) => void;
 }
 
 function TradeModuleHeader(props: propsIF) {
-    const { slippage, bypassConfirm, settingsTitle, isSwapPage } = props;
+    const {
+        slippage,
+        bypassConfirm,
+        settingsTitle,
+        isSwapPage,
+        activeContent,
+        handleSetActiveContent,
+    } = props;
 
     const [isSettingsModalOpen, openSettingsModal, closeSettingsModal] =
         useModal();
@@ -39,6 +49,31 @@ function TradeModuleHeader(props: propsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
+    const generateTitle = (
+        activeContent: string,
+        settingsTitle: string,
+        isSwapPage: boolean,
+    ) => {
+        if (activeContent === 'main') {
+            return isSwapPage
+                ? 'Swap'
+                : (isDenomBase ? baseTokenSymbol : quoteTokenSymbol) +
+                      '/' +
+                      (isDenomBase ? quoteTokenSymbol : baseTokenSymbol);
+        }
+
+        switch (activeContent) {
+            case 'confirmation':
+                return `${settingsTitle} Confirmation`;
+            case 'settings':
+                return `${settingsTitle} Settings`;
+            case 'share':
+                return 'Share';
+            default:
+                return '';
+        }
+    };
+
     return (
         <>
             <div style={{ paddingBottom: isSwapPage ? '16px' : '' }}>
@@ -50,38 +85,56 @@ function TradeModuleHeader(props: propsIF) {
                     fontSize='header1'
                     color='text2'
                 >
-                    <AiOutlineShareAlt
-                        onClick={openShareModal}
-                        id='share_button'
-                        role='button'
-                        tabIndex={0}
-                        aria-label='Share button'
-                    />
-
-                    {isSwapPage ? (
-                        <Text color='text1'>Swap</Text>
-                    ) : (
-                        <Text
-                            color='text1'
-                            fontSize='header1'
-                            role='button'
-                            onClick={() => dispatch(toggleDidUserFlipDenom())}
-                        >
-                            {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
-                            {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
-                        </Text>
-                    )}
-                    <IconWithTooltip title='Settings' placement='left'>
-                        <div
-                            onClick={openSettingsModal}
-                            id='settings_button'
+                    {activeContent === 'main' ? (
+                        <AiOutlineShareAlt
+                            onClick={openShareModal}
+                            id='share_button'
                             role='button'
                             tabIndex={0}
-                            aria-label='Settings button'
-                        >
-                            {<SettingsSvg />}
-                        </div>
-                    </IconWithTooltip>
+                            aria-label='Share button'
+                        />
+                    ) : (
+                        <BiArrowBack
+                            onClick={() => handleSetActiveContent('main')}
+                            id='back button'
+                            role='button'
+                            tabIndex={0}
+                            aria-label='back button'
+                        />
+                    )}
+
+                    <Text
+                        color='text1'
+                        fontSize='header1'
+                        role='button'
+                        onClick={
+                            activeContent === 'main'
+                                ? () => dispatch(toggleDidUserFlipDenom())
+                                : undefined
+                        }
+                    >
+                        {generateTitle(
+                            activeContent ?? 'main',
+                            settingsTitle,
+                            isSwapPage ?? false,
+                        )}
+                    </Text>
+
+                    {activeContent === 'main' ? (
+                        <IconWithTooltip title='Settings' placement='left'>
+                            <div
+                                onClick={openSettingsModal}
+                                id='settings_button'
+                                role='button'
+                                tabIndex={0}
+                                aria-label='Settings button'
+                            >
+                                {<SettingsSvg />}
+                            </div>
+                        </IconWithTooltip>
+                    ) : (
+                        <p />
+                    )}
                 </TradeModuleHeaderContainer>
             </div>
             {isSettingsModalOpen && (

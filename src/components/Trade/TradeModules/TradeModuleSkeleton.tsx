@@ -16,6 +16,7 @@ import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import Button from '../../Form/Button';
 
 import TradeLinks from './TradeLinks';
+import MultiContentComponent from '../../Global/MultiStepTransaction/MultiContentComponent';
 
 interface PropsIF {
     chainId: string;
@@ -31,6 +32,9 @@ interface PropsIF {
     tutorialSteps: any;
     isSwapPage?: boolean;
     inputOptions?: ReactNode;
+
+    activeContent?: string;
+    setActiveContent?: (key: string) => void;
 }
 
 export const TradeModuleSkeleton = (props: PropsIF) => {
@@ -47,6 +51,8 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         approveButton,
         warnings,
         tutorialSteps,
+        activeContent,
+        setActiveContent,
     } = props;
 
     const {
@@ -99,7 +105,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         '<span style="color: var(--negative); text-transform: uppercase;">$1</span>',
     );
 
-    return (
+    const mainContent = (
         <section>
             {isTutorialActive && (
                 <FlexContainer
@@ -207,11 +213,38 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                     {warnings && warnings}
                 </FlexContainer>
             </ContentContainer>
-            {modal}
             <TutorialOverlay
                 isTutorialEnabled={isTutorialEnabled}
                 setIsTutorialEnabled={setIsTutorialEnabled}
                 steps={tutorialSteps}
+            />
+        </section>
+    );
+
+    const confirmationContent = (
+        <ContentContainer isOnTradeRoute={!isSwapPage}>
+            {header}
+            {modal}
+        </ContentContainer>
+    );
+    const handleSetActiveContent = (newActiveContent: string) => {
+        if (setActiveContent) {
+            setActiveContent(newActiveContent);
+        }
+    };
+
+    const settingsContent = <div>I am settings</div>;
+
+    console.log({ activeContent });
+
+    return (
+        <section>
+            <MultiContentComponent
+                mainContent={mainContent}
+                settingsContent={settingsContent}
+                confirmationContent={confirmationContent}
+                activeContent={activeContent ?? 'main'}
+                setActiveContent={handleSetActiveContent}
             />
         </section>
     );

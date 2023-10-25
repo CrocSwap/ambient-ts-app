@@ -448,8 +448,15 @@ function Swap(props: propsIF) {
             </WarningContainer>
         ) : undefined;
 
+    const [activeContent, setActiveContent] = useState('main');
+    const handleSetActiveContent = (newActiveContent: string) => {
+        setActiveContent(newActiveContent);
+    };
+
     return (
         <TradeModuleSkeleton
+            activeContent={activeContent}
+            setActiveContent={setActiveContent}
             chainId={chainId}
             isSwapPage={!isOnTradeRoute}
             header={
@@ -458,6 +465,8 @@ function Swap(props: propsIF) {
                     bypassConfirm={bypassConfirmSwap}
                     settingsTitle='Swap'
                     isSwapPage={!isOnTradeRoute}
+                    activeContent={activeContent}
+                    handleSetActiveContent={handleSetActiveContent}
                 />
             }
             input={
@@ -498,33 +507,27 @@ function Swap(props: propsIF) {
                 />
             }
             modal={
-                isModalOpen ? (
-                    <ConfirmSwapModal
-                        onClose={handleModalClose}
-                        tokenPair={{
-                            dataTokenA: tokenA,
-                            dataTokenB: tokenB,
-                        }}
-                        isDenomBase={isDenomBase}
-                        baseTokenSymbol={baseToken.symbol}
-                        quoteTokenSymbol={quoteToken.symbol}
-                        initiateSwapMethod={initiateSwap}
-                        newSwapTransactionHash={newSwapTransactionHash}
-                        txErrorCode={txErrorCode}
-                        showConfirmation={showConfirmation}
-                        resetConfirmation={resetConfirmation}
-                        slippageTolerancePercentage={
-                            slippageTolerancePercentage
-                        }
-                        effectivePrice={effectivePrice}
-                        isSellTokenBase={isSellTokenBase}
-                        sellQtyString={sellQtyString}
-                        buyQtyString={buyQtyString}
-                        isTokenAPrimary={isTokenAPrimary}
-                    />
-                ) : (
-                    <></>
-                )
+                <ConfirmSwapModal
+                    onClose={handleModalClose}
+                    tokenPair={{
+                        dataTokenA: tokenA,
+                        dataTokenB: tokenB,
+                    }}
+                    isDenomBase={isDenomBase}
+                    baseTokenSymbol={baseToken.symbol}
+                    quoteTokenSymbol={quoteToken.symbol}
+                    initiateSwapMethod={initiateSwap}
+                    newSwapTransactionHash={newSwapTransactionHash}
+                    txErrorCode={txErrorCode}
+                    showConfirmation={showConfirmation}
+                    resetConfirmation={resetConfirmation}
+                    slippageTolerancePercentage={slippageTolerancePercentage}
+                    effectivePrice={effectivePrice}
+                    isSellTokenBase={isSellTokenBase}
+                    sellQtyString={sellQtyString}
+                    buyQtyString={buyQtyString}
+                    isTokenAPrimary={isTokenAPrimary}
+                />
             }
             button={
                 <Button
@@ -545,7 +548,7 @@ function Swap(props: propsIF) {
                         areBothAckd
                             ? bypassConfirmSwap.isEnabled
                                 ? initiateSwap
-                                : handleModalOpen
+                                : () => setActiveContent('confirmation')
                             : ackAsNeeded
                     }
                     disabled={

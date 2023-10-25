@@ -20,6 +20,7 @@ import {
     ConfirmationQuantityContainer,
     ModalContainer,
 } from '../../../styled/Components/TradeModules';
+import { BiArrowBack } from 'react-icons/bi';
 
 interface propsIF {
     type: 'Swap' | 'Limit' | 'Range' | 'Reposition';
@@ -129,74 +130,67 @@ export default function TradeConfirmationSkeleton(props: propsIF) {
     );
 
     return (
-        <Modal
-            title={`${type === 'Range' ? 'Pool' : type} Confirmation`}
-            onClose={onClose}
+        <FlexContainer
+            flexDirection='column'
+            gap={8}
+            background='dark1'
+            aria-label='Transaction Confirmation modal'
         >
-            <ModalContainer
-                flexDirection='column'
-                padding='16px'
-                gap={8}
-                background='dark1'
-                aria-label='Transaction Confirmation modal'
-            >
-                {type === 'Swap' || type === 'Limit'
-                    ? tokenDisplay
-                    : poolTokenDisplay}
-                {transactionDetails && (
-                    <ConfirmationDetailsContainer
-                        flexDirection='column'
-                        gap={8}
-                        padding='8px'
-                    >
-                        {transactionDetails}
-                    </ConfirmationDetailsContainer>
-                )}
-                {extraNotes && extraNotes}
-                <footer>
-                    {!showConfirmation ? (
-                        !acknowledgeUpdate ? (
-                            <>
-                                <ConfirmationModalControl
-                                    tempBypassConfirm={skipFutureConfirmation}
-                                    setTempBypassConfirm={
-                                        setSkipFutureConfirmation
+            {type === 'Swap' || type === 'Limit'
+                ? tokenDisplay
+                : poolTokenDisplay}
+            {transactionDetails && (
+                <ConfirmationDetailsContainer
+                    flexDirection='column'
+                    gap={8}
+                    padding='8px'
+                >
+                    {transactionDetails}
+                </ConfirmationDetailsContainer>
+            )}
+            {extraNotes && extraNotes}
+            <footer>
+                {!showConfirmation ? (
+                    !acknowledgeUpdate ? (
+                        <>
+                            <ConfirmationModalControl
+                                tempBypassConfirm={skipFutureConfirmation}
+                                setTempBypassConfirm={setSkipFutureConfirmation}
+                            />
+                            <Button
+                                title={statusText}
+                                action={() => {
+                                    // if this modal is launched we can infer user wants confirmation
+                                    // if user enables bypass, update all settings in parallel
+                                    // otherwise do not not make any change to persisted preferences
+                                    if (skipFutureConfirmation) {
+                                        bypassConfirmSwap.enable();
+                                        bypassConfirmLimit.enable();
+                                        bypassConfirmRange.enable();
+                                        bypassConfirmRepo.enable();
                                     }
-                                />
-                                <Button
-                                    title={statusText}
-                                    action={() => {
-                                        // if this modal is launched we can infer user wants confirmation
-                                        // if user enables bypass, update all settings in parallel
-                                        // otherwise do not not make any change to persisted preferences
-                                        if (skipFutureConfirmation) {
-                                            bypassConfirmSwap.enable();
-                                            bypassConfirmLimit.enable();
-                                            bypassConfirmRange.enable();
-                                            bypassConfirmRepo.enable();
-                                        }
-                                        initiate();
-                                    }}
-                                    flat
-                                    disabled={!!acknowledgeUpdate}
-                                />
-                            </>
-                        ) : (
-                            acknowledgeUpdate
-                        )
+                                    console.log('showing stepper');
+                                    initiate();
+                                }}
+                                flat
+                                disabled={!!acknowledgeUpdate}
+                            />
+                        </>
                     ) : (
-                        <SubmitTransaction
-                            type={type}
-                            newTransactionHash={transactionHash}
-                            txErrorCode={txErrorCode}
-                            resetConfirmation={resetConfirmation}
-                            sendTransaction={initiate}
-                            transactionPendingDisplayString={statusText}
-                            disableSubmitAgain
-                        />
-                    )}
-                </footer>
-            </ModalContainer>
-        </Modal>
+                        acknowledgeUpdate
+                    )
+                ) : (
+                    <SubmitTransaction
+                        type={type}
+                        newTransactionHash={transactionHash}
+                        txErrorCode={txErrorCode}
+                        resetConfirmation={resetConfirmation}
+                        sendTransaction={initiate}
+                        transactionPendingDisplayString={statusText}
+                        disableSubmitAgain
+                    />
+                )}
+            </footer>
+        </FlexContainer>
     );
 }

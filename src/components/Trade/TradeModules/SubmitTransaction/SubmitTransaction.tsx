@@ -16,7 +16,8 @@ import {
     SubmitTransactionButton,
     SubmitTransactionExtraButton,
 } from '../../../../styled/Components/TradeModules';
-import { FlexContainer } from '../../../../styled/Common';
+import { FlexContainer, Text } from '../../../../styled/Common';
+import StepperComponent from '../../../Global/MultiStepTransaction/StepperComponent';
 
 interface propsIF {
     type:
@@ -36,6 +37,8 @@ interface propsIF {
 }
 export default function SubmitTransaction(props: propsIF) {
     const receiptData = useAppSelector((state) => state.receiptData);
+
+    const [activeStep, setActiveStep] = useState(0);
 
     const {
         type,
@@ -149,6 +152,51 @@ export default function SubmitTransaction(props: propsIF) {
         : transactionPendingDisplayString;
 
     const [showExtraInfo, setShowExtraInfo] = useState(false);
+    const yes = false;
+
+    const steps = [
+        { label: 'Sign transaction to initialize pool.' },
+        {
+            label: 'Submitting pool initialization for something',
+        },
+    ];
+    const isError = false;
+    const errorMessage = 'yes I am error';
+
+    if (yes)
+        return (
+            <StepperComponent
+                orientation='vertical'
+                steps={steps}
+                activeStep={activeStep}
+                setActiveStep={setActiveStep}
+                isError={isTransactionException || isTransactionDenied}
+                errorDisplay={
+                    isError && (
+                        <Text
+                            fontWeight='300'
+                            fontSize='body'
+                            color='other-red'
+                            align='center'
+                        >
+                            {buttonText}
+                        </Text>
+                    )
+                }
+                completedDisplay={
+                    isError && (
+                        <Text
+                            fontWeight='300'
+                            fontSize='body'
+                            color='other-green'
+                            align='center'
+                        >
+                            {`Pool initialization for ${errorMessage} completed`}
+                        </Text>
+                    )
+                }
+            />
+        );
 
     return (
         <FlexContainer flexDirection='column' gap={8}>
