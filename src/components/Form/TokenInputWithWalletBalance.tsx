@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useContext, useEffect, useState } from 'react';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../utils/numbers';
@@ -6,6 +6,10 @@ import TokenInputQuantity from './TokenInputQuantity';
 import { RefreshButton } from '../../styled/Components/TradeModules';
 import { FiRefreshCw } from 'react-icons/fi';
 import WalletBalanceSubinfo from './WalletBalanceSubinfo';
+import { CachedDataContext } from '../../contexts/CachedDataContext';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
+import { supportedNetworks } from '../../utils/networks';
 interface propsIF {
     tokenAorB: 'A' | 'B';
     token: TokenIF;
@@ -52,6 +56,39 @@ function TokenInputWithWalletBalance(props: propsIF) {
     } = props;
 
     const ETH_BUFFER = 0.025;
+
+    const [usdValueForDom, setUsdValueForDom] = useState<string | undefined>();
+
+    const {
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
+
+    const { cachedFetchTokenPrice } = useContext(CachedDataContext);
+
+    const pricedToken = getMainnetAddress(
+        token.address,
+        supportedNetworks[chainId],
+    );
+
+    useEffect(() => {
+        Promise.resolve(cachedFetchTokenPrice(pricedToken, chainId)).then(
+            (price) => {
+                if (price?.usdPrice !== undefined) {
+                    const usdValueNum: number =
+                        (price &&
+                            price?.usdPrice * (parseFloat(tokenInput) ?? 0)) ??
+                        0;
+                    const usdValueTruncated = getFormattedNumber({
+                        value: usdValueNum,
+                        isUSD: true,
+                    });
+                    setUsdValueForDom(usdValueTruncated);
+                } else {
+                    setUsdValueForDom(undefined);
+                }
+            },
+        );
+    }, [chainId, pricedToken, tokenInput]);
 
     const toDecimal = (val: string) =>
         isTokenEth ? parseFloat(val).toFixed(18) : parseFloat(val).toString();
@@ -104,9 +141,11 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection();
     };
 
-    const walletContent = showWallet && (
+    const walletContent = tokenInput !== '' && usdValueForDom !== undefined && (
         <>
             <WalletBalanceSubinfo
+                usdValueForDom={usdValueForDom}
+                showWallet={showWallet}
                 isWithdraw={isWithdraw ?? tokenAorB === 'A'}
                 balance={balanceToDisplay}
                 availableBalance={parseFloat(balanceWithBuffer)}

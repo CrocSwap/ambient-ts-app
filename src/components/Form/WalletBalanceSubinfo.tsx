@@ -11,6 +11,8 @@ import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import { FlexContainer } from '../../styled/Common';
 import { MaxButton } from '../../styled/Components/Portfolio';
 interface PropsIF {
+    usdValueForDom: string;
+    showWallet: boolean | undefined;
     isWithdraw: boolean;
     balance: string;
     useExchangeBalance: boolean;
@@ -22,6 +24,8 @@ interface PropsIF {
 }
 export default function WalletBalanceSubinfo(props: PropsIF) {
     const {
+        usdValueForDom,
+        showWallet,
         isWithdraw,
         balance,
         availableBalance,
@@ -213,21 +217,24 @@ export default function WalletBalanceSubinfo(props: PropsIF) {
             fontSize='body'
             color='text2'
         >
-            <p>eg: $1,234</p>
-            <FlexContainer
-                role='button'
-                flexDirection='row'
-                alignItems='center'
-                gap={8}
-                fontSize='body'
-            >
-                {walletPriceWithTooltip}
-                {onMaxButtonClick &&
-                    parseFloat(balance) > 0 &&
-                    maxButtonWithTooltip}
-                {walletWithTooltip}
-                {exchangeWithTooltip}
-            </FlexContainer>
+            <p>{usdValueForDom}</p>
+            {showWallet && (
+                <FlexContainer
+                    role='button'
+                    flexDirection='row'
+                    alignItems='center'
+                    gap={8}
+                    fontSize='body'
+                >
+                    {walletPriceWithTooltip}
+                    {onMaxButtonClick &&
+                        parseFloat(balance) > 0 &&
+                        maxButtonWithTooltip}
+                    {walletWithTooltip}
+                    {exchangeWithTooltip}
+                </FlexContainer>
+            )}
+
             {/* {onRefresh && (
                 <RefreshButton onClick={onRefresh} aria-label='Refresh data'>
                     <FiRefreshCw size={18} />
