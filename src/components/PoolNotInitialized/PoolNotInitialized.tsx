@@ -23,6 +23,7 @@ export const PoolNotInitalized = (props: PropsIF) => {
                     <div className={styles.pool_not_init_inner}>
                         <h2>This pool has not been initialized.</h2>
                         <h3>Do you want to initialize it?</h3>
+
                         <Link
                             to={linkGenInitPool.getFullURL({
                                 chain: chainId,
