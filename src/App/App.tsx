@@ -45,7 +45,6 @@ import SwitchNetwork from '../components/Global/SwitchNetworkAlert/SwitchNetwork
 import Explore from '../pages/Explore/Explore';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { FlexContainer } from '../styled/Common';
-import ExampleForm from '../pages/InitPool/FormExample';
 
 /** ***** React Function *******/
 export default function App() {
@@ -243,7 +242,6 @@ export default function App() {
                             }
                         />
                         <Route path='initpool/:params' element={<InitPool />} />
-                        <Route path='template/form' element={<ExampleForm />} />
 
                         <Route path='account' element={<Portfolio />} />
                         <Route
