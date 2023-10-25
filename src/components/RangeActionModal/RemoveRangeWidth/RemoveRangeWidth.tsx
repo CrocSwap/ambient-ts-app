@@ -23,41 +23,36 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                 percentage.toString();
         }
     };
-    const PercentageOptionContent = (
-        <>
-            <div className={styles.percentage_options}>
-                <span
-                    className={styles.percentage_amount}
-                    id='remove-percentage-output'
-                >
-                    {removalPercentage}%
-                </span>
-                {removalPresets.map((preset: presetValues) => {
-                    const humanReadable: string = preset + '%';
-                    return (
-                        <button
-                            key={preset.toString()}
-                            id={`remove_liq_preset_${humanReadable}`}
-                            className={
-                                removalPercentage === preset
-                                    ? styles.matching_percentage_button
-                                    : styles.percentage_option_buttons
-                            }
-                            onClick={() => handlePercentageUpdate(preset)}
-                        >
-                            {humanReadable}
-                        </button>
-                    );
-                })}
-            </div>
-        </>
-    );
 
     return (
         <div className={styles.range_width_container}>
             <span className={styles.title}>Amount</span>
             <div className={styles.range_width_content}>
-                {PercentageOptionContent}
+                <div className={styles.percentage_options}>
+                    <span
+                        className={styles.percentage_amount}
+                        id='remove-percentage-output'
+                    >
+                        {removalPercentage}%
+                    </span>
+                    {removalPresets.map((preset: presetValues) => {
+                        const humanReadable: string = preset + '%';
+                        return (
+                            <button
+                                key={preset.toString()}
+                                id={`remove_liq_preset_${humanReadable}`}
+                                className={
+                                    removalPercentage === preset
+                                        ? styles.matching_percentage_button
+                                        : styles.percentage_option_buttons
+                                }
+                                onClick={() => handlePercentageUpdate(preset)}
+                            >
+                                {humanReadable}
+                            </button>
+                        );
+                    })}
+                </div>
                 <div className={styles.range_width_input}>
                     <RangeSlider
                         percentageInput
