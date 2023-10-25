@@ -32,7 +32,9 @@ function RangeWidth(props: propsIF) {
     } = useContext(AppStateContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
+    // values to generate balanced mode preset buttons
     const balancedPresets: number[] = [5, 10, 25, 50, 100];
+    // type annotation as union of number-literals in `balancedPresets`
     type presetValues = typeof balancedPresets[number];
 
     // fn to update the width of range (balanced mode) from buttons
@@ -93,8 +95,10 @@ function RangeWidth(props: propsIF) {
                 gap={4}
             >
                 {balancedPresets.map((preset: presetValues) => {
+                    // convert raw preset data to human-readable strings
                     const humanReadable: string =
                         preset === 100 ? 'Ambient' : preset.toString() + '%';
+                    // return a JSX element clickable for each preset
                     return (
                         <Chip
                             key={humanReadable}
