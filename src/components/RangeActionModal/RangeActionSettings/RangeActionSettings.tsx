@@ -2,19 +2,22 @@ import { Dispatch, SetStateAction } from 'react';
 import { useSlippageInput } from '../../../utils/hooks/useSlippageInput';
 import styles from './RangeActionSettings.module.css';
 
-interface RangeActionSettingsIF {
+interface propsIF {
     persistedSlippage: number;
     setCurrentSlippage: Dispatch<SetStateAction<number>>;
     presets: number[];
 }
 
-export default function RangeActionSettings(props: RangeActionSettingsIF) {
+export default function RangeActionSettings(props: propsIF) {
     const { persistedSlippage, setCurrentSlippage, presets } = props;
 
     const [slip, takeNewSlippage] = useSlippageInput(
         persistedSlippage,
         setCurrentSlippage,
     );
+
+    // union type pf number-literal values in presets array
+    type presetValues = typeof presets[number];
 
     return (
         <div className={styles.main_container}>
@@ -35,14 +38,20 @@ export default function RangeActionSettings(props: RangeActionSettingsIF) {
                                 placeholder={'slippage'}
                             />
                         </div>
-                        {presets.map((preset: number) => (
-                            <button
-                                key={`rmv-preset-button-${preset}`}
-                                onClick={() => takeNewSlippage(preset)}
-                            >
-                                {preset}%
-                            </button>
-                        ))}
+                        {presets.map((preset: presetValues) => {
+                            // convert raw preset value to human-readable string
+                            const humanReadable: string = preset + '%';
+                            // create a `<button>` element for each defined preset
+                            return (
+                                <button
+                                    key={preset}
+                                    id={`rmv-preset-button-${humanReadable}`}
+                                    onClick={() => takeNewSlippage(preset)}
+                                >
+                                    {humanReadable}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
