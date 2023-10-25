@@ -260,6 +260,7 @@ export default function ExchangeBalance(props: propsIF) {
 
     const exchangeControl = (
         <PortfolioControlContainer
+            id='portfolio_sidebar_toggle'
             onClick={() => setFullLayoutActive(!fullLayoutActive)}
         >
             <IconWithTooltip title='Exchange Balance' placement='bottom'>
