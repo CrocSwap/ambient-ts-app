@@ -176,6 +176,7 @@ export default function ExampleForm() {
                         tokenA: isWithdrawTokenAFromDexChecked,
                         tokenB: isWithdrawTokenBFromDexChecked,
                     }}
+                    poolPriceNonDisplay={0}
                     isOutOfRange={false}
                     tokenAInputQty={{
                         value: baseCollateral,
@@ -186,14 +187,6 @@ export default function ExampleForm() {
                         set: setQuoteCollateral,
                     }}
                     toggleDexSelection={() => console.log('Hello')}
-                    handleButtonMessage={{
-                        tokenA: () => {
-                            console.log('TODO: handleRangeButtonMessageTokenA');
-                        },
-                        tokenB: () => {
-                            console.log('TODO: handleRangeButtonMessageTokenB');
-                        },
-                    }}
                     isInputDisabled={{
                         tokenA: false,
                         tokenB: false,

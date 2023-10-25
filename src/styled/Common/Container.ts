@@ -51,7 +51,7 @@ export interface ContainerProps {
     zIndex?: number;
     minHeight?: string;
     maxHeight?: string;
-    overlay?: 'blur';
+    overlay?: 'blur' | null | undefined | boolean;
     margin?: string;
     padding?: string;
     display?: Displays;
