@@ -254,6 +254,8 @@ function Sidebar() {
         setOpenAllDefault(!openAllDefault);
     };
 
+    // TODO: why are we using an `<input>` as a clickable to close the sidebar?
+
     const searchContainerDisplay = (
         <FlexContainer
             flexDirection='row'
@@ -293,11 +295,13 @@ function Sidebar() {
                         >
                             {openAllDefault ? (
                                 <BsChevronContract
+                                    id='sidebar_expand_all_button'
                                     size={18}
                                     onClick={toggleExpandCollapseAll}
                                 />
                             ) : (
                                 <BsChevronExpand
+                                    id='sidebar_collapse_all_button'
                                     size={18}
                                     onClick={toggleExpandCollapseAll}
                                 />
@@ -313,6 +317,7 @@ function Sidebar() {
                             }
                         >
                             <input
+                                id='close_sidebar_button'
                                 type='image'
                                 src={closeSidebarImage}
                                 alt='close sidebar'
