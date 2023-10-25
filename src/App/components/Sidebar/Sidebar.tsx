@@ -91,7 +91,6 @@ function Sidebar() {
         {
             name: 'Top Pools',
             icon: <TopPoolsIcon open={sidebar.isOpen} size={20} />,
-
             data: (
                 <TopPools
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
@@ -275,11 +274,13 @@ function Sidebar() {
                         >
                             {isLocked ? (
                                 <AiFillLock
+                                    id='sidebar_is_locked_clickable'
                                     size={18}
                                     onClick={toggleLockSidebar}
                                 />
                             ) : (
                                 <AiFillUnlock
+                                    id='sidebar_is_unlocked_clickable'
                                     size={18}
                                     onClick={toggleLockSidebar}
                                 />
