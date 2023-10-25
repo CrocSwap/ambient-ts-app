@@ -52,55 +52,6 @@ function RangeWidth(props: propsIF) {
         setRangeWidthPercentage(parseFloat(truncatedValue));
     }
 
-    const PercentageOptionContent = (
-        <FlexContainer
-            fullWidth
-            wrap
-            justifyContent='center'
-            alignItems='center'
-            gap={4}
-        >
-            {balancedPresets.map((preset: presetValues) => {
-                const humanReadable: string =
-                    preset === 100 ? 'Ambient' : preset.toString() + '%';
-                return (
-                    <Chip
-                        key={humanReadable}
-                        id={`range_width_preset_${humanReadable}`}
-                        variant={
-                            rangeWidthPercentage === preset
-                                ? 'filled'
-                                : 'secondary'
-                        }
-                        onClick={() => {
-                            updateRangeWithButton(preset);
-                            setRescaleRangeBoundariesWithSlider(true);
-                        }}
-                        aria-label={`Set range width to ${humanReadable}.`}
-                    >
-                        {humanReadable}
-                    </Chip>
-                );
-            })}
-            <ExplanationButton
-                onClick={() =>
-                    openGlobalPopup(
-                        <div>
-                            Ambient liquidity remains fully in range regardless
-                            of pool price, but accumulates rewards at lower
-                            rates.
-                        </div>,
-                        'Ambient Range Width',
-                        'right',
-                    )
-                }
-                aria-label='Open range width explanation popup.'
-            >
-                <AiOutlineInfoCircle color='var(--text2)' />
-            </ExplanationButton>
-        </FlexContainer>
-    );
-
     const rangeWidthTooltip = (
         <ExplanationButton
             style={{ margin: '0 8px', cursor: 'pointer' }}
@@ -134,7 +85,52 @@ function RangeWidth(props: propsIF) {
             id='range_width'
             margin='0 0 16px 0'
         >
-            {PercentageOptionContent}
+            <FlexContainer
+                fullWidth
+                wrap
+                justifyContent='center'
+                alignItems='center'
+                gap={4}
+            >
+                {balancedPresets.map((preset: presetValues) => {
+                    const humanReadable: string =
+                        preset === 100 ? 'Ambient' : preset.toString() + '%';
+                    return (
+                        <Chip
+                            key={humanReadable}
+                            id={`range_width_preset_${humanReadable}`}
+                            variant={
+                                rangeWidthPercentage === preset
+                                    ? 'filled'
+                                    : 'secondary'
+                            }
+                            onClick={() => {
+                                updateRangeWithButton(preset);
+                                setRescaleRangeBoundariesWithSlider(true);
+                            }}
+                            aria-label={`Set range width to ${humanReadable}.`}
+                        >
+                            {humanReadable}
+                        </Chip>
+                    );
+                })}
+                <ExplanationButton
+                    onClick={() =>
+                        openGlobalPopup(
+                            <div>
+                                Ambient liquidity remains fully in range
+                                regardless of pool price, but accumulates
+                                rewards at lower rates.
+                            </div>,
+                            'Ambient Range Width',
+                            'right',
+                        )
+                    }
+                    aria-label='Open range width explanation popup.'
+                >
+                    <AiOutlineInfoCircle color='var(--text2)' />
+                </ExplanationButton>
+            </FlexContainer>
             <FlexContainer
                 justifyContent='center'
                 fontWeight='100'
