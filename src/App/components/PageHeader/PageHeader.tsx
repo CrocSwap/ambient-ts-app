@@ -367,7 +367,10 @@ const PageHeader = function () {
             <RightSide>
                 {show ? (
                     <TradeNowDiv justifyContent='flex-end' alignItems='center'>
-                        <TradeNowButton inNav />
+                        <TradeNowButton
+                            inNav
+                            fieldId='trade_now_btn_in_page_header'
+                        />
                     </TradeNowDiv>
                 ) : (
                     <div>
