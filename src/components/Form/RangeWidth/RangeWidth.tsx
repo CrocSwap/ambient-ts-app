@@ -10,7 +10,7 @@ import { handleRangeSlider } from './rangeWidthFunctions';
 import RangeSlider from '../RangeSlider';
 import { Chip } from '../Chip';
 import { ExplanationButton } from '../Icons/Icons.styles';
-import { FlexContainer } from '../../../styled/Common';
+import { FlexContainer, Text } from '../../../styled/Common';
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 
 // interface for React functional component props
@@ -120,9 +120,11 @@ function RangeWidth(props: propsIF) {
                 aria-atomic='true'
                 aria-relevant='all'
             >
-                {rangeWidthPercentage === 100
-                    ? 'Ambient'
-                    : '± ' + rangeWidthPercentage + '%'}
+                <Text color='text2' fontWeight='100' id='bal_range_width'>
+                    {rangeWidthPercentage === 100
+                        ? 'Ambient'
+                        : `± ${rangeWidthPercentage}%`}
+                </Text>
                 <ExplanationButton
                     style={{ margin: '0 8px', cursor: 'pointer' }}
                     onClick={() =>
