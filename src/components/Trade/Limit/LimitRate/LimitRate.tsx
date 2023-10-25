@@ -172,12 +172,14 @@ export default function LimitRate(props: propsIF) {
                     disabled={!isPoolInitialized}
                 >
                     <LimitRateButton
+                        id='increase_limit_rate_button'
                         onClick={!isDenomBase ? increaseTick : decreaseTick}
                         aria-label='Increase limit tick.'
                     >
                         <HiPlus />
                     </LimitRateButton>
                     <LimitRateButton
+                        id='decrease_limit_tick_button'
                         onClick={!isDenomBase ? decreaseTick : increaseTick}
                         aria-label='Decrease limit tick.'
                     >
