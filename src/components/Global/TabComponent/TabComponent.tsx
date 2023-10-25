@@ -149,7 +149,9 @@ export default function TabComponent(props: TabPropsIF) {
                 {data.map((item) => (
                     <li
                         key={item.label}
-                        id={`${item.label.toLowerCase()}_tab_clickable`}
+                        id={`${item.label
+                            .replaceAll(' ', '_')
+                            .toLowerCase()}_tab_clickable`}
                         className={
                             item.label === selectedTab.label
                                 ? styles.selected
@@ -210,7 +212,9 @@ export default function TabComponent(props: TabPropsIF) {
             {data.map((item) => (
                 <li
                     key={item.label}
-                    id={`${item.label.toLowerCase()}_tab_clickable`}
+                    id={`${item.label
+                        .replaceAll(' ', '_')
+                        .toLowerCase()}_tab_clickable`}
                     className={
                         item.label === selectedTab.label
                             ? styles.selected
@@ -238,8 +242,6 @@ export default function TabComponent(props: TabPropsIF) {
                             onClick={() => handleSelectedTab(item)}
                             role='tab'
                             aria-selected={item.label === selectedTab.label}
-
-                            // tabIndex={item.label === selectedTab.label ? 0 : -1}
                         >
                             {' '}
                             {item.label}
