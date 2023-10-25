@@ -15,9 +15,11 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
     // type annotation as union of number-literals in `removalPresets`
     type presetValues = typeof removalPresets[number];
 
+    const sliderFieldId = 'remove-range-slider';
+
     const handlePercentageUpdate = (percentage: number) => {
         setRemovalPercentage(percentage);
-        const sliderInputField = document.getElementById('remove-range-slider');
+        const sliderInputField = document.getElementById(sliderFieldId);
         if (sliderInputField) {
             (sliderInputField as HTMLInputElement).value =
                 percentage.toString();
@@ -58,7 +60,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                         percentageInput
                         aria-labelledby='input slider'
                         defaultValue={removalPercentage}
-                        id='remove-range-slider'
+                        id={sliderFieldId}
                         onChange={(e) =>
                             handlePercentageUpdate(parseInt(e.target.value))
                         }
