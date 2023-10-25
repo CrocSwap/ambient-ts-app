@@ -2,22 +2,23 @@ import { Dispatch, SetStateAction } from 'react';
 import styles from './RemoveRangeWidth.module.css';
 import RangeSlider from '../../Form/RangeSlider';
 
-interface RemoveRangeWidthPropsIF {
+interface propsIF {
     removalPercentage: number;
     setRemovalPercentage: Dispatch<SetStateAction<number>>;
 }
 
-export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
+export default function RemoveRangeWidth(props: propsIF) {
     const { removalPercentage, setRemovalPercentage } = props;
 
-    // values to generate balanced mode preset buttons
+    // values to generate remove liquidity preset buttons
     const removalPresets: number[] = [10, 25, 50, 100];
     // type annotation as union of number-literals in `removalPresets`
     type presetValues = typeof removalPresets[number];
 
+    // id attribute for removal slider input (referenced in multiple places)
     const sliderFieldId = 'remove-range-slider';
 
-    const handlePercentageUpdate = (percentage: number) => {
+    const handlePercentageUpdate = (percentage: number): void => {
         setRemovalPercentage(percentage);
         const sliderInputField = document.getElementById(sliderFieldId);
         if (sliderInputField) {
@@ -38,7 +39,9 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                         {removalPercentage}%
                     </span>
                     {removalPresets.map((preset: presetValues) => {
+                        // convert raw preset to a human-readable string
                         const humanReadable: string = preset + '%';
+                        // create a `<button>` element for each preset value
                         return (
                             <button
                                 key={preset.toString()}
