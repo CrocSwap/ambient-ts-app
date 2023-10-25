@@ -32,8 +32,11 @@ function RangeWidth(props: propsIF) {
     } = useContext(AppStateContext);
     const { showRangePulseAnimation } = useContext(TradeTableContext);
 
+    const balancedPresets: number[] = [5, 10, 25, 50, 100];
+    type presetValues = typeof balancedPresets[number];
+
     // fn to update the width of range (balanced mode) from buttons
-    function updateRangeWithButton(value: 5 | 10 | 25 | 50 | 100): void {
+    function updateRangeWithButton(value: presetValues): void {
         // convert the numerical input to a string
         const valueString: string = value.toString();
         // locate the range adjustment slider in the DOM
@@ -50,92 +53,52 @@ function RangeWidth(props: propsIF) {
     }
 
     const PercentageOptionContent = (
-        <>
-            <FlexContainer
-                fullWidth
-                wrap
-                justifyContent='center'
-                alignItems='center'
-                gap={4}
+        <FlexContainer
+            fullWidth
+            wrap
+            justifyContent='center'
+            alignItems='center'
+            gap={4}
+        >
+            {balancedPresets.map((preset: presetValues) => {
+                const humanReadable: string =
+                    preset === 100 ? 'Ambient' : preset.toString() + '%';
+                return (
+                    <Chip
+                        key={humanReadable}
+                        id={`range_width_preset_${humanReadable}`}
+                        variant={
+                            rangeWidthPercentage === preset
+                                ? 'filled'
+                                : 'secondary'
+                        }
+                        onClick={() => {
+                            updateRangeWithButton(preset);
+                            setRescaleRangeBoundariesWithSlider(true);
+                        }}
+                        aria-label={`Set range width to ${humanReadable}.`}
+                    >
+                        {humanReadable}
+                    </Chip>
+                );
+            })}
+            <ExplanationButton
+                onClick={() =>
+                    openGlobalPopup(
+                        <div>
+                            Ambient liquidity remains fully in range regardless
+                            of pool price, but accumulates rewards at lower
+                            rates.
+                        </div>,
+                        'Ambient Range Width',
+                        'right',
+                    )
+                }
+                aria-label='Open range width explanation popup.'
             >
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 5 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(5);
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='Set range width to 5%.'
-                >
-                    5%
-                </Chip>
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 10 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(10);
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='Set range width to 10%.'
-                >
-                    10%
-                </Chip>
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 25 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(25);
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='Set range width to 25%.'
-                >
-                    25%
-                </Chip>
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 50 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(50);
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='Set range width to 50%.'
-                >
-                    50%
-                </Chip>
-                <Chip
-                    variant={
-                        rangeWidthPercentage === 100 ? 'filled' : 'secondary'
-                    }
-                    onClick={() => {
-                        updateRangeWithButton(100);
-                        setRescaleRangeBoundariesWithSlider(true);
-                    }}
-                    aria-label='use Ambient range width.'
-                >
-                    Ambient
-                </Chip>
-                <ExplanationButton
-                    onClick={() =>
-                        openGlobalPopup(
-                            <div>
-                                Ambient liquidity remains fully in range
-                                regardless of pool price, but accumulates
-                                rewards at lower rates.
-                            </div>,
-                            'Ambient Range Width',
-                            'right',
-                        )
-                    }
-                    aria-label='Open range width explanation popup.'
-                >
-                    <AiOutlineInfoCircle color='var(--text2)' />
-                </ExplanationButton>
-            </FlexContainer>
-        </>
+                <AiOutlineInfoCircle color='var(--text2)' />
+            </ExplanationButton>
+        </FlexContainer>
     );
 
     const rangeWidthTooltip = (

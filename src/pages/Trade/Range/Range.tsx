@@ -986,31 +986,29 @@ function Range() {
                 />
             }
             input={
-                <>
-                    <RangeTokenInput
-                        isAmbient={isAmbient}
-                        depositSkew={depositSkew}
-                        poolPriceNonDisplay={poolPriceNonDisplay}
-                        isWithdrawFromDexChecked={{
-                            tokenA: isWithdrawTokenAFromDexChecked,
-                            tokenB: isWithdrawTokenBFromDexChecked,
-                        }}
-                        isOutOfRange={isOutOfRange}
-                        tokenAInputQty={{
-                            value: tokenAInputQty,
-                            set: setTokenAInputQty,
-                        }}
-                        tokenBInputQty={{
-                            value: tokenBInputQty,
-                            set: setTokenBInputQty,
-                        }}
-                        toggleDexSelection={toggleDexSelection}
-                        isInputDisabled={{
-                            tokenA: isTokenAInputDisabled,
-                            tokenB: isTokenBInputDisabled,
-                        }}
-                    />
-                </>
+                <RangeTokenInput
+                    isAmbient={isAmbient}
+                    depositSkew={depositSkew}
+                    poolPriceNonDisplay={poolPriceNonDisplay}
+                    isWithdrawFromDexChecked={{
+                        tokenA: isWithdrawTokenAFromDexChecked,
+                        tokenB: isWithdrawTokenBFromDexChecked,
+                    }}
+                    isOutOfRange={isOutOfRange}
+                    tokenAInputQty={{
+                        value: tokenAInputQty,
+                        set: setTokenAInputQty,
+                    }}
+                    tokenBInputQty={{
+                        value: tokenBInputQty,
+                        set: setTokenBInputQty,
+                    }}
+                    toggleDexSelection={toggleDexSelection}
+                    isInputDisabled={{
+                        tokenA: isTokenAInputDisabled,
+                        tokenB: isTokenBInputDisabled,
+                    }}
+                />
             }
             inputOptions={
                 <RangeBounds
