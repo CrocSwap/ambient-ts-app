@@ -54,30 +54,6 @@ function RangeWidth(props: propsIF) {
         setRangeWidthPercentage(parseFloat(truncatedValue));
     }
 
-    const rangeWidthTooltip = (
-        <ExplanationButton
-            style={{ margin: '0 8px', cursor: 'pointer' }}
-            onClick={() =>
-                openGlobalPopup(
-                    <div>
-                        <p>
-                            Percentage width of the range around current pool
-                            price.
-                        </p>
-                        <p>
-                            Tighter ranges accumulate rewards at faster rates,
-                            but are more likely to suffer divergence losses.
-                        </p>
-                    </div>,
-                    'Range Width',
-                    'right',
-                )
-            }
-        >
-            <AiOutlineInfoCircle size={17} />
-        </ExplanationButton>
-    );
-
     return (
         <FlexContainer
             fullWidth
@@ -149,7 +125,28 @@ function RangeWidth(props: propsIF) {
                 {rangeWidthPercentage === 100
                     ? 'Ambient'
                     : '± ' + rangeWidthPercentage + '%'}
-                {rangeWidthTooltip}
+                <ExplanationButton
+                    style={{ margin: '0 8px', cursor: 'pointer' }}
+                    onClick={() =>
+                        openGlobalPopup(
+                            <div>
+                                <p>
+                                    Percentage width of the range around current
+                                    pool price.
+                                </p>
+                                <p>
+                                    Tighter ranges accumulate rewards at faster
+                                    rates, but are more likely to suffer
+                                    divergence losses.
+                                </p>
+                            </div>,
+                            'Range Width',
+                            'right',
+                        )
+                    }
+                >
+                    <AiOutlineInfoCircle size={17} />
+                </ExplanationButton>
             </FlexContainer>
             <FlexContainer
                 alignItems='center'
