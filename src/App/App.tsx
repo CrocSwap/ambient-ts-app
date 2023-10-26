@@ -261,15 +261,18 @@ export default function App() {
                         {IS_LOCAL_ENV && (
                             <Route path='testpage' element={<TestPage />} />
                         )}
+                        {IS_LOCAL_ENV && (
+                            <Route
+                                path='template/form'
+                                element={<ExampleForm />}
+                            />
+                        )}
                         <Route path='/:address' element={<Portfolio />} />
                         <Route path='/404' element={<NotFound />} />
                         <Route
                             path='*'
                             element={<Navigate to='/404' replace />}
                         />
-                        IS_LOCAL_ENV && (
-                        <Route path='template/form' element={<ExampleForm />} />
-                        )
                     </Routes>
                 </section>
             </FlexContainer>
