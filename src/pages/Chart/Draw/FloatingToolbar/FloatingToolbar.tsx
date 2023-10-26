@@ -25,6 +25,7 @@ import {
 import { TbBrush } from 'react-icons/tb';
 import { SketchPicker } from 'react-color';
 import { IoCloseOutline } from 'react-icons/io5';
+import useKeyPress from '../../../../App/hooks/useKeyPress';
 
 interface FloatingToolbarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -62,11 +63,22 @@ function FloatingToolbar(props: FloatingToolbarProps) {
     const [isSizeOptionTabActive, setIsSizeOptionTabActive] = useState(false);
     const [isColorPickerTabActive, setIsColorPickerTabActive] = useState(false);
 
+    const isDeletePressed = useKeyPress('Delete');
+
+    useEffect(() => {
+        if (isDeletePressed && selectedDrawnShape) {
+            deleteDrawnShape();
+        }
+    }, [isDeletePressed]);
+
     useEffect(() => {
         if (selectedDrawnShape === undefined) {
             setIsStyleOptionTabActive(false);
             setIsColorPickerTabActive(false);
             setIsSizeOptionTabActive(false);
+            setBackgroundColorPicker(() => '#7371fc');
+        } else {
+            setBackgroundColorPicker(() => selectedDrawnShape?.data.color);
         }
     }, [selectedDrawnShape]);
 
@@ -292,7 +304,7 @@ function FloatingToolbar(props: FloatingToolbarProps) {
                 .select(floatingDivRef.current)
                 .node() as HTMLDivElement;
 
-            setDivLeft(mainCanvasBoundingClientRect?.width);
+            setDivLeft(mainCanvasBoundingClientRect?.width / 1.3);
             setDivTop(
                 mainCanvasBoundingClientRect?.top -
                     (floatingDiv.getBoundingClientRect().height + 10),

@@ -2761,17 +2761,36 @@ export default function Chart(props: propsIF) {
                                         denomInBase: denomInBase,
                                     } as bandLineData;
 
-                                    const fillerSqu = item.color;
+                                    const rgbaValues =
+                                        item.color.match(/\d+(\.\d+)?/g);
 
-                                    item.data[1].ctx.decorate(
-                                        (context: CanvasRenderingContext2D) => {
-                                            context.fillStyle =
-                                                fillerSqu.replace(
-                                                    '1)',
-                                                    '0.15)',
-                                                );
-                                        },
-                                    );
+                                    if (rgbaValues) {
+                                        const alphaValue =
+                                            Number(rgbaValues[3]) < 0.3
+                                                ? Number(rgbaValues[3]) / 2
+                                                : '0.15';
+
+                                        const rectRgbaFiller =
+                                            'rgba(' +
+                                            rgbaValues[0] +
+                                            ',' +
+                                            rgbaValues[1] +
+                                            ',' +
+                                            rgbaValues[2] +
+                                            ',' +
+                                            alphaValue +
+                                            ')';
+
+                                        item.data[1].ctx.decorate(
+                                            (
+                                                context: CanvasRenderingContext2D,
+                                            ) => {
+                                                context.fillStyle =
+                                                    rectRgbaFiller;
+                                            },
+                                        );
+                                    }
+
                                     item.data[1].ctx([bandData]);
 
                                     const lineOfBand = createPointsOfBandLine(
