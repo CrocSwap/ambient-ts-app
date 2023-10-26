@@ -148,7 +148,7 @@ export default function InitConfirmation(props: InitConfirmationProps) {
             <FlexContainer
                 flexDirection='column'
                 gap={8}
-                justifyContent={!isMintLiqEnabled ? 'center' : ''}
+                justifyContent={!isMintLiqEnabled ? 'center' : undefined}
                 style={{ height: '100%' }}
             >
                 {tokensInfo}

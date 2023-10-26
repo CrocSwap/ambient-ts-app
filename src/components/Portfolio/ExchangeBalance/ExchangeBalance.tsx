@@ -288,7 +288,7 @@ export default function ExchangeBalance(props: propsIF) {
                 background='dark1'
                 rounded
                 fullHeight
-                desktop={{ maxWidth: '400px%' }}
+                xl={{ maxWidth: '400px' }}
             >
                 <PortfolioMotionSubContainer
                     fullHeight

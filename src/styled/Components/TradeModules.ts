@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
 import { Link } from 'react-router-dom';
 import { FlexContainer, GridContainer, Text } from '../Common';
-import { AnimationProps, Animations } from '../Animations';
+import { AnimationProps, Animations } from '../Common/Animations';
 
 export const TradeModuleLink = styled(Link)<{ isActive: boolean }>`
     display: flex;
