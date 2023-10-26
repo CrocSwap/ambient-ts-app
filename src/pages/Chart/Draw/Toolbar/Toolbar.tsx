@@ -4,6 +4,7 @@ import drawLine from '../../../../assets/images/icons/draw/draw_line.svg';
 import drawCross from '../../../../assets/images/icons/draw/draw_cross.svg';
 import drawRect from '../../../../assets/images/icons/draw/rect.svg';
 import drawAngle from '../../../../assets/images/icons/draw/angle_line.svg';
+import horizontalRay from '../../../../assets/images/icons/draw/horizontal_ray.svg';
 
 interface ToolbarProps {
     activeDrawingType: string;
@@ -59,6 +60,10 @@ function Toolbar(props: ToolbarProps) {
         {
             icon: drawRect,
             label: 'Square',
+        },
+        {
+            icon: horizontalRay,
+            label: 'Ray',
         },
 
         // Add more icons here
