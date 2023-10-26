@@ -104,32 +104,41 @@ export default function DragCanvas(props: DragCanvasProps) {
 
         const previosData = drawnShapeHistory[index].data;
 
-        const lastDataIndex = previosData.findIndex(
-            (item) =>
-                hoveredDrawnShape?.selectedCircle &&
-                item.x === hoveredDrawnShape?.selectedCircle.x &&
-                item.y ===
-                    (item.denomInBase === denomInBase
-                        ? hoveredDrawnShape?.selectedCircle.y
-                        : 1 / hoveredDrawnShape?.selectedCircle.y),
-        );
+        if (drawnShapeHistory[index].type === 'Ray') {
+            previosData.forEach((data) => {
+                data.x = scaleData.xScale.invert(offsetX);
+                data.y =
+                    data.denomInBase === denomInBase
+                        ? scaleData.yScale.invert(offsetY)
+                        : 1 / scaleData.yScale.invert(offsetY);
+            });
+        } else {
+            const lastDataIndex = previosData.findIndex(
+                (item) =>
+                    hoveredDrawnShape?.selectedCircle &&
+                    item.x === hoveredDrawnShape?.selectedCircle.x &&
+                    item.y ===
+                        (item.denomInBase === denomInBase
+                            ? hoveredDrawnShape?.selectedCircle.y
+                            : 1 / hoveredDrawnShape?.selectedCircle.y),
+            );
 
-        if (lastDataIndex !== -1) {
-            if (hoveredDrawnShape && hoveredDrawnShape.selectedCircle) {
-                hoveredDrawnShape.selectedCircle.x =
-                    scaleData.xScale.invert(offsetX);
-                hoveredDrawnShape.selectedCircle.y =
-                    scaleData.yScale.invert(offsetY);
+            if (lastDataIndex !== -1) {
+                if (hoveredDrawnShape && hoveredDrawnShape.selectedCircle) {
+                    hoveredDrawnShape.selectedCircle.x =
+                        scaleData.xScale.invert(offsetX);
+                    hoveredDrawnShape.selectedCircle.y =
+                        scaleData.yScale.invert(offsetY);
+                }
+
+                previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
+                previosData[lastDataIndex].y =
+                    previosData[lastDataIndex].denomInBase === denomInBase
+                        ? scaleData.yScale.invert(offsetY)
+                        : 1 / scaleData.yScale.invert(offsetY);
             }
-
-            previosData[lastDataIndex].x = scaleData.xScale.invert(offsetX);
-            previosData[lastDataIndex].y =
-                previosData[lastDataIndex].denomInBase === denomInBase
-                    ? scaleData.yScale.invert(offsetY)
-                    : 1 / scaleData.yScale.invert(offsetY);
-
-            drawnShapeHistory[index].data = previosData;
         }
+        drawnShapeHistory[index].data = previosData;
     }
 
     function updateDrawRect(
@@ -319,7 +328,8 @@ export default function DragCanvas(props: DragCanvasProps) {
                         if (
                             hoveredDrawnShape &&
                             (hoveredDrawnShape.data.type === 'Brush' ||
-                                hoveredDrawnShape.data.type === 'Angle')
+                                hoveredDrawnShape.data.type === 'Angle' ||
+                                hoveredDrawnShape.data.type === 'Ray')
                         ) {
                             if (!hoveredDrawnShape.selectedCircle) {
                                 dragLine(movemementX, movemementY);

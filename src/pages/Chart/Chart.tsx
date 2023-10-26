@@ -2833,6 +2833,79 @@ export default function Chart(props: propsIF) {
                                         }
                                     });
                                 }
+
+                                if (item.type === 'Ray') {
+                                    item.data[1].ctx
+                                        .xScale()
+                                        .domain(scaleData.xScale.domain());
+
+                                    item.data[1].ctx
+                                        .yScale()
+                                        .domain(scaleData.yScale.domain());
+
+                                    const range = [
+                                        scaleData.xScale(item.data[0].x),
+                                        scaleData.xScale.range()[1],
+                                    ];
+
+                                    item.data[1].ctx.xScale().range(range);
+                                    if (ctx) ctx.setLineDash(item.style);
+                                    item.data[1].ctx.decorate(
+                                        (context: CanvasRenderingContext2D) => {
+                                            context.strokeStyle = item.color;
+                                            context.lineWidth = item.lineWidth;
+                                        },
+                                    );
+
+                                    item.data[1].ctx([
+                                        {
+                                            denomInBase:
+                                                item.data[0].denomInBase,
+                                            y:
+                                                item.data[0].denomInBase ===
+                                                denomInBase
+                                                    ? item.data[0].y
+                                                    : 1 / item.data[0].y,
+                                        },
+                                    ]);
+
+                                    if (
+                                        hoveredDrawnShape &&
+                                        hoveredDrawnShape.data.time ===
+                                            item.time
+                                    ) {
+                                        if (
+                                            hoveredDrawnShape &&
+                                            hoveredDrawnShape.selectedCircle &&
+                                            hoveredDrawnShape.selectedCircle
+                                                .x === item.data[0].x &&
+                                            item.data[0].y ===
+                                                (item.data[0].denomInBase ===
+                                                denomInBase
+                                                    ? hoveredDrawnShape
+                                                          ?.selectedCircle.y
+                                                    : 1 /
+                                                      hoveredDrawnShape
+                                                          ?.selectedCircle.y)
+                                        ) {
+                                            if (!isUpdatingShape) {
+                                                selectedCircleSeries([
+                                                    item.data[0],
+                                                ]);
+                                            }
+                                        } else {
+                                            circleSeries([
+                                                {
+                                                    denomInBase:
+                                                        item.data[0]
+                                                            .denomInBase,
+                                                    y: item.data[0].y,
+                                                    x: item.data[0].x,
+                                                },
+                                            ]);
+                                        }
+                                    }
+                                }
                             }
                         }
                     });
@@ -2841,7 +2914,7 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', () => {
                     drawnShapeHistory?.forEach((item) => {
-                        if (item.type === 'Square') {
+                        if (item.type === 'Square' || item.type === 'Ray') {
                             item.data[1].ctx.context(ctx);
                         }
                     });
@@ -3401,6 +3474,40 @@ export default function Chart(props: propsIF) {
         return isOverLine;
     }
 
+    function checkRayLineLocation(
+        element: lineData[],
+        mouseX: number,
+        mouseY: number,
+        denomInBase: boolean,
+    ) {
+        if (scaleData) {
+            const startX = element[0].x;
+            const startY =
+                element[0].denomInBase === denomInBase
+                    ? element[0].y
+                    : 1 / element[0].y;
+            const endX = scaleData.xScale.domain()[1];
+            const endY =
+                element[0].denomInBase === denomInBase
+                    ? element[0].y
+                    : 1 / element[0].y;
+
+            const threshold = 10;
+            const distance = distanceToLine(
+                mouseX,
+                mouseY,
+                scaleData.xScale(startX),
+                scaleData.yScale(startY),
+                scaleData.xScale(endX),
+                scaleData.yScale(endY),
+            );
+
+            return distance < threshold;
+        }
+
+        return false;
+    }
+
     const drawnShapesHoverStatus = (mouseX: number, mouseY: number) => {
         let resElement = undefined;
 
@@ -3431,6 +3538,18 @@ export default function Chart(props: propsIF) {
 
                 if (element.type === 'Square') {
                     if (checkRectLocation(element.data, mouseX, mouseY)) {
+                        resElement = element;
+                    }
+                }
+                if (element.type === 'Ray') {
+                    if (
+                        checkRayLineLocation(
+                            element.data,
+                            mouseX,
+                            mouseY,
+                            denomInBase,
+                        )
+                    ) {
                         resElement = element;
                     }
                 }

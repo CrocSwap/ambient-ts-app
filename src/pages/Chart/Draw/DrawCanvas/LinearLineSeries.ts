@@ -22,6 +22,21 @@ export function createLinearLineSeries(
         });
 }
 
+export function createAnnotationLineSeries(
+    xScale: d3.ScaleLinear<number, number>,
+    yScale: d3.ScaleLinear<number, number>,
+) {
+    return d3fc
+        .annotationCanvasLine()
+        .value((d: lineData) => d.y)
+        .xScale(xScale)
+        .yScale(yScale)
+        .decorate((context: CanvasRenderingContext2D) => {
+            context.strokeStyle = '#7371fc';
+            context.lineWidth = 1.5;
+        });
+}
+
 export function distanceToLine(
     x: number,
     y: number,

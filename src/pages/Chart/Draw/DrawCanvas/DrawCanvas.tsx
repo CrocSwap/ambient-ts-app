@@ -11,7 +11,10 @@ import {
 } from '../../ChartUtils/chartUtils';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { createCircle } from '../../ChartUtils/circle';
-import { createLinearLineSeries } from './LinearLineSeries';
+import {
+    createAnnotationLineSeries,
+    createLinearLineSeries,
+} from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';
 import { TradeDataIF } from '../../../../utils/state/tradeDataSlice';
 
@@ -144,7 +147,7 @@ function DrawCanvas(props: DrawCanvasProps) {
             const valueX = scaleData?.xScale.invert(offsetX);
             const valueY = scaleData?.yScale.invert(offsetY);
 
-            if (tempLineData.length > 0) {
+            if (tempLineData.length > 0 || activeDrawingType === 'Ray') {
                 endDrawing(mouseX, mouseY);
             } else {
                 tempLineData.push({
@@ -162,40 +165,77 @@ function DrawCanvas(props: DrawCanvasProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function endDrawing(mouseX: number, mouseY: number) {
             if (!cancelDraw) {
+                let endDraw = false;
                 const offsetY = mouseY - canvasRect?.top;
                 const offsetX = mouseX - canvasRect?.left;
 
                 const valueX = scaleData?.xScale.invert(offsetX);
                 const valueY = scaleData?.yScale.invert(offsetY);
 
-                const firstValueX = scaleData?.xScale(tempLineData[0].x);
-                const firstValueY = scaleData?.yScale(tempLineData[0].y);
+                if (activeDrawingType !== 'Ray') {
+                    const firstValueX = scaleData?.xScale(tempLineData[0].x);
+                    const firstValueY = scaleData?.yScale(tempLineData[0].y);
 
-                const checkThreshold = Math.hypot(
-                    offsetX - firstValueX,
-                    offsetY - firstValueY,
-                );
-
-                if (checkThreshold > threshold) {
-                    const newBandScale = createScaleForBandArea(
-                        tempLineData[0].x,
-                        valueX,
+                    const checkThreshold = Math.hypot(
+                        offsetX - firstValueX,
+                        offsetY - firstValueY,
                     );
 
-                    const bandArea = createBandArea(
-                        newBandScale,
-                        scaleData?.yScale,
-                        denomInBase,
-                    );
+                    endDraw = checkThreshold > threshold;
+                }
 
-                    bandArea
-                        .xScale()
-                        .range([firstValueX, scaleData?.xScale(valueX)]);
+                if (endDraw || activeDrawingType === 'Ray') {
+                    let shapeCtx;
+
+                    if (activeDrawingType === 'Ray') {
+                        const newRayScale = scaleData.xScale.copy();
+
+                        newRayScale.range([
+                            valueX,
+                            scaleData.xScale.range()[1],
+                        ]);
+
+                        const rayLine = createAnnotationLineSeries(
+                            newRayScale,
+                            scaleData?.yScale,
+                        );
+
+                        shapeCtx = rayLine;
+
+                        tempLineData[0] = {
+                            x: valueX,
+                            y: valueY,
+                            ctx: shapeCtx,
+                            denomInBase: denomInBase,
+                        };
+                    }
+
+                    if (activeDrawingType === 'Square') {
+                        const newBandScale = createScaleForBandArea(
+                            tempLineData[0].x,
+                            valueX,
+                        );
+
+                        const bandArea = createBandArea(
+                            newBandScale,
+                            scaleData?.yScale,
+                            denomInBase,
+                        );
+
+                        bandArea
+                            .xScale()
+                            .range([
+                                scaleData?.xScale(tempLineData[0].x),
+                                scaleData?.xScale(valueX),
+                            ]);
+
+                        shapeCtx = bandArea;
+                    }
 
                     tempLineData[1] = {
                         x: valueX,
                         y: valueY,
-                        ctx: bandArea,
+                        ctx: shapeCtx,
                         denomInBase: denomInBase,
                     };
 
@@ -236,7 +276,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                 setCrossHairDataFunc(offsetX, offsetY);
 
-                if (!isDrawing) return;
+                if (!isDrawing || activeDrawingType === 'Ray') return;
 
                 const newBandScale = createScaleForBandArea(
                     tempLineData[0].x,
@@ -447,6 +487,40 @@ function DrawCanvas(props: DrawCanvasProps) {
                 .on('measure', (event: CustomEvent) => {
                     lineData[1].ctx.context(ctx);
                     lineSeries.context(ctx);
+                    circleSeries.context(ctx);
+                    scaleData?.yScale.range([event.detail.height, 0]);
+                });
+        }
+    }, [diffHashSig(lineData), denomInBase]);
+
+    useEffect(() => {
+        const canvas = d3
+            .select(d3DrawCanvas.current)
+            .select('canvas')
+            .node() as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+
+        if (scaleData && lineData.length > 1 && activeDrawingType === 'Ray') {
+            d3.select(d3DrawCanvas.current)
+                .on('draw', () => {
+                    setCanvasResolution(canvas);
+
+                    lineData[1].ctx([
+                        {
+                            denomInBase: lineData[0].denomInBase,
+                            y: lineData[0].y,
+                        },
+                    ]);
+                    circleSeries([
+                        {
+                            denomInBase: lineData[0].denomInBase,
+                            y: lineData[0].y,
+                            x: lineData[0].x,
+                        },
+                    ]);
+                })
+                .on('measure', (event: CustomEvent) => {
+                    lineData[1].ctx.context(ctx);
                     circleSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
