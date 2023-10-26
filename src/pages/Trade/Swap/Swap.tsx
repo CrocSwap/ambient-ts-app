@@ -457,6 +457,7 @@ function Swap(props: propsIF) {
         <TradeModuleSkeleton
             activeContent={activeContent}
             setActiveContent={setActiveContent}
+            handleSetActiveContent={handleSetActiveContent}
             chainId={chainId}
             isSwapPage={!isOnTradeRoute}
             header={

@@ -17,6 +17,7 @@ import Button from '../../Form/Button';
 
 import TradeLinks from './TradeLinks';
 import MultiContentComponent from '../../Global/MultiStepTransaction/MultiContentComponent';
+import ShareModal from '../../Global/ShareModal/ShareModal';
 
 interface PropsIF {
     chainId: string;
@@ -33,8 +34,9 @@ interface PropsIF {
     isSwapPage?: boolean;
     inputOptions?: ReactNode;
 
-    activeContent?: string;
-    setActiveContent?: (key: string) => void;
+    activeContent: string;
+    setActiveContent: (key: string) => void;
+    handleSetActiveContent: (newActiveContent: string) => void;
 }
 
 export const TradeModuleSkeleton = (props: PropsIF) => {
@@ -53,6 +55,7 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
         tutorialSteps,
         activeContent,
         setActiveContent,
+        handleSetActiveContent,
     } = props;
 
     const {
@@ -227,11 +230,13 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
             {modal}
         </ContentContainer>
     );
-    const handleSetActiveContent = (newActiveContent: string) => {
-        if (setActiveContent) {
-            setActiveContent(newActiveContent);
-        }
-    };
+
+    const shareContent = (
+        <ContentContainer isOnTradeRoute={!isSwapPage}>
+            {header}
+            <ShareModal />
+        </ContentContainer>
+    );
 
     const settingsContent = <div>I am settings</div>;
 
@@ -243,8 +248,20 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
                 mainContent={mainContent}
                 settingsContent={settingsContent}
                 confirmationContent={confirmationContent}
-                activeContent={activeContent ?? 'main'}
+                activeContent={activeContent}
                 setActiveContent={handleSetActiveContent}
+                otherContents={[
+                    {
+                        title: 'share',
+                        content: shareContent,
+                        activeKey: 'share',
+                    },
+                    {
+                        title: 'Other 2',
+                        content: <div>Other Content 2</div>,
+                        activeKey: 'example',
+                    },
+                ]}
             />
         </section>
     );

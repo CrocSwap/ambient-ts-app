@@ -607,15 +607,24 @@ export default function Limit() {
         needConfirmTokenA && tokens.acknowledge(tokenA);
         needConfirmTokenB && tokens.acknowledge(tokenB);
     };
+    const [activeContent, setActiveContent] = useState('main');
+    const handleSetActiveContent = (newActiveContent: string) => {
+        setActiveContent(newActiveContent);
+    };
 
     return (
         <TradeModuleSkeleton
             chainId={chainId}
+            activeContent={activeContent}
+            setActiveContent={setActiveContent}
+            handleSetActiveContent={handleSetActiveContent}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmLimit}
                     settingsTitle='Limit Order'
+                    activeContent={activeContent}
+                    handleSetActiveContent={handleSetActiveContent}
                 />
             }
             input={
@@ -661,26 +670,20 @@ export default function Limit() {
                 />
             }
             modal={
-                isOpen ? (
-                    <ConfirmLimitModal
-                        onClose={handleModalClose}
-                        initiateLimitOrderMethod={sendLimitOrder}
-                        tokenAInputQty={tokenAInputQty}
-                        tokenBInputQty={tokenBInputQty}
-                        insideTickDisplayPrice={endDisplayPrice}
-                        newLimitOrderTransactionHash={
-                            newLimitOrderTransactionHash
-                        }
-                        txErrorCode={txErrorCode}
-                        showConfirmation={showConfirmation}
-                        resetConfirmation={resetConfirmation}
-                        startDisplayPrice={startDisplayPrice}
-                        middleDisplayPrice={middleDisplayPrice}
-                        endDisplayPrice={endDisplayPrice}
-                    />
-                ) : (
-                    <></>
-                )
+                <ConfirmLimitModal
+                    onClose={handleModalClose}
+                    initiateLimitOrderMethod={sendLimitOrder}
+                    tokenAInputQty={tokenAInputQty}
+                    tokenBInputQty={tokenBInputQty}
+                    insideTickDisplayPrice={endDisplayPrice}
+                    newLimitOrderTransactionHash={newLimitOrderTransactionHash}
+                    txErrorCode={txErrorCode}
+                    showConfirmation={showConfirmation}
+                    resetConfirmation={resetConfirmation}
+                    startDisplayPrice={startDisplayPrice}
+                    middleDisplayPrice={middleDisplayPrice}
+                    endDisplayPrice={endDisplayPrice}
+                />
             }
             button={
                 <Button
@@ -697,7 +700,7 @@ export default function Limit() {
                         areBothAckd
                             ? bypassConfirmLimit.isEnabled
                                 ? sendLimitOrder
-                                : handleModalOpen
+                                : () => setActiveContent('confirmation')
                             : ackAsNeeded
                     }
                     disabled={

@@ -87,7 +87,7 @@ function TradeModuleHeader(props: propsIF) {
                 >
                     {activeContent === 'main' ? (
                         <AiOutlineShareAlt
-                            onClick={openShareModal}
+                            onClick={() => handleSetActiveContent('share')}
                             id='share_button'
                             role='button'
                             tabIndex={0}
@@ -145,7 +145,7 @@ function TradeModuleHeader(props: propsIF) {
                     onClose={closeSettingsModal}
                 />
             )}
-            {isShareModalOpen && <ShareModal onClose={closeShareModal} />}
+            {/* {isShareModalOpen && <ShareModal onClose={closeShareModal} />} */}
         </>
     );
 }

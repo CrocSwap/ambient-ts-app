@@ -39,10 +39,7 @@ function SocialLink(props: SocialLinkPropsIF) {
     );
 }
 
-interface propsIF {
-    onClose: () => void;
-}
-export default function ShareModal({ onClose }: propsIF) {
+export default function ShareModal() {
     const location = useLocation();
     // const currentUrl = location.href
     const currentPathname = location.pathname;
@@ -105,35 +102,28 @@ export default function ShareModal({ onClose }: propsIF) {
     );
 
     return (
-        <Modal title='Share' onClose={onClose}>
-            <FlexContainer flexDirection='column' gap={8} padding='16px'>
-                {shareIconsContent}
+        <FlexContainer flexDirection='column' gap={8} padding='16px'>
+            {shareIconsContent}
 
-                <Text color='text2'>URL:</Text>
-                <FlexContainer
-                    fullWidth
-                    alignItems='center'
-                    gap={8}
-                    color='text2'
+            <Text color='text2'>URL:</Text>
+            <FlexContainer fullWidth alignItems='center' gap={8} color='text2'>
+                <ShareUrl
+                    type='text'
+                    placeholder={`${linkToShare}`}
+                    disabled={true}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        setLinkToShare(e?.target.value)
+                    }
+                />
+
+                <IconButton
+                    onClick={handleCopyAddress}
+                    tabIndex={0}
+                    aria-label='Copy to clipboard'
                 >
-                    <ShareUrl
-                        type='text'
-                        placeholder={`${linkToShare}`}
-                        disabled={true}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                            setLinkToShare(e?.target.value)
-                        }
-                    />
-
-                    <IconButton
-                        onClick={handleCopyAddress}
-                        tabIndex={0}
-                        aria-label='Copy to clipboard'
-                    >
-                        <FiCopy size={25} />
-                    </IconButton>
-                </FlexContainer>
+                    <FiCopy size={25} />
+                </IconButton>
             </FlexContainer>
-        </Modal>
+        </FlexContainer>
     );
 }

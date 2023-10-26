@@ -10,7 +10,11 @@ interface MultiContentComponentProps {
     mainContent: React.ReactNode;
     settingsContent: React.ReactNode;
     confirmationContent: React.ReactNode;
-    otherContents?: { title: string; content: React.ReactNode }[];
+    otherContents?: {
+        title: string;
+        content: React.ReactNode;
+        activeKey: string;
+    }[];
     activeContent: string;
     setActiveContent: (key: string) => void;
 }
@@ -34,12 +38,17 @@ const MultiContentComponent: React.FC<MultiContentComponentProps> = ({
             content: confirmationContent,
             key: 'confirmation',
         },
-        ...(otherContents || []).map(({ title, content }, index) => ({
-            label: title || `Other Content ${index + 1}`,
+        ...(otherContents || []).map(({ title, content, activeKey }) => ({
+            label: title || 'Other Content',
             content,
-            key: `other${index}`,
+            key: activeKey,
         })),
     ];
+
+    console.log('activeContent', activeContent);
+    const activeKeyFromOtherContent = otherContents.find(
+        (content) => content.activeKey === activeContent,
+    )?.activeKey;
 
     return (
         <>
@@ -47,7 +56,10 @@ const MultiContentComponent: React.FC<MultiContentComponentProps> = ({
                 <div
                     key={key}
                     style={{
-                        display: key === activeContent ? 'block' : 'none',
+                        display:
+                            key === (activeKeyFromOtherContent || activeContent)
+                                ? 'block'
+                                : 'none',
                     }}
                 >
                     {content}

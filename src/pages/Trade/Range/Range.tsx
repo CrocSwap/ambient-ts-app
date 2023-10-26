@@ -974,15 +974,23 @@ function Range() {
         aprPercentage: aprPercentage,
         daysInRange: daysInRange,
     };
-
+    const [activeContent, setActiveContent] = useState('main');
+    const handleSetActiveContent = (newActiveContent: string) => {
+        setActiveContent(newActiveContent);
+    };
     return (
         <TradeModuleSkeleton
             chainId={chainId}
+            activeContent={activeContent}
+            setActiveContent={setActiveContent}
+            handleSetActiveContent={handleSetActiveContent}
             header={
                 <TradeModuleHeader
                     slippage={mintSlippage}
                     bypassConfirm={bypassConfirmRange}
                     settingsTitle='Pool'
+                    activeContent={activeContent}
+                    handleSetActiveContent={handleSetActiveContent}
                 />
             }
             input={
@@ -1022,41 +1030,37 @@ function Range() {
             }
             transactionDetails={<RangeExtraInfo {...rangeExtraInfoProps} />}
             modal={
-                isOpen ? (
-                    <ConfirmRangeModal
-                        tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
-                        tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
-                        spotPriceDisplay={getFormattedNumber({
-                            value: displayPriceWithDenom,
-                        })}
-                        isTokenABase={isTokenABase}
-                        isAmbient={isAmbient}
-                        isAdd={isAdd}
-                        maxPriceDisplay={maxPriceDisplay}
-                        minPriceDisplay={minPriceDisplay}
-                        sendTransaction={sendTransaction}
-                        newRangeTransactionHash={newRangeTransactionHash}
-                        resetConfirmation={resetConfirmation}
-                        showConfirmation={showConfirmation}
-                        txErrorCode={txErrorCode}
-                        isInRange={!isOutOfRange}
-                        pinnedMinPriceDisplayTruncatedInBase={
-                            pinnedMinPriceDisplayTruncatedInBase
-                        }
-                        pinnedMinPriceDisplayTruncatedInQuote={
-                            pinnedMinPriceDisplayTruncatedInQuote
-                        }
-                        pinnedMaxPriceDisplayTruncatedInBase={
-                            pinnedMaxPriceDisplayTruncatedInBase
-                        }
-                        pinnedMaxPriceDisplayTruncatedInQuote={
-                            pinnedMaxPriceDisplayTruncatedInQuote
-                        }
-                        onClose={handleModalClose}
-                    />
-                ) : (
-                    <></>
-                )
+                <ConfirmRangeModal
+                    tokenAQty={isTokenAInputDisabled ? '' : tokenAInputQty}
+                    tokenBQty={isTokenBInputDisabled ? '' : tokenBInputQty}
+                    spotPriceDisplay={getFormattedNumber({
+                        value: displayPriceWithDenom,
+                    })}
+                    isTokenABase={isTokenABase}
+                    isAmbient={isAmbient}
+                    isAdd={isAdd}
+                    maxPriceDisplay={maxPriceDisplay}
+                    minPriceDisplay={minPriceDisplay}
+                    sendTransaction={sendTransaction}
+                    newRangeTransactionHash={newRangeTransactionHash}
+                    resetConfirmation={resetConfirmation}
+                    showConfirmation={showConfirmation}
+                    txErrorCode={txErrorCode}
+                    isInRange={!isOutOfRange}
+                    pinnedMinPriceDisplayTruncatedInBase={
+                        pinnedMinPriceDisplayTruncatedInBase
+                    }
+                    pinnedMinPriceDisplayTruncatedInQuote={
+                        pinnedMinPriceDisplayTruncatedInQuote
+                    }
+                    pinnedMaxPriceDisplayTruncatedInBase={
+                        pinnedMaxPriceDisplayTruncatedInBase
+                    }
+                    pinnedMaxPriceDisplayTruncatedInQuote={
+                        pinnedMaxPriceDisplayTruncatedInQuote
+                    }
+                    onClose={handleModalClose}
+                />
             }
             button={
                 <Button
@@ -1080,7 +1084,7 @@ function Range() {
                         areBothAckd
                             ? bypassConfirmRange.isEnabled
                                 ? sendTransaction
-                                : handleModalOpen
+                                : () => setActiveContent('confirmation')
                             : ackAsNeeded
                     }
                     disabled={
