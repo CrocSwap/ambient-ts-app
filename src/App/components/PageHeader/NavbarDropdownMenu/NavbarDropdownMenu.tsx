@@ -102,69 +102,46 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const ariaLabel =
         'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
 
-    const closeMenuBar = (): void => closeMenu && closeMenu();
-
     interface navDataIF {
         icon: JSX.Element;
-        action: () => void;
+        resource: string;
         text: string;
     }
 
     const navData: navDataIF[] = [
         {
             icon: <BsBook size={18} />,
-            action: () => {
-                openInNewTab(DOCS_LINK);
-                closeMenuBar();
-            },
+            resource: DOCS_LINK,
             text: 'Docs',
         },
         {
             icon: <AiFillTwitterCircle size={20} />,
-            action: () => {
-                openInNewTab(TWITTER_LINK);
-                closeMenuBar();
-            },
+            resource: TWITTER_LINK,
             text: 'Twitter',
         },
         {
             icon: <FaDiscord size={20} />,
-            action: () => {
-                openInNewTab(DISCORD_LINK);
-                closeMenuBar();
-            },
+            resource: DISCORD_LINK,
             text: 'Discord',
         },
         {
             icon: <BsMedium size={20} />,
-            action: () => {
-                openInNewTab(MEDIUM_LINK);
-                closeMenuBar();
-            },
+            resource: MEDIUM_LINK,
             text: 'Medium',
         },
         {
             icon: <IoDocumentTextSharp size={20} />,
-            action: () => {
-                openInNewTab(`${window.location.origin}/${termsUrls.privacy}`);
-                closeMenuBar();
-            },
+            resource: `${window.location.origin}/${termsUrls.privacy}`,
             text: 'Privacy',
         },
         {
             icon: <IoDocumentTextSharp size={20} />,
-            action: () => {
-                openInNewTab(`${window.location.origin}/${termsUrls.tos}`);
-                closeMenuBar();
-            },
+            resource: `${window.location.origin}/${termsUrls.tos}`,
             text: 'Terms of Service',
         },
         {
             icon: <GiAlligatorClip size={20} />,
-            action: () => {
-                window.open(CORPORATE_LINK, '_blank');
-                closeMenuBar();
-            },
+            resource: CORPORATE_LINK,
             text: 'About the Team',
         },
     ];
@@ -188,7 +165,10 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                         <NavbarDropdownItem
                             key={item.text}
                             rightIcon={item.icon}
-                            onClick={item.action}
+                            onClick={() => {
+                                openInNewTab(item.resource);
+                                closeMenu && closeMenu();
+                            }}
                         >
                             {item.text}
                         </NavbarDropdownItem>
