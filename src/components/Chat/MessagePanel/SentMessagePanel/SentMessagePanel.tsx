@@ -84,7 +84,6 @@ interface SentMessageProps {
 function SentMessagePanel(props: SentMessageProps) {
     const { deleteMsgFromList } = props;
     const [isMoreButtonPressed, setIsMoreButtonPressed] = useState(false);
-    const [aa, setaa] = useState('');
     const [hasSeparator, setHasSeparator] = useState(false);
     const [isClickedOptions, setIsClickedOptions] = useState(false);
     const [isPosition, setIsPosition] = useState(false);
@@ -111,8 +110,6 @@ function SentMessagePanel(props: SentMessageProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    const deletedMessageText = 'This message has deleted.';
 
     const handleInitialLikeDislike = () => {
         let retVal = 0;
