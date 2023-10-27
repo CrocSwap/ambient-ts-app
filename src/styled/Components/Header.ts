@@ -370,13 +370,12 @@ export const NavbarDropdown = styled.div`
     position: absolute;
     top: 60px;
     width: 240px;
-    height: 376px;
+    height: 420px;
     transform: translateX(-45%);
     border: none;
     padding: 1rem;
     overflow: hidden;
     transition: all var(--animation-speed) ease;
-
     background: var(--dark2);
     border-radius: var(--border-radius);
     box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
