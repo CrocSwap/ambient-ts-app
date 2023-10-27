@@ -101,18 +101,6 @@ function SwapTokenInput(props: propsIF) {
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastInput = useDebounce(lastInput, 750);
 
-    // useEffect(() => {
-    //     if (isTokenAPrimary) {
-    //         if (sellQtyString !== '') {
-    //             setIsBuyLoading(true);
-    //         }
-    //     } else {
-    //         if (buyQtyString !== '') {
-    //             setIsSellLoading(true);
-    //         }
-    //     }
-    // }, []);
-
     useEffect(() => {
         handleBlockUpdate();
     }, [lastBlockNumber]);
@@ -134,8 +122,6 @@ function SwapTokenInput(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            console.log({ rtkMatchesParams });
-            console.log({ tokenA, tokenB });
             if (rtkMatchesParams) {
                 await refreshTokenData();
                 setDisableReverseTokens(false);
