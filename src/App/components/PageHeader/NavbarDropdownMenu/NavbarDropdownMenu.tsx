@@ -6,6 +6,7 @@ import { AiFillTwitterCircle } from 'react-icons/ai';
 import { IoDocumentTextSharp } from 'react-icons/io5';
 import { BsBook, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
+import { GiAlligatorClip } from 'react-icons/gi';
 
 import '../../../App.css';
 import useKeyPress from '../../../hooks/useKeyPress';
@@ -15,6 +16,7 @@ import {
     DOCS_LINK,
     MEDIUM_LINK,
     TWITTER_LINK,
+    CORPORATE_LINK,
 } from '../../../../constants';
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
@@ -132,6 +134,11 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         closeMenuBar();
     };
 
+    const handleAboutTheTeam = () => {
+        window.open(CORPORATE_LINK, '_blank');
+        closeMenuBar();
+    };
+
     return (
         <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel}>
             <CSSTransition
@@ -182,6 +189,12 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                         onClick={handleTOSClick}
                     >
                         Terms of Service
+                    </NavbarDropdownItem>
+                    <NavbarDropdownItem
+                        rightIcon={<GiAlligatorClip size={20} />}
+                        onClick={handleAboutTheTeam}
+                    >
+                        About the Team
                     </NavbarDropdownItem>
                     {isUserLoggedIn ? (
                         <NavbarLogoutContainer>
