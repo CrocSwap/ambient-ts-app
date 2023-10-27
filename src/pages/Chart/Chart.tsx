@@ -2821,9 +2821,12 @@ export default function Chart(props: propsIF) {
                                         lineSeries(line);
 
                                         if (
-                                            hoveredDrawnShape &&
-                                            hoveredDrawnShape.data.time ===
-                                                item.time
+                                            (hoveredDrawnShape &&
+                                                hoveredDrawnShape.data.time ===
+                                                    item.time) ||
+                                            (selectedDrawnShape &&
+                                                selectedDrawnShape.data.time ===
+                                                    item.time)
                                         ) {
                                             line.forEach((element, _index) => {
                                                 const selectedCircleIsActive =
@@ -2901,9 +2904,12 @@ export default function Chart(props: propsIF) {
                                     ]);
 
                                     if (
-                                        hoveredDrawnShape &&
-                                        hoveredDrawnShape.data.time ===
-                                            item.time
+                                        (hoveredDrawnShape &&
+                                            hoveredDrawnShape.data.time ===
+                                                item.time) ||
+                                        (selectedDrawnShape &&
+                                            selectedDrawnShape.data.time ===
+                                                item.time)
                                     ) {
                                         if (
                                             hoveredDrawnShape &&
@@ -3605,6 +3611,8 @@ export default function Chart(props: propsIF) {
                 scaleData,
                 denomInBase,
             );
+
+            console.log({ resElement });
 
             setHoveredDrawnShape({
                 data: resElement,
