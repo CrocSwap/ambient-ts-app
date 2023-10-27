@@ -1,6 +1,6 @@
 .token_info {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(18ch, 2fr) 3fr;
     width: 100%;
     align-items: center;
     color: var(--text1);
@@ -45,10 +45,4 @@
     display: flex;
     justify-content: flex-end;
     color: var(--text1);
-}
-
-@media only screen and (min-width: 768px) {
-    .token_info {
-        width: 50%;
-    }
 }

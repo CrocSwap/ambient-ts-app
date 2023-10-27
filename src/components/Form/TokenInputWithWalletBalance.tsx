@@ -3,7 +3,7 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatTokenInput } from '../../utils/numbers';
 import TokenInputQuantity from './TokenInputQuantity';
-import { WalletBallanceSubinfo } from './WalletBalanceSubinfo';
+import { WalletBalanceSubinfo } from './WalletBalanceSubinfo';
 
 interface propsIF {
     tokenAorB: 'A' | 'B';
@@ -104,7 +104,7 @@ function TokenInputWithWalletBalance(props: propsIF) {
     };
 
     const walletContent = showWallet && (
-        <WalletBallanceSubinfo
+        <WalletBalanceSubinfo
             isWithdraw={isWithdraw ?? tokenAorB === 'A'}
             balance={balanceToDisplay}
             availableBalance={parseFloat(balanceWithBuffer)}
