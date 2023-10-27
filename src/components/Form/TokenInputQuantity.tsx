@@ -237,12 +237,7 @@ function TokenInputQuantity(props: propsIF) {
             >
                 <div style={{ position: 'relative' }}>
                     {isLoading ? (
-                        <FlexContainer
-                            fullWidth
-                            fullHeight
-                            alignItems='center'
-                            margin='0 32px'
-                        >
+                        <FlexContainer fullWidth fullHeight alignItems='center'>
                             <Spinner size={24} bg='var(--dark2)' weight={2} />
                         </FlexContainer>
                     ) : (

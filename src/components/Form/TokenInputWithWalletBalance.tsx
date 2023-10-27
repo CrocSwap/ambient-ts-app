@@ -141,10 +141,12 @@ function TokenInputWithWalletBalance(props: propsIF) {
         handleToggleDexSelection();
     };
 
-    const walletContent = tokenInput !== '' && usdValueForDom !== undefined && (
+    const walletContent = (
         <>
             <WalletBalanceSubinfo
-                usdValueForDom={usdValueForDom}
+                usdValueForDom={
+                    isLoading || !usdValueForDom ? '' : usdValueForDom
+                }
                 showWallet={showWallet}
                 isWithdraw={isWithdraw ?? tokenAorB === 'A'}
                 balance={balanceToDisplay}
