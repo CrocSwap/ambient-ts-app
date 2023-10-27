@@ -68,7 +68,7 @@ export default function InitSkeleton(props: InitSkeletonProps) {
                 textAlign='center'
                 flexDirection='column'
                 outline='accent1'
-                tablet={{ margin: '64px 0 0 0' }}
+                md={{ margin: '64px 0 0 0' }}
                 style={{ height: '462px' }}
                 className='mobile_auto_height'
             >
