@@ -24,9 +24,7 @@ export default function Menu(props: propsIF) {
     const { deleteMessage } = useChatApi();
     const closePanel = () => {
         deleteMessage(props.id, props.isModerator).then((result: any) => {
-            console.log('is Moderator: ', props.isModerator);
             if (result.status === 'OK') {
-                console.log('result: ', result);
                 props.setIsMessageDeleted(true);
                 props.deleteMsgFromList(props.id, props.isModerator);
                 return result;
