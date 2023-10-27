@@ -237,12 +237,6 @@ function SentMessagePanel(props: SentMessageProps) {
         }
     }, [props.message]);
 
-    useEffect(() => {
-        if (props.isMessageDeleted) {
-            console.log('xxx', props.message);
-        }
-    }, [props.isMessageDeleted]);
-
     const formatAMPM = (str: string) => {
         const date = new Date(str);
         let hours = date.getHours();
