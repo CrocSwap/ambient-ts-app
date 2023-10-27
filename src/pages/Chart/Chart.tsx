@@ -2576,15 +2576,24 @@ export default function Chart(props: propsIF) {
                                                 hoveredDrawnShape.selectedCircle &&
                                                 hoveredDrawnShape.selectedCircle
                                                     .x === element.x &&
-                                                element.y ===
+                                                Number(
+                                                    element.y.toFixed(12),
+                                                ) ===
                                                     (element.denomInBase ===
                                                     denomInBase
-                                                        ? hoveredDrawnShape
-                                                              ?.selectedCircle.y
-                                                        : 1 /
-                                                          hoveredDrawnShape
-                                                              ?.selectedCircle
-                                                              .y)
+                                                        ? Number(
+                                                              hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                                  12,
+                                                              ),
+                                                          )
+                                                        : Number(
+                                                              (
+                                                                  1 /
+                                                                  hoveredDrawnShape
+                                                                      ?.selectedCircle
+                                                                      .y
+                                                              ).toFixed(12),
+                                                          ))
                                             ) {
                                                 if (!isUpdatingShape) {
                                                     selectedCircleSeries([
@@ -2810,6 +2819,7 @@ export default function Chart(props: propsIF) {
                                             },
                                         );
                                         lineSeries(line);
+
                                         if (
                                             hoveredDrawnShape &&
                                             hoveredDrawnShape.data.time ===
@@ -2827,9 +2837,11 @@ export default function Chart(props: propsIF) {
                                                     ) ===
                                                         (element.denomInBase ===
                                                         denomInBase
-                                                            ? hoveredDrawnShape
-                                                                  ?.selectedCircle
-                                                                  .y
+                                                            ? Number(
+                                                                  hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                                      12,
+                                                                  ),
+                                                              )
                                                             : Number(
                                                                   (
                                                                       1 /
@@ -2898,14 +2910,24 @@ export default function Chart(props: propsIF) {
                                             hoveredDrawnShape.selectedCircle &&
                                             hoveredDrawnShape.selectedCircle
                                                 .x === item.data[0].x &&
-                                            item.data[0].y ===
+                                            Number(
+                                                item.data[0].y.toFixed(12),
+                                            ) ===
                                                 (item.data[0].denomInBase ===
                                                 denomInBase
-                                                    ? hoveredDrawnShape
-                                                          ?.selectedCircle.y
-                                                    : 1 /
-                                                      hoveredDrawnShape
-                                                          ?.selectedCircle.y)
+                                                    ? Number(
+                                                          hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                              12,
+                                                          ),
+                                                      )
+                                                    : Number(
+                                                          (
+                                                              1 /
+                                                              hoveredDrawnShape
+                                                                  ?.selectedCircle
+                                                                  .y
+                                                          ).toFixed(12),
+                                                      ))
                                         ) {
                                             if (!isUpdatingShape) {
                                                 selectedCircleSeries([
