@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { ReactNode, useRef, useEffect, memo, useContext } from 'react';
+import { useRef, useEffect, memo, useContext } from 'react';
 
 import { CSSTransition } from 'react-transition-group';
 import { AiFillTwitterCircle } from 'react-icons/ai';
@@ -22,29 +22,20 @@ import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
 import {
-    ConnectButton,
     NavbarDropdown,
-    IconRight,
     Menu,
-    MenuItem,
     NavbarLogoutContainer,
 } from '../../../../styled/Components/Header';
+import NavbarDropdownItem from './NavbarDropdownItem';
 
-interface NavbarDropdownItemPropsIF {
-    onClick: () => void;
-    children: ReactNode;
-    rightIcon?: ReactNode;
-    connectButton?: boolean;
-}
-
-interface NavbarDropdownMenuPropsIF {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     clickLogout: () => void;
     closeMenu?: () => void;
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
+function NavbarDropdownMenu(props: propsIF) {
     const { closeMenu, clickLogout, setIsNavbarMenuOpen, isUserLoggedIn } =
         props;
 
@@ -63,41 +54,6 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             setIsNavbarMenuOpen(false);
         }
     }, [isEscapePressed]);
-
-    function NavbarDropdownItem(props: NavbarDropdownItemPropsIF) {
-        const innerHtml = (
-            <>
-                <span>{props.children}</span>
-                <IconRight>{props.rightIcon}</IconRight>
-            </>
-        );
-        if (props.connectButton) {
-            return (
-                <ConnectButton
-                    onClick={() => props.onClick()}
-                    tabIndex={0}
-                    role='button'
-                >
-                    {innerHtml}
-                </ConnectButton>
-            );
-        }
-
-        return (
-            <MenuItem
-                alignItems='center'
-                rounded
-                color='text1'
-                fontSize='header2'
-                onClick={() => props.onClick()}
-                tabIndex={0}
-                role='button'
-                fullWidth
-            >
-                {innerHtml}
-            </MenuItem>
-        );
-    }
 
     const ariaLabel =
         'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
