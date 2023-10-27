@@ -9,7 +9,7 @@ import styles from './Modal.module.css';
 import GlobalModalPortal from '../../GlobalModalPortal';
 import { GLOBAL_MODAL_COMPONENT_ID } from '../../../constants';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-import { GradientBoxShadow } from '../../../styled/Common';
+import { Container } from '../../../styled/Common';
 
 // interface for React functional component
 interface ModalPropsIF {
@@ -111,7 +111,7 @@ export default function Modal(props: ModalPropsIF) {
                     tabIndex={0}
                     aria-label={`${title} modal`}
                 >
-                    <GradientBoxShadow>
+                    <Container boxShadow='gradient'>
                         {headerJSX}
                         <section
                             className={styles.modal_content}
@@ -122,7 +122,7 @@ export default function Modal(props: ModalPropsIF) {
                             {children}
                         </section>
                         {footerOrNull}
-                    </GradientBoxShadow>
+                    </Container>
                 </motion.div>
             </aside>
         </GlobalModalPortal>
