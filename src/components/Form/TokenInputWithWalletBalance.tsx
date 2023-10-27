@@ -74,15 +74,20 @@ function TokenInputWithWalletBalance(props: propsIF) {
         Promise.resolve(cachedFetchTokenPrice(pricedToken, chainId)).then(
             (price) => {
                 if (price?.usdPrice !== undefined) {
-                    const usdValueNum: number =
-                        (price &&
-                            price?.usdPrice * (parseFloat(tokenInput) ?? 0)) ??
-                        0;
-                    const usdValueTruncated = getFormattedNumber({
-                        value: usdValueNum,
-                        isUSD: true,
-                    });
-                    setUsdValueForDom(usdValueTruncated);
+                    const usdValueNum: number | undefined =
+                        price !== undefined && tokenInput !== ''
+                            ? price.usdPrice * parseFloat(tokenInput)
+                            : undefined;
+                    const usdValueTruncated =
+                        usdValueNum !== undefined
+                            ? getFormattedNumber({
+                                  value: usdValueNum,
+                                  isUSD: true,
+                              })
+                            : undefined;
+                    usdValueTruncated !== undefined
+                        ? setUsdValueForDom(usdValueTruncated)
+                        : setUsdValueForDom('');
                 } else {
                     setUsdValueForDom(undefined);
                 }
