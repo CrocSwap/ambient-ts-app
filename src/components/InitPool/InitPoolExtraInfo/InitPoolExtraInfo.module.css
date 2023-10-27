@@ -77,7 +77,8 @@
 
     .extra_details {
         padding: 8px;
-        height: 84px;
+        gap: 8px;
+        height: auto;
     }
 
     .extra_row {

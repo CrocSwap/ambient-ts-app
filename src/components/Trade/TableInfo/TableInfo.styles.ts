@@ -30,7 +30,7 @@ const FeaturedBoxInnerContainer = styled.div<BoxContainerProps>`
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: ${(props) => (props.isInit ? '8px 16px' : '1rem')};
+    padding: 8px 16px;
 `;
 
 const InfoHeader = styled.div`

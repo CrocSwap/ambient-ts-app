@@ -25,6 +25,7 @@ export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
     isAccountView = false,
+    fetchedEnsAddress?: string,
 ) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = getChainExplorer(limitOrder.chainId);
@@ -45,32 +46,20 @@ export const useProcessOrder = (
         limitOrder.user.toLowerCase() === account?.toLowerCase();
     const isDenomBase = tradeData.isDenomBase;
 
-    const ownerId = limitOrder.ensResolution
-        ? limitOrder.ensResolution
-        : limitOrder.user
-        ? getAddress(limitOrder.user)
-        : '';
+    const ownerId = fetchedEnsAddress || getAddress(limitOrder.user) || '';
 
-    const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
+    const ensName = fetchedEnsAddress || limitOrder.ensResolution || null;
 
     const isOrderFilled = limitOrder.claimableLiq > 0;
 
-    const posHash =
-        limitOrder.user &&
-        limitOrder.base &&
-        limitOrder.quote &&
-        limitOrder.bidTick &&
-        limitOrder.askTick
-            ? concPosSlot(
-                  limitOrder.user,
-                  limitOrder.base,
-                  limitOrder.quote,
-                  limitOrder.bidTick,
-                  limitOrder.askTick,
-                  limitOrder.poolIdx,
-              ).toString()
-            : '…';
-
+    const posHash = concPosSlot(
+        limitOrder.user ?? '',
+        limitOrder.base ?? '',
+        limitOrder.quote ?? '',
+        limitOrder.bidTick ?? '',
+        limitOrder.askTick ?? '',
+        limitOrder.poolIdx ?? '',
+    ).toString();
     const posHashTruncated = trimString(posHash ?? '', 9, 0, '…');
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<
@@ -240,7 +229,7 @@ export const useProcessOrder = (
         ? ensName.length > 16
             ? trimString(ensName, 11, 3, '…')
             : ensName
-        : trimString(ownerId, 5, 4, '…');
+        : trimString(ownerId, 6, 4, '…');
 
     const userNameToDisplay = isOwnerActiveAccount
         ? 'You'
