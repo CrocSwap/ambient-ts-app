@@ -160,6 +160,26 @@ export const arbGoerliDAI = {
         'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
 };
 
+export const scrollETH = {
+    name: 'Native Ether',
+    address: '0x0000000000000000000000000000000000000000',
+    symbol: 'ETH',
+    decimals: 18,
+    chainId: 534352,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+};
+
+export const scrollUSDC = {
+    name: 'USDCoin',
+    address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4',
+    symbol: 'USDC',
+    decimals: 6,
+    chainId: 534352,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+};
+
 export const scrollSepoliaETH = {
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -194,6 +214,8 @@ export const defaultTokens: TokenIF[] = [
     arbGoerliUSDC,
     arbGoerliDAI,
     arbGoerliWBTC,
+    scrollETH,
+    scrollUSDC,
     scrollSepoliaETH,
     scrollSepoliaUSDC,
 ];

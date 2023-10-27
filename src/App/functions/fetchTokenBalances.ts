@@ -20,6 +20,7 @@ const COVALENT_CHAIN_IDS = {
     '0x5': 'eth-goerli',
     '066eed': 'arbitrum-goerli',
     '0x8274f': 'scroll-sepolia-testnet',
+    '0x82750': 'scroll-mainnet',
 };
 
 export const fetchTokenBalances = async (

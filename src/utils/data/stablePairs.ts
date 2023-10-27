@@ -13,6 +13,7 @@ import {
     mainnetUSDC,
     mainnetUSDT,
     scrollSepoliaUSDC,
+    scrollUSDC,
 } from './defaultTokens';
 
 //       any sort of specific guaranteed relation between the tokens.
@@ -46,6 +47,7 @@ export const STABLE_USD_TOKENS = [
     goerliUSDT.address,
     arbGoerliDAI.address,
     arbGoerliUSDC.address,
+    scrollUSDC.address,
     scrollSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
 
