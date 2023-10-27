@@ -102,42 +102,72 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const ariaLabel =
         'You are currently on a focus mode on the main dropdown menu. To enter focus mode, press tab once again.  To exit focus mode, press escape.';
 
-    const closeMenuBar = () => closeMenu && closeMenu();
+    const closeMenuBar = (): void => closeMenu && closeMenu();
 
-    const handleDocsClick = () => {
-        openInNewTab(DOCS_LINK);
-        closeMenuBar();
-    };
+    interface navDataIF {
+        icon: JSX.Element;
+        action: () => void;
+        text: string;
+    }
 
-    const handleTwitterClick = () => {
-        openInNewTab(TWITTER_LINK);
-        closeMenuBar();
-    };
-
-    const handleDiscordClick = () => {
-        openInNewTab(DISCORD_LINK);
-        closeMenuBar();
-    };
-
-    const handleMediumClick = () => {
-        openInNewTab(MEDIUM_LINK);
-        closeMenuBar();
-    };
-
-    const handleLegalPrivacyClick = () => {
-        openInNewTab(`${window.location.origin}/${termsUrls.privacy}`);
-        closeMenuBar();
-    };
-
-    const handleTOSClick = () => {
-        openInNewTab(`${window.location.origin}/${termsUrls.tos}`);
-        closeMenuBar();
-    };
-
-    const handleAboutTheTeam = () => {
-        window.open(CORPORATE_LINK, '_blank');
-        closeMenuBar();
-    };
+    const navData: navDataIF[] = [
+        {
+            icon: <BsBook size={18} />,
+            action: () => {
+                openInNewTab(DOCS_LINK);
+                closeMenuBar();
+            },
+            text: 'Docs',
+        },
+        {
+            icon: <AiFillTwitterCircle size={20} />,
+            action: () => {
+                openInNewTab(TWITTER_LINK);
+                closeMenuBar();
+            },
+            text: 'Twitter',
+        },
+        {
+            icon: <FaDiscord size={20} />,
+            action: () => {
+                openInNewTab(DISCORD_LINK);
+                closeMenuBar();
+            },
+            text: 'Discord',
+        },
+        {
+            icon: <BsMedium size={20} />,
+            action: () => {
+                openInNewTab(MEDIUM_LINK);
+                closeMenuBar();
+            },
+            text: 'Medium',
+        },
+        {
+            icon: <IoDocumentTextSharp size={20} />,
+            action: () => {
+                openInNewTab(`${window.location.origin}/${termsUrls.privacy}`);
+                closeMenuBar();
+            },
+            text: 'Privacy',
+        },
+        {
+            icon: <IoDocumentTextSharp size={20} />,
+            action: () => {
+                openInNewTab(`${window.location.origin}/${termsUrls.tos}`);
+                closeMenuBar();
+            },
+            text: 'Terms of Service',
+        },
+        {
+            icon: <GiAlligatorClip size={20} />,
+            action: () => {
+                window.open(CORPORATE_LINK, '_blank');
+                closeMenuBar();
+            },
+            text: 'About the Team',
+        },
+    ];
 
     return (
         <NavbarDropdown ref={dropdownRef} aria-label={ariaLabel}>
@@ -154,48 +184,15 @@ function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                     transition={{ duration: 0.5 }}
                     tabIndex={0}
                 >
-                    <NavbarDropdownItem
-                        rightIcon={<BsBook size={18} />}
-                        onClick={handleDocsClick}
-                    >
-                        Docs
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<AiFillTwitterCircle size={20} />}
-                        onClick={handleTwitterClick}
-                    >
-                        Twitter
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<FaDiscord size={20} />}
-                        onClick={handleDiscordClick}
-                    >
-                        Discord
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<BsMedium size={20} />}
-                        onClick={handleMediumClick}
-                    >
-                        Medium
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<IoDocumentTextSharp size={20} />}
-                        onClick={handleLegalPrivacyClick}
-                    >
-                        Privacy
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<IoDocumentTextSharp size={20} />}
-                        onClick={handleTOSClick}
-                    >
-                        Terms of Service
-                    </NavbarDropdownItem>
-                    <NavbarDropdownItem
-                        rightIcon={<GiAlligatorClip size={20} />}
-                        onClick={handleAboutTheTeam}
-                    >
-                        About the Team
-                    </NavbarDropdownItem>
+                    {navData.map((item: navDataIF) => (
+                        <NavbarDropdownItem
+                            key={item.text}
+                            rightIcon={item.icon}
+                            onClick={item.action}
+                        >
+                            {item.text}
+                        </NavbarDropdownItem>
+                    ))}
                     {isUserLoggedIn ? (
                         <NavbarLogoutContainer>
                             <LogoutButton
