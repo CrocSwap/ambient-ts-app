@@ -264,6 +264,8 @@ export function useUndoRedo(denomInBase: boolean) {
                         lineWidth: newShapeData.lineWidth,
                         style: [0, 0],
                     });
+
+                    undoStack.clear();
                 }
             }
         }
