@@ -168,10 +168,6 @@ export default function MessageInput(props: MessageInputProps) {
     }, [isConnected, address]);
 
     useEffect(() => {
-        console.log('reply test');
-    }, [props.isReplyButtonPressed === false]);
-
-    useEffect(() => {
         if (inputRef.current !== null && cursorPosition !== null) {
             inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
         }
@@ -400,12 +396,6 @@ export default function MessageInput(props: MessageInputProps) {
                 (props.replyMessageContent?.roomInfo !== 'Admins' &&
                     props.replyMessageContent?.roomInfo !== undefined)
             ) {
-                console.log(
-                    'evet',
-                    isRoomAdmins,
-                    props.replyMessageContent,
-                    props.replyMessageContent?.roomInfo,
-                );
                 props.sendMsg(
                     props.currentUser,
                     message,
@@ -419,13 +409,6 @@ export default function MessageInput(props: MessageInputProps) {
                         : undefined,
                 );
             } else {
-                console.log(
-                    'burada',
-                    isRoomAdmins,
-                    props.replyMessageContent,
-                    props.replyMessageContent?.roomInfo,
-                    roomId,
-                );
                 props.sendMsg(
                     props.currentUser,
                     message,
