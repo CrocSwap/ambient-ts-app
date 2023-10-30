@@ -93,19 +93,21 @@ export default function Footer() {
     const itemsPerColumn: [number, number, number] = [2, 3, 3];
 
     // transform `footerData` into an array of arrays to ease columnization
-    const columnizedData = itemsPerColumn.map((count: number, idx: number) => {
-        // index in `footerData` to stop slice
-        const sliceEnd = itemsPerColumn
-            .slice(0, idx + 1)
-            .reduce(
-                (accumulator: number, currentValue: number) =>
-                    accumulator + currentValue,
-            );
-        // index in `footerData` to begin slice
-        const sliceStart = sliceEnd - count;
-        // return sub-array from `footerData` with proper elements
-        return footerData.slice(sliceStart, sliceEnd);
-    });
+    const columnizedData: Array<footerItemIF[]> = itemsPerColumn.map(
+        (count: number, idx: number): footerItemIF[] => {
+            // index in `footerData` to stop slice
+            const sliceEnd: number = itemsPerColumn
+                .slice(0, idx + 1)
+                .reduce(
+                    (accumulator: number, currentValue: number) =>
+                        accumulator + currentValue,
+                );
+            // index in `footerData` to begin slice
+            const sliceStart: number = sliceEnd - count;
+            // return sub-array from `footerData` with proper elements
+            return footerData.slice(sliceStart, sliceEnd);
+        },
+    );
 
     const mobileButton = (
         <Link
