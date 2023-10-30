@@ -11,7 +11,6 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { useDisconnect, useEnsName, useSwitchNetwork } from 'wagmi';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
@@ -47,6 +46,8 @@ import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
 import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { ChainDataContext } from '../../../contexts/ChainDataContext';
+import { useSwitchNetwork } from 'wagmi';
 
 const PageHeader = function () {
     const {
@@ -58,7 +59,7 @@ const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { setTokenBalances, resetUserAddress } = useContext(UserDataContext);
+    const { resetTokenBalances } = useContext(ChainDataContext);
 
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
@@ -73,8 +74,9 @@ const PageHeader = function () {
             setDexBalance: setQuoteTokenDexBalance,
         },
     } = useContext(TradeTokenContext);
-    const { userAddress, isUserConnected } = useContext(UserDataContext);
-    const { data: ensName } = useEnsName({ address: userAddress });
+    const { userAddress, isUserConnected, disconnectUser, ensName } =
+        useContext(UserDataContext);
+    const { switchNetwork } = useSwitchNetwork();
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
@@ -83,7 +85,6 @@ const PageHeader = function () {
         isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
     const dispatch = useAppDispatch();
-    const { disconnect } = useDisconnect();
 
     const clickLogout = useCallback(async () => {
         setCrocEnv(undefined);
@@ -93,10 +94,9 @@ const PageHeader = function () {
         setQuoteTokenDexBalance('');
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
-        setTokenBalances(undefined);
-        resetUserAddress();
+        resetTokenBalances();
         setShowAllData(true);
-        disconnect();
+        disconnectUser();
     }, []);
 
     const accountProps = {
@@ -324,8 +324,6 @@ const PageHeader = function () {
             </PrimaryNavigation>
         </AnimateSharedLayout>
     );
-
-    const { switchNetwork } = useSwitchNetwork();
 
     // ----------------------------END OF NAVIGATION FUNCTIONALITY-------------------------------------
     const [show, handleShow] = useState(false);

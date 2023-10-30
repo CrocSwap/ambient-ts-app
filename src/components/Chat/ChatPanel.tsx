@@ -10,7 +10,6 @@ import { PoolIF } from '../../utils/interfaces/exports';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
-import { useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
@@ -46,8 +45,7 @@ function ChatPanel(props: propsIF) {
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [userCurrentPool, setUserCurrentPool] = useState('ETH / USDC');
-    const { userAddress } = useContext(UserDataContext);
-    const { data: ens } = useEnsName({ address: userAddress });
+    const { userAddress, ensName: ens } = useContext(UserDataContext);
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,

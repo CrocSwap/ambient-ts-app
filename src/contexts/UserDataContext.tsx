@@ -6,7 +6,7 @@ import React, {
     SetStateAction,
 } from 'react';
 import { useDispatch } from 'react-redux';
-import { useAccount } from 'wagmi';
+import { useAccount, useDisconnect, useConnect, useEnsName } from 'wagmi';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
 import { getLimitOrderData } from '../App/functions/getLimitOrderData';
 import { getPositionData } from '../App/functions/getPositionData';
@@ -29,18 +29,22 @@ import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
+import { checkBlacklist } from '../utils/data/blacklist';
+import { ConnectArgs, Connector } from '@wagmi/core';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
     userAddress: `0x${string}` | undefined;
-    resetUserAddress: () => void;
-    tokenBalances: TokenIF[] | undefined;
-    setTokenBalances: Dispatch<SetStateAction<TokenIF[] | undefined>>;
-    setTokenBalance: (params: {
-        tokenAddress: string;
-        walletBalance?: string | undefined;
-        dexBalance?: string | undefined;
-    }) => void;
+    disconnectUser: () => void;
+    connectUser: (args?: Partial<ConnectArgs> | undefined) => void;
+    connectError: Error | null;
+    connectIsLoading: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    connectors: Connector<any, any, any>[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pendingConnector: Connector<any, any, any> | undefined;
+
+    ensName: string | null | undefined;
     resolvedAddressFromContext: string;
     setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
 }
@@ -51,16 +55,6 @@ export const UserDataContext = createContext<UserDataContextIF>(
 export const UserDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const [isUserConnected, setIsUserConnected] =
-        React.useState<boolean>(false);
-    const [userAddress, setUserAddress] = React.useState<
-        `0x${string}` | undefined
-    >(undefined);
-
-    const [tokenBalances, setTokenBalances] = React.useState<
-        TokenIF[] | undefined
-    >(undefined);
-
     const [resolvedAddressFromContext, setResolvedAddressInContext] =
         React.useState<string>('');
 
@@ -75,50 +69,34 @@ export const UserDataContextProvider = (props: {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
     const { crocEnv, provider, chainData } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, resetTokenBalances } =
+        useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { address: wagmiAddress, isConnected } = useAccount();
+    const { address: userAddress, isConnected: isUserConnected } = useAccount();
+    const { disconnect: disconnectUser } = useDisconnect();
+    const {
+        connect: connectUser,
+        connectors,
+        error: connectError,
+        isLoading: connectIsLoading,
+        pendingConnector,
+    } = useConnect({
+        onSettled(data, error) {
+            if (error) console.error({ error });
+            const connectedAddress = data?.account;
+            const isBlacklisted = connectedAddress
+                ? checkBlacklist(connectedAddress)
+                : false;
+            if (isBlacklisted) disconnectUser();
+        },
+    });
+    const { data: ensName } = useEnsName({ address: userAddress });
 
-    const resetUserAddress = () => {
-        setUserAddress(undefined);
-    };
-    const setTokenBalance = (params: {
-        tokenAddress: string;
-        walletBalance?: string | undefined;
-        dexBalance?: string | undefined;
-    }) => {
-        if (!tokenBalances) return;
-        const newTokenBalances = [...tokenBalances];
-
-        const tokenIndex = newTokenBalances?.findIndex(
-            (token) =>
-                token.address.toLowerCase() ===
-                params.tokenAddress.toLowerCase(),
-        );
-
-        if (newTokenBalances && tokenIndex && tokenIndex !== -1) {
-            const newTokenBalance = newTokenBalances[tokenIndex];
-            if (params.walletBalance) {
-                newTokenBalance.walletBalance = params.walletBalance;
-            }
-            if (params.dexBalance) {
-                newTokenBalance.dexBalance = params.dexBalance;
-            }
-            if (params.dexBalance || params.walletBalance) {
-                newTokenBalances[tokenIndex] = newTokenBalance;
-                setTokenBalances(newTokenBalances);
-            }
-        }
-    };
-
-    // TODO: Wagmi isConnected === userData.isLoggedIn - can consolidate and use either as source of truth && Wagmi address === useData.userAddress
     useEffect(() => {
-        setIsUserConnected(isConnected);
-        setUserAddress(wagmiAddress);
-        setTokenBalances(undefined);
+        resetTokenBalances();
         dispatch(resetUserGraphData());
-    }, [isConnected, isUserConnected, wagmiAddress]);
+    }, [isUserConnected, userAddress]);
 
     const userLimitOrderStatesCacheEndpoint =
         GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
@@ -132,7 +110,7 @@ export const UserDataContextProvider = (props: {
         // user Postions, limit orders, and recent changes are all governed here
         if (
             isServerEnabled &&
-            isConnected &&
+            isUserConnected &&
             userAddress &&
             crocEnv &&
             provider &&
@@ -344,7 +322,7 @@ export const UserDataContextProvider = (props: {
     }, [
         isServerEnabled,
         tokens.tokenUniv.length,
-        isConnected,
+        isUserConnected,
         userAddress,
         chainData.chainId,
         lastBlockNumWait,
@@ -355,10 +333,14 @@ export const UserDataContextProvider = (props: {
     const userDataContext: UserDataContextIF = {
         isUserConnected,
         userAddress,
-        resetUserAddress,
-        tokenBalances,
-        setTokenBalances,
-        setTokenBalance,
+        disconnectUser,
+        ensName,
+        connectUser,
+        connectors,
+        connectError,
+        connectIsLoading,
+        pendingConnector,
+
         resolvedAddressFromContext,
         setResolvedAddressInContext,
     };

@@ -6,7 +6,6 @@ import NavItem from '../NavItem/NavItem';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
-import { useAccount } from 'wagmi';
 import WalletDropdown from './WalletDropdown/WalletDropdown';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { AppStateContext } from '../../../../contexts/AppStateContext';

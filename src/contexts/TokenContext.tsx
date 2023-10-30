@@ -7,7 +7,7 @@ import { tokenMethodsIF, useTokens } from '../App/hooks/useTokens';
 import { useTokenSearch } from '../App/hooks/useTokenSearch';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { CrocEnvContext } from './CrocEnvContext';
-import { UserDataContext } from './UserDataContext';
+import { ChainDataContext } from './ChainDataContext';
 
 interface TokenContextIF {
     tokens: tokenMethodsIF;
@@ -25,7 +25,7 @@ export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
 
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const { chainData } = useContext(CrocEnvContext);
-    const { tokenBalances } = useContext(UserDataContext);
+    const { tokenBalances } = useContext(ChainDataContext);
 
     const tokens: tokenMethodsIF = useTokens(chainData.chainId);
     const { addRecentToken, getRecentTokens } = useRecentTokens(

@@ -64,7 +64,6 @@ export const TradeTokenContextProvider = (props: {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
 
-    const { setTokenBalance } = useContext(UserDataContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
@@ -72,7 +71,7 @@ export const TradeTokenContextProvider = (props: {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
     const { crocEnv, chainData, provider } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, setTokenBalance } = useContext(ChainDataContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);

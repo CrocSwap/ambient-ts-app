@@ -29,6 +29,14 @@ interface ChainDataContextIF {
     lastBlockNumber: number;
     setLastBlockNumber: Dispatch<SetStateAction<number>>;
     client: Client;
+
+    tokenBalances: TokenIF[] | undefined;
+    resetTokenBalances: () => void;
+    setTokenBalance: (params: {
+        tokenAddress: string;
+        walletBalance?: string | undefined;
+        dexBalance?: string | undefined;
+    }) => void;
 }
 
 export const ChainDataContext = createContext<ChainDataContextIF>(
@@ -39,7 +47,10 @@ export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { chainData, crocEnv, provider } = useContext(CrocEnvContext);
-    const { setTokenBalances } = useContext(UserDataContext);
+    const [tokenBalances, setTokenBalances] = React.useState<
+        TokenIF[] | undefined
+    >(undefined);
+
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
@@ -51,14 +62,6 @@ export const ChainDataContextProvider = (props: {
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
-
-    const chainDataContext = {
-        lastBlockNumber,
-        setLastBlockNumber,
-        gasPriceInGwei,
-        setGasPriceinGwei,
-        client,
-    };
 
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
@@ -163,6 +166,39 @@ export const ChainDataContextProvider = (props: {
         () => Math.floor(lastBlockNumber / 8),
         [lastBlockNumber],
     );
+    const setTokenBalance = (params: {
+        tokenAddress: string;
+        walletBalance?: string | undefined;
+        dexBalance?: string | undefined;
+    }) => {
+        if (!tokenBalances) return;
+        const newTokenBalances = [...tokenBalances];
+
+        const tokenIndex = newTokenBalances?.findIndex(
+            (token) =>
+                token.address.toLowerCase() ===
+                params.tokenAddress.toLowerCase(),
+        );
+
+        if (newTokenBalances && tokenIndex && tokenIndex !== -1) {
+            const newTokenBalance = newTokenBalances[tokenIndex];
+            if (params.walletBalance) {
+                newTokenBalance.walletBalance = params.walletBalance;
+            }
+            if (params.dexBalance) {
+                newTokenBalance.dexBalance = params.dexBalance;
+            }
+            if (params.dexBalance || params.walletBalance) {
+                newTokenBalances[tokenIndex] = newTokenBalance;
+                setTokenBalances(newTokenBalances);
+            }
+        }
+    };
+
+    const resetTokenBalances = () => {
+        setTokenBalances(undefined);
+    };
+
     useEffect(() => {
         (async () => {
             IS_LOCAL_ENV &&
@@ -206,6 +242,17 @@ export const ChainDataContextProvider = (props: {
         chainData.chainId,
         everyEigthBlock,
     ]);
+
+    const chainDataContext = {
+        lastBlockNumber,
+        setLastBlockNumber,
+        gasPriceInGwei,
+        setGasPriceinGwei,
+        client,
+        tokenBalances,
+        resetTokenBalances,
+        setTokenBalance,
+    };
 
     return (
         <ChainDataContext.Provider value={chainDataContext}>

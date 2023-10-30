@@ -53,10 +53,10 @@ export default function ExchangeBalance(props: propsIF) {
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
     );
-    const { userAddress, setTokenBalance } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
-    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { lastBlockNumber, setTokenBalance } = useContext(ChainDataContext);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =
