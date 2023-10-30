@@ -22,23 +22,28 @@ interface FooterItemProps {
 export default function Footer() {
     const [, , termsUrls] = useTermsAgreed();
 
-    const footerData = [
+    interface footerItemsIF {
+        title: JSX.Element;
+        content: string;
+        link: string;
+    }
+
+    const footerData: footerItemsIF[] = [
         {
-            title: 'Terms of Service',
+            title: <>Terms of Service</>,
             content: 'Our rules for using the platform',
             link: `${window.location.origin}/${termsUrls.tos}`,
         },
         {
-            title: 'Privacy Policy',
+            title: <>Privacy Policy</>,
             content: 'View our policies around data',
             link: `${window.location.origin}/${termsUrls.privacy}`,
         },
         {
-            title: 'Docs',
+            title: <>Docs</>,
             content: 'View our documentation',
             link: DOCS_LINK,
         },
-
         {
             title: (
                 <>
