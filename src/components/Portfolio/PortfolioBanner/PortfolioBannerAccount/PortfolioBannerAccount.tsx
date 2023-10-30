@@ -26,7 +26,7 @@ export default function PortfolioBannerAccount(
         truncatedAccountAddress,
         ensNameAvailable,
     } = props;
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -43,7 +43,7 @@ export default function PortfolioBannerAccount(
         ? resolvedAddress
         : ensNameAvailable
         ? truncatedAccountAddress
-        : addressCurrent;
+        : userAddress;
 
     const [_, copy] = useCopyToClipboard();
 
@@ -53,19 +53,19 @@ export default function PortfolioBannerAccount(
                 ? ensName
                 : resolvedAddress
                 ? resolvedAddress
-                : addressCurrent ?? '',
+                : userAddress ?? '',
         );
         const copiedData = ensNameAvailable
             ? ensName
             : resolvedAddress
             ? resolvedAddress
-            : addressCurrent;
+            : userAddress;
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
     function handleCopyAddress() {
-        copy(resolvedAddress ? resolvedAddress : addressCurrent ?? '');
-        const copiedData = resolvedAddress ? resolvedAddress : addressCurrent;
+        copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
+        const copiedData = resolvedAddress ? resolvedAddress : userAddress;
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
@@ -114,8 +114,7 @@ export default function PortfolioBannerAccount(
                                 size={'12px'}
                                 onClick={(e) => {
                                     handleOpenExplorer(
-                                        resolvedAddress ||
-                                            (addressCurrent ?? ''),
+                                        resolvedAddress || (userAddress ?? ''),
                                     );
                                     e.stopPropagation();
                                 }}

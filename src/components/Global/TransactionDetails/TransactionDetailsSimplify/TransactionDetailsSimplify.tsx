@@ -27,7 +27,7 @@ export default function TransactionDetailsSimplify(
 ) {
     const { tx, isAccountView } = props;
 
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         ensName,
@@ -56,7 +56,7 @@ export default function TransactionDetailsSimplify(
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-    } = useProcessTransaction(tx, addressCurrent);
+    } = useProcessTransaction(tx, userAddress);
 
     const { chainData } = useContext(CrocEnvContext);
 

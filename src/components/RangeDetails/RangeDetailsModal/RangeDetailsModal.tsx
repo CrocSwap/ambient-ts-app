@@ -66,7 +66,7 @@ export default function RangeDetailsModal(props: propsIF) {
         maxRangeDenomByMoneyness,
         onClose,
     } = props;
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -122,7 +122,7 @@ export default function RangeDetailsModal(props: propsIF) {
 
     const { crocEnv } = useContext(CrocEnvContext);
 
-    const { posHash } = useProcessRange(position, addressCurrent);
+    const { posHash } = useProcessRange(position, userAddress);
 
     const [_, copy] = useCopyToClipboard();
 

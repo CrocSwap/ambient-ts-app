@@ -70,7 +70,7 @@ export default function Withdraw(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const dispatch = useAppDispatch();
 
@@ -182,7 +182,7 @@ export default function Withdraw(props: propsIF) {
     ]);
 
     const withdraw = async (withdrawQtyNonDisplay: string) => {
-        if (crocEnv && withdrawQtyNonDisplay && addressCurrent) {
+        if (crocEnv && withdrawQtyNonDisplay && userAddress) {
             try {
                 const depositQtyDisplay = toDisplayQty(
                     withdrawQtyNonDisplay,
@@ -198,7 +198,7 @@ export default function Withdraw(props: propsIF) {
                 } else {
                     tx = await crocEnv
                         .token(selectedToken.address)
-                        .withdraw(depositQtyDisplay, addressCurrent);
+                        .withdraw(depositQtyDisplay, userAddress);
                 }
                 dispatch(addPendingTx(tx?.hash));
                 if (tx?.hash)
