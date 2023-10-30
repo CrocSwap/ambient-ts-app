@@ -16,7 +16,7 @@ import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
 import { GiAlligatorClip } from 'react-icons/gi';
 import FooterItem from './FooterItem';
 
-export interface footerItemsIF {
+export interface footerItemIF {
     title: JSX.Element;
     content: string;
     link: string;
@@ -25,7 +25,7 @@ export interface footerItemsIF {
 export default function Footer() {
     const [, , termsUrls] = useTermsAgreed();
 
-    const footerData: footerItemsIF[] = [
+    const footerData: footerItemIF[] = [
         {
             title: <>Terms of Service</>,
             content: 'Our rules for using the platform',
@@ -88,6 +88,27 @@ export default function Footer() {
         },
     ];
 
+    const itemsPerColumn: [number, number, number] = [2, 3, 5];
+
+    const columnizedData = itemsPerColumn.map((count: number, idx: number) => {
+        const subArray: number[] = itemsPerColumn.slice(0, idx + 1);
+
+        const sliceStart = subArray
+            .slice(0, subArray.length - 1)
+            .reduce(
+                (accumulator, currentValue) => accumulator + currentValue,
+                0,
+            );
+        const sliceEnd = subArray.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0,
+        );
+
+        return footerData.slice(sliceStart, sliceEnd);
+    });
+
+    console.log(columnizedData);
+
     const mobileButton = (
         <Link
             to={'/trade'}
@@ -119,36 +140,18 @@ export default function Footer() {
     return (
         <section className={styles.container}>
             <div className={styles.content}>
-                <div className={styles.row}>
-                    {footerData.slice(0, 2).map((data: footerItemsIF) => (
-                        <FooterItem
-                            title={data.title}
-                            content={data.content}
-                            link={data.link}
-                            key={data.content}
-                        />
-                    ))}
-                </div>
-                <div className={styles.row}>
-                    {footerData.slice(2, 5).map((data: footerItemsIF) => (
-                        <FooterItem
-                            title={data.title}
-                            content={data.content}
-                            link={data.link}
-                            key={data.content}
-                        />
-                    ))}
-                </div>
-                <div className={styles.row}>
-                    {footerData.slice(5, 8).map((data: footerItemsIF) => (
-                        <FooterItem
-                            title={data.title}
-                            content={data.content}
-                            link={data.link}
-                            key={data.content}
-                        />
-                    ))}
-                </div>
+                {columnizedData.map((elements: footerItemIF[], idx: number) => (
+                    <div className={styles.row} key={idx}>
+                        {elements.map((element: footerItemIF) => (
+                            <FooterItem
+                                title={element.title}
+                                content={element.content}
+                                link={element.link}
+                                key={element.link}
+                            />
+                        ))}
+                    </div>
+                ))}
             </div>
         </section>
     );

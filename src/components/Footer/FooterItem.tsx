@@ -1,5 +1,5 @@
 import { CORPORATE_LINK } from '../../constants';
-import { footerItemsIF as propsIF } from './Footer';
+import { footerItemIF as propsIF } from './Footer';
 import styles from './Footer.module.css';
 
 // propsIF conforms to the shape of data defined in the file `Footer.tsx`
