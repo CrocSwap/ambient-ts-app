@@ -15,7 +15,7 @@ import {
 } from '../../constants';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
 import { GiAlligatorClip } from 'react-icons/gi';
-import FooterItem from './FooterItem';
+import FooterCard from './FooterCard';
 
 export interface footerItemIF {
     title: JSX.Element;
@@ -122,54 +122,43 @@ export default function Footer() {
 
     const showMobileVersion: boolean = useMediaQuery('(max-width: 600px)');
 
-    // TODO:    eliminate unnecessary wrapper for mobile version
-
     // early return for mobile version
     if (showMobileVersion) {
         return (
-            <div className={styles.mobile_bg}>
-                <div className={styles.mobile_version}>
-                    {footerData.map((card: footerItemIF) => (
-                        <FooterItem key={card.link} data={card} />
-                    ))}
-                    <Link
-                        to={'/trade'}
-                        tabIndex={0}
-                        aria-label='Go to trade page button'
-                        className={styles.started_button}
-                    >
-                        Trade Now
-                    </Link>
-                </div>
-            </div>
+            <footer className={styles.mobile_version}>
+                {footerData.map((card: footerItemIF) => (
+                    <FooterCard key={card.link} data={card} />
+                ))}
+                <Link
+                    to={'/trade'}
+                    tabIndex={0}
+                    aria-label='Go to trade page button'
+                    className={styles.started_button}
+                >
+                    Trade Now
+                </Link>
+            </footer>
         );
     }
 
-    // TODO:    eliminate unnecessary wrapper
-
     // main return for non-movile version
     return (
-        <section className={styles.container}>
-            <div className={styles.content}>
-                {
-                    // map over `columnizedData` to create columns
-                    columnizedData.map(
-                        (columnData: footerItemIF[], idx: number) => (
-                            <div className={styles.row} key={idx}>
-                                {
-                                    // map over data in column to make cards
-                                    columnData.map((card: footerItemIF) => (
-                                        <FooterItem
-                                            key={card.link}
-                                            data={card}
-                                        />
-                                    ))
-                                }
-                            </div>
-                        ),
-                    )
-                }
-            </div>
-        </section>
+        <footer className={styles.content}>
+            {
+                // map over `columnizedData` to create columns
+                columnizedData.map(
+                    (columnData: footerItemIF[], idx: number) => (
+                        <div className={styles.row} key={idx}>
+                            {
+                                // map over data in column to make cards
+                                columnData.map((card: footerItemIF) => (
+                                    <FooterCard key={card.link} data={card} />
+                                ))
+                            }
+                        </div>
+                    ),
+                )
+            }
+        </footer>
     );
 }

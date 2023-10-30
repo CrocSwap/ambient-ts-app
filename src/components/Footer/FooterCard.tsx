@@ -7,7 +7,7 @@ interface propsIF {
 }
 
 // propsIF conforms to the shape of data defined in the file `Footer.tsx`
-export default function FooterItem(props: propsIF) {
+export default function FooterCard(props: propsIF) {
     const { data } = props;
     return (
         <a
