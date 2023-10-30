@@ -16,6 +16,7 @@ import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
 import NotFound from '../../pages/NotFound/NotFound';
 import { AppStateContext } from '../../contexts/AppStateContext';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 interface propsIF {
     isFullScreen: boolean;
@@ -65,9 +66,8 @@ function ChatPanel(props: propsIF) {
 
     const { getID, updateUser, updateMessageUser, saveUser } = useChatApi();
 
-    const userData = useAppSelector((state) => state.userData);
-    const isUserLoggedIn = userData.isLoggedIn;
-    const resolvedAddress = userData.resolvedAddress;
+    const { isUserConnected, resolvedAddressFromContext } =
+        useContext(UserDataContext);
 
     function closeOnEscapeKeyDown(e: KeyboardEvent) {
         if (e.code === 'Escape') setIsChatOpen(false);
@@ -278,12 +278,12 @@ function ChatPanel(props: propsIF) {
             {messages &&
                 messages.map((item, i) => (
                     <SentMessagePanel
-                        isUserLoggedIn={isUserLoggedIn as boolean}
+                        isUserLoggedIn={isUserConnected as boolean}
                         message={item}
                         ensName={ensName}
                         isCurrentUser={item.sender === currentUser}
                         currentUser={currentUser}
-                        resolvedAddress={resolvedAddress}
+                        resolvedAddress={resolvedAddressFromContext}
                         connectedAccountActive={address}
                         moderator={moderator}
                         room={room}

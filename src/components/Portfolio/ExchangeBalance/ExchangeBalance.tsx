@@ -20,12 +20,8 @@ import { fetchEnsAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
-import { setTokenBalance } from '../../../utils/state/userDataSlice';
 
 import { FlexContainer } from '../../../styled/Common';
 
@@ -35,6 +31,7 @@ import {
     PortfolioMotionContainer,
     PortfolioMotionSubContainer,
 } from '../../../styled/Components/Portfolio';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -56,10 +53,7 @@ export default function ExchangeBalance(props: propsIF) {
     const selectedToken: TokenIF = useAppSelector(
         (state) => state.soloTokenData.token,
     );
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
-    const dispatchRTK = useAppDispatch();
+    const { userAddress, setTokenBalance } = useContext(UserDataContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -98,12 +92,11 @@ export default function ExchangeBalance(props: propsIF) {
 
                 .then((bal: BigNumber) => {
                     setTokenWalletBalance(bal.toString());
-                    dispatchRTK(
-                        setTokenBalance({
-                            tokenAddress: selectedToken.address,
-                            walletBalance: bal.toString(),
-                        }),
-                    );
+
+                    setTokenBalance({
+                        tokenAddress: selectedToken.address,
+                        walletBalance: bal.toString(),
+                    });
                 })
                 .catch(console.error);
 
@@ -112,12 +105,11 @@ export default function ExchangeBalance(props: propsIF) {
                 .balance(userAddress)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
-                    dispatchRTK(
-                        setTokenBalance({
-                            tokenAddress: selectedToken.address,
-                            dexBalance: bal.toString(),
-                        }),
-                    );
+
+                    setTokenBalance({
+                        tokenAddress: selectedToken.address,
+                        dexBalance: bal.toString(),
+                    });
                 })
                 .catch(console.error);
         }

@@ -26,6 +26,7 @@ import {
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -67,9 +68,8 @@ function LimitTokenInput(props: propsIF) {
     const dispatch = useAppDispatch();
     // hook to generate navigation actions with pre-loaded path
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
+
     const {
         tokenA,
         tokenB,

@@ -75,6 +75,7 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useDebounce from '../../App/hooks/useDebounce';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { UserDataContext } from '../../contexts/UserDataContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -170,9 +171,7 @@ export default function Chart(props: propsIF) {
     const [isChartZoom, setIsChartZoom] = useState(false);
 
     const [chartHeights, setChartHeights] = useState(0);
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 

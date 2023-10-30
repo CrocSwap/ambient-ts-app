@@ -22,6 +22,7 @@ import {
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 // interface for props for react functional component
 interface propsIF {
@@ -55,9 +56,7 @@ function Orders(props: propsIF) {
         !isAccountView && tradeTableState === 'Expanded';
 
     const graphData = useAppSelector((state) => state?.graphData);
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const { transactionsByType, pendingTransactions } = useAppSelector(

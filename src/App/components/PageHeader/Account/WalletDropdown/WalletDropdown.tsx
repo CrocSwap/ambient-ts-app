@@ -4,7 +4,6 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
 import { getChainExplorer } from '../../../../../utils/data/chains';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { CachedDataContext } from '../../../../../contexts/CachedDataContext';
 
@@ -29,6 +28,7 @@ import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -62,9 +62,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const tokenBalances: TokenIF[] | undefined = useAppSelector(
-        (state) => state.userData.tokenBalances,
-    );
+    const { tokenBalances } = useContext(UserDataContext);
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);

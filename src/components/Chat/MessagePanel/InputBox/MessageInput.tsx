@@ -8,9 +8,9 @@ import styles from './MessageInput.module.css';
 import { useContext, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
 
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 interface MessageInputProps {
     currentUser: string;
     message?: Message;
@@ -35,10 +35,7 @@ export default function MessageInput(props: MessageInputProps) {
         isSubscriptionsEnabled,
         isChatOpen,
     );
-
-    const userData = useAppSelector((state) => state.userData);
-    const isUserLoggedIn = userData.isLoggedIn;
-
+    const { isUserConnected } = useContext(UserDataContext);
     const roomId = props.room;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,7 +46,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const handleEmojiPickerHideShow = () => {
-        if (!isUserLoggedIn) {
+        if (!isUserConnected) {
             setShowEmojiPicker(false);
         } else {
             setShowEmojiPicker(!showEmojiPicker);
@@ -168,7 +165,7 @@ export default function MessageInput(props: MessageInputProps) {
 
                 <BsEmojiSmile
                     className={
-                        isUserLoggedIn
+                        isUserConnected
                             ? styles.svgButton
                             : styles.not_LoggedIn_svgButton
                     }
@@ -177,7 +174,7 @@ export default function MessageInput(props: MessageInputProps) {
                 {}
                 <div
                     className={
-                        isUserLoggedIn
+                        isUserConnected
                             ? styles.send_message_button
                             : styles.not_LoggedIn_send_message_button
                     }
@@ -197,7 +194,7 @@ export default function MessageInput(props: MessageInputProps) {
                             strokeLinecap='round'
                             strokeLinejoin='round'
                             className={
-                                isUserLoggedIn
+                                isUserConnected
                                     ? styles.svgButton
                                     : styles.not_LoggedIn_svgButton
                             }

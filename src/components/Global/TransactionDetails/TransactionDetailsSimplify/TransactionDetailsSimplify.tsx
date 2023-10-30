@@ -6,10 +6,10 @@ import styles from './TransactionDetailsSimplify.module.css';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { ZERO_ADDRESS } from '../../../../constants';
 import moment from 'moment';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { useMediaQuery } from '@material-ui/core';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface ItemRowPropsIF {
     title: string;
@@ -26,9 +26,8 @@ export default function TransactionDetailsSimplify(
     props: TransactionDetailsSimplifyPropsIF,
 ) {
     const { tx, isAccountView } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+
+    const { userAddress: addressCurrent } = useContext(UserDataContext);
 
     const {
         ensName,
@@ -57,7 +56,7 @@ export default function TransactionDetailsSimplify(
         truncatedHighDisplayPriceDenomByMoneyness,
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
-    } = useProcessTransaction(tx, userAddress);
+    } = useProcessTransaction(tx, addressCurrent);
 
     const { chainData } = useContext(CrocEnvContext);
 

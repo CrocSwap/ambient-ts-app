@@ -16,6 +16,7 @@ import TutorialOverlay from '../../Global/TutorialOverlay/TutorialOverlay';
 import Button from '../../Form/Button';
 
 import TradeLinks from './TradeLinks';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface PropsIF {
     chainId: string;
@@ -58,9 +59,8 @@ export const TradeModuleSkeleton = (props: PropsIF) => {
     } = useContext(CrocEnvContext);
     const { tokens } = useContext(TokenContext);
 
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
+
     const { tokenA, tokenB, limitTick } = useAppSelector(
         (state) => state.tradeData,
     );
