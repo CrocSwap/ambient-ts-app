@@ -243,7 +243,7 @@ function Trade() {
             )}
 
             {activeMobileComponent === 'trade' && (
-                <ContentContainer>
+                <ContentContainer noPadding>
                     <Outlet
                         context={{
                             tradeData: tradeData,

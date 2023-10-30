@@ -4,14 +4,14 @@
     color: var(--text2);
     border-radius: var(--border-radius);
 
-    background-color: var(--dark1);
-    background: var(--dark-gradient);
+    background-color: var(--accent1);
+    background: var(--accent1);
 }
 
 .main_content {
     background-color: transparent;
     border-radius: var(--border-radius);
-    padding: 8px 16px 16px 16px;
+
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -40,7 +40,7 @@
 }
 
 .swap_route {
-    background: var(--swap-border);
+    background: var(--accent1);
     padding: 1px;
     border-radius: var(--border-radius);
     box-shadow: var(--swap-box-shadow);
