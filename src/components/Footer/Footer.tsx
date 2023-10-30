@@ -9,6 +9,7 @@ import {
     DISCORD_LINK,
     DOCS_LINK,
     GITHUB_LINK,
+    IS_LOCAL_ENV,
     MEDIUM_LINK,
     TWITTER_LINK,
 } from '../../constants';
@@ -91,6 +92,16 @@ export default function Footer() {
     // how many items from `footerData to display in each column
     // each element denotes a column, value is how many elements to populate
     const itemsPerColumn: [number, number, number] = [2, 3, 3];
+
+    // warn developer if more items are defined in `footerData` than are
+    // ... being rendered in the DOM for the user
+    if (IS_LOCAL_ENV) {
+        const numToShow: number = itemsPerColumn.reduce((a, c) => a + c);
+        numToShow < footerData.length &&
+            console.warn(
+                `The Footer.tsx file defines ${footerData.length} items but only designates ${numToShow} to be rendered in the DOM`,
+            );
+    }
 
     // transform `footerData` into an array of arrays to ease columnization
     const columnizedData: Array<footerItemIF[]> = itemsPerColumn.map(
