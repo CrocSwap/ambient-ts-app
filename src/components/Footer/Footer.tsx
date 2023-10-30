@@ -5,6 +5,7 @@ import { FaDiscord } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 import {
+    CORPORATE_LINK,
     DISCORD_LINK,
     DOCS_LINK,
     GITHUB_LINK,
@@ -12,6 +13,7 @@ import {
     TWITTER_LINK,
 } from '../../constants';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
+import { GiAlligatorClip } from 'react-icons/gi';
 interface FooterItemProps {
     title: string | JSX.Element;
     content: string;
@@ -45,6 +47,15 @@ export default function Footer() {
             ),
             content: 'View our smart contracts, SDK, and more',
             link: GITHUB_LINK,
+        },
+        {
+            title: (
+                <>
+                    <GiAlligatorClip size={15} /> About Us
+                </>
+            ),
+            content: 'Learn more about parent company Crocodile Labs',
+            link: CORPORATE_LINK,
         },
         {
             title: (
@@ -132,7 +143,7 @@ export default function Footer() {
                     ))}
                 </div>
                 <div className={styles.row}>
-                    {footerData.slice(2, 4).map((data) => (
+                    {footerData.slice(2, 5).map((data) => (
                         <FooterItem
                             title={data.title}
                             content={data.content}
@@ -142,7 +153,7 @@ export default function Footer() {
                     ))}
                 </div>
                 <div className={styles.row}>
-                    {footerData.slice(4, 7).map((data) => (
+                    {footerData.slice(5, 8).map((data) => (
                         <FooterItem
                             title={data.title}
                             content={data.content}
