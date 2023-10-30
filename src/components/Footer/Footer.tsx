@@ -104,13 +104,12 @@ export default function Footer() {
 
     const FooterItem = (props: FooterItemProps) => {
         const { title, content, link } = props;
-
         return (
             <a
                 href={link}
                 className={styles.footer_item_container}
                 target='_blank'
-                rel='noreferrer'
+                rel={link === CORPORATE_LINK ? 'noreferrer me' : 'noreferrer'}
             >
                 <h3>{title}</h3>
                 <p>{content}</p>
