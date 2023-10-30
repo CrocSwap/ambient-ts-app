@@ -26,6 +26,7 @@ export interface footerItemIF {
 export default function Footer() {
     const [, , termsUrls] = useTermsAgreed();
 
+    // raw data to generate cards in the footer
     const footerData: footerItemIF[] = [
         {
             title: <>Terms of Service</>,
@@ -120,6 +121,7 @@ export default function Footer() {
         },
     );
 
+    // boolean to trigger early return for mobile version of the app
     const showMobileVersion: boolean = useMediaQuery('(max-width: 600px)');
 
     // early return for mobile version
