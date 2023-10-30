@@ -2997,6 +2997,9 @@ export default function Chart(props: propsIF) {
                 setSelectedDrawnShape(undefined);
                 redo();
             }
+            if (event.key === 'Escape') {
+                setSelectedDrawnShape(undefined);
+            }
         };
 
         document.addEventListener('keydown', handleKeyDown);
