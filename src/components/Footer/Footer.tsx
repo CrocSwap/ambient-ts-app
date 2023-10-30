@@ -88,22 +88,16 @@ export default function Footer() {
         },
     ];
 
-    const itemsPerColumn: [number, number, number] = [2, 3, 5];
+    const itemsPerColumn: [number, number, number] = [2, 3, 3];
 
     const columnizedData = itemsPerColumn.map((count: number, idx: number) => {
-        const subArray: number[] = itemsPerColumn.slice(0, idx + 1);
-
-        const sliceStart = subArray
-            .slice(0, subArray.length - 1)
+        const sliceEnd = itemsPerColumn
+            .slice(0, idx + 1)
             .reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
                 0,
             );
-        const sliceEnd = subArray.reduce(
-            (accumulator, currentValue) => accumulator + currentValue,
-            0,
-        );
-
+        const sliceStart = sliceEnd - count;
         return footerData.slice(sliceStart, sliceEnd);
     });
 
