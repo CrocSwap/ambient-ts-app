@@ -140,18 +140,26 @@ export default function Footer() {
     return (
         <section className={styles.container}>
             <div className={styles.content}>
-                {columnizedData.map((elements: footerItemIF[], idx: number) => (
-                    <div className={styles.row} key={idx}>
-                        {elements.map((element: footerItemIF) => (
-                            <FooterItem
-                                title={element.title}
-                                content={element.content}
-                                link={element.link}
-                                key={element.link}
-                            />
-                        ))}
-                    </div>
-                ))}
+                {
+                    // map over `columnizedData` to create columns
+                    columnizedData.map(
+                        (elements: footerItemIF[], idx: number) => (
+                            <div className={styles.row} key={idx}>
+                                {
+                                    // map over data in column to make cards
+                                    elements.map((element: footerItemIF) => (
+                                        <FooterItem
+                                            title={element.title}
+                                            content={element.content}
+                                            link={element.link}
+                                            key={element.link}
+                                        />
+                                    ))
+                                }
+                            </div>
+                        ),
+                    )
+                }
             </div>
         </section>
     );
