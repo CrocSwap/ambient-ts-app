@@ -17,6 +17,7 @@ import {
     WalletName,
 } from '../../../../styled/Components/Header';
 import { FlexContainer } from '../../../../styled/Common';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 // TODO: use user context instead of UseAccount
 interface propsIF {
     accountAddress: string;
@@ -31,9 +32,8 @@ export default function Account(props: propsIF) {
     const {
         snackbar: { open: openSnackbar },
     } = useContext(AppStateContext);
-    const { connector, isConnected } = useAccount();
 
-    const isUserLoggedIn = isConnected;
+    const { isUserConnected } = useContext(UserDataContext);
 
     const [_, copy] = useCopyToClipboard();
 
@@ -50,8 +50,8 @@ export default function Account(props: propsIF) {
     const [showWalletDropdown, setShowWalletDropdown] = useState(false);
 
     useEffect(() => {
-        !isUserLoggedIn ? setShowWalletDropdown(false) : null;
-    }, [isUserLoggedIn]);
+        !isUserConnected ? setShowWalletDropdown(false) : null;
+    }, [isUserConnected]);
 
     const walletDropdownItemRef = useRef<HTMLDivElement>(null);
     const clickOutsideHandler = () => {
@@ -91,7 +91,6 @@ export default function Account(props: propsIF) {
                     ensName={ensName !== '' ? ensName : ''}
                     accountAddress={props.accountAddress}
                     handleCopyAddress={handleCopyAddress}
-                    connectorName={connector?.name}
                     clickLogout={clickLogout}
                     accountAddressFull={props.accountAddressFull}
                     clickOutsideHandler={clickOutsideHandler}
@@ -107,15 +106,15 @@ export default function Account(props: propsIF) {
             gap={8}
             overflow='visible'
         >
-            {isUserLoggedIn && walletDisplay}
-            {isConnected && <ExchangeBalanceDropdown />}
+            {isUserConnected && walletDisplay}
+            {isUserConnected && <ExchangeBalanceDropdown />}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
                 open={openNavbarMenu}
                 setOpen={setOpenNavbarMenu}
             >
                 <DropdownMenu
-                    isUserLoggedIn={isUserLoggedIn}
+                    isUserLoggedIn={isUserConnected}
                     clickLogout={clickLogout}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
                 />

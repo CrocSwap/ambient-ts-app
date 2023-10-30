@@ -3,12 +3,12 @@ import { useLocation } from 'react-router-dom';
 import { CandleContext } from './CandleContext';
 import { ChartContext } from './ChartContext';
 import { useSimulatedIsPoolInitialized } from '../App/hooks/useSimulatedIsPoolInitialized';
-import { useAccount } from 'wagmi';
 import {
     resetConnectedUserDataLoadingStatus,
     resetPoolDataLoadingStatus,
 } from '../utils/state/graphDataSlice';
 import { useAppDispatch } from '../utils/hooks/reduxToolkit';
+import { UserDataContext } from './UserDataContext';
 
 // 54 is the height of the trade table header
 export const TRADE_TABLE_HEADER_HEIGHT = 54;
@@ -64,16 +64,17 @@ export const TradeTableContextProvider = (props: {
     const [outsideControl, setOutsideControl] = useState(false);
     const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
-    const { isConnected } = useAccount();
+    const { isUserConnected } = useContext(UserDataContext);
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (!isConnected) {
+        if (!isUserConnected) {
             dispatch(resetPoolDataLoadingStatus());
             dispatch(resetConnectedUserDataLoadingStatus());
             setShowAllData(true);
         }
-    }, [isConnected]);
+    }, [isUserConnected]);
 
     const tradeTableContext = {
         showAllData,

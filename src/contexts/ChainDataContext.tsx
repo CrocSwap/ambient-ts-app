@@ -8,7 +8,6 @@ import React, {
     useContext,
 } from 'react';
 import useWebSocket from 'react-use-websocket';
-import { useAccount } from 'wagmi';
 import {
     IS_LOCAL_ENV,
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
@@ -48,7 +47,7 @@ export const ChainDataContextProvider = (props: {
     const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
 
     const dispatch = useAppDispatch();
-    const { address: userAddress, isConnected } = useAccount();
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
@@ -168,7 +167,12 @@ export const ChainDataContextProvider = (props: {
         (async () => {
             IS_LOCAL_ENV &&
                 console.debug('fetching native token and erc20 token balances');
-            if (crocEnv && isConnected && userAddress && chainData.chainId) {
+            if (
+                crocEnv &&
+                isUserConnected &&
+                userAddress &&
+                chainData.chainId
+            ) {
                 try {
                     const tokenBalances: TokenIF[] =
                         await cachedFetchTokenBalances(
@@ -195,7 +199,13 @@ export const ChainDataContextProvider = (props: {
                 }
             }
         })();
-    }, [crocEnv, isConnected, userAddress, chainData.chainId, everyEigthBlock]);
+    }, [
+        crocEnv,
+        isUserConnected,
+        userAddress,
+        chainData.chainId,
+        everyEigthBlock,
+    ]);
 
     return (
         <ChainDataContext.Provider value={chainDataContext}>

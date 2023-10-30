@@ -35,7 +35,6 @@ interface WalletDropdownPropsIF {
     accountAddress: string;
     handleCopyAddress: () => void;
     clickOutsideHandler: () => void;
-    connectorName: string | undefined;
     clickLogout: () => void;
     accountAddressFull: string;
 }
@@ -53,7 +52,6 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         accountAddress,
         handleCopyAddress,
         clickOutsideHandler,
-        // connectorName,
         clickLogout,
         accountAddressFull,
     } = props;

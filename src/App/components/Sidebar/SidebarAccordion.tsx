@@ -2,7 +2,6 @@
 import { useState, ReactNode, useEffect, useContext } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // START: Import Local Files
-import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import { IS_LOCAL_ENV } from '../../../constants';
 import { sidebarMethodsIF } from '../../hooks/useSidebar';
@@ -10,6 +9,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { AccordionHeader, ArrowIcon } from '../../../styled/Components/Sidebar';
 import Button from '../../../components/Form/Button';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -38,7 +38,7 @@ export default function SidebarAccordion(props: propsIF) {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { isConnected } = useAccount();
+    const { isUserConnected } = useContext(UserDataContext);
     const isTopPools = item.name === 'Top Pools';
 
     const [isOpen, setIsOpen] = useState(isTopPools);
@@ -89,7 +89,7 @@ export default function SidebarAccordion(props: propsIF) {
     }, [props.openAllDefault, isDefaultOverridden]);
 
     const accordionContentToShow =
-        !isConnected &&
+        !isUserConnected &&
         !shouldDisplayContentWhenUserNotLoggedIn &&
         sidebar.isOpen ? (
             <motion.div

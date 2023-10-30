@@ -1,4 +1,3 @@
-import { useAccount } from 'wagmi';
 import useChatSocket from '../../Service/useChatSocket';
 import { BsEmojiSmile } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
@@ -23,7 +22,7 @@ export default function MessageInput(props: MessageInputProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [isInfoPressed, setIsInfoPressed] = useState(false);
-    const { address, isConnected } = useAccount();
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
     const [isPosition, setIsPosition] = useState(false);
     const {
         chat: { isOpen: isChatOpen },
@@ -35,7 +34,6 @@ export default function MessageInput(props: MessageInputProps) {
         isSubscriptionsEnabled,
         isChatOpen,
     );
-    const { isUserConnected } = useContext(UserDataContext);
     const roomId = props.room;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,7 +56,7 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     function messageInputText() {
-        if (isConnected && address) {
+        if (isUserConnected && userAddress) {
             return 'Type to chat. Enter to submit.';
         } else {
             return 'Please log in to chat.';
@@ -67,7 +65,7 @@ export default function MessageInput(props: MessageInputProps) {
 
     useEffect(() => {
         messageInputText();
-    }, [isConnected, address]);
+    }, [isUserConnected, userAddress]);
 
     const handleSendMessageButton = () => {
         handleSendMsg(message, roomId);
@@ -114,8 +112,14 @@ export default function MessageInput(props: MessageInputProps) {
     });
 
     const handleSendMsg = async (msg: string, roomId: string) => {
-        if (msg !== '' && address) {
-            sendMsg(props.currentUser, message, roomId, props.ensName, address);
+        if (msg !== '' && userAddress) {
+            sendMsg(
+                props.currentUser,
+                message,
+                roomId,
+                props.ensName,
+                userAddress,
+            );
         }
     };
 
@@ -127,7 +131,9 @@ export default function MessageInput(props: MessageInputProps) {
     return (
         <div
             className={
-                !isConnected ? styles.input_box_not_allowed : styles.input_box
+                !isUserConnected
+                    ? styles.input_box_not_allowed
+                    : styles.input_box
             }
         >
             <PositionBox
@@ -136,22 +142,22 @@ export default function MessageInput(props: MessageInputProps) {
                 isPosition={isPosition}
                 setIsPosition={setIsPosition}
                 walletExplorer={
-                    props.ensName === undefined ? address : props.ensName
+                    props.ensName === undefined ? userAddress : props.ensName
                 }
             />
 
             <div
                 className={
-                    !isConnected ? styles.input_not_allowed : styles.input
+                    !isUserConnected ? styles.input_not_allowed : styles.input
                 }
             >
                 <input
                     type='text'
                     id='box'
                     placeholder={messageInputText()}
-                    disabled={!isConnected}
+                    disabled={!isUserConnected}
                     className={
-                        !isConnected
+                        !isUserConnected
                             ? styles.input_text_not_allowed
                             : styles.input_text
                     }

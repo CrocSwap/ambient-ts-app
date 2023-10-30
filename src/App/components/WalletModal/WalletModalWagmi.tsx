@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState } from 'react';
-import { useConnect, useAccount, useDisconnect } from 'wagmi';
+import { useConnect, useDisconnect } from 'wagmi';
 
 // START: Import Local Files
 import styles from './WalletModalWagmi.module.css';
@@ -18,6 +18,7 @@ import { IS_LOCAL_ENV } from '../../../constants';
 import GateWallet from './GateWallet';
 import { useTermsAgreed } from '../../hooks/useTermsAgreed';
 import { AppStateContext } from '../../../contexts/AppStateContext';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 export default function WalletModalWagmi() {
     const { disconnect } = useDisconnect();
@@ -42,7 +43,7 @@ export default function WalletModalWagmi() {
             setPage('metamaskError');
         }
     }, [error]);
-    const { isConnected } = useAccount();
+    const { isUserConnected } = useContext(UserDataContext);
 
     const defaultState = process.env.REACT_APP_VIEW_ONLY
         ? 'notAvailable'
@@ -80,8 +81,8 @@ export default function WalletModalWagmi() {
 
     // close the Connect Wallet modal only when authentication completes
     useEffect(() => {
-        isConnected && pendingLoginDelayElapsed && closeModal();
-    }, [isConnected, pendingLoginDelayElapsed]);
+        isUserConnected && pendingLoginDelayElapsed && closeModal();
+    }, [isUserConnected, pendingLoginDelayElapsed]);
 
     const learnAboutWalletsContent = (
         <div className={styles.learn_container}>

@@ -11,7 +11,7 @@ import {
     useAppDispatch,
     useAppSelector,
 } from '../../../utils/hooks/reduxToolkit';
-import { useAccount, useDisconnect, useEnsName, useSwitchNetwork } from 'wagmi';
+import { useDisconnect, useEnsName, useSwitchNetwork } from 'wagmi';
 import { BiGitBranch } from 'react-icons/bi';
 import { APP_ENVIRONMENT, BRANCH_NAME } from '../../../constants';
 import TradeNowButton from '../../../components/Home/Landing/TradeNowButton/TradeNowButton';
@@ -73,14 +73,14 @@ const PageHeader = function () {
             setDexBalance: setQuoteTokenDexBalance,
         },
     } = useContext(TradeTokenContext);
-    const { address, isConnected } = useAccount();
-    const { data: ensName } = useEnsName({ address });
+    const { userAddress, isUserConnected } = useContext(UserDataContext);
+    const { data: ensName } = useEnsName({ address: userAddress });
 
     // eslint-disable-next-line
     const [mobileNavToggle, setMobileNavToggle] = useState<boolean>(false);
 
     const accountAddress =
-        isConnected && address ? trimString(address, 6, 6) : '';
+        isUserConnected && userAddress ? trimString(userAddress, 6, 6) : '';
 
     const dispatch = useAppDispatch();
     const { disconnect } = useDisconnect();
@@ -101,9 +101,9 @@ const PageHeader = function () {
 
     const accountProps = {
         accountAddress: accountAddress,
-        accountAddressFull: isConnected && address ? address : '',
+        accountAddressFull: isUserConnected && userAddress ? userAddress : '',
         ensName: ensName || '',
-        isUserLoggedIn: isConnected,
+        isUserLoggedIn: isUserConnected,
         clickLogout: clickLogout,
     };
     const desktopScreen = useMediaQuery('(min-width: 1020px)');
@@ -255,7 +255,7 @@ const PageHeader = function () {
         {
             title: 'Account',
             destination: '/account',
-            shouldDisplay: isConnected,
+            shouldDisplay: !!isUserConnected,
         },
     ];
 
@@ -385,7 +385,7 @@ const PageHeader = function () {
                                 ) : null}
                             </FlexContainer>
                             <NetworkSelector switchNetwork={switchNetwork} />
-                            {!isConnected && connectWagmiButton}
+                            {!isUserConnected && connectWagmiButton}
                             <Account {...accountProps} />
                             <NotificationCenter />
                         </FlexContainer>

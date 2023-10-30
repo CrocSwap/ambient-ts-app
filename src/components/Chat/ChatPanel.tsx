@@ -10,7 +10,7 @@ import { PoolIF } from '../../utils/interfaces/exports';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
-import { useAccount, useEnsName } from 'wagmi';
+import { useEnsName } from 'wagmi';
 import { IoIosArrowUp, IoIosArrowDown } from 'react-icons/io';
 import FullChat from './FullChat/FullChat';
 import trimString from '../../utils/functions/trimString';
@@ -46,8 +46,8 @@ function ChatPanel(props: propsIF) {
     const [isCurrentPool, setIsCurrentPool] = useState(false);
     const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(true);
     const [userCurrentPool, setUserCurrentPool] = useState('ETH / USDC');
-    const { address } = useAccount();
-    const { data: ens } = useEnsName({ address });
+    const { userAddress } = useContext(UserDataContext);
+    const { data: ens } = useEnsName({ address: userAddress });
     const [ensName, setEnsName] = useState('');
     const [currentUser, setCurrentUser] = useState<string | undefined>(
         undefined,
@@ -92,7 +92,7 @@ function ChatPanel(props: propsIF) {
             if (messageUser !== currentUser) {
                 if (
                     lastMessage?.mentionedName === ensName ||
-                    lastMessage?.mentionedName === address
+                    lastMessage?.mentionedName === userAddress
                 ) {
                     setNotification((notification) => notification + 1);
                 }
@@ -118,7 +118,7 @@ function ChatPanel(props: propsIF) {
 
     useEffect(() => {
         setScrollDirection('Scroll Down');
-        if (address) {
+        if (userAddress) {
             if (ens === null || ens === undefined) {
                 setEnsName('defaultValue');
             } else {
@@ -128,7 +128,7 @@ function ChatPanel(props: propsIF) {
             getID().then((result: any) => {
                 if (result.status === 'Not OK') {
                     // eslint-disable-next-line
-                    saveUser(address, ensName).then((result: any) => {
+                    saveUser(userAddress, ensName).then((result: any) => {
                         setCurrentUser(result.userData._id);
                         return result;
                     });
@@ -166,7 +166,7 @@ function ChatPanel(props: propsIF) {
         } else {
             setCurrentUser(undefined);
         }
-    }, [ens, address, isChatOpen, isFullScreen, setUserCurrentPool]);
+    }, [ens, userAddress, isChatOpen, isFullScreen, setUserCurrentPool]);
 
     useEffect(() => {
         setIsScrollToBottomButtonPressed(false);
@@ -284,7 +284,7 @@ function ChatPanel(props: propsIF) {
                         isCurrentUser={item.sender === currentUser}
                         currentUser={currentUser}
                         resolvedAddress={resolvedAddressFromContext}
-                        connectedAccountActive={address}
+                        connectedAccountActive={userAddress}
                         moderator={moderator}
                         room={room}
                         isMessageDeleted={isMessageDeleted}
@@ -412,7 +412,7 @@ function ChatPanel(props: propsIF) {
                 messageInput={messageInput}
                 userName={
                     ens === null || ens === ''
-                        ? trimString(address as string, 6, 0, '…')
+                        ? trimString(userAddress as string, 6, 0, '…')
                         : (ens as string)
                 }
                 setRoom={setRoom}
