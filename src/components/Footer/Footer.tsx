@@ -109,50 +109,48 @@ export default function Footer() {
         },
     );
 
-    const mobileButton = (
-        <Link
-            to={'/trade'}
-            tabIndex={0}
-            aria-label='Go to trade page button'
-            className={styles.started_button}
-        >
-            Trade Now
-        </Link>
-    );
+    const showMobileVersion: boolean = useMediaQuery('(max-width: 600px)');
 
-    const showMobileVersion = useMediaQuery('(max-width: 600px)');
+    // TODO:    eliminate unnecessary wrapper for mobile version
 
-    const mobileItems = (
-        <div className={styles.mobile_version}>
-            {footerData.map((data) => (
-                <FooterItem
-                    title={data.title}
-                    content={data.content}
-                    link={data.link}
-                    key={data.content}
-                />
-            ))}
-            {mobileButton}
-        </div>
-    );
-    if (showMobileVersion)
-        return <div className={styles.mobile_bg}>{mobileItems}</div>;
+    // early return for mobile version
+    if (showMobileVersion) {
+        return (
+            <div className={styles.mobile_bg}>
+                <div className={styles.mobile_version}>
+                    {footerData.map((card: footerItemIF) => (
+                        <FooterItem key={card.link} data={card} />
+                    ))}
+                    <Link
+                        to={'/trade'}
+                        tabIndex={0}
+                        aria-label='Go to trade page button'
+                        className={styles.started_button}
+                    >
+                        Trade Now
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
+    // TODO:    eliminate unnecessary wrapper
+
+    // main return for non-movile version
     return (
         <section className={styles.container}>
             <div className={styles.content}>
                 {
                     // map over `columnizedData` to create columns
                     columnizedData.map(
-                        (elements: footerItemIF[], idx: number) => (
+                        (columnData: footerItemIF[], idx: number) => (
                             <div className={styles.row} key={idx}>
                                 {
                                     // map over data in column to make cards
-                                    elements.map((element: footerItemIF) => (
+                                    columnData.map((card: footerItemIF) => (
                                         <FooterItem
-                                            title={element.title}
-                                            content={element.content}
-                                            link={element.link}
-                                            key={element.link}
+                                            key={card.link}
+                                            data={card}
                                         />
                                     ))
                                 }
