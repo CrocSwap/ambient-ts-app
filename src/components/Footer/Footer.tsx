@@ -14,19 +14,16 @@ import {
 } from '../../constants';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
 import { GiAlligatorClip } from 'react-icons/gi';
-interface FooterItemProps {
-    title: string | JSX.Element;
+import FooterItem from './FooterItem';
+
+export interface footerItemsIF {
+    title: JSX.Element;
     content: string;
     link: string;
 }
+
 export default function Footer() {
     const [, , termsUrls] = useTermsAgreed();
-
-    interface footerItemsIF {
-        title: JSX.Element;
-        content: string;
-        link: string;
-    }
 
     const footerData: footerItemsIF[] = [
         {
@@ -102,20 +99,6 @@ export default function Footer() {
         </Link>
     );
 
-    const FooterItem = (props: FooterItemProps) => {
-        const { title, content, link } = props;
-        return (
-            <a
-                href={link}
-                className={styles.footer_item_container}
-                target='_blank'
-                rel={link === CORPORATE_LINK ? 'noreferrer me' : 'noreferrer'}
-            >
-                <h3>{title}</h3>
-                <p>{content}</p>
-            </a>
-        );
-    };
     const showMobileVersion = useMediaQuery('(max-width: 600px)');
 
     const mobileItems = (
