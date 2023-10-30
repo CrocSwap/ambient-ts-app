@@ -79,6 +79,7 @@
     .no_background:focus-within {
         box-shadow: none;
     }
+    
 }
 @media (min-width: 1200px) {
     .container {
@@ -107,7 +108,7 @@
 
     .swap_route,
     .no_background {
-        width: 95%;
+       
         margin: 0 auto;
     }
 }
@@ -117,5 +118,11 @@
         overflow-y: scroll;
 
         max-height: 75vh;
+    }
+
+    .swap_route,
+    .no_background {
+        width: 95%;
+       
     }
 }
