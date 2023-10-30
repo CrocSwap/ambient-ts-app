@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    Dispatch,
+    SetStateAction,
+} from 'react';
 import { useDispatch } from 'react-redux';
 import { useAccount } from 'wagmi';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
@@ -6,7 +12,6 @@ import { getLimitOrderData } from '../App/functions/getLimitOrderData';
 import { getPositionData } from '../App/functions/getPositionData';
 import useDebounce from '../App/hooks/useDebounce';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../constants';
-import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { LimitOrderServerIF } from '../utils/interfaces/LimitOrderIF';
 import { PositionServerIF } from '../utils/interfaces/PositionIF';
 import { TokenIF } from '../utils/interfaces/TokenIF';
@@ -18,24 +23,47 @@ import {
     setLimitOrdersByUser,
     setPositionsByUser,
 } from '../utils/state/graphDataSlice';
-import {
-    setIsLoggedIn,
-    setAddressCurrent,
-    resetTokenData,
-    setRecentTokens,
-} from '../utils/state/userDataSlice';
+
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 
-// TODO: userData redux goes in here
-export const UserDataContext = createContext({});
+interface UserDataContextIF {
+    isUserConnected: boolean | undefined;
+    userAddress: `0x${string}` | undefined;
+    resetUserAddress: () => void;
+    tokenBalances: TokenIF[] | undefined;
+    setTokenBalances: Dispatch<SetStateAction<TokenIF[] | undefined>>;
+    setTokenBalance: (params: {
+        tokenAddress: string;
+        walletBalance?: string | undefined;
+        dexBalance?: string | undefined;
+    }) => void;
+    resolvedAddressFromContext: string;
+    setResolvedAddressInContext: Dispatch<SetStateAction<string>>;
+}
+export const UserDataContext = createContext<UserDataContextIF>(
+    {} as UserDataContextIF,
+);
 
 export const UserDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
+    const [isUserConnected, setIsUserConnected] =
+        React.useState<boolean>(false);
+    const [userAddress, setUserAddress] = React.useState<
+        `0x${string}` | undefined
+    >(undefined);
+
+    const [tokenBalances, setTokenBalances] = React.useState<
+        TokenIF[] | undefined
+    >(undefined);
+
+    const [resolvedAddressFromContext, setResolvedAddressInContext] =
+        React.useState<string>('');
+
     const dispatch = useDispatch();
     const {
         server: { isEnabled: isServerEnabled },
@@ -51,16 +79,47 @@ export const UserDataContextProvider = (props: {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { isLoggedIn } = useAppSelector((state) => state.userData);
-    const { address: userAddress, isConnected } = useAccount();
+    const { address: wagmiAddress, isConnected } = useAccount();
+
+    const resetUserAddress = () => {
+        setUserAddress(undefined);
+    };
+    const setTokenBalance = (params: {
+        tokenAddress: string;
+        walletBalance?: string | undefined;
+        dexBalance?: string | undefined;
+    }) => {
+        if (!tokenBalances) return;
+        const newTokenBalances = [...tokenBalances];
+
+        const tokenIndex = newTokenBalances?.findIndex(
+            (token) =>
+                token.address.toLowerCase() ===
+                params.tokenAddress.toLowerCase(),
+        );
+
+        if (newTokenBalances && tokenIndex && tokenIndex !== -1) {
+            const newTokenBalance = newTokenBalances[tokenIndex];
+            if (params.walletBalance) {
+                newTokenBalance.walletBalance = params.walletBalance;
+            }
+            if (params.dexBalance) {
+                newTokenBalance.dexBalance = params.dexBalance;
+            }
+            if (params.dexBalance || params.walletBalance) {
+                newTokenBalances[tokenIndex] = newTokenBalance;
+                setTokenBalances(newTokenBalances);
+            }
+        }
+    };
 
     // TODO: Wagmi isConnected === userData.isLoggedIn - can consolidate and use either as source of truth && Wagmi address === useData.userAddress
     useEffect(() => {
-        dispatch(setIsLoggedIn(isConnected));
-        dispatch(setAddressCurrent(userAddress));
-        dispatch(resetTokenData());
+        setIsUserConnected(isConnected);
+        setUserAddress(wagmiAddress);
+        setTokenBalances(undefined);
         dispatch(resetUserGraphData());
-    }, [isConnected, isLoggedIn, userAddress]);
+    }, [isConnected, isUserConnected, wagmiAddress]);
 
     const userLimitOrderStatesCacheEndpoint = GRAPHCACHE_SMALL_URL
         ? GRAPHCACHE_SMALL_URL + '/user_limit_orders?'
@@ -71,6 +130,8 @@ export const UserDataContextProvider = (props: {
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
 
     useEffect(() => {
+        // This useEffect controls a series of other dispatches that fetch data on update of the user object
+        // user Postions, limit orders, and recent changes are all governed here
         if (
             isServerEnabled &&
             isConnected &&
@@ -270,7 +331,7 @@ export const UserDataContextProvider = (props: {
                                     }
                                 }
                             }
-                            dispatch(setRecentTokens(result));
+                            // setRecentTokens(result); // TODO: what to do here?  from useRecentTokens?
                         }
 
                         dispatch(
@@ -296,8 +357,19 @@ export const UserDataContextProvider = (props: {
         !!provider,
     ]);
 
+    const userDataContext: UserDataContextIF = {
+        isUserConnected,
+        userAddress,
+        resetUserAddress,
+        tokenBalances,
+        setTokenBalances,
+        setTokenBalance,
+        resolvedAddressFromContext,
+        setResolvedAddressInContext,
+    };
+
     return (
-        <UserDataContext.Provider value={{}}>
+        <UserDataContext.Provider value={userDataContext}>
             {props.children}
         </UserDataContext.Provider>
     );

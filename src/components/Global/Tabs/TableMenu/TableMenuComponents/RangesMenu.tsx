@@ -32,6 +32,7 @@ import { useModal } from '../../../Modal/useModal';
 import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeDetailsModal';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -110,7 +111,8 @@ export default function RangesMenu(props: propsIF) {
         closeRangeActionModal();
     };
 
-    const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
+    const { isUserConnected } = useContext(UserDataContext);
+
     const tradeData = useAppSelector((state) => state.tradeData);
     const rtkTokenA = tradeData.tokenA.address;
     const rtkTokenB = tradeData.tokenB.address;
@@ -132,7 +134,7 @@ export default function RangesMenu(props: propsIF) {
         : useMediaQuery('(max-width: 1150px)');
 
     const positionMatchesLoggedInUser =
-        userMatchesConnectedAccount && isUserLoggedIn;
+        userMatchesConnectedAccount && isUserConnected;
 
     const handleCopyClick = () => {
         setActiveMobileComponent('trade');

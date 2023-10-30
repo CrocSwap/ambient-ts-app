@@ -1,8 +1,5 @@
 import { TokenIF } from '../../../../utils/interfaces/exports';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import {
     Dispatch,
@@ -39,6 +36,7 @@ import {
     MaxButton,
 } from '../../../../styled/Components/Portfolio';
 import { useApprove } from '../../../../App/functions/approve';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     selectedToken: TokenIF;
@@ -67,9 +65,8 @@ export default function Deposit(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress: addressCurrent } = useContext(UserDataContext);
+
     const { approve, isApprovalPending } = useApprove();
 
     const dispatch = useAppDispatch();
@@ -219,7 +216,7 @@ export default function Deposit(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     const deposit = async (depositQtyNonDisplay: string) => {
-        if (crocEnv && isDepositQtyValid && userAddress) {
+        if (crocEnv && isDepositQtyValid && addressCurrent) {
             try {
                 const depositQtyDisplay = toDisplayQty(
                     depositQtyNonDisplay,
@@ -230,7 +227,7 @@ export default function Deposit(props: propsIF) {
 
                 const tx = await crocEnv
                     .token(selectedToken.address)
-                    .deposit(depositQtyDisplay, userAddress);
+                    .deposit(depositQtyDisplay, addressCurrent);
 
                 dispatch(addPendingTx(tx?.hash));
                 if (tx?.hash)

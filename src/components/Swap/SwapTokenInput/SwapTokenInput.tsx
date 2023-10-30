@@ -32,6 +32,7 @@ import {
 } from '../../../utils/state/tradeDataSlice';
 import TokenInputWithWalletBalance from '../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 interface propsIF {
     sellQtyString: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -81,9 +82,8 @@ function SwapTokenInput(props: propsIF) {
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
 
     const dispatch = useAppDispatch();
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
+
     const {
         tokenA,
         tokenB,

@@ -14,6 +14,7 @@ import { ChartContext } from '../../../../contexts/ChartContext';
 import { RangeRow as RangeRowStyled } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 // react functional component
 function Leaderboard() {
@@ -21,9 +22,7 @@ function Leaderboard() {
 
     const { tradeTableState } = useContext(ChartContext);
 
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state?.userData,
-    );
+    const { userAddress } = useContext(UserDataContext);
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state.tradeData);
 

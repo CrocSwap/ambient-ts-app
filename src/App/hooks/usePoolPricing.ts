@@ -21,7 +21,6 @@ interface PoolPricingPropsIF {
     chainData: ChainSpec;
     receiptCount: number;
     isUserLoggedIn: boolean;
-    isUserIdle: boolean;
     lastBlockNumber: number;
     isServerEnabled: boolean;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -127,7 +126,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     // useEffect to asyncronously query spot price when tokens change and block updates
     useEffect(() => {
         if (
-            !props.isUserIdle &&
             props.crocEnv &&
             props.baseTokenAddress &&
             props.quoteTokenAddress &&
@@ -150,7 +148,6 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
             })();
         }
     }, [
-        props.isUserIdle,
         props.lastBlockNumber,
         props.baseTokenAddress,
         props.quoteTokenAddress,

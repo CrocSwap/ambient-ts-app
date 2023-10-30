@@ -23,10 +23,7 @@ import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
 import { resetUserGraphData } from '../../../utils/state/graphDataSlice';
 import { resetReceiptData } from '../../../utils/state/receiptDataSlice';
-import {
-    resetTokenData,
-    resetUserAddresses,
-} from '../../../utils/state/userDataSlice';
+
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
 import { getFormattedNumber } from '../../functions/getFormattedNumber';
 import chainNumToString from '../../functions/chainNumToString';
@@ -49,6 +46,7 @@ import {
 import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
 import { version as appVersion } from '../../../../package.json';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 
 const PageHeader = function () {
     const {
@@ -60,6 +58,7 @@ const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
+    const { setTokenBalances, resetUserAddress } = useContext(UserDataContext);
 
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
@@ -94,8 +93,8 @@ const PageHeader = function () {
         setQuoteTokenDexBalance('');
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
-        dispatch(resetTokenData());
-        dispatch(resetUserAddresses());
+        setTokenBalances(undefined);
+        resetUserAddress();
         setShowAllData(true);
         disconnect();
     }, []);

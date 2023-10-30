@@ -46,6 +46,7 @@ import { AppStateContext } from '../../../contexts/AppStateContext';
 import { FlexContainer } from '../../../styled/Common';
 import { ClearButton } from '../../../styled/Components/TransactionTable';
 import TableInfo from '../TableInfo/TableInfo';
+import { UserDataContext } from '../../../contexts/UserDataContext';
 interface propsIF {
     filter: CandleData | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
@@ -109,8 +110,7 @@ function TradeTabs2(props: propsIF) {
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state?.tradeData);
-    const { isLoggedIn: isUserConnected, addressCurrent: userAddress } =
-        useAppSelector((state) => state.userData);
+    const { isUserConnected, userAddress } = useContext(UserDataContext);
 
     const userChanges = graphData?.changesByUser?.changes;
     const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;

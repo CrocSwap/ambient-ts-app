@@ -54,9 +54,7 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         crocEnv,
     );
 
-    const { tradeData, receiptData, userData } = useAppSelector(
-        (state) => state,
-    );
+    const { tradeData, receiptData } = useAppSelector((state) => state);
     const { isConnected } = useAccount();
 
     const pool = useMemo(
@@ -95,7 +93,6 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         chainData,
         receiptCount: receiptData.sessionReceipts.length,
         isUserLoggedIn: isConnected,
-        isUserIdle: userData.isUserIdle,
         lastBlockNumber,
         isServerEnabled,
         cachedQuerySpotPrice,

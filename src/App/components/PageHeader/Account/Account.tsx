@@ -17,7 +17,7 @@ import {
     WalletName,
 } from '../../../../styled/Components/Header';
 import { FlexContainer } from '../../../../styled/Common';
-
+// TODO: use user context instead of UseAccount
 interface propsIF {
     accountAddress: string;
     accountAddressFull: string;

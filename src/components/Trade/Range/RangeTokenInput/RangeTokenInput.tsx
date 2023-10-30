@@ -24,6 +24,7 @@ import tokenArrow from '../../../../assets/images/icons/plus.svg';
 import { formatTokenInput } from '../../../../utils/numbers';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { InputDisabledText } from '../../../../styled/Components/TradeModules';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 interface propsIF {
     hidePlus?: boolean;
@@ -80,9 +81,8 @@ function RangeTokenInput(props: propsIF) {
     // hook to generate navigation actions with pre-loaded path
     const linkGenPool: linkGenMethodsIF = useLinkGen('pool');
 
-    const { isLoggedIn: isUserConnected } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { isUserConnected } = useContext(UserDataContext);
+
     const {
         tokenA,
         tokenB,

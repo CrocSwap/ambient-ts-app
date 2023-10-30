@@ -3,13 +3,13 @@ import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
 import { TokenIF } from '../../../../../utils/interfaces/exports';
 import Spinner from '../../../Spinner/Spinner';
-import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { useContext } from 'react';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { isUsdcToken } from '../../../../../utils/data/stablePairs';
+import { UserDataContext } from '../../../../../contexts/UserDataContext';
 
 interface propsIF {
     chainId: string;
@@ -28,9 +28,7 @@ export default function Exchange(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const tokenBalances = useAppSelector(
-        (state) => state.userData.tokenBalances,
-    );
+    const { tokenBalances } = useContext(UserDataContext);
 
     const tokensToRender = connectedAccountActive
         ? tokenBalances

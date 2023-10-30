@@ -9,7 +9,7 @@ import { useAccount } from 'wagmi';
 import { usePoolMetadata } from '../App/hooks/usePoolMetadata';
 import { useTokenPairAllowance } from '../App/hooks/useTokenPairAllowance';
 import { IS_LOCAL_ENV, ZERO_ADDRESS } from '../constants';
-import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../utils/hooks/reduxToolkit';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
 import { ChainDataContext } from './ChainDataContext';
@@ -17,9 +17,9 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { RangeContext } from './RangeContext';
 import { TokenContext } from './TokenContext';
-import { setTokenBalance } from '../utils/state/userDataSlice';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
+import { UserDataContext } from './UserDataContext';
 
 interface TradeTokenContextIF {
     baseToken: {
@@ -62,6 +62,8 @@ export const TradeTokenContextProvider = (props: {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
+
+    const { setTokenBalance } = useContext(UserDataContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
@@ -76,7 +78,6 @@ export const TradeTokenContextProvider = (props: {
     const { tokens } = useContext(TokenContext);
 
     const { tradeData, receiptData } = useAppSelector((state) => state);
-    const dispatchRTK = useAppDispatch();
     const { address: userAddress, isConnected } = useAccount();
     const {
         tokenAAllowance,
@@ -216,12 +217,11 @@ export const TradeTokenContextProvider = (props: {
                                     'setting base token wallet balance',
                                 );
                             setBaseTokenBalance(displayBalance);
-                            dispatchRTK(
-                                setTokenBalance({
-                                    tokenAddress: tradeData.baseToken.address,
-                                    walletBalance: bal.toString(),
-                                }),
-                            );
+
+                            setTokenBalance({
+                                tokenAddress: tradeData.baseToken.address,
+                                walletBalance: bal.toString(),
+                            });
                         }
                     })
                     .catch(console.error);
@@ -237,12 +237,10 @@ export const TradeTokenContextProvider = (props: {
                             IS_LOCAL_ENV &&
                                 console.debug('setting base token dex balance');
                             setBaseTokenDexBalance(displayBalance);
-                            dispatchRTK(
-                                setTokenBalance({
-                                    tokenAddress: tradeData.baseToken.address,
-                                    dexBalance: bal.toString(),
-                                }),
-                            );
+                            setTokenBalance({
+                                tokenAddress: tradeData.baseToken.address,
+                                dexBalance: bal.toString(),
+                            });
                         }
                     })
                     .catch(console.error);
@@ -258,12 +256,10 @@ export const TradeTokenContextProvider = (props: {
                             IS_LOCAL_ENV &&
                                 console.debug('setting quote token balance');
                             setQuoteTokenBalance(displayBalance);
-                            dispatchRTK(
-                                setTokenBalance({
-                                    tokenAddress: tradeData.quoteToken.address,
-                                    walletBalance: bal.toString(),
-                                }),
-                            );
+                            setTokenBalance({
+                                tokenAddress: tradeData.quoteToken.address,
+                                walletBalance: bal.toString(),
+                            });
                         }
                     })
                     .catch(console.error);
@@ -281,12 +277,10 @@ export const TradeTokenContextProvider = (props: {
                                     'setting quote token dex balance',
                                 );
                             setQuoteTokenDexBalance(displayBalance);
-                            dispatchRTK(
-                                setTokenBalance({
-                                    tokenAddress: tradeData.quoteToken.address,
-                                    dexBalance: bal.toString(),
-                                }),
-                            );
+                            setTokenBalance({
+                                tokenAddress: tradeData.quoteToken.address,
+                                dexBalance: bal.toString(),
+                            });
                         }
                     })
                     .catch(console.error);

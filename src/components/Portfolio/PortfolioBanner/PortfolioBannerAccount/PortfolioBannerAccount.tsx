@@ -10,10 +10,10 @@ interface IPortfolioBannerAccountPropsIF {
 }
 import { FiCopy, FiExternalLink } from 'react-icons/fi';
 import { AppStateContext } from '../../../../contexts/AppStateContext';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { FlexContainer } from '../../../../styled/Common';
 import { PortfolioBannerMainContainer } from '../../../../styled/Components/Portfolio';
+import { UserDataContext } from '../../../../contexts/UserDataContext';
 
 export default function PortfolioBannerAccount(
     props: IPortfolioBannerAccountPropsIF,
@@ -26,9 +26,7 @@ export default function PortfolioBannerAccount(
         truncatedAccountAddress,
         ensNameAvailable,
     } = props;
-    const { addressCurrent: userAddress } = useAppSelector(
-        (state) => state.userData,
-    );
+    const { userAddress: addressCurrent } = useContext(UserDataContext);
 
     const {
         snackbar: { open: openSnackbar },
@@ -45,7 +43,7 @@ export default function PortfolioBannerAccount(
         ? resolvedAddress
         : ensNameAvailable
         ? truncatedAccountAddress
-        : userAddress;
+        : addressCurrent;
 
     const [_, copy] = useCopyToClipboard();
 
@@ -55,19 +53,19 @@ export default function PortfolioBannerAccount(
                 ? ensName
                 : resolvedAddress
                 ? resolvedAddress
-                : userAddress ?? '',
+                : addressCurrent ?? '',
         );
         const copiedData = ensNameAvailable
             ? ensName
             : resolvedAddress
             ? resolvedAddress
-            : userAddress;
+            : addressCurrent;
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
     function handleCopyAddress() {
-        copy(resolvedAddress ? resolvedAddress : userAddress ?? '');
-        const copiedData = resolvedAddress ? resolvedAddress : userAddress;
+        copy(resolvedAddress ? resolvedAddress : addressCurrent ?? '');
+        const copiedData = resolvedAddress ? resolvedAddress : addressCurrent;
 
         openSnackbar(`${copiedData} copied`, 'info');
     }
@@ -116,7 +114,8 @@ export default function PortfolioBannerAccount(
                                 size={'12px'}
                                 onClick={(e) => {
                                     handleOpenExplorer(
-                                        resolvedAddress || (userAddress ?? ''),
+                                        resolvedAddress ||
+                                            (addressCurrent ?? ''),
                                     );
                                     e.stopPropagation();
                                 }}

@@ -18,11 +18,11 @@ import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../utils/networks';
 import { setLastBlock } from '../utils/state/graphDataSlice';
-import { setTokenBalances } from '../utils/state/userDataSlice';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
+import { UserDataContext } from './UserDataContext';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -41,6 +41,7 @@ export const ChainDataContextProvider = (props: {
 }) => {
     const { chainData, activeNetwork, crocEnv, provider } =
         useContext(CrocEnvContext);
+    const { setTokenBalances } = useContext(UserDataContext);
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
@@ -195,9 +196,9 @@ export const ChainDataContextProvider = (props: {
                         return newToken;
                     });
 
-                    dispatch(setTokenBalances(tokensWithLogos));
+                    setTokenBalances(tokensWithLogos);
                 } catch (error) {
-                    dispatch(setTokenBalances([]));
+                    setTokenBalances([]);
                     console.error({ error });
                 }
             }
