@@ -120,7 +120,7 @@ export default function Footer() {
         <section className={styles.container}>
             <div className={styles.content}>
                 <div className={styles.row}>
-                    {footerData.slice(0, 2).map((data) => (
+                    {footerData.slice(0, 2).map((data: footerItemsIF) => (
                         <FooterItem
                             title={data.title}
                             content={data.content}
@@ -130,7 +130,7 @@ export default function Footer() {
                     ))}
                 </div>
                 <div className={styles.row}>
-                    {footerData.slice(2, 5).map((data) => (
+                    {footerData.slice(2, 5).map((data: footerItemsIF) => (
                         <FooterItem
                             title={data.title}
                             content={data.content}
@@ -140,7 +140,7 @@ export default function Footer() {
                     ))}
                 </div>
                 <div className={styles.row}>
-                    {footerData.slice(5, 8).map((data) => (
+                    {footerData.slice(5, 8).map((data: footerItemsIF) => (
                         <FooterItem
                             title={data.title}
                             content={data.content}
