@@ -65,7 +65,7 @@ export default function Deposit(props: propsIF) {
     } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const { approve, isApprovalPending } = useApprove();
 
@@ -216,7 +216,7 @@ export default function Deposit(props: propsIF) {
     }, [JSON.stringify(selectedToken)]);
 
     const deposit = async (depositQtyNonDisplay: string) => {
-        if (crocEnv && isDepositQtyValid && addressCurrent) {
+        if (crocEnv && isDepositQtyValid && userAddress) {
             try {
                 const depositQtyDisplay = toDisplayQty(
                     depositQtyNonDisplay,
@@ -227,7 +227,7 @@ export default function Deposit(props: propsIF) {
 
                 const tx = await crocEnv
                     .token(selectedToken.address)
-                    .deposit(depositQtyDisplay, addressCurrent);
+                    .deposit(depositQtyDisplay, userAddress);
 
                 dispatch(addPendingTx(tx?.hash));
                 if (tx?.hash)

@@ -18,20 +18,20 @@ interface propsIF {
 
 export default function PortfolioBanner(props: propsIF) {
     const { ensName, resolvedAddress, connectedAccountActive } = props;
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const ensNameAvailable = ensName !== '';
 
     const jazziconsSeed = resolvedAddress
         ? resolvedAddress.toLowerCase()
-        : addressCurrent?.toLowerCase() ?? '';
+        : userAddress?.toLowerCase() ?? '';
 
     const myJazzicon = (
         <Jazzicon diameter={50} seed={jsNumberForAddress(jazziconsSeed)} />
     );
 
     const truncatedAccountAddress = connectedAccountActive
-        ? trimString(addressCurrent ?? '', 6, 6, '…')
+        ? trimString(userAddress ?? '', 6, 6, '…')
         : trimString(resolvedAddress, 6, 6, '…');
 
     const jazziconsToDisplay =

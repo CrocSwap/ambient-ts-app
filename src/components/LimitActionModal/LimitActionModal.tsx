@@ -41,7 +41,7 @@ interface propsIF {
 
 export default function LimitActionModal(props: propsIF) {
     const { limitOrder, type, isOpen, onClose, isAccountView } = props;
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         baseTokenSymbol,
@@ -61,7 +61,7 @@ export default function LimitActionModal(props: propsIF) {
         baseTokenAddress,
         quoteTokenAddress,
         fillPercentage,
-    } = useProcessOrder(limitOrder, addressCurrent);
+    } = useProcessOrder(limitOrder, userAddress);
 
     const {
         crocEnv,

@@ -52,7 +52,7 @@ export default function OrderDetailsModal(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         baseTokenSymbol,
@@ -70,7 +70,7 @@ export default function OrderDetailsModal(props: propsIF) {
         truncatedDisplayPriceDenomByMoneyness,
         posHash,
         fillPercentage,
-    } = useProcessOrder(limitOrder, addressCurrent);
+    } = useProcessOrder(limitOrder, userAddress);
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
 

@@ -61,7 +61,7 @@ export default function OrderDetailsSimplify(
 
     const { chainData } = useContext(CrocEnvContext);
 
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const {
         ensName,
@@ -84,7 +84,7 @@ export default function OrderDetailsSimplify(
         isLimitOrderPartiallyFilled,
         fillPercentage,
         isBaseTokenMoneynessGreaterOrEqual,
-    } = useProcessOrder(limitOrder, addressCurrent, isAccountView);
+    } = useProcessOrder(limitOrder, userAddress, isAccountView);
 
     const showFullAddresses = useMediaQuery('(min-width: 768px)');
 

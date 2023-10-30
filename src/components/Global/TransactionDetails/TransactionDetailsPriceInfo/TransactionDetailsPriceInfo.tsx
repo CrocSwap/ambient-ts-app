@@ -28,7 +28,7 @@ interface propsIF {
 
 export default function TransactionDetailsPriceInfo(props: propsIF) {
     const { tx, controlItems, positionApy } = props;
-    const { userAddress: addressCurrent } = useContext(UserDataContext);
+    const { userAddress } = useContext(UserDataContext);
 
     const { tokens } = useContext(TokenContext);
 
@@ -54,7 +54,7 @@ export default function TransactionDetailsPriceInfo(props: propsIF) {
         quoteTokenCharacter,
         baseTokenAddress,
         quoteTokenAddress,
-    } = useProcessTransaction(tx, addressCurrent);
+    } = useProcessTransaction(tx, userAddress);
 
     const baseToken: TokenIF | undefined =
         tokens.getTokenByAddress(baseTokenAddress);
