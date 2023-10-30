@@ -58,7 +58,7 @@ export default function Footer() {
                     <GiAlligatorClip size={15} /> About Us
                 </>
             ),
-            content: 'Learn more about parent company Crocodile Labs',
+            content: 'Learn more about Crocodile Labs',
             link: CORPORATE_LINK,
         },
         {
