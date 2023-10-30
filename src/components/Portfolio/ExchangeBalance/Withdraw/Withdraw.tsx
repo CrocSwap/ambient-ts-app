@@ -65,7 +65,11 @@ export default function Withdraw(props: propsIF) {
         secondaryEnsName,
         setTokenModalOpen,
     } = props;
-    const { crocEnv, ethMainnetUsdPrice } = useContext(CrocEnvContext);
+    const {
+        crocEnv,
+        ethMainnetUsdPrice,
+        chainData: { chainId },
+    } = useContext(CrocEnvContext);
     const { gasPriceInGwei } = useContext(ChainDataContext);
 
     const { addressCurrent: userAddress } = useAppSelector(
@@ -384,14 +388,16 @@ export default function Withdraw(props: propsIF) {
                         <MaxButton onClick={handleBalanceClick}>Max</MaxButton>
                     )}
                 </FlexContainer>
-                <GasPump>
-                    <SVGContainer>
-                        <FaGasPump size={12} />{' '}
-                    </SVGContainer>
-                    {withdrawGasPriceinDollars
-                        ? withdrawGasPriceinDollars
-                        : '…'}
-                </GasPump>
+                {chainId === '0x1' && (
+                    <GasPump>
+                        <SVGContainer>
+                            <FaGasPump size={12} />{' '}
+                        </SVGContainer>
+                        {withdrawGasPriceinDollars
+                            ? withdrawGasPriceinDollars
+                            : '…'}
+                    </GasPump>
+                )}
             </FlexContainer>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}

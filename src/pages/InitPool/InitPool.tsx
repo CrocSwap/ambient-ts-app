@@ -565,36 +565,32 @@ export default function InitPool() {
         Math.log(selectedPoolNonDisplayPrice) / Math.log(1.0001);
 
     const shouldResetAdvancedLowTick =
-        advancedLowTick === 0 ||
         advancedHighTick > selectedPoolPriceTick + 100000 ||
         advancedLowTick < selectedPoolPriceTick - 100000;
     const shouldResetAdvancedHighTick =
-        advancedHighTick === 0 ||
         advancedHighTick > selectedPoolPriceTick + 100000 ||
         advancedLowTick < selectedPoolPriceTick - 100000;
 
     const defaultLowTick = useMemo<number>(() => {
-        const value: number =
-            shouldResetAdvancedLowTick || advancedLowTick === 0
-                ? roundDownTick(
-                      selectedPoolPriceTick +
-                          DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
-                      gridSize,
-                  )
-                : advancedLowTick;
+        const value: number = shouldResetAdvancedLowTick
+            ? roundDownTick(
+                  selectedPoolPriceTick +
+                      DEFAULT_MIN_PRICE_DIFF_PERCENTAGE * 100,
+                  gridSize,
+              )
+            : advancedLowTick;
         return value;
     }, [advancedLowTick, selectedPoolPriceTick, shouldResetAdvancedLowTick]);
 
     // default high tick to seed in the DOM (range upper value)
     const defaultHighTick = useMemo<number>(() => {
-        const value: number =
-            shouldResetAdvancedHighTick || advancedHighTick === 0
-                ? roundUpTick(
-                      selectedPoolPriceTick +
-                          DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
-                      gridSize,
-                  )
-                : advancedHighTick;
+        const value: number = shouldResetAdvancedHighTick
+            ? roundUpTick(
+                  selectedPoolPriceTick +
+                      DEFAULT_MAX_PRICE_DIFF_PERCENTAGE * 100,
+                  gridSize,
+              )
+            : advancedHighTick;
         return value;
     }, [advancedHighTick, selectedPoolPriceTick, shouldResetAdvancedHighTick]);
 
@@ -1040,6 +1036,7 @@ export default function InitPool() {
         initialPriceDisplay,
         advancedHighTick,
         advancedLowTick,
+        selectedPoolPriceTick,
     };
 
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
@@ -1319,7 +1316,7 @@ export default function InitPool() {
             flexDirection='column'
             gap={10}
             justifyContent='center'
-            blur={!!poolExists}
+            overlay={!!poolExists && 'blur'}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
                 <FlexContainer flexDirection='row' gap={8} alignItems='center'>
@@ -1383,7 +1380,7 @@ export default function InitPool() {
             flexDirection='column'
             justifyContent='center'
             gap={10}
-            blur={isRangeBoundsAndCollateralDisabled}
+            overlay={isRangeBoundsAndCollateralDisabled && 'blur'}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
                 <Text fontSize='body' color='text2'>
@@ -1420,15 +1417,16 @@ export default function InitPool() {
         </FlexContainer>
     );
 
+    const overlayIsBlur =
+        (!!poolExists ||
+            initialPriceDisplay === '' ||
+            parseFloat(initialPriceDisplay) === 0) ??
+        'blur';
     const mintInitialLiquidity = (
         <FlexContainer
             flexDirection='row'
             justifyContent='space-between'
-            blur={
-                !!poolExists ||
-                initialPriceDisplay === '' ||
-                parseFloat(initialPriceDisplay) === 0
-            }
+            overlay={overlayIsBlur}
         >
             <Text fontSize='body' color='text2'>
                 Mint Initial Liquidity
@@ -1498,7 +1496,7 @@ export default function InitPool() {
             />
         </div>
     ) : (
-        <FlexContainer blur={!!poolExists} justifyContent='center'>
+        <FlexContainer overlay={!!poolExists && 'blur'} justifyContent='center'>
             <InitPoolExtraInfo
                 initialPrice={parseFloat(
                     initialPriceDisplay.replaceAll(',', ''),
@@ -1541,7 +1539,9 @@ export default function InitPool() {
             >
                 <FlexContainer flexDirection='column' gap={8}>
                     {!showMobileVersion && mintInitialLiquidity}
-                    <FlexContainer blur={isRangeBoundsAndCollateralDisabled}>
+                    <FlexContainer
+                        overlay={isRangeBoundsAndCollateralDisabled && 'blur'}
+                    >
                         <AdvancedModeToggle advancedMode={advancedMode} />
                     </FlexContainer>
 

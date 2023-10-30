@@ -56,7 +56,7 @@ export function FeaturedBox(props: FeaturedBoxPropsIF) {
                         token={token}
                         src={token.logoURI ? uriToHttp(token.logoURI) : ''}
                         alt={token.symbol}
-                        size={'3xl'}
+                        size={isInit ? '2xl' : '3xl'}
                     />
                     <TokenSymbol>{token.symbol}</TokenSymbol>
                     <TokenName>{token.name}</TokenName>

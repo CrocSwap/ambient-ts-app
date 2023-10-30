@@ -64,11 +64,11 @@ export default function InitSkeleton(props: InitSkeletonProps) {
             <FlexContainer
                 background='dark1'
                 rounded
-                padding='16px'
+                padding='8px 16px 16px 16px'
                 textAlign='center'
                 flexDirection='column'
                 outline='accent1'
-                tablet={{ margin: '64px 0 0 0' }}
+                md={{ margin: '64px 0 0 0' }}
                 style={{ height: '462px' }}
                 className='mobile_auto_height'
             >

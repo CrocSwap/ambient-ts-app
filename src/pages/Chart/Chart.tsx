@@ -215,7 +215,7 @@ export default function Chart(props: propsIF) {
 
     const [minTickForLimit, setMinTickForLimit] = useState<number>(0);
     const [maxTickForLimit, setMaxTickForLimit] = useState<number>(0);
-
+    const [isShowFloatingToolbar, setIsShowFloatingToolbar] = useState(false);
     const period = unparsedData.duration;
 
     const isDenomBase = tradeData.isDenomBase;
@@ -2821,9 +2821,12 @@ export default function Chart(props: propsIF) {
                                         lineSeries(line);
 
                                         if (
-                                            hoveredDrawnShape &&
-                                            hoveredDrawnShape.data.time ===
-                                                item.time
+                                            (hoveredDrawnShape &&
+                                                hoveredDrawnShape.data.time ===
+                                                    item.time) ||
+                                            (selectedDrawnShape &&
+                                                selectedDrawnShape.data.time ===
+                                                    item.time)
                                         ) {
                                             line.forEach((element, _index) => {
                                                 const selectedCircleIsActive =
@@ -2901,9 +2904,12 @@ export default function Chart(props: propsIF) {
                                     ]);
 
                                     if (
-                                        hoveredDrawnShape &&
-                                        hoveredDrawnShape.data.time ===
-                                            item.time
+                                        (hoveredDrawnShape &&
+                                            hoveredDrawnShape.data.time ===
+                                                item.time) ||
+                                        (selectedDrawnShape &&
+                                            selectedDrawnShape.data.time ===
+                                                item.time)
                                     ) {
                                         if (
                                             hoveredDrawnShape &&
@@ -3267,13 +3273,22 @@ export default function Chart(props: propsIF) {
     ]);
 
     useEffect(() => {
+        if (selectedDrawnShape) {
+            setIsShowFloatingToolbar(true);
+        }
+    }, [selectedDrawnShape]);
+
+    useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleDocumentClick = (event: any) => {
-            if (
+            if (event.target.id === 'trade_chart_save_image') {
+                setIsShowFloatingToolbar(false);
+            } else if (
                 d3Container.current &&
                 !d3Container.current.contains(event.target)
             ) {
                 setSelectedDrawnShape(undefined);
+                setIsShowFloatingToolbar(false);
             }
         };
 
@@ -4399,16 +4414,17 @@ export default function Chart(props: propsIF) {
                     </div>
                 </div>
             </d3fc-group>
-
-            <FloatingToolbar
-                selectedDrawnShape={selectedDrawnShape}
-                mainCanvasBoundingClientRect={mainCanvasBoundingClientRect}
-                setDrawnShapeHistory={setDrawnShapeHistory}
-                setSelectedDrawnShape={setSelectedDrawnShape}
-                deleteItem={deleteItem}
-                setIsShapeEdited={setIsShapeEdited}
-                addDrawActionStack={addDrawActionStack}
-            />
+            {isShowFloatingToolbar && (
+                <FloatingToolbar
+                    selectedDrawnShape={selectedDrawnShape}
+                    mainCanvasBoundingClientRect={mainCanvasBoundingClientRect}
+                    setDrawnShapeHistory={setDrawnShapeHistory}
+                    setSelectedDrawnShape={setSelectedDrawnShape}
+                    deleteItem={deleteItem}
+                    setIsShapeEdited={setIsShapeEdited}
+                    addDrawActionStack={addDrawActionStack}
+                />
+            )}
 
             {scaleData && (
                 <CSSTransition

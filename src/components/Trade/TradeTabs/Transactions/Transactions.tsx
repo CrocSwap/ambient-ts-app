@@ -31,6 +31,7 @@ import {
     ViewMoreButton,
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
+import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -300,18 +301,22 @@ function Transactions(props: propsIF) {
         </>
     );
 
-    const headerColumns = [
+    const headerColumns: {
+        name: string | JSX.Element;
+        show: boolean;
+        slug: string;
+        sortable: boolean;
+        alignRight?: boolean;
+        alignCenter?: boolean;
+    }[] = [
         {
             name: 'Timestamp',
-            className: '',
             show: tableView === 'large',
-
             slug: 'time',
             sortable: true,
         },
         {
             name: 'Pair',
-            className: '',
             show: isAccountView,
             slug: 'pool',
             sortable: true,
@@ -400,7 +405,7 @@ function Transactions(props: propsIF) {
         },
         {
             name: '',
-            show: true,
+            show: false,
             slug: 'menu',
             sortable: false,
         },
@@ -500,22 +505,23 @@ function Transactions(props: propsIF) {
             </FlexContainer>
         );
 
-    const currentRowItemContent = _DATA.currentData.map((tx, idx) => (
-        <TransactionRow
-            key={idx}
-            tx={tx}
-            tableView={tableView}
-            isAccountView={isAccountView}
-        />
-    ));
-    const sortedRowItemContent = sortedTransactions.map((tx, idx) => (
-        <TransactionRow
-            key={idx}
-            tx={tx}
-            tableView={tableView}
-            isAccountView={isAccountView}
-        />
-    ));
+    const { ensAddressMapping, addData } = useENSAddresses();
+
+    useEffect(() => {
+        addData(sortedTransactions);
+    }, [sortedTransactions]);
+
+    const currentRowItemContent = () =>
+        _DATA.currentData.map((tx, idx) => (
+            <TransactionRow
+                key={idx}
+                tx={tx}
+                tableView={tableView}
+                isAccountView={isAccountView}
+                fetchedEnsAddress={ensAddressMapping.get(tx.user)}
+            />
+        ));
+
     const handleKeyDownViewTransaction = (
         event: React.KeyboardEvent<HTMLUListElement | HTMLDivElement>,
     ) => {
@@ -548,7 +554,7 @@ function Transactions(props: propsIF) {
     const showViewMoreButton =
         !isTradeTableExpanded &&
         !isAccountView &&
-        sortedRowItemContent.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
+        sortedTransactions.length > NUM_TRANSACTIONS_WHEN_COLLAPSED;
 
     const transactionDataOrNull = shouldDisplayNoTableData ? (
         <NoTableData
@@ -662,7 +668,7 @@ function Transactions(props: propsIF) {
                             </>
                         );
                     })}
-                {currentRowItemContent}
+                {currentRowItemContent()}
             </ul>
             {showViewMoreButton && (
                 <FlexContainer
