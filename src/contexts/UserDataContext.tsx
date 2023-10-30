@@ -327,7 +327,6 @@ export const UserDataContextProvider = (props: {
                                     }
                                 }
                             }
-                            // setRecentTokens(result); // TODO: what to do here?  from useRecentTokens?
                         }
 
                         dispatch(
