@@ -6,6 +6,10 @@ interface propsIF {
     data: footerItemIF;
 }
 
+// future Emily this is past Emily, you're going to wonder why you broke this
+// ... code out into its own component file, the reason is that even though
+// ... there's no logic the component itself is instantiated in muliple places
+
 // propsIF conforms to the shape of data defined in the file `Footer.tsx`
 export default function FooterCard(props: propsIF) {
     const { data } = props;
