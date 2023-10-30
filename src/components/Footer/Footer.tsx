@@ -101,7 +101,7 @@ export default function Footer() {
         const numToShow: number = itemsPerColumn.reduce((a, c) => a + c);
         numToShow < footerData.length &&
             console.warn(
-                `The Footer.tsx file defines ${footerData.length} items but only designates ${numToShow} to be rendered in the DOM`,
+                `The Footer.tsx file defines <<${footerData.length}>> items but only designates <<${numToShow}>> to be rendered in the DOM`,
             );
     }
 
