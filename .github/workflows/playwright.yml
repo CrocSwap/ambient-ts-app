@@ -3,7 +3,7 @@ on:
     # push:
     #   branches: [main]
     pull_request:
-        branches: [main]
+        branches: [develop]
 jobs:
     test:
         timeout-minutes: 60
@@ -13,7 +13,7 @@ jobs:
             - uses: actions/setup-node@v2
               with:
                   node-version: '14.x'
-            - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+            # - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
             - name: Install dependencies
               run: yarn
             - name: Install Playwright Browsers
