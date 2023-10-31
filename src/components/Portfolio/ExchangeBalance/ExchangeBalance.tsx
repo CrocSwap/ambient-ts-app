@@ -32,6 +32,7 @@ import {
     PortfolioMotionSubContainer,
 } from '../../../styled/Components/Portfolio';
 import { UserDataContext } from '../../../contexts/UserDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 
 interface propsIF {
     fullLayoutActive: boolean;
@@ -56,7 +57,8 @@ export default function ExchangeBalance(props: propsIF) {
     const { userAddress } = useContext(UserDataContext);
 
     const { crocEnv } = useContext(CrocEnvContext);
-    const { lastBlockNumber, setTokenBalance } = useContext(ChainDataContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { setTokenBalance } = useContext(TokenBalanceContext);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] =

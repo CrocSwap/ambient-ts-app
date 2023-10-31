@@ -19,6 +19,7 @@ import { TokenContext } from './TokenContext';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import { UserDataContext } from './UserDataContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
 
 interface TradeTokenContextIF {
     baseToken: {
@@ -71,7 +72,9 @@ export const TradeTokenContextProvider = (props: {
         cachedEnsResolve,
     } = useContext(CachedDataContext);
     const { crocEnv, chainData, provider } = useContext(CrocEnvContext);
-    const { lastBlockNumber, setTokenBalance } = useContext(ChainDataContext);
+    const { lastBlockNumber } = useContext(ChainDataContext);
+    const { setTokenBalance } = useContext(TokenBalanceContext);
+
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
     const { tokens } = useContext(TokenContext);

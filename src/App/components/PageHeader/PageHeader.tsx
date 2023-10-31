@@ -48,6 +48,7 @@ import { UserDataContext } from '../../../contexts/UserDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useSwitchNetwork } from 'wagmi';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';
 
 const PageHeader = function () {
     const {
@@ -59,7 +60,7 @@ const PageHeader = function () {
     const {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
-    const { resetTokenBalances } = useContext(ChainDataContext);
+    const { resetTokenBalances } = useContext(TokenBalanceContext);
     const { resetUserGraphData } = useContext(GraphDataContext);
 
     const { poolPriceDisplay } = useContext(PoolContext);
