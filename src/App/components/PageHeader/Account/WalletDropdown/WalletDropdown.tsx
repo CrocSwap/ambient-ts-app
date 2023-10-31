@@ -28,7 +28,7 @@ import { BigNumber } from 'ethers';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { ethereumMainnet } from '../../../../../utils/networks/ethereumMainnet';
 import IconWithTooltip from '../../../../../components/Global/IconWithTooltip/IconWithTooltip';
-import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 
 interface WalletDropdownPropsIF {
     ensName: string;
@@ -60,7 +60,7 @@ export default function WalletDropdown(props: WalletDropdownPropsIF) {
         chainData: { chainId },
     } = useContext(CrocEnvContext);
 
-    const { tokenBalances } = useContext(ChainDataContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
     const nativeData: TokenIF | undefined =
         tokenBalances &&
         tokenBalances.find((tkn: TokenIF) => tkn.address === ZERO_ADDRESS);

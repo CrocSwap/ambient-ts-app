@@ -9,7 +9,7 @@ import { TokenContext } from '../../../../../contexts/TokenContext';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { supportedNetworks } from '../../../../../utils/networks';
-import { ChainDataContext } from '../../../../../contexts/ChainDataContext';
+import { TokenBalanceContext } from '../../../../../contexts/TokenBalanceContext';
 
 interface propsIF {
     chainId: string;
@@ -29,7 +29,7 @@ export default function Wallet(props: propsIF) {
 
     const { tokens } = useContext(TokenContext);
 
-    const { tokenBalances } = useContext(ChainDataContext);
+    const { tokenBalances } = useContext(TokenBalanceContext);
 
     const tokensToRender: Array<TokenIF | undefined> | undefined =
         connectedAccountActive ? tokenBalances : resolvedAddressTokens;
