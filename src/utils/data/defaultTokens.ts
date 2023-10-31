@@ -180,6 +180,16 @@ export const scrollUSDC = {
         'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
 };
 
+export const scrollAxlUSDC = {
+    name: 'Axelar USDC',
+    address: '0xEB466342C4d449BC9f53A865D5Cb90586f405215',
+    symbol: 'axlUSDC',
+    decimals: 6,
+    chainId: 534352,
+    logoURI:
+        'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+};
+
 export const scrollSepoliaETH = {
     name: 'Native Ether',
     address: '0x0000000000000000000000000000000000000000',
@@ -216,6 +226,7 @@ export const defaultTokens: TokenIF[] = [
     arbGoerliWBTC,
     scrollETH,
     scrollUSDC,
+    scrollAxlUSDC,
     scrollSepoliaETH,
     scrollSepoliaUSDC,
 ];

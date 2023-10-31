@@ -24,7 +24,7 @@ const wagmiChain = {
     blockExplorers: {
         default: {
             name: 'Scrollscan',
-            url: 'https://sepolia.scrollscan.dev',
+            url: 'https://scrollscan.com',
         },
     },
     testnet: true,
