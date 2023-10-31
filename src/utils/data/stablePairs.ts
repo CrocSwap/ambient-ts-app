@@ -12,6 +12,7 @@ import {
     mainnetDAI,
     mainnetUSDC,
     mainnetUSDT,
+    scrollAxlUSDC,
     scrollSepoliaUSDC,
     scrollUSDC,
 } from './defaultTokens';
@@ -48,6 +49,7 @@ export const STABLE_USD_TOKENS = [
     arbGoerliDAI.address,
     arbGoerliUSDC.address,
     scrollUSDC.address,
+    scrollAxlUSDC.address,
     scrollSepoliaUSDC.address,
 ].map((x) => x.toLowerCase());
 

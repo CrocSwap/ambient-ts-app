@@ -23,7 +23,7 @@ const wagmiChain = {
     },
     blockExplorers: {
         default: {
-            name: 'Etherscan',
+            name: 'Scrollscan',
             url: 'https://sepolia.scrollscan.dev',
         },
     },
