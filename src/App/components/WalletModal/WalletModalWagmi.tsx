@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 // START: Import React and Dongles
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useConnect, useAccount, useDisconnect } from 'wagmi';
@@ -185,6 +187,7 @@ export default function WalletModalWagmi() {
         <div className={styles.metamask_pending_container}>
             <CircleLoaderFailed size='48' />
             <p>Ambient is not available in the United States.</p>
+            <p>If you think this is an error, contact the host.</p>
             <Button
                 title='Close'
                 flat={true}
@@ -195,39 +198,7 @@ export default function WalletModalWagmi() {
         </div>
     );
 
-    const activeContent = useMemo(() => {
-        switch (page) {
-            case 'wallets':
-                return walletsPage;
-            case 'notAvailable':
-                return notAvailablePage;
-            case 'metamaskPending':
-                return metamaskPendingPage;
-            case 'coinbaseWalletPending':
-                return coinbaseWalletPendingPage;
-            case 'metamaskError':
-                return metamaskErrorPage;
-
-            default:
-                walletsPage;
-        }
-    }, [page, delayForHelpTextElapsed]);
-
-    const activeTitle = useMemo(() => {
-        switch (page) {
-            case 'wallets':
-                return 'Choose a Wallet';
-            case 'metamaskPending':
-                return 'Waiting for Wallet';
-            case 'metamaskError':
-                return 'Wallet Connection Error';
-            case 'magicLogin':
-            case 'magicLoginPending':
-                return 'Log In With Email';
-            default:
-                'Choose a Wallet';
-        }
-    }, [page]);
+    const activeContent = notAvailablePage;
 
     const showBackArrow = useMemo(() => {
         switch (page) {
@@ -260,13 +231,9 @@ export default function WalletModalWagmi() {
             onClose={closeModal}
             handleBack={clickBackArrow}
             showBackButton={showBackArrow}
-            title={!hasAgreedTerms ? 'Welcome' : activeTitle}
+            title={'Not Available'}
         >
-            {!hasAgreedTerms ? (
-                <GateWallet recordAgreed={recordAgreed} termUrls={termUrls} />
-            ) : (
-                activeContent
-            )}
+            {activeContent}
         </Modal>
     );
 }
