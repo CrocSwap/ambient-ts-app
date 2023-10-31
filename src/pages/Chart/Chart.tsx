@@ -275,7 +275,7 @@ export default function Chart(props: propsIF) {
 
             const fakeDataClose = poolPriceWithoutDenom;
 
-            const fakeData = {
+            const placeHolderCandle = {
                 time: data[0].time + period,
                 invMinPriceExclMEVDecimalCorrected: fakeDataOpenWithDenom,
                 maxPriceExclMEVDecimalCorrected: fakeDataOpen,
@@ -306,9 +306,9 @@ export default function Chart(props: propsIF) {
 
             // added candle for pool price market price match
             if (!data[0].isFakeData) {
-                data.unshift(fakeData);
+                data.unshift(placeHolderCandle);
             } else {
-                data[0] = fakeData;
+                data[0] = placeHolderCandle;
             }
         }
 
@@ -2521,13 +2521,22 @@ export default function Chart(props: propsIF) {
                     data.time * 1000 >= xmin && data.time * 1000 <= xmax,
             );
 
-            if (filtered !== undefined && filtered.length > 10) {
-                const minYBoundary = d3.min(filtered, (d) =>
+            if (
+                filtered !== undefined &&
+                filtered.length > 10 &&
+                poolPriceWithoutDenom
+            ) {
+                const placeHolderPrice = denomInBase
+                    ? 1 / poolPriceWithoutDenom
+                    : poolPriceWithoutDenom;
+
+                const filteredMin = d3.min(filtered, (d) =>
                     denomInBase
                         ? d.invMaxPriceExclMEVDecimalCorrected
                         : d.minPriceExclMEVDecimalCorrected,
                 );
-                const maxYBoundary = d3.max(filtered, (d) =>
+
+                const filteredMax = d3.max(filtered, (d) =>
                     denomInBase
                         ? d.invMinPriceExclMEVDecimalCorrected
                         : d.maxPriceExclMEVDecimalCorrected,
@@ -2535,7 +2544,16 @@ export default function Chart(props: propsIF) {
 
                 const marketPrice = market;
 
-                if (minYBoundary && maxYBoundary) {
+                if (filteredMin && filteredMax) {
+                    const minYBoundary = Math.min(
+                        placeHolderPrice,
+                        filteredMin,
+                    );
+                    const maxYBoundary = Math.max(
+                        placeHolderPrice,
+                        filteredMax,
+                    );
+
                     const diffBoundray = Math.abs(maxYBoundary - minYBoundary);
                     const buffer = diffBoundray
                         ? diffBoundray / 6
