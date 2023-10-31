@@ -11,7 +11,6 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 // import Tokens from '../Tokens/Tokens';
 
 // START: Import Local Files
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import {
     LimitOrderIF,
@@ -24,7 +23,6 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import { setDataLoadingStatus } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
@@ -39,6 +37,7 @@ import { TokenContext } from '../../../contexts/TokenContext';
 import { CachedDataContext } from '../../../contexts/CachedDataContext';
 import { PortfolioTabsPortfolioTabsContainer } from '../../../styled/Components/Portfolio';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { DataLoadingContext } from '../../../contexts/DataLoadingContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -57,13 +56,13 @@ export default function PortfolioTabs(props: propsIF) {
         fullLayoutActive,
     } = props;
 
-    const dispatch = useAppDispatch();
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
+    const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         crocEnv,
         provider,
@@ -136,12 +135,10 @@ export default function PortfolioTabs(props: propsIF) {
                 IS_LOCAL_ENV && console.debug('dispatch');
             })
             .finally(() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserRangeData',
-                        loadingStatus: false,
-                    }),
-                );
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserRangeDataLoading',
+                    loadingStatus: false,
+                });
             });
 
     const getLookupUserLimitOrders = async (accountToSearch: string) =>
@@ -181,12 +178,10 @@ export default function PortfolioTabs(props: propsIF) {
                 }
             })
             .finally(() => {
-                dispatch(
-                    setDataLoadingStatus({
-                        datasetName: 'lookupUserOrderData',
-                        loadingStatus: false,
-                    }),
-                );
+                setDataLoadingStatus({
+                    datasetName: 'isLookupUserOrderDataLoading',
+                    loadingStatus: false,
+                });
             });
 
     const getLookupUserTransactions = async (accountToSearch: string) => {
@@ -215,12 +210,10 @@ export default function PortfolioTabs(props: propsIF) {
                     }
                 })
                 .finally(() => {
-                    dispatch(
-                        setDataLoadingStatus({
-                            datasetName: 'lookupUserTxData',
-                            loadingStatus: false,
-                        }),
-                    );
+                    setDataLoadingStatus({
+                        datasetName: 'isLookupUserTxDataLoading',
+                        loadingStatus: false,
+                    });
                 });
         }
     };

@@ -33,6 +33,7 @@ import {
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -91,6 +92,7 @@ function Transactions(props: propsIF) {
     // NOTE: this is done to improve rendering speed for this page.
 
     const graphData = useAppSelector((state) => state?.graphData);
+    const dataLoadingStatus = useContext(DataLoadingContext);
     const { changesByUser } = useContext(GraphDataContext);
     const tradeData = useAppSelector((state) => state.tradeData);
     const { transactionsByType, pendingTransactions } = useAppSelector(
@@ -149,28 +151,22 @@ function Transactions(props: propsIF) {
 
     useEffect(() => {
         if (isAccountView && connectedAccountActive)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isConnectedUserTxDataLoading);
         else if (isAccountView)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isLookupUserTxDataLoading);
         else if (isCandleSelected) {
-            setIsLoading(graphData?.dataLoadingStatus.isCandleDataLoading);
+            setIsLoading(dataLoadingStatus.isCandleDataLoading);
         } else if (!showAllData)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
-            );
-        else setIsLoading(graphData?.dataLoadingStatus.isPoolTxDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserTxDataLoading);
+        else setIsLoading(dataLoadingStatus.isPoolTxDataLoading);
     }, [
         isCandleSelected,
         showAllData,
         connectedAccountActive,
-        graphData?.dataLoadingStatus.isConnectedUserTxDataLoading,
-        graphData?.dataLoadingStatus.isLookupUserTxDataLoading,
-        graphData?.dataLoadingStatus.isPoolTxDataLoading,
-        graphData?.dataLoadingStatus.isCandleDataLoading,
+        dataLoadingStatus.isConnectedUserTxDataLoading,
+        dataLoadingStatus.isLookupUserTxDataLoading,
+        dataLoadingStatus.isPoolTxDataLoading,
+        dataLoadingStatus.isCandleDataLoading,
     ]);
 
     const relevantTransactionsByType = transactionsByType.filter(

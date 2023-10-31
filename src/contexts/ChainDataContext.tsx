@@ -63,6 +63,10 @@ export const ChainDataContextProvider = (props: {
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
 
+    useEffect(() => {
+        resetTokenBalances();
+    }, [isUserConnected, userAddress]);
+
     async function pollBlockNum(): Promise<void> {
         // if default RPC is Infura, use key from env variable
         const nodeUrl =

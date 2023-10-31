@@ -1,16 +1,8 @@
-import React, {
-    Dispatch,
-    SetStateAction,
-    createContext,
-    useContext,
-    useEffect,
-} from 'react';
+import React, { Dispatch, SetStateAction, createContext } from 'react';
 import { useAccount, useConnect, useDisconnect, useEnsName } from 'wagmi';
 
 import { ConnectArgs, Connector } from '@wagmi/core';
 import { checkBlacklist } from '../utils/data/blacklist';
-import { ChainDataContext } from './ChainDataContext';
-import { GraphDataContext } from './GraphDataContext';
 
 interface UserDataContextIF {
     isUserConnected: boolean | undefined;
@@ -38,9 +30,6 @@ export const UserDataContextProvider = (props: {
     const [resolvedAddressFromContext, setResolvedAddressInContext] =
         React.useState<string>('');
 
-    const { resetTokenBalances } = useContext(ChainDataContext);
-    const { resetUserGraphData } = useContext(GraphDataContext);
-
     const { address: userAddress, isConnected: isUserConnected } = useAccount();
     const { disconnect: disconnectUser } = useDisconnect();
     const {
@@ -60,11 +49,6 @@ export const UserDataContextProvider = (props: {
         },
     });
     const { data: ensName } = useEnsName({ address: userAddress });
-
-    useEffect(() => {
-        resetTokenBalances();
-        resetUserGraphData();
-    }, [isUserConnected, userAddress]);
 
     const userDataContext: UserDataContextIF = {
         isUserConnected,

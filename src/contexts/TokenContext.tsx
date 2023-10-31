@@ -25,7 +25,7 @@ export const TokenContext = createContext<TokenContextIF>({} as TokenContextIF);
 
 export const TokenContextProvider = (props: { children: React.ReactNode }) => {
     const { chainData } = useContext(CrocEnvContext);
-    const { tokenBalances } = useContext(ChainDataContext);
+    const { tokenBalances } = useContext(ChainDataContext); // This can't come from here since it's higher order than chainContext
 
     const tokens: tokenMethodsIF = useTokens(chainData.chainId);
     const { addRecentToken, getRecentTokens } = useRecentTokens(

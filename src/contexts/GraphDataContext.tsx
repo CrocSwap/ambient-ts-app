@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { fetchUserRecentChanges } from '../App/functions/fetchUserRecentChanges';
 import { getLimitOrderData } from '../App/functions/getLimitOrderData';
 import { getPositionData } from '../App/functions/getPositionData';
@@ -12,7 +11,6 @@ import {
 import { PositionIF, PositionServerIF } from '../utils/interfaces/PositionIF';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { TransactionIF } from '../utils/interfaces/TransactionIF';
-import { setDataLoadingStatus } from '../utils/state/graphDataSlice';
 
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -21,6 +19,7 @@ import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 
 import { UserDataContext } from './UserDataContext';
+import { DataLoadingContext } from './DataLoadingContext';
 
 interface ChangesByUser {
     dataReceived: boolean;
@@ -77,10 +76,11 @@ export const GraphDataContextProvider = (props: {
         });
     };
 
-    const dispatch = useDispatch();
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
+
+    const { setDataLoadingStatus } = useContext(DataLoadingContext);
     const {
         cachedQuerySpotPrice,
         cachedFetchTokenPrice,
@@ -99,6 +99,9 @@ export const GraphDataContextProvider = (props: {
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
+    useEffect(() => {
+        resetUserGraphData();
+    }, [isUserConnected, userAddress]);
 
     useEffect(() => {
         // This useEffect controls a series of other dispatches that fetch data on update of the user object
@@ -155,13 +158,11 @@ export const GraphDataContextProvider = (props: {
                                     dataReceived: true,
                                     positions: updatedPositions,
                                 }),
-                                    dispatch(
-                                        setDataLoadingStatus({
-                                            datasetName:
-                                                'connectedUserRangeData',
-                                            loadingStatus: false,
-                                        }),
-                                    );
+                                    setDataLoadingStatus({
+                                        datasetName:
+                                            'isConnectedUserRangeDataLoading',
+                                        loadingStatus: false,
+                                    });
                             });
                         }
                     })
@@ -207,12 +208,11 @@ export const GraphDataContextProvider = (props: {
                                 dataReceived: true,
                                 limitOrders: updatedLimitOrderStates,
                             }),
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'connectedUserOrderData',
-                                        loadingStatus: false,
-                                    }),
-                                );
+                                setDataLoadingStatus({
+                                    datasetName:
+                                        'isConnectedUserOrderDataLoading',
+                                    loadingStatus: false,
+                                });
                         });
                     }
                 })
@@ -297,12 +297,10 @@ export const GraphDataContextProvider = (props: {
                             }
                         }
 
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'connectedUserTxData',
-                                loadingStatus: false,
-                            }),
-                        );
+                        setDataLoadingStatus({
+                            datasetName: 'isConnectedUserTxDataLoading',
+                            loadingStatus: false,
+                        });
                     })
                     .catch(console.error);
             } catch (error) {

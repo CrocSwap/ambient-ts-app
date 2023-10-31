@@ -27,6 +27,7 @@ import {
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 
 const NUM_RANGES_WHEN_COLLAPSED = 10; // Number of ranges we show when the table is collapsed (i.e. half page)
 // NOTE: this is done to improve rendering speed for this page.
@@ -62,6 +63,7 @@ function Ranges(props: propsIF) {
     const { userAddress } = useContext(UserDataContext);
 
     const graphData = useAppSelector((state) => state?.graphData);
+    const dataLoadingStatus = useContext(DataLoadingContext);
     const tradeData = useAppSelector((state) => state.tradeData);
     const { transactionsByType, pendingTransactions } = useAppSelector(
         (state) => state.receiptData,
@@ -104,27 +106,20 @@ function Ranges(props: propsIF) {
 
     useEffect(() => {
         if (isAccountView && connectedAccountActive)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isConnectedUserRangeDataLoading);
         else if (isAccountView)
-            setIsLoading(
-                graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
-            );
+            setIsLoading(dataLoadingStatus.isLookupUserRangeDataLoading);
         else if (!showAllData)
-            setIsLoading(
-                graphData?.dataLoadingStatus
-                    .isConnectedUserPoolRangeDataLoading,
-            );
-        else setIsLoading(graphData?.dataLoadingStatus.isPoolRangeDataLoading);
+            setIsLoading(dataLoadingStatus.isConnectedUserPoolRangeDataLoading);
+        else setIsLoading(dataLoadingStatus.isPoolRangeDataLoading);
     }, [
         showAllData,
         isAccountView,
         connectedAccountActive,
-        graphData?.dataLoadingStatus.isConnectedUserRangeDataLoading,
-        graphData?.dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
-        graphData?.dataLoadingStatus.isLookupUserRangeDataLoading,
-        graphData?.dataLoadingStatus.isPoolRangeDataLoading,
+        dataLoadingStatus.isConnectedUserRangeDataLoading,
+        dataLoadingStatus.isConnectedUserPoolRangeDataLoading,
+        dataLoadingStatus.isLookupUserRangeDataLoading,
+        dataLoadingStatus.isPoolRangeDataLoading,
     ]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] =
