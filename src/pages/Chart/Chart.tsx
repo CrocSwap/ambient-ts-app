@@ -3284,13 +3284,10 @@ export default function Chart(props: propsIF) {
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleDocumentClick = (event: any) => {
-            if (event.target.id === 'trade_chart_save_image') {
-                setIsShowFloatingToolbar(false);
-            } else if (
+            if (
                 d3Container.current &&
                 !d3Container.current.contains(event.target)
             ) {
-                setSelectedDrawnShape(undefined);
                 setIsShowFloatingToolbar(false);
             }
         };
