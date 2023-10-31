@@ -26,13 +26,14 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                 <CachedDataContextProvider>
                     <DataLoadingContextProvider>
                         <UserDataContextProvider>
-                            <TokenBalanceContextProvider>
-                                <CrocEnvContextProvider>
-                                    <TokenContextProvider>
-                                        <ChainDataContextProvider>
-                                            <GraphDataContextProvider>
-                                                <ChartContextProvider>
-                                                    <RangeContextProvider>
+                            <ChartContextProvider>
+                                <RangeContextProvider>
+                                    {/* Everything above here has no context dependencies */}
+                                    <TokenBalanceContextProvider>
+                                        <CrocEnvContextProvider>
+                                            <TokenContextProvider>
+                                                <ChainDataContextProvider>
+                                                    <GraphDataContextProvider>
                                                         <TradeTokenContextProvider>
                                                             <PoolContextProvider>
                                                                 <CandleContextProvider>
@@ -50,13 +51,14 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                                                                 </CandleContextProvider>
                                                             </PoolContextProvider>
                                                         </TradeTokenContextProvider>
-                                                    </RangeContextProvider>
-                                                </ChartContextProvider>
-                                            </GraphDataContextProvider>
-                                        </ChainDataContextProvider>
-                                    </TokenContextProvider>
-                                </CrocEnvContextProvider>
-                            </TokenBalanceContextProvider>
+                                                    </GraphDataContextProvider>
+                                                </ChainDataContextProvider>
+                                            </TokenContextProvider>
+                                        </CrocEnvContextProvider>
+                                    </TokenBalanceContextProvider>
+                                    {/* Everything below here has no context dependencies */}
+                                </RangeContextProvider>
+                            </ChartContextProvider>
                         </UserDataContextProvider>
                     </DataLoadingContextProvider>
                 </CachedDataContextProvider>
