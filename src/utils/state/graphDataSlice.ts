@@ -13,7 +13,6 @@ export interface graphData {
     liquidityRequest?: PoolRequestParams;
     userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
-    dataLoadingStatus: DataLoadingStatus;
 }
 
 export interface PoolRequestParams {
@@ -21,21 +20,6 @@ export interface PoolRequestParams {
     quoteAddress: string;
     poolIndex: number;
     chainId: string;
-}
-
-export interface DataLoadingStatus {
-    isConnectedUserTxDataLoading: boolean;
-    isConnectedUserOrderDataLoading: boolean;
-    isConnectedUserPoolOrderDataLoading: boolean;
-    isConnectedUserRangeDataLoading: boolean;
-    isConnectedUserPoolRangeDataLoading: boolean;
-    isLookupUserTxDataLoading: boolean;
-    isLookupUserOrderDataLoading: boolean;
-    isLookupUserRangeDataLoading: boolean;
-    isPoolTxDataLoading: boolean;
-    isPoolOrderDataLoading: boolean;
-    isPoolRangeDataLoading: boolean;
-    isCandleDataLoading: boolean;
 }
 
 export interface LimitOrdersByPool {
@@ -74,20 +58,6 @@ const initialState: graphData = {
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     liquidityData: undefined,
     liquidityRequest: undefined,
-    dataLoadingStatus: {
-        isConnectedUserTxDataLoading: true,
-        isConnectedUserOrderDataLoading: true,
-        isConnectedUserPoolOrderDataLoading: true,
-        isConnectedUserRangeDataLoading: true,
-        isConnectedUserPoolRangeDataLoading: true,
-        isLookupUserTxDataLoading: true,
-        isLookupUserOrderDataLoading: true,
-        isLookupUserRangeDataLoading: true,
-        isPoolTxDataLoading: true,
-        isPoolOrderDataLoading: true,
-        isPoolRangeDataLoading: true,
-        isCandleDataLoading: true,
-    },
 };
 
 function normalizeAddr(addr: string): string {
@@ -170,16 +140,6 @@ export const graphDataSlice = createSlice({
             state.liquidityData = undefined;
             state.liquidityRequest = action.payload;
         },
-        resetPoolDataLoadingStatus: (state) => {
-            state.dataLoadingStatus.isPoolTxDataLoading = true;
-            state.dataLoadingStatus.isPoolOrderDataLoading = true;
-            state.dataLoadingStatus.isPoolRangeDataLoading = true;
-        },
-        resetConnectedUserDataLoadingStatus: (state) => {
-            state.dataLoadingStatus.isConnectedUserTxDataLoading = true;
-            state.dataLoadingStatus.isConnectedUserOrderDataLoading = true;
-            state.dataLoadingStatus.isConnectedUserRangeDataLoading = true;
-        },
     },
 });
 
@@ -194,8 +154,6 @@ export const {
     setUserLimitOrdersByPool,
     setLimitOrdersByPool,
     setChangesByPool,
-    resetPoolDataLoadingStatus,
-    resetConnectedUserDataLoadingStatus,
 } = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;

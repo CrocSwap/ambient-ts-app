@@ -17,6 +17,8 @@ interface DataLoadingContextIF {
         datasetName: keyof DataLoadingContextIF;
         loadingStatus: boolean;
     }) => void;
+    resetPoolDataLoadingStatus: () => void;
+    resetConnectedUserDataLoadingStatus: () => void;
 }
 
 export const DataLoadingContext = createContext<DataLoadingContextIF>(
@@ -27,34 +29,44 @@ export const DataLoadingContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const [isConnectedUserTxDataLoading, setIsConnectedUserTxDataLoading] =
-        useState(false);
+        useState(true);
     const [
         isConnectedUserOrderDataLoading,
         setIsConnectedUserOrderDataLoading,
-    ] = useState(false);
+    ] = useState(true);
     const [
         isConnectedUserPoolOrderDataLoading,
         setIsConnectedUserPoolOrderDataLoading,
-    ] = useState(false);
+    ] = useState(true);
     const [
         isConnectedUserRangeDataLoading,
         setIsConnectedUserRangeDataLoading,
-    ] = useState(false);
+    ] = useState(true);
     const [
         isConnectedUserPoolRangeDataLoading,
         setIsConnectedUserPoolRangeDataLoading,
-    ] = useState(false);
+    ] = useState(true);
     const [isLookupUserTxDataLoading, setIsLookupUserTxDataLoading] =
-        useState(false);
+        useState(true);
     const [isLookupUserOrderDataLoading, setIsLookupUserOrderDataLoading] =
-        useState(false);
+        useState(true);
     const [isLookupUserRangeDataLoading, setIsLookupUserRangeDataLoading] =
-        useState(false);
-    const [isPoolTxDataLoading, setIsPoolTxDataLoading] = useState(false);
-    const [isPoolOrderDataLoading, setIsPoolOrderDataLoading] = useState(false);
-    const [isPoolRangeDataLoading, setIsPoolRangeDataLoading] = useState(false);
-    const [isCandleDataLoading, setIsCandleDataLoading] = useState(false);
+        useState(true);
+    const [isPoolTxDataLoading, setIsPoolTxDataLoading] = useState(true);
+    const [isPoolOrderDataLoading, setIsPoolOrderDataLoading] = useState(true);
+    const [isPoolRangeDataLoading, setIsPoolRangeDataLoading] = useState(true);
+    const [isCandleDataLoading, setIsCandleDataLoading] = useState(true);
 
+    const resetPoolDataLoadingStatus = () => {
+        setIsPoolTxDataLoading(true);
+        setIsPoolOrderDataLoading(true);
+        setIsPoolRangeDataLoading(true);
+    };
+    const resetConnectedUserDataLoadingStatus = () => {
+        setIsConnectedUserTxDataLoading(true);
+        setIsConnectedUserOrderDataLoading(true);
+        setIsConnectedUserRangeDataLoading(true);
+    };
     const setDataLoadingStatus = (params: {
         datasetName: keyof DataLoadingContextIF;
         loadingStatus: boolean;
@@ -115,6 +127,8 @@ export const DataLoadingContextProvider = (props: {
         isPoolRangeDataLoading,
         isCandleDataLoading,
         setDataLoadingStatus,
+        resetPoolDataLoadingStatus,
+        resetConnectedUserDataLoadingStatus,
     };
     return (
         <DataLoadingContext.Provider value={dataLoadingContext}>
