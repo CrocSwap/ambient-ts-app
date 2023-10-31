@@ -1,15 +1,9 @@
 import styled from 'styled-components/macro';
 import { motion } from 'framer-motion';
-import {
-    ContainerProps,
-    ContainerStyles,
-    FlexProps,
-    Flex,
-    BreakpointProps,
-    Breakpoint,
-    WrappedContainerStyles,
-    FlexContainer,
-} from '../Common';
+import { ContainerStyles, Breakpoint, FlexContainer } from '../Common';
+
+import { ContainerProps } from '../Common/Container';
+import { BreakpointProps } from '../Common/Breakpoints';
 
 export const PortfolioTabsPortfolioTabsContainer = styled.div`
     width: 100%;
@@ -117,18 +111,16 @@ export const PortfolioControlContainer = styled.div`
 `;
 
 export const PortfolioMotionContainer = styled(motion.div)<
-    ContainerProps & FlexProps & BreakpointProps
+    ContainerProps & BreakpointProps
 >`
-    ${WrappedContainerStyles}
-    ${Flex}
+    ${(props) => ContainerStyles({ ...props, ...{ display: 'flex' } })}
     ${Breakpoint}
 `;
 
 export const PortfolioMotionSubContainer = styled(motion.div)<
-    ContainerProps & FlexProps & BreakpointProps
+    ContainerProps & BreakpointProps
 >`
     ${ContainerStyles}
-    ${Flex}
     ${Breakpoint}
     @media only screen and (max-width: 600px) {
         border-radius: var(--border-radius);

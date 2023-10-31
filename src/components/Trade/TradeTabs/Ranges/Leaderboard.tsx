@@ -70,25 +70,6 @@ function Leaderboard() {
         ? 'medium'
         : 'large';
 
-    const footerDisplay = (
-        <FlexContainer
-            alignItems='center'
-            justifyContent='center'
-            gap={isSmallScreen ? 4 : 8}
-            margin='16px auto'
-            background='dark1'
-        >
-            {tradeTableState === 'Expanded' && sortedPositions.length > 30 && (
-                <Pagination
-                    itemsPerPage={rangesPerPage}
-                    totalItems={sortedPositions.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
-        </FlexContainer>
-    );
-
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
 
@@ -216,20 +197,6 @@ function Leaderboard() {
             sortable: false,
         },
     ];
-    const headerColumnsDisplay = (
-        <RangeRowStyled size={tableView} leaderboard header>
-            {headerColumns.map((header, idx) => (
-                <RangeHeader
-                    key={idx}
-                    sortBy={sortBy}
-                    setSortBy={setSortBy}
-                    reverseSort={reverseSort}
-                    setReverseSort={setReverseSort}
-                    header={header}
-                />
-            ))}
-        </RangeRowStyled>
-    );
 
     const { ensAddressMapping, addData } = useENSAddresses();
 
@@ -255,11 +222,41 @@ function Leaderboard() {
         />
     ));
 
+    // TODO: we can probably severely reduce the number of wrappers in this JSX
+
     return (
         <FlexContainer flexDirection='column' fullHeight>
-            <div>{headerColumnsDisplay}</div>
+            <RangeRowStyled size={tableView} leaderboard header>
+                {headerColumns.map((header, idx) => (
+                    <RangeHeader
+                        key={idx}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        reverseSort={reverseSort}
+                        setReverseSort={setReverseSort}
+                        header={header}
+                    />
+                ))}
+            </RangeRowStyled>
             <div style={{ flex: 1, overflow: 'auto' }}>{rowItemContent}</div>
-            <div>{footerDisplay}</div>
+            <FlexContainer
+                as='footer'
+                alignItems='center'
+                justifyContent='center'
+                gap={isSmallScreen ? 4 : 8}
+                margin='0 auto'
+                background='dark1'
+            >
+                {tradeTableState === 'Expanded' &&
+                    sortedPositions.length > 30 && (
+                        <Pagination
+                            itemsPerPage={rangesPerPage}
+                            totalItems={sortedPositions.length}
+                            paginate={paginate}
+                            currentPage={currentPage}
+                        />
+                    )}
+            </FlexContainer>
         </FlexContainer>
     );
 }

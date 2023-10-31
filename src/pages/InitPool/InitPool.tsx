@@ -1316,7 +1316,7 @@ export default function InitPool() {
             flexDirection='column'
             gap={10}
             justifyContent='center'
-            blur={!!poolExists}
+            overlay={!!poolExists && 'blur'}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
                 <FlexContainer flexDirection='row' gap={8} alignItems='center'>
@@ -1380,7 +1380,7 @@ export default function InitPool() {
             flexDirection='column'
             justifyContent='center'
             gap={10}
-            blur={isRangeBoundsAndCollateralDisabled}
+            overlay={isRangeBoundsAndCollateralDisabled && 'blur'}
         >
             <FlexContainer flexDirection='row' justifyContent='space-between'>
                 <Text fontSize='body' color='text2'>
@@ -1417,15 +1417,16 @@ export default function InitPool() {
         </FlexContainer>
     );
 
+    const overlayIsBlur =
+        (!!poolExists ||
+            initialPriceDisplay === '' ||
+            parseFloat(initialPriceDisplay) === 0) ??
+        'blur';
     const mintInitialLiquidity = (
         <FlexContainer
             flexDirection='row'
             justifyContent='space-between'
-            blur={
-                !!poolExists ||
-                initialPriceDisplay === '' ||
-                parseFloat(initialPriceDisplay) === 0
-            }
+            overlay={overlayIsBlur}
         >
             <Text fontSize='body' color='text2'>
                 Mint Initial Liquidity
@@ -1495,7 +1496,7 @@ export default function InitPool() {
             />
         </div>
     ) : (
-        <FlexContainer blur={!!poolExists} justifyContent='center'>
+        <FlexContainer overlay={!!poolExists && 'blur'} justifyContent='center'>
             <InitPoolExtraInfo
                 initialPrice={parseFloat(
                     initialPriceDisplay.replaceAll(',', ''),
@@ -1538,7 +1539,9 @@ export default function InitPool() {
             >
                 <FlexContainer flexDirection='column' gap={8}>
                     {!showMobileVersion && mintInitialLiquidity}
-                    <FlexContainer blur={isRangeBoundsAndCollateralDisabled}>
+                    <FlexContainer
+                        overlay={isRangeBoundsAndCollateralDisabled && 'blur'}
+                    >
                         <AdvancedModeToggle advancedMode={advancedMode} />
                     </FlexContainer>
 
