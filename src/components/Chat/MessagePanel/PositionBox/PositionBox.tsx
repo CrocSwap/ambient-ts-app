@@ -1,6 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState,
+} from 'react';
 import { HiOutlineExternalLink } from 'react-icons/hi';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import trimString from '../../../../utils/functions/trimString';
@@ -12,6 +18,7 @@ import {
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 
 interface propsIF {
     message: string;
@@ -38,10 +45,10 @@ export default function PositionBox(props: propsIF) {
         string | undefined
     >();
     const tradeData = useAppSelector((state) => state.tradeData);
-    const graphData = useAppSelector((state) => state?.graphData);
+    const { positionsByPool, changesByPool } = useContext(GraphDataContext);
 
-    const transactionsData = graphData?.changesByPool?.changes;
-    const positionData = graphData?.positionsByPool?.positions;
+    const transactionsData = changesByPool.changes;
+    const positionData = positionsByPool.positions;
 
     const [minPrice, setMinPrice] = useState<string | undefined>();
     const [maxPrice, setMaxPrice] = useState<string | undefined>();

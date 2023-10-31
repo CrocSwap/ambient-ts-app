@@ -13,15 +13,14 @@ import {
     SHOULD_NON_CANDLE_SUBSCRIPTIONS_RECONNECT,
 } from '../constants';
 import isJsonString from '../utils/functions/isJsonString';
-import { useAppDispatch } from '../utils/hooks/reduxToolkit';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { supportedNetworks } from '../utils/networks';
-import { setLastBlock } from '../utils/state/graphDataSlice';
 import { CachedDataContext } from './CachedDataContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TokenContext } from './TokenContext';
 import { Client } from '@covalenthq/client-sdk';
 import { UserDataContext } from './UserDataContext';
+import { TokenBalanceContext } from './TokenBalanceContext';
 
 interface ChainDataContextIF {
     gasPriceInGwei: number | undefined;
@@ -39,9 +38,7 @@ export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
     const { chainData, crocEnv, provider } = useContext(CrocEnvContext);
-    const [tokenBalances, setTokenBalances] = React.useState<
-        TokenIF[] | undefined
-    >(undefined);
+    const { setTokenBalances } = useContext(TokenBalanceContext);
 
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
@@ -49,7 +46,6 @@ export const ChainDataContextProvider = (props: {
 
     const client = new Client(process.env.REACT_APP_COVALENT_API_KEY || '');
 
-    const dispatch = useAppDispatch();
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 
     const [lastBlockNumber, setLastBlockNumber] = useState<number>(0);
@@ -83,7 +79,6 @@ export const ChainDataContextProvider = (props: {
             .then((blockNum) => {
                 if (blockNum > lastBlockNumber) {
                     setLastBlockNumber(blockNum);
-                    dispatch(setLastBlock(blockNum));
                 }
             })
             .catch(console.error);
@@ -133,7 +128,6 @@ export const ChainDataContextProvider = (props: {
                     const newBlockNum = parseInt(lastBlockNumberHex);
                     if (lastBlockNumber !== newBlockNum) {
                         setLastBlockNumber(parseInt(lastBlockNumberHex));
-                        dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
                     }
                 }
             }

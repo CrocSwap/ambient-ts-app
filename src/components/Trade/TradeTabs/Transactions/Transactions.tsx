@@ -91,9 +91,8 @@ function Transactions(props: propsIF) {
     const NUM_TRANSACTIONS_WHEN_COLLAPSED = isAccountView ? 13 : 10; // Number of transactions we show when the table is collapsed (i.e. half page)
     // NOTE: this is done to improve rendering speed for this page.
 
-    const graphData = useAppSelector((state) => state?.graphData);
     const dataLoadingStatus = useContext(DataLoadingContext);
-    const { changesByUser } = useContext(GraphDataContext);
+    const { changesByUser, changesByPool } = useContext(GraphDataContext);
     const tradeData = useAppSelector((state) => state.tradeData);
     const { transactionsByType, pendingTransactions } = useAppSelector(
         (state) => state.receiptData,
@@ -114,7 +113,7 @@ function Transactions(props: propsIF) {
             setTransactionData(activeAccountTransactionData || []);
         else if (!showAllData)
             setTransactionData(
-                changesByUser?.changes.filter(
+                changesByUser.changes.filter(
                     (tx) =>
                         tx.base.toLowerCase() ===
                             tradeData.baseToken.address.toLowerCase() &&
@@ -126,7 +125,7 @@ function Transactions(props: propsIF) {
             );
         else {
             setTransactionData(
-                graphData?.changesByPool?.changes.filter(
+                changesByPool.changes.filter(
                     (tx) =>
                         tx.base.toLowerCase() ===
                             tradeData.baseToken.address.toLowerCase() &&
@@ -142,7 +141,7 @@ function Transactions(props: propsIF) {
         isCandleSelected,
         activeAccountTransactionData,
         changesByUser,
-        graphData?.changesByPool,
+        changesByPool,
     ]);
 
     useEffect(() => {

@@ -45,7 +45,6 @@ import { FlexContainer } from '../../../styled/Common';
 import Button from '../../../components/Form/Button';
 import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
-import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useSwitchNetwork } from 'wagmi';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
 import { TokenBalanceContext } from '../../../contexts/TokenBalanceContext';

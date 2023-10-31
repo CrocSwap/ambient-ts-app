@@ -21,10 +21,11 @@ import { TokenContext } from './TokenContext';
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
 
-interface ChangesByUser {
+interface Changes {
     dataReceived: boolean;
     changes: Array<TransactionIF>;
 }
+
 interface PositionsByUser {
     dataReceived: boolean;
     positions: Array<PositionIF>;
@@ -33,11 +34,26 @@ interface LimitOrdersByUser {
     dataReceived: boolean;
     limitOrders: LimitOrderIF[];
 }
+interface PositionsByPool {
+    dataReceived: boolean;
+    positions: Array<PositionIF>;
+}
+
 interface GraphDataContextIF {
     positionsByUser: PositionsByUser;
     limitOrdersByUser: LimitOrdersByUser;
-    changesByUser: ChangesByUser;
-    setChangesByUser: React.Dispatch<React.SetStateAction<ChangesByUser>>;
+    changesByUser: Changes;
+    userPositionsByPool: PositionsByPool;
+    positionsByPool: PositionsByPool;
+    leaderboardByPool: PositionsByPool;
+    changesByPool: Changes;
+    setChangesByPool: React.Dispatch<React.SetStateAction<Changes>>;
+    setChangesByUser: React.Dispatch<React.SetStateAction<Changes>>;
+    setUserPositionsByPool: React.Dispatch<
+        React.SetStateAction<PositionsByPool>
+    >;
+    setPositionsByPool: React.Dispatch<React.SetStateAction<PositionsByPool>>;
+    setLeaderboardByPool: React.Dispatch<React.SetStateAction<PositionsByPool>>;
     resetUserGraphData: () => void;
 }
 export const GraphDataContext = createContext<GraphDataContextIF>(
@@ -57,7 +73,27 @@ export const GraphDataContextProvider = (props: {
             dataReceived: false,
             limitOrders: [],
         });
-    const [changesByUser, setChangesByUser] = React.useState<ChangesByUser>({
+    const [changesByUser, setChangesByUser] = React.useState<Changes>({
+        dataReceived: false,
+        changes: [],
+    });
+    const [userPositionsByPool, setUserPositionsByPool] =
+        React.useState<PositionsByPool>({
+            dataReceived: false,
+            positions: [],
+        });
+
+    const [positionsByPool, setPositionsByPool] =
+        React.useState<PositionsByPool>({
+            dataReceived: false,
+            positions: [],
+        });
+    const [leaderboardByPool, setLeaderboardByPool] =
+        React.useState<PositionsByPool>({
+            dataReceived: false,
+            positions: [],
+        });
+    const [changesByPool, setChangesByPool] = React.useState<Changes>({
         dataReceived: false,
         changes: [],
     });
@@ -322,8 +358,16 @@ export const GraphDataContextProvider = (props: {
         positionsByUser,
         limitOrdersByUser,
         changesByUser,
+        userPositionsByPool,
         resetUserGraphData,
         setChangesByUser,
+        setUserPositionsByPool,
+        positionsByPool,
+        leaderboardByPool,
+        setPositionsByPool,
+        setLeaderboardByPool,
+        changesByPool,
+        setChangesByPool,
     };
 
     return (

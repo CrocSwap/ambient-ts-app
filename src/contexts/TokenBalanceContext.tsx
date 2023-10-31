@@ -10,6 +10,9 @@ interface TokenBalanceContextIF {
         walletBalance?: string | undefined;
         dexBalance?: string | undefined;
     }) => void;
+    setTokenBalances: React.Dispatch<
+        React.SetStateAction<TokenIF[] | undefined>
+    >;
 }
 
 export const TokenBalanceContext = createContext<TokenBalanceContextIF>(
@@ -65,6 +68,7 @@ export const TokenBalanceContextProvider = (props: {
         tokenBalances,
         resetTokenBalances,
         setTokenBalance,
+        setTokenBalances,
     };
 
     return (

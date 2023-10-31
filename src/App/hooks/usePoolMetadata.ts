@@ -16,14 +16,10 @@ import {
 } from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import {
-    setChangesByPool,
-    setLeaderboardByPool,
     setLimitOrdersByPool,
     setLiquidity,
     setLiquidityPending,
-    setPositionsByPool,
     setUserLimitOrdersByPool,
-    setUserPositionsByPool,
 } from '../../utils/state/graphDataSlice';
 import {
     setAdvancedHighTick,
@@ -45,6 +41,7 @@ import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { supportedNetworks } from '../../utils/networks';
 import { Provider } from '@ethersproject/providers';
 import { DataLoadingContext } from '../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../contexts/GraphDataContext';
 
 interface PoolParamsHookIF {
     crocEnv?: CrocEnv;
@@ -69,6 +66,12 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
     const { setDataLoadingStatus } = useContext(DataLoadingContext);
+    const {
+        setUserPositionsByPool,
+        setPositionsByPool,
+        setLeaderboardByPool,
+        setChangesByPool,
+    } = useContext(GraphDataContext);
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
 
@@ -282,12 +285,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     ),
                                 )
                                     .then((updatedPositions) => {
-                                        dispatch(
-                                            setPositionsByPool({
-                                                dataReceived: true,
-                                                positions: updatedPositions,
-                                            }),
-                                        );
+                                        setPositionsByPool({
+                                            dataReceived: true,
+                                            positions: updatedPositions,
+                                        });
                                         setDataLoadingStatus({
                                             datasetName:
                                                 'isPoolRangeDataLoading',
@@ -296,12 +297,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                     })
                                     .catch(console.error);
                             } else {
-                                dispatch(
-                                    setPositionsByPool({
-                                        dataReceived: false,
-                                        positions: [],
-                                    }),
-                                );
+                                setPositionsByPool({
+                                    dataReceived: false,
+                                    positions: [],
+                                });
                                 setDataLoadingStatus({
                                     datasetName: 'isPoolRangeDataLoading',
                                     loadingStatus: false,
@@ -371,12 +370,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             )
                                             .slice(0, 10);
 
-                                        dispatch(
-                                            setLeaderboardByPool({
-                                                dataReceived: true,
-                                                positions: top10Positions,
-                                            }),
-                                        );
+                                        setLeaderboardByPool({
+                                            dataReceived: true,
+                                            positions: top10Positions,
+                                        });
                                     })
                                     .catch(console.error);
                             }
@@ -406,12 +403,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
-                                dispatch(
-                                    setChangesByPool({
-                                        dataReceived: true,
-                                        changes: poolChangesJsonData,
-                                    }),
-                                );
+                                setChangesByPool({
+                                    dataReceived: true,
+                                    changes: poolChangesJsonData,
+                                });
                                 setDataLoadingStatus({
                                     datasetName: 'isPoolTxDataLoading',
                                     loadingStatus: false,
@@ -529,12 +524,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                         ),
                                     )
                                         .then((updatedPositions) => {
-                                            dispatch(
-                                                setUserPositionsByPool({
-                                                    dataReceived: true,
-                                                    positions: updatedPositions,
-                                                }),
-                                            );
+                                            setUserPositionsByPool({
+                                                dataReceived: true,
+                                                positions: updatedPositions,
+                                            });
                                             setDataLoadingStatus({
                                                 datasetName:
                                                     'isConnectedUserRangeDataLoading',
@@ -543,12 +536,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                         })
                                         .catch(console.error);
                                 } else {
-                                    dispatch(
-                                        setUserPositionsByPool({
-                                            dataReceived: false,
-                                            positions: [],
-                                        }),
-                                    );
+                                    setUserPositionsByPool({
+                                        dataReceived: false,
+                                        positions: [],
+                                    });
                                     setDataLoadingStatus({
                                         datasetName:
                                             'isConnectedUserRangeDataLoading',

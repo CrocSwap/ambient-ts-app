@@ -1,28 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CandleData } from '../../App/functions/fetchCandleSeries';
 import { LiquidityDataIF } from '../../App/functions/fetchPoolLiquidity';
-import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
+import { LimitOrderIF } from '../interfaces/exports';
 
-export interface graphData {
-    lastBlock: number;
-    userPositionsByPool: PositionsByPool;
-    positionsByPool: PositionsByPool;
-    leaderboardByPool: PositionsByPool;
-    changesByPool: ChangesByPool;
+interface graphData {
     liquidityData?: LiquidityDataIF;
     liquidityRequest?: PoolRequestParams;
     userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
 }
 
-export interface PoolRequestParams {
+interface PoolRequestParams {
     baseAddress: string;
     quoteAddress: string;
     poolIndex: number;
     chainId: string;
 }
 
-export interface LimitOrdersByPool {
+interface LimitOrdersByPool {
     dataReceived: boolean;
     limitOrders: LimitOrderIF[];
 }
@@ -38,22 +33,7 @@ export interface CandlesByPoolAndDuration {
     candles: Array<CandleData>;
 }
 
-export interface PositionsByPool {
-    dataReceived: boolean;
-    positions: Array<PositionIF>;
-}
-
-export interface ChangesByPool {
-    dataReceived: boolean;
-    changes: Array<TransactionIF>;
-}
-
 const initialState: graphData = {
-    lastBlock: 0,
-    userPositionsByPool: { dataReceived: false, positions: [] },
-    positionsByPool: { dataReceived: false, positions: [] },
-    leaderboardByPool: { dataReceived: false, positions: [] },
-    changesByPool: { dataReceived: false, changes: [] },
     userLimitOrdersByPool: { dataReceived: false, limitOrders: [] },
     limitOrdersByPool: { dataReceived: false, limitOrders: [] },
     liquidityData: undefined,
@@ -69,26 +49,6 @@ export const graphDataSlice = createSlice({
     name: 'graphData',
     initialState,
     reducers: {
-        setLastBlock: (state, action: PayloadAction<number>) => {
-            state.lastBlock = action.payload;
-        },
-
-        setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
-            state.positionsByPool = action.payload;
-        },
-        setUserPositionsByPool: (
-            state,
-            action: PayloadAction<PositionsByPool>,
-        ) => {
-            state.userPositionsByPool = action.payload;
-        },
-        setLeaderboardByPool: (
-            state,
-            action: PayloadAction<PositionsByPool>,
-        ) => {
-            state.leaderboardByPool = action.payload;
-        },
-
         setUserLimitOrdersByPool: (
             state,
             action: PayloadAction<LimitOrdersByPool>,
@@ -100,9 +60,6 @@ export const graphDataSlice = createSlice({
             action: PayloadAction<LimitOrdersByPool>,
         ) => {
             state.limitOrdersByPool = action.payload;
-        },
-        setChangesByPool: (state, action: PayloadAction<ChangesByPool>) => {
-            state.changesByPool = action.payload;
         },
 
         setLiquidity: (state, action: PayloadAction<LiquidityDataIF>) => {
@@ -145,15 +102,10 @@ export const graphDataSlice = createSlice({
 
 // action creators are generated for each case reducer function
 export const {
-    setLastBlock,
-    setUserPositionsByPool,
-    setPositionsByPool,
-    setLeaderboardByPool,
     setLiquidity,
     setLiquidityPending,
     setUserLimitOrdersByPool,
     setLimitOrdersByPool,
-    setChangesByPool,
 } = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;
