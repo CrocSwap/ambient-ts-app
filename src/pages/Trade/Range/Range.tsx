@@ -47,6 +47,7 @@ import {
 import { useApprove } from '../../../App/functions/approve';
 import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeButtonMessage';
 import { useRangeInputDisable } from './useRangeInputDisable';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -85,6 +86,7 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
+    const { positionsByUser } = useContext(GraphDataContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const dispatch = useAppDispatch();
@@ -106,7 +108,6 @@ function Range() {
             advancedMode,
             liquidityFee,
         },
-        graphData,
     } = useAppSelector((state) => state);
 
     // RangeTokenInput state values
@@ -231,7 +232,7 @@ function Range() {
         return value;
     }, [advancedHighTick, currentPoolPriceTick, shouldResetAdvancedHighTick]);
 
-    const userPositions = graphData.positionsByUser.positions.filter(
+    const userPositions = positionsByUser.positions.filter(
         (x) => x.chainId === chainId,
     );
     // Represents whether user is adding to an existing range position

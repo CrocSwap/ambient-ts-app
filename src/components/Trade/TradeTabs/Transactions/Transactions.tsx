@@ -32,6 +32,7 @@ import {
 } from '../../../../styled/Components/TransactionTable';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 
 interface propsIF {
     filter?: CandleData | undefined;
@@ -90,6 +91,7 @@ function Transactions(props: propsIF) {
     // NOTE: this is done to improve rendering speed for this page.
 
     const graphData = useAppSelector((state) => state?.graphData);
+    const { changesByUser } = useContext(GraphDataContext);
     const tradeData = useAppSelector((state) => state.tradeData);
     const { transactionsByType, pendingTransactions } = useAppSelector(
         (state) => state.receiptData,
@@ -110,7 +112,7 @@ function Transactions(props: propsIF) {
             setTransactionData(activeAccountTransactionData || []);
         else if (!showAllData)
             setTransactionData(
-                graphData?.changesByUser?.changes.filter(
+                changesByUser?.changes.filter(
                     (tx) =>
                         tx.base.toLowerCase() ===
                             tradeData.baseToken.address.toLowerCase() &&
@@ -137,7 +139,7 @@ function Transactions(props: propsIF) {
         showAllData,
         isCandleSelected,
         activeAccountTransactionData,
-        graphData?.changesByUser,
+        changesByUser,
         graphData?.changesByPool,
     ]);
 

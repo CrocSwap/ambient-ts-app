@@ -15,6 +15,7 @@ import { UserDataContextProvider } from './UserDataContext';
 import { UserPreferenceContextProvider } from './UserPreferenceContext';
 import { ExploreContextProvider } from './ExploreContext';
 import { ENSAddressContextProvider } from './ENSAddressContext';
+import { GraphDataContextProvider } from './GraphDataContext';
 
 export const GlobalContexts = (props: { children: React.ReactNode }) => {
     return (
@@ -25,27 +26,29 @@ export const GlobalContexts = (props: { children: React.ReactNode }) => {
                         <TokenContextProvider>
                             <ChainDataContextProvider>
                                 <UserDataContextProvider>
-                                    <ChartContextProvider>
-                                        <RangeContextProvider>
-                                            <TradeTokenContextProvider>
-                                                <PoolContextProvider>
-                                                    <CandleContextProvider>
-                                                        <TradeTableContextProvider>
-                                                            <UserPreferenceContextProvider>
-                                                                <SidebarContextProvider>
-                                                                    <ExploreContextProvider>
-                                                                        {
-                                                                            props.children
-                                                                        }
-                                                                    </ExploreContextProvider>
-                                                                </SidebarContextProvider>
-                                                            </UserPreferenceContextProvider>
-                                                        </TradeTableContextProvider>
-                                                    </CandleContextProvider>
-                                                </PoolContextProvider>
-                                            </TradeTokenContextProvider>
-                                        </RangeContextProvider>
-                                    </ChartContextProvider>
+                                    <GraphDataContextProvider>
+                                        <ChartContextProvider>
+                                            <RangeContextProvider>
+                                                <TradeTokenContextProvider>
+                                                    <PoolContextProvider>
+                                                        <CandleContextProvider>
+                                                            <TradeTableContextProvider>
+                                                                <UserPreferenceContextProvider>
+                                                                    <SidebarContextProvider>
+                                                                        <ExploreContextProvider>
+                                                                            {
+                                                                                props.children
+                                                                            }
+                                                                        </ExploreContextProvider>
+                                                                    </SidebarContextProvider>
+                                                                </UserPreferenceContextProvider>
+                                                            </TradeTableContextProvider>
+                                                        </CandleContextProvider>
+                                                    </PoolContextProvider>
+                                                </TradeTokenContextProvider>
+                                            </RangeContextProvider>
+                                        </ChartContextProvider>
+                                    </GraphDataContextProvider>
                                 </UserDataContextProvider>
                             </ChainDataContextProvider>
                         </TokenContextProvider>

@@ -20,7 +20,6 @@ import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
 import { SidebarContext } from '../../../contexts/SidebarContext';
 import { TradeTokenContext } from '../../../contexts/TradeTokenContext';
-import { resetUserGraphData } from '../../../utils/state/graphDataSlice';
 import { resetReceiptData } from '../../../utils/state/receiptDataSlice';
 
 import { TradeTableContext } from '../../../contexts/TradeTableContext';
@@ -48,6 +47,7 @@ import { version as appVersion } from '../../../../package.json';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { useSwitchNetwork } from 'wagmi';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
 
 const PageHeader = function () {
     const {
@@ -60,6 +60,7 @@ const PageHeader = function () {
         wagmiModal: { open: openWagmiModal },
     } = useContext(AppStateContext);
     const { resetTokenBalances } = useContext(ChainDataContext);
+    const { resetUserGraphData } = useContext(GraphDataContext);
 
     const { poolPriceDisplay } = useContext(PoolContext);
     const { recentPools } = useContext(SidebarContext);
@@ -92,7 +93,7 @@ const PageHeader = function () {
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
-        dispatch(resetUserGraphData());
+        resetUserGraphData();
         dispatch(resetReceiptData());
         resetTokenBalances();
         setShowAllData(true);
