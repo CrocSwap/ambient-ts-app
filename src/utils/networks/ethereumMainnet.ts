@@ -12,6 +12,7 @@ import { NetworkIF } from '../interfaces/exports';
 
 export const ethereumMainnet: NetworkIF = {
     chainId: '0x1',
+    graphCacheUrl: 'https://ambindexer.net/gcgo',
     wagmiChain,
     shouldPollBlock: false,
     marketData: '0x1',

@@ -15,10 +15,10 @@ const wagmiChain = {
     },
     rpcUrls: {
         default: {
-            http: ['https://sepolia-rpc.scroll.io'],
+            http: ['https://rpc.scroll.io/'],
         },
         public: {
-            http: ['https://sepolia-rpc.scroll.io'],
+            http: ['https://rpc.scroll.io/'],
         },
     },
     blockExplorers: {
@@ -27,11 +27,12 @@ const wagmiChain = {
             url: 'https://scrollscan.com',
         },
     },
-    testnet: true,
+    testnet: false,
 };
 
 export const scrollMainnet: NetworkIF = {
     chainId: '0x82750',
+    graphCacheUrl: 'https://ambindexer.net/scroll-gcgo',
     wagmiChain,
     shouldPollBlock: true,
     marketData: '0x82750',
