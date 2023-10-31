@@ -11,9 +11,12 @@ export interface actionKeyIF {
 }
 
 export function useUndoRedo(denomInBase: boolean) {
-    const [drawnShapeHistory, setDrawnShapeHistory] = useState<
-        drawDataHistory[]
-    >([]);
+    const initialData = localStorage.getItem('draw_shapes');
+
+    const initialArray = initialData ? JSON.parse(initialData) : [];
+
+    const [drawnShapeHistory, setDrawnShapeHistory] =
+        useState<drawDataHistory[]>(initialArray);
 
     const {
         chainData: { poolIndex },

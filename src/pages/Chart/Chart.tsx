@@ -81,10 +81,14 @@ import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import useDebounce from '../../App/hooks/useDebounce';
 import DrawCanvas from './Draw/DrawCanvas/DrawCanvas';
 import {
+    createAnnotationLineSeries,
     createLinearLineSeries,
     distanceToLine,
 } from './Draw/DrawCanvas/LinearLineSeries';
-import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
+import {
+    createBandArea,
+    createPointsOfBandLine,
+} from './Draw/DrawCanvas/BandArea';
 import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
@@ -2532,6 +2536,17 @@ export default function Chart(props: propsIF) {
         const ctx = canvas.getContext('2d');
 
         if (scaleData && lineSeries) {
+            const rayLine = createAnnotationLineSeries(
+                scaleData?.xScale.copy(),
+                scaleData?.yScale,
+            );
+
+            const bandArea = createBandArea(
+                scaleData?.xScale.copy(),
+                scaleData?.yScale,
+                denomInBase,
+            );
+
             d3.select(d3CanvasMain.current)
                 .on('draw', () => {
                     setCanvasResolution(canvas);
@@ -2539,14 +2554,18 @@ export default function Chart(props: propsIF) {
                     drawnShapeHistory?.forEach((item) => {
                         if (item.pool) {
                             const isShapeInCurrentPool =
-                                currentPool.tokenA ===
-                                    (isTokenABase === item.pool.isTokenABase
-                                        ? item.pool.tokenA
-                                        : item.pool.tokenB) &&
-                                currentPool.tokenB ===
-                                    (isTokenABase === item.pool.isTokenABase
-                                        ? item.pool.tokenB
-                                        : item.pool.tokenA);
+                                JSON.stringify(currentPool.tokenA) ===
+                                    JSON.stringify(
+                                        isTokenABase === item.pool.isTokenABase
+                                            ? item.pool.tokenA
+                                            : item.pool.tokenB,
+                                    ) &&
+                                JSON.stringify(currentPool.tokenB) ===
+                                    JSON.stringify(
+                                        isTokenABase === item.pool.isTokenABase
+                                            ? item.pool.tokenB
+                                            : item.pool.tokenA,
+                                    );
 
                             if (isShapeInCurrentPool) {
                                 if (
@@ -2749,24 +2768,20 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 if (item.type === 'Square') {
-                                    item.data[1].ctx
-                                        .xScale()
-                                        .domain(scaleData.xScale.domain());
-
-                                    item.data[1].ctx
-                                        .yScale()
-                                        .domain(scaleData.yScale.domain());
-
                                     const range = [
                                         scaleData?.xScale(item.data[0].x),
-                                        scaleData.xScale(item.data[1].x),
+                                        scaleData?.xScale(item.data[1].x),
                                     ];
 
-                                    item.data[1].ctx.xScale().range(range);
+                                    bandArea.xScale().range(range);
 
                                     const bandData = {
-                                        fromValue: item.data[0].y,
-                                        toValue: item.data[1].y,
+                                        fromValue: denomInBase
+                                            ? item.data[0].y
+                                            : 1 / item.data[0].y,
+                                        toValue: denomInBase
+                                            ? item.data[1].y
+                                            : 1 / item.data[1].y,
                                         denomInBase: denomInBase,
                                     } as bandLineData;
 
@@ -2790,7 +2805,7 @@ export default function Chart(props: propsIF) {
                                             alphaValue +
                                             ')';
 
-                                        item.data[1].ctx.decorate(
+                                        bandArea.decorate(
                                             (
                                                 context: CanvasRenderingContext2D,
                                             ) => {
@@ -2800,7 +2815,7 @@ export default function Chart(props: propsIF) {
                                         );
                                     }
 
-                                    item.data[1].ctx([bandData]);
+                                    bandArea([bandData]);
 
                                     const lineOfBand = createPointsOfBandLine(
                                         item.data,
@@ -2869,11 +2884,11 @@ export default function Chart(props: propsIF) {
                                 }
 
                                 if (item.type === 'Ray') {
-                                    item.data[1].ctx
+                                    rayLine
                                         .xScale()
                                         .domain(scaleData.xScale.domain());
 
-                                    item.data[1].ctx
+                                    rayLine
                                         .yScale()
                                         .domain(scaleData.yScale.domain());
 
@@ -2882,16 +2897,16 @@ export default function Chart(props: propsIF) {
                                         scaleData.xScale.range()[1],
                                     ];
 
-                                    item.data[1].ctx.xScale().range(range);
+                                    rayLine.xScale().range(range);
                                     if (ctx) ctx.setLineDash(item.style);
-                                    item.data[1].ctx.decorate(
+                                    rayLine.decorate(
                                         (context: CanvasRenderingContext2D) => {
                                             context.strokeStyle = item.color;
                                             context.lineWidth = item.lineWidth;
                                         },
                                     );
 
-                                    item.data[1].ctx([
+                                    rayLine([
                                         {
                                             denomInBase:
                                                 item.data[0].denomInBase,
@@ -2902,7 +2917,6 @@ export default function Chart(props: propsIF) {
                                                     : 1 / item.data[0].y,
                                         },
                                     ]);
-
                                     if (
                                         (hoveredDrawnShape &&
                                             hoveredDrawnShape.data.time ===
@@ -2960,11 +2974,8 @@ export default function Chart(props: propsIF) {
                     setIsShapeEdited(false);
                 })
                 .on('measure', () => {
-                    drawnShapeHistory?.forEach((item) => {
-                        if (item.type === 'Square' || item.type === 'Ray') {
-                            item.data[1].ctx.context(ctx);
-                        }
-                    });
+                    bandArea.context(ctx);
+                    rayLine.context(ctx);
                     lineSeries.context(ctx);
                     circleSeries.context(ctx);
                     selectedCircleSeries.context(ctx);
@@ -3569,14 +3580,18 @@ export default function Chart(props: propsIF) {
 
         drawnShapeHistory.forEach((element) => {
             const isShapeInCurrentPool =
-                currentPool.tokenA ===
-                    (isTokenABase === element.pool.isTokenABase
-                        ? element.pool.tokenA
-                        : element.pool.tokenB) &&
-                currentPool.tokenB ===
-                    (isTokenABase === element.pool.isTokenABase
-                        ? element.pool.tokenB
-                        : element.pool.tokenA);
+                JSON.stringify(currentPool.tokenA) ===
+                    JSON.stringify(
+                        isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenA
+                            : element.pool.tokenB,
+                    ) &&
+                JSON.stringify(currentPool.tokenB) ===
+                    JSON.stringify(
+                        isTokenABase === element.pool.isTokenABase
+                            ? element.pool.tokenB
+                            : element.pool.tokenA,
+                    );
 
             if (isShapeInCurrentPool) {
                 if (element.type === 'Brush' || element.type === 'Angle') {

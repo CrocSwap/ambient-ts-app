@@ -163,6 +163,10 @@ function TradeCandleStickChart(props: propsIF) {
     }, [period, denominationsInBase]);
 
     useEffect(() => {
+        localStorage.setItem('draw_shapes', JSON.stringify(drawnShapeHistory));
+    }, [JSON.stringify(drawnShapeHistory)]);
+
+    useEffect(() => {
         if (unparsedLiquidityData !== undefined) {
             const barThreshold =
                 poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
