@@ -687,6 +687,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
     ]);
 
     return {
+        rtkMatchesParams,
         baseTokenAddress,
         quoteTokenAddress,
         baseTokenDecimals, // Token contract decimals

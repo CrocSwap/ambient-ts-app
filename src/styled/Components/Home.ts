@@ -1,11 +1,7 @@
 import styled from 'styled-components/macro';
 
-import {
-    FlexContainer,
-    Text,
-    GridContainer,
-    hideScrollbarCss,
-} from '../Common';
+import { FlexContainer, Text, GridContainer } from '../Common';
+import { hideScrollbarCss } from '../Common/Container';
 import { Link } from 'react-router-dom';
 
 export const HomeTitle = styled.div`
