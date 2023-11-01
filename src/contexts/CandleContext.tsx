@@ -11,7 +11,6 @@ import {
     CandleData,
     fetchCandleSeriesHybrid,
 } from '../App/functions/fetchCandleSeries';
-import { CandlesByPoolAndDuration } from '../utils/state/graphDataSlice';
 import { candleDomain, candleScale } from '../utils/state/tradeDataSlice';
 import { AppStateContext } from './AppStateContext';
 import { CachedDataContext } from './CachedDataContext';
@@ -19,6 +18,16 @@ import { ChartContext } from './ChartContext';
 import { CrocEnvContext } from './CrocEnvContext';
 import { TradeTokenContext } from './TradeTokenContext';
 
+export interface CandlesByPoolAndDuration {
+    pool: {
+        baseAddress: string;
+        quoteAddress: string;
+        poolIdx: number;
+        chainId: string;
+    };
+    duration: number;
+    candles: Array<CandleData>;
+}
 interface CandleContextIF {
     candleData: CandlesByPoolAndDuration | undefined;
     setCandleData: Dispatch<

@@ -3,8 +3,8 @@ import { GRAPHCACHE_SMALL_URL, GRAPHCACHE_URL } from '../../constants';
 import { translateMainnetForGraphcache } from '../../utils/data/testTokenMap';
 import { getMainnetAddress } from '../../utils/functions/getMainnetAddress';
 import { supportedNetworks } from '../../utils/networks';
-import { CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { TokenPriceFn } from './fetchTokenPrice';
+import { CandlesByPoolAndDuration } from '../../contexts/CandleContext';
 
 interface CandleDataServerIF {
     priceOpen: number;

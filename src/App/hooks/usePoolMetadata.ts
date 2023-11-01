@@ -15,12 +15,7 @@ import {
     PositionServerIF,
 } from '../../utils/interfaces/PositionIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import {
-    setLimitOrdersByPool,
-    setLiquidity,
-    setLiquidityPending,
-    setUserLimitOrdersByPool,
-} from '../../utils/state/graphDataSlice';
+
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -71,6 +66,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         setPositionsByPool,
         setLeaderboardByPool,
         setChangesByPool,
+        setLimitOrdersByPool,
+        setUserLimitOrdersByPool,
+        setLiquidity,
+        setLiquidityPending,
     } = useContext(GraphDataContext);
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
     const [quoteTokenAddress, setQuoteTokenAddress] = useState<string>('');
@@ -455,25 +454,20 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                         },
                                     ),
                                 ).then((updatedLimitOrderStates) => {
-                                    dispatch(
-                                        setLimitOrdersByPool({
-                                            dataReceived: true,
-                                            limitOrders:
-                                                updatedLimitOrderStates,
-                                        }),
-                                    );
+                                    setLimitOrdersByPool({
+                                        dataReceived: true,
+                                        limitOrders: updatedLimitOrderStates,
+                                    });
                                     setDataLoadingStatus({
                                         datasetName: 'isPoolOrderDataLoading',
                                         loadingStatus: false,
                                     });
                                 });
                             } else {
-                                dispatch(
-                                    setLimitOrdersByPool({
-                                        dataReceived: false,
-                                        limitOrders: [],
-                                    }),
-                                );
+                                setLimitOrdersByPool({
+                                    dataReceived: false,
+                                    limitOrders: [],
+                                });
                                 setDataLoadingStatus({
                                     datasetName: 'isPoolOrderDataLoading',
                                     loadingStatus: false,
@@ -595,13 +589,11 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                             },
                                         ),
                                     ).then((updatedLimitOrderStates) => {
-                                        dispatch(
-                                            setUserLimitOrdersByPool({
-                                                dataReceived: true,
-                                                limitOrders:
-                                                    updatedLimitOrderStates,
-                                            }),
-                                        );
+                                        setUserLimitOrdersByPool({
+                                            dataReceived: true,
+                                            limitOrders:
+                                                updatedLimitOrderStates,
+                                        });
 
                                         setDataLoadingStatus({
                                             datasetName:
@@ -610,12 +602,10 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
                                         });
                                     });
                                 } else {
-                                    dispatch(
-                                        setUserLimitOrdersByPool({
-                                            dataReceived: false,
-                                            limitOrders: [],
-                                        }),
-                                    );
+                                    setUserLimitOrdersByPool({
+                                        dataReceived: false,
+                                        limitOrders: [],
+                                    });
                                     setDataLoadingStatus({
                                         datasetName:
                                             'isConnectedUserOrderDataLoading',
@@ -653,7 +643,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
         };
 
         // Set the pending data before making the request
-        dispatch(setLiquidityPending(request));
+        setLiquidityPending(request);
 
         const crocEnv = props.crocEnv;
         if (
@@ -674,7 +664,7 @@ export function usePoolMetadata(props: PoolParamsHookIF) {
             )
                 .then((liqCurve) => {
                     if (liqCurve) {
-                        dispatch(setLiquidity(liqCurve));
+                        setLiquidity(liqCurve);
                     }
                 })
                 .catch(console.error);

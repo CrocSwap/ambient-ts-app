@@ -24,6 +24,7 @@ import { FlexContainer, Text } from '../../../../styled/Common';
 import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
 
 // interface for props for react functional component
 interface propsIF {
@@ -56,7 +57,8 @@ function Orders(props: propsIF) {
     const isTradeTableExpanded =
         !isAccountView && tradeTableState === 'Expanded';
 
-    const graphData = useAppSelector((state) => state?.graphData);
+    const { userLimitOrdersByPool, limitOrdersByPool } =
+        useContext(GraphDataContext);
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
 
@@ -75,7 +77,7 @@ function Orders(props: propsIF) {
         if (isAccountView) setLimitOrderData(activeAccountLimitOrderData || []);
         else if (!showAllData)
             setLimitOrderData(
-                graphData?.userLimitOrdersByPool?.limitOrders.filter(
+                userLimitOrdersByPool?.limitOrders.filter(
                     (order) =>
                         order.base.toLowerCase() ===
                             baseTokenAddress.toLowerCase() &&
@@ -85,14 +87,14 @@ function Orders(props: propsIF) {
                 ),
             );
         else {
-            setLimitOrderData(graphData?.limitOrdersByPool.limitOrders);
+            setLimitOrderData(limitOrdersByPool.limitOrders);
         }
     }, [
         showAllData,
         isAccountView,
         activeAccountLimitOrderData,
-        graphData?.limitOrdersByPool,
-        graphData?.userLimitOrdersByPool,
+        limitOrdersByPool,
+        userLimitOrdersByPool,
     ]);
 
     useEffect(() => {

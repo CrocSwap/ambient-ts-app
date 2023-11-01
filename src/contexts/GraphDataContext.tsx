@@ -20,6 +20,7 @@ import { TokenContext } from './TokenContext';
 
 import { UserDataContext } from './UserDataContext';
 import { DataLoadingContext } from './DataLoadingContext';
+import { LiquidityDataIF } from '../App/functions/fetchPoolLiquidity';
 
 interface Changes {
     dataReceived: boolean;
@@ -38,6 +39,16 @@ interface PositionsByPool {
     dataReceived: boolean;
     positions: Array<PositionIF>;
 }
+interface LimitOrdersByPool {
+    dataReceived: boolean;
+    limitOrders: LimitOrderIF[];
+}
+interface PoolRequestParams {
+    baseAddress: string;
+    quoteAddress: string;
+    poolIndex: number;
+    chainId: string;
+}
 
 interface GraphDataContextIF {
     positionsByUser: PositionsByUser;
@@ -47,6 +58,11 @@ interface GraphDataContextIF {
     positionsByPool: PositionsByPool;
     leaderboardByPool: PositionsByPool;
     changesByPool: Changes;
+    userLimitOrdersByPool: LimitOrdersByPool;
+    limitOrdersByPool: LimitOrdersByPool;
+    liquidityData: LiquidityDataIF | undefined;
+    setLiquidityPending: (params: PoolRequestParams) => void;
+    setLiquidity: (liqData: LiquidityDataIF) => void;
     setChangesByPool: React.Dispatch<React.SetStateAction<Changes>>;
     setChangesByUser: React.Dispatch<React.SetStateAction<Changes>>;
     setUserPositionsByPool: React.Dispatch<
@@ -54,8 +70,23 @@ interface GraphDataContextIF {
     >;
     setPositionsByPool: React.Dispatch<React.SetStateAction<PositionsByPool>>;
     setLeaderboardByPool: React.Dispatch<React.SetStateAction<PositionsByPool>>;
+    setUserLimitOrdersByPool: React.Dispatch<
+        React.SetStateAction<LimitOrdersByPool>
+    >;
+    setLimitOrdersByPool: React.Dispatch<
+        React.SetStateAction<LimitOrdersByPool>
+    >;
     resetUserGraphData: () => void;
 }
+
+function normalizeAddr(addr: string): string {
+    const caseAddr = addr.toLowerCase();
+    return caseAddr.startsWith('0x') ? caseAddr : '0x' + caseAddr;
+}
+
+const userLimitOrderStatesCacheEndpoint =
+    GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
+
 export const GraphDataContext = createContext<GraphDataContextIF>(
     {} as GraphDataContextIF,
 );
@@ -97,20 +128,24 @@ export const GraphDataContextProvider = (props: {
         dataReceived: false,
         changes: [],
     });
-    const resetUserGraphData = () => {
-        setPositionsByUser({
-            dataReceived: false,
-            positions: [],
-        });
-        setLimitOrdersByUser({
+    const [userLimitOrdersByPool, setUserLimitOrdersByPool] =
+        React.useState<LimitOrdersByPool>({
             dataReceived: false,
             limitOrders: [],
         });
-        setChangesByUser({
+    const [limitOrdersByPool, setLimitOrdersByPool] =
+        React.useState<LimitOrdersByPool>({
             dataReceived: false,
-            changes: [],
+            limitOrders: [],
         });
-    };
+
+    const [liquidityData, setLiquidityData] = React.useState<
+        LiquidityDataIF | undefined
+    >(undefined);
+
+    const [liquidityRequest, setLiquidityRequest] = React.useState<
+        PoolRequestParams | undefined
+    >(undefined);
 
     const {
         server: { isEnabled: isServerEnabled },
@@ -129,15 +164,58 @@ export const GraphDataContextProvider = (props: {
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
 
-    const userLimitOrderStatesCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
+    const resetUserGraphData = () => {
+        setPositionsByUser({
+            dataReceived: false,
+            positions: [],
+        });
+        setLimitOrdersByUser({
+            dataReceived: false,
+            limitOrders: [],
+        });
+        setChangesByUser({
+            dataReceived: false,
+            changes: [],
+        });
+    };
+
+    const setLiquidity = (liqData: LiquidityDataIF) => {
+        // Sanitize the raw result from the backend
+        const base = normalizeAddr(liqData.curveState.base);
+        const quote = normalizeAddr(liqData.curveState.quote);
+        const chainId = liqData.curveState.chainId;
+        const curveState = { ...liqData.curveState, base, quote, chainId };
+
+        // Verify that the result matches the current request in case multiple are in-flight
+        if (
+            liquidityRequest?.baseAddress.toLowerCase() === base &&
+            liquidityRequest?.quoteAddress.toLowerCase() === quote &&
+            liquidityRequest?.poolIndex === liqData.curveState.poolIdx &&
+            liquidityRequest?.chainId === chainId
+        ) {
+            setLiquidityData({ ...liqData, curveState });
+        } else {
+            console.warn(
+                'Discarding mismatched liquidity curve request',
+                base,
+                quote,
+                chainId,
+            );
+        }
+    };
+
+    const setLiquidityPending = (params: PoolRequestParams) => {
+        setLiquidityRequest(params);
+        setLiquidityData(undefined);
+    };
+
+    useEffect(() => {
+        resetUserGraphData();
+    }, [isUserConnected, userAddress]);
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
     const lastBlockNumWait = useDebounce(lastBlockNumber, 2000);
-    useEffect(() => {
-        resetUserGraphData();
-    }, [isUserConnected, userAddress]);
 
     useEffect(() => {
         // This useEffect controls a series of other dispatches that fetch data on update of the user object
@@ -368,6 +446,13 @@ export const GraphDataContextProvider = (props: {
         setLeaderboardByPool,
         changesByPool,
         setChangesByPool,
+        userLimitOrdersByPool,
+        setUserLimitOrdersByPool,
+        limitOrdersByPool,
+        setLimitOrdersByPool,
+        liquidityData,
+        setLiquidity,
+        setLiquidityPending,
     };
 
     return (
