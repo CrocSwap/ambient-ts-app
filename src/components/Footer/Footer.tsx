@@ -55,15 +55,6 @@ export default function Footer() {
         {
             title: (
                 <>
-                    <GiAlligatorClip size={15} /> About Us
-                </>
-            ),
-            content: 'Learn more about parent company Crocodile Labs',
-            link: CORPORATE_LINK,
-        },
-        {
-            title: (
-                <>
                     <BsTwitter size={15} /> Twitter
                 </>
             ),
