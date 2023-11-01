@@ -9,7 +9,7 @@ import { useContext } from 'react';
 import { TokenContext } from '../../../../../contexts/TokenContext';
 import { tokenListURIs } from '../../../../../utils/data/tokenListURIs';
 import { ZERO_ADDRESS } from '../../../../../constants';
-import { supportedNetworks } from '../../../../../utils/networks';
+import { isUsdcToken } from '../../../../../utils/data/stablePairs';
 
 interface propsIF {
     chainId: string;
@@ -21,7 +21,6 @@ interface propsIF {
 
 export default function Wallet(props: propsIF) {
     const {
-        chainId,
         connectedAccountActive,
         resolvedAddressTokens,
         cachedFetchTokenPrice,
@@ -81,30 +80,13 @@ export default function Wallet(props: propsIF) {
             .sort((a: TokenIF, b: TokenIF) => {
                 // fn to numerically prioritize a token (high = important)
                 const getPriority = (tkn: TokenIF): number => {
-                    // declare an output variable
-                    let priority: number;
-                    // canonical token addresses to assign probability
-                    const addresses = {
-                        nativeToken: ZERO_ADDRESS,
-                        USDC: supportedNetworks[chainId].tokens.USDC,
-                    };
-                    // logic router to assign numerical priority to output
-                    // unlisted tokens get priority 0
-                    switch (tkn.address.toLowerCase()) {
-                        // native token
-                        case addresses.nativeToken:
-                            priority = 1000;
-                            break;
-                        // USDCoin (uses address for current chain)
-                        case addresses.USDC:
-                            priority = 900;
-                            break;
-                        // all non-privileged tokens
-                        default:
-                            priority = 0;
+                    if (tkn.address === ZERO_ADDRESS) {
+                        return 1000;
+                    } else if (isUsdcToken(tkn.address)) {
+                        return 900;
+                    } else {
+                        return 0;
                     }
-                    // return numerical priority of the token
-                    return priority;
                 };
                 // sort tokens by relative priority level
                 return getPriority(b) - getPriority(a);
