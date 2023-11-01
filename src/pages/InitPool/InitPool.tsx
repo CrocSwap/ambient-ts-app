@@ -68,6 +68,7 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import InitButton from './InitButton';
+import Button from '../../components/Form/Button';
 // react functional component
 export default function InitPool() {
     const {
@@ -1499,6 +1500,14 @@ export default function InitPool() {
         </FlexContainer>
     );
 
+    const withdrawWalletBalanceButton = (
+        <Button
+            title={`withdraw ${erc20TokenWithDexBalance?.symbol}`}
+            action={() => console.log('yes')}
+            flat
+        />
+    );
+
     const mainContent = (
         <InitSkeleton
             isTokenModalOpen={tokenModalOpen}
@@ -1549,7 +1558,11 @@ export default function InitPool() {
 
                 <FlexContainer flexDirection='column' gap={8}>
                     {warningAndExtraInfo}
-                    <InitButton {...initButtopPropsIF} />
+                    {erc20TokenWithDexBalance?.symbol ? (
+                        withdrawWalletBalanceButton
+                    ) : (
+                        <InitButton {...initButtopPropsIF} />
+                    )}
                 </FlexContainer>
             </FlexContainer>
         </InitSkeleton>
