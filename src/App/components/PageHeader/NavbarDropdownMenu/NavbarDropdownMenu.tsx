@@ -3,7 +3,9 @@ import { useRef, useEffect, memo, useContext } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { IoDocumentTextSharp } from 'react-icons/io5';
-import { BsBook, BsMedium } from 'react-icons/bs';
+import { BsMedium } from 'react-icons/bs';
+import { SiGitbook } from 'react-icons/si';
+import { RiSpyFill } from 'react-icons/ri';
 import { FaDiscord } from 'react-icons/fa';
 import '../../../App.css';
 import useKeyPress from '../../../hooks/useKeyPress';
@@ -62,7 +64,7 @@ function NavbarDropdownMenu(props: propsIF) {
 
     const navData: navDataIF[] = [
         {
-            icon: <BsBook size={18} />,
+            icon: <SiGitbook size={20} />,
             resource: DOCS_LINK,
             text: 'Docs',
         },
@@ -82,7 +84,7 @@ function NavbarDropdownMenu(props: propsIF) {
             text: 'Medium',
         },
         {
-            icon: <IoDocumentTextSharp size={20} />,
+            icon: <RiSpyFill size={20} />,
             resource: `${window.location.origin}/${termsUrls.privacy}`,
             text: 'Privacy',
         },
