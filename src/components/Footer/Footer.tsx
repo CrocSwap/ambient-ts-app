@@ -84,7 +84,7 @@ export default function Footer() {
     // how many items from `footerData to display in each column
     // each element denotes a column, value is how many elements to populate
     // changing the number of values changes the number of columns
-    const itemsPerColumn: [number, number, number] = [2, 3, 3];
+    const itemsPerColumn: [number, number, number] = [2, 2, 3];
 
     // warn developer if more items are defined in `footerData` than are
     // ... being rendered in the DOM for the user
