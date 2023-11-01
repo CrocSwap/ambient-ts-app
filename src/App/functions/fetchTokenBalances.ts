@@ -131,12 +131,13 @@ export const fetchTokenBalances = async (
 };
 
 export type TokenBalancesQueryFn = (
-    token: string,
+    address: string,
     chain: string,
     lastBlock: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
-    client?: Client,
+    graphCacheUrl: string,
+    client: Client,
 ) => Promise<TokenIF[]>;
 
 export function memoizeFetchTokenBalances(): TokenBalancesQueryFn {
