@@ -201,9 +201,11 @@ function Leaderboard() {
     const { ensAddressMapping, addData } = useENSAddresses();
 
     useEffect(() => {
-        if (usePaginateDataOrNull.length > 0) {
-            addData(usePaginateDataOrNull);
-        }
+        (async () => {
+            if (usePaginateDataOrNull.length > 0) {
+                await addData(usePaginateDataOrNull);
+            }
+        })();
     }, [usePaginateDataOrNull]);
 
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (

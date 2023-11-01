@@ -508,7 +508,9 @@ function Transactions(props: propsIF) {
     const { ensAddressMapping, addData } = useENSAddresses();
 
     useEffect(() => {
-        addData(sortedTransactions);
+        (async () => {
+            await addData(sortedTransactions);
+        })();
     }, [sortedTransactions]);
 
     const currentRowItemContent = () =>

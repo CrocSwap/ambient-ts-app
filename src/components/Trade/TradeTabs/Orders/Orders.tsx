@@ -400,7 +400,9 @@ function Orders(props: propsIF) {
     const { ensAddressMapping, addData } = useENSAddresses();
 
     useEffect(() => {
-        addData(sortedLimits);
+        (async () => {
+            await addData(sortedLimits);
+        })();
     }, [sortedLimits]);
 
     const currentRowItemContent = () =>

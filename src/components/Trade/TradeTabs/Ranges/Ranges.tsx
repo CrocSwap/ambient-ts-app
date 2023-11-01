@@ -378,7 +378,9 @@ function Ranges(props: propsIF) {
     const { ensAddressMapping, addData } = useENSAddresses();
 
     useEffect(() => {
-        addData(sortedPositions);
+        (async () => {
+            await addData(sortedPositions);
+        })();
     }, [sortedPositions]);
 
     const currentRowItemContent = () =>
