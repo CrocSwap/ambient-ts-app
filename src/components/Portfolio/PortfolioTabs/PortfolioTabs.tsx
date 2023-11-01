@@ -68,6 +68,7 @@ export default function PortfolioTabs(props: propsIF) {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
         provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -94,10 +95,12 @@ export default function PortfolioTabs(props: propsIF) {
     const [lookupAccountTransactionData, setLookupAccountTransactionData] =
         useState<TransactionIF[]>([]);
 
-    const userPositionsCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/user_positions?';
-    const userLimitOrdersCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
+    const userPositionsCacheEndpoint = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL + '/user_positions?'
+        : activeNetwork.graphCacheUrl + '/user_positions?';
+    const userLimitOrdersCacheEndpoint = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL + '/user_limit_orders?'
+        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
     const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(
@@ -206,6 +209,7 @@ export default function PortfolioTabs(props: propsIF) {
                 ensResolution: true,
                 n: 100, // fetch last 100 changes,
                 crocEnv: crocEnv,
+                graphCacheUrl: activeNetwork.graphCacheUrl,
                 provider,
                 lastBlockNumber: lastBlockNumber,
                 cachedFetchTokenPrice: cachedFetchTokenPrice,

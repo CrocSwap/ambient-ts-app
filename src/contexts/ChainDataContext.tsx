@@ -39,7 +39,8 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { chainData, crocEnv, provider } = useContext(CrocEnvContext);
+    const { chainData, activeNetwork, crocEnv, provider } =
+        useContext(CrocEnvContext);
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
@@ -167,7 +168,13 @@ export const ChainDataContextProvider = (props: {
         (async () => {
             IS_LOCAL_ENV &&
                 console.debug('fetching native token and erc20 token balances');
-            if (crocEnv && isConnected && userAddress && chainData.chainId) {
+            if (
+                crocEnv &&
+                isConnected &&
+                userAddress &&
+                chainData.chainId &&
+                client
+            ) {
                 try {
                     const tokenBalances: TokenIF[] =
                         await cachedFetchTokenBalances(
@@ -176,6 +183,7 @@ export const ChainDataContextProvider = (props: {
                             everyEigthBlock,
                             cachedTokenDetails,
                             crocEnv,
+                            activeNetwork.graphCacheUrl,
                             client,
                         );
                     const tokensWithLogos = tokenBalances.map((token) => {
@@ -194,7 +202,15 @@ export const ChainDataContextProvider = (props: {
                 }
             }
         })();
-    }, [crocEnv, isConnected, userAddress, chainData.chainId, everyEigthBlock]);
+    }, [
+        crocEnv,
+        isConnected,
+        userAddress,
+        chainData.chainId,
+        everyEigthBlock,
+        client !== undefined,
+        activeNetwork.graphCacheUrl,
+    ]);
 
     return (
         <ChainDataContext.Provider value={chainDataContext}>

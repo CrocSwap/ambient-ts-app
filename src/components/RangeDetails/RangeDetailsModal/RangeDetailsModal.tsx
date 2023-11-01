@@ -121,7 +121,7 @@ export default function RangeDetailsModal(props: propsIF) {
         number | undefined
     >(positionApy);
 
-    const { crocEnv } = useContext(CrocEnvContext);
+    const { crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
     const { posHash } = useProcessRange(position, userAddress);
 
@@ -133,8 +133,9 @@ export default function RangeDetailsModal(props: propsIF) {
     }
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/position_stats?';
+        const positionStatsCacheEndpoint = GRAPHCACHE_SMALL_URL
+            ? GRAPHCACHE_SMALL_URL + '/position_stats?'
+            : activeNetwork.graphCacheUrl + '/position_stats?';
 
         if (position.positionType) {
             fetch(

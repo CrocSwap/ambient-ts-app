@@ -55,8 +55,6 @@ export interface TradeDataIF {
     rangeHighLineTriggered: boolean | undefined;
     candleDomains: candleDomain;
     rescaleRangeBoundaries: boolean | undefined;
-    mainnetBaseTokenAddress: string;
-    mainnetQuoteTokenAddress: string;
 }
 
 // Have to set these values to something on load, so we use default pair
@@ -107,8 +105,6 @@ const initialState: TradeDataIF = {
     isLinesSwitched: undefined,
     rangeHighLineTriggered: undefined,
     rescaleRangeBoundaries: undefined,
-    mainnetBaseTokenAddress: '',
-    mainnetQuoteTokenAddress: '',
 };
 
 sortTokens(initialState);
