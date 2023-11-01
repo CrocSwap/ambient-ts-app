@@ -4,6 +4,7 @@ import { TokenIF } from './TokenIF';
 
 export interface NetworkIF {
     chainId: string;
+    graphCacheUrl: string;
     wagmiChain: any;
     shouldPollBlock: boolean;
     marketData: string;

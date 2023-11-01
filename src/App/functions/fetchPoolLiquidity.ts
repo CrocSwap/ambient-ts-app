@@ -2,16 +2,19 @@ import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { GRAPHCACHE_SMALL_URL } from '../../constants';
 import { TokenPriceFn } from './fetchTokenPrice';
 
-const poolLiquidityCacheEndpoint = GRAPHCACHE_SMALL_URL + '/pool_liq_curve?';
-
 export const fetchPoolLiquidity = async (
     chainId: string,
     base: string,
     quote: string,
     poolIdx: number,
     crocEnv: CrocEnv,
+    graphCacheUrl: string,
     cachedFetchTokenPrice: TokenPriceFn,
 ): Promise<LiquidityDataIF | undefined> => {
+    const poolLiquidityCacheEndpoint = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL + '/pool_liq_curve?'
+        : graphCacheUrl + '/pool_liq_curve?';
+
     return fetch(
         poolLiquidityCacheEndpoint +
             new URLSearchParams({

@@ -30,6 +30,7 @@ export const fetchTokenBalances = async (
     _lastBlockNumber: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
+    graphCacheUrl: string,
     client: Client,
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
@@ -53,6 +54,7 @@ export const fetchTokenBalances = async (
         chainId: chain,
         user: address,
         crocEnv: crocEnv,
+        graphCacheUrl: graphCacheUrl,
         cachedTokenDetails: cachedTokenDetails,
     });
 

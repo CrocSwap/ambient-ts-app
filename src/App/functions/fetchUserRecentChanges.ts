@@ -21,6 +21,7 @@ interface argsIF {
     n?: number;
     page?: number;
     crocEnv: CrocEnv;
+    graphCacheUrl: string;
     provider: Provider;
     lastBlockNumber: number;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -41,6 +42,7 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         ensResolution,
         n,
         crocEnv,
+        graphCacheUrl,
         provider,
         lastBlockNumber,
         cachedFetchTokenPrice,
@@ -49,7 +51,9 @@ export const fetchUserRecentChanges = (args: argsIF) => {
         cachedEnsResolve,
     } = args;
 
-    const userRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL + '/user_txs?';
+    const userRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL + '/user_txs?'
+        : graphCacheUrl + '/user_txs?';
 
     IS_LOCAL_ENV && console.debug('fetching user recent changes');
 

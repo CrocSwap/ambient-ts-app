@@ -49,6 +49,7 @@ export interface CandleData {
 export async function fetchCandleSeriesHybrid(
     isFetchEnabled: boolean,
     chainData: ChainSpec,
+    graphCacheUrl: string,
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
@@ -61,6 +62,7 @@ export async function fetchCandleSeriesHybrid(
     const candles = await fetchCandleSeriesCroc(
         isFetchEnabled,
         chainData,
+        graphCacheUrl,
         period,
         baseTokenAddress,
         quoteTokenAddress,
@@ -126,6 +128,7 @@ export async function fetchCandleSeriesHybrid(
 export async function fetchCandleSeriesCroc(
     isFetchEnabled: boolean,
     chainData: ChainSpec,
+    graphCacheUrl: string,
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
@@ -139,7 +142,9 @@ export async function fetchCandleSeriesCroc(
         return undefined;
     }
 
-    const candleSeriesEndpoint = GRAPHCACHE_SMALL_URL + '/pool_candles';
+    const candleSeriesEndpoint = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL + '/pool_candles'
+        : graphCacheUrl + '/pool_candles';
 
     if (endTime == 0) {
         endTime = Math.floor(Date.now() / 1000);

@@ -36,7 +36,7 @@ export default function TransactionDetailsGraph(
         isBaseTokenMoneynessGreaterOrEqual,
         isAccountView,
     } = props;
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const oneHourMiliseconds = 60 * 60 * 1000;
 
@@ -179,6 +179,7 @@ export default function TransactionDetailsGraph(
                         const graphData = await fetchCandleSeriesCroc(
                             fetchEnabled,
                             chainData,
+                            activeNetwork.graphCacheUrl,
                             period,
                             baseTokenAddress,
                             quoteTokenAddress,
