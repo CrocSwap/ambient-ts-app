@@ -48,7 +48,7 @@ export default function OrderDetailsModal(props: propsIF) {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, provider } = useContext(CrocEnvContext);
+    const { crocEnv, activeNetwork, provider } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -103,8 +103,9 @@ export default function OrderDetailsModal(props: propsIF) {
     const isFillStarted = isLimitOrderPartiallyFilled || isOrderFilled;
 
     useEffect(() => {
-        const positionStatsCacheEndpoint =
-            GRAPHCACHE_SMALL_URL + '/limit_stats?';
+        const positionStatsCacheEndpoint = GRAPHCACHE_SMALL_URL
+            ? GRAPHCACHE_SMALL_URL + '/limit_stats?'
+            : activeNetwork.graphCacheUrl + '/limit_stats?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (positionType && crocEnv && provider) {

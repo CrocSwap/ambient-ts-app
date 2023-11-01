@@ -6,6 +6,7 @@ import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
 import { FetchContractDetailsFn } from './fetchContractDetails';
 import { Client } from '@covalenthq/client-sdk';
+import { Chains } from '@covalenthq/client-sdk/dist/services/Client';
 
 export interface IDepositedTokenBalance {
     token: string;
@@ -14,6 +15,14 @@ export interface IDepositedTokenBalance {
     balance: string;
 }
 
+const COVALENT_CHAIN_IDS = {
+    '0x1': 'eth-mainnet',
+    '0x5': 'eth-goerli',
+    '066eed': 'arbitrum-goerli',
+    '0x8274f': 'scroll-sepolia-testnet',
+    '0x82750': 'scroll-mainnet',
+};
+
 export const fetchTokenBalances = async (
     address: string,
     chain: string,
@@ -21,20 +30,18 @@ export const fetchTokenBalances = async (
     _lastBlockNumber: number,
     cachedTokenDetails: FetchContractDetailsFn,
     crocEnv: CrocEnv | undefined,
+    graphCacheUrl: string,
     client: Client,
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
 
     const covalentChainString =
-        chain === '0x5'
-            ? 'eth-goerli'
-            : chain === '0x66eed'
-            ? 'arbitrum-goerli'
-            : 'eth-mainnet';
+        COVALENT_CHAIN_IDS[chain as keyof typeof COVALENT_CHAIN_IDS] ||
+        'eth-mainnet';
 
     const covalentBalancesResponse =
         await client.BalanceService.getTokenBalancesForWalletAddress(
-            covalentChainString,
+            covalentChainString as Chains,
             address,
             {
                 noSpam: false,
@@ -47,6 +54,7 @@ export const fetchTokenBalances = async (
         chainId: chain,
         user: address,
         crocEnv: crocEnv,
+        graphCacheUrl: graphCacheUrl,
         cachedTokenDetails: cachedTokenDetails,
     });
 
