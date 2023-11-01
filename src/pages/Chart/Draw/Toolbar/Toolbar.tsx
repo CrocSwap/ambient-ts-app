@@ -27,18 +27,21 @@ function Toolbar(props: ToolbarProps) {
         setIsToolbarOpen,
     } = props;
 
-    useEffect(() => {
-        const feeRate = document.getElementById('fee_rate_chart');
-        const tvl = document.getElementById('tvl_chart');
-        if (feeRate && tvl) {
-            const column = isToolbarOpen ? 38 : 9;
+    const feeRate = document.getElementById('fee_rate_chart');
+    const tvl = document.getElementById('tvl_chart');
 
+    useEffect(() => {
+        const column = isToolbarOpen ? 38 : 9;
+
+        if (feeRate) {
             feeRate.style.gridTemplateColumns =
                 column + 'px auto 1fr auto minmax(1em, max-content)';
+        }
+        if (tvl) {
             tvl.style.gridTemplateColumns =
                 column + 'px auto 1fr auto minmax(1em, max-content)';
         }
-    }, [isToolbarOpen]);
+    }, [isToolbarOpen, feeRate, tvl]);
 
     function handleDrawModeChange(item: IconList) {
         setActiveDrawingType(item.label);
