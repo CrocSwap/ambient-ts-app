@@ -1,13 +1,10 @@
 // START: Import React and Dongles
 import { useRef, useEffect, memo, useContext } from 'react';
-
 import { CSSTransition } from 'react-transition-group';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { IoDocumentTextSharp } from 'react-icons/io5';
 import { BsBook, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
-import { GiAlligatorClip } from 'react-icons/gi';
-
 import '../../../App.css';
 import useKeyPress from '../../../hooks/useKeyPress';
 import { openInNewTab } from '../../../../utils/functions/openInNewTab';
@@ -16,7 +13,6 @@ import {
     DOCS_LINK,
     MEDIUM_LINK,
     TWITTER_LINK,
-    CORPORATE_LINK,
 } from '../../../../constants';
 import { useTermsAgreed } from '../../../hooks/useTermsAgreed';
 import { LogoutButton } from '../../../../components/Global/LogoutButton/LogoutButton';

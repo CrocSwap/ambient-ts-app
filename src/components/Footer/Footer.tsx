@@ -3,9 +3,7 @@ import styles from './Footer.module.css';
 import { BsGithub, BsTwitter, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-
 import {
-    CORPORATE_LINK,
     DISCORD_LINK,
     DOCS_LINK,
     GITHUB_LINK,
@@ -14,7 +12,6 @@ import {
     TWITTER_LINK,
 } from '../../constants';
 import { useTermsAgreed } from '../../App/hooks/useTermsAgreed';
-import { GiAlligatorClip } from 'react-icons/gi';
 import FooterCard from './FooterCard';
 
 export interface footerItemIF {
