@@ -22,8 +22,7 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
 // import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
-import { LuEdit2 } from 'react-icons/lu';
-import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
+import { FiExternalLink, FiRefreshCw, FiEdit2 } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../styled/Common';
 import Toggle from '../../components/Form/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
@@ -1309,7 +1308,7 @@ export default function InitPool() {
             ) : (
                 <FiRefreshCw size={20} onClick={handleRefresh} />
             )}
-            <LuEdit2 size={20} onClick={() => openEditMode()} />
+            <FiEdit2 size={20} onClick={() => openEditMode()} />
         </FlexContainer>
     );
 
