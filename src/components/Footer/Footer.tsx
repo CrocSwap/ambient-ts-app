@@ -2,6 +2,10 @@ import { useMediaQuery } from '@mui/material';
 import styles from './Footer.module.css';
 import { BsGithub, BsTwitter, BsMedium } from 'react-icons/bs';
 import { FaDiscord } from 'react-icons/fa';
+import { IoDocumentTextSharp } from 'react-icons/io5';
+import { RiSpyFill } from 'react-icons/ri';
+import { SiGitbook } from 'react-icons/si';
+
 import { Link } from 'react-router-dom';
 import {
     DISCORD_LINK,
@@ -26,17 +30,29 @@ export default function Footer() {
     // raw data to generate cards in the footer
     const footerData: footerItemIF[] = [
         {
-            title: <>Terms of Service</>,
+            title: (
+                <>
+                    <IoDocumentTextSharp size={15} /> Terms of Service
+                </>
+            ),
             content: 'Our rules for using the platform',
             link: `${window.location.origin}/${termsUrls.tos}`,
         },
         {
-            title: <>Privacy Policy</>,
+            title: (
+                <>
+                    <RiSpyFill size={15} /> Privacy Policy
+                </>
+            ),
             content: 'View our policies around data',
             link: `${window.location.origin}/${termsUrls.privacy}`,
         },
         {
-            title: <>Docs</>,
+            title: (
+                <>
+                    <SiGitbook size={15} /> Docs
+                </>
+            ),
             content: 'View our documentation',
             link: DOCS_LINK,
         },
