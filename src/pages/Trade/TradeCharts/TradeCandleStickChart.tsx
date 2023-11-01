@@ -31,6 +31,7 @@ import Spinner from '../../../components/Global/Spinner/Spinner';
 import { LiquidityDataLocal } from './TradeCharts';
 import { CandleData } from '../../../App/functions/fetchCandleSeries';
 import {
+    CHART_ANNOTATIONS_LS_KEY,
     chartItemStates,
     liquidityChartData,
     scaleData,
@@ -163,7 +164,10 @@ function TradeCandleStickChart(props: propsIF) {
     }, [period, denominationsInBase]);
 
     useEffect(() => {
-        localStorage.setItem('draw_shapes', JSON.stringify(drawnShapeHistory));
+        localStorage.setItem(
+            CHART_ANNOTATIONS_LS_KEY,
+            JSON.stringify(drawnShapeHistory),
+        );
     }, [JSON.stringify(drawnShapeHistory)]);
 
     useEffect(() => {

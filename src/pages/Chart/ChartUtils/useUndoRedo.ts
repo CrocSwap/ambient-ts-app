@@ -1,17 +1,16 @@
-import { drawDataHistory } from './chartUtils';
+import { CHART_ANNOTATIONS_LS_KEY, drawDataHistory } from './chartUtils';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 
 export interface actionKeyIF {
     poolIndex: number;
-    tokenA: TokenIF;
-    tokenB: TokenIF;
+    tokenA: string;
+    tokenB: string;
 }
 
 export function useUndoRedo(denomInBase: boolean) {
-    const initialData = localStorage.getItem('draw_shapes');
+    const initialData = localStorage.getItem(CHART_ANNOTATIONS_LS_KEY);
 
     const initialArray = initialData ? JSON.parse(initialData) : [];
 
@@ -33,8 +32,8 @@ export function useUndoRedo(denomInBase: boolean) {
     const actionKey = useMemo(() => {
         const newActionKey = {
             poolIndex: poolIndex,
-            tokenA: currentPool.tokenA,
-            tokenB: currentPool.tokenB,
+            tokenA: currentPool.tokenA.address,
+            tokenB: currentPool.tokenB.address,
         };
         let existingKey = null;
 
@@ -52,6 +51,46 @@ export function useUndoRedo(denomInBase: boolean) {
         return newActionKey;
     }, [poolIndex, currentPool.tokenA, currentPool.tokenB]);
 
+    useEffect(() => {
+        initialArray.forEach((element: drawDataHistory) => {
+            const tempData = {
+                data: [
+                    {
+                        x: element.data[0].x,
+                        y: element.data[0].y,
+                        denomInBase: denomInBase,
+                    },
+                    {
+                        x: element.data[1].x,
+                        y: element.data[1].y,
+                        denomInBase: denomInBase,
+                    },
+                ],
+                type: element.type,
+                time: element.time,
+                pool: element.pool,
+                color: element.color,
+                lineWidth: element.lineWidth,
+                style: element.style,
+            };
+
+            if (
+                !drawActionStack.has(actionKey) &&
+                actionKey.tokenA === element.pool.tokenA.address &&
+                actionKey.tokenB === element.pool.tokenB.address
+            ) {
+                drawActionStack.set(actionKey, [tempData]);
+            } else {
+                const actionList = drawActionStack
+                    .get(actionKey)
+                    ?.find((item) => item.time === element.time);
+                if (actionList === undefined) {
+                    drawActionStack.get(actionKey)?.push(tempData);
+                }
+            }
+        });
+    }, []);
+
     function deleteItem(item: drawDataHistory) {
         const actionList = drawActionStack.get(actionKey);
         if (actionList) {
@@ -65,13 +104,11 @@ export function useUndoRedo(denomInBase: boolean) {
                         {
                             x: 0,
                             y: 0,
-                            ctx: findItem.data[0].ctx,
                             denomInBase: denomInBase,
                         },
                         {
                             x: 0,
                             y: 0,
-                            ctx: findItem.data[1].ctx,
                             denomInBase: denomInBase,
                         },
                     ],
@@ -187,13 +224,11 @@ export function useUndoRedo(denomInBase: boolean) {
                 {
                     x: tempLastData.data[0].x,
                     y: tempLastData.data[0].y,
-                    ctx: tempLastData.data[0].ctx,
                     denomInBase: tempLastData.data[0].denomInBase,
                 },
                 {
                     x: tempLastData.data[1].x,
                     y: tempLastData.data[1].y,
-                    ctx: tempLastData.data[1].ctx,
                     denomInBase: tempLastData.data[0].denomInBase,
                 },
             ],
@@ -209,7 +244,7 @@ export function useUndoRedo(denomInBase: boolean) {
     useEffect(() => {
         const newShapeData = drawnShapeHistory[drawnShapeHistory.length - 1];
 
-        if (newShapeData) {
+        if (newShapeData && initialArray !== drawnShapeHistory) {
             const newLineData = newShapeData.data;
 
             if (!drawActionStack.has(actionKey)) {
@@ -219,13 +254,11 @@ export function useUndoRedo(denomInBase: boolean) {
                             {
                                 x: newLineData[0].x,
                                 y: newLineData[0].y,
-                                ctx: newLineData[0].ctx,
                                 denomInBase: denomInBase,
                             },
                             {
                                 x: newLineData[1].x,
                                 y: newLineData[1].y,
-                                ctx: newLineData[1].ctx,
                                 denomInBase: denomInBase,
                             },
                         ],
@@ -250,13 +283,11 @@ export function useUndoRedo(denomInBase: boolean) {
                             {
                                 x: newLineData[0].x,
                                 y: newLineData[0].y,
-                                ctx: newLineData[0].ctx,
                                 denomInBase: denomInBase,
                             },
                             {
                                 x: newLineData[1].x,
                                 y: newLineData[1].y,
-                                ctx: newLineData[1].ctx,
                                 denomInBase: denomInBase,
                             },
                         ],

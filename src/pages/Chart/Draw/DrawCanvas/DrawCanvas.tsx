@@ -11,10 +11,7 @@ import {
 } from '../../ChartUtils/chartUtils';
 import { diffHashSig } from '../../../../utils/functions/diffHashSig';
 import { createCircle } from '../../ChartUtils/circle';
-import {
-    createAnnotationLineSeries,
-    createLinearLineSeries,
-} from './LinearLineSeries';
+import { createLinearLineSeries } from './LinearLineSeries';
 import { createBandArea, createPointsOfBandLine } from './BandArea';
 import { TradeDataIF } from '../../../../utils/state/tradeDataSlice';
 
@@ -37,7 +34,8 @@ interface DrawCanvasProps {
 function DrawCanvas(props: DrawCanvasProps) {
     const d3DrawCanvas = useRef<HTMLDivElement | null>(null);
     const [lineData, setLineData] = useState<lineData[]>([]);
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [bandArea, setBandArea] = useState<any>();
     const {
         scaleData,
         setDrawnShapeHistory,
@@ -153,7 +151,6 @@ function DrawCanvas(props: DrawCanvasProps) {
                 tempLineData.push({
                     x: valueX,
                     y: valueY,
-                    ctx: undefined,
                     denomInBase: denomInBase,
                 });
             }
@@ -185,57 +182,47 @@ function DrawCanvas(props: DrawCanvasProps) {
                 }
 
                 if (endDraw || activeDrawingType === 'Ray') {
-                    let shapeCtx;
-
                     if (activeDrawingType === 'Ray') {
-                        const newRayScale = scaleData.xScale.copy();
+                        // const newRayScale = scaleData.xScale.copy();
 
-                        newRayScale.range([
-                            valueX,
-                            scaleData.xScale.range()[1],
-                        ]);
-
-                        const rayLine = createAnnotationLineSeries(
-                            newRayScale,
-                            scaleData?.yScale,
-                        );
-
-                        shapeCtx = rayLine;
+                        // newRayScale.range([
+                        //     valueX,
+                        //     scaleData.xScale.range()[1],
+                        // ]);
 
                         tempLineData[0] = {
                             x: valueX,
                             y: valueY,
-                            ctx: shapeCtx,
                             denomInBase: denomInBase,
                         };
                     }
 
-                    if (activeDrawingType === 'Square') {
-                        const newBandScale = createScaleForBandArea(
-                            tempLineData[0].x,
-                            valueX,
-                        );
+                    // if (activeDrawingType === 'Square') {
+                    //     const newBandScale = createScaleForBandArea(
+                    //         tempLineData[0].x,
+                    //         valueX,
+                    //     );
 
-                        const bandArea = createBandArea(
-                            newBandScale,
-                            scaleData?.yScale,
-                            denomInBase,
-                        );
+                    //     const bandArea = createBandArea(
+                    //         newBandScale,
+                    //         scaleData?.yScale,
+                    //         denomInBase,
+                    //     );
 
-                        bandArea
-                            .xScale()
-                            .range([
-                                scaleData?.xScale(tempLineData[0].x),
-                                scaleData?.xScale(valueX),
-                            ]);
+                    //     bandArea
+                    //         .xScale()
+                    //         .range([
+                    //             scaleData?.xScale(tempLineData[0].x),
+                    //             scaleData?.xScale(valueX),
+                    //         ]);
 
-                        shapeCtx = bandArea;
-                    }
+                    //     setBandArea(()=>bandArea)
+
+                    // }
 
                     tempLineData[1] = {
                         x: valueX,
                         y: valueY,
-                        ctx: shapeCtx,
                         denomInBase: denomInBase,
                     };
 
@@ -289,20 +276,19 @@ function DrawCanvas(props: DrawCanvasProps) {
                     denomInBase,
                 );
 
+                setBandArea(() => bandArea);
                 const valueX = scaleData?.xScale.invert(offsetX);
                 const valueY = scaleData?.yScale.invert(offsetY);
                 if (tempLineData.length === 1) {
                     tempLineData.push({
                         x: valueX,
                         y: valueY,
-                        ctx: bandArea,
                         denomInBase: denomInBase,
                     });
                 } else {
                     tempLineData[1] = {
                         x: valueX,
                         y: valueY,
-                        ctx: bandArea,
                         denomInBase: denomInBase,
                     };
                 }
@@ -380,13 +366,11 @@ function DrawCanvas(props: DrawCanvasProps) {
                                 {
                                     x: lineData[0].x,
                                     y: lineData[0].y,
-                                    ctx: lineData[0].ctx,
                                     denomInBase: lineData[0].denomInBase,
                                 },
                                 {
                                     x: lineData[0].x + minAngleLineLength,
                                     y: lineData[0].y,
-                                    ctx: lineData[0].ctx,
                                     denomInBase: lineData[0].denomInBase,
                                 },
                             ];
@@ -477,7 +461,7 @@ function DrawCanvas(props: DrawCanvasProps) {
 
                     const lineOfBand = createPointsOfBandLine(lineData);
 
-                    lineData[1].ctx([bandData]);
+                    bandArea && bandArea([bandData]);
 
                     lineOfBand?.forEach((item) => {
                         lineSeries(item);
@@ -485,13 +469,13 @@ function DrawCanvas(props: DrawCanvasProps) {
                     });
                 })
                 .on('measure', (event: CustomEvent) => {
-                    lineData[1].ctx.context(ctx);
+                    bandArea && bandArea.context(ctx);
                     lineSeries.context(ctx);
                     circleSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });
         }
-    }, [diffHashSig(lineData), denomInBase]);
+    }, [diffHashSig(lineData), denomInBase, bandArea]);
 
     useEffect(() => {
         const canvas = d3
@@ -505,12 +489,12 @@ function DrawCanvas(props: DrawCanvasProps) {
                 .on('draw', () => {
                     setCanvasResolution(canvas);
 
-                    lineData[1].ctx([
-                        {
-                            denomInBase: lineData[0].denomInBase,
-                            y: lineData[0].y,
-                        },
-                    ]);
+                    // lineData[1].ctx([
+                    //     {
+                    //         denomInBase: lineData[0].denomInBase,
+                    //         y: lineData[0].y,
+                    //     },
+                    // ]);
                     circleSeries([
                         {
                             denomInBase: lineData[0].denomInBase,
@@ -520,7 +504,7 @@ function DrawCanvas(props: DrawCanvasProps) {
                     ]);
                 })
                 .on('measure', (event: CustomEvent) => {
-                    lineData[1].ctx.context(ctx);
+                    // lineData[1].ctx.context(ctx);
                     circleSeries.context(ctx);
                     scaleData?.yScale.range([event.detail.height, 0]);
                 });

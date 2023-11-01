@@ -2667,7 +2667,6 @@ export default function Chart(props: propsIF) {
                                             {
                                                 x: item?.data[0].x,
                                                 y: item?.data[0].y,
-                                                ctx: item?.data[0].ctx,
                                                 denomInBase:
                                                     item?.data[0].denomInBase,
                                             },
@@ -2676,7 +2675,6 @@ export default function Chart(props: propsIF) {
                                                     item?.data[0].x +
                                                     minAngleLineLength,
                                                 y: item?.data[0].y,
-                                                ctx: item?.data[0].ctx,
                                                 denomInBase:
                                                     item?.data[0].denomInBase,
                                             },
@@ -2774,12 +2772,14 @@ export default function Chart(props: propsIF) {
                                     ];
 
                                     bandArea.xScale().range(range);
-
+                                    const checkDenom =
+                                        item.data[0].denomInBase ===
+                                        denomInBase;
                                     const bandData = {
-                                        fromValue: denomInBase
+                                        fromValue: checkDenom
                                             ? item.data[0].y
                                             : 1 / item.data[0].y,
-                                        toValue: denomInBase
+                                        toValue: checkDenom
                                             ? item.data[1].y
                                             : 1 / item.data[1].y,
                                         denomInBase: denomInBase,
@@ -2814,6 +2814,8 @@ export default function Chart(props: propsIF) {
                                             },
                                         );
                                     }
+
+                                    console.log({ bandData });
 
                                     bandArea([bandData]);
 

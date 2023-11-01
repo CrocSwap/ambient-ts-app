@@ -70,7 +70,6 @@ export default function DragCanvas(props: DragCanvasProps) {
                     y: scale.invert(
                         scale(hoveredDrawnShape.data.data[0].y) + movemementY,
                     ),
-                    ctx: hoveredDrawnShape.data?.data[0].ctx,
                     denomInBase: hoveredDrawnShape.data?.data[0].denomInBase,
                 },
                 {
@@ -81,7 +80,6 @@ export default function DragCanvas(props: DragCanvasProps) {
                     y: scale.invert(
                         scale(hoveredDrawnShape.data.data[1].y) + movemementY,
                     ),
-                    ctx: hoveredDrawnShape.data?.data[1].ctx,
                     denomInBase: hoveredDrawnShape.data?.data[1].denomInBase,
                 },
             ];
@@ -190,7 +188,6 @@ export default function DragCanvas(props: DragCanvasProps) {
             hoveredDrawnShape.selectedCircle = {
                 x: newX,
                 y: newYWithDenom,
-                ctx: undefined,
                 denomInBase: denomInBase,
             };
         }
