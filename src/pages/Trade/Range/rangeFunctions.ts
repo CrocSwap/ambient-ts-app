@@ -9,18 +9,21 @@ import {
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { getFormattedNumber } from '../../../App/functions/getFormattedNumber';
 
+// TODO: candidate for data-and-controls state-independent
 export function roundDownTick(lowTick: number, nTicksGrid: number): number {
     const tickGrid = Math.floor(lowTick / nTicksGrid) * nTicksGrid;
     const horizon = Math.floor(MIN_TICK / nTicksGrid) * nTicksGrid;
     return Math.max(tickGrid, horizon);
 }
 
+// TODO: candidate for data-and-controls state-independent
 export function roundUpTick(highTick: number, nTicksGrid: number): number {
     const tickGrid = Math.ceil(highTick / nTicksGrid) * nTicksGrid;
     const horizon = Math.ceil(MAX_TICK / nTicksGrid) * nTicksGrid;
     return Math.min(tickGrid, horizon);
 }
 
+// TODO: candidate for data-and-controls state-independent
 export function getPinnedPriceValuesFromTicks(
     isDenomInBase: boolean,
     baseTokenDecimals: number,

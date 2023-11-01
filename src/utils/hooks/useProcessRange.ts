@@ -11,6 +11,7 @@ import moment from 'moment';
 import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import { getAddress } from 'ethers/lib/utils.js';
 
+// TODO: candidate for data-and-controls state-dependent
 export const useProcessRange = (
     position: PositionIF,
     account = '',

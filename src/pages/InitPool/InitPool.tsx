@@ -594,6 +594,7 @@ export default function InitPool() {
         return value;
     }, [advancedHighTick, selectedPoolPriceTick, shouldResetAdvancedHighTick]);
 
+    // TODO: candidate for data-and-controls state-dependent
     const pinnedMinPriceDisplayTruncatedInBase = useMemo(
         () =>
             getPinnedPriceValuesFromTicks(
@@ -834,6 +835,7 @@ export default function InitPool() {
         isDenomBase ? baseToken.symbol : quoteToken.symbol
     }/${isDenomBase ? quoteToken.symbol : baseToken.symbol})`;
 
+    // TODO: candidate for data-and-controls state-dependent
     const handleInitialPriceInputChange = (
         event: React.ChangeEvent<HTMLInputElement>,
     ) => {

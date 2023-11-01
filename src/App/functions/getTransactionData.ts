@@ -9,6 +9,7 @@ import { TokenPriceFn } from './fetchTokenPrice';
 import { SpotPriceFn } from './querySpotPrice';
 import { Provider } from '@ethersproject/providers';
 
+// TODO: candidate for data-and-controls state-dependent
 export const getTransactionData = async (
     tx: TransactionServerIF,
     tokenList: TokenIF[],

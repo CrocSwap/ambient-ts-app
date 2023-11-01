@@ -67,6 +67,7 @@ function Portfolio() {
         undefined,
     );
 
+    // TODO: candidate for data-and-controls state-dependent-ish
     const connectedAccountActive = useMemo(
         () =>
             userAddress

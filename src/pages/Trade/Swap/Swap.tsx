@@ -282,6 +282,7 @@ function Swap(props: propsIF) {
         setNewSwapTransactionHash('');
     };
 
+    // TODO: candidate for data-and-controls state-dependent
     async function initiateSwap() {
         resetConfirmation();
 

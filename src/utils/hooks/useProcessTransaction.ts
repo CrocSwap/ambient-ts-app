@@ -15,6 +15,7 @@ import {
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
+// TODO: candidate for data-and-controls state-dependent
 export const useProcessTransaction = (
     tx: TransactionIF,
     account = '',

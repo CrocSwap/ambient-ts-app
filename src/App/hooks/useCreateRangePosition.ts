@@ -18,6 +18,7 @@ import {
 import { IS_LOCAL_ENV } from '../../constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 
+// TODO: candidate for data-and-controls state-dependent
 export function useCreateRangePosition() {
     const dispatch = useAppDispatch();
 

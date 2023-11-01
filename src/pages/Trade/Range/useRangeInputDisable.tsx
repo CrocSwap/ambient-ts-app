@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+// TODO: candidate for data-and-controls state-dependent
 export function useRangeInputDisable(
     isAmbient: boolean,
     isTokenABase: boolean,

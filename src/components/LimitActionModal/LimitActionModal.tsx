@@ -126,6 +126,7 @@ export default function LimitActionModal(props: propsIF) {
 
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
+            // TODO: candidate for data-and-controls state-independent (all instances of gaspriceindollars)
             const gasPriceInDollarsNum =
                 gasPriceInGwei *
                 averageGasUnitsForHarvestTxInGasDrops *

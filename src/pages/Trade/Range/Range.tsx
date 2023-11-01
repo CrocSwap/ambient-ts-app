@@ -564,6 +564,7 @@ function Range() {
             const lowTickDiff =
                 pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick;
 
+            // TODO: candidate for data-and-controls state-independent
             const highGeometricDifferencePercentage =
                 Math.abs(highTickDiff) < 200
                     ? parseFloat(truncateDecimals(highTickDiff / 100, 2))
@@ -680,6 +681,7 @@ function Range() {
                       );
             }
 
+            // TODO: candidate for data-and-controls state-independent
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
                     (pinnedDisplayPrices.pinnedHighTick -
@@ -688,6 +690,8 @@ function Range() {
                     0,
                 ),
             );
+
+            // TODO: candidate for data-and-controls state-independent
             const lowGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
                     (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) /
@@ -729,6 +733,7 @@ function Range() {
             const targetMaxValue = maxPrice;
             const targetMinValue = minPrice;
 
+            // TODO: candidate for data-and-controls state-independent
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 isDenomBase,
                 baseTokenDecimals,
@@ -777,6 +782,7 @@ function Range() {
                       );
             }
 
+            // TODO: candidate for data-and-controls state-independent
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
                     (pinnedDisplayPrices.pinnedHighTick -
@@ -785,6 +791,8 @@ function Range() {
                     0,
                 ),
             );
+
+            // TODO: candidate for data-and-controls state-independent
             const lowGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
                     (pinnedDisplayPrices.pinnedLowTick - currentPoolPriceTick) /

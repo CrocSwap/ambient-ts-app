@@ -147,6 +147,7 @@ export default function Limit() {
     // value showing if no acknowledgement is necessary
     const areBothAckd: boolean = !needConfirmTokenA && !needConfirmTokenB;
 
+    // TODO: candidate for data-and-controls state-independent
     const liquidityProviderFeeString = (liquidityFee * 100).toLocaleString(
         'en-US',
         {
@@ -155,6 +156,7 @@ export default function Limit() {
         },
     );
 
+    // TODO: candidate for data-and-controls state-dependent
     useEffect(() => {
         (async () => {
             if (limitTick === undefined && !!poolPriceNonDisplay && crocEnv) {
@@ -323,6 +325,7 @@ export default function Limit() {
         !!poolPriceNonDisplay,
     ]);
 
+    // TODO: candidate for data-and-controls state-dependent
     const updateOrderValidityStatus = async () => {
         try {
             if (!crocEnv) return;
@@ -433,6 +436,7 @@ export default function Limit() {
             }  Price`,
         );
 
+    // TODO: candidate for data-and-controls state-dependent
     const sendLimitOrder = async () => {
         if (!crocEnv) return;
         if (limitTick === undefined) return;
@@ -535,6 +539,7 @@ export default function Limit() {
         }
     };
 
+    // TODO: candidate for data-and-controls state-independent
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!isPoolInitialized) {
             setLimitAllowed(false);

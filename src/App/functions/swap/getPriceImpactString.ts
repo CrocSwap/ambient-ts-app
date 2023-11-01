@@ -1,3 +1,4 @@
+// TODO: candidate for data-and-controls state-independent
 export const getPriceImpactString = (priceImpactNum: number | undefined) => {
     if (!priceImpactNum) {
         return '…';

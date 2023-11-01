@@ -154,6 +154,7 @@ function Reposition() {
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);
 
+    // TODO: candidate for data-and-controls state-dependent-ish
     const isPositionInRange =
         position.bidTick <= currentPoolPriceTick &&
         currentPoolPriceTick <= position.askTick;
@@ -182,6 +183,7 @@ function Reposition() {
         value: currentPoolDisplayPriceInQuote,
     });
 
+    // TODO: candidate for data-and-controls state-dependent-ish
     const currentPoolPriceDisplay =
         currentPoolPriceNonDisplay === 0
             ? '...'
@@ -263,6 +265,7 @@ function Reposition() {
         }
     }, [position.positionId, rangeWidthPercentage, currentPoolPriceTick]);
 
+    // TODO: candidate for data-and-controls state-independent
     function mintArgsForReposition(
         lowTick: number,
         highTick: number,
@@ -274,6 +277,7 @@ function Reposition() {
         }
     }
 
+    // TODO: candidate for data-and-controls state-dependent
     const sendRepositionTransaction = async () => {
         if (!crocEnv) return;
         let tx;
@@ -375,6 +379,7 @@ function Reposition() {
 
     // -----------------------------TEMPORARY PLACE HOLDERS--------------
 
+    // TODO: candidate for data-and-controls state-dependent
     const [minPriceDisplay, setMinPriceDisplay] = useState<string>(
         pinnedMinPriceDisplayTruncated || '0.00',
     );
@@ -405,6 +410,7 @@ function Reposition() {
         GRAPHCACHE_SMALL_URL + '/position_stats?';
     const poolIndex = lookupChain(position.chainId).poolIndex;
 
+    // TODO: candidate for data-and-controls state-dependent
     const fetchCurrentCollateral = () => {
         fetch(
             positionStatsCacheEndpoint +

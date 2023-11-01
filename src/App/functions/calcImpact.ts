@@ -1,5 +1,6 @@
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 
+// TODO: candidate for data-and-controls state-dependent
 export const calcImpact = async (
     isQtySell: boolean,
     env: CrocEnv,

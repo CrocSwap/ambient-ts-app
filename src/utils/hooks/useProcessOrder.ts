@@ -21,6 +21,7 @@ import { getFormattedNumber } from '../../App/functions/getFormattedNumber';
 import uriToHttp from '../functions/uriToHttp';
 import { getAddress } from 'ethers/lib/utils.js';
 
+// TODO: candidate for data-and-controls state-dependent
 export const useProcessOrder = (
     limitOrder: LimitOrderIF,
     account = '',
