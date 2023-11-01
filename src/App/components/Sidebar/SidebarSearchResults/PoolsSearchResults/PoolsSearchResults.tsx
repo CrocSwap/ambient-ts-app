@@ -91,10 +91,7 @@ export default function PoolsSearchResults(props: propsIF) {
                     </GridContainer>
                     <ResultsContainer flexDirection='column'>
                         {searchedPools
-                            .filter(
-                                (pool: PoolIF) =>
-                                    !checkPoolForWETH(pool, chainId),
-                            )
+                            .filter((pool: PoolIF) => !checkPoolForWETH(pool))
                             // max five elements before content overflows container
                             .slice(0, 5)
                             .map((pool: PoolIF) => (

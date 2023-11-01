@@ -11,7 +11,10 @@ import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
-import { getDefaultPairForChain } from '../utils/data/defaultTokens';
+import {
+    getDefaultPairForChain,
+    mainnetETH,
+} from '../utils/data/defaultTokens';
 import { CachedDataContext } from './CachedDataContext';
 import { Provider } from '@ethersproject/providers';
 import {
@@ -162,17 +165,19 @@ export const CrocEnvContextProvider = (props: { children: ReactNode }) => {
     ]);
 
     useEffect(() => {
-        (async () => {
-            IS_LOCAL_ENV && console.debug('fetching WETH price from mainnet');
-            const mainnetEthPrice = await cachedFetchTokenPrice(
-                ethereumMainnet.tokens['WETH'],
-                ethereumMainnet.chainId,
-            );
-            const usdPrice = mainnetEthPrice?.usdPrice;
-            setEthMainnetUsdPrice(usdPrice);
-        })();
-    }, []);
-
+        if (provider) {
+            (async () => {
+                IS_LOCAL_ENV &&
+                    console.debug('fetching WETH price from mainnet');
+                const mainnetEthPrice = await cachedFetchTokenPrice(
+                    mainnetETH.address,
+                    ethereumMainnet.chainId,
+                );
+                const usdPrice = mainnetEthPrice?.usdPrice;
+                setEthMainnetUsdPrice(usdPrice);
+            })();
+        }
+    }, [provider]);
     useEffect(() => {
         setDefaultUrlParams(createDefaultUrlParams(chainData.chainId));
     }, [chainData.chainId]);

@@ -45,6 +45,7 @@ function Portfolio() {
         useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber, client } = useContext(ChainDataContext);
@@ -184,6 +185,7 @@ function Portfolio() {
         (async () => {
             if (
                 crocEnv &&
+                client &&
                 resolvedAddress &&
                 chainId &&
                 lastBlockNumber &&
@@ -198,6 +200,7 @@ function Portfolio() {
                         lastBlockNumber,
                         cachedTokenDetails,
                         crocEnv,
+                        activeNetwork.graphCacheUrl,
                         client,
                     );
 
@@ -235,10 +238,12 @@ function Portfolio() {
         })();
     }, [
         crocEnv,
+        client !== undefined,
         resolvedAddress,
         chainId,
         lastBlockNumber,
         connectedAccountActive,
+        activeNetwork.graphCacheUrl,
     ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);

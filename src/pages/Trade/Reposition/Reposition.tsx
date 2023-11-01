@@ -63,6 +63,7 @@ function Reposition() {
     } = useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
         provider,
         chainData: { blockExplorer },
         ethMainnetUsdPrice,
@@ -406,8 +407,9 @@ function Reposition() {
         setCurrentQuoteQtyDisplayTruncated,
     ] = useState<string>(position?.positionLiqQuoteTruncated || '0.00');
 
-    const positionStatsCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/position_stats?';
+    const positionStatsCacheEndpoint = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL + '/position_stats?'
+        : activeNetwork.graphCacheUrl + '/position_stats?';
     const poolIndex = lookupChain(position.chainId).poolIndex;
 
     // TODO: candidate for data-and-controls state-dependent
