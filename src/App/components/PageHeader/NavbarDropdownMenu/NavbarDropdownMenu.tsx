@@ -95,11 +95,6 @@ function NavbarDropdownMenu(props: propsIF) {
             resource: `${window.location.origin}/${termsUrls.tos}`,
             text: 'Terms of Service',
         },
-        {
-            icon: <GiAlligatorClip size={20} />,
-            resource: CORPORATE_LINK,
-            text: 'About the Team',
-        },
     ];
 
     return (
