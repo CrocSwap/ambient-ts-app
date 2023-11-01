@@ -47,18 +47,12 @@ if (!doReload) {
                 rpc: (chain: Chain) => {
                     if (chain.id === 534352) {
                         return { http: 'https://rpc.scroll.io' };
-                    } else if (chain.id === 534353) {
+                    } else if (chain.id === 534351) {
                         return { http: 'https://sepolia-rpc.scroll.io' };
                     } else {
                         return { http: '' };
                     }
                 },
-            }),
-
-            jsonRpcProvider({
-                rpc: () => ({
-                    http: 'https://rpc.scroll.io',
-                }),
             }),
         ],
     );
