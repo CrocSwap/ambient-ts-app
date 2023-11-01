@@ -1,5 +1,5 @@
 import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     setDidUserFlipDenom,
@@ -9,6 +9,7 @@ import {
 } from '../../utils/state/tradeDataSlice';
 import { get24hChange } from '../functions/getPoolStats';
 import { SpotPriceFn } from '../functions/querySpotPrice';
+import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
@@ -29,6 +30,8 @@ interface PoolPricingPropsIF {
 export function usePoolPricing(props: PoolPricingPropsIF) {
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const { activeNetwork } = useContext(CrocEnvContext);
 
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
@@ -170,6 +173,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         props.quoteTokenAddress,
                         props.chainData.poolIndex,
                         tradeData.isDenomBase,
+                        activeNetwork.graphCacheUrl,
                     );
 
                     if (!priceChangeResult) {

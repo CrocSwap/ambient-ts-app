@@ -28,6 +28,7 @@ import Toggle from '../../components/Form/Toggle';
 import { TextOnlyTooltip } from '../../components/Global/StyledTooltip/StyledTooltip';
 import { TokenContext } from '../../contexts/TokenContext';
 import { useUrlParams } from '../../utils/hooks/useUrlParams';
+import { useSendInit } from '../../App/hooks/useSendInit';
 
 import { useTokenBalancesAndAllowances } from '../../App/hooks/useTokenBalancesAndAllowances';
 import { UserPreferenceContext } from '../../contexts/UserPreferenceContext';
@@ -35,7 +36,6 @@ import Spinner from '../../components/Global/Spinner/Spinner';
 import AdvancedModeToggle from '../../components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle';
 import { getMoneynessRank } from '../../utils/functions/getMoneynessRank';
 import { WarningBox } from '../../components/RangeActionModal/WarningBox/WarningBox';
-import { ethereumMainnet } from '../../utils/networks/ethereumMainnet';
 import InitSkeleton from './InitSkeleton';
 import InitConfirmation from './InitConfirmation';
 import MultiContentComponent from '../../components/Global/MultiStepTransaction/MultiContentComponent';
@@ -67,7 +67,6 @@ import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { useRangeInputDisable } from '../Trade/Range/useRangeInputDisable';
 import TooltipComponent from '../../components/Global/TooltipComponent/TooltipComponent';
 import InitButton from './InitButton';
-import { useSendInit } from '../../App/hooks/useSendInit';
 import { UserDataContext } from '../../contexts/UserDataContext';
 // react functional component
 export default function InitPool() {
@@ -455,23 +454,13 @@ export default function InitPool() {
 
     const refreshReferencePrice = async () => {
         if (tradeDataMatchesURLParams) {
-            const mainnetBase =
-                baseToken.address === ZERO_ADDRESS
-                    ? ethereumMainnet.tokens['WETH']
-                    : ethereumMainnet.tokens[
-                          baseToken?.symbol as keyof typeof ethereumMainnet.tokens
-                      ];
-            const mainnetQuote =
-                ethereumMainnet.tokens[
-                    quoteToken?.symbol as keyof typeof ethereumMainnet.tokens
-                ];
             const basePricePromise = cachedFetchTokenPrice(
-                mainnetBase,
-                ethereumMainnet.chainId,
+                baseToken.address,
+                chainId,
             );
             const quotePricePromise = cachedFetchTokenPrice(
-                mainnetQuote,
-                ethereumMainnet.chainId,
+                quoteToken.address,
+                chainId,
             );
 
             const basePrice = await basePricePromise;

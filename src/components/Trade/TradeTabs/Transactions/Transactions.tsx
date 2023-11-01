@@ -69,6 +69,7 @@ function Transactions(props: propsIF) {
     const { chartSettings, tradeTableState } = useContext(ChartContext);
     const {
         crocEnv,
+        activeNetwork,
         provider,
         chainData: { chainId, poolIndex },
     } = useContext(CrocEnvContext);
@@ -225,6 +226,7 @@ function Transactions(props: propsIF) {
             period: candleTime.time,
             time: filter?.time,
             crocEnv: crocEnv,
+            graphCacheUrl: activeNetwork.graphCacheUrl,
             provider,
             lastBlockNumber,
             cachedFetchTokenPrice: cachedFetchTokenPrice,

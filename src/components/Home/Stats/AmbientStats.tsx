@@ -50,7 +50,7 @@ export default function Stats() {
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
 
     const { cachedFetchTokenPrice } = useContext(CachedDataContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
@@ -68,6 +68,7 @@ export default function Stats() {
             getChainStats(
                 chainData.chainId,
                 crocEnv,
+                activeNetwork.graphCacheUrl,
                 cachedFetchTokenPrice,
             ).then((dexStats) => {
                 if (!dexStats) {

@@ -38,7 +38,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
     const { cachedQuerySpotPrice } = useContext(CachedDataContext);
-    const { crocEnv, provider, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, provider, chainData, activeNetwork } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const {
         baseToken: { address: baseTokenAddress, decimals: baseTokenDecimals },
@@ -48,10 +49,12 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         },
     } = useContext(TradeTokenContext);
 
-    const poolList: PoolIF[] = usePoolList(crocEnv);
-
     const { tradeData, receiptData } = useAppSelector((state) => state);
     const { isUserConnected } = useContext(UserDataContext);
+    const poolList: PoolIF[] = usePoolList(
+        activeNetwork.graphCacheUrl,
+        crocEnv,
+    );
 
     const pool = useMemo(
         () =>

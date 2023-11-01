@@ -37,9 +37,10 @@ export const ChainDataContext = createContext<ChainDataContextIF>(
 export const ChainDataContextProvider = (props: {
     children: React.ReactNode;
 }) => {
-    const { chainData, crocEnv, provider } = useContext(CrocEnvContext);
     const { setTokenBalances } = useContext(TokenBalanceContext);
 
+    const { chainData, activeNetwork, crocEnv, provider } =
+        useContext(CrocEnvContext);
     const { cachedFetchTokenBalances, cachedTokenDetails } =
         useContext(CachedDataContext);
     const { tokens } = useContext(TokenContext);
@@ -161,7 +162,8 @@ export const ChainDataContextProvider = (props: {
                 crocEnv &&
                 isUserConnected &&
                 userAddress &&
-                chainData.chainId
+                chainData.chainId &&
+                client
             ) {
                 try {
                     const tokenBalances: TokenIF[] =
@@ -171,6 +173,7 @@ export const ChainDataContextProvider = (props: {
                             everyEigthBlock,
                             cachedTokenDetails,
                             crocEnv,
+                            activeNetwork.graphCacheUrl,
                             client,
                         );
                     const tokensWithLogos = tokenBalances.map((token) => {
@@ -195,6 +198,8 @@ export const ChainDataContextProvider = (props: {
         userAddress,
         chainData.chainId,
         everyEigthBlock,
+        client !== undefined,
+        activeNetwork.graphCacheUrl,
     ]);
 
     const chainDataContext = {

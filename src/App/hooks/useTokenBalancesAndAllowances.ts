@@ -42,7 +42,7 @@ export const useTokenBalancesAndAllowances = (
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, chainData, activeNetwork } = useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { isEnabled: isChartEnabled } = useContext(ChartContext);
     const { setSimpleRangeWidth } = useContext(RangeContext);
@@ -64,6 +64,7 @@ export const useTokenBalancesAndAllowances = (
 
     const { isTokenABase, baseTokenAddress } = usePoolMetadata({
         crocEnv,
+        graphCacheUrl: activeNetwork.graphCacheUrl,
         pathname: location.pathname,
         chainData,
         userAddress,

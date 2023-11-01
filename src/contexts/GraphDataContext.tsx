@@ -84,9 +84,6 @@ function normalizeAddr(addr: string): string {
     return caseAddr.startsWith('0x') ? caseAddr : '0x' + caseAddr;
 }
 
-const userLimitOrderStatesCacheEndpoint =
-    GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
-
 export const GraphDataContext = createContext<GraphDataContextIF>(
     {} as GraphDataContextIF,
 );
@@ -158,11 +155,16 @@ export const GraphDataContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, provider, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, provider, chainData, activeNetwork } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
     const { userAddress, isUserConnected } = useContext(UserDataContext);
+
+    const userLimitOrderStatesCacheEndpoint = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL + '/user_limit_orders?'
+        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
     const resetUserGraphData = () => {
         setPositionsByUser({
@@ -343,6 +345,7 @@ export const GraphDataContextProvider = (props: {
                     annotateMEV: false,
                     ensResolution: true,
                     crocEnv: crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider,
                     lastBlockNumber: lastBlockNumber,
                     n: 100, // fetch last 100 changes,

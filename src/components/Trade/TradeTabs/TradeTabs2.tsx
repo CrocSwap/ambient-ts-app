@@ -87,6 +87,7 @@ function TradeTabs2(props: propsIF) {
 
     const {
         crocEnv,
+        activeNetwork,
         provider,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
@@ -267,6 +268,7 @@ function TradeTabs2(props: propsIF) {
                     ensResolution: true,
                     n: 100, // fetch last 100 changes,
                     crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider,
                     lastBlockNumber,
                     cachedFetchTokenPrice: cachedFetchTokenPrice,
