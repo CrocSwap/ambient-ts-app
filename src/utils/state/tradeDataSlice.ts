@@ -4,6 +4,11 @@ import { getDefaultChainId } from '../data/chains';
 import { getDefaultPairForChain } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/exports';
 
+export interface targetData {
+    name: string;
+    value: number | undefined;
+}
+
 export interface candleDomain {
     lastCandleDate: number | undefined;
     domainBoundry: number | undefined;
@@ -41,10 +46,15 @@ export interface TradeDataIF {
     advancedHighTick: number;
     simpleRangeWidth: number;
     slippageTolerance: number;
+    targetData: targetData[];
+    pinnedMaxPriceDisplayTruncated: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
+    rangeModuleTriggered: boolean;
+    rangeLowLineTriggered: boolean | undefined;
     isLinesSwitched: boolean | undefined;
+    rangeHighLineTriggered: boolean | undefined;
     candleDomains: candleDomain;
-    mainnetBaseTokenAddress: string;
-    mainnetQuoteTokenAddress: string;
+    rescaleRangeBoundaries: boolean | undefined;
 }
 
 // Have to set these values to something on load, so we use default pair
@@ -80,13 +90,21 @@ const initialState: TradeDataIF = {
     advancedHighTick: 0,
     simpleRangeWidth: 10,
     slippageTolerance: 0.05,
+    targetData: [
+        { name: 'Min', value: undefined },
+        { name: 'Max', value: undefined },
+    ],
     candleDomains: {
         lastCandleDate: undefined,
         domainBoundry: undefined,
     },
+    pinnedMaxPriceDisplayTruncated: undefined,
+    pinnedMinPriceDisplayTruncated: undefined,
+    rangeModuleTriggered: false,
+    rangeLowLineTriggered: undefined,
     isLinesSwitched: undefined,
-    mainnetBaseTokenAddress: '',
-    mainnetQuoteTokenAddress: '',
+    rangeHighLineTriggered: undefined,
+    rescaleRangeBoundaries: undefined,
 };
 
 sortTokens(initialState);
@@ -214,9 +232,30 @@ export const tradeDataSlice = createSlice({
         setSlippageTolerance: (state, action: PayloadAction<number>) => {
             state.slippageTolerance = action.payload;
         },
+        setTargetData: (state, action: PayloadAction<targetData[]>) => {
+            state.targetData = action.payload;
+        },
         reverseTokensInRTK: (state) => {
             state.tokenA = state.tokenB;
             state.tokenB = state.tokenA;
+        },
+        setPinnedMaxPrice: (state, action: PayloadAction<number>) => {
+            state.pinnedMaxPriceDisplayTruncated = action.payload;
+        },
+        setPinnedMinPrice: (state, action: PayloadAction<number>) => {
+            state.pinnedMinPriceDisplayTruncated = action.payload;
+        },
+        setRangeModuleTriggered: (state, action: PayloadAction<boolean>) => {
+            state.rangeModuleTriggered = action.payload;
+        },
+        setRangeHighLineTriggered: (state, action: PayloadAction<boolean>) => {
+            state.rangeHighLineTriggered = action.payload;
+        },
+        setRescaleRangeBoundaries: (state, action: PayloadAction<boolean>) => {
+            state.rescaleRangeBoundaries = action.payload;
+        },
+        setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
+            state.rangeLowLineTriggered = action.payload;
         },
         setIsLinesSwitched: (state, action: PayloadAction<boolean>) => {
             state.isLinesSwitched = action.payload;
@@ -259,7 +298,14 @@ export const {
     setSlippageTolerance,
     resetTradeData,
     reverseTokensInRTK,
+    setPinnedMaxPrice,
+    setPinnedMinPrice,
+    setTargetData,
+    setRangeModuleTriggered,
+    setRangeLowLineTriggered,
     setIsLinesSwitched,
+    setRangeHighLineTriggered,
+    setRescaleRangeBoundaries,
     setCandleDomains,
 } = tradeDataSlice.actions;
 

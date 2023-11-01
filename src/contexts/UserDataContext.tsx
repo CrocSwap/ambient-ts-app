@@ -46,7 +46,8 @@ export const UserDataContextProvider = (props: {
         cachedTokenDetails,
         cachedEnsResolve,
     } = useContext(CachedDataContext);
-    const { crocEnv, provider, chainData } = useContext(CrocEnvContext);
+    const { crocEnv, activeNetwork, provider, chainData } =
+        useContext(CrocEnvContext);
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { tokens } = useContext(TokenContext);
 
@@ -61,8 +62,9 @@ export const UserDataContextProvider = (props: {
         dispatch(resetUserGraphData());
     }, [isConnected, isLoggedIn, userAddress]);
 
-    const userLimitOrderStatesCacheEndpoint =
-        GRAPHCACHE_SMALL_URL + '/user_limit_orders?';
+    const userLimitOrderStatesCacheEndpoint = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL + '/user_limit_orders?'
+        : activeNetwork.graphCacheUrl + '/user_limit_orders?';
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block
@@ -80,8 +82,9 @@ export const UserDataContextProvider = (props: {
         ) {
             IS_LOCAL_ENV && console.debug('fetching user positions');
 
-            const userPositionsCacheEndpoint =
-                GRAPHCACHE_SMALL_URL + '/user_positions?';
+            const userPositionsCacheEndpoint = GRAPHCACHE_SMALL_URL
+                ? GRAPHCACHE_SMALL_URL + '/user_positions?'
+                : activeNetwork.graphCacheUrl + '/user_positions?';
 
             try {
                 fetch(
@@ -198,6 +201,7 @@ export const UserDataContextProvider = (props: {
                     annotateMEV: false,
                     ensResolution: true,
                     crocEnv: crocEnv,
+                    graphCacheUrl: activeNetwork.graphCacheUrl,
                     provider,
                     lastBlockNumber: lastBlockNumber,
                     n: 100, // fetch last 100 changes,
