@@ -2815,8 +2815,6 @@ export default function Chart(props: propsIF) {
                                         );
                                     }
 
-                                    console.log({ bandData });
-
                                     bandArea([bandData]);
 
                                     const lineOfBand = createPointsOfBandLine(
