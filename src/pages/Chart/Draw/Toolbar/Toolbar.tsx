@@ -68,6 +68,10 @@ function Toolbar(props: ToolbarProps) {
             icon: horizontalRay,
             label: 'Ray',
         },
+        {
+            icon: horizontalRay,
+            label: 'DPRange',
+        },
 
         // Add more icons here
     ];

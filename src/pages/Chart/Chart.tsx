@@ -84,7 +84,11 @@ import {
     createLinearLineSeries,
     distanceToLine,
 } from './Draw/DrawCanvas/LinearLineSeries';
-import { createPointsOfBandLine } from './Draw/DrawCanvas/BandArea';
+import {
+    createArrowPointsOfDPRangeLine,
+    createPointsOfBandLine,
+    createPointsOfDPRangeLine,
+} from './Draw/DrawCanvas/BandArea';
 import { checkCricleLocation, createCircle } from './ChartUtils/circle';
 import DragCanvas from './Draw/DrawCanvas/DragCanvas';
 import Toolbar from './Draw/Toolbar/Toolbar';
@@ -2748,7 +2752,10 @@ export default function Chart(props: propsIF) {
                                     }
                                 }
 
-                                if (item.type === 'Square') {
+                                if (
+                                    item.type === 'Square' ||
+                                    item.type === 'DPRange'
+                                ) {
                                     item.data[1].ctx
                                         .xScale()
                                         .domain(scaleData.xScale.domain());
@@ -2802,23 +2809,133 @@ export default function Chart(props: propsIF) {
 
                                     item.data[1].ctx([bandData]);
 
-                                    const lineOfBand = createPointsOfBandLine(
-                                        item.data,
-                                    );
+                                    if (item.type === 'Square') {
+                                        const lineOfBand =
+                                            createPointsOfBandLine(item.data);
 
-                                    lineOfBand?.forEach((line) => {
-                                        if (ctx) ctx.setLineDash(item.style);
-                                        lineSeries.decorate(
-                                            (
-                                                context: CanvasRenderingContext2D,
-                                            ) => {
-                                                context.strokeStyle =
-                                                    item.color;
-                                                context.lineWidth =
-                                                    item.lineWidth;
-                                            },
+                                        lineOfBand?.forEach((line) => {
+                                            if (ctx)
+                                                ctx.setLineDash(item.style);
+                                            lineSeries.decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    context.strokeStyle =
+                                                        item.color;
+                                                    context.lineWidth =
+                                                        item.lineWidth;
+                                                },
+                                            );
+                                            lineSeries(line);
+
+                                            if (
+                                                (hoveredDrawnShape &&
+                                                    hoveredDrawnShape.data
+                                                        .time === item.time) ||
+                                                (selectedDrawnShape &&
+                                                    selectedDrawnShape.data
+                                                        .time === item.time)
+                                            ) {
+                                                line.forEach(
+                                                    (element, _index) => {
+                                                        const selectedCircleIsActive =
+                                                            hoveredDrawnShape &&
+                                                            hoveredDrawnShape.selectedCircle &&
+                                                            hoveredDrawnShape
+                                                                .selectedCircle
+                                                                .x ===
+                                                                element.x &&
+                                                            Number(
+                                                                element.y.toFixed(
+                                                                    12,
+                                                                ),
+                                                            ) ===
+                                                                (element.denomInBase ===
+                                                                denomInBase
+                                                                    ? Number(
+                                                                          hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                                              12,
+                                                                          ),
+                                                                      )
+                                                                    : Number(
+                                                                          (
+                                                                              1 /
+                                                                              hoveredDrawnShape
+                                                                                  ?.selectedCircle
+                                                                                  .y
+                                                                          ).toFixed(
+                                                                              12,
+                                                                          ),
+                                                                      ));
+
+                                                        if (
+                                                            selectedCircleIsActive
+                                                        ) {
+                                                            if (
+                                                                !isUpdatingShape
+                                                            ) {
+                                                                selectedCircleSeries(
+                                                                    [element],
+                                                                );
+                                                            }
+                                                        } else {
+                                                            circleSeries([
+                                                                element,
+                                                            ]);
+                                                        }
+                                                    },
+                                                );
+                                            }
+                                        });
+                                    }
+
+                                    if (item.type === 'DPRange') {
+                                        const lineOfDPRange =
+                                            createPointsOfDPRangeLine(
+                                                item.data,
+                                            );
+
+                                        lineOfDPRange?.forEach((line) => {
+                                            if (ctx)
+                                                ctx.setLineDash(item.style);
+                                            lineSeries.decorate(
+                                                (
+                                                    context: CanvasRenderingContext2D,
+                                                ) => {
+                                                    context.strokeStyle =
+                                                        item.color;
+                                                    context.lineWidth =
+                                                        item.lineWidth;
+                                                },
+                                            );
+                                            lineSeries(line);
+                                        });
+
+                                        const height = Math.abs(
+                                            scaleData.yScale(item.data[0].y) -
+                                                scaleData.yScale(
+                                                    item.data[1].y,
+                                                ),
                                         );
-                                        lineSeries(line);
+                                        const width = Math.abs(
+                                            scaleData.xScale(item.data[0].x) -
+                                                scaleData.xScale(
+                                                    item.data[1].x,
+                                                ),
+                                        );
+
+                                        if (height > 70 && width > 70) {
+                                            const arrowArray =
+                                                createArrowPointsOfDPRangeLine(
+                                                    item.data,
+                                                    scaleData,
+                                                    denomInBase,
+                                                );
+
+                                            arrowArray.forEach((arrow) => {
+                                                lineSeries(arrow);
+                                            });
+                                        }
 
                                         if (
                                             (hoveredDrawnShape &&
@@ -2828,44 +2945,52 @@ export default function Chart(props: propsIF) {
                                                 selectedDrawnShape.data.time ===
                                                     item.time)
                                         ) {
-                                            line.forEach((element, _index) => {
-                                                const selectedCircleIsActive =
-                                                    hoveredDrawnShape &&
-                                                    hoveredDrawnShape.selectedCircle &&
-                                                    hoveredDrawnShape
-                                                        .selectedCircle.x ===
-                                                        element.x &&
-                                                    Number(
-                                                        element.y.toFixed(12),
-                                                    ) ===
-                                                        (element.denomInBase ===
-                                                        denomInBase
-                                                            ? Number(
-                                                                  hoveredDrawnShape?.selectedCircle.y.toFixed(
-                                                                      12,
-                                                                  ),
-                                                              )
-                                                            : Number(
-                                                                  (
-                                                                      1 /
-                                                                      hoveredDrawnShape
-                                                                          ?.selectedCircle
-                                                                          .y
-                                                                  ).toFixed(12),
-                                                              ));
+                                            item.data.forEach(
+                                                (element, _index) => {
+                                                    const selectedCircleIsActive =
+                                                        hoveredDrawnShape &&
+                                                        hoveredDrawnShape.selectedCircle &&
+                                                        hoveredDrawnShape
+                                                            .selectedCircle
+                                                            .x === element.x &&
+                                                        Number(
+                                                            element.y.toFixed(
+                                                                12,
+                                                            ),
+                                                        ) ===
+                                                            (element.denomInBase ===
+                                                            denomInBase
+                                                                ? Number(
+                                                                      hoveredDrawnShape?.selectedCircle.y.toFixed(
+                                                                          12,
+                                                                      ),
+                                                                  )
+                                                                : Number(
+                                                                      (
+                                                                          1 /
+                                                                          hoveredDrawnShape
+                                                                              ?.selectedCircle
+                                                                              .y
+                                                                      ).toFixed(
+                                                                          12,
+                                                                      ),
+                                                                  ));
 
-                                                if (selectedCircleIsActive) {
-                                                    if (!isUpdatingShape) {
-                                                        selectedCircleSeries([
-                                                            element,
-                                                        ]);
+                                                    if (
+                                                        selectedCircleIsActive
+                                                    ) {
+                                                        if (!isUpdatingShape) {
+                                                            selectedCircleSeries(
+                                                                [element],
+                                                            );
+                                                        }
+                                                    } else {
+                                                        circleSeries([element]);
                                                     }
-                                                } else {
-                                                    circleSeries([element]);
-                                                }
-                                            });
+                                                },
+                                            );
                                         }
-                                    });
+                                    }
                                 }
 
                                 if (item.type === 'Ray') {
@@ -2961,7 +3086,11 @@ export default function Chart(props: propsIF) {
                 })
                 .on('measure', () => {
                     drawnShapeHistory?.forEach((item) => {
-                        if (item.type === 'Square' || item.type === 'Ray') {
+                        if (
+                            item.type === 'Square' ||
+                            item.type === 'Ray' ||
+                            item.type === 'DPRange'
+                        ) {
                             item.data[1].ctx.context(ctx);
                         }
                     });
@@ -3595,9 +3724,72 @@ export default function Chart(props: propsIF) {
                     }
                 }
 
-                if (element.type === 'Square') {
+                if (element.type === 'Square' || element.type === 'DPRange') {
                     if (checkRectLocation(element.data, mouseX, mouseY)) {
                         resElement = element;
+                    }
+
+                    if (element.type === 'DPRange') {
+                        const startX = Math.min(
+                            element.data[0].x,
+                            element.data[1].x,
+                        );
+                        const startY = Math.max(
+                            element.data[0].y,
+                            element.data[1].y,
+                        );
+                        const endX = Math.max(
+                            element.data[0].x,
+                            element.data[1].x,
+                        );
+                        const endY = Math.min(
+                            element.data[0].y,
+                            element.data[1].y,
+                        );
+
+                        const lineOfDPRange = [
+                            [
+                                {
+                                    x: startX + (endX - startX) / 2,
+                                    y: startY,
+                                    denomInBase: element.data[0].denomInBase,
+                                    ctx: undefined,
+                                },
+                                {
+                                    x: startX + (endX - startX) / 2,
+                                    y: endY,
+                                    denomInBase: element.data[1].denomInBase,
+                                    ctx: undefined,
+                                },
+                            ],
+                            [
+                                {
+                                    x: startX,
+                                    y: startY - (startY - endY) / 2,
+                                    denomInBase: element.data[0].denomInBase,
+                                    ctx: undefined,
+                                },
+                                {
+                                    x: endX,
+                                    y: startY - (startY - endY) / 2,
+                                    denomInBase: element.data[0].denomInBase,
+                                    ctx: undefined,
+                                },
+                            ],
+                        ];
+
+                        lineOfDPRange.forEach((line) => {
+                            if (
+                                checkLineLocation(
+                                    line,
+                                    mouseX,
+                                    mouseY,
+                                    denomInBase,
+                                )
+                            ) {
+                                resElement = element;
+                            }
+                        });
                     }
                 }
                 if (element.type === 'Ray') {

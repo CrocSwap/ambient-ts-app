@@ -15,7 +15,12 @@ import {
     createAnnotationLineSeries,
     createLinearLineSeries,
 } from './LinearLineSeries';
-import { createBandArea, createPointsOfBandLine } from './BandArea';
+import {
+    createArrowPointsOfDPRangeLine,
+    createBandArea,
+    createPointsOfBandLine,
+    createPointsOfDPRangeLine,
+} from './BandArea';
 import { TradeDataIF } from '../../../../utils/state/tradeDataSlice';
 
 interface DrawCanvasProps {
@@ -210,7 +215,10 @@ function DrawCanvas(props: DrawCanvasProps) {
                         };
                     }
 
-                    if (activeDrawingType === 'Square') {
+                    if (
+                        activeDrawingType === 'Square' ||
+                        activeDrawingType === 'DPRange'
+                    ) {
                         const newBandScale = createScaleForBandArea(
                             tempLineData[0].x,
                             valueX,
@@ -463,7 +471,7 @@ function DrawCanvas(props: DrawCanvasProps) {
         if (
             scaleData &&
             lineData.length > 1 &&
-            activeDrawingType === 'Square'
+            (activeDrawingType === 'Square' || activeDrawingType === 'DPRange')
         ) {
             d3.select(d3DrawCanvas.current)
                 .on('draw', () => {
@@ -475,14 +483,45 @@ function DrawCanvas(props: DrawCanvasProps) {
                         denomInBase: denomInBase,
                     } as bandLineData;
 
-                    const lineOfBand = createPointsOfBandLine(lineData);
-
                     lineData[1].ctx([bandData]);
 
-                    lineOfBand?.forEach((item) => {
-                        lineSeries(item);
-                        circleSeries(item);
-                    });
+                    if (activeDrawingType === 'Square') {
+                        const lineOfBand = createPointsOfBandLine(lineData);
+
+                        lineOfBand?.forEach((item) => {
+                            lineSeries(item);
+                            circleSeries(item);
+                        });
+                    }
+                    if (activeDrawingType === 'DPRange') {
+                        const lineOfBand = createPointsOfDPRangeLine(lineData);
+
+                        lineOfBand?.forEach((item) => {
+                            lineSeries(item);
+                        });
+                        circleSeries(lineData);
+
+                        const height = Math.abs(
+                            scaleData.yScale(lineData[0].y) -
+                                scaleData.yScale(lineData[1].y),
+                        );
+                        const width = Math.abs(
+                            scaleData.xScale(lineData[0].x) -
+                                scaleData.xScale(lineData[1].x),
+                        );
+
+                        if (height > 70 && width > 70) {
+                            const arrowArray = createArrowPointsOfDPRangeLine(
+                                lineData,
+                                scaleData,
+                                denomInBase,
+                            );
+
+                            arrowArray.forEach((arrow) => {
+                                lineSeries(arrow);
+                            });
+                        }
+                    }
                 })
                 .on('measure', (event: CustomEvent) => {
                     lineData[1].ctx.context(ctx);

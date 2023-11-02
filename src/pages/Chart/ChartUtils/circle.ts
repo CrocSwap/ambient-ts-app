@@ -68,7 +68,11 @@ export function checkCricleLocation(
 }
 
 function createCirclePoints(element: drawDataHistory, denomInBase: boolean) {
-    if (element.type === 'Brush' || element.type === 'Angle') {
+    if (
+        element.type === 'Brush' ||
+        element.type === 'Angle' ||
+        element.type === 'DPRange'
+    ) {
         const data: lineData[] = [];
 
         element.data.forEach((item) => {
