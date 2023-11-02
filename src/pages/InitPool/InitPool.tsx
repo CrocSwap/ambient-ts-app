@@ -1527,9 +1527,16 @@ export default function InitPool() {
         </FlexContainer>
     );
 
+    const [isWithdrawPending, setIsWithdrawPending] = useState(false);
+
     const withdrawWalletBalanceButton = (
         <Button
-            title={`withdraw ${erc20TokenWithDexBalance?.symbol}`}
+            disabled={isWithdrawPending}
+            title={
+                isWithdrawPending
+                    ? `Withdrawing ${erc20TokenWithDexBalance?.symbol}...`
+                    : `withdraw ${erc20TokenWithDexBalance?.symbol}`
+            }
             action={async () => {
                 if (
                     !crocEnv ||
@@ -1539,51 +1546,60 @@ export default function InitPool() {
                 )
                     return;
 
-                const tx = await crocEnv
-                    .token(erc20TokenWithDexBalance.address)
-                    .withdraw(dexBalanceToBeRemoved, userAddress);
+                setIsWithdrawPending(true);
 
-                dispatch(addPendingTx(tx?.hash));
-                if (tx?.hash)
-                    dispatch(
-                        addTransactionByType({
-                            txHash: tx.hash,
-                            txType: 'Withdraw',
-                            txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,
-                        }),
-                    );
-
-                let receipt;
                 try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.error({ error });
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        IS_LOCAL_ENV && console.debug('repriced');
-                        dispatch(removePendingTx(error.hash));
+                    const tx = await crocEnv
+                        .token(erc20TokenWithDexBalance.address)
+                        .withdraw(dexBalanceToBeRemoved, userAddress);
 
-                        const newTransactionHash = error.replacement.hash;
-                        dispatch(addPendingTx(newTransactionHash));
+                    dispatch(addPendingTx(tx?.hash));
 
+                    if (tx?.hash) {
                         dispatch(
-                            updateTransactionHash({
-                                oldHash: error.hash,
-                                newHash: error.replacement.hash,
+                            addTransactionByType({
+                                txHash: tx.hash,
+                                txType: 'Withdraw',
+                                txDescription: `Withdrawal of ${erc20TokenWithDexBalance.symbol}`,
                             }),
                         );
-                        IS_LOCAL_ENV && console.debug({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        console.error({ error });
-                        receipt = error.receipt;
                     }
-                }
-                if (receipt) {
-                    dispatch(addReceipt(JSON.stringify(receipt)));
-                    dispatch(removePendingTx(receipt.transactionHash));
+
+                    let receipt;
+                    try {
+                        if (tx) receipt = await tx.wait();
+                    } catch (e) {
+                        const error = e as TransactionError;
+                        console.error({ error });
+
+                        if (isTransactionReplacedError(error)) {
+                            IS_LOCAL_ENV && console.debug('repriced');
+                            dispatch(removePendingTx(error.hash));
+
+                            const newTransactionHash = error.replacement.hash;
+                            dispatch(addPendingTx(newTransactionHash));
+
+                            dispatch(
+                                updateTransactionHash({
+                                    oldHash: error.hash,
+                                    newHash: error.replacement.hash,
+                                }),
+                            );
+                            IS_LOCAL_ENV &&
+                                console.debug({ newTransactionHash });
+                            receipt = error.receipt;
+                        } else if (isTransactionFailedError(error)) {
+                            console.error({ error });
+                            receipt = error.receipt;
+                        }
+                    }
+
+                    if (receipt) {
+                        dispatch(addReceipt(JSON.stringify(receipt)));
+                        dispatch(removePendingTx(receipt.transactionHash));
+                    }
+                } finally {
+                    setIsWithdrawPending(false);
                 }
             }}
             flat
