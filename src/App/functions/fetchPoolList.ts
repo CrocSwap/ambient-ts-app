@@ -5,14 +5,21 @@ import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 export async function fetchPoolList(
     crocEnv: CrocEnv,
+    graphCacheUrl: string,
 ): Promise<GCServerPoolIF[]> {
-    const ENDPOINT: string =
-        GRAPHCACHE_SMALL_URL +
-        '/pool_list?' +
-        new URLSearchParams({
-            chainId: (await crocEnv.context).chain.chainId,
-            poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
-        });
+    const ENDPOINT: string = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL +
+          '/pool_list?' +
+          new URLSearchParams({
+              chainId: (await crocEnv.context).chain.chainId,
+              poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
+          })
+        : graphCacheUrl +
+          '/pool_list?' +
+          new URLSearchParams({
+              chainId: (await crocEnv.context).chain.chainId,
+              poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
+          });
     return fetch(ENDPOINT)
         .then((response) => response.json())
         .then((json) => {

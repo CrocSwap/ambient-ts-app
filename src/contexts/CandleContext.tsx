@@ -50,7 +50,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
     } = useContext(AppStateContext);
     const { chartSettings, isEnabled: isChartEnabled } =
         useContext(ChartContext);
-    const { chainData, crocEnv } = useContext(CrocEnvContext);
+    const { chainData, crocEnv, activeNetwork } = useContext(CrocEnvContext);
     const {
         baseToken: { address: baseTokenAddress },
         quoteToken: { address: quoteTokenAddress },
@@ -169,6 +169,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
             fetchCandleSeriesHybrid(
                 true,
                 chainData,
+                activeNetwork.graphCacheUrl,
                 candleTimeLocal,
                 baseTokenAddress,
                 quoteTokenAddress,
@@ -233,6 +234,7 @@ export const CandleContextProvider = (props: { children: React.ReactNode }) => {
         fetchCandleSeriesHybrid(
             true,
             chainData,
+            activeNetwork.graphCacheUrl,
             candleTimeLocal,
             baseTokenAddress,
             quoteTokenAddress,

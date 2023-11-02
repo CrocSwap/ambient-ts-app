@@ -3,12 +3,15 @@
 import { memoizePromiseFn } from './memoizePromiseFn';
 const randomNum = Math.random();
 import { ANALYTICS_URL } from '../../constants';
+import { translateTestnetToken } from '../../utils/data/testnetTokenMap';
 
 export const fetchTokenPrice = async (
-    address: string,
+    dispToken: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastTime: number,
 ) => {
+    const address = translateTestnetToken(dispToken);
+
     try {
         if (address) {
             const response = await fetch(
