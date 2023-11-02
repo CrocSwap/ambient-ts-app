@@ -1,12 +1,4 @@
-import {
-    useContext,
-    // Dispatch,
-    // SetStateAction,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { getDefaultChainId, validateChainId } from '../../utils/data/chains';
@@ -16,7 +8,6 @@ import { useLinkGen, linkGenMethodsIF } from '../../utils/hooks/useLinkGen';
 import { NetworkIF } from '../../utils/interfaces/exports';
 import { supportedNetworks } from '../../utils/networks/index';
 import { useSearchParams } from 'react-router-dom';
-import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export const useAppChain = (): {
     chainData: ChainSpec;
@@ -27,7 +18,6 @@ export const useAppChain = (): {
     // metadata on chain authenticated in connected wallet
     const { chain: chainNetwork, chains: chns } = useNetwork();
     const { switchNetwork } = useSwitchNetwork();
-    const { setChainId } = useContext(TradeDataContext);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenCurrent: linkGenMethodsIF = useLinkGen();
@@ -194,8 +184,6 @@ export const useAppChain = (): {
     const chainData = useMemo<ChainSpec>(() => {
         const output: ChainSpec =
             lookupChain(activeNetwork.chainId) ?? lookupChain(defaultChain);
-        // sync data in RTK for the new chain
-        setChainId(output.chainId);
         // return output varibale (chain data)
         return output;
     }, [activeNetwork.chainId]);

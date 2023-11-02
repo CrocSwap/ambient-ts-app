@@ -6,7 +6,7 @@ import { TokenIF } from '../interfaces/exports';
 import { ethers } from 'ethers';
 import { fetchContractDetails } from '../../App/functions/fetchContractDetails';
 import { useProvider, useSwitchNetwork } from 'wagmi';
-import { getDefaultPairForChain } from '../data/defaultTokens';
+import { getDefaultPairForChain } from '../data/chains';
 import { tokenMethodsIF } from '../../App/hooks/useTokens';
 import { pageNames, linkGenMethodsIF, useLinkGen } from './useLinkGen';
 import validateAddress from '../functions/validateAddress';
@@ -40,7 +40,7 @@ export const useUrlParams = (
     provider?: ethers.providers.Provider,
 ): urlParamsMethodsIF => {
     const { params } = useParams();
-    const { setTokenA, setTokenB, setChainId } = useContext(TradeDataContext);
+    const { setTokenA, setTokenB } = useContext(TradeDataContext);
 
     // this is used for updating the URL bar
     // also for when params need to be re-parsed because the page has changed
@@ -280,7 +280,6 @@ export const useUrlParams = (
 
             if (urlParamMap.has('chain')) {
                 switchNetwork && switchNetwork(parseInt(chainToUse));
-                setChainId(chainToUse);
             }
 
             const tokenA = urlParamMap.get('tokenA');
