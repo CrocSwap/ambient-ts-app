@@ -21,6 +21,7 @@ export const fetchTokenPrice = async (
                         config_path: 'price',
                         include_data: '0',
                         token_address: address,
+                        asset_platform: 'scroll',
                     }),
             );
             const result = await response.json();
