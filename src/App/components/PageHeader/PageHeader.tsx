@@ -352,13 +352,15 @@ const PageHeader = function () {
             data-testid={'page-header'}
             fixed={location.pathname === '/'}
         >
-            <LogoContainer to='/' aria-label='Home'>
-                {desktopScreen ? (
-                    <img src={mainLogo} alt='ambient' />
-                ) : (
-                    <LogoText src={logo} alt='ambient' />
-                )}
-            </LogoContainer>
+            <div>
+                <LogoContainer to='/' aria-label='Home'>
+                    {desktopScreen ? (
+                        <img src={mainLogo} alt='ambient' />
+                    ) : (
+                        <LogoText src={logo} alt='ambient' />
+                    )}
+                </LogoContainer>
+            </div>
             {routeDisplay}
             <RightSide>
                 {show ? (

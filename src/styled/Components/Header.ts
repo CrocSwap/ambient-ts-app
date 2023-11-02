@@ -27,16 +27,16 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
     ${({ fixed }) => fixed && fixedStyles}
 
     @media only screen and (min-width: 800px) {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
         padding: 0 16px;
     }
 `;
 
 // Define the styles for LogoContainer
+// inline block prevents clickable area from expanding larger than content
 export const LogoContainer = styled(Link)`
-    display: flex;
+    display: inline-block;
     flex-direction: row;
     gap: 8px;
     align-items: center;
