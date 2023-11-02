@@ -11,10 +11,8 @@ import { useAppChain } from '../App/hooks/useAppChain';
 import { useBlacklist } from '../App/hooks/useBlacklist';
 import { useTopPools } from '../App/hooks/useTopPools';
 import { APP_ENVIRONMENT, IS_LOCAL_ENV } from '../constants';
-import {
-    getDefaultPairForChain,
-    mainnetETH,
-} from '../utils/data/defaultTokens';
+import { mainnetETH } from '../utils/data/defaultTokens';
+import { getDefaultPairForChain } from '../utils/data/chains';
 import { CachedDataContext } from './CachedDataContext';
 import { Provider } from '@ethersproject/providers';
 import {

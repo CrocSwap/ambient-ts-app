@@ -26,7 +26,7 @@ export interface TradeDataIF {
     primaryQuantityRange: string; // Value input into Range
     rangeTicksCopied: boolean;
     simpleRangeWidth: number;
-    // advanced range
+    // Advanced Range
     advancedMode: boolean;
     advancedLowTick: number;
     advancedHighTick: number;
@@ -43,14 +43,6 @@ export interface TradeDataIF {
     // Limit order
     limitTick: number | undefined; // values that affects price? just in limit order
 }
-
-// Have to set these values to something on load, so we use default pair
-// for default chain. Don't worry if user is coming in to another chain,
-// since these will get updated by useUrlParams() in any context where a
-// pair is necessary at load time
-// const dfltChainId = getDefaultChainId();
-// const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
-// const dfltTokenB = getDefaultPairForChain(dfltChainId)[1];
 
 const initialState: TradeDataIF = {
     shouldSwapDirectionReverse: false,

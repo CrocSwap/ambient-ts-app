@@ -1,8 +1,11 @@
-import React, { createContext, useMemo } from 'react';
+import React, { createContext, useEffect, useMemo } from 'react';
 import { TokenIF } from '../utils/interfaces/TokenIF';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
-import { getDefaultChainId } from '../utils/data/chains';
-import { getDefaultPairForChain } from '../utils/data/defaultTokens';
+import {
+    getDefaultChainId,
+    getDefaultPairForChain,
+} from '../utils/data/chains';
+import { useAppChain } from '../App/hooks/useAppChain';
 
 interface TradeDataContextIF {
     tokenA: TokenIF;
@@ -16,7 +19,6 @@ interface TradeDataContextIF {
 
     setTokenA: React.Dispatch<React.SetStateAction<TokenIF>>;
     setTokenB: React.Dispatch<React.SetStateAction<TokenIF>>;
-    setChainId: (chainId: string) => void;
     setDenomInBase: React.Dispatch<React.SetStateAction<boolean>>;
     setIsTokenAPrimary: React.Dispatch<React.SetStateAction<boolean>>;
     setDidUserFlipDenom: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,14 +28,13 @@ interface TradeDataContextIF {
 export const TradeDataContext = createContext<TradeDataContextIF>(
     {} as TradeDataContextIF,
 );
-console.log('Debug, getting items');
+// Have to set these values to something on load, so we use default pair
+// for default chain. Don't worry if user is coming in to another chain,
+// since these will get updated by useUrlParams() in any context where a
+// pair is necessary at load time
 const dfltChainId = getDefaultChainId();
-console.log('Debug, got chainId');
-
 const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
 const dfltTokenB = getDefaultPairForChain(dfltChainId)[1];
-
-console.log('Debug, dfltTokenA: ', { dfltTokenA, dfltTokenB, dfltChainId });
 
 export const TradeDataContextProvider = (props: {
     children: React.ReactNode;
@@ -47,6 +48,7 @@ export const TradeDataContextProvider = (props: {
 
     // TODO: Not convinced yet this belongs here
     //  This probably belongs in a separate context
+    // Belongs with the other "primary" values in the tradedata slice
     const [isTokenAPrimary, setIsTokenAPrimary] = React.useState<boolean>(true);
 
     const { baseToken, quoteToken, isTokenABase } = useMemo(() => {
@@ -73,13 +75,19 @@ export const TradeDataContextProvider = (props: {
         setDidUserFlipDenom(!didUserFlipDenom);
     };
 
-    const setChainId = (chainId: string) => {
-        if (tokenA.chainId !== parseInt(chainId)) {
-            const [_tokenA, _tokenB] = getDefaultPairForChain(chainId);
+    // TODO: this part feels suspicious
+    // Why should we be handling the app chain in a hook
+    // rather than a context?
+    const { chainData } = useAppChain();
+    useEffect(() => {
+        if (tokenA.chainId !== parseInt(chainData.chainId)) {
+            const [_tokenA, _tokenB] = getDefaultPairForChain(
+                chainData.chainId,
+            );
             setTokenA(_tokenA);
             setTokenB(_tokenB);
         }
-    };
+    }, [chainData.chainId]);
 
     const tradeDataContext = {
         tokenA,
@@ -92,7 +100,6 @@ export const TradeDataContextProvider = (props: {
         didUserFlipDenom,
         setTokenA,
         setTokenB,
-        setChainId,
         setDenomInBase,
         setIsTokenAPrimary,
         setDidUserFlipDenom,
