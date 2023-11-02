@@ -1,8 +1,4 @@
-import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { getDefaultChainId } from '../data/chains';
-import { getDefaultPairForChain } from '../data/defaultTokens';
-import { TokenIF } from '../interfaces/exports';
 
 export interface targetData {
     name: string;
@@ -22,64 +18,43 @@ export interface candleScale {
 }
 
 export interface TradeDataIF {
-    tokenA: TokenIF;
-    tokenB: TokenIF;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-    isTokenABase: boolean;
-    liquidityFee: number;
-    didUserFlipDenom: boolean;
-    shouldSwapConverterUpdate: boolean;
-    shouldLimitConverterUpdate: boolean;
+    // Look into this
     shouldSwapDirectionReverse: boolean;
-    shouldRangeDirectionReverse: boolean;
-    isDenomBase: boolean;
-    advancedMode: boolean;
-    isTokenAPrimary: boolean;
-    primaryQuantity: string;
+
+    // Range
     isTokenAPrimaryRange: boolean;
-    primaryQuantityRange: string;
-    limitTick: number | undefined;
+    primaryQuantityRange: string; // Value input into Range
     rangeTicksCopied: boolean;
-    poolPriceNonDisplay: number;
+    simpleRangeWidth: number;
+    // advanced range
+    advancedMode: boolean;
     advancedLowTick: number;
     advancedHighTick: number;
-    simpleRangeWidth: number;
-    slippageTolerance: number;
-    targetData: targetData[];
-    pinnedMaxPriceDisplayTruncated: number | undefined;
-    pinnedMinPriceDisplayTruncated: number | undefined;
-    rangeModuleTriggered: boolean;
-    rangeLowLineTriggered: boolean | undefined;
     isLinesSwitched: boolean | undefined;
-    rangeHighLineTriggered: boolean | undefined;
-    candleDomains: candleDomain;
-    rescaleRangeBoundaries: boolean | undefined;
+
+    // swap and  limit order UI
+    // isTokenAPrimary: boolean;
+    primaryQuantity: string;
+    slippageTolerance: number; // swap and range, not limit
+
+    // background computations
+    poolPriceNonDisplay: number;
+
+    // Limit order
+    limitTick: number | undefined; // values that affects price? just in limit order
 }
 
 // Have to set these values to something on load, so we use default pair
 // for default chain. Don't worry if user is coming in to another chain,
 // since these will get updated by useUrlParams() in any context where a
 // pair is necessary at load time
-const dfltChainId = getDefaultChainId();
-const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
-const dfltTokenB = getDefaultPairForChain(dfltChainId)[1];
+// const dfltChainId = getDefaultChainId();
+// const dfltTokenA = getDefaultPairForChain(dfltChainId)[0];
+// const dfltTokenB = getDefaultPairForChain(dfltChainId)[1];
 
 const initialState: TradeDataIF = {
-    tokenA: dfltTokenA,
-    tokenB: dfltTokenB,
-    baseToken: dfltTokenA, // We sort these in the next line
-    quoteToken: dfltTokenB,
-    isTokenABase: true,
-    liquidityFee: 0,
-    didUserFlipDenom: false,
-    shouldSwapConverterUpdate: false,
-    shouldLimitConverterUpdate: false,
     shouldSwapDirectionReverse: false,
-    shouldRangeDirectionReverse: false,
-    isDenomBase: true,
     advancedMode: false,
-    isTokenAPrimary: true,
     primaryQuantity: '',
     isTokenAPrimaryRange: true,
     primaryQuantityRange: '',
@@ -90,117 +65,25 @@ const initialState: TradeDataIF = {
     advancedHighTick: 0,
     simpleRangeWidth: 10,
     slippageTolerance: 0.05,
-    targetData: [
-        { name: 'Min', value: undefined },
-        { name: 'Max', value: undefined },
-    ],
-    candleDomains: {
-        lastCandleDate: undefined,
-        domainBoundry: undefined,
-    },
-    pinnedMaxPriceDisplayTruncated: undefined,
-    pinnedMinPriceDisplayTruncated: undefined,
-    rangeModuleTriggered: false,
-    rangeLowLineTriggered: undefined,
     isLinesSwitched: undefined,
-    rangeHighLineTriggered: undefined,
-    rescaleRangeBoundaries: undefined,
 };
-
-sortTokens(initialState);
-
-function sortTokens(state: TradeDataIF) {
-    const [baseTokenAddress] = sortBaseQuoteTokens(
-        state.tokenA.address,
-        state.tokenB.address,
-    );
-
-    if (state.tokenA.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
-        state.baseToken = state.tokenA;
-        state.quoteToken = state.tokenB;
-        state.isTokenABase = true;
-    } else {
-        state.baseToken = state.tokenB;
-        state.quoteToken = state.tokenA;
-        state.isTokenABase = false;
-    }
-}
 
 export const tradeDataSlice = createSlice({
     name: 'tradeData',
     initialState,
     reducers: {
-        setChainId: (state, action: PayloadAction<string>) => {
-            const chainNum = parseInt(action.payload);
-
-            // If token pair isn't set to a chain token, always reset to default
-            // pair for the chain
-            if (state.tokenA.chainId !== chainNum) {
-                const [tokenA, tokenB] = getDefaultPairForChain(action.payload);
-                state.tokenA = tokenA;
-                state.tokenB = tokenB;
-                sortTokens(state);
-            }
-        },
-
-        setTokenA: (state, action: PayloadAction<TokenIF>) => {
-            state.tokenA = action.payload;
-            sortTokens(state);
-        },
-        setTokenB: (state, action: PayloadAction<TokenIF>) => {
-            state.tokenB = action.payload;
-            sortTokens(state);
-        },
-        setLiquidityFee: (state, action: PayloadAction<number>) => {
-            state.liquidityFee = action.payload;
-        },
-        setDidUserFlipDenom: (state, action: PayloadAction<boolean>) => {
-            state.didUserFlipDenom = action.payload;
-        },
-        setShouldSwapConverterUpdate: (
-            state,
-            action: PayloadAction<boolean>,
-        ) => {
-            state.shouldSwapConverterUpdate = action.payload;
-        },
-        setShouldLimitConverterUpdate: (
-            state,
-            action: PayloadAction<boolean>,
-        ) => {
-            state.shouldLimitConverterUpdate = action.payload;
-        },
         setShouldSwapDirectionReverse: (
             state,
             action: PayloadAction<boolean>,
         ) => {
             state.shouldSwapDirectionReverse = action.payload;
         },
-        setShouldRangeDirectionReverse: (
-            state,
-            action: PayloadAction<boolean>,
-        ) => {
-            state.shouldRangeDirectionReverse = action.payload;
-        },
-        toggleDidUserFlipDenom: (state) => {
-            state.didUserFlipDenom = !state.didUserFlipDenom;
-        },
-        setDenomInBase: (state, action: PayloadAction<boolean>) => {
-            state.isDenomBase = action.payload;
-        },
-        toggleDenomInBase: (state) => {
-            state.isDenomBase = !state.isDenomBase;
-        },
+
         setAdvancedMode: (state, action: PayloadAction<boolean>) => {
             state.advancedMode = action.payload;
         },
         toggleAdvancedMode: (state) => {
             state.advancedMode = !state.advancedMode;
-        },
-        setIsTokenAPrimary: (state, action: PayloadAction<boolean>) => {
-            state.isTokenAPrimary = action.payload;
-        },
-        toggleIsTokenAPrimary: (state) => {
-            state.isTokenAPrimary = !state.isTokenAPrimary;
         },
         setPrimaryQuantity: (state, action: PayloadAction<string>) => {
             state.primaryQuantity = action.payload;
@@ -232,60 +115,18 @@ export const tradeDataSlice = createSlice({
         setSlippageTolerance: (state, action: PayloadAction<number>) => {
             state.slippageTolerance = action.payload;
         },
-        setTargetData: (state, action: PayloadAction<targetData[]>) => {
-            state.targetData = action.payload;
-        },
-        reverseTokensInRTK: (state) => {
-            state.tokenA = state.tokenB;
-            state.tokenB = state.tokenA;
-        },
-        setPinnedMaxPrice: (state, action: PayloadAction<number>) => {
-            state.pinnedMaxPriceDisplayTruncated = action.payload;
-        },
-        setPinnedMinPrice: (state, action: PayloadAction<number>) => {
-            state.pinnedMinPriceDisplayTruncated = action.payload;
-        },
-        setRangeModuleTriggered: (state, action: PayloadAction<boolean>) => {
-            state.rangeModuleTriggered = action.payload;
-        },
-        setRangeHighLineTriggered: (state, action: PayloadAction<boolean>) => {
-            state.rangeHighLineTriggered = action.payload;
-        },
-        setRescaleRangeBoundaries: (state, action: PayloadAction<boolean>) => {
-            state.rescaleRangeBoundaries = action.payload;
-        },
-        setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
-            state.rangeLowLineTriggered = action.payload;
-        },
+
         setIsLinesSwitched: (state, action: PayloadAction<boolean>) => {
             state.isLinesSwitched = action.payload;
         },
-        setCandleDomains: (state, action: PayloadAction<candleDomain>) => {
-            state.candleDomains = action.payload;
-        },
-
-        resetTradeData: () => initialState,
     },
 });
 
 // action creators are generated for each case reducer function
 export const {
-    setChainId,
-    setTokenA,
-    setTokenB,
-    setLiquidityFee,
-    setDidUserFlipDenom,
-    toggleDidUserFlipDenom,
-    setShouldSwapConverterUpdate,
-    setShouldLimitConverterUpdate,
     setShouldSwapDirectionReverse,
-    setShouldRangeDirectionReverse,
-    setDenomInBase,
-    toggleDenomInBase,
     setAdvancedMode,
     toggleAdvancedMode,
-    setIsTokenAPrimary,
-    toggleIsTokenAPrimary,
     setPrimaryQuantity,
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
@@ -296,17 +137,7 @@ export const {
     setAdvancedHighTick,
     setSimpleRangeWidth,
     setSlippageTolerance,
-    resetTradeData,
-    reverseTokensInRTK,
-    setPinnedMaxPrice,
-    setPinnedMinPrice,
-    setTargetData,
-    setRangeModuleTriggered,
-    setRangeLowLineTriggered,
     setIsLinesSwitched,
-    setRangeHighLineTriggered,
-    setRescaleRangeBoundaries,
-    setCandleDomains,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

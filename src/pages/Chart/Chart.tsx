@@ -16,7 +16,6 @@ import {
     setIsLinesSwitched,
     candleScale,
     candleDomain,
-    setIsTokenAPrimary,
     setIsTokenAPrimaryRange,
 } from '../../utils/state/tradeDataSlice';
 
@@ -78,6 +77,7 @@ import useDebounce from '../../App/hooks/useDebounce';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
 import { UserDataContext } from '../../contexts/UserDataContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -169,6 +169,12 @@ export default function Chart(props: propsIF) {
         setSimpleRangeWidth: setRangeSimpleRangeWidth,
     } = useContext(RangeContext);
     // const { handlePulseAnimation } = useContext(TradeTableContext);
+    const {
+        isDenomBase,
+        isTokenABase: isBid,
+        isTokenAPrimary,
+        setIsTokenAPrimary,
+    } = useContext(TradeDataContext);
 
     const [isChartZoom, setIsChartZoom] = useState(false);
 
@@ -182,8 +188,6 @@ export default function Chart(props: propsIF) {
 
     const period = unparsedData.duration;
 
-    const isDenomBase = tradeData.isDenomBase;
-    const isBid = tradeData.isTokenABase;
     const side =
         (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
@@ -220,7 +224,7 @@ export default function Chart(props: propsIF) {
     const simpleRangeWidth = rangeSimpleRangeWidth;
     const setSimpleRangeWidth = setRangeSimpleRangeWidth;
 
-    const { tokenA, tokenB } = tradeData;
+    const { tokenA, tokenB } = useContext(TradeDataContext);
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
@@ -3300,7 +3304,7 @@ export default function Chart(props: propsIF) {
             // ... pair; else just update the `limitTick` value in the URL
             reverseTokenForChart(limitPreviousData, newLimitValue)
                 ? (() => {
-                      dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+                      setIsTokenAPrimary(!isTokenAPrimary);
                       dispatch(
                           setIsTokenAPrimaryRange(
                               !tradeData.isTokenAPrimaryRange,

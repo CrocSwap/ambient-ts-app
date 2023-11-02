@@ -7,10 +7,7 @@ import styles from './TableMenus.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -33,6 +30,7 @@ import RangeDetailsModal from '../../../../RangeDetails/RangeDetailsModal/RangeD
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
 import { UserDataContext } from '../../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -113,9 +111,9 @@ export default function RangesMenu(props: propsIF) {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-    const rtkTokenA = tradeData.tokenA.address;
-    const rtkTokenB = tradeData.tokenB.address;
+    const { tokenA, tokenB } = useContext(TradeDataContext);
+    const tokenAAddress = tokenA.address;
+    const tokenBAddress = tokenB.address;
 
     // ----------------------
 
@@ -164,11 +162,11 @@ export default function RangesMenu(props: propsIF) {
             to={linkGenRepo.getFullURL({
                 chain: chainId,
                 tokenA:
-                    rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                    tokenAAddress.toLowerCase() === position.quote.toLowerCase()
                         ? position.quote
                         : position.base,
                 tokenB:
-                    rtkTokenB.toLowerCase() === position.base.toLowerCase()
+                    tokenBAddress.toLowerCase() === position.base.toLowerCase()
                         ? position.base
                         : position.quote,
                 lowTick: position.bidTick.toString(),
@@ -196,11 +194,13 @@ export default function RangesMenu(props: propsIF) {
                 const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
-                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
                             ? position.quote
                             : position.base,
                     tokenB:
-                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
                             ? position.base
                             : position.quote,
                     lowTick: position.bidTick.toString(),
@@ -222,11 +222,13 @@ export default function RangesMenu(props: propsIF) {
                 const poolLinkParams: poolParamsIF = {
                     chain: chainId,
                     tokenA:
-                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
                             ? position.quote
                             : position.base,
                     tokenB:
-                        rtkTokenA.toLowerCase() === position.quote.toLowerCase()
+                        tokenAAddress.toLowerCase() ===
+                        position.quote.toLowerCase()
                             ? position.base
                             : position.quote,
                     lowTick: position.bidTick.toString(),

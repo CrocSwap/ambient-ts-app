@@ -1,5 +1,4 @@
 import { PoolStatsFn } from '../../../App/functions/getPoolStats';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useContext } from 'react';
 import { UserPreferenceContext } from '../../../contexts/UserPreferenceContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -11,6 +10,7 @@ import {
     ItemsContainer,
     ViewMoreFlex,
 } from '../../../styled/Components/Sidebar';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     cachedPoolStatsFetch: PoolStatsFn;
@@ -20,15 +20,16 @@ interface propsIF {
 export default function FavoritePools(props: propsIF) {
     const { cachedPoolStatsFetch } = props;
 
-    const { tradeData } = useAppSelector((state) => state);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
     const {
         chainData: { chainId, poolIndex: poolId },
     } = useContext(CrocEnvContext);
     const { favePools } = useContext(UserPreferenceContext);
 
     const isAlreadyFavorited = favePools.check(
-        tradeData.baseToken.address,
-        tradeData.quoteToken.address,
+        baseToken.address,
+        quoteToken.address,
         chainId,
         poolId,
     );
@@ -47,12 +48,7 @@ export default function FavoritePools(props: propsIF) {
                     justifyContent='center'
                     color='accent4'
                     onClick={() =>
-                        favePools.add(
-                            tradeData.baseToken,
-                            tradeData.quoteToken,
-                            chainId,
-                            poolId,
-                        )
+                        favePools.add(baseToken, quoteToken, chainId, poolId)
                     }
                 >
                     Add Current Pool

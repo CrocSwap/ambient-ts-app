@@ -2,7 +2,6 @@ import { ChainSpec, CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useContext, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
-    setDidUserFlipDenom,
     setLimitTick,
     setPoolPriceNonDisplay,
     setPrimaryQuantityRange,
@@ -10,6 +9,7 @@ import {
 import { get24hChange } from '../functions/getPoolStats';
 import { SpotPriceFn } from '../functions/querySpotPrice';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
@@ -30,6 +30,7 @@ interface PoolPricingPropsIF {
 export function usePoolPricing(props: PoolPricingPropsIF) {
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { isDenomBase, setDidUserFlipDenom } = useContext(TradeDataContext);
 
     const { activeNetwork } = useContext(CrocEnvContext);
 
@@ -81,7 +82,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         setIsPoolInitialized(undefined);
         dispatch(setPrimaryQuantityRange(''));
         setPoolPriceDisplay(undefined);
-        dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
+        setDidUserFlipDenom(false); // reset so a new token pair is re-evaluated for price > 1
         setPoolPriceChangePercent(undefined);
         if (!props.pathname.includes('limitTick')) {
             dispatch(setLimitTick(undefined));
@@ -172,7 +173,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
                         props.baseTokenAddress,
                         props.quoteTokenAddress,
                         props.chainData.poolIndex,
-                        tradeData.isDenomBase,
+                        isDenomBase,
                         activeNetwork.graphCacheUrl,
                     );
 
@@ -215,7 +216,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
         })();
     }, [
         props.isServerEnabled,
-        tradeData.isDenomBase,
+        isDenomBase,
         props.baseTokenAddress,
         props.quoteTokenAddress,
         props.lastBlockNumber,

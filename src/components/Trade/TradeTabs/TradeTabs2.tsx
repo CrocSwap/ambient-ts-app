@@ -8,7 +8,6 @@ import {
     memo,
 } from 'react';
 
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
 import Orders from './Orders/Orders';
@@ -44,6 +43,7 @@ import { ClearButton } from '../../../styled/Components/TransactionTable';
 import TableInfo from '../TableInfo/TableInfo';
 import { UserDataContext } from '../../../contexts/UserDataContext';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 interface propsIF {
     filter: CandleData | undefined;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
@@ -105,7 +105,8 @@ function TradeTabs2(props: propsIF) {
         selectedOutsideTab,
     } = useContext(TradeTableContext);
 
-    const tradeData = useAppSelector((state) => state?.tradeData);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
+
     const { isUserConnected, userAddress } = useContext(UserDataContext);
     const { positionsByUser, limitOrdersByUser, changesByUser } =
         useContext(GraphDataContext);
@@ -121,14 +122,16 @@ function TradeTabs2(props: propsIF) {
     const [hasUserSelectedViewAll, setHasUserSelectedViewAll] =
         useState<boolean>(false);
 
-    const selectedBase = tradeData.baseToken.address;
-    const selectedQuote = tradeData.quoteToken.address;
+    const selectedBaseAddress = baseToken.address;
+    const selectedQuoteAddress = quoteToken.address;
 
     const userChangesMatchingTokenSelection = userChanges.filter(
         (userChange) => {
             return (
-                userChange.base.toLowerCase() === selectedBase.toLowerCase() &&
-                userChange.quote.toLowerCase() === selectedQuote.toLowerCase()
+                userChange.base.toLowerCase() ===
+                    selectedBaseAddress.toLowerCase() &&
+                userChange.quote.toLowerCase() ===
+                    selectedQuoteAddress.toLowerCase()
             );
         },
     );
@@ -137,9 +140,9 @@ function TradeTabs2(props: propsIF) {
         (userLimitOrder) => {
             return (
                 userLimitOrder.base.toLowerCase() ===
-                    selectedBase.toLowerCase() &&
+                    selectedBaseAddress.toLowerCase() &&
                 userLimitOrder.quote.toLowerCase() ===
-                    selectedQuote.toLowerCase()
+                    selectedQuoteAddress.toLowerCase()
             );
         },
     );
@@ -148,9 +151,9 @@ function TradeTabs2(props: propsIF) {
         (userPosition) => {
             return (
                 userPosition.base.toLowerCase() ===
-                    selectedBase.toLowerCase() &&
+                    selectedBaseAddress.toLowerCase() &&
                 userPosition.quote.toLowerCase() ===
-                    selectedQuote.toLowerCase() &&
+                    selectedQuoteAddress.toLowerCase() &&
                 userPosition.positionLiq !== 0
             );
         },
@@ -159,7 +162,12 @@ function TradeTabs2(props: propsIF) {
     useEffect(() => {
         setHasInitialized(false);
         setHasUserSelectedViewAll(false);
-    }, [userAddress, isUserConnected, selectedBase, selectedQuote]);
+    }, [
+        userAddress,
+        isUserConnected,
+        selectedBaseAddress,
+        selectedQuoteAddress,
+    ]);
 
     // Wait 2 seconds before refreshing to give cache server time to sync from
     // last block

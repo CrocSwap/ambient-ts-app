@@ -2,10 +2,7 @@
 import styles from './RangePriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
-import {
-    // useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+
 // import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { memo, useContext, useEffect, useMemo, useState } from 'react';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
@@ -15,6 +12,7 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 // interface for component props
 interface propsIF {
@@ -58,7 +56,7 @@ function RangePriceInfo(props: propsIF) {
     } = useContext(CrocEnvContext);
 
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
-        useAppSelector((state) => state.tradeData);
+        useContext(TradeDataContext);
 
     const [tokenAPrice, setTokenAPrice] = useState<number | undefined>();
     const [tokenBPrice, setTokenBPrice] = useState<number | undefined>();

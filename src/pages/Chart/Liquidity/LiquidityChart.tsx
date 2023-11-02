@@ -31,6 +31,7 @@ import {
     createLineSeries,
     decorateForLiquidityLine,
 } from './LiquiditySeries/LineSeries';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface liquidityPropsIF {
     liqMode: string;
@@ -60,8 +61,8 @@ export default function LiquidityChart(props: liquidityPropsIF) {
     const { pool: pool, poolPriceDisplay: poolPriceWithoutDenom } =
         useContext(PoolContext);
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
-    const isDenomBase = tradeData.isDenomBase;
     const { poolPriceNonDisplay } = tradeData;
 
     const poolPriceDisplay = poolPriceWithoutDenom

@@ -18,6 +18,7 @@ import { usePoolList } from '../App/hooks/usePoolList';
 import { PoolIF, PoolStatIF } from '../utils/interfaces/exports';
 import useFetchPoolStats from '../App/hooks/useFetchPoolStats';
 import { UserDataContext } from './UserDataContext';
+import { TradeDataContext } from './TradeDataContext';
 
 interface PoolContextIF {
     poolList: PoolIF[];
@@ -49,7 +50,8 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
         },
     } = useContext(TradeTokenContext);
 
-    const { tradeData, receiptData } = useAppSelector((state) => state);
+    const { receiptData } = useAppSelector((state) => state);
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
     const { isUserConnected } = useContext(UserDataContext);
     const poolList: PoolIF[] = usePoolList(
         activeNetwork.graphCacheUrl,
@@ -57,17 +59,13 @@ export const PoolContextProvider = (props: { children: React.ReactNode }) => {
     );
 
     const pool = useMemo(
-        () =>
-            crocEnv?.pool(
-                tradeData.baseToken.address,
-                tradeData.quoteToken.address,
-            ),
-        [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
+        () => crocEnv?.pool(baseToken.address, quoteToken.address),
+        [crocEnv, baseToken.address, quoteToken.address],
     );
 
     const poolArg: PoolIF = {
-        base: tradeData.baseToken,
-        quote: tradeData.quoteToken,
+        base: baseToken,
+        quote: quoteToken,
         chainId: chainData.chainId,
         poolIdx: chainData.poolIndex,
     };

@@ -17,7 +17,6 @@ import {
     setPrimaryQuantityRange,
     setIsTokenAPrimaryRange,
     setRangeTicksCopied,
-    setIsTokenAPrimary,
 } from '../../../../utils/state/tradeDataSlice';
 import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import tokenArrow from '../../../../assets/images/icons/plus.svg';
@@ -25,6 +24,7 @@ import { formatTokenInput } from '../../../../utils/numbers';
 import { FlexContainer, Text } from '../../../../styled/Common';
 import { InputDisabledText } from '../../../../styled/Components/TradeModules';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     hidePlus?: boolean;
@@ -83,14 +83,11 @@ function RangeTokenInput(props: propsIF) {
 
     const { isUserConnected } = useContext(UserDataContext);
 
-    const {
-        tokenA,
-        tokenB,
-        isTokenAPrimary,
-        isTokenAPrimaryRange,
-        rangeTicksCopied,
-    } = useAppSelector((state) => state.tradeData);
-
+    const { isTokenAPrimaryRange, rangeTicksCopied } = useAppSelector(
+        (state) => state.tradeData,
+    );
+    const { tokenA, tokenB, isTokenAPrimary, setIsTokenAPrimary } =
+        useContext(TradeDataContext);
     useEffect(() => {
         if (poolPriceNonDisplay) {
             updateTokenQty();
@@ -140,7 +137,7 @@ function RangeTokenInput(props: propsIF) {
         : (): void => {
               resetTokenQuantities();
               dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
-              dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+              setIsTokenAPrimary(!isTokenAPrimary);
               if (!rangeTicksCopied && !isInitPage) {
                   // URL params for link to pool page
                   const poolLinkParams: poolParamsIF = {

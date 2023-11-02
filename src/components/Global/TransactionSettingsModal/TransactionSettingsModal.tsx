@@ -1,15 +1,15 @@
-import { useState, KeyboardEvent } from 'react';
+import { useState, KeyboardEvent, useContext } from 'react';
 import { FiAlertTriangle } from 'react-icons/fi';
 import { skipConfirmIF } from '../../../App/hooks/useSkipConfirm';
 import { SlippageMethodsIF } from '../../../App/hooks/useSlippage';
 import { FlexContainer, Text } from '../../../styled/Common';
 import { SettingsContainer } from '../../../styled/Components/TradeModules';
 import { isStablePair } from '../../../utils/data/stablePairs';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import Button from '../../Form/Button';
 import ConfirmationModalControl from '../ConfirmationModalControl/ConfirmationModalControl';
 import Modal from '../Modal/Modal';
 import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 export type TransactionModuleType =
     | 'Swap'
@@ -27,7 +27,7 @@ interface propsIF {
 
 export default function TransactionSettingsModal(props: propsIF) {
     const { module, slippage, onClose, bypassConfirm } = props;
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const isPairStable = isStablePair(tokenA.address, tokenB.address);
 

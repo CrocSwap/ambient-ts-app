@@ -81,6 +81,7 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../utils/TransactionError';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 // react functional component
 export default function InitPool() {
     const {
@@ -109,16 +110,11 @@ export default function InitPool() {
 
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            baseToken,
-            quoteToken,
-            advancedMode,
-            advancedHighTick,
-            advancedLowTick,
-        },
+        tradeData: { advancedMode, advancedHighTick, advancedLowTick },
     } = useAppSelector((state) => state);
+
+    const { tokenA, tokenB, baseToken, quoteToken } =
+        useContext(TradeDataContext);
 
     useEffect(() => {
         setIsWithdrawTokenAFromDexChecked(parseFloat(tokenADexBalance) > 0);

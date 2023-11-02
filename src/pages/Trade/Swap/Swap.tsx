@@ -42,6 +42,8 @@ import {
 import { swapTutorialSteps } from '../../../utils/tutorial/Swap';
 import { useApprove } from '../../../App/functions/approve';
 import { useUrlParams } from '../../../utils/hooks/useUrlParams';
+import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     isOnTradeRoute?: boolean;
@@ -78,18 +80,23 @@ function Swap(props: propsIF) {
     // depending on location we pull data on the tx in progress differently
     const {
         tradeData: {
-            tokenA,
-            tokenB,
-            baseToken,
-            quoteToken,
-            isTokenAPrimary,
             primaryQuantity,
-            isDenomBase,
-            liquidityFee,
+
+            // liquidityFee
         },
     } = pathname.includes('/trade')
         ? useTradeData()
         : useAppSelector((state) => state);
+    // TODO: confirm this doesn't break data that needs to be different when on trade page
+    const { liquidityFee } = useContext(GraphDataContext);
+    const {
+        tokenA,
+        tokenB,
+        baseToken,
+        quoteToken,
+        isTokenAPrimary,
+        isDenomBase,
+    } = useContext(TradeDataContext);
 
     const [sellQtyString, setSellQtyString] = useState<string>(
         isTokenAPrimary ? primaryQuantity : '',
