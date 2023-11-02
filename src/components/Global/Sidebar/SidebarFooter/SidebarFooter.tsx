@@ -4,10 +4,10 @@ import { MdAccountBox, MdOutlineExplore } from 'react-icons/md';
 import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
 import { BsFillChatDotsFill } from 'react-icons/bs';
-import { memo } from 'react';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { memo, useContext } from 'react';
 import { formSlugForPairParams } from '../../../../App/functions/urlSlugs';
 import chainNumToString from '../../../../App/functions/chainNumToString';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 function SidebarFooter() {
     const location = useLocation();
@@ -29,12 +29,12 @@ function SidebarFooter() {
         ? '/trade/edit/'
         : '/trade/market/';
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const paramsSlug = formSlugForPairParams({
-        chain: chainNumToString(tradeData.tokenA.chainId),
-        tokenA: tradeData.tokenA.address,
-        tokenB: tradeData.tokenB.address,
+        chain: chainNumToString(tokenA.chainId),
+        tokenA: tokenA.address,
+        tokenB: tokenB.address,
     });
 
     const linksData = [

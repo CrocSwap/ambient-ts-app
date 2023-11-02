@@ -50,6 +50,7 @@ import { linkGenMethodsIF, useLinkGen } from '../../../utils/hooks/useLinkGen';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import SubmitTransaction from '../../../components/Trade/TradeModules/SubmitTransaction/SubmitTransaction';
 import RangeWidth from '../../../components/Form/RangeWidth/RangeWidth';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 function Reposition() {
     // current URL parameter string
@@ -143,14 +144,11 @@ function Reposition() {
     }, [crocEnv, lastBlockNumber, position?.positionId]);
 
     const {
-        tradeData: {
-            tokenA,
-            tokenB,
-            isTokenABase,
-            poolPriceNonDisplay: currentPoolPriceNonDisplay,
-            isDenomBase,
-        },
+        tradeData: { poolPriceNonDisplay: currentPoolPriceNonDisplay },
     } = useAppSelector((state) => state);
+
+    const { isDenomBase, tokenA, tokenB, isTokenABase } =
+        useContext(TradeDataContext);
 
     const currentPoolPriceTick =
         Math.log(currentPoolPriceNonDisplay) / Math.log(1.0001);

@@ -48,6 +48,7 @@ import { useApprove } from '../../../App/functions/approve';
 import { useHandleRangeButtonMessage } from '../../../App/hooks/useHandleRangeButtonMessage';
 import { useRangeInputDisable } from './useRangeInputDisable';
 import { GraphDataContext } from '../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 export const DEFAULT_MIN_PRICE_DIFF_PERCENTAGE = -10;
 export const DEFAULT_MAX_PRICE_DIFF_PERCENTAGE = 10;
@@ -86,7 +87,7 @@ function Range() {
     const { mintSlippage, dexBalRange, bypassConfirmRange } = useContext(
         UserPreferenceContext,
     );
-    const { positionsByUser } = useContext(GraphDataContext);
+    const { positionsByUser, liquidityFee } = useContext(GraphDataContext);
     const isPoolInitialized = useSimulatedIsPoolInitialized();
 
     const dispatch = useAppDispatch();
@@ -94,21 +95,18 @@ function Range() {
 
     const {
         tradeData: {
-            isDenomBase,
             isTokenAPrimaryRange,
             primaryQuantityRange,
             isLinesSwitched,
-            tokenA,
-            tokenB,
             poolPriceNonDisplay,
-            baseToken,
-            quoteToken,
             advancedHighTick,
             advancedLowTick,
             advancedMode,
-            liquidityFee,
         },
     } = useAppSelector((state) => state);
+
+    const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
+        useContext(TradeDataContext);
 
     // RangeTokenInput state values
     const [tokenAInputQty, setTokenAInputQty] = useState<string>(

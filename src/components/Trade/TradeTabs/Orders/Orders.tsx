@@ -25,6 +25,7 @@ import { useENSAddresses } from '../../../../contexts/ENSAddressContext';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
 import { DataLoadingContext } from '../../../../contexts/DataLoadingContext';
 import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 // interface for props for react functional component
 interface propsIF {
@@ -62,13 +63,15 @@ function Orders(props: propsIF) {
     const dataLoadingStatus = useContext(DataLoadingContext);
     const { userAddress } = useContext(UserDataContext);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
     const { transactionsByType, pendingTransactions } = useAppSelector(
         (state) => state.receiptData,
     );
+    const { baseToken, quoteToken } = useContext(TradeDataContext);
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const baseTokenSymbol = baseToken.symbol;
+    const quoteTokenSymbol = quoteToken.symbol;
+    const baseTokenAddress = baseToken.address;
+    const quoteTokenAddress = quoteToken.address;
 
     const [limitOrderData, setLimitOrderData] = useState<LimitOrderIF[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -121,9 +124,9 @@ function Orders(props: propsIF) {
             tx.txType === 'Limit' &&
             pendingTransactions.includes(tx.txHash) &&
             tx.txDetails?.baseAddress.toLowerCase() ===
-                tradeData.baseToken.address.toLowerCase() &&
+                baseToken.address.toLowerCase() &&
             tx.txDetails?.quoteAddress.toLowerCase() ===
-                tradeData.quoteToken.address.toLowerCase() &&
+                quoteToken.address.toLowerCase() &&
             tx.txDetails?.poolIdx === poolIndex,
     );
 
@@ -147,9 +150,6 @@ function Orders(props: propsIF) {
               (isAccountView && isLargeScreen && isSidebarOpen)
             ? 'medium'
             : 'large';
-
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
 
     // Changed this to have the sort icon be inline with the last row rather than under it
     const walID = (

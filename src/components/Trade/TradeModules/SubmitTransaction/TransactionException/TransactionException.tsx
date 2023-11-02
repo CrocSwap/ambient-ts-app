@@ -2,20 +2,21 @@ import styles from './TransactionException.module.css';
 import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import DividerDark from '../../../../Global/DividerDark/DividerDark';
+import { useContext } from 'react';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 export default function TransactionException() {
     const rangeModuleActive = location.pathname.includes('/trade/pool');
     const tradeData = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     const isEthSecondary =
-        (tradeData.isTokenAPrimaryRange &&
-            tradeData.tokenB.address === ZERO_ADDRESS) ||
-        (!tradeData.isTokenAPrimaryRange &&
-            tradeData.tokenA.address === ZERO_ADDRESS);
+        (tradeData.isTokenAPrimaryRange && tokenB.address === ZERO_ADDRESS) ||
+        (!tradeData.isTokenAPrimaryRange && tokenA.address === ZERO_ADDRESS);
 
     const primaryTokenSymbol = tradeData.isTokenAPrimaryRange
-        ? tradeData.tokenA.symbol
-        : tradeData.tokenB.symbol;
+        ? tokenA.symbol
+        : tokenB.symbol;
 
     return (
         <div className={styles.removal_pending}>

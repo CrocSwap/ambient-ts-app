@@ -1,7 +1,6 @@
 import { PoolIF } from '../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../App/functions/getPoolStats';
 import { Link, useLocation } from 'react-router-dom';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { usePoolStats } from '../../../App/hooks/usePoolStats';
 import { useContext, useMemo } from 'react';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -14,6 +13,7 @@ import {
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { ItemContainer } from '../../../styled/Components/Sidebar';
 import { FlexContainer } from '../../../styled/Common';
+import { TradeDataContext } from '../../../contexts/TradeDataContext';
 
 interface propsIF {
     pool: PoolIF;
@@ -62,7 +62,7 @@ export default function PoolsListItem(props: propsIF) {
         return output as pageNames;
     }, [pathname]);
 
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useContext(TradeDataContext);
 
     // hook to generate navigation actions with pre-loaded path
     const linkGenMarket: linkGenMethodsIF = useLinkGen(navTarget);

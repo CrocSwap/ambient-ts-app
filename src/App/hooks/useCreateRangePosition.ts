@@ -17,6 +17,7 @@ import {
 } from '../../utils/TransactionError';
 import { IS_LOCAL_ENV } from '../../constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export function useCreateRangePosition() {
     const dispatch = useAppDispatch();
@@ -31,14 +32,10 @@ export function useCreateRangePosition() {
     } = useContext(TradeTokenContext);
 
     const {
-        tradeData: {
-            isTokenAPrimaryRange,
-            tokenA,
-            tokenB,
-            baseToken,
-            quoteToken,
-        },
+        tradeData: { isTokenAPrimaryRange },
     } = useAppSelector((state) => state);
+    const { tokenA, tokenB, baseToken, quoteToken } =
+        useContext(TradeDataContext);
 
     const isTokenABase = tokenA.address === baseTokenAddress;
     const tokenADecimals = tokenA.decimals;

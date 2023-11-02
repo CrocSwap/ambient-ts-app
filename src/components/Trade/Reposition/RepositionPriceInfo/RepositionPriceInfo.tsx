@@ -5,10 +5,7 @@ import { useContext, useState } from 'react';
 import { FaGasPump } from 'react-icons/fa';
 // import { getPinnedPriceValuesFromTicks } from '../../../../pages/Trade/Range/rangeFunctions';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 // import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 // import DividerDark from '../../../Global/DividerDark/DividerDark';
@@ -18,6 +15,8 @@ import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent'
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 // import AprExplanation from '../../../Global/Informational/AprExplanation';
 import { UserPreferenceContext } from '../../../../contexts/UserPreferenceContext';
+import { GraphDataContext } from '../../../../contexts/GraphDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 // import { AppStateContext } from '../../../../contexts/AppStateContext';
 // import { PoolContext } from '../../../../contexts/PoolContext';
 
@@ -78,14 +77,12 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     // } = useContext(AppStateContext);
     // const { ambientApy } = useContext(PoolContext);
     const { repoSlippage } = useContext(UserPreferenceContext);
+    const { liquidityFee } = useContext(GraphDataContext);
 
     const baseSymbol = position?.baseSymbol;
     const quoteSymbol = position?.quoteSymbol;
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const isDenomBase = tradeData?.isDenomBase;
-    const liquidityFee = tradeData?.liquidityFee;
+    const { isDenomBase } = useContext(TradeDataContext);
 
     // const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
     // const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;

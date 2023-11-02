@@ -10,9 +10,9 @@ import Button from '../../components/Form/Button';
 import { Chip } from '../../components/Form/Chip';
 import RangeWidth from '../../components/Form/RangeWidth/RangeWidth';
 import TokenInputQuantity from '../../components/Form/TokenInputQuantity';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import Toggle from '../../components/Form/Toggle';
 import FormFooter from './FormFooterExample';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 export default function ExampleForm() {
     const { dexBalRange } = useContext(UserPreferenceContext);
@@ -74,7 +74,7 @@ export default function ExampleForm() {
     const [minPrice, setMinPrice] = useState(10);
     const [maxPrice, setMaxPrice] = useState(100);
 
-    const { tokenA } = useAppSelector((state) => state.tradeData);
+    const { tokenA } = useContext(TradeDataContext);
 
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,

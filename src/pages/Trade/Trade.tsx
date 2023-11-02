@@ -37,6 +37,7 @@ import {
     TradeDropdownButton,
 } from '../../styled/Components/Trade';
 import { Direction } from 're-resizable/lib/resizer';
+import { TradeDataContext } from '../../contexts/TradeDataContext';
 
 const TRADE_CHART_MIN_HEIGHT = 175;
 
@@ -68,7 +69,8 @@ function Trade() {
     } = useContext(TradeTableContext);
 
     const { tradeData } = useAppSelector((state) => state);
-    const { isDenomBase, limitTick } = tradeData;
+    const { baseToken, quoteToken, isDenomBase } = useContext(TradeDataContext);
+    const { limitTick } = tradeData;
 
     const { urlParamMap, updateURL } = useUrlParams(tokens, chainId, provider);
 
@@ -157,11 +159,7 @@ function Trade() {
 
     useEffect(() => {
         unselectCandle();
-    }, [
-        chartSettings.candleTime.global.time,
-        tradeData.baseToken.name,
-        tradeData.quoteToken.name,
-    ]);
+    }, [chartSettings.candleTime.global.time, baseToken.name, quoteToken.name]);
 
     const showActiveMobileComponent = useMediaQuery('(max-width: 1200px)');
 
@@ -283,16 +281,8 @@ function Trade() {
                         {showNoChartData && (
                             <NoChartData
                                 chainId={chainId}
-                                tokenA={
-                                    isDenomBase
-                                        ? tradeData.baseToken
-                                        : tradeData.quoteToken
-                                }
-                                tokenB={
-                                    isDenomBase
-                                        ? tradeData.quoteToken
-                                        : tradeData.baseToken
-                                }
+                                tokenA={isDenomBase ? baseToken : quoteToken}
+                                tokenB={isDenomBase ? quoteToken : baseToken}
                                 isCandleDataNull
                                 isTableExpanded={tradeTableState == 'Expanded'}
                             />

@@ -3,7 +3,6 @@ import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { TradeTableContext } from '../../../../contexts/TradeTableContext';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     useLinkGen,
     linkGenMethodsIF,
@@ -15,6 +14,7 @@ import {
     Results,
     ResultsContainer,
 } from '../../../../styled/Components/Sidebar';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     searchedLimitOrders: LimitOrderIF[];
@@ -26,7 +26,7 @@ interface limitOrderPropsIF {
 
 function LimitOrderLI(props: limitOrderPropsIF) {
     const { limitOrder, handleClick } = props;
-    const { isDenomBase } = useAppSelector((state) => state.tradeData);
+    const { isDenomBase } = useContext(TradeDataContext);
 
     const symbols = {
         base: limitOrder.baseSymbol

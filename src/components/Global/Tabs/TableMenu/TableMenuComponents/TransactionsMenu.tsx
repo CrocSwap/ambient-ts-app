@@ -9,19 +9,14 @@ import styles from './TableMenus.module.css';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetailsModal from '../../../TransactionDetails/TransactionDetailsModal';
-import {
-    useAppDispatch,
-    useAppSelector,
-} from '../../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
     setShouldSwapDirectionReverse,
-    setShouldRangeDirectionReverse,
     setPrimaryQuantityRange,
     setRangeTicksCopied,
-    setIsTokenAPrimary,
 } from '../../../../../utils/state/tradeDataSlice';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { CrocEnvContext } from '../../../../../contexts/CrocEnvContext';
@@ -36,6 +31,7 @@ import { TradeTableContext } from '../../../../../contexts/TradeTableContext';
 import { useModal } from '../../../Modal/useModal';
 import { Chip } from '../../../../Form/Chip';
 import { FlexContainer } from '../../../../../styled/Common';
+import { TradeDataContext } from '../../../../../contexts/TradeDataContext';
 
 // interface for React functional component props
 interface propsIF {
@@ -69,8 +65,8 @@ export default function TransactionsMenu(props: propsIF) {
         ? useMediaQuery('(max-width: 1500px)')
         : useMediaQuery('(max-width: 1250px)');
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
+    const { tokenA, isTokenAPrimary, setIsTokenAPrimary } =
+        useContext(TradeDataContext);
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const dispatch = useAppDispatch();
@@ -95,11 +91,9 @@ export default function TransactionsMenu(props: propsIF) {
             setSimpleRangeWidth(100);
             dispatch(setAdvancedMode(false));
             const shouldReverse =
-                tradeData.tokenA.address.toLowerCase() !==
-                tx.base.toLowerCase();
+                tokenA.address.toLowerCase() !== tx.base.toLowerCase();
             if (shouldReverse) {
                 dispatch(setPrimaryQuantityRange(''));
-                dispatch(setShouldRangeDirectionReverse(true));
             }
         } else if (tx.positionType === 'concentrated') {
             setTimeout(() => {
@@ -108,24 +102,22 @@ export default function TransactionsMenu(props: propsIF) {
                 dispatch(setAdvancedHighTick(tx.askTick));
                 dispatch(setAdvancedMode(true));
                 const shouldReverse =
-                    tradeData.tokenA.address.toLowerCase() !==
-                    tx.base.toLowerCase();
+                    tokenA.address.toLowerCase() !== tx.base.toLowerCase();
                 if (shouldReverse) {
                     dispatch(setPrimaryQuantityRange(''));
-                    dispatch(setShouldRangeDirectionReverse(true));
                 }
             }, 1000);
         } else if (tx.entityType === 'swap') {
             const shouldReverse =
-                tradeData.tokenA.address.toLowerCase() ===
+                tokenA.address.toLowerCase() ===
                 (tx.isBuy ? tx.quote.toLowerCase() : tx.base.toLowerCase());
             if (shouldReverse) {
                 dispatch(setShouldSwapDirectionReverse(true));
             }
         } else if (tx.entityType === 'limitOrder') {
-            tradeData.tokenA.address.toLowerCase() !==
+            tokenA.address.toLowerCase() !==
                 (tx.isBuy ? tx.base.toLowerCase() : tx.quote.toLowerCase()) &&
-                dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+                setIsTokenAPrimary(!isTokenAPrimary);
             // URL params for link to limit page
             const limitLinkParams: limitParamsIF = {
                 chain: chainId,

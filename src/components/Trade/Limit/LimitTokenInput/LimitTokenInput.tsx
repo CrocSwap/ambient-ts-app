@@ -19,7 +19,6 @@ import { formatTokenInput } from '../../../../utils/numbers';
 import {
     setLimitTick,
     setPoolPriceNonDisplay,
-    setIsTokenAPrimary,
     setPrimaryQuantity,
     setIsTokenAPrimaryRange,
 } from '../../../../utils/state/tradeDataSlice';
@@ -27,6 +26,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import TokenInputWithWalletBalance from '../../../Form/TokenInputWithWalletBalance';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { UserDataContext } from '../../../../contexts/UserDataContext';
+import { TradeDataContext } from '../../../../contexts/TradeDataContext';
 
 interface propsIF {
     tokenAInputQty: { value: string; set: Dispatch<SetStateAction<string>> };
@@ -70,14 +70,12 @@ function LimitTokenInput(props: propsIF) {
     const linkGenLimit: linkGenMethodsIF = useLinkGen('limit');
     const { isUserConnected } = useContext(UserDataContext);
 
-    const {
-        tokenA,
-        tokenB,
-        isTokenAPrimary,
-        isTokenAPrimaryRange,
-        primaryQuantity,
-        isDenomBase,
-    } = useAppSelector((state) => state.tradeData);
+    const { isTokenAPrimaryRange, primaryQuantity } = useAppSelector(
+        (state) => state.tradeData,
+    );
+
+    const { tokenA, tokenB, isTokenAPrimary, isDenomBase, setIsTokenAPrimary } =
+        useContext(TradeDataContext);
 
     const isSellTokenBase = pool?.baseToken.tokenAddr === tokenA.address;
 
@@ -99,7 +97,7 @@ function LimitTokenInput(props: propsIF) {
         };
         // navigate user to limit page with URL params defined above
         linkGenLimit.navigate(limitLinkParams);
-        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+        setIsTokenAPrimary(!isTokenAPrimary);
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryRange));
     };
 
@@ -125,7 +123,7 @@ function LimitTokenInput(props: propsIF) {
 
             // set token input quantity to be unparsed input
             setTokenAInputQty(value);
-            dispatch(setIsTokenAPrimary(true));
+            setIsTokenAPrimary(true);
             dispatch(setPrimaryQuantity(inputStr));
 
             if (!isDenomBase) {
@@ -168,7 +166,7 @@ function LimitTokenInput(props: propsIF) {
 
             // set token input quantity to be unparsed input
             setTokenBInputQty(value);
-            dispatch(setIsTokenAPrimary(false));
+            setIsTokenAPrimary(false);
             dispatch(setPrimaryQuantity(inputStr));
 
             if (!isDenomBase) {

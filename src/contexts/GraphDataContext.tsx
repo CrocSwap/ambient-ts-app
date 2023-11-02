@@ -61,8 +61,11 @@ interface GraphDataContextIF {
     userLimitOrdersByPool: LimitOrdersByPool;
     limitOrdersByPool: LimitOrdersByPool;
     liquidityData: LiquidityDataIF | undefined;
+    liquidityFee: number;
+
     setLiquidityPending: (params: PoolRequestParams) => void;
     setLiquidity: (liqData: LiquidityDataIF) => void;
+    setLiquidityFee: React.Dispatch<React.SetStateAction<number>>;
     setChangesByPool: React.Dispatch<React.SetStateAction<Changes>>;
     setChangesByUser: React.Dispatch<React.SetStateAction<Changes>>;
     setUserPositionsByPool: React.Dispatch<
@@ -143,7 +146,7 @@ export const GraphDataContextProvider = (props: {
     const [liquidityRequest, setLiquidityRequest] = React.useState<
         PoolRequestParams | undefined
     >(undefined);
-
+    const [liquidityFee, setLiquidityFee] = React.useState<number>(0);
     const {
         server: { isEnabled: isServerEnabled },
     } = useContext(AppStateContext);
@@ -456,6 +459,8 @@ export const GraphDataContextProvider = (props: {
         liquidityData,
         setLiquidity,
         setLiquidityPending,
+        liquidityFee,
+        setLiquidityFee,
     };
 
     return (
