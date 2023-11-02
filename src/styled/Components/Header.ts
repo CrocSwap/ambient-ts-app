@@ -27,15 +27,15 @@ export const PrimaryHeader = styled.header<PrimaryHeaderProps>`
     ${({ fixed }) => fixed && fixedStyles}
 
     @media only screen and (min-width: 800px) {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
         padding: 0 16px;
     }
 `;
 
 // Define the styles for LogoContainer
 export const LogoContainer = styled(Link)`
-    width: 100%;
     display: flex;
     flex-direction: row;
     gap: 8px;
