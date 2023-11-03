@@ -21,7 +21,7 @@ export function useUndoRedo(denomInBase: boolean) {
         chainData: { poolIndex },
     } = useContext(CrocEnvContext);
 
-    const [drawActionStack] = useState(
+    const [drawActionStack, setDrawActionStack] = useState(
         new Map<actionKeyIF, drawDataHistory[]>(),
     );
 
@@ -126,6 +126,7 @@ export function useUndoRedo(denomInBase: boolean) {
     }
     function undo() {
         const actionList = drawActionStack.get(actionKey);
+        console.log('undo', drawActionStack);
 
         if (actionList) {
             const action = actionList.pop();
@@ -219,7 +220,7 @@ export function useUndoRedo(denomInBase: boolean) {
     }
 
     function addDrawActionStack(tempLastData: drawDataHistory) {
-        drawActionStack.get(actionKey)?.push({
+        const tempDta = {
             data: [
                 {
                     x: tempLastData.data[0].x,
@@ -238,6 +239,19 @@ export function useUndoRedo(denomInBase: boolean) {
             color: tempLastData.color,
             lineWidth: tempLastData.lineWidth,
             style: tempLastData.style,
+        };
+
+        setDrawActionStack((prevStack) => {
+            const tempMap = new Map<actionKeyIF, drawDataHistory[]>(prevStack);
+            const values = tempMap.get(actionKey);
+            if (values) {
+                const checkData =
+                    JSON.stringify(values[values.length - 1]) !==
+                    JSON.stringify(tempDta);
+                if (checkData) values.push(tempDta);
+                tempMap.set(actionKey, values);
+            }
+            return tempMap;
         });
     }
 
@@ -315,5 +329,6 @@ export function useUndoRedo(denomInBase: boolean) {
         drawActionStack,
         actionKey,
         addDrawActionStack,
+        undoStack,
     };
 }

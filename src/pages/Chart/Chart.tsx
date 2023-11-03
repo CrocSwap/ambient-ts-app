@@ -95,6 +95,7 @@ import Toolbar from './Draw/Toolbar/Toolbar';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { actionKeyIF } from './ChartUtils/useUndoRedo';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -142,6 +143,8 @@ interface propsIF {
     deleteItem: (item: drawDataHistory) => void;
     updateURL: (changes: updatesIF) => void;
     addDrawActionStack: (item: drawDataHistory) => void;
+    drawActionStack: Map<actionKeyIF, drawDataHistory[]>;
+    undoStack: Map<actionKeyIF, drawDataHistory[]>;
 }
 
 export default function Chart(props: propsIF) {
@@ -174,6 +177,8 @@ export default function Chart(props: propsIF) {
         deleteItem,
         updateURL,
         addDrawActionStack,
+        drawActionStack,
+        undoStack,
     } = props;
 
     const {
@@ -3000,13 +3005,11 @@ export default function Chart(props: propsIF) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const handleKeyDown = function (event: any) {
             if ((event.ctrlKey || event.metaKey) && event.key === 'z') {
-                event.preventDefault();
-                setSelectedDrawnShape(undefined);
                 undo();
-            } else if ((event.ctrlKey || event.metaKey) && event.key === 'y') {
-                event.preventDefault();
                 setSelectedDrawnShape(undefined);
+            } else if ((event.ctrlKey || event.metaKey) && event.key === 'y') {
                 redo();
+                setSelectedDrawnShape(undefined);
             }
             if (event.key === 'Escape') {
                 setSelectedDrawnShape(undefined);
@@ -3018,7 +3021,7 @@ export default function Chart(props: propsIF) {
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [undo, redo]);
+    }, [undo, redo, drawActionStack, undoStack]);
 
     useEffect(() => {
         const canvas = d3

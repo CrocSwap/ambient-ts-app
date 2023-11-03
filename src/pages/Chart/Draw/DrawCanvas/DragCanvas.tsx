@@ -387,7 +387,7 @@ export default function DragCanvas(props: DragCanvasProps) {
                         tempLastData &&
                         isDragging &&
                         dragTimeout &&
-                        event.sourceEvent.timeStamp - dragTimeout > 250
+                        event.sourceEvent.timeStamp - dragTimeout > 150
                     ) {
                         addDrawActionStack(tempLastData);
                     }

@@ -121,6 +121,8 @@ function TradeCandleStickChart(props: propsIF) {
         currentPool,
         deleteItem,
         addDrawActionStack,
+        drawActionStack,
+        undoStack,
     } = useUndoRedo(denominationsInBase);
 
     const tokenPair = useMemo(
@@ -859,6 +861,8 @@ function TradeCandleStickChart(props: propsIF) {
                         deleteItem={deleteItem}
                         updateURL={updateURL}
                         addDrawActionStack={addDrawActionStack}
+                        drawActionStack={drawActionStack}
+                        undoStack={undoStack}
                     />
                 ) : (
                     <Spinner size={100} bg='var(--dark2)' centered />
