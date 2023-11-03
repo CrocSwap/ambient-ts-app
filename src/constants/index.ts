@@ -52,6 +52,7 @@ export const GITHUB_LINK = 'https://github.com/CrocSwap';
 export const TWITTER_LINK = 'https://twitter.com/ambient_finance';
 export const DISCORD_LINK = 'https://discord.gg/ambient-finance';
 export const MEDIUM_LINK = 'https://crocswap.medium.com/';
+export const CORPORATE_LINK = 'https://www.crocswap.com/';
 
 export const OVERRIDE_CANDLE_POOL_ID = 36000;
 
