@@ -34,7 +34,6 @@ import {
     TransactionError,
 } from '../../../utils/TransactionError';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { setAdvancedMode } from '../../../utils/state/tradeDataSlice';
 import { GRAPHCACHE_SMALL_URL, IS_LOCAL_ENV } from '../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
@@ -79,6 +78,7 @@ function Reposition() {
         setMinRangePrice: setMinPrice,
         setCurrentRangeInReposition,
         setRescaleRangeBoundariesWithSlider,
+        setAdvancedMode,
     } = useContext(RangeContext);
 
     const [isOpen, openModal, closeModal] = useModal();
@@ -206,7 +206,7 @@ function Reposition() {
 
     useEffect(() => {
         IS_LOCAL_ENV && console.debug('set Advanced Mode to false');
-        dispatch(setAdvancedMode(false));
+        setAdvancedMode(false);
     }, []);
 
     useEffect(() => {

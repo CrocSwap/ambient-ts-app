@@ -4,12 +4,12 @@ import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     setLimitTick,
     setPoolPriceNonDisplay,
-    setPrimaryQuantityRange,
 } from '../../utils/state/tradeDataSlice';
 import { get24hChange } from '../functions/getPoolStats';
 import { SpotPriceFn } from '../functions/querySpotPrice';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { RangeContext } from '../../contexts/RangeContext';
 
 interface PoolPricingPropsIF {
     crocEnv?: CrocEnv;
@@ -31,7 +31,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     const dispatch = useAppDispatch();
     const tradeData = useAppSelector((state) => state.tradeData);
     const { isDenomBase, setDidUserFlipDenom } = useContext(TradeDataContext);
-
+    const { setPrimaryQuantityRange } = useContext(RangeContext);
     const { activeNetwork } = useContext(CrocEnvContext);
 
     // value for whether a pool exists on current chain and token pair
@@ -80,7 +80,7 @@ export function usePoolPricing(props: PoolPricingPropsIF) {
     useEffect(() => {
         setPoolPriceDisplay(0);
         setIsPoolInitialized(undefined);
-        dispatch(setPrimaryQuantityRange(''));
+        setPrimaryQuantityRange('');
         setPoolPriceDisplay(undefined);
         setDidUserFlipDenom(false); // reset so a new token pair is re-evaluated for price > 1
         setPoolPriceChangePercent(undefined);

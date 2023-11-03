@@ -20,7 +20,6 @@ import InitPoolTokenSelect from '../../components/Global/InitPoolTokenSelect/Ini
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { PoolContext } from '../../contexts/PoolContext';
 import RangeBounds from '../../components/Global/RangeBounds/RangeBounds';
-// import { toggleAdvancedMode } from '../../utils/state/tradeDataSlice';
 import { LuEdit2 } from 'react-icons/lu';
 import { FiExternalLink, FiRefreshCw } from 'react-icons/fi';
 import { FlexContainer, Text } from '../../styled/Common';
@@ -55,10 +54,7 @@ import {
     DEFAULT_MAX_PRICE_DIFF_PERCENTAGE,
     DEFAULT_MIN_PRICE_DIFF_PERCENTAGE,
 } from '../Trade/Range/Range';
-import {
-    setAdvancedLowTick,
-    setAdvancedHighTick,
-} from '../../utils/state/tradeDataSlice';
+
 import { concDepositSkew, fromDisplayPrice } from '@crocswap-libs/sdk';
 import truncateDecimals from '../../utils/data/truncateDecimals';
 
@@ -82,6 +78,7 @@ import {
     isTransactionFailedError,
     isTransactionReplacedError,
 } from '../../utils/TransactionError';
+import { RangeContext } from '../../contexts/RangeContext';
 // react functional component
 export default function InitPool() {
     const {
@@ -109,10 +106,14 @@ export default function InitPool() {
     } = useContext(TradeTokenContext);
 
     const { sessionReceipts } = useAppSelector((state) => state.receiptData);
-    const {
-        tradeData: { advancedMode, advancedHighTick, advancedLowTick },
-    } = useAppSelector((state) => state);
 
+    const {
+        advancedMode,
+        advancedHighTick,
+        advancedLowTick,
+        setAdvancedHighTick,
+        setAdvancedLowTick,
+    } = useContext(RangeContext);
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
 
@@ -315,12 +316,8 @@ export default function InitPool() {
                   );
 
             isDenomBase
-                ? dispatch(
-                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                  )
-                : dispatch(
-                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
-                  );
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
@@ -388,12 +385,8 @@ export default function InitPool() {
                   );
 
             !isDenomBase
-                ? dispatch(
-                      setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick),
-                  )
-                : dispatch(
-                      setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick),
-                  );
+                ? setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick)
+                : setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             !isDenomBase
                 ? setMinPrice(
@@ -700,8 +693,8 @@ export default function InitPool() {
                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
             );
 
-            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             const highTickDiff =
                 pinnedDisplayPrices.pinnedHighTick - selectedPoolPriceTick;
@@ -1109,8 +1102,8 @@ export default function InitPool() {
                 pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
             );
 
-            dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-            dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick);
+            setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick);
 
             setMaxPrice(
                 parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
@@ -1634,7 +1627,7 @@ export default function InitPool() {
                     <FlexContainer
                         overlay={isRangeBoundsAndCollateralDisabled && 'blur'}
                     >
-                        <AdvancedModeToggle advancedMode={advancedMode} />
+                        <AdvancedModeToggle />
                     </FlexContainer>
 
                     {!hideContentOnMobile && (

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { CrocEnvContext } from '../../contexts/CrocEnvContext';
 
 import {
@@ -18,6 +18,7 @@ import {
 import { IS_LOCAL_ENV } from '../../constants';
 import { TradeTokenContext } from '../../contexts/TradeTokenContext';
 import { TradeDataContext } from '../../contexts/TradeDataContext';
+import { RangeContext } from '../../contexts/RangeContext';
 
 export function useCreateRangePosition() {
     const dispatch = useAppDispatch();
@@ -31,11 +32,9 @@ export function useCreateRangePosition() {
         baseToken: { address: baseTokenAddress },
     } = useContext(TradeTokenContext);
 
-    const {
-        tradeData: { isTokenAPrimaryRange },
-    } = useAppSelector((state) => state);
     const { tokenA, tokenB, baseToken, quoteToken } =
         useContext(TradeDataContext);
+    const { isTokenAPrimaryRange } = useContext(RangeContext);
 
     const isTokenABase = tokenA.address === baseTokenAddress;
     const tokenADecimals = tokenA.decimals;
