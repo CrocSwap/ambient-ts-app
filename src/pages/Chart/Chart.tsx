@@ -65,6 +65,7 @@ import {
     defaultCandleBandwith,
     drawDataHistory,
     fillLiqAdvanced,
+    formatTimeDifference,
     lineData,
     lineValue,
     liquidityChartData,
@@ -95,6 +96,7 @@ import Toolbar from './Draw/Toolbar/Toolbar';
 import FloatingToolbar from './Draw/FloatingToolbar/FloatingToolbar';
 import { updatesIF } from '../../utils/hooks/useUrlParams';
 import { linkGenMethodsIF, useLinkGen } from '../../utils/hooks/useLinkGen';
+import { formatDollarAmountAxis } from '../../utils/numbers';
 
 interface propsIF {
     isTokenABase: boolean;
@@ -2911,10 +2913,45 @@ export default function Chart(props: propsIF) {
                                             lineSeries(line);
                                         });
 
+                                        const firstPointYAxisData =
+                                            item.data[0].denomInBase ===
+                                            denomInBase
+                                                ? item.data[0].y
+                                                : 1 / item.data[0].y;
+                                        const secondPointYAxisData =
+                                            item.data[1].denomInBase ===
+                                            denomInBase
+                                                ? item.data[1].y
+                                                : 1 / item.data[1].y;
+
+                                        const filtered =
+                                            unparsedCandleData.filter(
+                                                (data: CandleData) =>
+                                                    data.time * 1000 >=
+                                                        Math.min(
+                                                            item.data[0].x,
+                                                            item.data[1].x,
+                                                        ) &&
+                                                    data.time * 1000 <=
+                                                        Math.max(
+                                                            item.data[0].x,
+                                                            item.data[1].x,
+                                                        ),
+                                            );
+
+                                        const totalVolumeCovered =
+                                            filtered.reduce(
+                                                (sum, obj) =>
+                                                    sum + obj.volumeUSD,
+                                                0,
+                                            );
+
                                         const height = Math.abs(
-                                            scaleData.yScale(item.data[0].y) -
+                                            scaleData.yScale(
+                                                firstPointYAxisData,
+                                            ) -
                                                 scaleData.yScale(
-                                                    item.data[1].y,
+                                                    secondPointYAxisData,
                                                 ),
                                         );
                                         const width = Math.abs(
@@ -2923,6 +2960,104 @@ export default function Chart(props: propsIF) {
                                                     item.data[1].x,
                                                 ),
                                         );
+
+                                        const lengthAsBars = Math.abs(
+                                            item.data[0].x - item.data[1].x,
+                                        );
+                                        const lengthAsDate =
+                                            (item.data[0].x > item.data[1].x
+                                                ? '-'
+                                                : '') +
+                                            formatTimeDifference(
+                                                new Date(item.data[0].x),
+                                                new Date(item.data[1].x),
+                                            );
+
+                                        const heightAsPrice =
+                                            secondPointYAxisData -
+                                            firstPointYAxisData;
+
+                                        const heightAsPercentage = (
+                                            (Number(heightAsPrice) /
+                                                Math.min(
+                                                    firstPointYAxisData,
+                                                    secondPointYAxisData,
+                                                )) *
+                                            100
+                                        ).toFixed(2);
+
+                                        const infoLabelHeight = 66;
+                                        const infoLabelWidth = 150;
+
+                                        const infoLabelXAxisData =
+                                            Math.min(
+                                                item.data[0].x,
+                                                item.data[1].x,
+                                            ) +
+                                            Math.abs(
+                                                item.data[0].x - item.data[1].x,
+                                            ) /
+                                                2;
+                                        const infoLabelYAxisData =
+                                            scaleData.yScale(
+                                                secondPointYAxisData,
+                                            ) +
+                                            (secondPointYAxisData >
+                                            firstPointYAxisData
+                                                ? -(infoLabelHeight + 15)
+                                                : 15);
+
+                                        if (ctx) {
+                                            ctx.beginPath();
+                                            ctx.fillStyle = 'rgb(34,44,58)';
+                                            ctx.fillRect(
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ) -
+                                                    infoLabelWidth / 2,
+                                                infoLabelYAxisData,
+                                                infoLabelWidth,
+                                                infoLabelHeight,
+                                            );
+                                            ctx.fillStyle =
+                                                'rgba(210,210,210,1)';
+                                            ctx.font = '12.425px Lexend Deca';
+                                            ctx.textAlign = 'center';
+                                            ctx.textBaseline = 'middle';
+
+                                            ctx.fillText(
+                                                heightAsPrice.toFixed(2) +
+                                                    ' ' +
+                                                    '(' +
+                                                    heightAsPercentage.toString() +
+                                                    '%)',
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ),
+                                                infoLabelYAxisData + 16,
+                                            );
+                                            ctx.fillText(
+                                                (lengthAsBars / (1000 * period))
+                                                    .toFixed(0)
+                                                    .toString() +
+                                                    ' bars,  ' +
+                                                    lengthAsDate,
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ),
+                                                infoLabelYAxisData + 33,
+                                            );
+                                            ctx.fillText(
+                                                'Vol ' +
+                                                    formatDollarAmountAxis(
+                                                        totalVolumeCovered,
+                                                    ).replace('$', ''),
+                                                scaleData.xScale(
+                                                    infoLabelXAxisData,
+                                                ),
+                                                infoLabelYAxisData + 50,
+                                            );
+                                        }
 
                                         if (height > 70 && width > 70) {
                                             const arrowArray =

@@ -211,3 +211,18 @@ export function fillLiqAdvanced(
         }
     }
 }
+
+export function formatTimeDifference(startDate: Date, endDate: Date): string {
+    const timeDifference = endDate.getTime() - startDate.getTime();
+    const secondsDifference = Math.floor(timeDifference / 1000);
+
+    const days = Math.floor(secondsDifference / 86400);
+    const hours = Math.floor((secondsDifference % 86400) / 3600);
+    const minutes = Math.floor((secondsDifference % 3600) / 60);
+
+    if (days > 0) {
+        return `${days}d ${hours}h ${minutes}m`;
+    } else {
+        return `${hours}h ${minutes}m`;
+    }
+}
