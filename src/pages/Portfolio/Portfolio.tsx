@@ -45,6 +45,7 @@ function Portfolio() {
         useContext(CachedDataContext);
     const {
         crocEnv,
+        activeNetwork,
         chainData: { chainId },
     } = useContext(CrocEnvContext);
     const { lastBlockNumber, client } = useContext(ChainDataContext);
@@ -52,7 +53,7 @@ function Portfolio() {
 
     const dispatch = useAppDispatch();
 
-    const { provider } = useContext(CrocEnvContext);
+    const { mainnetProvider } = useContext(CrocEnvContext);
 
     const { address: addressFromParams } = useParams();
 
@@ -82,11 +83,10 @@ function Portfolio() {
 
     useEffect(() => {
         (async () => {
-            if (addressFromParams && isAddressEns && provider) {
+            if (addressFromParams && isAddressEns && mainnetProvider) {
                 try {
-                    const newResolvedAddress = await provider.resolveName(
-                        addressFromParams,
-                    );
+                    const newResolvedAddress =
+                        await mainnetProvider.resolveName(addressFromParams);
                     setResolvedAddress(newResolvedAddress ?? '');
                     dispatch(setResolvedAddressRedux(newResolvedAddress ?? ''));
                 } catch (error) {
@@ -100,7 +100,7 @@ function Portfolio() {
                 dispatch(setResolvedAddressRedux(''));
             }
         })();
-    }, [addressFromParams, isAddressHex, isAddressEns, provider]);
+    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
 
     const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes
@@ -184,6 +184,7 @@ function Portfolio() {
         (async () => {
             if (
                 crocEnv &&
+                client &&
                 resolvedAddress &&
                 chainId &&
                 lastBlockNumber &&
@@ -198,6 +199,7 @@ function Portfolio() {
                         lastBlockNumber,
                         cachedTokenDetails,
                         crocEnv,
+                        activeNetwork.graphCacheUrl,
                         client,
                     );
 
@@ -235,10 +237,12 @@ function Portfolio() {
         })();
     }, [
         crocEnv,
+        client !== undefined,
         resolvedAddress,
         chainId,
         lastBlockNumber,
         connectedAccountActive,
+        activeNetwork.graphCacheUrl,
     ]);
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);

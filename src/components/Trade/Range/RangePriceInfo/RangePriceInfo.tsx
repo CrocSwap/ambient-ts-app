@@ -15,9 +15,6 @@ import { AppStateContext } from '../../../../contexts/AppStateContext';
 import { CrocEnvContext } from '../../../../contexts/CrocEnvContext';
 import { CachedDataContext } from '../../../../contexts/CachedDataContext';
 import { getFormattedNumber } from '../../../../App/functions/getFormattedNumber';
-import { getMainnetAddress } from '../../../../utils/functions/getMainnetAddress';
-import { supportedNetworks } from '../../../../utils/networks';
-import { ethereumMainnet } from '../../../../utils/networks/ethereumMainnet';
 
 // interface for component props
 interface propsIF {
@@ -63,48 +60,8 @@ function RangePriceInfo(props: propsIF) {
     const { isDenomBase, tokenA, tokenB, baseToken, quoteToken } =
         useAppSelector((state) => state.tradeData);
 
-    // const dispatch = useAppDispatch();
-
-    // const aprPercentageString = aprPercentage
-    //     ? `${aprPercentage.toLocaleString('en-US', {
-    //           minimumFractionDigits: 2,
-    //           maximumFractionDigits: 2,
-    //       })}%`
-    //     : '…';
-    // JSX frag for estimated APR of position
-
-    // const aprDisplay = (
-    //     <div className={styles.price_display}>
-    //         <h4 className={styles.price_title}>Est. APR</h4>
-    //         <span
-    //             className={styles.apr_price}
-    //             onClick={() => {
-    //                 dispatch(toggleDidUserFlipDenom());
-    //                 setUserFlippedMaxMinDisplay(false);
-    //             }}
-    //         >
-    //             {aprPercentageString}
-    //             {/* <AiOutlineQuestionCircle
-    //             size={14}
-    //             onClick={() =>
-    //                 openGlobalPopup(
-    //                     <AprExplanation />,
-
-    //                     'Estimated APR',
-    //                     'right',
-    //                 )
-    //             }
-    //         /> */}
-    //         </span>
-    //     </div>
-    // );
-
-    const [tokenAMainnetPrice, setTokenAMainnetPrice] = useState<
-        number | undefined
-    >();
-    const [tokenBMainnetPrice, setTokenBMainnetPrice] = useState<
-        number | undefined
-    >();
+    const [tokenAPrice, setTokenAPrice] = useState<number | undefined>();
+    const [tokenBPrice, setTokenBPrice] = useState<number | undefined>();
 
     const [userFlippedMaxMinDisplay, setUserFlippedMaxMinDisplay] =
         useState<boolean>(false);
@@ -147,49 +104,24 @@ function RangePriceInfo(props: propsIF) {
     const pinnedMaxPrice = pinnedDisplayPrices?.pinnedMaxPriceDisplay;
 
     const isStableTokenA = useMemo(
-        () => isStableToken(tokenAAddress, chainId),
+        () => isStableToken(tokenAAddress),
         [tokenAAddress, chainId],
     );
 
     const isStableTokenB = useMemo(
-        () => isStableToken(tokenBAddress, chainId),
+        () => isStableToken(tokenBAddress),
         [tokenBAddress, chainId],
     );
 
     const isEitherTokenStable = isStableTokenA || isStableTokenB;
 
     const updateMainnetPricesAsync = async () => {
-        const tokenAMainnetEquivalent = getMainnetAddress(
-            tokenAAddress,
-            supportedNetworks[chainId],
-        );
-        const tokenBMainnetEquivalent = getMainnetAddress(
-            tokenBAddress,
-            supportedNetworks[chainId],
-        );
+        const tokenAPrice = await cachedFetchTokenPrice(tokenAAddress, chainId);
 
-        if (tokenAMainnetEquivalent) {
-            const tokenAMainnetPrice = await cachedFetchTokenPrice(
-                tokenAMainnetEquivalent,
-                ethereumMainnet.chainId,
-            );
-            const usdPrice = tokenAMainnetPrice?.usdPrice;
+        const tokenBPrice = await cachedFetchTokenPrice(tokenBAddress, chainId);
 
-            setTokenAMainnetPrice(usdPrice);
-        } else {
-            setTokenAMainnetPrice(undefined);
-        }
-
-        if (tokenBMainnetEquivalent) {
-            const tokenBMainnetPrice = await cachedFetchTokenPrice(
-                tokenBMainnetEquivalent,
-                ethereumMainnet.chainId,
-            );
-            const usdPrice = tokenBMainnetPrice?.usdPrice;
-            setTokenBMainnetPrice(usdPrice);
-        } else {
-            setTokenBMainnetPrice(undefined);
-        }
+        setTokenAPrice(tokenAPrice?.usdPrice);
+        setTokenBPrice(tokenBPrice?.usdPrice);
     };
 
     useEffect(() => {
@@ -204,17 +136,13 @@ function RangePriceInfo(props: propsIF) {
         let minPriceNum, maxPriceNum;
 
         if (isDenomTokenA) {
-            minPriceNum =
-                parseFloat(pinnedMinPrice) * (tokenBMainnetPrice || 0);
+            minPriceNum = parseFloat(pinnedMinPrice) * (tokenBPrice || 0);
 
-            maxPriceNum =
-                parseFloat(pinnedMaxPrice) * (tokenBMainnetPrice || 0);
+            maxPriceNum = parseFloat(pinnedMaxPrice) * (tokenBPrice || 0);
         } else {
-            minPriceNum =
-                parseFloat(pinnedMinPrice) * (tokenAMainnetPrice || 0);
+            minPriceNum = parseFloat(pinnedMinPrice) * (tokenAPrice || 0);
 
-            maxPriceNum =
-                parseFloat(pinnedMaxPrice) * (tokenAMainnetPrice || 0);
+            maxPriceNum = parseFloat(pinnedMaxPrice) * (tokenAPrice || 0);
         }
 
         const minDisplayUsdPriceString = getFormattedNumber({
@@ -235,8 +163,8 @@ function RangePriceInfo(props: propsIF) {
         pinnedMaxPrice,
         userFlippedMaxMinDisplay,
         isDenomTokenA,
-        tokenBMainnetPrice,
-        tokenAMainnetPrice,
+        tokenBPrice,
+        tokenAPrice,
     ]);
 
     const handleMinMaxPriceClick = () => {
@@ -246,12 +174,12 @@ function RangePriceInfo(props: propsIF) {
     // JSX frag for lowest price in range
 
     const denomTokenDollarEquivalentExists = isDenomTokenA
-        ? tokenAMainnetPrice !== undefined
-        : tokenBMainnetPrice !== undefined;
+        ? tokenAPrice !== undefined
+        : tokenBPrice !== undefined;
 
     const nonDenomTokenDollarEquivalentExists = !isDenomTokenA
-        ? tokenAMainnetPrice !== undefined
-        : tokenBMainnetPrice !== undefined;
+        ? tokenAPrice !== undefined
+        : tokenBPrice !== undefined;
 
     const minimumPrice =
         denomTokenDollarEquivalentExists && !isEitherTokenStable ? (

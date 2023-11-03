@@ -25,6 +25,7 @@ interface argsIF {
     period?: number;
     time?: number;
     crocEnv: CrocEnv;
+    graphCacheUrl: string;
     provider: Provider;
     lastBlockNumber: number;
     cachedFetchTokenPrice: TokenPriceFn;
@@ -49,6 +50,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         period,
         time,
         crocEnv,
+        graphCacheUrl,
         provider,
         lastBlockNumber,
         cachedFetchTokenPrice,
@@ -57,7 +59,9 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
         cachedEnsResolve,
     } = args;
 
-    const poolRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL + '/pool_txs?';
+    const poolRecentChangesCacheEndpoint = GRAPHCACHE_SMALL_URL
+        ? GRAPHCACHE_SMALL_URL + '/pool_txs?'
+        : graphCacheUrl + '/pool_txs?';
 
     IS_LOCAL_ENV && console.debug('fetching pool recent changes');
 
@@ -102,6 +106,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                 return [];
             }
 
+            const skipENSFetch = true;
             return Promise.all(
                 userTransactions.map((tx: TransactionServerIF) => {
                     return getTransactionData(
@@ -115,6 +120,7 @@ export const fetchPoolRecentChanges = (args: argsIF) => {
                         cachedQuerySpotPrice,
                         cachedTokenDetails,
                         cachedEnsResolve,
+                        skipENSFetch,
                     );
                 }),
             ).then((updatedTransactions) => {

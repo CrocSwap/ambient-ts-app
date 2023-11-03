@@ -1,4 +1,4 @@
-import { CrocImpact, sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { CrocImpact } from '@crocswap-libs/sdk';
 import {
     Dispatch,
     SetStateAction,
@@ -10,7 +10,6 @@ import {
 } from 'react';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import useDebounce from '../../../App/hooks/useDebounce';
-import { ZERO_ADDRESS } from '../../../constants';
 import { ChainDataContext } from '../../../contexts/ChainDataContext';
 import { CrocEnvContext } from '../../../contexts/CrocEnvContext';
 import { PoolContext } from '../../../contexts/PoolContext';
@@ -70,15 +69,15 @@ function SwapTokenInput(props: propsIF) {
     const { lastBlockNumber } = useContext(ChainDataContext);
     const { poolPriceDisplay, isPoolInitialized } = useContext(PoolContext);
     const {
-        baseToken: {
-            balance: baseTokenBalance,
-            dexBalance: baseTokenDexBalance,
-        },
-        quoteToken: {
-            balance: quoteTokenBalance,
-            dexBalance: quoteTokenDexBalance,
-        },
+        tokenABalance,
+        tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
+        isTokenAEth: isSellTokenEth,
+        isTokenBEth: isBuyTokenEth,
+        rtkMatchesParams,
     } = useContext(TradeTokenContext);
+
     const { showSwapPulseAnimation } = useContext(TradeTableContext);
 
     const dispatch = useAppDispatch();
@@ -99,38 +98,8 @@ function SwapTokenInput(props: propsIF) {
     const [lastInput, setLastInput] = useState<string | undefined>();
     const [disableReverseTokens, setDisableReverseTokens] = useState(false);
 
-    const isSellTokenEth = tokenA.address === ZERO_ADDRESS;
-    const isBuyTokenEth = tokenB.address === ZERO_ADDRESS;
-    const sortedTokens = sortBaseQuoteTokens(tokenA.address, tokenB.address);
-    const isSellTokenBase = tokenA.address === sortedTokens[0];
-
-    const tokenABalance = isSellTokenBase
-        ? baseTokenBalance
-        : quoteTokenBalance;
-    const tokenBBalance = isSellTokenBase
-        ? quoteTokenBalance
-        : baseTokenBalance;
-    const tokenADexBalance = isSellTokenBase
-        ? baseTokenDexBalance
-        : quoteTokenDexBalance;
-    const tokenBDexBalance = isSellTokenBase
-        ? quoteTokenDexBalance
-        : baseTokenDexBalance;
-
     // Let input rest 3/4 of a second before triggering an update
     const debouncedLastInput = useDebounce(lastInput, 750);
-
-    useEffect(() => {
-        if (isTokenAPrimary) {
-            if (sellQtyString !== '') {
-                setIsBuyLoading(true);
-            }
-        } else {
-            if (buyQtyString !== '') {
-                setIsSellLoading(true);
-            }
-        }
-    }, []);
 
     useEffect(() => {
         handleBlockUpdate();
@@ -153,10 +122,12 @@ function SwapTokenInput(props: propsIF) {
 
     useEffect(() => {
         (async () => {
-            await refreshTokenData();
-            setDisableReverseTokens(false);
+            if (rtkMatchesParams) {
+                await refreshTokenData();
+                setDisableReverseTokens(false);
+            }
         })();
-    }, [tokenA, tokenB]);
+    }, [rtkMatchesParams]);
 
     const reverseTokens = (): void => {
         if (disableReverseTokens || !isPoolInitialized) return;
@@ -188,8 +159,12 @@ function SwapTokenInput(props: propsIF) {
     };
 
     const handleBlockUpdate = () => {
-        setDisableReverseTokens(true);
-        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        if (rtkMatchesParams) {
+            setDisableReverseTokens(true);
+            isTokenAPrimary
+                ? handleTokenAChangeEvent()
+                : handleTokenBChangeEvent();
+        }
     };
 
     async function refreshImpact(
